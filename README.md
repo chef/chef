@@ -66,10 +66,11 @@ Before working on the code, if you plan to contribute your changes, you need to
 read the
 [Chef Contributions document](http://docs.chef.io/community_contributions.html).
 
-You will also need to set up the repository with the appropriate branches. We
-document the process on the
-[Working with Git](http://wiki.chef.io/display/chef/Working+with+git) page
-of the Chef wiki.
+The general development process is:
+1. Fork this repo and clone it to your workstation
+2. Create a feature branch for your change
+3. Write code and tests
+4. Push your feature branch to github and open a pull request
 
 Once your repository is set up, you can start working on the code. We do use
 TDD with RSpec, so you'll need to get a development environment running.
