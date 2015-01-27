@@ -29,4 +29,5 @@ build_script:
   - bundle install
 
 test_script:
+  - SET SPEC_OPTS=--format progress
   - bundle exec rake spec
