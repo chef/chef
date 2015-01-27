@@ -105,7 +105,7 @@ shared_examples_for "a diff util" do
     end
   end
 
-  describe "when the default external encoding is UTF-8", :ruby_gte_19_only  do
+  describe "when the default external encoding is UTF-8" do
 
     before do
       @saved_default_external = Encoding.default_external
@@ -170,7 +170,7 @@ shared_examples_for "a diff util" do
 
   end
 
-  describe "when the default external encoding is Latin-1", :ruby_gte_19_only  do
+  describe "when the default external encoding is Latin-1" do
 
     before do
       @saved_default_external = Encoding.default_external
@@ -234,7 +234,7 @@ shared_examples_for "a diff util" do
     end
 
   end
-  describe "when the default external encoding is Shift_JIS", :ruby_gte_19_only  do
+  describe "when the default external encoding is Shift_JIS" do
 
     before do
       @saved_default_external = Encoding.default_external
@@ -411,7 +411,7 @@ shared_examples_for "a diff util" do
       end
     end
 
-    describe "when the default external encoding is UTF-8", :ruby_gte_19_only  do
+    describe "when the default external encoding is UTF-8" do
 
       before do
         @saved_default_external = Encoding.default_external
@@ -456,7 +456,7 @@ shared_examples_for "a diff util" do
 
     end
 
-    describe "when the default external encoding is Latin-1", :ruby_gte_19_only do
+    describe "when the default external encoding is Latin-1" do
 
       before do
         @saved_default_external = Encoding.default_external
@@ -500,7 +500,7 @@ shared_examples_for "a diff util" do
       end
     end
 
-    describe "when the default external encoding is Shift-JIS", :ruby_gte_19_only do
+    describe "when the default external encoding is Shift-JIS" do
 
       before do
         @saved_default_external = Encoding.default_external

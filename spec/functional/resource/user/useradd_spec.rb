@@ -82,12 +82,25 @@ describe Chef::Provider::User::Useradd, metadata do
   end
 
   after do
-    begin
-      pw_entry # will raise if the user doesn't exist
-      shell_out!("userdel", "-r", username, :returns => [0,12])
-    rescue UserNotFound
-      # nothing to remove
+    max_retries = 3
+    while max_retries > 0
+      begin
+        pw_entry # will raise if the user doesn't exist
+        status = shell_out!("userdel", "-r", username, :returns => [0,8,12])
+
+        # Error code 8 during userdel indicates that the user is logged in.
+        # This occurs randomly because the accounts daemon holds a lock due to which userdel fails.
+        # The work around is to retry userdel for 3 times.
+        break if status.exitstatus != 8
+
+        sleep 1
+        max_retries = max_retries -1
+      rescue UserNotFound
+        break
+      end
     end
+
+    statur.error! if max_retries == 0
   end
 
   let(:node) do
