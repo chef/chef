@@ -67,6 +67,7 @@ read the
 [Chef Contributions document](http://docs.chef.io/community_contributions.html).
 
 The general development process is:
+
 1. Fork this repo and clone it to your workstation
 2. Create a feature branch for your change
 3. Write code and tests
