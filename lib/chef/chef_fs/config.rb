@@ -26,6 +26,25 @@ class Chef
     # objects representing the server and local repository, respectively).
     #
     class Config
+
+      # Not all of our object types pluralize by adding an 's', so we map them
+      # out here:
+      INFLECTIONS = {
+        "acls" => "acl",
+        "clients" => "client",
+        "cookbooks" => "cookbook",
+        "containers" => "container",
+        "data_bags" => "data_bag",
+        "environments" => "environment",
+        "groups" => "group",
+        "nodes" => "node",
+        "roles" => "role",
+        "users" => "user",
+        "policies" => "policy"
+      }
+      INFLECTIONS.each { |k,v| k.freeze; v.freeze }
+      INFLECTIONS.freeze
+
       #
       # Create a new Config object which can produce a chef_fs and local_fs.
       #
@@ -215,14 +234,16 @@ class Chef
           result = {}
           case @chef_config[:repo_mode]
           when 'static'
-            object_names = %w(cookbooks data_bags environments roles)
+            object_names = %w(cookbooks data_bags environments roles policies)
           when 'hosted_everything'
-            object_names = %w(acls clients cookbooks containers data_bags environments groups nodes roles)
+            object_names = %w(acls clients cookbooks containers data_bags environments groups nodes roles policies)
           else
-            object_names = %w(clients cookbooks data_bags environments nodes roles users)
+            object_names = %w(clients cookbooks data_bags environments nodes roles users policies)
           end
           object_names.each do |object_name|
-            variable_name = "#{object_name[0..-2]}_path" # cookbooks -> cookbook_path
+            # cookbooks -> cookbook_path
+            singular_name = INFLECTIONS[object_name] or raise "Unknown object name #{object_name}"
+            variable_name = "#{singular_name}_path"
             paths = Array(@chef_config[variable_name]).flatten
             result[object_name] = paths.map { |path| File.expand_path(path) }
           end

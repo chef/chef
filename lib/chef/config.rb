@@ -203,6 +203,10 @@ class Chef
     # Does not apply to Enterprise Chef commands.
     default(:user_path) { derive_path_from_chef_repo_path('users') }
 
+    # Location of policies on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/policies.
+    default(:policy_path) { derive_path_from_chef_repo_path('policies') }
+
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
     default :enforce_path_sanity, true
 
