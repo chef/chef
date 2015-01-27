@@ -3,11 +3,11 @@
 [![Build Status Master](https://travis-ci.org/chef/chef.svg?branch=master)](https://travis-ci.org/chef/chef)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
 
-Want to try Chef? Get started with [learnchef](https://learnchef.opscode.com)
+Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 
-* Documentation: [http://docs.opscode.com](http://docs.opscode.com)
-* Source: [http://github.com/opscode/chef/tree/master](http://github.com/opscode/chef/tree/master)
-* Tickets/Issues: [https://github.com/opscode/chef/issues](https://github.com/opscode/chef/issues)
+* Documentation: [http://docs.chef.io](http://docs.chef.io)
+* Source: [http://github.com/chef/chef/tree/master](http://github.com/chef/chef/tree/master)
+* Tickets/Issues: [https://github.com/chef/chef/issues](https://github.com/chef/chef/issues)
 * IRC: `#chef` and `#chef-hacking` on Freenode
 * Mailing list: [http://lists.opscode.com](http://lists.opscode.com)
 
@@ -17,15 +17,15 @@ entire infrastructure.
 This README focuses on developers who want to modify Chef source code.
 If you just want to use Chef, check out these resources:
 
-* [learnchef](https://learnchef.opscode.com): Getting started guide
-* [http://docs.opscode.com](http://docs.opscode.com): Comprehensive User Docs
-* [Installer Downloads](http://www.getchef.com/chef/install/): Install Chef as a complete package
+* [learnchef](https://learn.chef.io): Getting started guide
+* [http://docs.chef.io](http://docs.chef.io): Comprehensive User Docs
+* [Installer Downloads](https://www.chef.io/download-chef-client/): Install Chef as a complete package
 
 ## Installing From Git
 
 **NOTE:** Unless you have a specific reason to install from source (to
 try a new feature, contribute a patch, or run chef on an OS for which no
-package is available), you should head to the [installer page](http://www.getchef.com/chef/install/)
+package is available), you should head to the [installer page](https://www.chef.io/download-chef-client/)
 to get a prebuilt package.
 
 ### Prerequisites
@@ -45,7 +45,7 @@ emerge, etc.):
 Then get the source and install it:
 
     # Clone this repo
-    git clone https://github.com/opscode/chef.git
+    git clone https://github.com/chef/chef.git
     
     # cd into the source tree
     cd chef
@@ -64,12 +64,14 @@ Then get the source and install it:
 
 Before working on the code, if you plan to contribute your changes, you need to
 read the
-[Chef Contributions document](http://docs.opscode.com/community_contributions.html).
+[Chef Contributions document](http://docs.chef.io/community_contributions.html).
 
-You will also need to set up the repository with the appropriate branches. We
-document the process on the
-[Working with Git](http://wiki.opscode.com/display/chef/Working+with+git) page
-of the Chef wiki.
+The general development process is:
+1. Fork this repo and clone it to your workstation
+2. Create a feature branch for your change
+3. Write code and tests
+4. Push your feature branch to github and open a pull request against
+   master
 
 Once your repository is set up, you can start working on the code. We do use
 TDD with RSpec, so you'll need to get a development environment running.
@@ -78,9 +80,9 @@ copy of the source running.
 
 ## Reporting Issues
 
-Issues can be reported by using [GitHub issues](https://github.com/opscode/chef/issues).
+Issues can be reported by using [GitHub issues](https://github.com/chef/chef/issues).
 
-Full details on how to report issues can be found in the [CONTRIBUTING](https://github.com/opscode/chef/blob/master/CONTRIBUTING.md#-chef-issue-tracking) doc.
+Full details on how to report issues can be found in the [CONTRIBUTING](https://github.com/chef/chef/blob/master/CONTRIBUTING.md#-chef-issue-tracking) doc.
 
 Note that this repository is primarily for reporting chef-client issues.
 For reporting issues against other Chef projects, please look up the appropriate repository
@@ -114,8 +116,8 @@ Chef - A configuration management system
 
 |                      |                                          |
 |:---------------------|:-----------------------------------------|
-| **Author:**          | Adam Jacob (<adam@opscode.com>)
-| **Copyright:**       | Copyright (c) 2008-2014 Chef Software, Inc.
+| **Author:**          | Adam Jacob (<adam@chef.io>)
+| **Copyright:**       | Copyright (c) 2008-2015 Chef Software, Inc.
 | **License:**         | Apache License, Version 2.0
 
 Licensed under the Apache License, Version 2.0 (the "License");
