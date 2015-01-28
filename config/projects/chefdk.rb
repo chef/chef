@@ -70,6 +70,12 @@ override :'test-kitchen', version: "v1.3.1"
 override :yajl,           version: "1.2.1"
 override :zlib,           version: "1.2.8"
 
+override :'chef-provisioning', version: "v0.18"
+override :'chef-provisioning-fog', version: "v0.12"
+override :'chef-provisioning-vagrant', version: "v0.8.1"
+override :'chef-provisioning-azure', version: "v0.1"
+override :'chef-provisioning-aws', version: "v0.2.1"
+
 dependency "preparation"
 dependency "chefdk"
 dependency "chef-provisioning"
