@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife/ssl_fetch'
+require 'chef/knife'
 require 'chef/config'
 
 class Chef
