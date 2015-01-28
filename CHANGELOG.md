@@ -48,6 +48,8 @@
   Remove all RSpec test filters related to Ruby 1.8 and 1.9
 * [**Xabier de Zuazo**] (https://github.com/zuazo)
   Fix knife cookbook upload messages
+* [**David Crowder**] (https://github.com/david-crowder)
+  refactor to use shell_out in rpm provider
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
