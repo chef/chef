@@ -100,7 +100,7 @@ describe Chef::Provider::User::Useradd, metadata do
       end
     end
 
-    statur.error! if max_retries == 0
+    status.error! if max_retries == 0
   end
 
   let(:node) do
