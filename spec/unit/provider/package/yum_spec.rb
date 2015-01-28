@@ -1924,6 +1924,40 @@ describe "Chef::Provider::Package::Yum - Multi" do
     it "should return the current resouce" do
       expect(@provider.load_current_resource).to eql(@provider.current_resource)
     end
+  end
 
+  describe "when installing a package" do
+    it "should run yum install with the package name and version" do
+      @provider.load_current_resource
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('0.9')
+      expect(@provider).to receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5 vim-1.0"
+      )
+      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", '1.0'])
+    end
+
+    it "should run yum install with the package name, version and arch" do
+      @provider.load_current_resource
+      allow(@new_resource).to receive(:arch).and_return("i386")
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+      expect(@provider).to receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5.i386 vim-1.0.i386"
+      )
+      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", "1.0"])
+    end
+
+    it "installs the package with the options given in the resource" do
+      @provider.load_current_resource
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('0.9')
+      expect(@provider).to receive(:yum_command).with(
+        "yum -d0 -e0 -y --disablerepo epmd install cups-1.2.4-11.19.el5 vim-1.0"
+      )
+      allow(@new_resource).to receive(:options).and_return("--disablerepo epmd")
+      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", '1.0'])
+    end
   end
 end
