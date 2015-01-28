@@ -20,6 +20,7 @@ require 'chef/exceptions'
 require 'chef/log'
 require 'chef/provider'
 require 'fileutils'
+require 'git-ssh-wrapper'
 
 class Chef
   class Provider
@@ -308,7 +309,9 @@ class Chef
           end
         end
         run_opts[:group] = @new_resource.group if @new_resource.group
+        env['GIT_SSH'] = generate_GIT_SSH_key(@new_resource.ssh_key) if @new_resource.ssh_key && !@new_resource.ssh_wrapper
         env['GIT_SSH'] = @new_resource.ssh_wrapper if @new_resource.ssh_wrapper
+	Chef::Log.warn("#{@new_resource} has both ssh_wrapper and ssh_key - ssh_key is ignored") if @new_resource.ssh_wrapper && @new_resource.ssh_key
         run_opts[:log_tag] = @new_resource.to_s
         run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
         env.merge!(@new_resource.environment) if @new_resource.environment
@@ -319,6 +322,10 @@ class Chef
 
       def cwd
         @new_resource.destination
+      end
+
+      def generate_GIT_SSH_key(private_key)
+        GitSSHWrapper.new(:private_key => private_key).git_ssh[/^GIT_SSH='(.+)'$/, 1]
       end
 
       def git(*args)

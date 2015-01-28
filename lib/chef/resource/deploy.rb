@@ -237,6 +237,15 @@ class Chef
       end
       alias :ssh_wrapper :git_ssh_wrapper
 
+      def git_ssh_key(arg=nil)
+        set_or_return(
+	  :git_ssh_key,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+      alias :ssh_key :git_ssh_key
+
       def svn_username(arg=nil)
         set_or_return(
           :svn_username,
