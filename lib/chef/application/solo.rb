@@ -124,10 +124,17 @@ class Chef::Application::Solo < Chef::Application
     :proc => lambda { |s| s.to_i }
 
   option :recipe_url,
-      :short => "-r RECIPE_URL",
-      :long => "--recipe-url RECIPE_URL",
-      :description => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache.",
-      :proc => nil
+    :short => "-r RECIPE_URL",
+    :long => "--recipe-url RECIPE_URL",
+    :description => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache.",
+    :proc => nil
+
+  option :github,
+    :short => "-g",
+    :long => "--github",
+    :description => "Assume the recipe_url is a github release tarball",
+    :boolean => true,
+    :default => false
 
   option :version,
     :short        => "-v",
@@ -202,7 +209,15 @@ class Chef::Application::Solo < Chef::Application
       FileUtils.mkdir_p(recipes_path)
       tarball_path = File.join(recipes_path, 'recipes.tgz')
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} -C #{recipes_path}")
+      if Chef::Config[:github]
+        cookbooks_dir = File.join(recipes_path, 'cookbooks')
+        FileUtils.rm_rf(cookbooks_dir, :secure => true)
+        FileUtils.mkdir_p(cookbooks_dir)
+        Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} --strip-components=1 -C #{cookbooks_dir}")
+        puts "tar zxvf #{tarball_path} --strip-components=1 -C #{recipes_path}"
+      else
+        Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} -C #{recipes_path}")
+      end
     end
 
     # json_attribs shuld be fetched after recipe_url tarball is unpacked.
