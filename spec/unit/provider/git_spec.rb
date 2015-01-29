@@ -310,6 +310,21 @@ SHAS
     @provider.clone
   end
 
+  it "compiles a clone command with an ssh key" do
+    #mock out GitSSHWrapper stuff
+    wrapper = GitSSHWrapper.new(:private_key => 'KEY DATA')
+    expect(GitSSHWrapper).to receive(:new).and_return(wrapper)
+    expect(wrapper).to receive(:git_ssh).and_return("GIT_SSH='/path/to/wrapper.sh'")
+
+    #chef specific test
+    @resource.ssh_key "KEY DATA"
+    expected_cmd = 'git clone  "git://github.com/opscode/chef.git" "/my/deploy/dir"'
+    expect(@provider).to receive(:shell_out!).with(expected_cmd,
+                                                :log_tag=>"git[web2.0 app]", 
+                                                :environment => {"GIT_SSH"=>"/path/to/wrapper.sh"})
+    @provider.clone
+  end
+
   it "runs a checkout command with default options" do
     expect(@provider).to receive(:shell_out!).with('git branch -f deploy d35af14d41ae22b19da05d7d03a0bafc321b244c', :cwd => "/my/deploy/dir",
                                                              :log_tag => "git[web2.0 app]").ordered

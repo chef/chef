@@ -38,6 +38,14 @@ class Chef
         )
       end
 
+      def ssh_key(arg=nil)
+        set_or_return(
+	  :ssh_key,
+	  arg,
+	  :kind_of=> String
+	)
+      end
+
       alias :branch :revision
       alias :reference :revision
 

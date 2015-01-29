@@ -51,4 +51,7 @@ Gem::Specification.new do |s|
 
   s.require_path = 'lib'
   s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }
+
+  # Generates GIT_SSH by key
+  s.add_dependency "git-ssh-wrapper", ">= 0.0.1"
 end
