@@ -36,6 +36,7 @@ class Chef
     end
 
     def read_local_config
+      puts "READING #{config_location}"
       ::File.read(config_location)
     rescue Errno::ENOENT => error
       Chef::Application.fatal!("Cannot load configuration from #{config_location}", 2)
