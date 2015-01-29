@@ -29,4 +29,4 @@ build_script:
   - bundle install
 
 test_script:
-  - bundle exec rake spec\unit\application\client.spec
+  - bundle exec rspec spec\unit\application\client.spec
