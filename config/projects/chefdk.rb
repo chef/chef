@@ -47,8 +47,9 @@ end
 override :cacerts, version: '2014.08.20'
 
 override :berkshelf,      version: "v3.2.3"
-override :bundler,        version: "1.7.5"
-override :chef,           version: "11.18.0"
+override :bundler,        version: "1.7.12"
+override :chef,           version: "12.0.3"
+override :'chef-vault',   version: "v2.4.0"
 
 # TODO: Can we bump default versions in omnibus-software?
 override :libedit,        version: "20130712-3.1"
@@ -65,10 +66,23 @@ override :ruby,           version: "2.1.4"
 # override :'ruby-windows-devkit', version: "4.7.2-20130224-1151"
 override :'ruby-windows', version: "2.0.0-p451"
 ######
+
+######
+# rubygems 2.4.5 is not working on windows.
+# See https://github.com/rubygems/rubygems/issues/1120
+# Once this is fixed, we can bump the version
 override :rubygems,       version: "2.4.4"
+######
+
 override :'test-kitchen', version: "v1.3.1"
 override :yajl,           version: "1.2.1"
 override :zlib,           version: "1.2.8"
+
+override :'chef-provisioning', version: "v0.18"
+override :'chef-provisioning-fog', version: "v0.12"
+override :'chef-provisioning-vagrant', version: "v0.8.1"
+override :'chef-provisioning-azure', version: "v0.1"
+override :'chef-provisioning-aws', version: "v0.2.1"
 
 dependency "preparation"
 dependency "chefdk"
