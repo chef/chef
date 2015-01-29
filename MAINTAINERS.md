@@ -30,6 +30,7 @@ another component.
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
 * [Claire McQuin](https://github.com/mcquin)
+* [Jay Mundrawala](http://github.com/jdmundrawala)
 
 ## Dev Tools
 
@@ -84,6 +85,7 @@ The specific components of Chef related to a given platform - including (but not
 
 ### Maintainers
 * [Steven Murawski](http://github.com/smurawski)
+* [Jay Mundrawala](http://github.com/jdmundrawala)
 
 ## Solaris
 
