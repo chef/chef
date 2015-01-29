@@ -255,6 +255,7 @@ describe Chef::Application::Client, "configure_chef" do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
+    allow(Chef::Platform).to receive(:windows?).and_return(false)
     allow(::File).to receive(:read).with("/etc/chef/client.rb").and_return("")
     app.configure_chef
   end
