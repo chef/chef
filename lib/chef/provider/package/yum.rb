@@ -987,10 +987,6 @@ class Chef
         # Helpers
         #
 
-        def as_array(thing)
-          [ thing ].flatten
-        end
-
         def yum_arch
           arch ? ".#{arch}" : nil
         end

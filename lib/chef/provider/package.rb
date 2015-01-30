@@ -40,6 +40,10 @@ class Chef
       def load_current_resource
       end
 
+      def as_array(thing)
+        [ thing ].flatten
+      end
+
       def package_name_array
         [ new_resource.package_name ].flatten
       end
@@ -77,7 +81,7 @@ class Chef
         if new_version_array.any? && !(target_version_already_installed?)
           install_version = @new_resource.version
         # If it's not installed at all, install it
-        elsif current_version_array.any? { |x| x.nil? }
+        elsif current_version_array.include?(nil)
           install_version = candidate_version
         else
           Chef::Log.debug("#{@new_resource} is already installed - nothing to do")
@@ -99,6 +103,20 @@ class Chef
         end
       end
 
+      def upgrade_text(name, oldversion, newversion)
+        if as_array(name).size == 1
+          return "upgraded #{name} from #{oldversion} to #{newversion}"
+        end
+
+        outs = []
+        name.zip(oldversion, newversion).each do |pkg, old, new|
+          next if old == new
+          outs << "#{pkg} from #{old} to #{new}"
+        end
+
+        "upgraded #{outs.join(', ')}"
+      end
+
       def action_upgrade
         if !candidate_version_array.any?
           Chef::Log.debug("#{@new_resource} no candidate version - nothing to do")
@@ -108,8 +126,14 @@ class Chef
           return
         end
         @new_resource.version(candidate_version)
-        orig_version = @current_resource.version || "uninstalled"
-        converge_by("upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
+
+        orig_version = []
+        current_version_array.each do |v|
+          orig_version << (v || "uninstalled")
+        end
+        orig_version = orig_version.size == 1 ? orig_version[0] : orig_version
+
+        converge_by(upgrade_text(@new_resource.package_name, orig_version, candidate_version)) do
           upgrade_package(@new_resource.package_name, candidate_version)
           Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
         end
