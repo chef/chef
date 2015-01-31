@@ -373,7 +373,7 @@ describe Chef::Provider::Package::Yum do
 
     it "installs the package with the options given in the resource" do
       @provider.load_current_resource
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       allow(@new_resource).to receive(:options).and_return("--disablerepo epmd")
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
@@ -488,7 +488,7 @@ describe Chef::Provider::Package::Yum do
   describe "when upgrading a package" do
     it "should run yum install if the package is installed and a version is given" do
       @provider.load_current_resource
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
         "yum -d0 -e0 -y install cups-11"
@@ -499,7 +499,7 @@ describe Chef::Provider::Package::Yum do
     it "should run yum install if the package is not installed" do
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
         "yum -d0 -e0 -y install cups-11"
@@ -528,42 +528,41 @@ describe Chef::Provider::Package::Yum do
     # Test our little workaround, some crossover into Chef::Provider::Package territory
     it "should call action_upgrade in the parent if the current resource version is nil" do
       allow(@yum_cache).to receive(:installed_version).and_return(nil)
-      @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       expect(@provider).to receive(:upgrade_package).with(
         "cups",
         "11"
       )
-      @provider.action_upgrade
+      @provider.run_action(:upgrade)
     end
 
     it "should call action_upgrade in the parent if the candidate version is nil" do
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = nil
+      allow(@provider).to receive(:candidate_version).and_return(nil)
       expect(@provider).not_to receive(:upgrade_package)
-      @provider.action_upgrade
+      @provider.run_action(:upgrade)
     end
 
     it "should call action_upgrade in the parent if the candidate is newer" do
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       expect(@provider).to receive(:upgrade_package).with(
         "cups",
         "11"
       )
-      @provider.action_upgrade
+      @provider.run_action(:upgrade)
     end
 
     it "should not call action_upgrade in the parent if the candidate is older" do
       allow(@yum_cache).to receive(:installed_version).and_return("12")
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       expect(@provider).not_to receive(:upgrade_package)
-      @provider.action_upgrade
+      @provider.run_action(:upgrade)
     end
   end
 

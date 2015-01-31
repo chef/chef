@@ -190,9 +190,8 @@ REMOTE
 
       expect(@provider).to receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local)
       expect(@provider).to receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote)
-      @provider.load_current_resource
       expect(@provider).to receive(:install_package).exactly(0).times
-      @provider.action_install
+      @provider.run_action(:install)
     end
 
     context "when accept_license is true" do

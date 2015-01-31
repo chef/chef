@@ -88,8 +88,8 @@ describe Chef::Provider::Package::Dpkg do
     it "should raise an exception if the source is not set but we are installing" do
       @new_resource = Chef::Resource::Package.new("wget")
       @provider.new_resource = @new_resource
-      @provider.define_resource_requirements
       @provider.load_current_resource
+      @provider.define_resource_requirements
       expect { @provider.run_action(:install)}.to raise_error(Chef::Exceptions::Package)
     end
 

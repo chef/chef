@@ -64,8 +64,8 @@ PKGINFO
     it "should raise an exception if a source is supplied but not found" do
       allow(@provider).to receive(:popen4).and_return(@status)
       allow(::File).to receive(:exists?).and_return(false)
-      @provider.define_resource_requirements
       @provider.load_current_resource
+      @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Package)
     end
 

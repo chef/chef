@@ -484,7 +484,7 @@ class Chef
 
         def candidate_version
           @candidate_version ||= begin
-            if target_version_already_installed?
+            if target_version_already_installed?(@current_resource.version, @new_resource.version)
               nil
             elsif source_is_remote?
               @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
@@ -494,12 +494,11 @@ class Chef
           end
         end
 
-        def target_version_already_installed?
-          return false unless @current_resource && @current_resource.version
-          return false if @current_resource.version.nil?
-          return false if @new_resource.version.nil?
+        def target_version_already_installed?(current_version, new_version)
+          return false unless current_version
+          return false if new_version.nil?
 
-          Gem::Requirement.new(@new_resource.version).satisfied_by?(Gem::Version.new(@current_resource.version))
+          Gem::Requirement.new(new_version).satisfied_by?(Gem::Version.new(current_version))
         end
 
         ##

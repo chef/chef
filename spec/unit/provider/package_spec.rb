@@ -152,7 +152,7 @@ describe Chef::Provider::Package do
 
     it "should print the word 'uninstalled' if there was no original version" do
       allow(@current_resource).to receive(:version).and_return(nil)
-      expect(Chef::Log).to receive(:info).with("package[emacs] upgraded from uninstalled to 1.0")
+      expect(Chef::Log).to receive(:info).with("package[emacs] upgraded emacs to 1.0")
       @provider.run_action(:upgrade)
       expect(@new_resource).to be_updated_by_last_action
     end
@@ -444,39 +444,89 @@ describe "Chef::Provider::Package - Multi" do
       allow(@provider).to receive(:install_package).and_return(true)
     end
 
-    it "should install the candidate versions when none are installed" do
+    it "installs the candidate versions when none are installed" do
+      expect(@provider).to receive(:install_package).with(
+        ["emacs", "vi"],
+        ["1.0", "6.2"]
+      ).and_return(true)
       @provider.run_action(:install)
       expect(@new_resource).to be_updated
     end
 
-    it "should install the candidate versions when some are installed" do
+    it "installs the candidate versions when some are installed" do
       expect(@provider).to receive(:install_package).with(
-        @new_resource.name,
-        @provider.candidate_version
+        [ 'vi' ],
+        [ '6.2' ]
       ).and_return(true)
       @current_resource.version(['1.0', nil])
       @provider.run_action(:install)
       expect(@new_resource).to be_updated
     end
 
-    it "should install the specified version when some are out of date" do
+    it "installs the specified version when some are out of date" do
       @current_resource.version(['1.0', '6.2'])
       @new_resource.version(['1.0', '6.1'])
       @provider.run_action(:install)
       expect(@new_resource).to be_updated
     end
 
-    it "should not install any version if all are installed at the right version" do
+    it "does not install any version if all are installed at the right version" do
       @current_resource.version(['1.0', '6.2'])
       @new_resource.version(['1.0', '6.2'])
       @provider.run_action(:install)
       expect(@new_resource).not_to be_updated_by_last_action
     end
 
-    it "should not install any version if all are installed, and no version was specified" do
+    it "does not install any version if all are installed, and no version was specified" do
       @current_resource.version(['1.0', '6.2'])
       @provider.run_action(:install)
       expect(@new_resource).not_to be_updated_by_last_action
+    end
+
+    it "raises an exception if both are not installed and no caondidates are available" do
+      @current_resource.version([nil, nil])
+      @provider.candidate_version = [nil, nil]
+      expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
+
+    it "raises an exception if one is not installed and no candidates are available" do
+      @current_resource.version(['1.0', nil])
+      @provider.candidate_version = ['1.0', nil]
+      expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
+
+    it "does not raise an exception if the packages are installed or have a candidate" do
+      @current_resource.version(['1.0', nil])
+      @provider.candidate_version = [nil, '6.2']
+      expect { @provider.run_action(:install) }.not_to raise_error
+    end
+
+    it "raises an exception if an explicit version is asked for, an old version is installed, but no candidate" do
+      @new_resource.version ['1.0', '6.2']
+      @current_resource.version(['1.0', '6.1'])
+      @provider.candidate_version = ['1.0', nil]
+      expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
+
+    it "does not raise an exception if an explicit version is asked for, and is installed, but no candidate" do
+      @new_resource.version ['1.0', '6.2']
+      @current_resource.version(['1.0', '6.2'])
+      @provider.candidate_version = ['1.0', nil]
+      expect { @provider.run_action(:install) }.not_to raise_error
+    end
+
+    it "raise an exception if an explicit version is asked for, and is not installed, and no candidate" do
+      @new_resource.version ['1.0', '6.2']
+      @current_resource.version(['1.0', nil])
+      @provider.candidate_version = ['1.0', nil]
+      expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
+
+    it "does not raise an exception if an explicit version is asked for, and is not installed, and there is a candidate" do
+      @new_resource.version ['1.0', '6.2']
+      @current_resource.version(['1.0', nil])
+      @provider.candidate_version = ['1.0', '6.2']
+      expect { @provider.run_action(:install) }.not_to raise_error
     end
   end
 
@@ -499,8 +549,8 @@ describe "Chef::Provider::Package - Multi" do
     it "should upgrade the package if some of current versions are not the candidate versions" do
       @current_resource.version ['1.0', '6.1']
       expect(@provider).to receive(:upgrade_package).with(
-        @new_resource.name,
-        @provider.candidate_version
+        ["vi"],
+        ["6.2"]
       ).and_return(true)
       @provider.run_action(:upgrade)
       expect(@new_resource).to be_updated_by_last_action
@@ -511,6 +561,30 @@ describe "Chef::Provider::Package - Multi" do
       expect(@provider).not_to receive(:upgrade_package)
       @provider.run_action(:upgrade)
       expect(@new_resource).not_to be_updated_by_last_action
+    end
+
+    it "should raise an exception if both are not installed and no caondidates are available" do
+      @current_resource.version([nil, nil])
+      @provider.candidate_version = [nil, nil]
+      expect { @provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
+    end
+
+    it "should raise an exception if one is not installed and no candidates are available" do
+      @current_resource.version(['1.0', nil])
+      @provider.candidate_version = ['1.0', nil]
+      expect { @provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
+    end
+
+    it "should not raise an exception if the packages are installed or have a candidate" do
+      @current_resource.version(['1.0', nil])
+      @provider.candidate_version = [nil, '6.2']
+      expect { @provider.run_action(:upgrade) }.not_to raise_error
+    end
+
+    it "should not raise an exception if the packages are installed or have a candidate" do
+      @current_resource.version(['1.0', nil])
+      @provider.candidate_version = [nil, '6.2']
+      expect { @provider.run_action(:upgrade) }.not_to raise_error
     end
   end
 

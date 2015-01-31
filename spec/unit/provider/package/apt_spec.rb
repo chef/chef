@@ -198,6 +198,11 @@ mpg123 1.12.1-0ubuntu1
 
         it "raises an exception if a source is specified (CHEF-5113)" do
           @new_resource.source "pluto"
+          expect(@provider).to receive(:shell_out!).with(
+            "apt-cache policy #{@new_resource.package_name}",
+            :timeout => @timeout
+          ).and_return(@shell_out)
+          @provider.load_current_resource
           @provider.define_resource_requirements
           expect(@provider).to receive(:shell_out!).with("apt-cache policy irssi", {:timeout=>900}).and_return(@shell_out)
           expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
@@ -307,8 +312,7 @@ mpg123 1.12.1-0ubuntu1
           end
 
           it "should get the full path to the preseed response file" do
-            expect(@provider).to receive(:get_preseed_file).with("irssi", "0.8.12-7").and_return("/tmp/irssi-0.8.12-7.seed")
-            file = @provider.get_preseed_file("irssi", "0.8.12-7")
+            file = "/tmp/irssi-0.8.12-7.seed"
 
             expect(@provider).to receive(:shell_out!).with(
               "debconf-set-selections /tmp/irssi-0.8.12-7.seed",
