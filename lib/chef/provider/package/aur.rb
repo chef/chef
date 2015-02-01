@@ -58,11 +58,15 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
 
-          uri = URI.parse("http://aur.archlinux.org/rpc.php?type=info&arg=#{@new_resource.package_name}")
+          info_url = "https://aur.archlinux.org/rpc.php?type=info&arg=#{@new_resource.package_name}"
+          uri = URI.parse(info_url)
           response = Net::HTTP.get_response(uri)
           json = JSON.parse(response.body)
 
-          @candidate_version = json["results"]["version"]
+          results = json["results"]
+          version = results["Version"]
+
+          @candidate_version = version
 
           unless @candidate_version
             raise Chef::Exceptions::Package, "pacman does not have a version of package #{@new_resource.package_name}"

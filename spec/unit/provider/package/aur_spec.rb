@@ -23,8 +23,8 @@ describe Chef::Provider::Package::AUR do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Package.new("nano")
-    @current_resource = Chef::Resource::Package.new("nano")
+    @new_resource = Chef::Resource::Package.new("pacaur")
+    @current_resource = Chef::Resource::Package.new("pacaur")
 
     @status = double("Status", :exitstatus => 0)
     @provider = Chef::Provider::Package::AUR.new(@new_resource, @run_context)
@@ -32,7 +32,7 @@ describe Chef::Provider::Package::AUR do
     allow(@provider).to receive(:popen4).and_return(@status)
     @stdin = StringIO.new
     @stdout = StringIO.new(<<-ERR)
-error: package "nano" not found
+error: package "pacaur" not found
 ERR
     @stderr = StringIO.new
     @pid = 2342
@@ -97,7 +97,10 @@ PACMAN
       allow(@stdout).to receive(:each).and_yield("core nano 2.2.3-1")
       allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
-      expect(@provider.candidate_version).to eql("2.2.3-1")
+
+      allow_any_instance_of(JSON).to receive(:parse).and_return({"version":1,"type":"info","resultcount":1,"results":{"ID":142434,"Name":"pacaur","PackageBaseID":49145,"PackageBase":"pacaur","Version":"4.2.18-1","CategoryID":16,"Description":"A fast workflow AUR helper using cower as backend","URL":"https:\/\/github.com\/rmarquis\/pacaur","NumVotes":288,"OutOfDate":0,"Maintainer":"Spyhawk","FirstSubmitted":1305666963,"LastModified":1421180118,"License":"GPL","URLPath":"\/packages\/pa\/pacaur\/pacaur.tar.gz"}})
+
+      expect(@provider.candidate_version).to eql("4.2.18-1")
     end
 
     it "should use pacman.conf to determine valid repo names for package versions" do
@@ -152,42 +155,42 @@ PACMAN_CONF
   describe Chef::Provider::Package::AUR, "install_package" do
     it "should run pacman install with the package name and version" do
       expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano")
-      @provider.install_package("nano", "1.0")
+      @provider.install_package("pacaur", "1.0")
     end
 
     it "should run pacman install with the package name and version and options if specified" do
       expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano")
       allow(@new_resource).to receive(:options).and_return("--debug")
 
-      @provider.install_package("nano", "1.0")
+      @provider.install_package("pacaur", "1.0")
     end
   end
 
   describe Chef::Provider::Package::AUR, "upgrade_package" do
     it "should run install_package with the name and version" do
       expect(@provider).to receive(:install_package).with("nano", "1.0")
-      @provider.upgrade_package("nano", "1.0")
+      @provider.upgrade_package("pacaur", "1.0")
     end
   end
 
   describe Chef::Provider::Package::AUR, "remove_package" do
     it "should run pacman remove with the package name" do
       expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar nano")
-      @provider.remove_package("nano", "1.0")
+      @provider.remove_package("pacaur", "1.0")
     end
 
     it "should run pacman remove with the package name and options if specified" do
       expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar --debug nano")
       allow(@new_resource).to receive(:options).and_return("--debug")
 
-      @provider.remove_package("nano", "1.0")
+      @provider.remove_package("pacaur", "1.0")
     end
   end
 
   describe Chef::Provider::Package::AUR, "purge_package" do
     it "should run remove_package with the name and version" do
       expect(@provider).to receive(:remove_package).with("nano", "1.0")
-      @provider.purge_package("nano", "1.0")
+      @provider.purge_package("pacaur", "1.0")
     end
 
   end
