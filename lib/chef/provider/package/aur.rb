@@ -20,6 +20,10 @@ require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
 
+require 'net/http'
+require 'uri'
+require 'json'
+
 class Chef
   class Provider
     class Package
@@ -51,33 +55,14 @@ class Chef
           @current_resource
         end
 
-        # TODO: grok this method and make conversion to AUR
         def candidate_version
           return @candidate_version if @candidate_version
 
-          repos = ["extra","core","community"]
+          uri = URI.parse("http://aur.archlinux.org/rpc.php?type=info&arg=#{@new_resource.package_name}")
+          response = Net::HTTP.get_response(uri)
+          json = JSON.parse(response.body)
 
-          if(::File.exists?("/etc/pacman.conf"))
-            pacman = ::File.read("/etc/pacman.conf")
-            repos = pacman.scan(/\[(.+)\]/).flatten
-          end
-
-          package_repos = repos.map {|r| Regexp.escape(r) }.join('|')
-
-          status = popen4("pacman -Sl") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-                when /^(#{package_repos}) #{Regexp.escape(@new_resource.package_name)} (.+)$/
-                  # $2 contains a string like "4.4.0-1" or "3.10-4 [installed]"
-                  # simply split by space and use first token
-                  @candidate_version = $2.split(" ").first
-              end
-            end
-          end
-
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
-          end
+          @candidate_version = json["results"]["version"]
 
           unless @candidate_version
             raise Chef::Exceptions::Package, "pacman does not have a version of package #{@new_resource.package_name}"
@@ -87,7 +72,6 @@ class Chef
 
         end
 
-        # TODO: what is this "expand options" stuff?
         def install_package(name, version)
           abbreviation = name[0,2]
           tarball_name = "#{name}.tar.gz"
