@@ -103,34 +103,6 @@ PACMAN
       expect(@provider.candidate_version).to eql("4.2.18-1")
     end
 
-    it "should use pacman.conf to determine valid repo names for package versions" do
-     @pacman_conf = <<-PACMAN_CONF
-[options]
-HoldPkg      = pacman glibc
-Architecture = auto
-
-[customrepo]
-Server = https://my.custom.repo
-
-[core]
-Include = /etc/pacman.d/mirrorlist
-
-[extra]
-Include = /etc/pacman.d/mirrorlist
-
-[community]
-Include = /etc/pacman.d/mirrorlist
-PACMAN_CONF
-
-      allow(::File).to receive(:exists?).with("/etc/pacman.conf").and_return(true)
-      allow(::File).to receive(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
-      allow(@stdout).to receive(:each).and_yield("customrepo nano 1.2.3-4")
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-
-      @provider.load_current_resource
-      expect(@provider.candidate_version).to eql("1.2.3-4")
-    end
-
     it "should raise an exception if pacman fails" do
       expect(@status).to receive(:exitstatus).and_return(2)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
