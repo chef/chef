@@ -27,7 +27,7 @@ describe Chef::Provider::Package::AUR do
     @current_resource = Chef::Resource::Package.new("nano")
 
     @status = double("Status", :exitstatus => 0)
-    @provider = Chef::Provider::Package::Pacman.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::AUR.new(@new_resource, @run_context)
     allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
     allow(@provider).to receive(:popen4).and_return(@status)
     @stdin = StringIO.new
@@ -149,7 +149,7 @@ PACMAN_CONF
     end
   end
 
-  describe Chef::Provider::Package::Pacman, "install_package" do
+  describe Chef::Provider::Package::AUR, "install_package" do
     it "should run pacman install with the package name and version" do
       expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano")
       @provider.install_package("nano", "1.0")
@@ -163,14 +163,14 @@ PACMAN_CONF
     end
   end
 
-  describe Chef::Provider::Package::Pacman, "upgrade_package" do
+  describe Chef::Provider::Package::AUR, "upgrade_package" do
     it "should run install_package with the name and version" do
       expect(@provider).to receive(:install_package).with("nano", "1.0")
       @provider.upgrade_package("nano", "1.0")
     end
   end
 
-  describe Chef::Provider::Package::Pacman, "remove_package" do
+  describe Chef::Provider::Package::AUR, "remove_package" do
     it "should run pacman remove with the package name" do
       expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar nano")
       @provider.remove_package("nano", "1.0")
@@ -184,7 +184,7 @@ PACMAN_CONF
     end
   end
 
-  describe Chef::Provider::Package::Pacman, "purge_package" do
+  describe Chef::Provider::Package::AUR, "purge_package" do
     it "should run remove_package with the name and version" do
       expect(@provider).to receive(:remove_package).with("nano", "1.0")
       @provider.purge_package("nano", "1.0")
