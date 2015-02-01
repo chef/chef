@@ -84,7 +84,8 @@ Dir["spec/support/**/*.rb"].
 OHAI_SYSTEM = Ohai::System.new
 OHAI_SYSTEM.all_plugins("platform")
 TEST_PLATFORM = OHAI_SYSTEM["platform"].dup.freeze
-TEST_PLATFORM_VERSION = OHAI_SYSTEM["platform_version"].dup.freeze
+# TODO review this
+TEST_PLATFORM_VERSION = OHAI_SYSTEM["platform_version"].dup.freeze if OHAI_SYSTEM["platform_version"]
 
 RSpec.configure do |config|
   config.include(Matchers)
@@ -155,9 +156,11 @@ RSpec.configure do |config|
     type, target_provider = criteria.first
 
     platform = TEST_PLATFORM.dup
-    platform_version = TEST_PLATFORM_VERSION.dup
+    # TODO review this
+    platform_version = TEST_PLATFORM_VERSION.dup if TEST_PLATFORM_VERSION
 
     begin
+      # TODO figure out what to send to find_provider
       provider_for_running_platform = Chef::Platform.find_provider(platform, platform_version, type)
       provider_for_running_platform != target_provider
     rescue ArgumentError # no provider for platform
