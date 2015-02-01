@@ -27,7 +27,6 @@ class Chef
 
         provides :aur_package, os: "linux"
 
-        # TODO: grok this method and make conversion to AUR
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
@@ -88,22 +87,24 @@ class Chef
 
         end
 
-        # TODO: grok this method and make conversion to AUR
+        # TODO: what is this "expand options" stuff?
         def install_package(name, version)
-          shell_out!( "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
+          abbreviation = name[0,2]
+          tarball_name = "#{name}.tar.gz"
+          aur_url = "http://archlinux.org/packages/#{abbreviation}/#{name}/#{tarball_name}"
+          shell_out!( "rm -rf /tmp/aur_pkgbuilds/* && mkdir -p /tmp/aur_pkgbuilds && cd /tmp/aur_pkgbuilds && wget #{aur_url} && tar xvf #{tarball_name} && makepkg --syncdeps --install --noconfirm --noprogressbar && cd && rm -rf tmp/aur_pkgbuilds" )
+          #shell_out!( "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 
-        # TODO: grok this method and make conversion to AUR
         def upgrade_package(name, version)
           install_package(name, version)
         end
 
-        # TODO: grok this method and make conversion to AUR
+        # TODO: recursive removal?
         def remove_package(name, version)
           shell_out!( "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 
-        # TODO: grok this method and make conversion to AUR
         def purge_package(name, version)
           remove_package(name, version)
         end
