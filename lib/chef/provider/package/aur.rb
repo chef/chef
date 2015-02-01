@@ -63,8 +63,12 @@ class Chef
           response = Net::HTTP.get_response(uri)
           json = JSON.parse(response.body)
 
+#          raise json.to_s
+
           results = json["results"]
-          version = results["Version"]
+          unless results.length == 0
+            version = results["Version"]
+          end
 
           @candidate_version = version
 
@@ -79,9 +83,8 @@ class Chef
         def install_package(name, version)
           abbreviation = name[0,2]
           tarball_name = "#{name}.tar.gz"
-          aur_url = "http://archlinux.org/packages/#{abbreviation}/#{name}/#{tarball_name}"
-          shell_out!( "rm -rf /tmp/aur_pkgbuilds/* && mkdir -p /tmp/aur_pkgbuilds && cd /tmp/aur_pkgbuilds && wget #{aur_url} && tar xvf #{tarball_name} && makepkg --syncdeps --install --noconfirm --noprogressbar && cd && rm -rf tmp/aur_pkgbuilds" )
-          #shell_out!( "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
+          aur_url = "http://aur.archlinux.org/packages/#{abbreviation}/#{name}/#{tarball_name}"
+          shell_out!( "rm -rf /tmp/aur_pkgbuilds/* && mkdir -p /tmp/aur_pkgbuilds && cd /tmp/aur_pkgbuilds && wget #{aur_url} && tar xvf #{tarball_name} && cd #{name} && makepkg#{expand_options(@new_resource.options)} --syncdeps --install --noconfirm --noprogressbar PKGBUILD && cd && rm -rf tmp/aur_pkgbuilds" )
         end
 
         def upgrade_package(name, version)

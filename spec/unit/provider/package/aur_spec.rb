@@ -98,7 +98,7 @@ PACMAN
       allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
 
-      allow_any_instance_of(JSON).to receive(:parse).and_return({"version":1,"type":"info","resultcount":1,"results":{"ID":142434,"Name":"pacaur","PackageBaseID":49145,"PackageBase":"pacaur","Version":"4.2.18-1","CategoryID":16,"Description":"A fast workflow AUR helper using cower as backend","URL":"https:\/\/github.com\/rmarquis\/pacaur","NumVotes":288,"OutOfDate":0,"Maintainer":"Spyhawk","FirstSubmitted":1305666963,"LastModified":1421180118,"License":"GPL","URLPath":"\/packages\/pa\/pacaur\/pacaur.tar.gz"}})
+      allow_any_instance_of(JSON).to receive(:parse).and_return({"version":1,"type":"info","resultcount":1,"results":{"ID":142434,"Name":"pacaur","PackageBaseID":49145,"PackageBase":"pacaur","Version":"4.2.18-1","CategoryID":16,"Description":"A fast workflow AUR helper using cower as backend","URL":"https:\/\/github.com\/rmarquis\/pacaur","NumVotes":288,"OutOfDate":0,"Maintainer":"Spyhawk","FirstSubmitted":1305666963,"LastModified":1421180118,"License":"GPL","URLPath":"\/packages\/pa\/pacaur\/pacaur.tar.gz"}},{"version":1,"type":"info","resultcount":0,"results":[]})
 
       expect(@provider.candidate_version).to eql("4.2.18-1")
     end
@@ -114,8 +114,6 @@ PACMAN
     end
 
     it "should raise an exception if pacman does not return a candidate version" do
-      allow(@stdout).to receive(:each).and_yield("")
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
     end
 
@@ -126,13 +124,14 @@ PACMAN
 
   describe Chef::Provider::Package::AUR, "install_package" do
     it "should run pacman install with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano")
+      expect(@provider).to receive(:shell_out!).with("rm -rf /tmp/aur_pkgbuilds/* && mkdir -p /tmp/aur_pkgbuilds && cd /tmp/aur_pkgbuilds && wget http://aur.archlinux.org/packages/pa/pacaur/pacaur.tar.gz && tar xvf pacaur.tar.gz && cd pacaur && makepkg --syncdeps --install --noconfirm --noprogressbar PKGBUILD && cd && rm -rf tmp/aur_pkgbuilds")
       @provider.install_package("pacaur", "1.0")
     end
 
+    # TODO replace --log with pacman -U --debug?
     it "should run pacman install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano")
-      allow(@new_resource).to receive(:options).and_return("--debug")
+      expect(@provider).to receive(:shell_out!).with("rm -rf /tmp/aur_pkgbuilds/* && mkdir -p /tmp/aur_pkgbuilds && cd /tmp/aur_pkgbuilds && wget http://aur.archlinux.org/packages/pa/pacaur/pacaur.tar.gz && tar xvf pacaur.tar.gz && cd pacaur && makepkg --log --syncdeps --install --noconfirm --noprogressbar PKGBUILD && cd && rm -rf tmp/aur_pkgbuilds")
+      allow(@new_resource).to receive(:options).and_return("--log")
 
       @provider.install_package("pacaur", "1.0")
     end
@@ -140,19 +139,19 @@ PACMAN
 
   describe Chef::Provider::Package::AUR, "upgrade_package" do
     it "should run install_package with the name and version" do
-      expect(@provider).to receive(:install_package).with("nano", "1.0")
+      expect(@provider).to receive(:install_package).with("pacaur", "1.0")
       @provider.upgrade_package("pacaur", "1.0")
     end
   end
 
   describe Chef::Provider::Package::AUR, "remove_package" do
     it "should run pacman remove with the package name" do
-      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar pacaur")
       @provider.remove_package("pacaur", "1.0")
     end
 
     it "should run pacman remove with the package name and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar --debug nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar --debug pacaur")
       allow(@new_resource).to receive(:options).and_return("--debug")
 
       @provider.remove_package("pacaur", "1.0")
@@ -161,7 +160,7 @@ PACMAN
 
   describe Chef::Provider::Package::AUR, "purge_package" do
     it "should run remove_package with the name and version" do
-      expect(@provider).to receive(:remove_package).with("nano", "1.0")
+      expect(@provider).to receive(:remove_package).with("pacaur", "1.0")
       @provider.purge_package("pacaur", "1.0")
     end
 
