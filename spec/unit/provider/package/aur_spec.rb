@@ -98,7 +98,7 @@ PACMAN
       allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
 
-      allow_any_instance_of(JSON).to receive(:parse).and_return({"version":1,"type":"info","resultcount":1,"results":{"ID":142434,"Name":"pacaur","PackageBaseID":49145,"PackageBase":"pacaur","Version":"4.2.18-1","CategoryID":16,"Description":"A fast workflow AUR helper using cower as backend","URL":"https:\/\/github.com\/rmarquis\/pacaur","NumVotes":288,"OutOfDate":0,"Maintainer":"Spyhawk","FirstSubmitted":1305666963,"LastModified":1421180118,"License":"GPL","URLPath":"\/packages\/pa\/pacaur\/pacaur.tar.gz"}})
+      allow_any_instance_of(JSON).to receive(:parse).and_return({"version"=>1,"type"=>"info","resultcount"=>1,"results"=>{"ID"=>142434,"Name"=>"pacaur","PackageBaseID"=>49145,"PackageBase"=>"pacaur","Version"=>"4.2.18-1","CategoryID"=>16,"Description"=>"A fast workflow AUR helper using cower as backend","URL"=>"https:\/\/github.com\/rmarquis\/pacaur","NumVotes"=>288,"OutOfDate"=>0,"Maintainer"=>"Spyhawk","FirstSubmitted"=>1305666963,"LastModified"=>1421180118,"License"=>"GPL","URLPath"=>"\/packages\/pa\/pacaur\/pacaur.tar.gz"}})
 
       expect(@provider.candidate_version).to eql("4.2.18-1")
     end
@@ -115,7 +115,7 @@ PACMAN
 
 ## For some reason this never returns the right json...
 #    it "should raise an exception if pacman does not return a candidate version" do
-#      allow_any_instance_of(JSON).to receive(:parse).and_return({"version":1,"type":"info","resultcount":0,"results":[]})
+#      allow_any_instance_of(JSON).to receive(:parse).and_return({"version"=>1,"type"=>"info","resultcount"=>0,"results"=>[]})
 #      expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
 #    end
 
