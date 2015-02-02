@@ -70,7 +70,6 @@ class Chef
         end
 
         def candidate_version
-          return @candidate_version if @candidate_version
 
           @candidate_version ||= aur_version_query
 
