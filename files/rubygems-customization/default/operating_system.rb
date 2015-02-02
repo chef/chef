@@ -13,7 +13,7 @@ module Gem
   # Override user_dir to live inside of ~/.chefdk
 
   class << self
-    alias :_chefdk_original_user_dir :user_dir
+    # Remove method before redefining so we avoid a ruby warning
     remove_method :user_dir
 
     def user_dir
