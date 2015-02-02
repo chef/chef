@@ -85,7 +85,16 @@ class Chef
           abbreviation = name[0,2]
           tarball_name = "#{name}.tar.gz"
           aur_url = "http://aur.archlinux.org/packages/#{abbreviation}/#{name}/#{tarball_name}"
-          shell_out!( "rm -rf /tmp/aur_pkgbuilds && mkdir -p /tmp/aur_pkgbuilds && cd /tmp/aur_pkgbuilds && wget #{aur_url} && tar xvf #{tarball_name} && cd #{name} && makepkg#{expand_options(@new_resource.options)} --syncdeps --install --noconfirm --noprogressbar PKGBUILD && cd && rm -rf tmp/aur_pkgbuilds" )
+
+          enter_bild_dir = "rm -rf /tmp/aur_pkgbuilds && mkdir -p /tmp/aur_pkgbuilds && cd /tmp/aur_pkgbuilds"
+          download_tarball = "wget #{aur_url}"
+          extract_pkg = "tar xvf #{tarball_name} && cd #{name}"
+          makepkg = "makepkg#{expand_options(@new_resource.options)} --syncdeps --install --noconfirm --noprogressbar PKGBUILD"
+          cleanup = "cd && rm -rf tmp/aur_pkgbuilds"
+
+          aur_install = [enter_bild_dir, download_tarball, extract_pkg, makepkg, cleanup].join(' && ')
+
+          shell_out!( aur_install )
         end
 
         def upgrade_package(name, version)
