@@ -62,7 +62,7 @@ class Chef
           json = JSON.parse(response.body)
 
           results = json["results"]
-          unless results.length == 0
+          unless results.empty?
             version = results["Version"]
           end
 
