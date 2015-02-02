@@ -59,7 +59,7 @@ build do
     'chefspec'          => '4.2.0',
     'fauxhai'           => '2.2.0',
     'rubocop'           => '0.28.0',
-    'knife-spork'       => '1.4.2',
+    'knife-spork'       => '1.5.0',
     'kitchen-vagrant'   => '0.15.0',
     # Strainer build is hosed on windows
     # 'strainer'        => '0.15.0',
