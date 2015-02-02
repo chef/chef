@@ -110,7 +110,7 @@ class Chef
           when :skip
             ui.fatal("Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}")
             $!.backtrace.each { |l| Chef::Log.debug(l) }
-            exit 65
+            raise Exception, 'Connection Failed'
           when :raise
             #Net::SSH::Multi magic to force exception to be re-raised.
             throw :go, :raise
