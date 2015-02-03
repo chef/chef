@@ -38,13 +38,13 @@ class Chef
           @current_resource.version(nil)
 
           Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
-          status = popen4("pacman -Qi #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^Version(\s?)*: (.+)$/
-                Chef::Log.debug("#{@new_resource} current version is #{$2}")
-                @current_resource.version($2)
-              end
+
+          cmd = shell_out!("pacman -Qi #{@new_resource.package_name}")
+          cmd.stdout.split('\n').each do |line|
+            case line
+            when /^Version(\s?)*: (.+)$/
+              Chef::Log.debug("#{@new_resource} current version is #{$2}")
+              @current_resource.version($2)
             end
           end
 
