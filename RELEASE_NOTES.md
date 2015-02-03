@@ -68,6 +68,11 @@ Previously, when a URI scheme contained all uppercase letters, Chef would reject
 Now that the default for SSL checking is on, no more warning is emitted when SSL
 checking is off.
 
+## Multi-package Support
+The `package` provider has been extended to support multiple packages. This
+support is new and and not all subproviders yet support it. Full support for
+`apt` and `yum` has been implemented.
+
 # Chef Client Release Notes 12.0.0:
 
 # Internal API Changes in this Release
