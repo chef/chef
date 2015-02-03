@@ -417,7 +417,7 @@ class Chef
             missing = []
             each_package do |package_name, new_version, current_version, candidate_version|
               next if new_version.nil? || current_version.nil?
-              if !target_version_already_installed?(current_version, new_version) && candidate_version.nil?
+              if candidate_version.nil? && !target_version_already_installed?(current_version, new_version)
                 missing.push(package_name)
               end
             end
