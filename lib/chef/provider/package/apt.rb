@@ -55,8 +55,6 @@ class Chef
           final_candidate_version = []
           final_installed = []
           final_virtual = []
-          installed = virtual = false
-          installed_version = candidate_version = nil
 
           [package].flatten.each do |pkg|
             installed = virtual = false
