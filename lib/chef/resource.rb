@@ -931,10 +931,6 @@ class Chef
       run_context.notifies_delayed(Notification.new(resource_spec, action, self))
     end
 
-    def self.strict_const_defined?(const)
-      const_defined?(const, false)
-    end
-
     class << self
       # back-compat
       # NOTE: that we do not support unregistering classes as descendents like

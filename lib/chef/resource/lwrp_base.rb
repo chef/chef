@@ -39,7 +39,7 @@ class Chef
         rname = filename_to_qualified_string(cookbook_name, filename)
 
         class_name = convert_to_class_name(rname)
-        if Resource.strict_const_defined?(class_name)
+        if Resource.const_defined?(class_name, false)
           Chef::Log.info("#{class_name} light-weight resource is already initialized -- Skipping loading #{filename}!")
           Chef::Log.debug("Overriding already defined LWRPs is not supported anymore starting with Chef 12.")
           resource_class = Resource.const_get(class_name)
