@@ -165,7 +165,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_attribute" do
         @knife.run
-        expect(@knife.config[:attribute]).to eq("ec2.public_hostname")
+        expect(@knife.get_ssh_attribute(Chef::Node.new)).to eq("ec2.public_hostname")
       end
     end
 
@@ -177,7 +177,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the default" do
         @knife.run
-        expect(@knife.config[:attribute]).to eq("fqdn")
+        expect(@knife.get_ssh_attribute(Chef::Node.new)).to eq("fqdn")
       end
     end
 

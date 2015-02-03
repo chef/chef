@@ -160,6 +160,31 @@ class Chef
         session_from_list(list)
       end
 
+      def get_ssh_attribute(node)
+        # Order of precedence for ssh target
+        # 1) command line attribute
+        # 2) configuration file
+        # 3) cloud attribute
+        # 4) fqdn
+        if config[:attribute]
+          Chef::Log.debug("Using node attribute '#{config[:attribute]}' as the ssh target")
+          attribute = config[:attribute]
+        elsif Chef::Config[:knife][:ssh_attribute]
+          Chef::Log.debug("Using node attribute #{Chef::Config[:knife][:ssh_attribute]}")
+          attribute = Chef::Config[:knife][:ssh_attribute]
+        elsif node[:cloud] &&
+              node[:cloud][:public_hostname] &&
+              !node[:cloud][:public_hostname].empty?
+          Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target")
+          attribute = 'cloud.public_hostname'
+        else
+          # falling back to default of fqdn
+          Chef::Log.debug("Using node attribute 'fqdn' as the ssh target")
+          attribute = "fqdn"
+        end
+        attribute
+      end
+
       def search_nodes
         list = Array.new
         query = Chef::Search::Query.new
@@ -168,25 +193,9 @@ class Chef
           # we should skip the loop to next iteration if the item
           # returned by the search is nil
           next if item.nil?
-          # if a command line attribute was not passed, and we have a
-          # cloud public_hostname, use that.  see #configure_attribute
-          # for the source of config[:attribute] and
-          # config[:attribute_from_cli]
-          if config[:attribute_from_cli]
-            Chef::Log.debug("Using node attribute '#{config[:attribute_from_cli]}' from the command line as the ssh target")
-            host = extract_nested_value(item, config[:attribute_from_cli])
-          elsif item[:cloud] &&
-                item[:cloud][:public_hostname] &&
-                !item[:cloud][:public_hostname].empty?
-            Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target")
-            host = item[:cloud][:public_hostname]
-          else
-            # ssh attribute from a configuration file or the default will land here
-            Chef::Log.debug("Using node attribute '#{config[:attribute]}' as the ssh target")
-            host = extract_nested_value(item, config[:attribute])
-          end
           # next if we couldn't find the specified attribute in the
           # returned node object
+          host = extract_nested_value(item,get_ssh_attribute(item))
           next if host.nil?
           ssh_port = item[:cloud].nil? ? nil : item[:cloud][:public_ssh_port]
           srv = [host, ssh_port]
@@ -416,16 +425,6 @@ class Chef
         end
       end
 
-      def configure_attribute
-        # Setting 'knife[:ssh_attribute] = "foo"' in knife.rb => Chef::Config[:knife][:ssh_attribute] == 'foo'
-        # Running 'knife ssh -a foo' => both Chef::Config[:knife][:ssh_attribute] && config[:attribute] == foo
-        # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
-        # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
-        # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:attribute_from_cli] = config[:attribute]
-        config[:attribute] = (config[:attribute_from_cli] || Chef::Config[:knife][:ssh_attribute] || "fqdn").strip
-      end
-
       def cssh
         cssh_cmd = nil
         %w[csshX cssh].each do |cmd|
@@ -499,7 +498,6 @@ class Chef
 
         @longest = 0
 
-        configure_attribute
         configure_user
         configure_password
         configure_identity_file
