@@ -63,7 +63,7 @@ class Chef
       end
 
       def action_install
-        if !target_version_array.any?
+        unless target_version_array.any?
           Chef::Log.debug("#{@new_resource} is already installed - nothing to do")
           return
         end
@@ -417,7 +417,9 @@ class Chef
             missing = []
             each_package do |package_name, new_version, current_version, candidate_version|
               next if new_version.nil? || current_version.nil?
-              missing.push(package_name) if !target_version_already_installed?(current_version, new_version) && candidate_version.nil?
+              if !target_version_already_installed?(current_version, new_version) && candidate_version.nil?
+                missing.push(package_name)
+              end
             end
             missing
           end
