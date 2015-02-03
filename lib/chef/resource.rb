@@ -931,14 +931,8 @@ class Chef
       run_context.notifies_delayed(Notification.new(resource_spec, action, self))
     end
 
-    if Module.method(:const_defined?).arity == 1
-      def self.strict_const_defined?(const)
-        const_defined?(const)
-      end
-    else
-      def self.strict_const_defined?(const)
-        const_defined?(const, false)
-      end
+    def self.strict_const_defined?(const)
+      const_defined?(const, false)
     end
 
     class << self

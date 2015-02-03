@@ -124,11 +124,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :aix_only => true unless aix?
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
-  config.filter_run_excluding :ruby_18_only => true unless ruby_18?
-  config.filter_run_excluding :ruby_19_only => true unless ruby_19?
-  config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
   config.filter_run_excluding :ruby_20_only => true unless ruby_20?
-  config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
   # chef_gte_XX_only and chef_lt_XX_only pair up correctly with the same XX
   # number.  please conserve this pattern & resist filling out all the operators
   config.filter_run_excluding :chef_gte_13_only => true unless chef_gte_13?
@@ -137,9 +133,8 @@ RSpec.configure do |config|
   config.filter_run_excluding :requires_root_or_running_windows => true unless (root? || windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if root?
   config.filter_run_excluding :uses_diff => true unless has_diff?
-  config.filter_run_excluding :ruby_gte_20_and_openssl_gte_101 => true unless (ruby_gte_20? && openssl_gte_101?)
+  config.filter_run_excluding :openssl_gte_101 => true unless openssl_gte_101?
   config.filter_run_excluding :openssl_lt_101 => true unless openssl_lt_101?
-  config.filter_run_excluding :ruby_lt_20 => true unless ruby_lt_20?
   config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
   config.filter_run_excluding :broken => true
 

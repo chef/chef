@@ -22,6 +22,34 @@
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   Drop SSL warnings now that we have a safe default
 * [Pull 2684](https://github.com/chef/chef/pull/2684) Remove ole_initialize/uninitialize which cause problems with Ruby >= 2
+* [**BinaryBabel**](https://github.com/binarybabel)
+  Make knife cookbook site share prefer gnutar when packaging
+* [**Dave Eddy**](https://github.com/bahamas10)
+  Support arrays for not_if and only_if
+* [**Scott Bonds**](https://github.com/bonds)
+  Add service provider for OpenBSD
+* [**Alex Slynko**](https://github.com/alex-slynko-wonga)
+  Change env provider to preserve ordering
+* [**Rob Redpath**](https://github.com/robredpath)
+  Add --lockfile opt for chef-client and chef-solo
+* [**Josh Murphy**](https://github.com/jdmurphy)
+  Check cookbooks exist in path(s) before attempting to upload them with --all
+* [**Vasiliy Tolstov**](https://github.com/vtolstov)
+  add ability to fetch recipes like in chef-solo when using local-mode
+* [**Jan**](https://github.com/habermann24)
+  FIX data_bag_item.rb:161: warning: circular argument reference - data_bag
+* [**David Radcliffe**](https://github.com/dwradcliffe)
+  add banner for knife serve command
+* [**Yukihiko Sawanobori**](https://github.com/sawanoboly)
+  use Chef::JSONCompat.parse for file_contents
+* [**Xabier de Zuazo**] (https://github.com/zuazo)
+  Remove some simple Ruby 1.8 and 1.9 code
+* [**Xabier de Zuazo**] (https://github.com/zuazo)
+  Remove all RSpec test filters related to Ruby 1.8 and 1.9
+* [**Xabier de Zuazo**] (https://github.com/zuazo)
+  Fix knife cookbook upload messages
+* [**David Crowder**] (https://github.com/david-crowder)
+  refactor to use shell_out in rpm provider
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
@@ -34,6 +62,11 @@
 * suppress 3694 warnings on the most trivial resource cloning
 * fixed bugs in the deep_merge_cache logic introduced in 12.0.0 around `node['foo']` vs `node[:foo]` vs. `node.foo`
 * add `include_recipe "::recipe"` sugar to reference a recipe in the current cookbook
+* Add --proxy-auth option to `knife raw`
+* added Chef::Org model class for Chef Organizations in Chef 12 Server
+* `powershell_script` should now correctly get the exit code for scripts that it runs. See [Issue 2348](https://github.com/chef/chef/issues/2348)
+* Useradd functional tests fail randomly
+* Add comments to trusted_certs_content
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):

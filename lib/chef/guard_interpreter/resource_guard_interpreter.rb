@@ -95,6 +95,7 @@ class Chef
         empty_events = Chef::EventDispatch::Dispatcher.new
         anonymous_run_context = Chef::RunContext.new(parent_resource.node, {}, empty_events)
         interpreter_resource = resource_class.new('Guard resource', anonymous_run_context)
+        interpreter_resource.is_guard_interpreter = true
 
         interpreter_resource
       end

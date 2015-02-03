@@ -138,6 +138,7 @@ EOM
     context 'PUT /TYPE/NAME' do
       before do
         file 'empty.json', {}
+        file 'dummynode.json', { "name" => "x", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => {"foo" => "bar"}}
         file 'rolestuff.json', '{"description":"hi there","name":"x"}'
         file 'cookbooks_to_upload/x/metadata.rb', cookbook_x_100_metadata_rb
       end
@@ -165,9 +166,10 @@ EOM
         knife('list --local /environments').should_succeed "/environments/x.json\n"
       end
 
-      it 'knife raw -z -i empty.json -m PUT /nodes/x' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /nodes/x").should_succeed( /"x"/ )
+      it 'knife raw -z -i dummynode.json -m PUT /nodes/x' do
+        knife("raw -z -i #{path_to('dummynode.json')} -m PUT /nodes/x").should_succeed( /"x"/ )
         knife('list --local /nodes').should_succeed "/nodes/x.json\n"
+        knife('show -z /nodes/x.json --verbose').should_succeed /"bar"/
       end
 
       it 'knife raw -z -i empty.json -m PUT /roles/x' do
@@ -196,6 +198,7 @@ EOM
     context 'POST /TYPE/NAME' do
       before do
         file 'empty.json', { 'name' => 'z' }
+        file 'dummynode.json', { "name" => "z", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => {"foo" => "bar"}}
         file 'empty_x.json', { 'name' => 'x' }
         file 'empty_id.json', { 'id' => 'z' }
         file 'rolestuff.json', '{"description":"hi there","name":"x"}'
@@ -231,9 +234,10 @@ EOM
         knife('list --local /environments').should_succeed "/environments/z.json\n"
       end
 
-      it 'knife raw -z -i empty.json -m POST /nodes' do
-        knife("raw -z -i #{path_to('empty.json')} -m POST /nodes").should_succeed( /uri/ )
+      it 'knife raw -z -i dummynode.json -m POST /nodes' do
+        knife("raw -z -i #{path_to('dummynode.json')} -m POST /nodes").should_succeed( /uri/ )
         knife('list --local /nodes').should_succeed "/nodes/z.json\n"
+        knife('show -z /nodes/z.json').should_succeed /"bar"/
       end
 
       it 'knife raw -z -i empty.json -m POST /roles' do

@@ -27,6 +27,7 @@ require 'chef/handler/error_report'
 require 'chef/workstation_config_loader'
 
 class Chef::Application::Client < Chef::Application
+  include Chef::Mixin::ShellOut
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = []
@@ -63,7 +64,7 @@ class Chef::Application::Client < Chef::Application
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
-    :description  => "Set the log level (debug, info, warn, error, fatal)",
+    :description  => "Set the log level (auto, debug, info, warn, error, fatal)",
     :proc         => lambda { |l| l.to_sym }
 
   option :log_location,
@@ -104,7 +105,12 @@ class Chef::Application::Client < Chef::Application
   option :pid_file,
     :short        => "-P PID_FILE",
     :long         => "--pid PIDFILE",
-    :description  => "Set the PID file location, defaults to /tmp/chef-client.pid",
+    :description  => "Set the PID file location, for the chef-client daemon process. Defaults to /tmp/chef-client.pid",
+    :proc         => nil
+
+  option :lockfile,
+    :long         => "--lockfile LOCKFILE",
+    :description  => "Set the lockfile location. Prevents multiple client processes from converging at the same time",
     :proc         => nil
 
   option :interval,
@@ -200,6 +206,10 @@ class Chef::Application::Client < Chef::Application
     :description  => "Fork client",
     :boolean      => true
 
+  option :recipe_url,
+    :long         => "--recipe-url=RECIPE_URL",
+    :description  => "Pull down a remote archive of recipes and unpack it to the cookbook cache. Only used in local mode."
+
   option :enable_reporting,
     :short        => "-R",
     :long         => "--enable-reporting",
@@ -252,6 +262,8 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
+    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
+
     Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
@@ -260,6 +272,18 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
+
+    if !Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+      Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
+    elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+      Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
+      FileUtils.mkdir_p(Chef::Config.chef_repo_path)
+      tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
+      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+      result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+      Chef::Log.debug "#{result.stdout}"
+    end
+
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
@@ -434,5 +458,14 @@ class Chef::Application::Client < Chef::Application
     msg += " Audit mode is an experimental feature currently under development. API changes may occur. Use at your own risk."
     msg += audit_mode_settings_explaination
     return msg
+  end
+
+  def fetch_recipe_tarball(url, path)
+    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
+    File.open(path, 'wb') do |f|
+      open(url) do |r|
+        f.write(r.read)
+      end
+    end
   end
 end

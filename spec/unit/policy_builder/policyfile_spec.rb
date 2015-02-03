@@ -211,9 +211,54 @@ describe Chef::PolicyBuilder::Policyfile do
       end
     end
 
-    context "and a deployment_group is configured" do
+    context "and policy_document_native_api is configured" do
+
       before do
-        expect(http_api).to receive(:get).with("data/policyfiles/example-policy-stage").and_return(parsed_policyfile_json)
+        Chef::Config[:policy_document_native_api] = true
+        Chef::Config[:policy_group] = "policy-stage"
+        Chef::Config[:policy_name] = "example"
+      end
+
+      context "and policy_name or policy_group are not configured" do
+
+        it "raises a Configuration error for policy_group" do
+          Chef::Config[:policy_group] = nil
+          expect { policy_builder.policy }.to raise_error(err_namespace::ConfigurationError)
+        end
+
+        it "raises a Configuration error for policy_name" do
+          Chef::Config[:policy_name] = nil
+          expect { policy_builder.policy }.to raise_error(err_namespace::ConfigurationError)
+        end
+
+      end
+
+      context "and policy_name and policy_group are configured" do
+
+        let(:policy_relative_url) { "policies/policy-stage/example" }
+
+        before do
+          expect(http_api).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
+        end
+
+        it "fetches the policy file from a data bag item" do
+          expect(policy_builder.policy).to eq(parsed_policyfile_json)
+        end
+
+        it "extracts the run_list from the policyfile" do
+          expect(policy_builder.run_list).to eq(policyfile_run_list)
+        end
+      end
+
+    end
+
+
+    context "and a deployment_group is configured" do
+
+      let(:policy_relative_url) { "data/policyfiles/example-policy-stage" }
+
+      before do
+        expect(http_api).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
       end
 
       it "fetches the policy file from a data bag item" do

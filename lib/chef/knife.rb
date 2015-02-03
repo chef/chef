@@ -269,7 +269,8 @@ class Chef
         list_commands(category_commands)
       elsif missing_plugin = ( OFFICIAL_PLUGINS.find {|plugin| plugin == args[0]} )
         ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
-        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}")
+        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}`")
+        ui.info("Use `chef gem install knife-#{missing_plugin}` instead if using ChefDK")
       else
         list_commands
       end
@@ -308,7 +309,7 @@ class Chef
         exit 1
       end
 
-      # copy Mixlib::CLI over so that it cab be configured in knife.rb
+      # copy Mixlib::CLI over so that it can be configured in knife.rb
       # config file
       Chef::Config[:verbosity] = config[:verbosity]
     end

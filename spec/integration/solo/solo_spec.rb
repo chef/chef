@@ -83,8 +83,7 @@ end
 EOM
     end
 
-    # Ruby 1.8.7 doesn't have Process.spawn :(
-    it "while running solo concurrently", :ruby_gte_19_only => true do
+    it "while running solo concurrently" do
       file 'config/solo.rb', <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"

@@ -61,9 +61,12 @@ class Chef
       def requires_modify_or_create?
         if @new_resource.delim
           #e.g. check for existing value within PATH
-          not new_values.all? do |val|
-            current_values.include? val
+          new_values.inject(0) do |index, val|
+            next_index = current_values.find_index val
+            return true if next_index.nil? || next_index < index
+            next_index
           end
+          false
         else
           @new_resource.value != @current_resource.value
         end
@@ -145,10 +148,7 @@ class Chef
 
       def modify_env
         if @new_resource.delim
-          values = new_values.reject do |v|
-            current_values.include?(v)
-          end
-          @new_resource.value((values + [@current_resource.value]).join(@new_resource.delim))
+          @new_resource.value((new_values + current_values).uniq.join(@new_resource.delim))
         end
         create_env
       end
