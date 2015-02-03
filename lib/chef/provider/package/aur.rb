@@ -48,9 +48,9 @@ class Chef
             end
           end
 
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
-          end
+          #unless status.exitstatus == 0 || status.exitstatus == 1
+          #  raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
+          #end
 
           @current_resource
         end
