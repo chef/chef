@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'plist', '~> 3.1.0'
 
   # Audit mode requires these, so they are non-developmental dependencies now
-  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_dependency gem, "~> 3.1.0" }
+  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_dependency gem, "~> 3.2" }
   s.add_dependency "rspec_junit_formatter", "~> 0.2.0"
   s.add_dependency "serverspec", "~> 2.7"
   s.add_dependency "specinfra", "~> 2.10"

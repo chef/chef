@@ -19,9 +19,10 @@
 #
 
 require 'spec_helper'
-require 'spec/support/audit_helper'
+require 'rspec/core/sandbox'
 require 'chef/audit/runner'
 require 'rspec/support/spec/in_sub_process'
+require 'rspec/support/spec/stderr_splitter'
 require 'chef/audit/rspec_formatter'
 
 describe Chef::Audit::RspecFormatter do
@@ -37,7 +38,7 @@ describe Chef::Audit::RspecFormatter do
   let!(:formatter) { Chef::Audit::RspecFormatter.new(output) }
 
   around(:each) do |ex|
-    Sandboxing.sandboxed { ex.run }
+    RSpec::Core::Sandbox.sandboxed { ex.run }
   end
 
   it "should not close the output using our formatter" do
