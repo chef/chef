@@ -1060,7 +1060,7 @@ class Chef
               dep = parse_dependency(n)
               if dep
                 if @new_resource.package_name.is_a?(Array)
-                  @new_resource.package_name(package_name_array + [dep])
+                  @new_resource.package_name(package_name_array - [n] + [dep])
                 else
                   @new_resource.package_name(dep)
                 end
