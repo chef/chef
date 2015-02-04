@@ -337,9 +337,9 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
-        "yum -d0 -e0 -y install emacs-1.0"
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5"
       )
-      @provider.install_package("emacs", "1.0")
+      @provider.install_package("cups", "1.2.4-11.19.el5")
     end
 
     it "should run yum localinstall if given a path to an rpm" do
@@ -366,14 +366,14 @@ describe Chef::Provider::Package::Yum do
       allow(@new_resource).to receive(:arch).and_return("i386")
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
-        "yum -d0 -e0 -y install emacs-21.4-20.el5.i386"
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5.i386"
       )
-      @provider.install_package("emacs", "21.4-20.el5")
+      @provider.install_package("cups", "1.2.4-11.19.el5")
     end
 
     it "installs the package with the options given in the resource" do
       @provider.load_current_resource
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       allow(@new_resource).to receive(:options).and_return("--disablerepo epmd")
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
@@ -467,10 +467,10 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
-        "yum -d0 -e0 -y install emacs-1.0"
+        "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
       )
       expect(@yum_cache).to receive(:reload).once
-      @provider.install_package("emacs", "1.0")
+      @provider.install_package("cups", "1.2.4-11.15.el5")
     end
 
     it "should run yum install then not flush the cache if :after is false" do
@@ -478,17 +478,17 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
-        "yum -d0 -e0 -y install emacs-1.0"
+        "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
       )
       expect(@yum_cache).not_to receive(:reload)
-      @provider.install_package("emacs", "1.0")
+      @provider.install_package("cups", "1.2.4-11.15.el5")
     end
   end
 
   describe "when upgrading a package" do
     it "should run yum install if the package is installed and a version is given" do
       @provider.load_current_resource
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
         "yum -d0 -e0 -y install cups-11"
@@ -499,7 +499,7 @@ describe Chef::Provider::Package::Yum do
     it "should run yum install if the package is not installed" do
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
         "yum -d0 -e0 -y install cups-11"
@@ -528,42 +528,41 @@ describe Chef::Provider::Package::Yum do
     # Test our little workaround, some crossover into Chef::Provider::Package territory
     it "should call action_upgrade in the parent if the current resource version is nil" do
       allow(@yum_cache).to receive(:installed_version).and_return(nil)
-      @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       expect(@provider).to receive(:upgrade_package).with(
         "cups",
         "11"
       )
-      @provider.action_upgrade
+      @provider.run_action(:upgrade)
     end
 
     it "should call action_upgrade in the parent if the candidate version is nil" do
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = nil
+      allow(@provider).to receive(:candidate_version).and_return(nil)
       expect(@provider).not_to receive(:upgrade_package)
-      @provider.action_upgrade
+      @provider.run_action(:upgrade)
     end
 
     it "should call action_upgrade in the parent if the candidate is newer" do
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       expect(@provider).to receive(:upgrade_package).with(
         "cups",
         "11"
       )
-      @provider.action_upgrade
+      @provider.run_action(:upgrade)
     end
 
     it "should not call action_upgrade in the parent if the candidate is older" do
       allow(@yum_cache).to receive(:installed_version).and_return("12")
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = '11'
+      allow(@provider).to receive(:candidate_version).and_return('11')
       expect(@provider).not_to receive(:upgrade_package)
-      @provider.action_upgrade
+      @provider.run_action(:upgrade)
     end
   end
 
@@ -1860,4 +1859,104 @@ EOF
     end
   end
 
+end
+
+describe "Chef::Provider::Package::Yum - Multi" do
+  before(:each) do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @new_resource = Chef::Resource::Package.new(['cups', 'vim'])
+    @status = double("Status", :exitstatus => 0)
+    @yum_cache = double(
+      'Chef::Provider::Yum::YumCache',
+      :reload_installed => true,
+      :reset => true,
+      :installed_version => 'XXXX',
+      :candidate_version => 'YYYY',
+      :package_available? => true,
+      :version_available? => true,
+      :allow_multi_install => [ 'kernel' ],
+      :package_repository => 'base',
+      :disable_extra_repo_control => true
+    )
+    allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
+    @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+    @pid = double("PID")
+  end
+
+  describe "when loading the current system state" do
+    it "should create a current resource with the name of the new_resource" do
+      @provider.load_current_resource
+      expect(@provider.current_resource.name).to eq(['cups', 'vim'])
+    end
+
+    it "should set the current resources package name to the new resources package name" do
+      @provider.load_current_resource
+      expect(@provider.current_resource.package_name).to eq(['cups', 'vim'])
+    end
+
+    it "should set the installed version to nil on the current resource if no installed package" do
+      allow(@yum_cache).to receive(:installed_version).and_return(nil)
+      @provider.load_current_resource
+      expect(@provider.current_resource.version).to eq([nil, nil])
+    end
+
+    it "should set the installed version if yum has one" do
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('1.0')
+      allow(@yum_cache).to receive(:candidate_version).with('cups', nil).and_return('1.2.4-11.18.el5_2.3')
+      allow(@yum_cache).to receive(:candidate_version).with('vim', nil).and_return('1.5')
+      @provider.load_current_resource
+      expect(@provider.current_resource.version).to eq(['1.2.4-11.18.el5', '1.0'])
+    end
+
+    it "should set the candidate version if yum info has one" do
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('1.0')
+      allow(@yum_cache).to receive(:candidate_version).with('cups', nil).and_return('1.2.4-11.18.el5_2.3')
+      allow(@yum_cache).to receive(:candidate_version).with('vim', nil).and_return('1.5')
+      @provider.load_current_resource
+      expect(@provider.candidate_version).to eql(['1.2.4-11.18.el5_2.3', '1.5'])
+    end
+
+    it "should return the current resouce" do
+      expect(@provider.load_current_resource).to eql(@provider.current_resource)
+    end
+  end
+
+  describe "when installing a package" do
+    it "should run yum install with the package name and version" do
+      @provider.load_current_resource
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('0.9')
+      expect(@provider).to receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5 vim-1.0"
+      )
+      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", '1.0'])
+    end
+
+    it "should run yum install with the package name, version and arch" do
+      @provider.load_current_resource
+      allow(@new_resource).to receive(:arch).and_return("i386")
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+      expect(@provider).to receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5.i386 vim-1.0.i386"
+      )
+      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", "1.0"])
+    end
+
+    it "installs the package with the options given in the resource" do
+      @provider.load_current_resource
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('0.9')
+      expect(@provider).to receive(:yum_command).with(
+        "yum -d0 -e0 -y --disablerepo epmd install cups-1.2.4-11.19.el5 vim-1.0"
+      )
+      allow(@new_resource).to receive(:options).and_return("--disablerepo epmd")
+      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", '1.0'])
+    end
+  end
 end

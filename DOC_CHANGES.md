@@ -39,3 +39,8 @@ This probably only needs to be a bullet point added to http://docs.getchef.com/n
 ## Drop SSL Warnings
 Now that the default for SSL checking is on, no more warning is emitted when SSL
 checking is off.
+
+## Multi-package Support
+The `package` provider has been extended to support multiple packages. This
+support is new and and not all subproviders yet support it. Full support for
+`apt` and `yum` has been implemented.

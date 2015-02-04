@@ -50,6 +50,8 @@
   Fix knife cookbook upload messages
 * [**David Crowder**] (https://github.com/david-crowder)
   refactor to use shell_out in rpm provider
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Multi-package support
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
