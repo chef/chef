@@ -114,7 +114,7 @@ class Chef
     end
 
     def emit_cloned_resource_warning
-      Chef::Log.warn("Cloning resource attributes for #{self} from prior resource (CHEF-3694)")
+      Chef::Log.warn("Cloning resource attributes for #{resource} from prior resource (CHEF-3694)")
       Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
       Chef::Log.warn("Current  #{resource}: #{resource.source_line}") if resource.source_line
     end
