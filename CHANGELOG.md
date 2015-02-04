@@ -68,6 +68,7 @@
 * Useradd functional tests fail randomly
 * Add comments to trusted_certs_content
 * fixes a bug where providers would not get defined if a top-level ruby constant with the same name was already defined (ark cookbook, chrome cookbook)
+* Fix a bug in `reboot`, `ips_package`, `paludis_package` resources where `action :nothing` was not permitted
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
