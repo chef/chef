@@ -1146,7 +1146,7 @@ class Chef
                     log_method = "downgrading"
                   else
                     # we bail like yum when the package is older
-                    raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer " +
+                    raise Chef::Exceptions::Package, "Installed package #{n}-#{current_version_array[idx]} is newer " +
                                                      "than candidate package #{n}-#{v}"
                   end
                 end
