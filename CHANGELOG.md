@@ -67,6 +67,7 @@
 * `powershell_script` should now correctly get the exit code for scripts that it runs. See [Issue 2348](https://github.com/chef/chef/issues/2348)
 * Useradd functional tests fail randomly
 * Add comments to trusted_certs_content
+* fixes a bug where providers would not get defined if a top-level ruby constant with the same name was already defined (ark cookbook, chrome cookbook)
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
