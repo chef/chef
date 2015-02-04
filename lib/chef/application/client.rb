@@ -210,6 +210,13 @@ class Chef::Application::Client < Chef::Application
     :long         => "--recipe-url=RECIPE_URL",
     :description  => "Pull down a remote archive of recipes and unpack it to the cookbook cache. Only used in local mode."
 
+  option :github,
+    :short => "-g",
+    :long => "--github",
+    :description => "Assume the recipe_url is a github release tarball",
+    :boolean => true,
+    :default => false
+
   option :enable_reporting,
     :short        => "-R",
     :long         => "--enable-reporting",
@@ -280,7 +287,14 @@ class Chef::Application::Client < Chef::Application
       FileUtils.mkdir_p(Chef::Config.chef_repo_path)
       tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+      if Chef::Config[:github]
+        cookbooks_dir = File.join(Chef::Config.chef_repo_path, 'cookbooks')
+        FileUtils.rm_rf(cookbooks_dir, :secure => true)
+        FileUtils.mkdir_p(cookbooks_dir)
+        result = shell_out!("tar zxvf #{tarball_path} --strip-components=1 -C #{cookbooks_dir}")
+      else
+        result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+      end
       Chef::Log.debug "#{result.stdout}"
     end
 

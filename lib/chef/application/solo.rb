@@ -219,7 +219,6 @@ class Chef::Application::Solo < Chef::Application
         FileUtils.rm_rf(cookbooks_dir, :secure => true)
         FileUtils.mkdir_p(cookbooks_dir)
         Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} --strip-components=1 -C #{cookbooks_dir}")
-        puts "tar zxvf #{tarball_path} --strip-components=1 -C #{recipes_path}"
       else
         Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} -C #{recipes_path}")
       end
