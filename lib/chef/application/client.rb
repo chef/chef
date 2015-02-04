@@ -260,7 +260,9 @@ class Chef::Application::Client < Chef::Application
   # Reconfigure the chef client
   # Re-open the JSON attributes and load them into the node
   def reconfigure
+    puts "1"
     super
+    puts "2"
 
     raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
 
