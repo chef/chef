@@ -552,7 +552,7 @@ describe Chef::Provider::Package::Rubygems do
 
           it "installs the gem by shelling out when options are provided but no version is given" do
             @new_resource.options('-i /alt/install/location')
-            expected ="gem install rspec-core -q --no-rdoc --no-ri -v \"3.1.7\" -i /alt/install/location"
+            expected ="gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" -i /alt/install/location"
             expect(@provider).to receive(:shell_out!).with(expected, :env => nil)
             @provider.run_action(:install)
             expect(@new_resource).to be_updated_by_last_action
