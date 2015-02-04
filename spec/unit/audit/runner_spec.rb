@@ -17,11 +17,13 @@
 #
 
 require 'spec_helper'
-require 'spec/support/audit_helper'
+require 'rspec/core/sandbox'
 require 'chef/audit/runner'
 require 'chef/audit/audit_event_proxy'
 require 'chef/audit/rspec_formatter'
 require 'rspec/support/spec/in_sub_process'
+require 'rspec/support/spec/stderr_splitter'
+
 
 describe Chef::Audit::Runner do
   include RSpec::Support::InSubProcess
@@ -31,7 +33,7 @@ describe Chef::Audit::Runner do
   let(:runner) { Chef::Audit::Runner.new(run_context) }
 
   around(:each) do |ex|
-    Sandboxing.sandboxed { ex.run }
+    RSpec::Core::Sandbox.sandboxed { ex.run }
   end
 
   describe "#initialize" do
