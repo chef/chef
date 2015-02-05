@@ -341,8 +341,8 @@ describe "LWRP" do
       Chef::Runner.new(@run_context).converge
 
       expect(@run_context.resource_collection[0]).to eql(injector)
-      expect(@run_context.resource_collection[1].name).to eql(:prepared_thumbs)
-      expect(@run_context.resource_collection[2].name).to eql(:twiddled_thumbs)
+      expect(@run_context.resource_collection[1].name).to eql('prepared_thumbs')
+      expect(@run_context.resource_collection[2].name).to eql('twiddled_thumbs')
       expect(@run_context.resource_collection[3]).to eql(dummy)
     end
 
@@ -365,12 +365,12 @@ describe "LWRP" do
       Chef::Runner.new(@run_context).converge
 
       expect(@run_context.resource_collection[0]).to eql(injector)
-      expect(@run_context.resource_collection[1].name).to eql(:prepared_thumbs)
-      expect(@run_context.resource_collection[2].name).to eql(:twiddled_thumbs)
+      expect(@run_context.resource_collection[1].name).to eql('prepared_thumbs')
+      expect(@run_context.resource_collection[2].name).to eql('twiddled_thumbs')
       expect(@run_context.resource_collection[3]).to eql(dummy)
       expect(@run_context.resource_collection[4]).to eql(injector2)
-      expect(@run_context.resource_collection[5].name).to eql(:prepared_eyes)
-      expect(@run_context.resource_collection[6].name).to eql(:dried_paint_watched)
+      expect(@run_context.resource_collection[5].name).to eql('prepared_eyes')
+      expect(@run_context.resource_collection[6].name).to eql('dried_paint_watched')
     end
 
     it "should properly handle a new_resource reference" do

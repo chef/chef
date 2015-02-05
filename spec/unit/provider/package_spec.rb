@@ -539,7 +539,7 @@ describe "Chef::Provider::Package - Multi" do
     it "should upgrade the package if the current versions are not the candidate version" do
       @current_resource.version ['0.9', '6.1']
       expect(@provider).to receive(:upgrade_package).with(
-        @new_resource.name,
+        @new_resource.package_name,
         @provider.candidate_version
       ).and_return(true)
       @provider.run_action(:upgrade)
