@@ -91,7 +91,7 @@ class Chef
     # @param run_context The context of the Chef run. Corresponds to #run_context.
     #
     def initialize(name, run_context=nil)
-      @name = name
+      name(name)
       @run_context = run_context
       @noop = nil
       @before = nil
@@ -138,8 +138,11 @@ class Chef
     #
     def name(name=nil)
       if !name.nil?
-        raise ArgumentError, "name must be a string!" unless name.kind_of?(String)
-        @name = name
+        if name.is_a?(Array)
+          @name = name.join(', ')
+        else
+          @name = name.to_s
+        end
       end
       @name
     end
