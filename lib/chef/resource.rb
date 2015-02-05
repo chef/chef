@@ -139,7 +139,7 @@ class Chef
     # so that `package ["foo", "bar"]` becomes package[foo, bar] instead of the more
     # awkward `package[["foo", "bar"]]` that #to_s would produce.
     #
-    # @param name [String] The name to set.
+    # @param name [Object] The name to set, typically a String or Array
     # @return [String] The name of this Resource.
     #
     def name(name=nil)
