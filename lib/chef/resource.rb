@@ -133,6 +133,12 @@ class Chef
     #
     # This is also used in to_s to show the resource name, e.g. `execute[Vitruvius]`.
     #
+    # This is also used for resource notifications and subscribes in the same manner.
+    #
+    # This will coerce any object into a string via #to_s.  Arrays are a special case
+    # so that `package ["foo", "bar"]` becomes package[foo, bar] instead of the more
+    # awkward `package[["foo", "bar"]]` that #to_s would produce.
+    #
     # @param name [String] The name to set.
     # @return [String] The name of this Resource.
     #
