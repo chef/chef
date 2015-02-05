@@ -533,6 +533,8 @@ class Chef
         def install_via_gem_command(name, version)
           if @new_resource.source =~ /\.gem$/i
             name = @new_resource.source
+          elsif source_is_remote?
+            src = @new_resource.source && "  --source=#{@new_resource.source}"
           else
             src = @new_resource.source && "  --source=#{@new_resource.source} --source=https://rubygems.org"
           end
