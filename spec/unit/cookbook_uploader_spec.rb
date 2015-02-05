@@ -61,7 +61,7 @@ describe Chef::CookbookUploader do
   describe "uploading cookbooks" do
 
     def url_for(cksum)
-      "https://storage.example.com/#{cksum}" 
+      "https://storage.example.com/#{cksum}"
     end
 
     let(:sandbox_response) do
