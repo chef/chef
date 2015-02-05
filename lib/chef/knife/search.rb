@@ -53,7 +53,7 @@ class Chef
         :short => "-R INT",
         :long => "--rows INT",
         :description => "The number of rows to return",
-        :default => 1000,
+        :default => nil,
         :proc => lambda { |i| i.to_i }
 
       option :run_list,
@@ -71,6 +71,11 @@ class Chef
         :long => "--query QUERY",
         :description => "The search query; useful to protect queries starting with -"
 
+      option :filter_result,
+        :short => "-f FILTER",
+        :long => "--filter-result FILTER",
+        :description => "Only bring back specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\""
+
       def run
         read_cli_args
         fuzzify_query
@@ -79,7 +84,6 @@ class Chef
           ui.use_presenter Knife::Core::NodePresenter
         end
 
-
         q = Chef::Search::Query.new
         escaped_query = URI.escape(@query,
                            Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
@@ -87,14 +91,26 @@ class Chef
         result_items = []
         result_count = 0
 
-        rows = config[:rows]
-        start = config[:start]
+        search_args = Hash.new
+        search_args[:sort] = config[:sort] if config[:sort]
+        search_args[:start] = config[:start] if config[:start]
+        search_args[:rows] = config[:rows] if config[:rows]
+        if config[:filter_result]
+          search_args[:filter_result] = create_result_filter(config[:filter_result])
+        elsif (not ui.config[:attribute].nil?) && (not ui.config[:attribute].empty?)
+          search_args[:filter_result] = create_result_filter_from_attributes(ui.config[:attribute])
+        end
+
         begin
-          q.search(@type, escaped_query, config[:sort], start, rows) do |item|
-            formatted_item = format_for_display(item)
-            # if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
-            #   formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
-            # end
+          q.search(@type, escaped_query, search_args) do |item|
+            formatted_item = Hash.new
+            if item.is_a?(Hash)
+              # doing a little magic here to set the correct name
+              formatted_item[item["data"]["__display_name"]] = item["data"]
+              formatted_item[item["data"]["__display_name"]].delete("__display_name")
+            else
+              formatted_item = format_for_display(item)
+            end
             result_items << formatted_item
             result_count += 1
           end
@@ -149,10 +165,38 @@ class Chef
         end
       end
 
+      # This method turns a set of key value pairs in a string into the appropriate data structure that the
+      # chef-server search api is expecting.
+      # expected input is in the form of:
+      # -f "return_var1=path.to.attribute, return_var2=shorter.path"
+      #
+      # a more concrete example might be:
+      # -f "env=chef_environment, ruby_platform=languages.ruby.platform"
+      #
+      # The end result is a hash where the key is a symbol in the hash (the return variable)
+      # and the path is an array with the path elements as strings (in order)
+      # See lib/chef/search/query.rb for more examples of this.
+      def create_result_filter(filter_string)
+        final_filter = Hash.new
+        filter_string.gsub!(" ", "")
+        filters = filter_string.split(",")
+        filters.each do |f|
+          return_id, attr_path = f.split("=")
+          final_filter[return_id.to_sym] = attr_path.split(".")
+        end
+        return final_filter
+      end
+
+      def create_result_filter_from_attributes(filter_array)
+        final_filter = Hash.new
+        filter_array.each do |f|
+          final_filter[f] = f.split(".")
+        end
+        # adding magic filter so we can actually pull the name as before
+        final_filter["__display_name"] = [ "name" ]
+        return final_filter
+      end
+
     end
   end
 end
-
-
-
-

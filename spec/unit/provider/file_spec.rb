@@ -46,7 +46,7 @@ describe Chef::Provider::File do
 
   let(:provider) do
     provider = described_class.new(resource, run_context)
-    provider.stub(:content).and_return(content)
+    allow(provider).to receive(:content).and_return(content)
     provider
   end
 

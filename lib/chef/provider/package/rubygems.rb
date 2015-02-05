@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'uri'
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
@@ -130,7 +131,7 @@ class Chef
 
           ##
           # Determines the candidate version for a gem from a .gem file on disk
-          # and checks if it matches the version contraints in +gem_dependency+
+          # and checks if it matches the version constraints in +gem_dependency+
           # === Returns
           # Gem::Version  a singular gem version object is returned if the gem
           #               is available
@@ -359,6 +360,9 @@ class Chef
           Chef::Log.logger
         end
 
+        provides :chef_gem
+        provides :gem_package
+
         include Chef::Mixin::GetSourceFromPackage
 
         def initialize(new_resource, run_context=nil)
@@ -480,7 +484,7 @@ class Chef
 
         def candidate_version
           @candidate_version ||= begin
-            if target_version_already_installed?
+            if target_version_already_installed?(@current_resource.version, @new_resource.version)
               nil
             elsif source_is_remote?
               @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
@@ -490,11 +494,11 @@ class Chef
           end
         end
 
-        def target_version_already_installed?
-          return false unless @current_resource && @current_resource.version
-          return false if @current_resource.version.nil?
+        def target_version_already_installed?(current_version, new_version)
+          return false unless current_version
+          return false if new_version.nil?
 
-          Gem::Requirement.new(@new_resource.version).satisfied_by?(Gem::Version.new(@current_resource.version))
+          Gem::Requirement.new(new_version).satisfied_by?(Gem::Version.new(current_version))
         end
 
         ##
@@ -530,9 +534,9 @@ class Chef
           if @new_resource.source =~ /\.gem$/i
             name = @new_resource.source
           else
-            src = @new_resource.source && "  --source=#{@new_resource.source} --source=http://rubygems.org"
+            src = @new_resource.source && "  --source=#{@new_resource.source} --source=https://rubygems.org"
           end
-          if version
+          if !version.nil? && version.length > 0
             shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
           else
             shell_out!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)

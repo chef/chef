@@ -39,9 +39,9 @@ describe Chef::ScanAccessControl do
     end
 
     it "does not set any fields on the current resource" do
-      @current_resource.owner.should be_nil
-      @current_resource.group.should be_nil
-      @current_resource.mode.should be_nil
+      expect(@current_resource.owner).to be_nil
+      expect(@current_resource.group).to be_nil
+      expect(@current_resource.mode).to be_nil
     end
 
   end
@@ -50,9 +50,9 @@ describe Chef::ScanAccessControl do
 
     before do
       @stat = double("File::Stat for #{@new_resource.path}", :uid => 0, :gid => 0, :mode => 00100644)
-      File.should_receive(:realpath).with(@new_resource.path).and_return(@real_file)
-      File.should_receive(:stat).with(@real_file).and_return(@stat)
-      File.should_receive(:exist?).with(@new_resource.path).and_return(true)
+      expect(File).to receive(:realpath).with(@new_resource.path).and_return(@real_file)
+      expect(File).to receive(:stat).with(@real_file).and_return(@stat)
+      expect(File).to receive(:exist?).with(@new_resource.path).and_return(true)
     end
 
     describe "when new_resource does not specify mode, user or group" do
@@ -62,26 +62,26 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the mode of the current resource to the current mode as a String" do
-        @current_resource.mode.should == "0644"
+        expect(@current_resource.mode).to eq("0644")
       end
 
       context "on unix", :unix_only do
         it "sets the group of the current resource to the current group as a String" do
-          @current_resource.group.should == Etc.getgrgid(0).name
+          expect(@current_resource.group).to eq(Etc.getgrgid(0).name)
         end
 
         it "sets the owner of the current resource to the current owner as a String" do
-          @current_resource.user.should == "root"
+          expect(@current_resource.user).to eq("root")
         end
       end
 
       context "on windows", :windows_only do
         it "sets the group of the current resource to the current group as a String" do
-          @current_resource.group.should == 0
+          expect(@current_resource.group).to eq(0)
         end
 
         it "sets the owner of the current resource to the current owner as a String" do
-          @current_resource.user.should == 0
+          expect(@current_resource.user).to eq(0)
         end
       end
     end
@@ -93,7 +93,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the mode of the current resource to the file's current mode as a string" do
-        @current_resource.mode.should == "0644"
+        expect(@current_resource.mode).to eq("0644")
       end
     end
 
@@ -104,7 +104,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the mode of the current resource to the current mode as a String" do
-        @current_resource.mode.should == "0644"
+        expect(@current_resource.mode).to eq("0644")
       end
 
     end
@@ -117,7 +117,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the owner of current_resource to the UID of the current owner" do
-        @current_resource.user.should == 0
+        expect(@current_resource.user).to eq(0)
       end
     end
 
@@ -129,17 +129,17 @@ describe Chef::ScanAccessControl do
 
       it "sets the owner of current_resource to the username of the current owner" do
         @root_passwd = double("Struct::Passwd for uid 0", :name => "root")
-        Etc.should_receive(:getpwuid).with(0).and_return(@root_passwd)
+        expect(Etc).to receive(:getpwuid).with(0).and_return(@root_passwd)
         @scanner.set_all!
 
-        @current_resource.user.should == "root"
+        expect(@current_resource.user).to eq("root")
       end
 
       describe "and there is no passwd entry for the user" do
         it "sets the owner of the current_resource to the UID" do
-          Etc.should_receive(:getpwuid).with(0).and_raise(ArgumentError)
+          expect(Etc).to receive(:getpwuid).with(0).and_raise(ArgumentError)
           @scanner.set_all!
-          @current_resource.user.should == 0
+          expect(@current_resource.user).to eq(0)
         end
       end
     end
@@ -152,7 +152,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the group of the current_resource to the gid of the current owner" do
-        @current_resource.group.should == 0
+        expect(@current_resource.group).to eq(0)
       end
 
     end
@@ -164,17 +164,17 @@ describe Chef::ScanAccessControl do
 
       it "sets the group of the current resource to the group name" do
         @group_entry = double("Struct::Group for wheel", :name => "wheel")
-        Etc.should_receive(:getgrgid).with(0).and_return(@group_entry)
+        expect(Etc).to receive(:getgrgid).with(0).and_return(@group_entry)
         @scanner.set_all!
 
-        @current_resource.group.should == "wheel"
+        expect(@current_resource.group).to eq("wheel")
       end
 
       describe "and there is no group entry for the group" do
         it "sets the current_resource's group to the GID" do
-          Etc.should_receive(:getgrgid).with(0).and_raise(ArgumentError)
+          expect(Etc).to receive(:getgrgid).with(0).and_raise(ArgumentError)
           @scanner.set_all!
-          @current_resource.group.should == 0
+          expect(@current_resource.group).to eq(0)
         end
       end
 

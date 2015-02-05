@@ -28,7 +28,7 @@ class Chef
         super(@name, *args)
         @action = "break"
         @allowed_actions << :break
-        @provider = Chef::Provider::Breakpoint
+        @resource_name = :breakpoint
       end
     end
   end

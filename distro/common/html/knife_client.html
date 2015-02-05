@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,10 +41,10 @@
             
   <div class="section" id="knife-client">
 <h1>knife client<a class="headerlink" href="#knife-client" title="Permalink to this headline">¶</a></h1>
-<p>The <strong>knife client</strong> subcommand is used to manage an API client list and their associated RSA public key-pairs. This allows authentication requests to be made to the Chef server by any entity that uses the Chef Server API, such as the chef-client and Knife.</p>
+<p>The <strong>knife client</strong> subcommand is used to manage an API client list and their associated RSA public key-pairs. This allows authentication requests to be made to the Chef server by any entity that uses the Chef server API, such as the chef-client and knife.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <div class="section" id="bulk-delete">
 <h2>bulk delete<a class="headerlink" href="#bulk-delete" title="Permalink to this headline">¶</a></h2>
@@ -70,7 +70,7 @@
 <p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to create a new API client. This process will generate an RSA key pair for the named API client. The public key will be stored on the Chef server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
 <ul class="simple">
 <li>For the chef-client, the private key should be copied to the system as <tt class="docutils literal"><span class="pre">/etc/chef/client.pem</span></tt>.</li>
-<li>For Knife, the private key is typically copied to <tt class="docutils literal"><span class="pre">~/.chef/client_name.pem</span></tt> and referenced in the knife.rb configuration file.</li>
+<li>For knife, the private key is typically copied to <tt class="docutils literal"><span class="pre">~/.chef/client_name.pem</span></tt> and referenced in the knife.rb configuration file.</li>
 </ul>
 <div class="section" id="id1">
 <h3>Syntax<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
@@ -93,9 +93,9 @@
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create an admin client</strong></p>
-<p>To create a chef-client that can access the Chef Server API as an administrator&#8212;sometimes referred to as an &#8220;API chef-client&#8221;&#8212;with the name &#8220;exampleorg&#8221; and save its private key to a file, enter:</p>
+<p>To create a chef-client that can access the Chef server API as an administrator&#8212;sometimes referred to as an &#8220;API chef-client&#8221;&#8212;with the name &#8220;exampleorg&#8221; and save its private key to a file, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client create exampleorg -a -f <span class="s2">&quot;/etc/chef/client.pem&quot;</span>
 </pre></div>
 </div>
@@ -122,7 +122,7 @@
 </div>
 <div class="section" id="id6">
 <h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Delete a client</strong></p>
 <p>To delete a client with the name &#8220;client_foo&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client delete client_foo
@@ -133,7 +133,7 @@
 </div>
 <div class="section" id="edit">
 <h2>edit<a class="headerlink" href="#edit" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the details of a registered API client. When this argument is run, Knife will open $EDITOR to enable editing of the <tt class="docutils literal"><span class="pre">admin</span></tt> attribute. (None of the other attributes should be changed using this argument.) When finished, Knife will update the Chef server with those changes.</p>
+<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the details of a registered API client. When this argument is run, knife will open $EDITOR to enable editing of the <tt class="docutils literal"><span class="pre">admin</span></tt> attribute. (None of the other attributes should be changed using this argument.) When finished, knife will update the Chef server with those changes.</p>
 <div class="section" id="id7">
 <h3>Syntax<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -147,7 +147,7 @@
 </div>
 <div class="section" id="id9">
 <h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Edit a client</strong></p>
 <p>To edit a client with the name &#8220;exampleorg&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client edit exampleorg
@@ -175,7 +175,7 @@
 </div>
 <div class="section" id="id12">
 <h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>View a list of clients</strong></p>
 <p>To verify the API client list for the Chef server, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client list
@@ -218,7 +218,7 @@ Chef server correctly, try getting a list of clients using <tt class="docutils l
 </div>
 <div class="section" id="id15">
 <h3>Examples<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Reregister clients</strong></p>
 <p>To regenerate the RSA key pair for a client named &#8220;testclient&#8221; and save it to a file named &#8220;rsa_key&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client regenerate testclient -f rsa_key
@@ -246,7 +246,7 @@ Chef server correctly, try getting a list of clients using <tt class="docutils l
 </div>
 <div class="section" id="id18">
 <h3>Examples<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Show clients</strong></p>
 <p>To view a client named &#8220;testclient&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client show testclient

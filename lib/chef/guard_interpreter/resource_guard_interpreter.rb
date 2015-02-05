@@ -33,10 +33,19 @@ class Chef
         # to the resource
         merge_inherited_attributes
 
-        # Script resources have a code attribute, which is
-        # what is used to execute the command, so include
-        # that with attributes specified by caller in opts
-        block_attributes = @command_opts.merge({:code => @command})
+        # Only execute and script resources and use guard attributes.
+        # The command to be executed on them are passed via different attributes.
+        # Script resources use code attribute and execute resources use
+        # command attribute. Moreover script resources are also execute
+        # resources. Here we make sure @command is assigned to the right
+        # attribute by checking the type of the resources.
+        # We need to make sure we check for Script first because any resource
+        # that can get to here is an Execute resource.
+        if @parent_resource.is_a? Chef::Resource::Script
+          block_attributes = @command_opts.merge({:code => @command})
+        else
+          block_attributes = @command_opts.merge({:command => @command})
+        end
 
         # Handles cases like powershell_script where default
         # attributes are different when used in a guard vs. not. For
@@ -79,13 +88,14 @@ class Chef
           raise ArgumentError, "Specified guard_interpreter resource #{parent_resource.guard_interpreter.to_s} unknown for this platform"
         end
 
-        if ! resource_class.ancestors.include?(Chef::Resource::Script)
-          raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
+        if ! resource_class.ancestors.include?(Chef::Resource::Execute)
+          raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Execute resource"
         end
 
         empty_events = Chef::EventDispatch::Dispatcher.new
         anonymous_run_context = Chef::RunContext.new(parent_resource.node, {}, empty_events)
         interpreter_resource = resource_class.new('Guard resource', anonymous_run_context)
+        interpreter_resource.is_guard_interpreter = true
 
         interpreter_resource
       end

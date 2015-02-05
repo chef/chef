@@ -32,7 +32,7 @@ class Chef
           @exists = options[:exists]
           # If the name is apache2-1.0.0 and versioned_cookbooks is on, we know
           # the actual cookbook_name and version.
-          if Chef::Config[:versioned_cookbooks]
+          if root.versioned_cookbooks
             if name =~ VALID_VERSIONED_COOKBOOK_NAME
               @cookbook_name = $1
               @version = $2

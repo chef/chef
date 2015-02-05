@@ -32,10 +32,6 @@ describe Chef::Provider::Log::ChefLog do
 
   let(:provider) { Chef::Provider::Log::ChefLog.new(new_resource, run_context) }
 
-  it "should be registered with the default platform hash" do
-    expect(Chef::Platform.platforms[:default][:log]).not_to be_nil
-  end
-
   it "should write the string to the Chef::Log object at default level (info)" do
     expect(Chef::Log).to receive(:info).with(log_str).and_return(true)
     provider.run_action(:write)

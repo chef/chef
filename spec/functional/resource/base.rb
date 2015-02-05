@@ -22,6 +22,7 @@ def run_context
     node = Chef::Node.new
     node.default[:platform] = ohai[:platform]
     node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
     events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, events)
   end

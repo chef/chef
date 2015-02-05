@@ -17,32 +17,43 @@
 #
 
 require 'chef/provider/service/init'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider
     class Service
       class Insserv < Chef::Provider::Service::Init
 
+        provides :service, os: "linux"
+
+        def self.provides?(node, resource)
+          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
+        end
+
+        def self.supports?(resource, action)
+          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
+        end
+
         def load_current_resource
           super
 
-          # Look for a /etc/rc.*/SnnSERVICE link to signifiy that the service would be started in a runlevel
-          if Dir.glob("/etc/rc**/S*#{@current_resource.service_name}").empty?
-            @current_resource.enabled false
+          # Look for a /etc/rc.*/SnnSERVICE link to signify that the service would be started in a runlevel
+          if Dir.glob("/etc/rc**/S*#{Chef::Util::PathHelper.escape_glob(current_resource.service_name)}").empty?
+            current_resource.enabled false
           else
-            @current_resource.enabled true
+            current_resource.enabled true
           end
 
-          @current_resource
+          current_resource
         end
 
         def enable_service()
-          run_command(:command => "/sbin/insserv -r -f #{@new_resource.service_name}")
-          run_command(:command => "/sbin/insserv -d -f #{@new_resource.service_name}")
+          shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
+          shell_out!("/sbin/insserv -d -f #{new_resource.service_name}")
         end
 
         def disable_service()
-          run_command(:command => "/sbin/insserv -r -f #{@new_resource.service_name}")
+          shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
         end
       end
     end

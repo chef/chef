@@ -50,6 +50,9 @@ class Chef
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
 
+    # The list of audits (control groups) to execute during the audit phase
+    attr_accessor :audits
+
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
     attr_accessor :immediate_notification_collection
@@ -61,6 +64,9 @@ class Chef
     # Event dispatcher for this run.
     attr_reader :events
 
+    # Hash of factoids for a reboot request.
+    attr_reader :reboot_info
+
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
@@ -70,15 +76,16 @@ class Chef
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
+      @audits = {}
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
       @definitions = Hash.new
       @loaded_recipes = {}
       @loaded_attributes = {}
       @events = events
+      @reboot_info = {}
 
       @node.run_context = self
-
       @cookbook_compiler = nil
     end
 
@@ -97,7 +104,7 @@ class Chef
       if nr.instance_of?(Chef::Resource)
         @immediate_notification_collection[nr.name] << notification
       else
-        @immediate_notification_collection[nr.to_s] << notification
+        @immediate_notification_collection[nr.declared_key] << notification
       end
     end
 
@@ -108,7 +115,7 @@ class Chef
       if nr.instance_of?(Chef::Resource)
         @delayed_notification_collection[nr.name] << notification
       else
-        @delayed_notification_collection[nr.to_s] << notification
+        @delayed_notification_collection[nr.declared_key] << notification
       end
     end
 
@@ -116,7 +123,7 @@ class Chef
       if resource.instance_of?(Chef::Resource)
         return @immediate_notification_collection[resource.name]
       else
-        return @immediate_notification_collection[resource.to_s]
+        return @immediate_notification_collection[resource.declared_key]
       end
     end
 
@@ -124,15 +131,15 @@ class Chef
       if resource.instance_of?(Chef::Resource)
         return @delayed_notification_collection[resource.name]
       else
-        return @delayed_notification_collection[resource.to_s]
+        return @delayed_notification_collection[resource.declared_key]
       end
     end
 
     # Evaluates the recipes +recipe_names+. Used by DSL::IncludeRecipe
-    def include_recipe(*recipe_names)
+    def include_recipe(*recipe_names, current_cookbook: nil)
       result_recipes = Array.new
       recipe_names.flatten.each do |recipe_name|
-        if result = load_recipe(recipe_name)
+        if result = load_recipe(recipe_name, current_cookbook: current_cookbook)
           result_recipes << result
         end
       end
@@ -140,10 +147,10 @@ class Chef
     end
 
     # Evaluates the recipe +recipe_name+. Used by DSL::IncludeRecipe
-    def load_recipe(recipe_name)
+    def load_recipe(recipe_name, current_cookbook: nil)
       Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
 
-      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name, current_cookbook: current_cookbook)
 
       if unreachable_cookbook?(cookbook_name) # CHEF-4367
         Chef::Log.warn(<<-ERROR_MESSAGE)
@@ -191,7 +198,7 @@ ERROR_MESSAGE
     end
 
     # An Array of all recipes that have been loaded. This is stored internally
-    # as a Hash, so ordering is not preserved when using ruby 1.8.
+    # as a Hash, so ordering is predictable.
     #
     # Recipe names are given in fully qualified form, e.g., the recipe "nginx"
     # will be given as "nginx::default"
@@ -202,7 +209,7 @@ ERROR_MESSAGE
     end
 
     # An Array of all attributes files that have been loaded. Stored internally
-    # using a Hash, so order is not preserved on ruby 1.8.
+    # using a Hash, so order is predictable.
     #
     # Attribute file names are given in fully qualified form, e.g.,
     # "nginx::default" instead of "nginx".
@@ -269,6 +276,27 @@ ERROR_MESSAGE
       else
         stream
       end
+    end
+
+    # there are options for how to handle multiple calls to these functions:
+    # 1. first call always wins (never change @reboot_info once set).
+    # 2. last call always wins (happily change @reboot_info whenever).
+    # 3. raise an exception on the first conflict.
+    # 4. disable reboot after this run if anyone ever calls :cancel.
+    # 5. raise an exception on any second call.
+    # 6. ?
+    def request_reboot(reboot_info)
+      Chef::Log::info "Changing reboot status from #{@reboot_info.inspect} to #{reboot_info.inspect}"
+      @reboot_info = reboot_info
+    end
+
+    def cancel_reboot
+      Chef::Log::info "Changing reboot status from #{@reboot_info.inspect} to {}"
+      @reboot_info = {}
+    end
+
+    def reboot_requested?
+      @reboot_info.size > 0
     end
 
     private

@@ -24,8 +24,10 @@ require 'chef/daemon'
 require 'chef/log'
 require 'chef/config_fetcher'
 require 'chef/handler/error_report'
+require 'chef/workstation_config_loader'
 
 class Chef::Application::Client < Chef::Application
+  include Chef::Mixin::ShellOut
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = []
@@ -62,7 +64,7 @@ class Chef::Application::Client < Chef::Application
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
-    :description  => "Set the log level (debug, info, warn, error, fatal)",
+    :description  => "Set the log level (auto, debug, info, warn, error, fatal)",
     :proc         => lambda { |l| l.to_sym }
 
   option :log_location,
@@ -103,7 +105,12 @@ class Chef::Application::Client < Chef::Application
   option :pid_file,
     :short        => "-P PID_FILE",
     :long         => "--pid PIDFILE",
-    :description  => "Set the PID file location, defaults to /tmp/chef-client.pid",
+    :description  => "Set the PID file location, for the chef-client daemon process. Defaults to /tmp/chef-client.pid",
+    :proc         => nil
+
+  option :lockfile,
+    :long         => "--lockfile LOCKFILE",
+    :description  => "Set the lockfile location. Prevents multiple client processes from converging at the same time",
     :proc         => nil
 
   option :interval,
@@ -199,6 +206,10 @@ class Chef::Application::Client < Chef::Application
     :description  => "Fork client",
     :boolean      => true
 
+  option :recipe_url,
+    :long         => "--recipe-url=RECIPE_URL",
+    :description  => "Pull down a remote archive of recipes and unpack it to the cookbook cache. Only used in local mode."
+
   option :enable_reporting,
     :short        => "-R",
     :long         => "--enable-reporting",
@@ -219,9 +230,10 @@ class Chef::Application::Client < Chef::Application
     :long         => "--chef-zero-port PORT",
     :description  => "Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
-  option :config_file_jail,
-    :long         => "--config-file-jail PATH",
-    :description  => "Directory under which config files are allowed to be loaded (no client.rb or knife.rb outside this path will be loaded)."
+  option :disable_config,
+    :long         => "--disable-config",
+    :description  => "Refuse to load a config file and use defaults. This is for development and not a stable API",
+    :boolean      => true
 
   option :run_lock_timeout,
     :long         => "--run-lock-timeout SECONDS",
@@ -236,8 +248,12 @@ class Chef::Application::Client < Chef::Application
       :boolean      => true
   end
 
+  option :audit_mode,
+    :long           => "--audit-mode MODE",
+    :description    => "Enable audit-mode with `enabled`. Disable audit-mode with `disabled`. Skip converge and only perform audits with `audit-only`",
+    :proc           => lambda { |mo| mo.gsub("-", "_").to_sym }
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
-  GRACEFUL_EXIT_SIGNAL = "2".freeze
 
   attr_reader :chef_client_json
 
@@ -245,6 +261,8 @@ class Chef::Application::Client < Chef::Application
   # Re-open the JSON attributes and load them into the node
   def reconfigure
     super
+
+    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
 
     Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
 
@@ -254,6 +272,18 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
+
+    if !Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+      Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
+    elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+      Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
+      FileUtils.mkdir_p(Chef::Config.chef_repo_path)
+      tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
+      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+      result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+      Chef::Log.debug "#{result.stdout}"
+    end
+
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
@@ -266,18 +296,33 @@ class Chef::Application::Client < Chef::Application
       Chef::Config[:splay] = nil
     end
 
+    if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
+      Chef::Application.fatal!(unforked_interval_error_message)
+    end
+
     if Chef::Config[:json_attribs]
       config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
       @chef_client_json = config_fetcher.fetch_json
     end
+
+    if mode = config[:audit_mode] || Chef::Config[:audit_mode]
+      expected_modes = [:enabled, :disabled, :audit_only]
+      unless expected_modes.include?(mode)
+        Chef::Application.fatal!(unrecognized_audit_mode(mode))
+      end
+
+      unless mode == :disabled
+        # This should be removed when audit-mode is enabled by default/no longer
+        # an experimental feature.
+        Chef::Log.warn(audit_mode_experimental_message)
+      end
+    end
   end
 
   def load_config_file
-    Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
-    if !config.has_key?(:config_file)
+    if !config.has_key?(:config_file) && !config[:disable_config]
       if config[:local_mode]
-        require 'chef/knife'
-        config[:config_file] = Chef::Knife.locate_config_file
+        config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
       end
@@ -295,8 +340,9 @@ class Chef::Application::Client < Chef::Application
     Chef::Daemon.change_privilege
   end
 
-  # Run the chef client, optionally daemonizing or looping at intervals.
-  def run_application
+  def setup_signal_handlers
+    super
+
     unless Chef::Platform.windows?
       SELF_PIPE.replace IO.pipe
 
@@ -304,52 +350,54 @@ class Chef::Application::Client < Chef::Application
         Chef::Log.info("SIGUSR1 received, waking up")
         SELF_PIPE[1].putc(IMMEDIATE_RUN_SIGNAL) # wakeup master process from select
       end
-
-      # see CHEF-5172
-      if Chef::Config[:daemonize] || Chef::Config[:interval]
-        trap("TERM") do
-          Chef::Log.info("SIGTERM received, exiting gracefully")
-          SELF_PIPE[1].putc(GRACEFUL_EXIT_SIGNAL)
-        end
-      end
     end
+  end
 
+  # Run the chef client, optionally daemonizing or looping at intervals.
+  def run_application
     if Chef::Config[:version]
       puts "Chef version: #{::Chef::VERSION}"
     end
 
+    if !Chef::Config[:client_fork] || Chef::Config[:once]
+      begin
+        # run immediately without interval sleep, or splay
+        run_chef_client(Chef::Config[:specific_recipes])
+      rescue SystemExit
+        raise
+      rescue Exception => e
+        Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+      end
+    else
+      interval_run_chef_client
+    end
+  end
+
+  private
+  def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
     end
 
-    signal = nil
-
     loop do
       begin
-        Chef::Application.exit!("Exiting", 0) if signal == GRACEFUL_EXIT_SIGNAL
-
-        if Chef::Config[:splay] and signal != IMMEDIATE_RUN_SIGNAL
-          splay = rand Chef::Config[:splay]
-          Chef::Log.debug("Splay sleep #{splay} seconds")
-          sleep splay
+        @signal = test_signal
+        if @signal != IMMEDIATE_RUN_SIGNAL
+          sleep_sec = time_to_sleep
+          Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
+          interval_sleep(sleep_sec)
         end
 
-        signal = nil
+        @signal = nil
         run_chef_client(Chef::Config[:specific_recipes])
 
-        if Chef::Config[:interval]
-          Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
-          signal = interval_sleep
-        else
-          Chef::Application.exit! "Exiting", 0
-        end
+        Chef::Application.exit!("Exiting", 0) if !Chef::Config[:interval]
       rescue SystemExit => e
         raise
       rescue Exception => e
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
-          Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
-          signal = interval_sleep
+          Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
           retry
         else
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
@@ -358,19 +406,66 @@ class Chef::Application::Client < Chef::Application
     end
   end
 
-  private
+  def test_signal
+    @signal = interval_sleep(0)
+  end
 
-  def interval_sleep
+  def time_to_sleep
+    duration = 0
+    duration += rand(Chef::Config[:splay]) if Chef::Config[:splay]
+    duration += Chef::Config[:interval] if Chef::Config[:interval]
+    duration
+  end
+
+  def interval_sleep(sec)
     unless SELF_PIPE.empty?
-      client_sleep Chef::Config[:interval]
+      client_sleep(sec)
     else
       # Windows
-      sleep Chef::Config[:interval]
+      sleep(sec)
     end
   end
 
   def client_sleep(sec)
     IO.select([ SELF_PIPE[0] ], nil, nil, sec) or return
-    SELF_PIPE[0].getc.chr
+    @signal = SELF_PIPE[0].getc.chr
+  end
+
+  def unforked_interval_error_message
+    "Unforked chef-client interval runs are disabled in Chef 12." +
+    "\nConfiguration settings:" +
+    "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+    "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+  end
+
+  def audit_mode_settings_explaination
+    "\n* To enable audit mode after converge, use command line option `--audit-mode enabled` or set `:audit_mode = :enabled` in your config file." +
+    "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `:audit_mode = :disabled` in your config file." +
+    "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `:audit_mode = :audit_only` in your config file." +
+    "\nAudit mode is disabled by default."
+  end
+
+  def unrecognized_audit_mode(mode)
+    "Unrecognized setting #{mode} for audit mode." + audit_mode_settings_explaination
+  end
+
+  def audit_mode_experimental_message
+    msg = if Chef::Config[:audit_mode] == :audit_only
+      "Chef-client has been configured to skip converge and run only audits."
+    else
+      "Chef-client has been configured to run audits after it converges."
+    end
+    msg += " Audit mode is an experimental feature currently under development. API changes may occur. Use at your own risk."
+    msg += audit_mode_settings_explaination
+    return msg
+  end
+
+  def fetch_recipe_tarball(url, path)
+    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
+    File.open(path, 'wb') do |f|
+      open(url) do |r|
+        f.write(r.read)
+      end
+    end
   end
 end

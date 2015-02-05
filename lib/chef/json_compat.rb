@@ -18,9 +18,9 @@
 # Wrapper class for interacting with JSON.
 
 require 'ffi_yajl'
-require 'json'
-require 'ffi_yajl/json_gem'  # XXX: parts of chef require JSON gem's Hash#to_json monkeypatch
 require 'chef/exceptions'
+# We're requiring this to prevent breaking consumers using Hash.to_json
+require 'json'
 
 class Chef
   class JSONCompat
@@ -39,6 +39,8 @@ class Chef
     CHEF_SANDBOX            = "Chef::Sandbox".freeze
     CHEF_RESOURCE           = "Chef::Resource".freeze
     CHEF_RESOURCECOLLECTION = "Chef::ResourceCollection".freeze
+    CHEF_RESOURCESET        = "Chef::ResourceCollection::ResourceSet".freeze
+    CHEF_RESOURCELIST       = "Chef::ResourceCollection::ResourceList".freeze
 
     class <<self
 
@@ -101,7 +103,7 @@ class Chef
       def to_json(obj, opts = nil)
         begin
           FFI_Yajl::Encoder.encode(obj, opts)
-        rescue FFI_Yajl::EndodeError => e
+        rescue FFI_Yajl::EncodeError => e
           raise Chef::Exceptions::JSON::EncodeError, e.message
         end
       end
@@ -145,8 +147,12 @@ class Chef
           Chef::Resource
         when CHEF_RESOURCECOLLECTION
           Chef::ResourceCollection
+        when CHEF_RESOURCESET
+          Chef::ResourceCollection::ResourceSet
+        when CHEF_RESOURCELIST
+          Chef::ResourceCollection::ResourceList
         when /^Chef::Resource/
-          Chef::Resource.find_subclass_by_name(json_class)
+          Chef::Resource.find_descendants_by_name(json_class)
         else
           raise Chef::Exceptions::JSON::ParseError, "Unsupported `json_class` type '#{json_class}'"
         end

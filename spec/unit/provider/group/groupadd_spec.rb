@@ -43,47 +43,47 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
 
   field_list.each do |attribute, option|
     it "should check for differences in #{attribute.to_s} between the current and new resources" do
-        @new_resource.should_receive(attribute)
-        @current_resource.should_receive(attribute)
+        expect(@new_resource).to receive(attribute)
+        expect(@current_resource).to receive(attribute)
         @provider.set_options
     end
     it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
-      @new_resource.stub(attribute).and_return("wowaweea")
-      @provider.set_options.should eql(" #{option} '#{@new_resource.send(attribute)}' #{@new_resource.group_name}")
+      allow(@new_resource).to receive(attribute).and_return("wowaweea")
+      expect(@provider.set_options).to eql(" #{option} '#{@new_resource.send(attribute)}' #{@new_resource.group_name}")
     end
   end
 
   it "should combine all the possible options" do
     match_string = ""
     field_list.sort{ |a,b| a[0] <=> b[0] }.each do |attribute, option|
-      @new_resource.stub(attribute).and_return("hola")
+      allow(@new_resource).to receive(attribute).and_return("hola")
       match_string << " #{option} 'hola'"
     end
     match_string << " aj"
-    @provider.set_options.should eql(match_string)
+    expect(@provider.set_options).to eql(match_string)
   end
 
   describe "when we want to create a system group" do
     it "should not set groupadd_options '-r' when system is false" do
       @new_resource.system(false)
-      @provider.groupadd_options.should_not =~ /-r/
+      expect(@provider.groupadd_options).not_to match(/-r/)
     end
 
     it "should set groupadd -r if system is true" do
       @new_resource.system(true)
-      @provider.groupadd_options.should == " -r"
+      expect(@provider.groupadd_options).to eq(" -r")
     end
   end
 
   describe "when we want to create a non_unique gid group" do
     it "should not set groupadd_options '-o' when non_unique is false" do
       @new_resource.non_unique(false)
-      @provider.groupadd_options.should_not =~ /-o/
+      expect(@provider.groupadd_options).not_to match(/-o/)
     end
 
     it "should set groupadd -o if non_unique is true" do
       @new_resource.non_unique(true)
-      @provider.groupadd_options.should == " -o"
+      expect(@provider.groupadd_options).to eq(" -o")
     end
   end
 end
@@ -93,19 +93,19 @@ describe Chef::Provider::Group::Groupadd, "create_group" do
     @node = Chef::Node.new
     @new_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
-    @provider.stub(:run_command).and_return(true)
-    @provider.stub(:set_options).and_return(" monkey")
-    @provider.stub(:groupadd_options).and_return("")
-    @provider.stub(:modify_group_members).and_return(true)
+    allow(@provider).to receive(:run_command).and_return(true)
+    allow(@provider).to receive(:set_options).and_return(" monkey")
+    allow(@provider).to receive(:groupadd_options).and_return("")
+    allow(@provider).to receive(:modify_group_members).and_return(true)
   end
 
   it "should run groupadd with the return of set_options" do
-    @provider.should_receive(:run_command).with({ :command => "groupadd monkey" }).and_return(true)
+    expect(@provider).to receive(:run_command).with({ :command => "groupadd monkey" }).and_return(true)
     @provider.create_group
   end
 
   it "should modify the group members" do
-    @provider.should_receive(:modify_group_members).and_return(true)
+    expect(@provider).to receive(:modify_group_members).and_return(true)
     @provider.create_group
   end
 end
@@ -117,20 +117,20 @@ describe Chef::Provider::Group::Groupadd do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
-    @provider.stub(:run_command).and_return(true)
-    @provider.stub(:set_options).and_return(" monkey")
+    allow(@provider).to receive(:run_command).and_return(true)
+    allow(@provider).to receive(:set_options).and_return(" monkey")
   end
 
   describe "manage group" do
 
     it "should run groupmod with the return of set_options" do
-      @provider.stub(:modify_group_members).and_return(true)
-      @provider.should_receive(:run_command).with({ :command => "groupmod monkey" }).and_return(true)
+      allow(@provider).to receive(:modify_group_members).and_return(true)
+      expect(@provider).to receive(:run_command).with({ :command => "groupmod monkey" }).and_return(true)
       @provider.manage_group
     end
 
     it "should modify the group members" do
-      @provider.should_receive(:modify_group_members).and_return(true)
+      expect(@provider).to receive(:modify_group_members).and_return(true)
       @provider.manage_group
     end
   end
@@ -138,36 +138,36 @@ describe Chef::Provider::Group::Groupadd do
   describe "remove_group" do
 
     it "should run groupdel with the new resources group name" do
-      @provider.should_receive(:run_command).with({ :command => "groupdel aj" }).and_return(true)
+      expect(@provider).to receive(:run_command).with({ :command => "groupdel aj" }).and_return(true)
       @provider.remove_group
     end
   end
 
   [:add_member, :remove_member, :set_members].each do |m|
     it "should raise an error when calling #{m}" do
-      lambda { @provider.send(m, [ ]) }.should raise_error(Chef::Exceptions::Group, "you must override #{m} in #{@provider.to_s}")
+      expect { @provider.send(m, [ ]) }.to raise_error(Chef::Exceptions::Group, "you must override #{m} in #{@provider.to_s}")
     end
   end
 
   describe "load_current_resource" do
     before do
-      File.stub(:exists?).and_return(false)
+      allow(File).to receive(:exists?).and_return(false)
       @provider.define_resource_requirements
     end
     it "should raise an error if the required binary /usr/sbin/groupadd doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(false)
-      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
+      expect(File).to receive(:exists?).with("/usr/sbin/groupadd").and_return(false)
+      expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
     it "should raise an error if the required binary /usr/sbin/groupmod doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupmod").and_return(false)
-      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
+      expect(File).to receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
+      expect(File).to receive(:exists?).with("/usr/sbin/groupmod").and_return(false)
+      expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
     it "should raise an error if the required binary /usr/sbin/groupdel doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupmod").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupdel").and_return(false)
-      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
+      expect(File).to receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
+      expect(File).to receive(:exists?).with("/usr/sbin/groupmod").and_return(true)
+      expect(File).to receive(:exists?).with("/usr/sbin/groupdel").and_return(false)
+      expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
 
   end

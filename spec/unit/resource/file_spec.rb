@@ -25,55 +25,55 @@ describe Chef::Resource::File do
   end
 
   it "should have a name" do
-    @resource.name.should eql("fakey_fakerton")
+    expect(@resource.name).to eql("fakey_fakerton")
   end
 
   it "should have a default action of 'create'" do
-    @resource.action.should eql("create")
+    expect(@resource.action).to eql("create")
   end
 
   it "should have a default content of nil" do
-    @resource.content.should be_nil
+    expect(@resource.content).to be_nil
   end
 
   it "should be set to back up 5 files by default" do
-    @resource.backup.should eql(5)
+    expect(@resource.backup).to eql(5)
   end
 
   it "should only accept strings for content" do
-    lambda { @resource.content 5 }.should raise_error(ArgumentError)
-    lambda { @resource.content :foo }.should raise_error(ArgumentError)
-    lambda { @resource.content "hello" => "there" }.should raise_error(ArgumentError)
-    lambda { @resource.content "hi" }.should_not raise_error
+    expect { @resource.content 5 }.to raise_error(ArgumentError)
+    expect { @resource.content :foo }.to raise_error(ArgumentError)
+    expect { @resource.content "hello" => "there" }.to raise_error(ArgumentError)
+    expect { @resource.content "hi" }.not_to raise_error
   end
 
   it "should only accept false or a number for backup" do
-    lambda { @resource.backup true }.should raise_error(ArgumentError)
-    lambda { @resource.backup false }.should_not raise_error
-    lambda { @resource.backup 10 }.should_not raise_error
-    lambda { @resource.backup "blues" }.should raise_error(ArgumentError)
+    expect { @resource.backup true }.to raise_error(ArgumentError)
+    expect { @resource.backup false }.not_to raise_error
+    expect { @resource.backup 10 }.not_to raise_error
+    expect { @resource.backup "blues" }.to raise_error(ArgumentError)
   end
 
   it "should accept a sha256 for checksum" do
-    lambda { @resource.checksum "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa" }.should_not raise_error
-    lambda { @resource.checksum "monkey!" }.should raise_error(ArgumentError)
+    expect { @resource.checksum "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa" }.not_to raise_error
+    expect { @resource.checksum "monkey!" }.to raise_error(ArgumentError)
   end
 
   it "should accept create, delete or touch for action" do
-    lambda { @resource.action :create }.should_not raise_error
-    lambda { @resource.action :delete }.should_not raise_error
-    lambda { @resource.action :touch }.should_not raise_error
-    lambda { @resource.action :blues }.should raise_error(ArgumentError)
+    expect { @resource.action :create }.not_to raise_error
+    expect { @resource.action :delete }.not_to raise_error
+    expect { @resource.action :touch }.not_to raise_error
+    expect { @resource.action :blues }.to raise_error(ArgumentError)
   end
 
   it "should use the object name as the path by default" do
-    @resource.path.should eql("fakey_fakerton")
+    expect(@resource.path).to eql("fakey_fakerton")
   end
 
   it "should accept a string as the path" do
-    lambda { @resource.path "/tmp" }.should_not raise_error
-    @resource.path.should eql("/tmp")
-    lambda { @resource.path Hash.new }.should raise_error(ArgumentError)
+    expect { @resource.path "/tmp" }.not_to raise_error
+    expect(@resource.path).to eql("/tmp")
+    expect { @resource.path Hash.new }.to raise_error(ArgumentError)
   end
 
   describe "when it has a path, owner, group, mode, and checksum" do
@@ -88,15 +88,15 @@ describe Chef::Resource::File do
     context "on unix", :unix_only do
       it "describes its state" do
         state = @resource.state
-        state[:owner].should == "root"
-        state[:group].should == "wheel"
-        state[:mode].should == "0644"
-        state[:checksum].should == "1" * 64
+        expect(state[:owner]).to eq("root")
+        expect(state[:group]).to eq("wheel")
+        expect(state[:mode]).to eq("0644")
+        expect(state[:checksum]).to eq("1" * 64)
       end
     end
 
     it "returns the file path as its identity" do
-      @resource.identity.should == "/tmp/foo.txt"
+      expect(@resource.identity).to eq("/tmp/foo.txt")
     end
 
   end
@@ -108,8 +108,8 @@ describe Chef::Resource::File do
     end
     it "describes its state including windows ACL attributes" do
       state = @resource.state
-      state[:rights].should == [ {:permissions => :read, :principals => "Everyone"},
-                               {:permissions => :full_control, :principals => "DOMAIN\User"} ]
+      expect(state[:rights]).to eq([ {:permissions => :read, :principals => "Everyone"},
+                               {:permissions => :full_control, :principals => "DOMAIN\User"} ])
     end
   end
 

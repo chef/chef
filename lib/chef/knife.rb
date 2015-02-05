@@ -20,7 +20,7 @@
 require 'forwardable'
 require 'chef/version'
 require 'mixlib/cli'
-require 'chef/config_fetcher'
+require 'chef/workstation_config_loader'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/path_sanity'
 require 'chef/knife/core/subcommand_loader'
@@ -70,6 +70,11 @@ class Chef
 
     def self.msg(msg="")
       ui.msg(msg)
+    end
+
+    def self.reset_config_loader!
+      @@chef_config_dir = nil
+      @config_loader = nil
     end
 
     def self.reset_subcommands!
@@ -159,6 +164,29 @@ class Chef
       end
     end
 
+    # Shared with subclasses
+    @@chef_config_dir = nil
+
+    def self.config_loader
+      @config_loader ||= WorkstationConfigLoader.new(nil, Chef::Log)
+    end
+
+    def self.load_config(explicit_config_file)
+      config_loader.explicit_config_file = explicit_config_file
+      config_loader.load
+
+      ui.warn("No knife configuration file found") if config_loader.no_config_found?
+
+      config_loader
+    rescue Exceptions::ConfigurationError => e
+      ui.error(ui.color("CONFIGURATION ERROR:", :red) + e.message)
+      exit 1
+    end
+
+    def self.chef_config_dir
+      @@chef_config_dir ||= config_loader.chef_config_dir
+    end
+
     # Run knife for the given +args+ (ARGV), adding +options+ to the list of
     # CLI options that the subcommand knows how to handle.
     # ===Arguments
@@ -166,6 +194,16 @@ class Chef
     # options::: A Mixlib::CLI option parser hash. These +options+ are how
     # subcommands know about global knife CLI options
     def self.run(args, options={})
+      # Fallback debug logging. Normally the logger isn't configured until we
+      # read the config, but this means any logging that happens before the
+      # config file is read may be lost. If the KNIFE_DEBUG variable is set, we
+      # setup the logger for debug logging to stderr immediately to catch info
+      # from early in the setup process.
+      if ENV['KNIFE_DEBUG']
+        Chef::Log.init($stderr)
+        Chef::Log.level(:debug)
+      end
+
       load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
@@ -222,7 +260,7 @@ class Chef
     OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
 
     # :nodoc:
-    # Error out and print usage. probably becuase the arguments given by the
+    # Error out and print usage. probably because the arguments given by the
     # user could not be resolved to a subcommand.
     def self.subcommand_not_found!(args)
       ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
@@ -231,7 +269,8 @@ class Chef
         list_commands(category_commands)
       elsif missing_plugin = ( OFFICIAL_PLUGINS.find {|plugin| plugin == args[0]} )
         ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
-        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}")
+        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}`")
+        ui.info("Use `chef gem install knife-#{missing_plugin}` instead if using ChefDK")
       else
         list_commands
       end
@@ -239,39 +278,11 @@ class Chef
       exit 10
     end
 
-    def self.working_directory
-      a = if Chef::Platform.windows?
-            ENV['CD']
-          else
-            ENV['PWD']
-          end || Dir.pwd
-
-      a
-    end
-
     def self.reset_config_path!
       @@chef_config_dir = nil
     end
 
     reset_config_path!
-
-
-    # search upward from current_dir until .chef directory is found
-    def self.chef_config_dir
-      if @@chef_config_dir.nil? # share this with subclasses
-        @@chef_config_dir = false
-        full_path = working_directory.split(File::SEPARATOR)
-        (full_path.length - 1).downto(0) do |i|
-          candidate_directory = File.join(full_path[0..i] + [".chef" ])
-          if File.exist?(candidate_directory) && File.directory?(candidate_directory)
-            @@chef_config_dir = candidate_directory
-            break
-          end
-        end
-      end
-      @@chef_config_dir
-    end
-
 
     public
 
@@ -298,7 +309,7 @@ class Chef
         exit 1
       end
 
-      # copy Mixlib::CLI over so that it cab be configured in knife.rb
+      # copy Mixlib::CLI over so that it can be configured in knife.rb
       # config file
       Chef::Config[:verbosity] = config[:verbosity]
     end
@@ -320,39 +331,6 @@ class Chef
         config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
       end
       config_file_settings
-    end
-
-    def self.config_fetcher(candidate_config)
-      Chef::ConfigFetcher.new(candidate_config, Chef::Config.config_file_jail)
-    end
-
-    def self.locate_config_file
-      candidate_configs = []
-
-      # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
-      if ENV['KNIFE_HOME']
-        candidate_configs << File.join(ENV['KNIFE_HOME'], 'knife.rb')
-      end
-      # Look for $PWD/knife.rb
-      if Dir.pwd
-        candidate_configs << File.join(Dir.pwd, 'knife.rb')
-      end
-      # Look for $UPWARD/.chef/knife.rb
-      if chef_config_dir
-        candidate_configs << File.join(chef_config_dir, 'knife.rb')
-      end
-      # Look for $HOME/.chef/knife.rb
-      if ENV['HOME']
-        candidate_configs << File.join(ENV['HOME'], '.chef', 'knife.rb')
-      end
-
-      candidate_configs.each do | candidate_config |
-        fetcher = config_fetcher(candidate_config)
-        if !fetcher.config_missing?
-          return candidate_config
-        end
-      end
-      return nil
     end
 
     # Apply Config in this order:
@@ -386,6 +364,8 @@ class Chef
         Chef::Config[:log_level] = :debug
       end
 
+      Chef::Config[:log_level] = :debug if ENV['KNIFE_DEBUG']
+
       Chef::Config[:node_name]         = config[:node_name]       if config[:node_name]
       Chef::Config[:client_key]        = config[:client_key]      if config[:client_key]
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
@@ -416,68 +396,13 @@ class Chef
     end
 
     def configure_chef
-      if !config[:config_file]
-        located_config_file = self.class.locate_config_file
-        config[:config_file] = located_config_file if located_config_file
-      end
-
-      # Don't try to load a knife.rb if it wasn't specified.
-      if config[:config_file]
-        Chef::Config.config_file = config[:config_file]
-        fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
-        if fetcher.config_missing?
-          ui.error("Specified config file #{config[:config_file]} does not exist#{Chef::Config.config_file_jail ? " or is not under config file jail #{Chef::Config.config_file_jail}" : ""}!")
-          exit 1
-        end
-        Chef::Log.debug("Using configuration from #{config[:config_file]}")
-        read_config(fetcher.read_config, config[:config_file])
-      else
-        # ...but do log a message if no config was found.
-        Chef::Config[:color] = config[:color]
-        ui.warn("No knife configuration file found")
-      end
+      config_loader = self.class.load_config(config[:config_file])
+      config[:config_file] = config_loader.config_location
 
       merge_configs
       apply_computed_config
-    end
-
-    def read_config(config_content, config_file_path)
-      Chef::Config.from_string(config_content, config_file_path)
-    rescue SyntaxError => e
-      ui.error "You have invalid ruby syntax in your config file #{config_file_path}"
-      ui.info(ui.color(e.message, :red))
-      if file_line = e.message[/#{Regexp.escape(config_file_path)}:[\d]+/]
-        line = file_line[/:([\d]+)$/, 1].to_i
-        highlight_config_error(config_file_path, line)
-      end
-      exit 1
-    rescue Exception => e
-      ui.error "You have an error in your config file #{config_file_path}"
-      ui.info "#{e.class.name}: #{e.message}"
-      filtered_trace = e.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-      filtered_trace.each {|line| ui.msg("  " + ui.color(line, :red))}
-      if !filtered_trace.empty?
-        line_nr = filtered_trace.first[/#{Regexp.escape(config_file_path)}:([\d]+)/, 1]
-        highlight_config_error(config_file_path, line_nr.to_i)
-      end
-
-      exit 1
-    end
-
-    def highlight_config_error(file, line)
-      config_file_lines = []
-      IO.readlines(file).each_with_index {|l, i| config_file_lines << "#{(i + 1).to_s.rjust(3)}: #{l.chomp}"}
-      if line == 1
-        lines = config_file_lines[0..3]
-        lines[0] = ui.color(lines[0], :red)
-      else
-        lines = config_file_lines[Range.new(line - 2, line)]
-        lines[1] = ui.color(lines[1], :red)
-      end
-      ui.msg ""
-      ui.msg ui.color("     # #{file}", :white)
-      lines.each {|l| ui.msg(l)}
-      ui.msg ""
+      # This has to be after apply_computed_config so that Mixlib::Log is configured
+      Chef::Log.info("Using configuration from #{config[:config_file]}") if config[:config_file]
     end
 
     def show_usage
@@ -504,6 +429,13 @@ class Chef
         raise # make sure exit passes through.
       when Net::HTTPServerException, Net::HTTPFatalError
         humanize_http_exception(e)
+      when OpenSSL::SSL::SSLError
+        ui.error "Could not establish a secure connection to the server."
+        ui.info "Use `knife ssl check` to troubleshoot your SSL configuration."
+        ui.info "If your Chef Server uses a self-signed certificate, you can use"
+        ui.info "`knife ssl fetch` to make knife trust the server's certificates."
+        ui.info ""
+        ui.info  "Original Exception: #{e.class.name}: #{e.message}"
       when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
         ui.error "Network Error: #{e.message}"
         ui.info "Check your knife configuration and network settings"

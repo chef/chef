@@ -18,11 +18,16 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::TimestampedDeploy do
+describe Chef::Resource::TimestampedDeploy, "initialize" do
 
-  it "defaults to the TimestampedDeploy provider" do
-    @resource = Chef::Resource::TimestampedDeploy.new("stuff")
-    @resource.provider.should == Chef::Provider::Deploy::Timestamped
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::TimestampedDeploy,
+    provider: Chef::Provider::Deploy::Timestamped,
+    name: :deploy,
+    action: :deploy,
+    os: 'linux',
+    platform_family: 'rhel',
+  )
 
 end
+

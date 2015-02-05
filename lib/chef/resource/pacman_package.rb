@@ -22,10 +22,11 @@ class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
 
+      provides :pacman_package, os: "linux"
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :pacman_package
-        @provider = Chef::Provider::Package::Pacman
       end
 
     end

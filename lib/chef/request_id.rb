@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'chef/monkey_patches/securerandom'
+require 'securerandom'
 require 'singleton'
 
 class Chef

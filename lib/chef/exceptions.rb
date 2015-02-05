@@ -45,6 +45,7 @@ class Chef
     class FileNotFound < RuntimeError; end
     class Package < RuntimeError; end
     class Service < RuntimeError; end
+    class Script < RuntimeError; end
     class Route < RuntimeError; end
     class SearchIndex < RuntimeError; end
     class Override < RuntimeError; end
@@ -83,6 +84,7 @@ class Chef
     class RequestedUIDUnavailable < RuntimeError; end
     class InvalidHomeDirectory < ArgumentError; end
     class DsclCommandFailed < RuntimeError; end
+    class PlistUtilCommandFailed < RuntimeError; end
     class UserIDNotFound < ArgumentError; end
     class GroupIDNotFound < ArgumentError; end
     class ConflictingMembersInGroup < ArgumentError; end
@@ -90,7 +92,11 @@ class Chef
     class ResourceNotFound < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
-    class NoSuchResourceType < NameError; end
+    class NoSuchResourceType < NameError
+      def initialize(short_name, node)
+        super "Cannot find a resource for #{short_name} on #{node[:platform]} version #{node[:platform_version]}"
+      end
+    end
 
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
@@ -117,6 +123,18 @@ class Chef
     class InvalidDataBagPath < ArgumentError; end
     class DuplicateDataBagItem < RuntimeError; end
 
+    class PowershellCmdletException < RuntimeError; end
+    class LCMParser < RuntimeError; end
+
+    class CannotDetermineHomebrewOwner < Package; end
+
+    # Can not create staging file during file deployment
+    class FileContentStagingError < RuntimeError
+      def initialize(errors)
+        super "Staging tempfile can not be created during file deployment.\n Errors: #{errors.join('\n')}!"
+      end
+    end
+
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
     class CookbookVersionConflict < ArgumentError ; end
@@ -132,6 +150,17 @@ class Chef
     # Version constraints are not allowed in chef-solo
     class IllegalVersionConstraint < NotImplementedError; end
 
+    class MetadataNotValid < StandardError; end
+    class MetadataNotFound < StandardError
+      attr_reader :install_path
+      attr_reader :cookbook_name
+      def initialize(install_path, cookbook_name)
+        @install_path = install_path
+        @cookbook_name = cookbook_name
+        super "No metadata.rb or metadata.json found for cookbook #{@cookbook_name} in #{@install_path}"
+      end
+    end
+
     # File operation attempted but no permissions to perform it
     class InsufficientPermissions < RuntimeError; end
 
@@ -144,7 +173,12 @@ class Chef
     # Node::Attribute computes the merged version of of attributes
     # and makes it read-only. Attempting to modify a read-only
     # attribute will cause this error.
-    class ImmutableAttributeModification < NoMethodError; end
+    class ImmutableAttributeModification < NoMethodError
+      def initialize
+        super "Node attributes are read-only when you do not specify which precedence level to set. " +
+          %Q(To set an attribute use code like `node.default["key"] = "value"')
+      end
+    end
 
     # Merged node attributes are invalidated when the component
     # attributes are updated. Attempting to read from a stale copy
@@ -175,6 +209,8 @@ class Chef
     class InvalidSymlink < RuntimeError; end
 
     class ChildConvergeError < RuntimeError; end
+
+    class NoProviderAvailable < RuntimeError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
@@ -343,6 +379,61 @@ class Chef
     class JSON
       class EncodeError < RuntimeError; end
       class ParseError < RuntimeError; end
+    end
+
+    class InvalidSearchQuery < ArgumentError; end
+
+    # Raised by Chef::ProviderResolver
+    class AmbiguousProviderResolution < RuntimeError
+      def initialize(resource, classes)
+        super "Found more than one provider for #{resource.resource_name} resource: #{classes}"
+      end
+    end
+
+    class AuditControlGroupDuplicate < RuntimeError
+      def initialize(name)
+        super "Audit control group with name '#{name}' has already been defined"
+      end
+    end
+    class AuditNameMissing < RuntimeError; end
+    class NoAuditsProvided < RuntimeError
+      def initialize
+        super "You must provide a block with audits"
+      end
+    end
+    class AuditsFailed < RuntimeError
+      def initialize(num_failed, num_total)
+        super "Audit phase found failures - #{num_failed}/#{num_total} audits failed"
+      end
+    end
+
+    # If a converge or audit fails, we want to wrap the output from those errors into 1 error so we can
+    # see both issues in the output.  It is possible that nil will be provided.  You must call `fill_backtrace`
+    # to correctly populate the backtrace with the wrapped backtraces.
+    class RunFailedWrappingError < RuntimeError
+      attr_reader :wrapped_errors
+      def initialize(*errors)
+        errors = errors.select {|e| !e.nil?}
+        output = "Found #{errors.size} errors, they are stored in the backtrace"
+        @wrapped_errors = errors
+        super output
+      end
+
+      def fill_backtrace
+        backtrace = []
+        wrapped_errors.each_with_index do |e,i|
+          backtrace << "#{i+1}) #{e.class} -  #{e.message}"
+          backtrace += e.backtrace if e.backtrace
+          backtrace << ""
+        end
+        set_backtrace(backtrace)
+      end
+    end
+
+    class PIDFileLockfileMatch < RuntimeError
+      def initialize
+        super "PID file and lockfile are not permitted to match. Specify a different location with --pid or --lockfile"
+      end
     end
   end
 end

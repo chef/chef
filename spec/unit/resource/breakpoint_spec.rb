@@ -17,27 +17,31 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::Breakpoint do
+
+  static_provider_resolution(
+    resource: Chef::Resource::Breakpoint,
+    provider: Chef::Provider::Breakpoint,
+    name: :breakpoint,
+    action: :break,
+  )
 
   before do
     @breakpoint = Chef::Resource::Breakpoint.new
   end
 
   it "allows the action :break" do
-    @breakpoint.allowed_actions.should include(:break)
+    expect(@breakpoint.allowed_actions).to include(:break)
   end
 
   it "defaults to the break action" do
-    @breakpoint.action.should == "break"
+    expect(@breakpoint.action).to eq("break")
   end
 
   it "names itself after the line number of the file where it's created" do
-    @breakpoint.name.should match(/breakpoint_spec\.rb\:[\d]{2}\:in \`new\'$/)
-  end
-
-  it "uses the breakpoint provider" do
-    @breakpoint.provider.should == Chef::Provider::Breakpoint
+    expect(@breakpoint.name).to match(/breakpoint_spec\.rb\:[\d]{2}\:in \`new\'$/)
   end
 
 end

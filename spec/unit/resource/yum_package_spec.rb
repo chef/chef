@@ -17,24 +17,19 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::YumPackage, "initialize" do
 
-  before(:each) do
-    @resource = Chef::Resource::YumPackage.new("foo")
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::YumPackage,
+    provider: Chef::Provider::Package::Yum,
+    name: :yum_package,
+    action: :install,
+    os: 'linux',
+    platform_family: 'rhel',
+  )
 
-  it "should return a Chef::Resource::YumPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::YumPackage)
-  end
-
-  it "should set the resource_name to :yum_package" do
-    @resource.resource_name.should eql(:yum_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Yum" do
-    @resource.provider.should eql(Chef::Provider::Package::Yum)
-  end
 end
 
 describe Chef::Resource::YumPackage, "arch" do
@@ -44,7 +39,7 @@ describe Chef::Resource::YumPackage, "arch" do
 
   it "should set the arch variable to whatever is passed in" do
     @resource.arch("i386")
-    @resource.arch.should eql("i386")
+    expect(@resource.arch).to eql("i386")
   end
 end
 
@@ -55,20 +50,20 @@ describe Chef::Resource::YumPackage, "flush_cache" do
 
   it "should default the flush timing to false" do
     flush_hash = { :before => false, :after => false }
-    @resource.flush_cache.should == flush_hash
+    expect(@resource.flush_cache).to eq(flush_hash)
   end
 
   it "should allow you to set the flush timing with an array" do
     flush_array = [ :before, :after ]
     flush_hash = { :before => true, :after => true }
     @resource.flush_cache(flush_array)
-    @resource.flush_cache.should == flush_hash
+    expect(@resource.flush_cache).to eq(flush_hash)
   end
 
   it "should allow you to set the flush timing with a hash" do
     flush_hash = { :before => true, :after => true }
     @resource.flush_cache(flush_hash)
-    @resource.flush_cache.should == flush_hash
+    expect(@resource.flush_cache).to eq(flush_hash)
   end
 end
 
@@ -78,8 +73,8 @@ describe Chef::Resource::YumPackage, "allow_downgrade" do
   end
 
   it "should allow you to specify whether allow_downgrade is true or false" do
-    lambda { @resource.allow_downgrade true }.should_not raise_error
-    lambda { @resource.allow_downgrade false }.should_not raise_error
-    lambda { @resource.allow_downgrade "monkey" }.should raise_error(ArgumentError)
+    expect { @resource.allow_downgrade true }.not_to raise_error
+    expect { @resource.allow_downgrade false }.not_to raise_error
+    expect { @resource.allow_downgrade "monkey" }.to raise_error(ArgumentError)
   end
 end

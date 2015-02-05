@@ -29,75 +29,75 @@ describe Chef::Environment do
 
   describe "initialize" do
     it "should be a Chef::Environment" do
-      @environment.should be_a_kind_of(Chef::Environment)
+      expect(@environment).to be_a_kind_of(Chef::Environment)
     end
   end
 
   describe "name" do
     it "should let you set the name to a string" do
-      @environment.name("production").should == "production"
+      expect(@environment.name("production")).to eq("production")
     end
 
     it "should return the current name" do
       @environment.name("production")
-      @environment.name.should == "production"
+      expect(@environment.name).to eq("production")
     end
 
     it "should not accept spaces" do
-      lambda { @environment.name("production environment") }.should raise_error(ArgumentError)
+      expect { @environment.name("production environment") }.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but strings" do
-      lambda { @environment.name(Array.new) }.should raise_error(ArgumentError)
-      lambda { @environment.name(Hash.new) }.should raise_error(ArgumentError)
-      lambda { @environment.name(2) }.should raise_error(ArgumentError)
+      expect { @environment.name(Array.new) }.to raise_error(ArgumentError)
+      expect { @environment.name(Hash.new) }.to raise_error(ArgumentError)
+      expect { @environment.name(2) }.to raise_error(ArgumentError)
     end
   end
 
   describe "description" do
     it "should let you set the description to a string" do
-      @environment.description("this is my test environment").should == "this is my test environment"
+      expect(@environment.description("this is my test environment")).to eq("this is my test environment")
     end
 
     it "should return the correct description" do
       @environment.description("I like running tests")
-      @environment.description.should == "I like running tests"
+      expect(@environment.description).to eq("I like running tests")
     end
 
     it "should not accept anything but strings" do
-      lambda { @environment.description(Array.new) }.should raise_error(ArgumentError)
-      lambda { @environment.description(Hash.new) }.should raise_error(ArgumentError)
-      lambda { @environment.description(42) }.should raise_error(ArgumentError)
+      expect { @environment.description(Array.new) }.to raise_error(ArgumentError)
+      expect { @environment.description(Hash.new) }.to raise_error(ArgumentError)
+      expect { @environment.description(42) }.to raise_error(ArgumentError)
     end
   end
 
   describe "default attributes" do
     it "should let you set the attributes hash explicitly" do
-      @environment.default_attributes({ :one => 'two' }).should == { :one => 'two' }
+      expect(@environment.default_attributes({ :one => 'two' })).to eq({ :one => 'two' })
     end
 
     it "should let you return the attributes hash" do
       @environment.default_attributes({ :one => 'two' })
-      @environment.default_attributes.should == { :one => 'two' }
+      expect(@environment.default_attributes).to eq({ :one => 'two' })
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
-      lambda { @environment.default_attributes(Array.new) }.should raise_error(ArgumentError)
+      expect { @environment.default_attributes(Array.new) }.to raise_error(ArgumentError)
     end
   end
 
   describe "override attributes" do
     it "should let you set the attributes hash explicitly" do
-      @environment.override_attributes({ :one => 'two' }).should == { :one => 'two' }
+      expect(@environment.override_attributes({ :one => 'two' })).to eq({ :one => 'two' })
     end
 
     it "should let you return the attributes hash" do
       @environment.override_attributes({ :one => 'two' })
-      @environment.override_attributes.should == { :one => 'two' }
+      expect(@environment.override_attributes).to eq({ :one => 'two' })
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
-      lambda { @environment.override_attributes(Array.new) }.should raise_error(ArgumentError)
+      expect { @environment.override_attributes(Array.new) }.to raise_error(ArgumentError)
     end
   end
 
@@ -111,22 +111,22 @@ describe Chef::Environment do
     end
 
     it "should let you set the cookbook versions in a hash" do
-      @environment.cookbook_versions(@cookbook_versions).should == @cookbook_versions
+      expect(@environment.cookbook_versions(@cookbook_versions)).to eq(@cookbook_versions)
     end
 
     it "should return the cookbook versions" do
       @environment.cookbook_versions(@cookbook_versions)
-      @environment.cookbook_versions.should == @cookbook_versions
+      expect(@environment.cookbook_versions).to eq(@cookbook_versions)
     end
 
     it "should not accept anything but a hash" do
-      lambda { @environment.cookbook_versions("I am a string!") }.should raise_error(ArgumentError)
-      lambda { @environment.cookbook_versions(Array.new) }.should raise_error(ArgumentError)
-      lambda { @environment.cookbook_versions(42) }.should raise_error(ArgumentError)
+      expect { @environment.cookbook_versions("I am a string!") }.to raise_error(ArgumentError)
+      expect { @environment.cookbook_versions(Array.new) }.to raise_error(ArgumentError)
+      expect { @environment.cookbook_versions(42) }.to raise_error(ArgumentError)
     end
 
     it "should validate the hash" do
-      Chef::Environment.should_receive(:validate_cookbook_versions).with(@cookbook_versions).and_return true
+      expect(Chef::Environment).to receive(:validate_cookbook_versions).with(@cookbook_versions).and_return true
       @environment.cookbook_versions(@cookbook_versions)
     end
   end
@@ -134,11 +134,11 @@ describe Chef::Environment do
   describe "cookbook" do
     it "should set the version of the cookbook in the cookbook_versions hash" do
       @environment.cookbook("apt", "~> 1.2.3")
-      @environment.cookbook_versions["apt"].should == "~> 1.2.3"
+      expect(@environment.cookbook_versions["apt"]).to eq("~> 1.2.3")
     end
 
     it "should validate the cookbook version it is passed" do
-      Chef::Environment.should_receive(:validate_cookbook_version).with(">= 1.2.3").and_return true
+      expect(Chef::Environment).to receive(:validate_cookbook_version).with(">= 1.2.3").and_return true
       @environment.cookbook("apt", ">= 1.2.3")
     end
   end
@@ -157,9 +157,9 @@ describe Chef::Environment do
 
     it "should update everything but name" do
       @environment.update_from!(@example)
-      @environment.name.should == "prod"
-      @environment.description.should == @example.description
-      @environment.cookbook_versions.should == @example.cookbook_versions
+      expect(@environment.name).to eq("prod")
+      expect(@environment.description).to eq(@example.description)
+      expect(@environment.cookbook_versions).to eq(@example.cookbook_versions)
     end
   end
 
@@ -173,16 +173,16 @@ describe Chef::Environment do
 
     %w{name description cookbook_versions}.each do |t|
       it "should include '#{t}'" do
-        @hash[t].should == @environment.send(t.to_sym)
+        expect(@hash[t]).to eq(@environment.send(t.to_sym))
       end
     end
 
     it "should include 'json_class'" do
-      @hash["json_class"].should == "Chef::Environment"
+      expect(@hash["json_class"]).to eq("Chef::Environment")
     end
 
     it "should include 'chef_type'" do
-      @hash["chef_type"].should == "environment"
+      expect(@hash["chef_type"]).to eq("environment")
     end
   end
 
@@ -196,16 +196,20 @@ describe Chef::Environment do
 
     %w{name description cookbook_versions}.each do |t|
       it "should include '#{t}'" do
-        @json.should =~ /"#{t}":#{Regexp.escape(@environment.send(t.to_sym).to_json)}/
+        expect(@json).to match(/"#{t}":#{Regexp.escape(Chef::JSONCompat.to_json(@environment.send(t.to_sym)))}/)
       end
     end
 
     it "should include 'json_class'" do
-      @json.should =~ /"json_class":"Chef::Environment"/
+      expect(@json).to match(/"json_class":"Chef::Environment"/)
     end
 
     it "should include 'chef_type'" do
-      @json.should =~ /"chef_type":"environment"/
+      expect(@json).to match(/"chef_type":"environment"/)
+    end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:jsonable) { @environment }
     end
   end
 
@@ -222,16 +226,16 @@ describe Chef::Environment do
         "json_class" => "Chef::Environment",
         "chef_type" => "environment"
       }
-      @environment = Chef::JSONCompat.from_json(@data.to_json)
+      @environment = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@data))
     end
 
     it "should return a Chef::Environment" do
-      @environment.should be_a_kind_of(Chef::Environment)
+      expect(@environment).to be_a_kind_of(Chef::Environment)
     end
 
     %w{name description cookbook_versions}.each do |t|
       it "should match '#{t}'" do
-        @environment.send(t.to_sym).should == @data[t]
+        expect(@environment.send(t.to_sym)).to eq(@data[t])
       end
     end
   end
@@ -247,39 +251,39 @@ describe Chef::Environment do
 
     it "should validate the version string of each cookbook" do
       @cookbook_versions.each do |cookbook, version|
-        Chef::Environment.should_receive(:validate_cookbook_version).with(version).and_return true
+        expect(Chef::Environment).to receive(:validate_cookbook_version).with(version).and_return true
       end
       Chef::Environment.validate_cookbook_versions(@cookbook_versions)
     end
 
     it "should return false if anything other than a hash is passed as the argument" do
-      Chef::Environment.validate_cookbook_versions(Array.new).should == false
-      Chef::Environment.validate_cookbook_versions(42).should == false
-      Chef::Environment.validate_cookbook_versions(Chef::CookbookVersion.new("meta")).should == false
-      Chef::Environment.validate_cookbook_versions("cookbook => 1.2.3").should == false
+      expect(Chef::Environment.validate_cookbook_versions(Array.new)).to eq(false)
+      expect(Chef::Environment.validate_cookbook_versions(42)).to eq(false)
+      expect(Chef::Environment.validate_cookbook_versions(Chef::CookbookVersion.new("meta"))).to eq(false)
+      expect(Chef::Environment.validate_cookbook_versions("cookbook => 1.2.3")).to eq(false)
     end
   end
 
   describe "self.validate_cookbook_version" do
     it "should validate correct version numbers" do
-      Chef::Environment.validate_cookbook_version("= 1.2.3").should == true
-      Chef::Environment.validate_cookbook_version("=1.2.3").should == true
-      Chef::Environment.validate_cookbook_version(">= 0.0.3").should == true
-      Chef::Environment.validate_cookbook_version(">=0.0.3").should == true
+      expect(Chef::Environment.validate_cookbook_version("= 1.2.3")).to eq(true)
+      expect(Chef::Environment.validate_cookbook_version("=1.2.3")).to eq(true)
+      expect(Chef::Environment.validate_cookbook_version(">= 0.0.3")).to eq(true)
+      expect(Chef::Environment.validate_cookbook_version(">=0.0.3")).to eq(true)
       # A lone version is allowed, interpreted as implicit '='
-      Chef::Environment.validate_cookbook_version("1.2.3").should == true
+      expect(Chef::Environment.validate_cookbook_version("1.2.3")).to eq(true)
     end
 
     it "should return false when an invalid version is given" do
-      Chef::Environment.validate_cookbook_version(Chef::CookbookVersion.new("meta")).should == false
-      Chef::Environment.validate_cookbook_version("= 1.2.3a").should == false
-      Chef::Environment.validate_cookbook_version("=1.2.3a").should == false
-      Chef::Environment.validate_cookbook_version("= 1").should == false
-      Chef::Environment.validate_cookbook_version("=1").should == false
-      Chef::Environment.validate_cookbook_version("= a").should == false
-      Chef::Environment.validate_cookbook_version("=a").should == false
-      Chef::Environment.validate_cookbook_version("= 1.2.3.4").should == false
-      Chef::Environment.validate_cookbook_version("=1.2.3.4").should == false
+      expect(Chef::Environment.validate_cookbook_version(Chef::CookbookVersion.new("meta"))).to eq(false)
+      expect(Chef::Environment.validate_cookbook_version("= 1.2.3a")).to eq(false)
+      expect(Chef::Environment.validate_cookbook_version("=1.2.3a")).to eq(false)
+      expect(Chef::Environment.validate_cookbook_version("= 1")).to eq(false)
+      expect(Chef::Environment.validate_cookbook_version("=1")).to eq(false)
+      expect(Chef::Environment.validate_cookbook_version("= a")).to eq(false)
+      expect(Chef::Environment.validate_cookbook_version("=a")).to eq(false)
+      expect(Chef::Environment.validate_cookbook_version("= 1.2.3.4")).to eq(false)
+      expect(Chef::Environment.validate_cookbook_version("=1.2.3.4")).to eq(false)
     end
 
     describe "in solo mode" do
@@ -292,9 +296,9 @@ describe Chef::Environment do
       end
 
       it "should raise and exception" do
-        lambda {
+        expect {
           Chef::Environment.validate_cookbook_version("= 1.2.3.4")
-        }.should raise_error Chef::Exceptions::IllegalVersionConstraint,
+        }.to raise_error Chef::Exceptions::IllegalVersionConstraint,
                              "Environment cookbook version constraints not allowed in chef-solo"
       end
     end
@@ -308,17 +312,17 @@ describe Chef::Environment do
 
     it "updates the name from parameters[:name]" do
       @environment.update_from_params(:name => "kurrupt")
-      @environment.name.should == "kurrupt"
+      expect(@environment.name).to eq("kurrupt")
     end
 
     it "validates the name given in the params" do
-      @environment.update_from_params(:name => "@$%^&*()").should be_false
-      @environment.invalid_fields[:name].should == %q|Option name's value @$%^&*() does not match regular expression /^[\-[:alnum:]_]+$/|
+      expect(@environment.update_from_params(:name => "@$%^&*()")).to be_falsey
+      expect(@environment.invalid_fields[:name]).to eq(%q|Option name's value @$%^&*() does not match regular expression /^[\-[:alnum:]_]+$/|)
     end
 
     it "updates the description from parameters[:description]" do
       @environment.update_from_params(:description => "wow, writing your own object mapper is kinda painful")
-      @environment.description.should == "wow, writing your own object mapper is kinda painful"
+      expect(@environment.description).to eq("wow, writing your own object mapper is kinda painful")
     end
 
     it "updates cookbook version constraints from the hash in parameters[:cookbook_version_constraints]" do
@@ -327,34 +331,34 @@ describe Chef::Environment do
       # the way merb does params
       params = {:name=>"superbowl", :cookbook_version => {"0" => "apache2 ~> 1.0.0", "1" => "nginx < 2.0.0"}}
       @environment.update_from_params(params)
-      @environment.cookbook_versions.should == {"apache2" => "~> 1.0.0", "nginx" => "< 2.0.0"}
+      expect(@environment.cookbook_versions).to eq({"apache2" => "~> 1.0.0", "nginx" => "< 2.0.0"})
     end
 
     it "validates the cookbook constraints" do
       params = {:cookbook_version => {"0" => "apache2 >>> 1.0.0"}}
-      @environment.update_from_params(params).should be_false
+      expect(@environment.update_from_params(params)).to be_falsey
       err_msg = @environment.invalid_fields[:cookbook_version]["0"]
-      err_msg.should == "apache2 >>> 1.0.0 is not a valid cookbook constraint"
+      expect(err_msg).to eq("apache2 >>> 1.0.0 is not a valid cookbook constraint")
     end
 
     it "is not valid if the name is not present" do
-      @environment.validate_required_attrs_present.should be_false
-      @environment.invalid_fields[:name].should == "name cannot be empty"
+      expect(@environment.validate_required_attrs_present).to be_falsey
+      expect(@environment.invalid_fields[:name]).to eq("name cannot be empty")
     end
 
     it "is not valid after updating from params if the name is not present" do
-      @environment.update_from_params({}).should be_false
-      @environment.invalid_fields[:name].should == "name cannot be empty"
+      expect(@environment.update_from_params({})).to be_falsey
+      expect(@environment.invalid_fields[:name]).to eq("name cannot be empty")
     end
 
     it "updates default attributes from a JSON string in params[:attributes]" do
       @environment.update_from_params(:name => "fuuu", :default_attributes => %q|{"fuuu":"RAGE"}|)
-      @environment.default_attributes.should == {"fuuu" => "RAGE"}
+      expect(@environment.default_attributes).to eq({"fuuu" => "RAGE"})
     end
 
     it "updates override attributes from a JSON string in params[:attributes]" do
       @environment.update_from_params(:name => "fuuu", :override_attributes => %q|{"foo":"override"}|)
-      @environment.override_attributes.should == {"foo" => "override"}
+      expect(@environment.override_attributes).to eq({"foo" => "override"})
     end
 
   end
@@ -362,25 +366,25 @@ describe Chef::Environment do
   describe "api model" do
     before(:each) do
       @rest = double("Chef::REST")
-      Chef::REST.stub(:new).and_return(@rest)
+      allow(Chef::REST).to receive(:new).and_return(@rest)
       @query = double("Chef::Search::Query")
-      Chef::Search::Query.stub(:new).and_return(@query)
+      allow(Chef::Search::Query).to receive(:new).and_return(@query)
     end
 
     describe "list" do
       describe "inflated" do
         it "should return a hash of environment names and objects" do
           e1 = double("Chef::Environment", :name => "one")
-          @query.should_receive(:search).with(:environment).and_yield(e1)
+          expect(@query).to receive(:search).with(:environment).and_yield(e1)
           r = Chef::Environment.list(true)
-          r["one"].should == e1
+          expect(r["one"]).to eq(e1)
         end
       end
 
       it "should return a hash of environment names and urls" do
-        @rest.should_receive(:get_rest).and_return({ "one" => "http://foo" })
+        expect(@rest).to receive(:get_rest).and_return({ "one" => "http://foo" })
         r = Chef::Environment.list
-        r["one"].should == "http://foo"
+        expect(r["one"]).to eq("http://foo")
       end
     end
   end
@@ -397,18 +401,18 @@ describe Chef::Environment do
       end
 
       it "should get the environment from the environment_path" do
-        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
-        File.should_receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
+        expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
+        expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
         role_dsl="name \"foo\"\ndescription \"desc\"\n"
-        IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(role_dsl)
+        expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(role_dsl)
         Chef::Environment.load('foo')
       end
 
       it "should return a Chef::Environment object from JSON" do
-        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(true)
+        expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(true)
         environment_hash = {
           "name" => "foo",
           "default_attributes" => {
@@ -420,45 +424,45 @@ describe Chef::Environment do
           "description" => "desc",
           "chef_type" => "environment"
         }
-        IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(Chef::JSONCompat.to_json(environment_hash))
+        expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(Chef::JSONCompat.to_json(environment_hash))
         environment = Chef::Environment.load('foo')
 
-        environment.should be_a_kind_of(Chef::Environment)
-        environment.name.should == environment_hash['name']
-        environment.description.should == environment_hash['description']
-        environment.default_attributes.should == environment_hash['default_attributes']
+        expect(environment).to be_a_kind_of(Chef::Environment)
+        expect(environment.name).to eq(environment_hash['name'])
+        expect(environment.description).to eq(environment_hash['description'])
+        expect(environment.default_attributes).to eq(environment_hash['default_attributes'])
       end
 
       it "should return a Chef::Environment object from Ruby DSL" do
-        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
-        File.should_receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
+        expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
+        expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
         role_dsl="name \"foo\"\ndescription \"desc\"\n"
-        IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(role_dsl)
+        expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(role_dsl)
         environment = Chef::Environment.load('foo')
 
-        environment.should be_a_kind_of(Chef::Environment)
-        environment.name.should == 'foo'
-        environment.description.should == 'desc'
+        expect(environment).to be_a_kind_of(Chef::Environment)
+        expect(environment.name).to eq('foo')
+        expect(environment.description).to eq('desc')
       end
 
       it 'should raise an error if the configured environment_path is invalid' do
-        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(false)
+        expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(false)
 
-        lambda {
+        expect {
           Chef::Environment.load('foo')
-        }.should raise_error Chef::Exceptions::InvalidEnvironmentPath, "Environment path '/var/chef/environments' is invalid"
+        }.to raise_error Chef::Exceptions::InvalidEnvironmentPath, "Environment path '/var/chef/environments' is invalid"
       end
 
       it 'should raise an error if the file does not exist' do
-        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(false)
+        expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(false)
 
-        lambda {
+        expect {
           Chef::Environment.load('foo')
-        }.should raise_error Chef::Exceptions::EnvironmentNotFound, "Environment 'foo' could not be loaded from disk"
+        }.to raise_error Chef::Exceptions::EnvironmentNotFound, "Environment 'foo' could not be loaded from disk"
       end
     end
   end

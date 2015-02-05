@@ -27,6 +27,8 @@ class Chef
 
         include Chef::Mixin::GetSourceFromPackage
 
+        provides :solaris_package, os: "solaris2"
+
         # def initialize(*args)
         #   super
         #   @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -112,9 +114,7 @@ class Chef
             else
               command = "pkgadd -n -d #{@new_resource.source} all"
             end
-            run_command_with_systems_locale(
-                    :command => command
-                  )
+            shell_out!(command)
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           else
             if ::File.directory?(@new_resource.source) # CHEF-4469
@@ -122,23 +122,17 @@ class Chef
             else
               command = "pkgadd -n#{expand_options(@new_resource.options)} -d #{@new_resource.source} all"
             end
-            run_command_with_systems_locale(
-              :command => command
-            )
+            shell_out!(command)
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           end
         end
 
         def remove_package(name, version)
           if @new_resource.options.nil?
-            run_command_with_systems_locale(
-                    :command => "pkgrm -n #{name}"
-                  )
+            shell_out!( "pkgrm -n #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           else
-            run_command_with_systems_locale(
-              :command => "pkgrm -n#{expand_options(@new_resource.options)} #{name}"
-            )
+            shell_out!( "pkgrm -n#{expand_options(@new_resource.options)} #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           end
         end

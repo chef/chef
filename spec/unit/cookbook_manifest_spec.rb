@@ -210,8 +210,8 @@ describe "Chef::CookbookVersion manifest" do
     node.automatic_attrs[:fqdn] = "examplehost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
-    manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum-host"
+    expect(manifest_record).not_to be_nil
+    expect(manifest_record[:checksum]).to eq("csum-host")
   end
 
   it "should return a manifest record based on priority preference: platform & full version" do
@@ -221,8 +221,8 @@ describe "Chef::CookbookVersion manifest" do
     node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
-    manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum-platver-full"
+    expect(manifest_record).not_to be_nil
+    expect(manifest_record[:checksum]).to eq("csum-platver-full")
   end
 
   it "should return a manifest record based on priority preference: platform & partial version" do
@@ -232,8 +232,8 @@ describe "Chef::CookbookVersion manifest" do
     node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
-    manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum-platver-partial"
+    expect(manifest_record).not_to be_nil
+    expect(manifest_record[:checksum]).to eq("csum-platver-partial")
   end
 
   it "should return a manifest record based on priority preference: platform only" do
@@ -243,8 +243,8 @@ describe "Chef::CookbookVersion manifest" do
     node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
-    manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum-plat"
+    expect(manifest_record).not_to be_nil
+    expect(manifest_record[:checksum]).to eq("csum-plat")
   end
 
   it "should return a manifest record based on priority preference: default" do
@@ -254,8 +254,8 @@ describe "Chef::CookbookVersion manifest" do
     node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
-    manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum-default"
+    expect(manifest_record).not_to be_nil
+    expect(manifest_record[:checksum]).to eq("csum-default")
   end
 
   it "should return a manifest record based on priority preference: platform & full version - platform_version variant 1" do
@@ -265,8 +265,8 @@ describe "Chef::CookbookVersion manifest" do
     node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
-    manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum2-platver-full"
+    expect(manifest_record).not_to be_nil
+    expect(manifest_record[:checksum]).to eq("csum2-platver-full")
   end
 
   it "should return a manifest record based on priority preference: platform & partial version - platform_version variant 1" do
@@ -276,8 +276,8 @@ describe "Chef::CookbookVersion manifest" do
     node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
-    manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum2-platver-partial"
+    expect(manifest_record).not_to be_nil
+    expect(manifest_record[:checksum]).to eq("csum2-platver-partial")
   end
 
   it "should return a manifest record based on priority preference: platform & full version - platform_version variant 2" do
@@ -287,8 +287,8 @@ describe "Chef::CookbookVersion manifest" do
     node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
-    manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum3-platver-full"
+    expect(manifest_record).not_to be_nil
+    expect(manifest_record[:checksum]).to eq("csum3-platver-full")
   end
 
   it "should return a manifest record based on priority preference: platform & full version - platform_version variant 3" do
@@ -298,8 +298,8 @@ describe "Chef::CookbookVersion manifest" do
     node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
-    manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum4-platver-full"
+    expect(manifest_record).not_to be_nil
+    expect(manifest_record[:checksum]).to eq("csum4-platver-full")
   end
 
   describe "when fetching the contents of a directory by file specificity" do
@@ -311,11 +311,11 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "examplehost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
-      manifest_records.should_not be_nil
-      manifest_records.size.should == 2
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum-host-1", "csum-host-2"]
+      expect(checksums.sort).to eq(["csum-host-1", "csum-host-2"])
     end
 
     it "should return a directory of manifest records based on priority preference: platform & full version" do
@@ -325,11 +325,11 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
-      manifest_records.should_not be_nil
-      manifest_records.size.should == 2
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum-platver-full-1", "csum-platver-full-2"]
+      expect(checksums.sort).to eq(["csum-platver-full-1", "csum-platver-full-2"])
     end
 
     it "should return a directory of manifest records based on priority preference: platform & partial version" do
@@ -339,11 +339,11 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
-      manifest_records.should_not be_nil
-      manifest_records.size.should == 2
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum-platver-partial-1", "csum-platver-partial-2"]
+      expect(checksums.sort).to eq(["csum-platver-partial-1", "csum-platver-partial-2"])
     end
 
     it "should return a directory of manifest records based on priority preference: platform only" do
@@ -353,11 +353,11 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
-      manifest_records.should_not be_nil
-      manifest_records.size.should == 2
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum-plat-1", "csum-plat-2"]
+      expect(checksums.sort).to eq(["csum-plat-1", "csum-plat-2"])
     end
 
     it "should return a directory of manifest records based on priority preference: default" do
@@ -367,11 +367,11 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
-      manifest_records.should_not be_nil
-      manifest_records.size.should == 2
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum-default-1", "csum-default-2"]
+      expect(checksums.sort).to eq(["csum-default-1", "csum-default-2"])
     end
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 1" do
@@ -381,11 +381,11 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
-      manifest_records.should_not be_nil
-      manifest_records.size.should == 2
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum2-platver-full-1", "csum2-platver-full-2"]
+      expect(checksums.sort).to eq(["csum2-platver-full-1", "csum2-platver-full-2"])
     end
 
     it "should return a manifest record based on priority preference: platform & partial version - platform_version variant 1" do
@@ -395,11 +395,11 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
-      manifest_records.should_not be_nil
-      manifest_records.size.should == 2
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum2-platver-partial-1", "csum2-platver-partial-2"]
+      expect(checksums.sort).to eq(["csum2-platver-partial-1", "csum2-platver-partial-2"])
     end
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 2" do
@@ -409,11 +409,11 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
-      manifest_records.should_not be_nil
-      manifest_records.size.should == 2
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum3-platver-full-1", "csum3-platver-full-2"]
+      expect(checksums.sort).to eq(["csum3-platver-full-1", "csum3-platver-full-2"])
     end
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 3" do
@@ -423,11 +423,11 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
-      manifest_records.should_not be_nil
-      manifest_records.size.should == 2
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum4-platver-full-1", "csum4-platver-full-2"]
+      expect(checksums.sort).to eq(["csum4-platver-full-1", "csum4-platver-full-2"])
     end
   end
 
@@ -441,10 +441,10 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "examplehost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
-      filenames.should_not be_nil
-      filenames.size.should == 2
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(2)
 
-      filenames.sort.should == ['anotherfile1.rb.host', 'anotherfile2.rb.host']
+      expect(filenames.sort).to eq(['anotherfile1.rb.host', 'anotherfile2.rb.host'])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version" do
@@ -454,10 +454,10 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
-      filenames.should_not be_nil
-      filenames.size.should == 2
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(2)
 
-      filenames.sort.should == ['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version']
+      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
     end
 
     it "should return a list of relative paths based on priority preference: platform & partial version" do
@@ -467,10 +467,10 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
-      filenames.should_not be_nil
-      filenames.size.should == 2
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(2)
 
-      filenames.sort.should == ['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version']
+      expect(filenames.sort).to eq(['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version'])
     end
 
     it "should return a list of relative paths based on priority preference: platform only" do
@@ -480,10 +480,10 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
-      filenames.should_not be_nil
-      filenames.size.should == 2
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(2)
 
-      filenames.sort.should == ['anotherfile1.rb.platform', 'anotherfile2.rb.platform']
+      expect(filenames.sort).to eq(['anotherfile1.rb.platform', 'anotherfile2.rb.platform'])
     end
 
     it "should return a list of relative paths based on priority preference: default" do
@@ -493,10 +493,10 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
-      filenames.should_not be_nil
-      filenames.size.should == 2
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(2)
 
-      filenames.sort.should == ['anotherfile1.rb.default', 'anotherfile2.rb.default']
+      expect(filenames.sort).to eq(['anotherfile1.rb.default', 'anotherfile2.rb.default'])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 1" do
@@ -506,10 +506,10 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
-      filenames.should_not be_nil
-      filenames.size.should == 2
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(2)
 
-      filenames.sort.should == ['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version']
+      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
     end
 
     it "should return a list of relative paths based on priority preference: platform & partial version - platform_version variant 1" do
@@ -519,10 +519,10 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
-      filenames.should_not be_nil
-      filenames.size.should == 2
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(2)
 
-      filenames.sort.should == ['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version']
+      expect(filenames.sort).to eq(['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version'])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 2" do
@@ -532,10 +532,10 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
-      filenames.should_not be_nil
-      filenames.size.should == 2
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(2)
 
-      filenames.sort.should == ['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version']
+      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 3" do
@@ -545,10 +545,10 @@ describe "Chef::CookbookVersion manifest" do
       node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
-      filenames.should_not be_nil
-      filenames.size.should == 2
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(2)
 
-      filenames.sort.should == ['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version']
+      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
     end
   end
 end

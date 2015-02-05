@@ -17,6 +17,7 @@
 #
 
 require 'chef/util/windows'
+require 'chef/exceptions'
 
 #wrapper around a subset of the NetUser* APIs.
 #nothing Chef specific, but not complete enough to be its own gem, so util for now.
@@ -137,7 +138,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     ptr  = 0.chr * PTR_SIZE
     rc = NetUserGetInfo.call(nil, @name, 3, ptr)
 
-    if rc != NERR_Success
+    if rc == NERR_UserNotFound
+      raise Chef::Exceptions::UserIDNotFound, get_last_error(rc)
+    elsif rc != NERR_Success
       raise ArgumentError, get_last_error(rc)
     end
 

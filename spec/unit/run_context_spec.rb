@@ -21,26 +21,36 @@
 require 'spec_helper'
 require 'support/lib/library_load_order'
 
-Chef::Log.level = :debug
-
 describe Chef::RunContext do
-  before(:each) do
-    @chef_repo_path = File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks"))
-    cl = Chef::CookbookLoader.new(@chef_repo_path)
+  let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")) }
+  let(:cookbook_collection) {
+    cl = Chef::CookbookLoader.new(chef_repo_path)
     cl.load_cookbooks
-    @cookbook_collection = Chef::CookbookCollection.new(cl)
-    @node = Chef::Node.new
-    @node.run_list << "test" << "test::one" << "test::two"
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
+    Chef::CookbookCollection.new(cl)
+  }
+  let(:node) {
+    node = Chef::Node.new
+    node.run_list << "test" << "test::one" << "test::two"
+    node
+  }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
+
+  before(:each) do
+    @original_log_level = Chef::Log.level
+    Chef::Log.level = :debug
+  end
+
+  after(:each) do
+    Chef::Log.level = @original_log_level
   end
 
   it "has a cookbook collection" do
-    @run_context.cookbook_collection.should == @cookbook_collection
+    expect(run_context.cookbook_collection).to eq(cookbook_collection)
   end
 
   it "has a node" do
-    @run_context.node.should == @node
+    expect(run_context.node).to eq(node)
   end
 
   describe "loading cookbooks for a run list" do
@@ -52,86 +62,101 @@ describe Chef::RunContext do
         Chef::Provider.send(:remove_const, :TestProvider)
       end
 
-      @node.run_list << "test" << "test::one" << "test::two"
-      @node.should_receive(:loaded_recipe).with(:test, "default")
-      @node.should_receive(:loaded_recipe).with(:test, "one")
-      @node.should_receive(:loaded_recipe).with(:test, "two")
-      @run_context.load(@node.run_list.expand('_default'))
+      node.run_list << "test" << "test::one" << "test::two"
+      expect(node).to receive(:loaded_recipe).with(:test, "default")
+      expect(node).to receive(:loaded_recipe).with(:test, "one")
+      expect(node).to receive(:loaded_recipe).with(:test, "two")
+      run_context.load(node.run_list.expand('_default'))
     end
 
     it "should load all the definitions in the cookbooks for this node" do
-      @run_context.definitions.should have_key(:new_cat)
-      @run_context.definitions.should have_key(:new_badger)
-      @run_context.definitions.should have_key(:new_dog)
+      expect(run_context.definitions).to have_key(:new_cat)
+      expect(run_context.definitions).to have_key(:new_badger)
+      expect(run_context.definitions).to have_key(:new_dog)
     end
 
     it "should load all the recipes specified for this node" do
-      @run_context.resource_collection[0].to_s.should == "cat[einstein]"
-      @run_context.resource_collection[1].to_s.should == "cat[loulou]"
-      @run_context.resource_collection[2].to_s.should == "cat[birthday]"
-      @run_context.resource_collection[3].to_s.should == "cat[peanut]"
-      @run_context.resource_collection[4].to_s.should == "cat[fat peanut]"
+      expect(run_context.resource_collection[0].to_s).to eq("cat[einstein]")
+      expect(run_context.resource_collection[1].to_s).to eq("cat[loulou]")
+      expect(run_context.resource_collection[2].to_s).to eq("cat[birthday]")
+      expect(run_context.resource_collection[3].to_s).to eq("cat[peanut]")
+      expect(run_context.resource_collection[4].to_s).to eq("cat[fat peanut]")
     end
 
     it "loads all the attribute files in the cookbook collection" do
-      @run_context.loaded_fully_qualified_attribute?("test", "george").should be_true
-      @node[:george].should == "washington"
+      expect(run_context.loaded_fully_qualified_attribute?("test", "george")).to be_truthy
+      expect(node[:george]).to eq("washington")
     end
 
     it "registers attributes files as loaded so they won't be reloaded" do
       # This test unfortunately is pretty tightly intertwined with the
       # implementation of how nodes load attribute files, but is the only
       # convenient way to test this behavior.
-      @node.should_not_receive(:from_file)
-      @node.include_attribute("test::george")
+      expect(node).not_to receive(:from_file)
+      node.include_attribute("test::george")
     end
 
     it "raises an error when attempting to include_recipe from a cookbook not reachable by run list or dependencies" do
-      @node.should_receive(:loaded_recipe).with(:ancient, "aliens")
-      lambda do
-        @run_context.include_recipe("ancient::aliens")
+      expect(node).to receive(:loaded_recipe).with(:ancient, "aliens")
+      expect do
+        run_context.include_recipe("ancient::aliens")
       # In CHEF-5120, this becomes a Chef::Exceptions::MissingCookbookDependency error:
-      end.should raise_error(Chef::Exceptions::CookbookNotFound)
+      end.to raise_error(Chef::Exceptions::CookbookNotFound)
     end
 
+    it "raises an error on a recipe with a leading :: with no current_cookbook" do
+      expect do
+        run_context.include_recipe("::aliens")
+      end.to raise_error(RuntimeError)
+    end
   end
 
   describe "querying the contents of cookbooks" do
-    before do
-      @chef_repo_path = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
-      cl = Chef::CookbookLoader.new(@chef_repo_path)
-      cl.load_cookbooks
-      @cookbook_collection = Chef::CookbookCollection.new(cl)
-      @node = Chef::Node.new
-      @node.set[:platform] = "ubuntu"
-      @node.set[:platform_version] = "13.04"
-      @node.name("testing")
-      @events = Chef::EventDispatch::Dispatcher.new
-      @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
-    end
-
+    let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")) }
+    let(:node) {
+      node = Chef::Node.new
+      node.set[:platform] = "ubuntu"
+      node.set[:platform_version] = "13.04"
+      node.name("testing")
+      node
+    }
 
     it "queries whether a given cookbook has a specific template" do
-      @run_context.should have_template_in_cookbook("openldap", "test.erb")
-      @run_context.should_not have_template_in_cookbook("openldap", "missing.erb")
+      expect(run_context).to have_template_in_cookbook("openldap", "test.erb")
+      expect(run_context).not_to have_template_in_cookbook("openldap", "missing.erb")
     end
 
     it "errors when querying for a template in a not-available cookbook" do
       expect do
-        @run_context.has_template_in_cookbook?("no-such-cookbook", "foo.erb")
+        run_context.has_template_in_cookbook?("no-such-cookbook", "foo.erb")
       end.to raise_error(Chef::Exceptions::CookbookNotFound)
     end
 
     it "queries whether a given cookbook has a specific cookbook_file" do
-      @run_context.should have_cookbook_file_in_cookbook("java", "java.response")
-      @run_context.should_not have_cookbook_file_in_cookbook("java", "missing.txt")
+      expect(run_context).to have_cookbook_file_in_cookbook("java", "java.response")
+      expect(run_context).not_to have_cookbook_file_in_cookbook("java", "missing.txt")
     end
 
     it "errors when querying for a cookbook_file in a not-available cookbook" do
       expect do
-        @run_context.has_cookbook_file_in_cookbook?("no-such-cookbook", "foo.txt")
+        run_context.has_cookbook_file_in_cookbook?("no-such-cookbook", "foo.txt")
       end.to raise_error(Chef::Exceptions::CookbookNotFound)
     end
   end
 
+  describe "handling reboot requests" do
+    let(:expected) do
+      { :reason => "spec tests require a reboot" }
+    end
+
+    it "stores and deletes the reboot request" do
+      run_context.request_reboot(expected)
+      expect(run_context.reboot_info).to eq(expected)
+      expect(run_context.reboot_requested?).to be_truthy
+
+      run_context.cancel_reboot
+      expect(run_context.reboot_info).to eq({})
+      expect(run_context.reboot_requested?).to be_falsey
+    end
+  end
 end

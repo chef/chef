@@ -18,20 +18,33 @@
 #
 
 require 'chef/resource/execute'
+require 'chef/provider/script'
 
 class Chef
   class Resource
     class Script < Chef::Resource::Execute
 
+      # Chef-13: go back to using :name as the identity attr
       identity_attr :command
 
       def initialize(name, run_context=nil)
         super
         @resource_name = :script
+        # Chef-13: the command variable should be initialized to nil
         @command = name
         @code = nil
         @interpreter = nil
         @flags = nil
+        @default_guard_interpreter = :default
+      end
+
+      def command(arg=nil)
+        unless arg.nil?
+          # Chef-13: change this to raise if the user is trying to set a value here
+          Chef::Log.warn "Specifying command attribute on a script resource is a coding error, use the 'code' attribute, or the execute resource"
+          Chef::Log.warn "This attribute is deprecated and must be fixed or this code will fail on Chef-13"
+        end
+        super
       end
 
       def code(arg=nil)
@@ -57,31 +70,6 @@ class Chef
           :kind_of => [ String ]
         )
       end
-
-      def self.set_guard_inherited_attributes(*inherited_attributes)
-        @class_inherited_attributes = inherited_attributes
-      end
-
-      def self.guard_inherited_attributes(*inherited_attributes)
-        # Similar to patterns elsewhere, return attributes from this
-        # class and superclasses as a form of inheritance
-        ancestor_attributes = []
-
-        if superclass.respond_to?(:guard_inherited_attributes)
-          ancestor_attributes = superclass.guard_inherited_attributes
-        end
-
-        ancestor_attributes.concat(@class_inherited_attributes ? @class_inherited_attributes : []).uniq
-      end
-
-      set_guard_inherited_attributes(
-       :cwd,
-       :environment,
-       :group,
-       :path,
-       :user,
-       :umask
-       )
 
     end
   end

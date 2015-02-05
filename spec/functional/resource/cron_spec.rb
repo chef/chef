@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'spec_helper'
 require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 
@@ -29,10 +30,14 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     case ohai[:platform]
     when "aix", "solaris", "opensolaris", "solaris2", "omnios"
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(0)
+      expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").stdout.lines.to_a.size).to eq(1)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{command}\"").exitstatus).to eq(0)
+      expect(shell_out("crontab -l #{new_resource.user} | grep \"#{command}\"").stdout.lines.to_a.size).to eq(1)
     else
       expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(0)
+      expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").stdout.lines.to_a.size).to eq(0)
       expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{command}\"").exitstatus).to eq(0)
+      expect(shell_out("crontab -l #{new_resource.user} | grep \"#{command}\"").stdout.lines.to_a.size).to eq(0)
     end
   end
 
@@ -40,8 +45,10 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     case ohai[:platform]
     when "aix", "solaris", "opensolaris", "solaris2", "omnios"
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
+      expect(shell_out("crontab -l #{new_resource.user} | grep \"#{new_resource.command}\"").stdout.lines.to_a.size).to eq(0)
     else
       expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
+      expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{new_resource.command}\"").stdout.lines.to_a.size).to eq(0)
     end
   end
 
@@ -49,7 +56,16 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   let(:new_resource) do
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
     new_resource.user  'root'
-    new_resource.minute "30"
+    # @hourly is not supported on solaris, aix
+    if ohai[:platform] == "solaris" || ohai[:platform] == "solaris2" || ohai[:platform] == "aix"
+      new_resource.minute "0 * * * *"
+    else
+      new_resource.minute '@hourly'
+    end
+    new_resource.hour ''
+    new_resource.day ''
+    new_resource.month ''
+    new_resource.weekday ''
     new_resource.command "/bin/true"
     new_resource
   end
@@ -66,6 +82,11 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
 
     it "should create a crontab entry" do
       new_resource.run_action(:create)
+      cron_should_exists(new_resource.name, new_resource.command)
+    end
+
+    it "should create exactly one crontab entry" do
+      5.times { new_resource.run_action(:create) }
       cron_should_exists(new_resource.name, new_resource.command)
     end
   end
@@ -128,6 +149,10 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   end
 
   describe "negative tests for create action" do
+    after do
+      new_resource.run_action(:delete)
+    end
+
     def cron_create_should_raise_exception
       expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{new_resource.name}, exit: 1/)
       cron_should_not_exists(new_resource.name)

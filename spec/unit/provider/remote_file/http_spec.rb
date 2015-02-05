@@ -48,11 +48,11 @@ describe Chef::Provider::RemoteFile::HTTP do
     context "and there is no valid cache control data for this URI on disk" do
 
       before do
-        Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
+        expect(Chef::Provider::RemoteFile::CacheControlData).to receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
       end
 
       it "does not add conditional GET headers" do
-        fetcher.conditional_get_headers.should == {}
+        expect(fetcher.conditional_get_headers).to eq({})
       end
 
       context "and the resource specifies custom headers" do
@@ -61,7 +61,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         end
 
         it "has the user-specified custom headers" do
-          fetcher.headers.should == {"x-myapp-header" => "custom-header-value"}
+          expect(fetcher.headers).to eq({"x-myapp-header" => "custom-header-value"})
         end
       end
 
@@ -79,7 +79,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         cache_control_data.etag = etag
         cache_control_data.mtime = mtime
 
-        Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
+        expect(Chef::Provider::RemoteFile::CacheControlData).to receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
       end
 
       context "and no conditional get features are enabled" do
@@ -88,7 +88,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         end
 
         it "does not add headers to the request" do
-          fetcher.headers.should == {}
+          expect(fetcher.headers).to eq({})
         end
       end
 
@@ -99,8 +99,8 @@ describe Chef::Provider::RemoteFile::HTTP do
 
         it "adds If-None-Match and If-Modified-Since headers to the request" do
           headers = fetcher.headers
-          headers["if-none-match"].should == etag
-          headers["if-modified-since"].should == mtime
+          expect(headers["if-none-match"]).to eq(etag)
+          expect(headers["if-modified-since"]).to eq(mtime)
         end
 
         context "and custom headers are provided" do
@@ -111,13 +111,13 @@ describe Chef::Provider::RemoteFile::HTTP do
           end
 
           it "preserves non-conflicting headers" do
-            fetcher.headers["x-myapp-header"].should == "app-specific-header"
+            expect(fetcher.headers["x-myapp-header"]).to eq("app-specific-header")
           end
 
           it "prefers user-supplied cache control headers" do
             headers = fetcher.headers
-            headers["if-none-match"].should == "custom-etag"
-            headers["if-modified-since"].should == "custom-last-modified"
+            expect(headers["if-none-match"]).to eq("custom-etag")
+            expect(headers["if-modified-since"]).to eq("custom-last-modified")
           end
         end
 
@@ -131,8 +131,8 @@ describe Chef::Provider::RemoteFile::HTTP do
 
         it "only adds If-None-Match headers to the request" do
           headers = fetcher.headers
-          headers["if-none-match"].should == etag
-          headers.should_not have_key("if-modified-since")
+          expect(headers["if-none-match"]).to eq(etag)
+          expect(headers).not_to have_key("if-modified-since")
         end
       end
 
@@ -144,8 +144,8 @@ describe Chef::Provider::RemoteFile::HTTP do
 
         it "only adds If-Modified-Since headers to the request" do
           headers = fetcher.headers
-          headers["if-modified-since"].should == mtime
-          headers.should_not have_key("if-none-match")
+          expect(headers["if-modified-since"]).to eq(mtime)
+          expect(headers).not_to have_key("if-none-match")
         end
       end
     end
@@ -165,17 +165,17 @@ describe Chef::Provider::RemoteFile::HTTP do
 
     let(:rest) do
       rest = double(Chef::HTTP::Simple)
-      rest.stub(:streaming_request).and_return(tempfile)
-      rest.stub(:last_response).and_return(last_response)
+      allow(rest).to receive(:streaming_request).and_return(tempfile)
+      allow(rest).to receive(:last_response).and_return(last_response)
       rest
     end
 
     before do
       new_resource.headers({})
       new_resource.use_last_modified(false)
-      Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
+      expect(Chef::Provider::RemoteFile::CacheControlData).to receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
 
-      Chef::HTTP::Simple.should_receive(:new).with(*expected_http_args).and_return(rest)
+      expect(Chef::HTTP::Simple).to receive(:new).with(*expected_http_args).and_return(rest)
     end
 
 
@@ -183,8 +183,8 @@ describe Chef::Provider::RemoteFile::HTTP do
 
       it "should return a nil tempfile for a 304 HTTPNotModifed" do
         # Streaming request returns nil for 304 errors
-        rest.stub(:streaming_request).and_return(nil)
-        fetcher.fetch.should be_nil
+        allow(rest).to receive(:streaming_request).and_return(nil)
+        expect(fetcher.fetch).to be_nil
       end
 
     end
@@ -194,25 +194,25 @@ describe Chef::Provider::RemoteFile::HTTP do
       let(:fetched_content_checksum) { "e2a8938cc31754f6c067b35aab1d0d4864272e9bf8504536ef3e79ebf8432305" }
 
       before do
-        cache_control_data.should_receive(:save)
-        Chef::Digester.should_receive(:checksum_for_file).with(tempfile_path).and_return(fetched_content_checksum)
+        expect(cache_control_data).to receive(:save)
+        expect(Chef::Digester).to receive(:checksum_for_file).with(tempfile_path).and_return(fetched_content_checksum)
       end
 
       it "should return a tempfile" do
         result = fetcher.fetch
-        result.should == tempfile
-        cache_control_data.etag.should be_nil
-        cache_control_data.mtime.should be_nil
-        cache_control_data.checksum.should == fetched_content_checksum
+        expect(result).to eq(tempfile)
+        expect(cache_control_data.etag).to be_nil
+        expect(cache_control_data.mtime).to be_nil
+        expect(cache_control_data.checksum).to eq(fetched_content_checksum)
       end
 
       context "and the response does not contain an etag" do
         let(:last_response) { {"etag" => nil} }
         it "does not include an etag in the result" do
           fetcher.fetch
-          cache_control_data.etag.should be_nil
-          cache_control_data.mtime.should be_nil
-          cache_control_data.checksum.should == fetched_content_checksum
+          expect(cache_control_data.etag).to be_nil
+          expect(cache_control_data.mtime).to be_nil
+          expect(cache_control_data.checksum).to eq(fetched_content_checksum)
         end
       end
 
@@ -221,9 +221,9 @@ describe Chef::Provider::RemoteFile::HTTP do
 
         it "includes the etag value in the response" do
           fetcher.fetch
-          cache_control_data.etag.should == "abc123"
-          cache_control_data.mtime.should be_nil
-          cache_control_data.checksum.should == fetched_content_checksum
+          expect(cache_control_data.etag).to eq("abc123")
+          expect(cache_control_data.mtime).to be_nil
+          expect(cache_control_data.checksum).to eq(fetched_content_checksum)
         end
 
       end
@@ -234,9 +234,9 @@ describe Chef::Provider::RemoteFile::HTTP do
           # RFC 2616 suggests that servers that do not set a Date header do not
           # have a reliable clock, so no use in making them deal with dates.
           fetcher.fetch
-          cache_control_data.etag.should be_nil
-          cache_control_data.mtime.should be_nil
-          cache_control_data.checksum.should == fetched_content_checksum
+          expect(cache_control_data.etag).to be_nil
+          expect(cache_control_data.mtime).to be_nil
+          expect(cache_control_data.checksum).to eq(fetched_content_checksum)
         end
       end
 
@@ -248,8 +248,8 @@ describe Chef::Provider::RemoteFile::HTTP do
 
         it "sets the mtime to the Last-Modified time in the response" do
           fetcher.fetch
-          cache_control_data.etag.should be_nil
-          cache_control_data.mtime.should == last_response["last_modified"]
+          expect(cache_control_data.etag).to be_nil
+          expect(cache_control_data.mtime).to eq(last_response["last_modified"])
         end
       end
 
@@ -260,9 +260,9 @@ describe Chef::Provider::RemoteFile::HTTP do
 
         it "sets the mtime to the Date in the response" do
           fetcher.fetch
-          cache_control_data.etag.should be_nil
-          cache_control_data.mtime.should == last_response["date"]
-          cache_control_data.checksum.should == fetched_content_checksum
+          expect(cache_control_data.etag).to be_nil
+          expect(cache_control_data.mtime).to eq(last_response["date"])
+          expect(cache_control_data.checksum).to eq(fetched_content_checksum)
         end
 
       end
@@ -288,11 +288,11 @@ describe Chef::Provider::RemoteFile::HTTP do
           # This is intended to provide insurance that refactoring of the parent
           # context does not negate the value of this particular example.
           Chef::HTTP::Simple.new(*expected_http_args)
-          Chef::HTTP::Simple.should_receive(:new).once.with(*expected_http_args).and_return(rest)
+          expect(Chef::HTTP::Simple).to receive(:new).once.with(*expected_http_args).and_return(rest)
           fetcher.fetch
-          cache_control_data.etag.should be_nil
-          cache_control_data.mtime.should be_nil
-          cache_control_data.checksum.should == fetched_content_checksum
+          expect(cache_control_data.etag).to be_nil
+          expect(cache_control_data.mtime).to be_nil
+          expect(cache_control_data.checksum).to eq(fetched_content_checksum)
         end
       end
     end

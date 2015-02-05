@@ -159,25 +159,25 @@ describe Chef::Resource::Package, metadata do
       it "installs the package with action :install" do
         package_resource.run_action(:install)
         shell_out!("dpkg -l chef-integration-test")
-        package_resource.should be_updated_by_last_action
+        expect(package_resource).to be_updated_by_last_action
       end
 
       it "installs the package for action :upgrade" do
         package_resource.run_action(:upgrade)
         shell_out!("dpkg -l chef-integration-test")
-        package_resource.should be_updated_by_last_action
+        expect(package_resource).to be_updated_by_last_action
       end
 
       it "does nothing for action :remove" do
         package_resource.run_action(:remove)
         shell_out!("dpkg -l chef-integration-test", :returns => [1])
-        package_resource.should_not be_updated_by_last_action
+        expect(package_resource).not_to be_updated_by_last_action
       end
 
       it "does nothing for action :purge" do
         package_resource.run_action(:purge)
         shell_out!("dpkg -l chef-integration-test", :returns => [1])
-        package_resource.should_not be_updated_by_last_action
+        expect(package_resource).not_to be_updated_by_last_action
       end
 
       context "and a not-available package version is specified" do
@@ -221,8 +221,8 @@ describe Chef::Resource::Package, metadata do
           it "preseeds the package, then installs it" do
             package_resource.run_action(:install)
             cmd = shell_out!("debconf-show chef-integration-test")
-            cmd.stdout.should include('chef-integration-test/sample-var: "hello world"')
-            package_resource.should be_updated_by_last_action
+            expect(cmd.stdout).to include('chef-integration-test/sample-var: "hello world"')
+            expect(package_resource).to be_updated_by_last_action
           end
 
           context "and the preseed file exists and is up-to-date" do
@@ -239,8 +239,8 @@ describe Chef::Resource::Package, metadata do
             it "does not update the package configuration" do
               package_resource.run_action(:install)
               cmd = shell_out!("debconf-show chef-integration-test")
-              cmd.stdout.should include('chef-integration-test/sample-var: INVALID')
-              package_resource.should be_updated_by_last_action
+              expect(cmd.stdout).to include('chef-integration-test/sample-var: INVALID')
+              expect(package_resource).to be_updated_by_last_action
             end
 
           end
@@ -267,8 +267,8 @@ describe Chef::Resource::Package, metadata do
           it "preseeds the package, then installs it" do
             package_resource.run_action(:install)
             cmd = shell_out!("debconf-show chef-integration-test")
-            cmd.stdout.should include('chef-integration-test/sample-var: "FROM TEMPLATE"')
-            package_resource.should be_updated_by_last_action
+            expect(cmd.stdout).to include('chef-integration-test/sample-var: "FROM TEMPLATE"')
+            expect(package_resource).to be_updated_by_last_action
           end
 
           context "with variables" do
@@ -283,8 +283,8 @@ describe Chef::Resource::Package, metadata do
             it "preseeds the package, then installs it" do
               package_resource.run_action(:install)
               cmd = shell_out!("debconf-show chef-integration-test")
-              cmd.stdout.should include('chef-integration-test/sample-var: "SUPPORTS VARIABLES"')
-              package_resource.should be_updated_by_last_action
+              expect(cmd.stdout).to include('chef-integration-test/sample-var: "SUPPORTS VARIABLES"')
+              expect(package_resource).to be_updated_by_last_action
             end
           end
 
@@ -302,13 +302,13 @@ describe Chef::Resource::Package, metadata do
       it "does nothing for action :install" do
         package_resource.run_action(:install)
         shell_out!("dpkg -l chef-integration-test", :returns => [0])
-        package_resource.should_not be_updated_by_last_action
+        expect(package_resource).not_to be_updated_by_last_action
       end
 
       it "does nothing for action :upgrade" do
         package_resource.run_action(:upgrade)
         shell_out!("dpkg -l chef-integration-test", :returns => [0])
-        package_resource.should_not be_updated_by_last_action
+        expect(package_resource).not_to be_updated_by_last_action
       end
 
       # Verify that the package is removed by running `dpkg -l PACKAGE`
@@ -328,7 +328,7 @@ describe Chef::Resource::Package, metadata do
         pkg_check = shell_out!("dpkg -l chef-integration-test", :returns => [0,1])
 
         if pkg_check.exitstatus == 0
-          pkg_check.stdout.should =~ /un[\s]+chef-integration-test/
+          expect(pkg_check.stdout).to match(/un[\s]+chef-integration-test/)
         end
       end
 
@@ -336,13 +336,13 @@ describe Chef::Resource::Package, metadata do
       it "removes the package for action :remove" do
         package_resource.run_action(:remove)
         pkg_should_be_removed
-        package_resource.should be_updated_by_last_action
+        expect(package_resource).to be_updated_by_last_action
       end
 
       it "removes the package for action :purge" do
         package_resource.run_action(:purge)
         pkg_should_be_removed
-        package_resource.should be_updated_by_last_action
+        expect(package_resource).to be_updated_by_last_action
       end
 
     end
@@ -356,14 +356,14 @@ describe Chef::Resource::Package, metadata do
       it "does nothing for action :install" do
         package_resource.run_action(:install)
         shell_out!("dpkg -l chef-integration-test", :returns => [0])
-        package_resource.should_not be_updated_by_last_action
+        expect(package_resource).not_to be_updated_by_last_action
       end
 
       it "upgrades the package for action :upgrade" do
         package_resource.run_action(:upgrade)
         dpkg_l = shell_out!("dpkg -l chef-integration-test", :returns => [0])
-        dpkg_l.stdout.should =~ /chef\-integration\-test[\s]+1\.1\-1/
-        package_resource.should be_updated_by_last_action
+        expect(dpkg_l.stdout).to match(/chef\-integration\-test[\s]+1\.1\-1/)
+        expect(package_resource).to be_updated_by_last_action
       end
 
       context "and the resource specifies the new version" do
@@ -376,8 +376,8 @@ describe Chef::Resource::Package, metadata do
         it "upgrades the package for action :install" do
           package_resource.run_action(:install)
           dpkg_l = shell_out!("dpkg -l chef-integration-test", :returns => [0])
-          dpkg_l.stdout.should =~ /chef\-integration\-test[\s]+1\.1\-1/
-          package_resource.should be_updated_by_last_action
+          expect(dpkg_l.stdout).to match(/chef\-integration\-test[\s]+1\.1\-1/)
+          expect(package_resource).to be_updated_by_last_action
         end
       end
 

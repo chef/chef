@@ -153,7 +153,9 @@ class Chef
       def file_flags
         base_flags = File::CREAT|File::TRUNC|File::RDWR
         # Windows doesn't have symlinks, so it doesn't have NOFOLLOW
-        base_flags |= File::NOFOLLOW if defined?(File::NOFOLLOW)
+        if defined?(File::NOFOLLOW) && !Chef::Config[:follow_client_key_symlink]
+          base_flags |= File::NOFOLLOW
+        end
         base_flags
       end
     end

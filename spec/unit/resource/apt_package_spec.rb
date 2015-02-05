@@ -17,27 +17,22 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::AptPackage, "initialize" do
 
-  before(:each) do
-    @resource = Chef::Resource::AptPackage.new("foo")
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::AptPackage,
+    provider: Chef::Provider::Package::Apt,
+    name: :apt_package,
+    action: :install,
+    os: "linux",
+  )
 
-  it "should return a Chef::Resource::AptPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::AptPackage)
-  end
-
-  it "should set the resource_name to :apt_package" do
-    @resource.resource_name.should eql(:apt_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Apt" do
-    @resource.provider.should eql(Chef::Provider::Package::Apt)
-  end
+  let(:resource) { Chef::Resource::AptPackage.new("foo") }
 
   it "should support default_release" do
-    @resource.default_release("lenny-backports")
-    @resource.default_release.should eql("lenny-backports")
+    resource.default_release("lenny-backports")
+    expect(resource.default_release).to eql("lenny-backports")
   end
 end

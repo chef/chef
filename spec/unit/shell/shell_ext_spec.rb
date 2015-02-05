@@ -23,7 +23,7 @@ describe Shell::Extensions do
 
     before do
       @shell_client = TestableShellSession.instance
-      Shell.stub(:session).and_return(@shell_client)
+      allow(Shell).to receive(:session).and_return(@shell_client)
       @job_manager = TestJobManager.new
       @root_context = Object.new
       @root_context.instance_eval(&ObjectTestHarness)
@@ -37,98 +37,98 @@ describe Shell::Extensions do
       irb_context = double("context", :main => target_context_obj)
       irb_session = double("irb session", :context => irb_context)
       @job_manager.jobs = [[:thread, irb_session]]
-      @root_context.stub(:jobs).and_return(@job_manager)
+      allow(@root_context).to receive(:jobs).and_return(@job_manager)
       @root_context.ensure_session_select_defined
-      @root_context.jobs.select_shell_session(target_context_obj).should == irb_session
-      @root_context.jobs.select_shell_session(:idontexist).should be_nil
+      expect(@root_context.jobs.select_shell_session(target_context_obj)).to eq(irb_session)
+      expect(@root_context.jobs.select_shell_session(:idontexist)).to be_nil
     end
 
     it "finds, then switches to a session" do
       @job_manager.jobs = []
-      @root_context.stub(:ensure_session_select_defined)
-      @root_context.stub(:jobs).and_return(@job_manager)
-      @job_manager.should_receive(:select_shell_session).and_return(:the_shell_session)
-      @job_manager.should_receive(:switch).with(:the_shell_session)
+      allow(@root_context).to receive(:ensure_session_select_defined)
+      allow(@root_context).to receive(:jobs).and_return(@job_manager)
+      expect(@job_manager).to receive(:select_shell_session).and_return(:the_shell_session)
+      expect(@job_manager).to receive(:switch).with(:the_shell_session)
       @root_context.find_or_create_session_for(:foo)
     end
 
     it "creates a new session if an existing one isn't found" do
       @job_manager.jobs = []
-      @root_context.stub(:jobs).and_return(@job_manager)
-      @job_manager.stub(:select_shell_session).and_return(nil)
-      @root_context.should_receive(:irb).with(:foo)
+      allow(@root_context).to receive(:jobs).and_return(@job_manager)
+      allow(@job_manager).to receive(:select_shell_session).and_return(nil)
+      expect(@root_context).to receive(:irb).with(:foo)
       @root_context.find_or_create_session_for(:foo)
     end
 
     it "switches to recipe context" do
-      @root_context.should respond_to(:recipe_mode)
+      expect(@root_context).to respond_to(:recipe_mode)
       @shell_client.recipe = :monkeyTime
-      @root_context.should_receive(:find_or_create_session_for).with(:monkeyTime)
+      expect(@root_context).to receive(:find_or_create_session_for).with(:monkeyTime)
       @root_context.recipe_mode
     end
 
     it "switches to attribute context" do
-      @root_context.should respond_to(:attributes_mode)
+      expect(@root_context).to respond_to(:attributes_mode)
       @shell_client.node = "monkeyNodeTime"
-      @root_context.should_receive(:find_or_create_session_for).with("monkeyNodeTime")
+      expect(@root_context).to receive(:find_or_create_session_for).with("monkeyNodeTime")
       @root_context.attributes_mode
     end
 
     it "has a help command" do
-      @root_context.should respond_to(:help)
+      expect(@root_context).to respond_to(:help)
     end
 
     it "turns irb tracing on and off" do
-      @root_context.should respond_to(:trace)
-      @root_context.conf.should_receive(:use_tracer=).with(true)
-      @root_context.stub(:tracing?)
+      expect(@root_context).to respond_to(:trace)
+      expect(@root_context.conf).to receive(:use_tracer=).with(true)
+      allow(@root_context).to receive(:tracing?)
       @root_context.tracing :on
     end
 
     it "says if tracing is on or off" do
-      @root_context.conf.stub(:use_tracer).and_return(true)
-      @root_context.should_receive(:puts).with("tracing is on")
+      allow(@root_context.conf).to receive(:use_tracer).and_return(true)
+      expect(@root_context).to receive(:puts).with("tracing is on")
       @root_context.tracing?
     end
 
     it "prints node attributes" do
       node = double("node", :attribute => {:foo => :bar})
       @shell_client.node = node
-      @root_context.should_receive(:pp).with({:foo => :bar})
+      expect(@root_context).to receive(:pp).with({:foo => :bar})
       @root_context.ohai
-      @root_context.should_receive(:pp).with(:bar)
+      expect(@root_context).to receive(:pp).with(:bar)
       @root_context.ohai(:foo)
     end
 
     it "resets the recipe and reloads ohai data" do
-      @shell_client.should_receive(:reset!)
+      expect(@shell_client).to receive(:reset!)
       @root_context.reset
     end
 
     it "turns irb echo on and off" do
-      @root_context.conf.should_receive(:echo=).with(true)
+      expect(@root_context.conf).to receive(:echo=).with(true)
       @root_context.echo :on
     end
 
     it "says if echo is on or off" do
-      @root_context.conf.stub(:echo).and_return(true)
-      @root_context.should_receive(:puts).with("echo is on")
+      allow(@root_context.conf).to receive(:echo).and_return(true)
+      expect(@root_context).to receive(:puts).with("echo is on")
       @root_context.echo?
     end
 
     it "gives access to the stepable iterator" do
-      Shell::StandAloneSession.instance.stub(:reset!)
-      Shell.session.stub(:rebuild_context)
+      allow(Shell::StandAloneSession.instance).to receive(:reset!)
+      allow(Shell.session).to receive(:rebuild_context)
       events = Chef::EventDispatch::Dispatcher.new
       run_context = Chef::RunContext.new(Chef::Node.new, {}, events)
-      run_context.resource_collection.instance_variable_set(:@iterator, :the_iterator)
+      run_context.resource_collection.instance_variable_get(:@resource_list).instance_variable_set(:@iterator, :the_iterator)
       Shell.session.run_context = run_context
-      @root_context.chef_run.should == :the_iterator
+      expect(@root_context.chef_run).to eq(:the_iterator)
     end
 
     it "lists directory contents" do
       entries = %w{. .. someFile}
-      Dir.should_receive(:entries).with("/tmp").and_return(entries)
+      expect(Dir).to receive(:entries).with("/tmp").and_return(entries)
       @root_context.ls "/tmp"
     end
 
@@ -145,7 +145,7 @@ describe Shell::Extensions do
 
     it "gives a list of the resources" do
       resource = @recipe_object.file("foo")
-      @recipe_object.should_receive(:pp).with(["file[foo]"])
+      expect(@recipe_object).to receive(:pp).with(["file[foo]"])
       @recipe_object.resources
     end
 

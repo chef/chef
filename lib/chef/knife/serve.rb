@@ -4,6 +4,9 @@ require 'chef/local_mode'
 class Chef
   class Knife
     class Serve < Knife
+      
+      banner 'knife serve (options)'
+
       option :repo_mode,
         :long => '--repo-mode MODE',
         :description => "Specifies the local repository layout.  Values: static (only environments/roles/data_bags/cookbooks), everything (includes nodes/clients/users), hosted_everything (includes acls/groups/etc. for Enterprise/Hosted Chef).  Default: everything/hosted_everything"
@@ -33,7 +36,7 @@ class Chef
       def run
         server = Chef::LocalMode.chef_zero_server
         begin
-          output "Serving files from:\n#{server.options[:data_store].chef_fs.fs_description}"
+          output "Serving files from:\n#{Chef::LocalMode.chef_fs.fs_description}"
           server.stop
           server.start(stdout) # to print header
         ensure

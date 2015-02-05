@@ -45,7 +45,7 @@ class Chef
 
           def current_installed_version
             pkg_info = shell_out!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,70])
-            pkg_info.stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+)/, 1]
+            pkg_info.stdout[/^Version +: (.+)$/, 1]
           end
 
           def candidate_version

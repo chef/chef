@@ -45,11 +45,10 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
   before(:all) do
     @ohai = Ohai::System.new
-    @ohai.all_plugins("os")
+    @ohai.all_plugins(["platform", "os"])
   end
 
   let(:node) do
-
     Chef::Node.new.tap do |n|
       n.name "rspec-test"
       n.consume_external_attrs(@ohai.data, {})
@@ -58,7 +57,6 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
   let(:event_dispatch) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, event_dispatch) }
-
 
   # These tests use git's bundle feature, which is a way to export an entire
   # git repo (or subset of commits) as a single file.
@@ -174,12 +172,12 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     it "deploys the app to the target revision (#{target_rev_spec})" do
       target_rev = send(target_rev_spec)
 
-      File.should exist(rel_path("current"))
+      expect(File).to exist(rel_path("current"))
 
-      actual_current_rev.should == target_rev
+      expect(actual_current_rev).to eq(target_rev)
 
       # Is the app code actually there?
-      File.should exist(rel_path("current/app/app.rb"))
+      expect(File).to exist(rel_path("current/app/app.rb"))
     end
   end
 
@@ -194,12 +192,12 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the application" do
-        File.should exist(rel_path("current/restart.txt"))
-        actual_operations_order.should == %w[deploy_to_latest_rev]
+        expect(File).to exist(rel_path("current/restart.txt"))
+        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev])
       end
 
       it "is marked as updated" do
-        deploy_to_latest_rev.should be_updated_by_last_action
+        expect(deploy_to_latest_rev).to be_updated_by_last_action
       end
     end
 
@@ -216,15 +214,15 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the application after rolling back" do
-        actual_operations_order.should == %w[deploy_to_latest_rev deploy_to_previous_rev deploy_to_latest_rev_again]
+        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev deploy_to_previous_rev deploy_to_latest_rev_again])
       end
 
       it "is marked updated" do
-        deploy_to_latest_rev_again.should be_updated_by_last_action
+        expect(deploy_to_latest_rev_again).to be_updated_by_last_action
       end
 
       it "deploys the right code" do
-        IO.read(rel_path("current/app/app.rb")).should include("this is the fourth version of the app")
+        expect(IO.read(rel_path("current/app/app.rb"))).to include("this is the fourth version of the app")
       end
     end
 
@@ -234,27 +232,27 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       end
 
       it "creates the required directory tree" do
-        File.should be_directory(rel_path("releases"))
-        File.should be_directory(rel_path("shared"))
-        File.should be_directory(rel_path("releases/#{latest_rev}"))
+        expect(File).to be_directory(rel_path("releases"))
+        expect(File).to be_directory(rel_path("shared"))
+        expect(File).to be_directory(rel_path("releases/#{latest_rev}"))
 
-        File.should be_directory(rel_path("current/tmp"))
-        File.should be_directory(rel_path("current/config"))
-        File.should be_directory(rel_path("current/public"))
+        expect(File).to be_directory(rel_path("current/tmp"))
+        expect(File).to be_directory(rel_path("current/config"))
+        expect(File).to be_directory(rel_path("current/public"))
 
-        File.should be_symlink(rel_path("current"))
-        File.readlink(rel_path("current")).should == rel_path("releases/#{latest_rev}")
+        expect(File).to be_symlink(rel_path("current"))
+        expect(File.readlink(rel_path("current"))).to eq(rel_path("releases/#{latest_rev}"))
       end
 
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the application" do
-        File.should exist(rel_path("current/restart.txt"))
-        actual_operations_order.should == %w[deploy_to_latest_rev]
+        expect(File).to exist(rel_path("current/restart.txt"))
+        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev])
       end
 
       it "is marked as updated" do
-        deploy_to_latest_rev.should be_updated_by_last_action
+        expect(deploy_to_latest_rev).to be_updated_by_last_action
       end
     end
 
@@ -267,11 +265,11 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "does not restart the app" do
-        actual_operations_order.should == %w[deploy_to_latest_rev]
+        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev])
       end
 
       it "is not marked updated" do
-        deploy_to_latest_rev.should_not be_updated_by_last_action
+        expect(deploy_to_latest_rev).not_to be_updated_by_last_action
       end
 
     end
@@ -285,11 +283,11 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the app" do
-        actual_operations_order.should == %w[deploy_to_latest_rev deploy_to_latest_rev_again]
+        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev deploy_to_latest_rev_again])
       end
 
       it "is marked updated" do
-        deploy_to_latest_rev.should be_updated_by_last_action
+        expect(deploy_to_latest_rev).to be_updated_by_last_action
       end
 
     end
@@ -303,15 +301,15 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the application after the new deploy" do
-        actual_operations_order.should == %w[deploy_to_previous_rev deploy_to_latest_rev]
+        expect(actual_operations_order).to eq(%w[deploy_to_previous_rev deploy_to_latest_rev])
       end
 
       it "is marked updated" do
-        deploy_to_previous_rev.should be_updated_by_last_action
+        expect(deploy_to_previous_rev).to be_updated_by_last_action
       end
 
       it "leaves the old copy of the app around for rollback" do
-        File.should exist(File.join(deploy_directory, "releases", previous_rev))
+        expect(File).to exist(File.join(deploy_directory, "releases", previous_rev))
       end
 
     end
@@ -326,15 +324,15 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the application after rolling back" do
-        actual_operations_order.should == %w[deploy_to_latest_rev deploy_to_previous_rev deploy_to_latest_rev_again]
+        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev deploy_to_previous_rev deploy_to_latest_rev_again])
       end
 
       it "is marked updated" do
-        deploy_to_latest_rev_again.should be_updated_by_last_action
+        expect(deploy_to_latest_rev_again).to be_updated_by_last_action
       end
 
       it "deploys the right code" do
-        IO.read(rel_path("current/app/app.rb")).should include("this is the fourth version of the app")
+        expect(IO.read(rel_path("current/app/app.rb"))).to include("this is the fourth version of the app")
       end
     end
 
@@ -351,31 +349,31 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:previous_rev)
 
       it "restarts the application after rolling back" do
-        actual_operations_order.should == %w[deploy_to_previous_rev deploy_to_latest_rev deploy_to_latest_rev_again]
+        expect(actual_operations_order).to eq(%w[deploy_to_previous_rev deploy_to_latest_rev deploy_to_latest_rev_again])
       end
 
       it "is marked updated" do
-        deploy_to_latest_rev_again.should be_updated_by_last_action
+        expect(deploy_to_latest_rev_again).to be_updated_by_last_action
       end
 
       it "deploys the right code" do
-        IO.read(rel_path("current/app/app.rb")).should include("this is the third version of the app")
+        expect(IO.read(rel_path("current/app/app.rb"))).to include("this is the third version of the app")
       end
 
       it "all_releases after first deploy should have one entry" do
-        @previous_rev_all_releases.length.should == 1
+        expect(@previous_rev_all_releases.length).to eq(1)
       end
 
       it "all_releases after second deploy should have two entries" do
-        @latest_rev_all_releases.length.should == 2
+        expect(@latest_rev_all_releases.length).to eq(2)
       end
 
       it "all_releases after rollback should have one entry" do
-        @previous_rev_again_all_releases.length.should == 1
+        expect(@previous_rev_again_all_releases.length).to eq(1)
       end
 
       it "all_releases after rollback should be the same as after the first deploy" do
-        @previous_rev_again_all_releases.should == @previous_rev_all_releases
+        expect(@previous_rev_again_all_releases).to eq(@previous_rev_all_releases)
       end
 
     end
@@ -394,31 +392,31 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:previous_rev)
 
       it "restarts the application after rolling back" do
-        actual_operations_order.should == %w[deploy_to_previous_rev deploy_to_latest_rev deploy_to_previous_rev_again]
+        expect(actual_operations_order).to eq(%w[deploy_to_previous_rev deploy_to_latest_rev deploy_to_previous_rev_again])
       end
 
       it "is marked updated" do
-        deploy_to_previous_rev_again.should be_updated_by_last_action
+        expect(deploy_to_previous_rev_again).to be_updated_by_last_action
       end
 
       it "deploys the right code" do
-        IO.read(rel_path("current/app/app.rb")).should include("this is the third version of the app")
+        expect(IO.read(rel_path("current/app/app.rb"))).to include("this is the third version of the app")
       end
 
       it "all_releases after first deploy should have one entry" do
-        @previous_rev_all_releases.length.should == 1
+        expect(@previous_rev_all_releases.length).to eq(1)
       end
 
       it "all_releases after second deploy should have two entries" do
-        @latest_rev_all_releases.length.should == 2
+        expect(@latest_rev_all_releases.length).to eq(2)
       end
 
       it "all_releases after rollback should have one entry" do
-        @previous_rev_again_all_releases.length.should == 1
+        expect(@previous_rev_again_all_releases.length).to eq(1)
       end
 
       it "all_releases after rollback should be the same as after the first deploy" do
-        @previous_rev_again_all_releases.should == @previous_rev_all_releases
+        expect(@previous_rev_again_all_releases).to eq(@previous_rev_all_releases)
       end
     end
 
@@ -439,23 +437,23 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:second_rev)
 
       it "restarts the application after rolling back" do
-        actual_operations_order.should == %w[deploy_to_second_rev deploy_to_previous_rev deploy_to_previous_rev_again deploy_to_latest_rev deploy_to_latest_rev_again]
+        expect(actual_operations_order).to eq(%w[deploy_to_second_rev deploy_to_previous_rev deploy_to_previous_rev_again deploy_to_latest_rev deploy_to_latest_rev_again])
       end
 
       it "is marked updated" do
-        deploy_to_latest_rev_again.should be_updated_by_last_action
+        expect(deploy_to_latest_rev_again).to be_updated_by_last_action
       end
 
       it "deploys the right code" do
-        IO.read(rel_path("current/app/app.rb")).should include("this is the second version of the app")
+        expect(IO.read(rel_path("current/app/app.rb"))).to include("this is the second version of the app")
       end
 
       it "all_releases after rollback should have one entry" do
-        @fifth_deploy_all_releases.length.should == 1
+        expect(@fifth_deploy_all_releases.length).to eq(1)
       end
 
       it "all_releases after rollback should be the same as after the first deploy" do
-        @fifth_deploy_all_releases.should == @first_deploy_all_releases
+        expect(@fifth_deploy_all_releases).to eq(@first_deploy_all_releases)
       end
     end
 
@@ -476,23 +474,23 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:second_rev)
 
       it "restarts the application after rolling back" do
-        actual_operations_order.should == %w[deploy_to_second_rev deploy_to_previous_rev deploy_to_second_rev_again deploy_to_latest_rev deploy_to_second_rev_again_again]
+        expect(actual_operations_order).to eq(%w[deploy_to_second_rev deploy_to_previous_rev deploy_to_second_rev_again deploy_to_latest_rev deploy_to_second_rev_again_again])
       end
 
       it "is marked updated" do
-        deploy_to_second_rev_again_again.should be_updated_by_last_action
+        expect(deploy_to_second_rev_again_again).to be_updated_by_last_action
       end
 
       it "deploys the right code" do
-        IO.read(rel_path("current/app/app.rb")).should include("this is the second version of the app")
+        expect(IO.read(rel_path("current/app/app.rb"))).to include("this is the second version of the app")
       end
 
       it "all_releases after rollback should have one entry" do
-        @fifth_deploy_all_releases.length.should == 1
+        expect(@fifth_deploy_all_releases.length).to eq(1)
       end
 
       it "all_releases after rollback should be the same as after the first deploy" do
-        @fifth_deploy_all_releases.should == @first_deploy_all_releases
+        expect(@fifth_deploy_all_releases).to eq(@first_deploy_all_releases)
       end
 
     end
@@ -511,21 +509,21 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       end
 
       before do
-        File.should_not exist(deploy_directory)
+        expect(File).not_to exist(deploy_directory)
         deploy_to_latest_rev.run_action(:deploy)
       end
 
       it "creates the required directory tree" do
-        File.should be_directory(rel_path("releases"))
-        File.should be_directory(rel_path("shared"))
-        File.should be_directory(rel_path("releases/#{latest_rev}"))
+        expect(File).to be_directory(rel_path("releases"))
+        expect(File).to be_directory(rel_path("shared"))
+        expect(File).to be_directory(rel_path("releases/#{latest_rev}"))
 
-        File.should be_directory(rel_path("current/tmp"))
-        File.should be_directory(rel_path("current/config"))
-        File.should be_directory(rel_path("current/public"))
+        expect(File).to be_directory(rel_path("current/tmp"))
+        expect(File).to be_directory(rel_path("current/config"))
+        expect(File).to be_directory(rel_path("current/public"))
 
-        File.should be_symlink(rel_path("current"))
-        File.readlink(rel_path("current")).should == rel_path("releases/#{latest_rev}")
+        expect(File).to be_symlink(rel_path("current"))
+        expect(File.readlink(rel_path("current"))).to eq(rel_path("releases/#{latest_rev}"))
       end
 
       the_app_is_deployed_at_revision(:latest_rev)
@@ -600,18 +598,18 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     the_app_is_deployed_at_revision(:latest_rev)
 
     it "is marked updated" do
-      deploy_to_latest_with_inline_recipes.should be_updated_by_last_action
+      expect(deploy_to_latest_with_inline_recipes).to be_updated_by_last_action
     end
 
     it "calls the callbacks in order" do
-      callback_order.should == [:before_migrate, :before_symlink, :before_restart, :after_restart]
+      expect(callback_order).to eq([:before_migrate, :before_symlink, :before_restart, :after_restart])
     end
 
     it "runs chef resources in the callbacks" do
-      File.should exist(rel_path("current/before_migrate.txt"))
-      File.should exist(rel_path("current/before_symlink.txt"))
-      File.should exist(rel_path("current/tmp/before_restart.txt"))
-      File.should exist(rel_path("current/tmp/after_restart.txt"))
+      expect(File).to exist(rel_path("current/before_migrate.txt"))
+      expect(File).to exist(rel_path("current/before_symlink.txt"))
+      expect(File).to exist(rel_path("current/tmp/before_restart.txt"))
+      expect(File).to exist(rel_path("current/tmp/after_restart.txt"))
     end
   end
 
@@ -630,10 +628,10 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     the_app_is_deployed_at_revision(:rev_with_in_repo_callbacks)
 
     it "runs chef resources in the callbacks" do
-      File.should exist(rel_path("current/before_migrate.txt"))
-      File.should exist(rel_path("current/before_symlink.txt"))
-      File.should exist(rel_path("current/tmp/before_restart.txt"))
-      File.should exist(rel_path("current/tmp/after_restart.txt"))
+      expect(File).to exist(rel_path("current/before_migrate.txt"))
+      expect(File).to exist(rel_path("current/before_symlink.txt"))
+      expect(File).to exist(rel_path("current/tmp/before_restart.txt"))
+      expect(File).to exist(rel_path("current/tmp/after_restart.txt"))
     end
 
   end
@@ -691,7 +689,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     end
 
     it "runs migrations in between the before_migrate and before_symlink steps" do
-      actual_operations_order.should == %w[before_migrate migration before_symlink before_restart after_restart]
+      expect(actual_operations_order).to eq(%w[before_migrate migration before_symlink before_restart after_restart])
     end
   end
 
@@ -704,7 +702,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     end
 
     it "should not raise an exception calling File.utime on symlinks" do
-      lambda { deploy_with_in_repo_symlinks.run_action(:deploy) }.should_not raise_error
+      expect { deploy_with_in_repo_symlinks.run_action(:deploy) }.not_to raise_error
     end
   end
 
@@ -713,16 +711,16 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     shared_examples_for "a redeployed application" do
 
       it "should redeploy the application" do
-        File.should be_directory(rel_path("releases"))
-        File.should be_directory(rel_path("shared"))
-        File.should be_directory(rel_path("releases/#{latest_rev}"))
+        expect(File).to be_directory(rel_path("releases"))
+        expect(File).to be_directory(rel_path("shared"))
+        expect(File).to be_directory(rel_path("releases/#{latest_rev}"))
 
-        File.should be_directory(rel_path("current/tmp"))
-        File.should be_directory(rel_path("current/config"))
-        File.should be_directory(rel_path("current/public"))
+        expect(File).to be_directory(rel_path("current/tmp"))
+        expect(File).to be_directory(rel_path("current/config"))
+        expect(File).to be_directory(rel_path("current/public"))
 
-        File.should be_symlink(rel_path("current"))
-        File.readlink(rel_path("current")).should == rel_path("releases/#{latest_rev}")
+        expect(File).to be_symlink(rel_path("current"))
+        expect(File.readlink(rel_path("current"))).to eq(rel_path("releases/#{latest_rev}"))
       end
     end
 
@@ -759,23 +757,23 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     shared_examples_for "a recovered deployment" do
 
       it "should redeploy the application" do
-        File.should be_directory(rel_path("releases"))
-        File.should be_directory(rel_path("shared"))
-        File.should be_directory(rel_path("releases/#{latest_rev}"))
+        expect(File).to be_directory(rel_path("releases"))
+        expect(File).to be_directory(rel_path("shared"))
+        expect(File).to be_directory(rel_path("releases/#{latest_rev}"))
 
-        File.should be_directory(rel_path("current/tmp"))
-        File.should be_directory(rel_path("current/config"))
-        File.should be_directory(rel_path("current/public"))
+        expect(File).to be_directory(rel_path("current/tmp"))
+        expect(File).to be_directory(rel_path("current/config"))
+        expect(File).to be_directory(rel_path("current/public"))
 
-        File.should be_symlink(rel_path("current"))
-        File.readlink(rel_path("current")).should == rel_path("releases/#{latest_rev}")
+        expect(File).to be_symlink(rel_path("current"))
+        expect(File.readlink(rel_path("current"))).to eq(rel_path("releases/#{latest_rev}"))
 
         # if callbacks ran, we know the app was deployed and not merely rolled
         # back to a (busted) prior deployment.
-        callback_order.should == [:before_migrate,
+        expect(callback_order).to eq([:before_migrate,
                                   :before_symlink,
                                   :before_restart,
-                                  :after_restart ]
+                                  :after_restart ])
       end
     end
 
@@ -795,10 +793,9 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
       context "in the `#{callback}' callback" do
         before do
-          lambda { deploy_that_fails.run_action(:deploy) }.should raise_error(Exception, %r{I am a failed deploy})
+          expect { deploy_that_fails.run_action(:deploy) }.to raise_error(Exception, %r{I am a failed deploy})
           deploy_to_latest_with_callback_tracking.run_action(:deploy)
         end
-
 
         let(:deploy_that_fails) do
           resource = deploy_to_latest_rev.dup
@@ -822,7 +819,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       end
 
       before do
-        lambda { deploy_that_fails.run_action(:deploy) }.should raise_error(Chef::Exceptions::Exec)
+        expect { deploy_that_fails.run_action(:deploy) }.to raise_error(Chef::Exceptions::Exec)
         deploy_to_latest_with_callback_tracking.run_action(:deploy)
       end
 
@@ -854,7 +851,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       end
 
       before do
-        lambda { deploy_that_fails.run_action(:deploy) }.should raise_error(RuntimeError, /network error/)
+        expect { deploy_that_fails.run_action(:deploy) }.to raise_error(RuntimeError, /network error/)
         deploy_to_latest_with_callback_tracking.run_action(:deploy)
       end
 
@@ -870,17 +867,15 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       end
 
       before do
-        lambda { deploy_that_fails.run_action(:deploy) }.should raise_error(Exception, %r{I am a failed deploy})
+        expect { deploy_that_fails.run_action(:deploy) }.to raise_error(Exception, %r{I am a failed deploy})
         deploy_to_latest_rev.run_action(:deploy)
       end
 
       it "removes the unsuccessful deploy after a later successful deploy" do
-        ::File.should_not exist(File.join(deploy_directory, "releases", previous_rev))
+        expect(::File).not_to exist(File.join(deploy_directory, "releases", previous_rev))
       end
 
     end
 
   end
 end
-
-

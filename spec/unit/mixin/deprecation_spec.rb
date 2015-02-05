@@ -28,16 +28,16 @@ describe Chef::Mixin do
     end
 
     it "has a list of deprecated constants" do
-      Chef::Mixin.deprecated_constants.should have_key(:DeprecatedClass)
+      expect(Chef::Mixin.deprecated_constants).to have_key(:DeprecatedClass)
     end
 
     it "returns the replacement when accessing the deprecated constant" do
-      Chef::Mixin::DeprecatedClass.should == Chef::Node
+      expect(Chef::Mixin::DeprecatedClass).to eq(Chef::Node)
     end
 
     it "warns when accessing the deprecated constant" do
       Chef::Mixin::DeprecatedClass
-      @log_io.string.should include("This is a test deprecation")
+      expect(@log_io.string).to include("This is a test deprecation")
     end
   end
 end
@@ -50,8 +50,8 @@ describe Chef::Mixin::Deprecation::DeprecatedInstanceVariable do
   end
 
   it "forward method calls to the target object" do
-    @deprecated_ivar.length.should == 5
-    @deprecated_ivar.to_sym.should == :value
+    expect(@deprecated_ivar.length).to eq(5)
+    expect(@deprecated_ivar.to_sym).to eq(:value)
   end
 
 end

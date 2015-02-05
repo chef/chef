@@ -25,52 +25,52 @@ describe Chef::Resource::RemoteDirectory do
   end
 
   it "should create a new Chef::Resource::RemoteDirectory" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::RemoteDirectory)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::RemoteDirectory)
   end
 
   it "should set the path to the first argument to new" do
-    @resource.path.should eql("/etc/dunk")
+    expect(@resource.path).to eql("/etc/dunk")
   end
 
   it "should accept a string for the remote directory source" do
     @resource.source "foo"
-    @resource.source.should eql("foo")
+    expect(@resource.source).to eql("foo")
   end
 
   it "should have the basename of the remote directory resource as the default source" do
-    @resource.source.should eql("dunk")
+    expect(@resource.source).to eql("dunk")
   end
 
   it "should accept a number for the remote files backup" do
     @resource.files_backup 1
-    @resource.files_backup.should eql(1)
+    expect(@resource.files_backup).to eql(1)
   end
 
   it "should accept false for the remote files backup" do
     @resource.files_backup false
-    @resource.files_backup.should eql(false)
+    expect(@resource.files_backup).to eql(false)
   end
 
   it "should accept 3 or 4 digets for the files_mode" do
     @resource.files_mode 100
-    @resource.files_mode.should eql(100)
+    expect(@resource.files_mode).to eql(100)
     @resource.files_mode 1000
-    @resource.files_mode.should eql(1000)
+    expect(@resource.files_mode).to eql(1000)
   end
 
   it "should accept a string or number for the files group" do
     @resource.files_group "heart"
-    @resource.files_group.should eql("heart")
+    expect(@resource.files_group).to eql("heart")
     @resource.files_group 1000
-    @resource.files_group.should eql(1000)
+    expect(@resource.files_group).to eql(1000)
   end
 
   it "should accept a string or number for the files owner" do
     @resource.files_owner "heart"
-    @resource.files_owner.should eql("heart")
+    expect(@resource.files_owner).to eql("heart")
     @resource.files_owner 1000
-    @resource.files_owner.should eql(1000)
+    expect(@resource.files_owner).to eql(1000)
   end
 
   describe "when it has cookbook, files owner, files mode, and source" do
@@ -85,13 +85,13 @@ describe Chef::Resource::RemoteDirectory do
 
     it "describes its state" do
       state = @resource.state
-      state[:files_owner].should == "root"
-      state[:files_group].should == "supergroup"
-      state[:files_mode].should == "0664"
+      expect(state[:files_owner]).to eq("root")
+      expect(state[:files_group]).to eq("supergroup")
+      expect(state[:files_mode]).to eq("0664")
     end
 
     it "returns the path  as its identity" do
-      @resource.identity.should == "/var/path/"
+      expect(@resource.identity).to eq("/var/path/")
     end
   end
 end

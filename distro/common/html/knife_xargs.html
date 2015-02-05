@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,7 +41,7 @@
             
   <div class="section" id="knife-xargs">
 <h1>knife xargs<a class="headerlink" href="#knife-xargs" title="Permalink to this headline">¶</a></h1>
-<p>The <strong>knife xargs</strong> subcommand is used to build and execute command lines against objects on a Chef server using standard input.</p>
+<p>The <strong>knife xargs</strong> subcommand is used to take patterns from standard input, download as JSON, run a command against the downloaded JSON, and then upload any changes.</p>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
 <p>This subcommand has the following syntax:</p>
@@ -53,7 +53,7 @@
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <p>This subcommand has the following options:</p>
 <dl class="docutils">
@@ -89,9 +89,18 @@
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Use output of knife deps to pass command to knife xargs</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife deps nodes/*.json | xargs knife upload
+<p>The following examples show various ways of listing all nodes on the server, and then using Perl to replace <tt class="docutils literal"><span class="pre">grantmc</span></tt> with <tt class="docutils literal"><span class="pre">gmc</span></tt>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife list <span class="s1">&#39;nodes/*&#39;</span> | knife xargs <span class="s2">&quot;perl -i -pe &#39;s/grantmc/gmc&#39;&quot;</span>
+</pre></div>
+</div>
+<p>or without quotes and the backslash escaped:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife list /nodes/<span class="se">\*</span> | knife xargs <span class="s2">&quot;perl -i -pe &#39;s/grantmc/gmc&#39;&quot;</span>
+</pre></div>
+</div>
+<p>or by using the <tt class="docutils literal"><span class="pre">--pattern</span></tt> option:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife xargs --pattern <span class="s1">&#39;/nodes.*&#39;</span> <span class="s2">&quot;perl -i -pe &#39;s/grantmc/gmc&#39;&quot;</span>
 </pre></div>
 </div>
 </div>

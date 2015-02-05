@@ -27,10 +27,13 @@ class Chef
       include Chef::DSL::PlatformIntrospection
 
       # Returns true if the system needs a reboot or is expected to reboot
-      # Raises UnsupportedPlatform if this functionality isn't provided yet
+      # Note that we will silently miss any other platform-specific reboot notices besides Windows+Ubuntu.
       def reboot_pending?
 
-        if platform?("windows")
+        # don't break when used as a mixin in contexts without #node (e.g. specs).
+        if self.respond_to?(:node, true) && node.run_context.reboot_requested?
+          true
+        elsif platform?("windows")
           # PendingFileRenameOperations contains pairs (REG_MULTI_SZ) of filenames that cannot be updated
           # due to a file being in use (usually a temporary file and a system file)
           # \??\c:\temp\test.sys!\??\c:\winnt\system32\test.sys
@@ -44,7 +47,7 @@ class Chef
           # Vista + Server 2008 and newer may have reboots pending from CBS
           registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired') ||
 
-          # The mere existance of the UpdateExeVolatile key should indicate a pending restart for certain updates
+          # The mere existence of the UpdateExeVolatile key should indicate a pending restart for certain updates
           # http://support.microsoft.com/kb/832475
           (registry_key_exists?('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile') &&
                 !registry_get_values('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').select { |v| v[:name] == "Flags" }[0].nil? &&
@@ -53,7 +56,7 @@ class Chef
           # This should work for Debian as well if update-notifier-common happens to be installed. We need an API for that.
           File.exists?('/var/run/reboot-required')
         else
-          raise Chef::Exceptions::UnsupportedPlatform.new(node[:platform])
+          false
         end
       end
     end

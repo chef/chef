@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'uri'
 require 'chef/resource/file'
 require 'chef/provider/remote_file'
 require 'chef/mixin/securable'
@@ -26,7 +27,7 @@ class Chef
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      provides :remote_file, :on_platforms => :all
+      provides :remote_file
 
       def initialize(name, run_context=nil)
         super

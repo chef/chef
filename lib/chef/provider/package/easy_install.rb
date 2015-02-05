@@ -25,6 +25,8 @@ class Chef
     class Package
       class EasyInstall < Chef::Provider::Package
 
+        provides :easy_install_package
+
         def install_check(name)
           check = false
 

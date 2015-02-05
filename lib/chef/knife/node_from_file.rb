@@ -35,16 +35,17 @@ class Chef
       end
 
       def run
-        updated = loader.load_from('nodes', @name_args[0])
-
-        updated.save
-
-        output(format_for_display(updated)) if config[:print_after]
-
-        ui.info("Updated Node #{updated.name}!")
+        @name_args.each do |arg|
+          updated = loader.load_from('nodes', arg)
+  
+          updated.save
+  
+          output(format_for_display(updated)) if config[:print_after]
+  
+          ui.info("Updated Node #{updated.name}!")
+        end
       end
 
     end
   end
 end
-

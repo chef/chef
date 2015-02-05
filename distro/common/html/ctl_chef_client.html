@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,7 +41,7 @@
             
   <div class="section" id="chef-client">
 <h1>chef-client<a class="headerlink" href="#chef-client" title="Permalink to this headline">¶</a></h1>
-<p>A chef-client is an agent that runs locally on every node that is registered with the Chef server. When a chef-client is run, it will perform all of the steps that are required to bring the node into the expected state, including:</p>
+<p>A chef-client is an agent that runs locally on every node that is under management by Chef. When a chef-client is run, it will perform all of the steps that are required to bring the node into the expected state, including:</p>
 <ul class="simple">
 <li>Registering and authenticating the node with the Chef server</li>
 <li>Building the node object</li>
@@ -50,10 +50,6 @@
 <li>Taking the appropriate and required actions to configure the node</li>
 <li>Looking for exceptions and notifications, handling each as required</li>
 </ul>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The chef-client executable can be run as a daemon.</p>
-</div>
 <p>The chef-client executable is run as a command-line tool.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -75,10 +71,8 @@
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-A</span></tt>, <tt class="docutils literal"><span class="pre">--fatal-windows-admin-check</span></tt></dt>
 <dd>Use to cause a chef-client run to fail when the chef-client does not have administrator privileges in Microsoft Windows.</dd>
-<dt><tt class="docutils literal"><span class="pre">-c</span> <span class="pre">CONFIG</span></tt>, <tt class="docutils literal"><span class="pre">--config</span> <span class="pre">CONFIG</span></tt></dt>
-<dd>The configuration file to use.</dd>
 <dt><tt class="docutils literal"><span class="pre">--chef-zero-port</span> <span class="pre">PORT</span></tt></dt>
-<dd>The port on which chef-zero will listen.</dd>
+<dd>The port on which chef-zero will listen. If a port is not specified&#8212;individually, as range of ports, or from the <tt class="docutils literal"><span class="pre">chef_zero.port</span></tt> setting in the client.rb file&#8212;the chef-client will scan for ports between 8889-9999 and will pick the first port that is available.</dd>
 <dt><tt class="docutils literal"><span class="pre">-F</span> <span class="pre">FORMAT</span></tt>, <tt class="docutils literal"><span class="pre">--format</span> <span class="pre">FORMAT</span></tt></dt>
 <dd><p class="first">The output format: <tt class="docutils literal"><span class="pre">doc</span></tt> (default) or <tt class="docutils literal"><span class="pre">min</span></tt>.</p>
 <p>Use <tt class="docutils literal"><span class="pre">doc</span></tt> to print the progress of the chef-client run using full strings that display a summary of updates as they occur.</p>
@@ -94,9 +88,53 @@
 <dt><tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">--help</span></tt></dt>
 <dd>Shows help for the command.</dd>
 <dt><tt class="docutils literal"><span class="pre">-i</span> <span class="pre">SECONDS</span></tt>, <tt class="docutils literal"><span class="pre">--interval</span> <span class="pre">SECONDS</span></tt></dt>
-<dd>The frequency (in seconds) at which the chef-client runs. Default value: <tt class="docutils literal"><span class="pre">1800</span></tt>.</dd>
+<dd>The frequency (in seconds) at which the chef-client runs. When the chef-client is run at intervals, <tt class="docutils literal"><span class="pre">--splay</span></tt> and <tt class="docutils literal"><span class="pre">--interval</span></tt> values are applied before the chef-client run. Default value: <tt class="docutils literal"><span class="pre">1800</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-j</span> <span class="pre">PATH</span></tt>, <tt class="docutils literal"><span class="pre">--json-attributes</span> <span class="pre">PATH</span></tt></dt>
-<dd>The path to a file that contains JSON data.</dd>
+<dd><p class="first">The path to a file that contains JSON data.</p>
+<p>Use this option to define a <tt class="docutils literal"><span class="pre">run_list</span></tt> object. For example, a JSON file similar to:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="s2">&quot;run_list&quot;</span><span class="o">:</span> <span class="p">[</span>
+  <span class="s2">&quot;recipe[base]&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;recipe[foo]&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;recipe[bar]&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;role[webserver]&quot;</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>may be used by running <tt class="docutils literal"><span class="pre">chef-client</span> <span class="pre">-j</span> <span class="pre">path/to/file.json</span></tt>.</p>
+<p>In certain situations this option may be used to update <tt class="docutils literal"><span class="pre">normal</span></tt> attributes.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Any other attribute type that is contained in this JSON file will be treated as a <tt class="docutils literal"><span class="pre">normal</span></tt> attribute. For example, attempting to update <tt class="docutils literal"><span class="pre">override</span></tt> attributes using the <tt class="docutils literal"><span class="pre">-j</span></tt> option:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;dev-99&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Install some stuff&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;override_attributes&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;apptastic&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;enable_apptastic&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;apptastic_tier_name&quot;</span><span class="o">:</span> <span class="s2">&quot;dev-99.bomb.com&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>will result in a node object similar to:</p>
+<div class="last highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;maybe-dev-99&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;normal&quot;</span><span class="o">:</span> <span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;dev-99&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Install some stuff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;override_attributes&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;apptastic&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;enable_apptastic&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;apptastic_tier_name&quot;</span><span class="o">:</span> <span class="s2">&quot;dev-99.bomb.com&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">-k</span> <span class="pre">KEY_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--client_key</span> <span class="pre">KEY_FILE</span></tt></dt>
 <dd>The location of the file which contains the client key. Default value: <tt class="docutils literal"><span class="pre">/etc/chef/client.pem</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-K</span> <span class="pre">KEY_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--validation_key</span> <span class="pre">KEY_FILE</span></tt></dt>
@@ -110,15 +148,21 @@
 <dt><tt class="docutils literal"><span class="pre">-N</span> <span class="pre">NODE_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--node-name</span> <span class="pre">NODE_NAME</span></tt></dt>
 <dd>The name of the node.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">RUN_LIST_ITEM</span></tt>, <tt class="docutils literal"><span class="pre">--override-runlist</span> <span class="pre">RUN_LIST_ITEM</span></tt></dt>
-<dd>Replace the current run list with the specified items.</dd>
+<dd>Replace the current run list with the specified items. This option will not clear the list of cookbooks (and related files) that is cached on the node.</dd>
 <dt><tt class="docutils literal"><span class="pre">--once</span></tt></dt>
 <dd>Use to run the chef-client only once and to cancel <tt class="docutils literal"><span class="pre">interval</span></tt> and <tt class="docutils literal"><span class="pre">splay</span></tt> options.</dd>
 <dt><tt class="docutils literal"><span class="pre">-P</span> <span class="pre">PID_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--pid</span> <span class="pre">PID_FILE</span></tt></dt>
 <dd>The location in which a process identification number (pid) is saved. An executable, when started as a daemon, will write the pid to the specified file. Default value: <tt class="docutils literal"><span class="pre">/tmp/name-of-executable.pid</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">-r</span> <span class="pre">RUN_LIST_ITEM</span></tt>, <tt class="docutils literal"><span class="pre">--runlist</span> <span class="pre">RUN_LIST_ITEM</span></tt></dt>
+<dd>Use to permanently replace the current run-list with the specified run-list items.</dd>
 <dt><tt class="docutils literal"><span class="pre">-R</span></tt>, <tt class="docutils literal"><span class="pre">--enable-reporting</span></tt></dt>
-<dd>Use to enable data collection reporting during a chef-client run.</dd>
+<dd>Use to enable Chef reporting, which performs data collection during a chef-client run.</dd>
+<dt><tt class="docutils literal"><span class="pre">RECIPE_FILE</span></tt></dt>
+<dd>The path to a recipe. For example, if a recipe file is in the current directory, use <tt class="docutils literal"><span class="pre">recipe_file.rb</span></tt>. This is typically used with the <tt class="docutils literal"><span class="pre">--local-mode</span></tt> option.</dd>
+<dt><tt class="docutils literal"><span class="pre">--run-lock-timeout</span> <span class="pre">SECONDS</span></tt></dt>
+<dd>The amount of time (in seconds) to wait for a chef-client run to finish. Default value: not set (indefinite). Set to <tt class="docutils literal"><span class="pre">0</span></tt> to cause a second chef-client to exit immediately.</dd>
 <dt><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">SECONDS</span></tt>, <tt class="docutils literal"><span class="pre">--splay</span> <span class="pre">SECONDS</span></tt></dt>
-<dd>A number (in seconds) to add to the <tt class="docutils literal"><span class="pre">interval</span></tt> that is used to determine the frequency of chef-client runs. This number can help prevent server load when there are many clients running at the same time.</dd>
+<dd>A number (in seconds) to add to the <tt class="docutils literal"><span class="pre">interval</span></tt> that is used to determine the frequency of chef-client runs. This number can help prevent server load when there are many clients running at the same time. When the chef-client is run at intervals, <tt class="docutils literal"><span class="pre">--splay</span></tt> and <tt class="docutils literal"><span class="pre">--interval</span></tt> values are applied before the chef-client run.</dd>
 <dt><tt class="docutils literal"><span class="pre">-S</span> <span class="pre">CHEF_SERVER_URL</span></tt>, <tt class="docutils literal"><span class="pre">--server</span> <span class="pre">CHEF_SERVER_URL</span></tt></dt>
 <dd>The URL for the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">-u</span> <span class="pre">USER</span></tt>, <tt class="docutils literal"><span class="pre">--user</span> <span class="pre">USER</span></tt></dt>

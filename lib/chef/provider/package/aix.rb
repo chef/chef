@@ -26,6 +26,8 @@ class Chef
     class Package
       class Aix < Chef::Provider::Package
 
+        provides :bff_package, os: "aix"
+
         include Chef::Mixin::GetSourceFromPackage
 
         def define_resource_requirements
@@ -112,14 +114,10 @@ class Chef
         def install_package(name, version)
           Chef::Log.debug("#{@new_resource} package install options: #{@new_resource.options}")
           if @new_resource.options.nil?
-            run_command_with_systems_locale(
-                    :command => "installp -aYF -d #{@new_resource.source} #{@new_resource.package_name}"
-                  )
+            shell_out!( "installp -aYF -d #{@new_resource.source} #{@new_resource.package_name}" )
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           else
-            run_command_with_systems_locale(
-              :command => "installp -aYF #{expand_options(@new_resource.options)} -d #{@new_resource.source} #{@new_resource.package_name}"
-            )
+            shell_out!( "installp -aYF #{expand_options(@new_resource.options)} -d #{@new_resource.source} #{@new_resource.package_name}" )
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           end
         end
@@ -128,14 +126,10 @@ class Chef
 
         def remove_package(name, version)
           if @new_resource.options.nil?
-            run_command_with_systems_locale(
-                    :command => "installp -u #{name}"
-                  )
+            shell_out!( "installp -u #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           else
-            run_command_with_systems_locale(
-              :command => "installp -u #{expand_options(@new_resource.options)} #{name}"
-            )
+            shell_out!( "installp -u #{expand_options(@new_resource.options)} #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           end
         end

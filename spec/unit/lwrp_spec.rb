@@ -33,8 +33,32 @@ describe "LWRP" do
 
   describe "when overriding an existing class" do
     before :each do
-      $stderr.stub(:write)
+      allow($stderr).to receive(:write)
     end
+
+    it "should not skip loading a resource when there's a top level symbol of the same name" do
+      Object.const_set('LwrpFoo', Class.new)
+      file = File.expand_path( "lwrp/resources/foo.rb", CHEF_SPEC_DATA)
+      expect(Chef::Log).not_to receive(:info).with(/Skipping/)
+      expect(Chef::Log).not_to receive(:debug).with(/anymore/)
+      Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
+      Object.send(:remove_const, 'LwrpFoo')
+      Chef::Resource.send(:remove_const, 'LwrpFoo')
+    end
+
+    it "should not skip loading a provider when there's a top level symbol of the same name" do
+      Object.const_set('LwrpBuckPasser', Class.new)
+      file = File.expand_path( "lwrp/providers/buck_passer.rb", CHEF_SPEC_DATA)
+      expect(Chef::Log).not_to receive(:info).with(/Skipping/)
+      expect(Chef::Log).not_to receive(:debug).with(/anymore/)
+      Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
+      Object.send(:remove_const, 'LwrpBuckPasser')
+      Chef::Provider.send(:remove_const, 'LwrpBuckPasser')
+    end
+
+    # @todo: we need a before block to manually remove_const all of the LWRPs that we
+    #        load in these tests.  we're threading state through these tests in LWRPs that
+    #        have already been loaded in prior tests, which probably renders some of them bogus
 
     it "should log if attempting to load resource of same name" do
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
@@ -42,7 +66,8 @@ describe "LWRP" do
       end
 
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Log.should_receive(:info).with(/overriding/)
+        expect(Chef::Log).to receive(:info).with(/Skipping/)
+        expect(Chef::Log).to receive(:debug).with(/anymore/)
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
@@ -53,25 +78,24 @@ describe "LWRP" do
       end
 
       Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Log.should_receive(:info).with(/overriding/)
+        expect(Chef::Log).to receive(:info).with(/Skipping/)
+        expect(Chef::Log).to receive(:debug).with(/anymore/)
         Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
 
-    it "removes the old LRWP resource class from the list of resource subclasses [CHEF-3432]" do
-      # CHEF-3432 regression test:
-      # Chef::Resource keeps a list of all subclasses to assist class inflation
-      # for json parsing (see Chef::JSONCompat). When replacing LWRP resources,
-      # we need to ensure the old resource class is remove from that list.
+    it "keeps the old LRWP resource class in the list of resource subclasses" do
+      # This was originally CHEF-3432 regression test. But with Chef 12 we are
+      # not replacing the original classes anymore.
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
       first_lwr_foo_class = Chef::Resource::LwrpFoo
-      Chef::Resource.resource_classes.should include(first_lwr_foo_class)
+      expect(Chef::Resource.resource_classes).to include(first_lwr_foo_class)
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
-      Chef::Resource.resource_classes.should_not include(first_lwr_foo_class)
+      expect(Chef::Resource.resource_classes).to include(first_lwr_foo_class)
     end
 
     it "does not attempt to remove classes from higher up namespaces [CHEF-4117]" do
@@ -95,27 +119,27 @@ describe "LWRP" do
     end
 
     it "should load the resource into a properly-named class" do
-      Chef::Resource.const_get("LwrpFoo").should be_kind_of(Class)
+      expect(Chef::Resource.const_get("LwrpFoo")).to be_kind_of(Class)
     end
 
     it "should set resource_name" do
-      Chef::Resource::LwrpFoo.new("blah").resource_name.should eql(:lwrp_foo)
+      expect(Chef::Resource::LwrpFoo.new("blah").resource_name).to eql(:lwrp_foo)
     end
 
     it "should add the specified actions to the allowed_actions array" do
-      Chef::Resource::LwrpFoo.new("blah").allowed_actions.should include(:pass_buck, :twiddle_thumbs)
+      expect(Chef::Resource::LwrpFoo.new("blah").allowed_actions).to include(:pass_buck, :twiddle_thumbs)
     end
 
     it "should set the specified action as the default action" do
-      Chef::Resource::LwrpFoo.new("blah").action.should == :pass_buck
+      expect(Chef::Resource::LwrpFoo.new("blah").action).to eq(:pass_buck)
     end
 
     it "should create a method for each attribute" do
-      Chef::Resource::LwrpFoo.new("blah").methods.map{ |m| m.to_sym}.should include(:monkey)
+      expect(Chef::Resource::LwrpFoo.new("blah").methods.map{ |m| m.to_sym}).to include(:monkey)
     end
 
     it "should build attribute methods that respect validation rules" do
-      lambda { Chef::Resource::LwrpFoo.new("blah").monkey(42) }.should raise_error(ArgumentError)
+      expect { Chef::Resource::LwrpFoo.new("blah").monkey(42) }.to raise_error(ArgumentError)
     end
 
     it "should have access to the run context and node during class definition" do
@@ -128,9 +152,9 @@ describe "LWRP" do
       end
 
       cls = Chef::Resource.const_get("LwrpNodeattr")
-      cls.node.should be_kind_of(Chef::Node)
-      cls.run_context.should be_kind_of(Chef::RunContext)
-      cls.node[:penguin_name].should eql("jackass")
+      expect(cls.node).to be_kind_of(Chef::Node)
+      expect(cls.run_context).to be_kind_of(Chef::RunContext)
+      expect(cls.node[:penguin_name]).to eql("jackass")
     end
 
     context "resource_name" do
@@ -231,6 +255,27 @@ describe "LWRP" do
           expect(child.default_action).to eq(:dont_eat)
         end
       end
+
+      context "when actions are already defined" do
+        let(:child) do
+          Class.new(parent) do
+            actions :eat
+            actions :sleep
+            actions :drink
+          end
+        end
+
+        def raise_if_deprecated!
+          if Chef::VERSION.split('.').first.to_i > 12
+            raise "This test should be removed and the associated code should be removed!"
+          end
+        end
+
+        it "amends actions when they are already defined" do
+          raise_if_deprecated!
+          expect(child.actions).to eq([:eat, :sleep, :drink])
+        end
+      end
     end
 
   end
@@ -275,13 +320,13 @@ describe "LWRP" do
     end
 
     it "should load the provider into a properly-named class" do
-      Chef::Provider.const_get("LwrpBuckPasser").should be_kind_of(Class)
+      expect(Chef::Provider.const_get("LwrpBuckPasser")).to be_kind_of(Class)
     end
 
     it "should create a method for each attribute" do
       new_resource = double("new resource").as_null_object
-      Chef::Provider::LwrpBuckPasser.new(nil, new_resource).methods.map{|m|m.to_sym}.should include(:action_pass_buck)
-      Chef::Provider::LwrpThumbTwiddler.new(nil, new_resource).methods.map{|m|m.to_sym}.should include(:action_twiddle_thumbs)
+      expect(Chef::Provider::LwrpBuckPasser.new(nil, new_resource).methods.map{|m|m.to_sym}).to include(:action_pass_buck)
+      expect(Chef::Provider::LwrpThumbTwiddler.new(nil, new_resource).methods.map{|m|m.to_sym}).to include(:action_twiddle_thumbs)
     end
 
     it "should insert resources embedded in the provider into the middle of the resource collection" do
@@ -295,10 +340,10 @@ describe "LWRP" do
 
       Chef::Runner.new(@run_context).converge
 
-      @run_context.resource_collection[0].should eql(injector)
-      @run_context.resource_collection[1].name.should eql(:prepared_thumbs)
-      @run_context.resource_collection[2].name.should eql(:twiddled_thumbs)
-      @run_context.resource_collection[3].should eql(dummy)
+      expect(@run_context.resource_collection[0]).to eql(injector)
+      expect(@run_context.resource_collection[1].name).to eql(:prepared_thumbs)
+      expect(@run_context.resource_collection[2].name).to eql(:twiddled_thumbs)
+      expect(@run_context.resource_collection[3]).to eql(dummy)
     end
 
     it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
@@ -319,13 +364,13 @@ describe "LWRP" do
 
       Chef::Runner.new(@run_context).converge
 
-      @run_context.resource_collection[0].should eql(injector)
-      @run_context.resource_collection[1].name.should eql(:prepared_thumbs)
-      @run_context.resource_collection[2].name.should eql(:twiddled_thumbs)
-      @run_context.resource_collection[3].should eql(dummy)
-      @run_context.resource_collection[4].should eql(injector2)
-      @run_context.resource_collection[5].name.should eql(:prepared_eyes)
-      @run_context.resource_collection[6].name.should eql(:dried_paint_watched)
+      expect(@run_context.resource_collection[0]).to eql(injector)
+      expect(@run_context.resource_collection[1].name).to eql(:prepared_thumbs)
+      expect(@run_context.resource_collection[2].name).to eql(:twiddled_thumbs)
+      expect(@run_context.resource_collection[3]).to eql(dummy)
+      expect(@run_context.resource_collection[4]).to eql(injector2)
+      expect(@run_context.resource_collection[5].name).to eql(:prepared_eyes)
+      expect(@run_context.resource_collection[6].name).to eql(:dried_paint_watched)
     end
 
     it "should properly handle a new_resource reference" do
@@ -336,7 +381,7 @@ describe "LWRP" do
       provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
       provider.action_twiddle_thumbs
 
-      provider.monkey_name.should == "my monkey's name is 'bob'"
+      expect(provider.monkey_name).to eq("my monkey's name is 'bob'")
     end
 
     it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
@@ -348,7 +393,7 @@ describe "LWRP" do
       #provider = @runner.build_provider(resource)
       provider.action_twiddle_thumbs
 
-      provider.enclosed_resource.monkey.should == 'bob, the monkey'
+      expect(provider.enclosed_resource.monkey).to eq('bob, the monkey')
     end
 
     describe "when using inline compilation" do
@@ -367,27 +412,27 @@ describe "LWRP" do
 
       it "does not add interior resources to the exterior resource collection" do
         @resource.run_action(:test)
-        @run_context.resource_collection.should be_empty
+        expect(@run_context.resource_collection).to be_empty
       end
 
       context "when interior resources are updated" do
         it "processes notifications within the LWRP provider's action" do
           @resource.run_action(:test)
-          $interior_ruby_block_2.should == "executed"
+          expect($interior_ruby_block_2).to eq("executed")
         end
 
         it "marks the parent resource updated" do
           @resource.run_action(:test)
-          @resource.should be_updated
-          @resource.should be_updated_by_last_action
+          expect(@resource).to be_updated
+          expect(@resource).to be_updated_by_last_action
         end
       end
 
       context "when interior resources are not updated" do
         it "does not mark the parent resource updated" do
           @resource.run_action(:no_updates)
-          @resource.should_not be_updated
-          @resource.should_not be_updated_by_last_action
+          expect(@resource).not_to be_updated
+          expect(@resource).not_to be_updated_by_last_action
         end
       end
 

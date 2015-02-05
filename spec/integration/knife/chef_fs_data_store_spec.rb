@@ -22,14 +22,17 @@ require 'chef/knife/show'
 require 'chef/knife/raw'
 require 'chef/knife/cookbook_upload'
 
-describe 'ChefFSDataStore tests' do
+describe 'ChefFSDataStore tests', :workstation do
   include IntegrationSupport
   include KnifeSupport
+
+  let(:cookbook_x_100_metadata_rb) { cb_metadata("x", "1.0.0") }
+  let(:cookbook_z_100_metadata_rb) { cb_metadata("z", "1.0.0") }
 
   when_the_repository "has one of each thing" do
     before do
       file 'clients/x.json', {}
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/metadata.rb', cookbook_x_100_metadata_rb
       file 'data_bags/x/y.json', {}
       file 'environments/x.json', {}
       file 'nodes/x.json', {}
@@ -108,7 +111,7 @@ EOM
       end
 
       it 'knife show -z /cookbooks/x/metadata.rb works' do
-        knife('show -z /cookbooks/x/metadata.rb').should_succeed "/cookbooks/x/metadata.rb:\nversion \"1.0.0\"\n"
+        knife('show -z /cookbooks/x/metadata.rb').should_succeed "/cookbooks/x/metadata.rb:\n#{cookbook_x_100_metadata_rb}\n"
       end
 
       it 'knife show -z /data_bags/x/y.json works' do
@@ -135,8 +138,9 @@ EOM
     context 'PUT /TYPE/NAME' do
       before do
         file 'empty.json', {}
+        file 'dummynode.json', { "name" => "x", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => {"foo" => "bar"}}
         file 'rolestuff.json', '{"description":"hi there","name":"x"}'
-        file 'cookbooks_to_upload/x/metadata.rb', "version '1.0.0'\n\n"
+        file 'cookbooks_to_upload/x/metadata.rb', cookbook_x_100_metadata_rb
       end
 
       it 'knife raw -z -i empty.json -m PUT /clients/x' do
@@ -162,9 +166,10 @@ EOM
         knife('list --local /environments').should_succeed "/environments/x.json\n"
       end
 
-      it 'knife raw -z -i empty.json -m PUT /nodes/x' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /nodes/x").should_succeed( /"x"/ )
+      it 'knife raw -z -i dummynode.json -m PUT /nodes/x' do
+        knife("raw -z -i #{path_to('dummynode.json')} -m PUT /nodes/x").should_succeed( /"x"/ )
         knife('list --local /nodes').should_succeed "/nodes/x.json\n"
+        knife('show -z /nodes/x.json --verbose').should_succeed /"bar"/
       end
 
       it 'knife raw -z -i empty.json -m PUT /roles/x' do
@@ -177,9 +182,9 @@ EOM
         knife('list --local /users').should_succeed "/users/x.json\n"
       end
 
-      it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
+      it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', :skip => (RUBY_VERSION < "1.9") do
         knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
-        IO.read(path_to('roles/x.json')).should == <<EOM.strip
+        expect(IO.read(path_to('roles/x.json'))).to eq <<EOM.strip
 {
   "name": "x",
   "description": "hi there"
@@ -193,10 +198,11 @@ EOM
     context 'POST /TYPE/NAME' do
       before do
         file 'empty.json', { 'name' => 'z' }
+        file 'dummynode.json', { "name" => "z", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => {"foo" => "bar"}}
         file 'empty_x.json', { 'name' => 'x' }
         file 'empty_id.json', { 'id' => 'z' }
         file 'rolestuff.json', '{"description":"hi there","name":"x"}'
-        file 'cookbooks_to_upload/z/metadata.rb', "version '1.0.0'"
+        file 'cookbooks_to_upload/z/metadata.rb', cookbook_z_100_metadata_rb
       end
 
       it 'knife raw -z -i empty.json -m POST /clients' do
@@ -228,9 +234,10 @@ EOM
         knife('list --local /environments').should_succeed "/environments/z.json\n"
       end
 
-      it 'knife raw -z -i empty.json -m POST /nodes' do
-        knife("raw -z -i #{path_to('empty.json')} -m POST /nodes").should_succeed( /uri/ )
+      it 'knife raw -z -i dummynode.json -m POST /nodes' do
+        knife("raw -z -i #{path_to('dummynode.json')} -m POST /nodes").should_succeed( /uri/ )
         knife('list --local /nodes').should_succeed "/nodes/z.json\n"
+        knife('show -z /nodes/z.json').should_succeed /"bar"/
       end
 
       it 'knife raw -z -i empty.json -m POST /roles' do
@@ -243,9 +250,9 @@ EOM
         knife('list --local /users').should_succeed "/users/z.json\n"
       end
 
-      it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
+      it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', :skip => (RUBY_VERSION < "1.9") do
         knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed( /uri/ )
-        IO.read(path_to('roles/x.json')).should == <<EOM.strip
+        expect(IO.read(path_to('roles/x.json'))).to eq <<EOM.strip
 {
   "name": "x",
   "description": "hi there"

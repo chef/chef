@@ -21,65 +21,59 @@ require "spec_helper"
 
 describe Chef::DSL::RebootPending do
   describe "reboot_pending?" do
-    describe "in isoloation" do
+    describe "in isolation" do
       let(:recipe) { Object.new.extend(Chef::DSL::RebootPending) }
 
       before do
-        recipe.stub(:platform?).and_return(false)
+        allow(recipe).to receive(:platform?).and_return(false)
       end
 
       context "platform is windows" do
         before do
-          recipe.stub(:platform?).with('windows').and_return(true)
-          recipe.stub(:registry_key_exists?).and_return(false)
-          recipe.stub(:registry_value_exists?).and_return(false)
+          allow(recipe).to receive(:platform?).with('windows').and_return(true)
+          allow(recipe).to receive(:registry_key_exists?).and_return(false)
+          allow(recipe).to receive(:registry_value_exists?).and_return(false)
         end
   
         it 'should return true if "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations" exists' do
-          recipe.stub(:registry_value_exists?).with('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => 'PendingFileRenameOperations' }).and_return(true)
-          expect(recipe.reboot_pending?).to be_true
+          allow(recipe).to receive(:registry_value_exists?).with('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => 'PendingFileRenameOperations' }).and_return(true)
+          expect(recipe.reboot_pending?).to be_truthy
         end
   
         it 'should return true if "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" exists' do
-          recipe.stub(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired').and_return(true)
-          expect(recipe.reboot_pending?).to be_true
+          allow(recipe).to receive(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired').and_return(true)
+          expect(recipe.reboot_pending?).to be_truthy
         end
   
         it 'should return true if key "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired" exists' do
-          recipe.stub(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired').and_return(true)
-          expect(recipe.reboot_pending?).to be_true
+          allow(recipe).to receive(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired').and_return(true)
+          expect(recipe.reboot_pending?).to be_truthy
         end
   
         it 'should return true if value "HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile" contains specific data' do
-          recipe.stub(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').and_return(true)
-          recipe.stub(:registry_get_values).with('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').and_return(
+          allow(recipe).to receive(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').and_return(true)
+          allow(recipe).to receive(:registry_get_values).with('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').and_return(
                 [{:name => "Flags", :type => :dword, :data => 3}])
-          expect(recipe.reboot_pending?).to be_true
+          expect(recipe.reboot_pending?).to be_truthy
         end
       end
   
       context "platform is ubuntu" do
         before do
-          recipe.stub(:platform?).with('ubuntu').and_return(true)
+          allow(recipe).to receive(:platform?).with('ubuntu').and_return(true)
         end
   
         it 'should return true if /var/run/reboot-required exists' do
-          File.stub(:exists?).with('/var/run/reboot-required').and_return(true)
-          expect(recipe.reboot_pending?).to be_true
+          allow(File).to receive(:exists?).with('/var/run/reboot-required').and_return(true)
+          expect(recipe.reboot_pending?).to be_truthy
         end
   
         it 'should return false if /var/run/reboot-required does not exist' do
-          File.stub(:exists?).with('/var/run/reboot-required').and_return(false)
-          expect(recipe.reboot_pending?).to be_false
+          allow(File).to receive(:exists?).with('/var/run/reboot-required').and_return(false)
+          expect(recipe.reboot_pending?).to be_falsey
         end
       end
 
-      context "platform is not supported" do
-        it 'should raise an exception' do
-          recipe.stub_chain(:node, :[]).with(:platform).and_return('msdos')
-          expect { recipe.reboot_pending? }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
-        end
-      end
     end # describe in isolation
 
     describe "in a recipe" do

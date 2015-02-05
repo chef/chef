@@ -17,22 +17,18 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::RpmPackage, "initialize" do
 
-  before(:each) do
-    @resource = Chef::Resource::RpmPackage.new("foo")
+  %w{linux aix}.each do |os|
+    static_provider_resolution(
+      resource: Chef::Resource::RpmPackage,
+      provider: Chef::Provider::Package::Rpm,
+      name: :rpm_package,
+      action: :install,
+      os: os
+    )
   end
 
-  it "should return a Chef::Resource::RpmPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::RpmPackage)
-  end
-
-  it "should set the resource_name to :rpm_package" do
-    @resource.resource_name.should eql(:rpm_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Rpm" do
-    @resource.provider.should eql(Chef::Provider::Package::Rpm)
-  end
 end

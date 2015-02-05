@@ -18,6 +18,7 @@
 # limitations under the License.
 #
 
+require 'chef/exceptions'
 require 'chef/mash'
 require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
@@ -34,28 +35,31 @@ class Chef
     # about Chef Cookbooks.
     class Metadata
 
-      NAME              = 'name'.freeze
-      DESCRIPTION       = 'description'.freeze
-      LONG_DESCRIPTION  = 'long_description'.freeze
-      MAINTAINER        = 'maintainer'.freeze
-      MAINTAINER_EMAIL  = 'maintainer_email'.freeze
-      LICENSE           = 'license'.freeze
-      PLATFORMS         = 'platforms'.freeze
-      DEPENDENCIES      = 'dependencies'.freeze
-      RECOMMENDATIONS   = 'recommendations'.freeze
-      SUGGESTIONS       = 'suggestions'.freeze
-      CONFLICTING       = 'conflicting'.freeze
-      PROVIDING         = 'providing'.freeze
-      REPLACING         = 'replacing'.freeze
-      ATTRIBUTES        = 'attributes'.freeze
-      GROUPINGS         = 'groupings'.freeze
-      RECIPES           = 'recipes'.freeze
-      VERSION           = 'version'.freeze
+      NAME                   = 'name'.freeze
+      DESCRIPTION            = 'description'.freeze
+      LONG_DESCRIPTION       = 'long_description'.freeze
+      MAINTAINER             = 'maintainer'.freeze
+      MAINTAINER_EMAIL       = 'maintainer_email'.freeze
+      LICENSE                = 'license'.freeze
+      PLATFORMS              = 'platforms'.freeze
+      DEPENDENCIES           = 'dependencies'.freeze
+      RECOMMENDATIONS        = 'recommendations'.freeze
+      SUGGESTIONS            = 'suggestions'.freeze
+      CONFLICTING            = 'conflicting'.freeze
+      PROVIDING              = 'providing'.freeze
+      REPLACING              = 'replacing'.freeze
+      ATTRIBUTES             = 'attributes'.freeze
+      GROUPINGS              = 'groupings'.freeze
+      RECIPES                = 'recipes'.freeze
+      VERSION                = 'version'.freeze
+      SOURCE_URL             = 'source_url'.freeze
+      ISSUES_URL             = 'issues_url'.freeze
 
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
                             :maintainer_email, :license, :platforms, :dependencies,
                             :recommendations, :suggestions, :conflicting, :providing,
-                            :replacing, :attributes, :groupings, :recipes, :version]
+                            :replacing, :attributes, :groupings, :recipes, :version,
+                            :source_url, :issues_url ]
 
       VERSION_CONSTRAINTS = {:depends     => DEPENDENCIES,
                              :recommends  => RECOMMENDATIONS,
@@ -67,18 +71,17 @@ class Chef
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
 
-      attr_reader   :cookbook,
-                    :platforms,
-                    :dependencies,
-                    :recommendations,
-                    :suggestions,
-                    :conflicting,
-                    :providing,
-                    :replacing,
-                    :attributes,
-                    :groupings,
-                    :recipes,
-                    :version
+      attr_reader :platforms
+      attr_reader :dependencies
+      attr_reader :recommendations
+      attr_reader :suggestions
+      attr_reader :conflicting
+      attr_reader :providing
+      attr_reader :replacing
+      attr_reader :attributes
+      attr_reader :groupings
+      attr_reader :recipes
+      attr_reader :version
 
       # Builds a new Chef::Cookbook::Metadata object.
       #
@@ -90,14 +93,16 @@ class Chef
       #
       # === Returns
       # metadata<Chef::Cookbook::Metadata>
-      def initialize(cookbook=nil, maintainer='YOUR_COMPANY_NAME', maintainer_email='YOUR_EMAIL', license='none')
-        @cookbook = cookbook
-        @name = cookbook ? cookbook.name : ""
-        @long_description = ""
-        self.maintainer(maintainer)
-        self.maintainer_email(maintainer_email)
-        self.license(license)
-        self.description('A fabulous new cookbook')
+      def initialize
+        @name =  nil
+
+        @description = ''
+        @long_description = ''
+        @license = 'All rights reserved'
+
+        @maintainer = nil
+        @maintainer_email = nil
+
         @platforms = Mash.new
         @dependencies = Mash.new
         @recommendations = Mash.new
@@ -108,21 +113,43 @@ class Chef
         @attributes = Mash.new
         @groupings = Mash.new
         @recipes = Mash.new
-        @version = Version.new "0.0.0"
-        if cookbook
-          @recipes = cookbook.fully_qualified_recipe_names.inject({}) do |r, e|
-            e = self.name.to_s if e =~ /::default$/
-            r[e] ||= ""
-            self.provides e
-            r
-          end
-        end
+        @version = Version.new("0.0.0")
+        @source_url = ''
+        @issues_url = ''
+
+        @errors = []
       end
 
       def ==(other)
         COMPARISON_FIELDS.inject(true) do |equal_so_far, field|
           equal_so_far && other.respond_to?(field) && (other.send(field) == send(field))
         end
+      end
+
+      # Whether this metadata is valid. In order to be valid, all required
+      # fields must be set. Chef's validation implementation checks the content
+      # of a given field when setting (and raises an error if the content does
+      # not meet the criteria), so the content of the fields is not considered
+      # when checking validity.
+      #
+      # === Returns
+      # valid<Boolean>:: Whether this metadata object is valid
+      def valid?
+        run_validation
+        @errors.empty?
+      end
+
+      # A list of validation errors for this metadata object. See #valid? for
+      # comments about the validation criteria.
+      #
+      # If there are any validation errors, one or more error strings will be
+      # returned. Otherwise an empty array is returned.
+      #
+      # === Returns
+      # error messages<Array>:: Whether this metadata object is valid
+      def errors
+        run_validation
+        @errors
       end
 
       # Sets the cookbooks maintainer, or returns it.
@@ -200,11 +227,11 @@ class Chef
         )
       end
 
-      # Sets the current cookbook version, or returns it.  Can be two or three digits, seperated
+      # Sets the current cookbook version, or returns it.  Can be two or three digits, separated
       # by dots.  ie: '2.1', '1.5.4' or '0.9'.
       #
       # === Parameters
-      # version<String>:: The curent version, as a string
+      # version<String>:: The current version, as a string
       #
       # === Returns
       # version<String>:: Returns the current version
@@ -219,7 +246,7 @@ class Chef
       # Sets the name of the cookbook, or returns it.
       #
       # === Parameters
-      # name<String>:: The curent cookbook name.
+      # name<String>:: The current cookbook name.
       #
       # === Returns
       # name<String>:: Returns the current cookbook name.
@@ -365,7 +392,33 @@ class Chef
         @recipes[name] = description
       end
 
-      # Adds an attribute )hat a user needs to configure for this cookbook. Takes
+      # Sets the cookbook's recipes to the list of recipes in the given
+      # +cookbook+. Any recipe that already has a description (if set by the
+      # #recipe method) will not be updated.
+      #
+      # === Parameters
+      # cookbook<CookbookVersion>:: CookbookVersion object representing the cookbook
+      # description<String>:: The description of the recipe
+      #
+      # === Returns
+      # recipe_unqualified_names<Array>:: An array of the recipe names given by the cookbook
+      def recipes_from_cookbook_version(cookbook)
+        cookbook.fully_qualified_recipe_names.map do |recipe_name|
+          unqualified_name =
+            if recipe_name =~ /::default$/
+              self.name.to_s
+            else
+              recipe_name
+            end
+
+          @recipes[unqualified_name] ||= ""
+          provides(unqualified_name)
+
+          unqualified_name
+        end
+      end
+
+      # Adds an attribute that a user needs to configure for this cookbook. Takes
       # a name (with the / notation for a nested attribute), followed by any of
       # these options
       #
@@ -395,7 +448,9 @@ class Chef
             :type => { :equal_to => [ "string", "array", "hash", "symbol", "boolean", "numeric" ], :default => "string" },
             :required => { :equal_to => [ "required", "recommended", "optional", true, false ], :default => "optional" },
             :recipes => { :kind_of => [ Array ], :default => [] },
-            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] }
+            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] },
+            :source_url => { :kind_of => String },
+            :issues_url => { :kind_of => String }
           }
         )
         options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
@@ -421,23 +476,25 @@ class Chef
 
       def to_hash
         {
-          NAME             => self.name,
-          DESCRIPTION      => self.description,
-          LONG_DESCRIPTION => self.long_description,
-          MAINTAINER       => self.maintainer,
-          MAINTAINER_EMAIL => self.maintainer_email,
-          LICENSE          => self.license,
-          PLATFORMS        => self.platforms,
-          DEPENDENCIES     => self.dependencies,
-          RECOMMENDATIONS  => self.recommendations,
-          SUGGESTIONS      => self.suggestions,
-          CONFLICTING      => self.conflicting,
-          PROVIDING        => self.providing,
-          REPLACING        => self.replacing,
-          ATTRIBUTES       => self.attributes,
-          GROUPINGS        => self.groupings,
-          RECIPES          => self.recipes,
-          VERSION          => self.version
+          NAME                   => self.name,
+          DESCRIPTION            => self.description,
+          LONG_DESCRIPTION       => self.long_description,
+          MAINTAINER             => self.maintainer,
+          MAINTAINER_EMAIL       => self.maintainer_email,
+          LICENSE                => self.license,
+          PLATFORMS              => self.platforms,
+          DEPENDENCIES           => self.dependencies,
+          RECOMMENDATIONS        => self.recommendations,
+          SUGGESTIONS            => self.suggestions,
+          CONFLICTING            => self.conflicting,
+          PROVIDING              => self.providing,
+          REPLACING              => self.replacing,
+          ATTRIBUTES             => self.attributes,
+          GROUPINGS              => self.groupings,
+          RECIPES                => self.recipes,
+          VERSION                => self.version,
+          SOURCE_URL             => self.source_url,
+          ISSUES_URL             => self.issues_url
         }
       end
 
@@ -469,6 +526,8 @@ class Chef
         @groupings                    = o[GROUPINGS] if o.has_key?(GROUPINGS)
         @recipes                      = o[RECIPES] if o.has_key?(RECIPES)
         @version                      = o[VERSION] if o.has_key?(VERSION)
+        @source_url                   = o[SOURCE_URL] if o.has_key?(SOURCE_URL)
+        @issues_url                   = o[ISSUES_URL] if o.has_key?(ISSUES_URL)
         self
       end
 
@@ -480,10 +539,12 @@ class Chef
       def self.validate_json(json_str)
         o = Chef::JSONCompat.from_json(json_str)
         metadata = new()
-        VERSION_CONSTRAINTS.each do |method_name, hash_key|
-          if constraints = o[hash_key]
-           constraints.each do |cb_name, constraints|
-             metadata.send(method_name, cb_name, *Array(constraints))
+        VERSION_CONSTRAINTS.each do |dependency_type, hash_key|
+          if dependency_group = o[hash_key]
+           dependency_group.each do |cb_name, constraints|
+             if metadata.respond_to?(method_name)
+               metadata.public_send(method_name, cb_name, *Array(constraints))
+             end
            end
           end
         end
@@ -495,7 +556,43 @@ class Chef
         from_hash(o)
       end
 
+      # Sets the cookbook's source URL, or returns it.
+      #
+      # === Parameters
+      # maintainer<String>:: The source URL
+      #
+      # === Returns
+      # source_url<String>:: Returns the current source URL.
+      def source_url(arg=nil)
+        set_or_return(
+          :source_url,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      # Sets the cookbook's issues URL, or returns it.
+      #
+      # === Parameters
+      # issues_url<String>:: The issues URL
+      #
+      # === Returns
+      # issues_url<String>:: Returns the current issues URL.
+      def issues_url(arg=nil)
+        set_or_return(
+          :issues_url,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
     private
+
+      def run_validation
+        if name.nil?
+          @errors = ["The `name' attribute is required in cookbook metadata"]
+        end
+      end
 
       def new_args_format(caller_name, dep_name, version_constraints)
         if version_constraints.empty?

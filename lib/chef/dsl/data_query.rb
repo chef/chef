@@ -20,6 +20,7 @@ require 'chef/search/query'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
 require 'chef/encrypted_data_bag_item'
+require 'chef/encrypted_data_bag_item/check_encrypted'
 
 class Chef
   module DSL
@@ -28,6 +29,7 @@ class Chef
     # Provides DSL for querying data from the chef-server via search or data
     # bag.
     module DataQuery
+      include Chef::EncryptedDataBagItem::CheckEncrypted
 
       def search(*args, &block)
         # If you pass a block, or have at least the start argument, do raw result parsing
@@ -53,14 +55,31 @@ class Chef
         raise
       end
 
-      def data_bag_item(bag, item)
+      def data_bag_item(bag, item, secret=nil)
         DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
-        DataBagItem.load(bag, item)
+
+        item = DataBagItem.load(bag, item)
+        if encrypted?(item.raw_data)
+          Log.debug("Data bag item looks encrypted: #{bag.inspect} #{item.inspect}")
+
+          # Try to load the data bag item secret, if secret is not provided.
+          # Chef::EncryptedDataBagItem.load_secret may throw a variety of errors.
+          begin
+            secret ||= EncryptedDataBagItem.load_secret
+            item = EncryptedDataBagItem.new(item.raw_data, secret)
+          rescue Exception
+            Log.error("Failed to load secret for encrypted data bag item: #{bag.inspect} #{item.inspect}")
+            raise
+          end
+        end
+        
+        item
       rescue Exception
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
         raise
       end
+
     end
   end
 end
@@ -68,4 +87,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
 require 'chef/mixin/language'
-

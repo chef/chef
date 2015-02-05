@@ -33,6 +33,7 @@ class Chef
         MAX_PREFERRED_LENGTH                = 0xFFFF
 
         NERR_Success                        = 0
+        NERR_UserNotFound                   = 2221
 
         ffi_lib "netapi32"
 

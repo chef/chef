@@ -28,7 +28,7 @@ class Chef
       SPECIAL_TIME_VALUES = [:reboot, :yearly, :annually, :monthly, :weekly, :daily, :midnight, :hourly]
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :time, :command, :mailto, :path, :shell, :home, :environment]
       WEEKDAY_SYMBOLS = [:sunday, :monday, :tuesday, :wednesday, :thursday, :friday, :saturday]
-      
+
       CRON_PATTERN = /\A([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+|[a-zA-Z]{3})\s([-0-9*,\/]+|[a-zA-Z]{3})\s(.*)/
       SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join('|')}))\s(.*)/
       ENV_PATTERN = /\A(\S+)=(\S*)/
@@ -118,6 +118,12 @@ class Chef
             when ENV_PATTERN
               crontab << line unless cron_found
               next
+            when SPECIAL_PATTERN
+              if cron_found
+                cron_found = false
+                crontab << newcron
+                next
+              end
             when CRON_PATTERN
               if cron_found
                 cron_found = false
@@ -163,6 +169,11 @@ class Chef
               next
             when ENV_PATTERN
               next if cron_found
+            when SPECIAL_PATTERN
+              if cron_found
+                cron_found = false
+                next
+              end
             when CRON_PATTERN
               if cron_found
                 cron_found = false

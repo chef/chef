@@ -40,6 +40,11 @@ class Chef
           true
         end
 
+        # An empty children array is an empty dir
+        def empty?
+          children.empty?
+        end
+
         # Abstract: children
       end
     end

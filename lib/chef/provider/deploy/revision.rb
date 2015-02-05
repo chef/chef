@@ -27,6 +27,8 @@ class Chef
   class Provider
     class Deploy
       class Revision < Chef::Provider::Deploy
+        provides :deploy_revision
+        provides :deploy_branch
 
         def all_releases
           sorted_releases
@@ -42,7 +44,7 @@ class Chef
 
           known_releases = sorted_releases
 
-          Dir["#{new_resource.deploy_to}/releases/*"].each do |release_dir|
+          Dir["#{Chef::Util::PathHelper.escape_glob(new_resource.deploy_to)}/releases/*"].each do |release_dir|
             unless known_releases.include?(release_dir)
               converge_by("Remove unknown release in #{release_dir}") do
                 FileUtils.rm_rf(release_dir)
@@ -85,12 +87,12 @@ class Chef
         end
 
         def sorted_releases_from_filesystem
-          Dir.glob(new_resource.deploy_to + "/releases/*").sort_by { |d| ::File.ctime(d) }
+          Dir.glob(Chef::Util::PathHelper.escape_glob(new_resource.deploy_to) + "/releases/*").sort_by { |d| ::File.ctime(d) }
         end
 
         def load_cache
           begin
-            Chef::JSONCompat.from_json(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
+            Chef::JSONCompat.parse(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
           rescue Chef::Exceptions::FileNotFound
             sorted_releases_from_filesystem
           end

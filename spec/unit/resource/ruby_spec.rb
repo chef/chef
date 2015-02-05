@@ -25,16 +25,16 @@ describe Chef::Resource::Ruby do
   end
 
   it "should create a new Chef::Resource::Ruby" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Ruby)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Ruby)
   end
 
   it "should have a resource name of :ruby" do
-    @resource.resource_name.should eql(:ruby)
+    expect(@resource.resource_name).to eql(:ruby)
   end
 
   it "should have an interpreter of ruby" do
-    @resource.interpreter.should eql("ruby")
+    expect(@resource.interpreter).to eql("ruby")
   end
 
 end

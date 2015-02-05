@@ -36,7 +36,11 @@ class Chef
           result
         end
 
-        def preserve_key(key)
+        def normalize_for_post(group, entry)
+          normalize_for_put(group, entry)
+        end
+
+        def preserve_key?(key)
           return key == 'name'
         end
 

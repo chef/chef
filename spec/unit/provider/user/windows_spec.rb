@@ -36,10 +36,16 @@ describe Chef::Provider::User::Windows do
     @current_resource = Chef::Resource::User.new("monkey")
 
     @net_user = double("Chef::Util::Windows::NetUser")
-    Chef::Util::Windows::NetUser.stub(:new).and_return(@net_user)
+    allow(Chef::Util::Windows::NetUser).to receive(:new).and_return(@net_user)
 
     @provider = Chef::Provider::User::Windows.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
+  end
+
+  it "creates a net_user object with the provided username" do
+    @new_resource.username "not-monkey"
+    expect(Chef::Util::Windows::NetUser).to receive(:new).with("not-monkey")
+    @provider = Chef::Provider::User::Windows.new(@new_resource, @run_context)
   end
 
   describe "when comparing the user's current attributes to the desired attributes" do
@@ -53,29 +59,30 @@ describe Chef::Provider::User::Windows do
 
       @provider.current_resource = @new_resource.clone
     end
+
     describe "and the attributes match" do
       it "doesn't set the comment field to be updated" do
-        @provider.set_options.should_not have_key(:full_name)
+        expect(@provider.set_options).not_to have_key(:full_name)
       end
 
       it "doesn't set the home directory to be updated" do
-        @provider.set_options.should_not have_key(:home_dir)
+        expect(@provider.set_options).not_to have_key(:home_dir)
       end
 
       it "doesn't set the group id to be updated" do
-        @provider.set_options.should_not have_key(:primary_group_id)
+        expect(@provider.set_options).not_to have_key(:primary_group_id)
       end
 
       it "doesn't set the user id to be updated" do
-        @provider.set_options.should_not have_key(:user_id)
+        expect(@provider.set_options).not_to have_key(:user_id)
       end
 
       it "doesn't set the shell to be updated" do
-        @provider.set_options.should_not have_key(:script_path)
+        expect(@provider.set_options).not_to have_key(:script_path)
       end
 
       it "doesn't set the password to be updated" do
-        @provider.set_options.should_not have_key(:password)
+        expect(@provider.set_options).not_to have_key(:password)
       end
 
     end
@@ -93,53 +100,53 @@ describe Chef::Provider::User::Windows do
       end
 
       it "marks the full_name field to be updated" do
-        @provider.set_options[:full_name].should == "Adam Jacob"
+        expect(@provider.set_options[:full_name]).to eq("Adam Jacob")
       end
 
       it "marks the home_dir attribute to be updated" do
-        @provider.set_options[:home_dir].should == '/home/adam'
+        expect(@provider.set_options[:home_dir]).to eq('/home/adam')
       end
 
       it "marks the primary_group_id attribute to be updated" do
-        @provider.set_options[:primary_group_id].should == 1000
+        expect(@provider.set_options[:primary_group_id]).to eq(1000)
       end
 
       it "marks the user_id attribute to be updated" do
-        @provider.set_options[:user_id].should == 1000
+        expect(@provider.set_options[:user_id]).to eq(1000)
       end
 
       it "marks the script_path attribute to be updated" do
-        @provider.set_options[:script_path].should == '/usr/bin/zsh'
+        expect(@provider.set_options[:script_path]).to eq('/usr/bin/zsh')
       end
 
       it "marks the password attribute to be updated" do
-        @provider.set_options[:password].should == 'abracadabra'
+        expect(@provider.set_options[:password]).to eq('abracadabra')
       end
     end
   end
 
   describe "when creating the user" do
     it "should call @net_user.add with the return of set_options" do
-      @provider.stub(:set_options).and_return(:name=> "monkey")
-      @net_user.should_receive(:add).with(:name=> "monkey")
+      allow(@provider).to receive(:set_options).and_return(:name=> "monkey")
+      expect(@net_user).to receive(:add).with(:name=> "monkey")
       @provider.create_user
     end
   end
 
   describe "manage_user" do
     before(:each) do
-      @provider.stub(:set_options).and_return(:name=> "monkey")
+      allow(@provider).to receive(:set_options).and_return(:name=> "monkey")
     end
 
     it "should call @net_user.update with the return of set_options" do
-      @net_user.should_receive(:update).with(:name=> "monkey")
+      expect(@net_user).to receive(:update).with(:name=> "monkey")
       @provider.manage_user
     end
   end
 
   describe "when removing the user" do
     it "should call @net_user.delete" do
-      @net_user.should_receive(:delete)
+      expect(@net_user).to receive(:delete)
       @provider.remove_user
     end
   end
@@ -150,28 +157,28 @@ describe Chef::Provider::User::Windows do
     end
 
     it "should return true if user is locked" do
-      @net_user.stub(:check_enabled).and_return(true)
-      @provider.check_lock.should eql(true)
+      allow(@net_user).to receive(:check_enabled).and_return(true)
+      expect(@provider.check_lock).to eql(true)
     end
 
     it "should return false if user is not locked" do
-      @net_user.stub(:check_enabled).and_return(false)
-      @provider.check_lock.should eql(false)
+      allow(@net_user).to receive(:check_enabled).and_return(false)
+      expect(@provider.check_lock).to eql(false)
     end
   end
 
   describe "locking the user" do
     it "should call @net_user.disable_account" do
-      @net_user.stub(:check_enabled).and_return(true)
-      @net_user.should_receive(:disable_account)
+      allow(@net_user).to receive(:check_enabled).and_return(true)
+      expect(@net_user).to receive(:disable_account)
       @provider.lock_user
     end
   end
 
   describe "unlocking the user" do
     it "should call @net_user.enable_account" do
-      @net_user.stub(:check_enabled).and_return(false)
-      @net_user.should_receive(:enable_account)
+      allow(@net_user).to receive(:check_enabled).and_return(false)
+      expect(@net_user).to receive(:enable_account)
       @provider.unlock_user
     end
   end

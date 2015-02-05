@@ -25,73 +25,135 @@ describe Chef::Knife::CookbookSiteShare do
 
   before(:each) do
     @knife = Chef::Knife::CookbookSiteShare.new
+    # Merge default settings in.
+    @knife.merge_configs
     @knife.name_args = ['cookbook_name', 'AwesomeSausage']
 
     @cookbook = Chef::CookbookVersion.new('cookbook_name')
 
     @cookbook_loader = double('Chef::CookbookLoader')
-    @cookbook_loader.stub(:cookbook_exists?).and_return(true)
-    @cookbook_loader.stub(:[]).and_return(@cookbook)
-    Chef::CookbookLoader.stub(:new).and_return(@cookbook_loader)
+    allow(@cookbook_loader).to receive(:cookbook_exists?).and_return(true)
+    allow(@cookbook_loader).to receive(:[]).and_return(@cookbook)
+    allow(Chef::CookbookLoader).to receive(:new).and_return(@cookbook_loader)
+
+    @noauth_rest = double(Chef::REST)
+    allow(@knife).to receive(:noauth_rest).and_return(@noauth_rest)
 
     @cookbook_uploader = Chef::CookbookUploader.new('herpderp', :rest => "norest")
-    Chef::CookbookUploader.stub(:new).and_return(@cookbook_uploader)
-    @cookbook_uploader.stub(:validate_cookbooks).and_return(true)
-    Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return(Dir.mktmpdir)
+    allow(Chef::CookbookUploader).to receive(:new).and_return(@cookbook_uploader)
+    allow(@cookbook_uploader).to receive(:validate_cookbooks).and_return(true)
+    allow(Chef::CookbookSiteStreamingUploader).to receive(:create_build_dir).and_return(Dir.mktmpdir)
 
-    @knife.stub(:shell_out!).and_return(true)
+    allow(@knife).to receive(:shell_out!).and_return(true)
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
 
   describe 'run' do
 
     before(:each) do
-      @knife.stub(:do_upload).and_return(true)
+      allow(@knife).to receive(:do_upload).and_return(true)
+      @category_response = {
+        "name" => "cookbook_name",
+        "category" => "Testing Category"
+      }
+      @bad_category_response = {
+        "error_code" => "NOT_FOUND",
+        "error_messages" => [
+            "Resource does not exist."
+        ]
+      }
+    end
+
+    it 'should set true to config[:dry_run] as default' do
+      expect(@knife.config[:dry_run]).to be_falsey
     end
 
     it 'should should print usage and exit when given no arguments' do
       @knife.name_args = []
-      @knife.should_receive(:show_usage)
-      @knife.ui.should_receive(:fatal)
-      lambda { @knife.run }.should raise_error(SystemExit)
+      expect(@knife).to receive(:show_usage)
+      expect(@knife.ui).to receive(:fatal)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
-    it 'should print usage and exit when given only 1 argument' do
+    it 'should not fail when given only 1 argument and can determine category' do
       @knife.name_args = ['cookbook_name']
-      @knife.should_receive(:show_usage)
-      @knife.ui.should_receive(:fatal)
-      lambda { @knife.run }.should raise_error(SystemExit)
+      expect(@noauth_rest).to receive(:get_rest).with("http://cookbooks.opscode.com/api/v1/cookbooks/cookbook_name").and_return(@category_response)
+      expect(@knife).to receive(:do_upload)
+      @knife.run
+    end
+
+    it 'should print error and exit when given only 1 argument and cannot determine category' do
+      @knife.name_args = ['cookbook_name']
+      expect(@noauth_rest).to receive(:get_rest).with("http://cookbooks.opscode.com/api/v1/cookbooks/cookbook_name").and_return(@bad_category_response)
+      expect(@knife.ui).to receive(:fatal)
+      expect { @knife.run }.to raise_error(SystemExit)
+    end
+
+    it 'should print error and exit when given only 1 argument and Chef::REST throws an exception' do
+      @knife.name_args = ['cookbook_name']
+      expect(@noauth_rest).to receive(:get_rest).with("http://cookbooks.opscode.com/api/v1/cookbooks/cookbook_name") { raise Errno::ECONNREFUSED, "Connection refused" }
+      expect(@knife.ui).to receive(:fatal)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
     it 'should check if the cookbook exists' do
-      @cookbook_loader.should_receive(:cookbook_exists?)
+      expect(@cookbook_loader).to receive(:cookbook_exists?)
       @knife.run
     end
 
     it "should exit and log to error if the cookbook doesn't exist" do
-      @cookbook_loader.stub(:cookbook_exists?).and_return(false)
-      @knife.ui.should_receive(:error)
-      lambda { @knife.run }.should raise_error(SystemExit)
+      allow(@cookbook_loader).to receive(:cookbook_exists?).and_return(false)
+      expect(@knife.ui).to receive(:error)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
-    it 'should make a tarball of the cookbook' do
-      @knife.should_receive(:shell_out!) do |args|
-        args.to_s.should match(/tar -czf/)
+    if File.exists?('/usr/bin/gnutar') || File.exists?('/bin/gnutar')
+      it 'should use gnutar to make a tarball of the cookbook' do
+        expect(@knife).to receive(:shell_out!) do |args|
+          expect(args.to_s).to match(/gnutar -czf/)
+        end
+        @knife.run
       end
-      @knife.run
+    else
+      it 'should make a tarball of the cookbook' do
+        expect(@knife).to receive(:shell_out!) do |args|
+          expect(args.to_s).to match(/tar -czf/)
+        end
+        @knife.run
+      end
     end
 
     it 'should exit and log to error when the tarball creation fails' do
-      @knife.stub(:shell_out!).and_raise(Chef::Exceptions::Exec)
-      @knife.ui.should_receive(:error)
-      lambda { @knife.run }.should raise_error(SystemExit)
+      allow(@knife).to receive(:shell_out!).and_raise(Chef::Exceptions::Exec)
+      expect(@knife.ui).to receive(:error)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
     it 'should upload the cookbook and clean up the tarball' do
-      @knife.should_receive(:do_upload)
-      FileUtils.should_receive(:rm_rf)
+      expect(@knife).to receive(:do_upload)
+      expect(FileUtils).to receive(:rm_rf)
       @knife.run
+    end
+
+    context "when the --dry-run flag is specified" do
+      before do
+        allow(Chef::CookbookSiteStreamingUploader).to receive(:create_build_dir).and_return("/var/tmp/dummy")
+        @knife.config = { :dry_run => true }
+        allow(@knife).to receive_message_chain(:shell_out!, :stdout).and_return('file')
+      end
+
+      it "should list files in the tarball" do
+        expect(@knife).to receive(:shell_out!).with("tar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})
+        expect(@knife).to receive(:shell_out!).with("tar -tzf #{@cookbook.name}.tgz", {:cwd => "/var/tmp/dummy"})
+        @knife.run
+      end
+
+      it "does not upload the cookbook" do
+        allow(@knife).to receive(:shell_out!).and_return(true)
+        expect(@knife).not_to receive(:do_upload)
+        @knife.run
+      end
     end
   end
 
@@ -99,46 +161,46 @@ describe Chef::Knife::CookbookSiteShare do
 
     before(:each) do
       @upload_response = double('Net::HTTPResponse')
-      Chef::CookbookSiteStreamingUploader.stub(:post).and_return(@upload_response)
+      allow(Chef::CookbookSiteStreamingUploader).to receive(:post).and_return(@upload_response)
 
       @stdout = StringIO.new
       @stderr = StringIO.new
-      @knife.ui.stub(:stdout).and_return(@stdout)
-      @knife.ui.stub(:stderr).and_return(@stderr)
-      File.stub(:open).and_return(true)
+      allow(@knife.ui).to receive(:stdout).and_return(@stdout)
+      allow(@knife.ui).to receive(:stderr).and_return(@stderr)
+      allow(File).to receive(:open).and_return(true)
     end
 
-    it 'should post the cookbook to "http://cookbooks.opscode.com"' do
-      response_text = {:uri => 'http://cookbooks.opscode.com/cookbooks/cookbook_name'}.to_json
-      @upload_response.stub(:body).and_return(response_text)
-      @upload_response.stub(:code).and_return(201)
-      Chef::CookbookSiteStreamingUploader.should_receive(:post).with(/cookbooks\.opscode\.com/, anything(), anything(), anything())
+    it 'should post the cookbook to "https://supermarket.getchef.com"' do
+      response_text = Chef::JSONCompat.to_json({:uri => 'https://supermarket.getchef.com/cookbooks/cookbook_name'})
+      allow(@upload_response).to receive(:body).and_return(response_text)
+      allow(@upload_response).to receive(:code).and_return(201)
+      expect(Chef::CookbookSiteStreamingUploader).to receive(:post).with(/supermarket\.getchef\.com/, anything(), anything(), anything())
       @knife.run
     end
 
     it 'should alert the user when a version already exists' do
-      response_text = {:error_messages => ['Version already exists']}.to_json
-      @upload_response.stub(:body).and_return(response_text)
-      @upload_response.stub(:code).and_return(409)
-      lambda { @knife.run }.should raise_error(SystemExit)
-      @stderr.string.should match(/ERROR(.+)cookbook already exists/)
+      response_text = Chef::JSONCompat.to_json({:error_messages => ['Version already exists']})
+      allow(@upload_response).to receive(:body).and_return(response_text)
+      allow(@upload_response).to receive(:code).and_return(409)
+      expect { @knife.run }.to raise_error(SystemExit)
+      expect(@stderr.string).to match(/ERROR(.+)cookbook already exists/)
     end
 
     it 'should pass any errors on to the user' do
-      response_text = {:error_messages => ["You're holding it wrong"]}.to_json
-      @upload_response.stub(:body).and_return(response_text)
-      @upload_response.stub(:code).and_return(403)
-      lambda { @knife.run }.should raise_error(SystemExit)
-      @stderr.string.should match("ERROR(.*)You're holding it wrong")
+      response_text = Chef::JSONCompat.to_json({:error_messages => ["You're holding it wrong"]})
+      allow(@upload_response).to receive(:body).and_return(response_text)
+      allow(@upload_response).to receive(:code).and_return(403)
+      expect { @knife.run }.to raise_error(SystemExit)
+      expect(@stderr.string).to match("ERROR(.*)You're holding it wrong")
     end
 
     it 'should print the body if no errors are exposed on failure' do
-      response_text = {:system_error => "Your call was dropped", :reason => "There's a map for that"}.to_json
-      @upload_response.stub(:body).and_return(response_text)
-      @upload_response.stub(:code).and_return(500)
-      @knife.ui.should_receive(:error).with(/#{Regexp.escape(response_text)}/)#.ordered
-      @knife.ui.should_receive(:error).with(/Unknown error/)#.ordered
-      lambda { @knife.run }.should raise_error(SystemExit)
+      response_text = Chef::JSONCompat.to_json({:system_error => "Your call was dropped", :reason => "There's a map for that"})
+      allow(@upload_response).to receive(:body).and_return(response_text)
+      allow(@upload_response).to receive(:code).and_return(500)
+      expect(@knife.ui).to receive(:error).with(/#{Regexp.escape(response_text)}/)#.ordered
+      expect(@knife.ui).to receive(:error).with(/Unknown error/)#.ordered
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
   end

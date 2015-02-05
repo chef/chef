@@ -22,10 +22,13 @@ require 'chef/mixin/file_class'
 require 'chef/resource/link'
 require 'chef/provider'
 require 'chef/scan_access_control'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider
     class Link < Chef::Provider
+
+      provides :link
 
       include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::FileClass

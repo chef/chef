@@ -41,7 +41,7 @@ describe "Chef::Platform supports" do
     :ibm_powerkvm
   ].each do |platform|
     it "#{platform}" do
-      Chef::Platform.platforms.should have_key(platform)
+      expect(Chef::Platform.platforms).to have_key(platform)
     end
   end
 end
@@ -86,57 +86,57 @@ describe Chef::Platform do
 
     it "should allow you to look up a platform by name and version, returning the provider map for it" do
       pmap = Chef::Platform.find("Darwin", "9.2.2")
-      pmap.should be_a_kind_of(Hash)
-      pmap[:file].should eql("darwinian")
+      expect(pmap).to be_a_kind_of(Hash)
+      expect(pmap[:file]).to eql("darwinian")
     end
 
     it "should allow you to look up a platform by name and version using \"greater than\" style operators" do
       pmap = Chef::Platform.find("Darwin", "11.1.0")
-      pmap.should be_a_kind_of(Hash)
-      pmap[:file].should eql("new_darwinian")
+      expect(pmap).to be_a_kind_of(Hash)
+      expect(pmap[:file]).to eql("new_darwinian")
     end
 
     it "should use the default providers for an os if the specific version does not exist" do
       pmap = Chef::Platform.find("Darwin", "1")
-      pmap.should be_a_kind_of(Hash)
-      pmap[:file].should eql("old school")
+      expect(pmap).to be_a_kind_of(Hash)
+      expect(pmap[:file]).to eql("old school")
     end
 
     it "should use the default providers if the os doesn't give me a default, but does exist" do
       pmap = Chef::Platform.find("mars_volta", "1")
-      pmap.should be_a_kind_of(Hash)
-      pmap[:file].should eql(Chef::Provider::File)
+      expect(pmap).to be_a_kind_of(Hash)
+      expect(pmap[:file]).to eql(Chef::Provider::File)
     end
 
     it "should use the default provider if the os does not exist" do
       pmap = Chef::Platform.find("AIX", "1")
-      pmap.should be_a_kind_of(Hash)
-      pmap[:file].should eql(Chef::Provider::File)
+      expect(pmap).to be_a_kind_of(Hash)
+      expect(pmap[:file]).to eql(Chef::Provider::File)
     end
 
     it "should merge the defaults for an os with the specific version" do
       pmap = Chef::Platform.find("Darwin", "9.2.2")
-      pmap[:file].should eql("darwinian")
-      pmap[:snicker].should eql("snack")
+      expect(pmap[:file]).to eql("darwinian")
+      expect(pmap[:snicker]).to eql("snack")
     end
 
     it "should merge the defaults for an os with the universal defaults" do
       pmap = Chef::Platform.find("Darwin", "9.2.2")
-      pmap[:file].should eql("darwinian")
-      pmap[:pax].should eql("brittania")
+      expect(pmap[:file]).to eql("darwinian")
+      expect(pmap[:pax]).to eql("brittania")
     end
 
     it "should allow you to look up a provider for a platform directly by symbol" do
-      Chef::Platform.find_provider("Darwin", "9.2.2", :file).should eql("darwinian")
+      expect(Chef::Platform.find_provider("Darwin", "9.2.2", :file)).to eql("darwinian")
     end
 
     it "should raise an exception if a provider cannot be found for a resource type" do
-      lambda { Chef::Platform.find_provider("Darwin", "9.2.2", :coffee) }.should raise_error(ArgumentError)
+      expect { Chef::Platform.find_provider("Darwin", "9.2.2", :coffee) }.to raise_error(ArgumentError)
     end
 
     it "should look up a provider for a resource with a Chef::Resource object" do
       kitty = Chef::Resource::Cat.new("loulou")
-      Chef::Platform.find_provider("Darwin", "9.2.2", kitty).should eql("nice")
+      expect(Chef::Platform.find_provider("Darwin", "9.2.2", kitty)).to eql("nice")
     end
 
     it "should look up a provider with a node and a Chef::Resource object" do
@@ -145,21 +145,21 @@ describe Chef::Platform do
       node.name("Intel")
       node.automatic_attrs[:platform] = "mac_os_x"
       node.automatic_attrs[:platform_version] = "9.2.2"
-      Chef::Platform.find_provider_for_node(node, kitty).should eql("nice")
+      expect(Chef::Platform.find_provider_for_node(node, kitty)).to eql("nice")
     end
 
     it "should not throw an exception when the platform version has an unknown format" do
-      Chef::Platform.find_provider(:darwin, "bad-version", :file).should eql("old school")
+      expect(Chef::Platform.find_provider(:darwin, "bad-version", :file)).to eql("old school")
     end
 
     it "should prefer an explicit provider" do
       kitty = Chef::Resource::Cat.new("loulou")
-      kitty.stub(:provider).and_return(Chef::Provider::File)
+      allow(kitty).to receive(:provider).and_return(Chef::Provider::File)
       node = Chef::Node.new
       node.name("Intel")
       node.automatic_attrs[:platform] = "mac_os_x"
       node.automatic_attrs[:platform_version] = "9.2.2"
-      Chef::Platform.find_provider_for_node(node, kitty).should eql(Chef::Provider::File)
+      expect(Chef::Platform.find_provider_for_node(node, kitty)).to eql(Chef::Provider::File)
     end
 
     it "should look up a provider based on the resource name if nothing else matches" do
@@ -170,7 +170,7 @@ describe Chef::Platform do
       node.name("Intel")
       node.automatic_attrs[:platform] = "mac_os_x"
       node.automatic_attrs[:platform_version] = "8.5"
-      Chef::Platform.find_provider_for_node(node, kitty).should eql(Chef::Provider::Cat)
+      expect(Chef::Platform.find_provider_for_node(node, kitty)).to eql(Chef::Provider::Cat)
     end
 
     def setup_file_resource
@@ -184,26 +184,26 @@ describe Chef::Platform do
     it "returns a provider object given a Chef::Resource object which has a valid run context and an action" do
       file, run_context = setup_file_resource
       provider = Chef::Platform.provider_for_resource(file, :foo)
-      provider.should be_an_instance_of(Chef::Provider::File)
-      provider.new_resource.should equal(file)
-      provider.run_context.should equal(run_context)
+      expect(provider).to be_an_instance_of(Chef::Provider::File)
+      expect(provider.new_resource).to equal(file)
+      expect(provider.run_context).to equal(run_context)
     end
 
     it "returns a provider object given a Chef::Resource object which has a valid run context without an action" do
       file, run_context = setup_file_resource
       provider = Chef::Platform.provider_for_resource(file)
-      provider.should be_an_instance_of(Chef::Provider::File)
-      provider.new_resource.should equal(file)
-      provider.run_context.should equal(run_context)
+      expect(provider).to be_an_instance_of(Chef::Provider::File)
+      expect(provider.new_resource).to equal(file)
+      expect(provider.run_context).to equal(run_context)
     end
 
     it "raises an error when trying to find the provider for a resource with no run context" do
       file = Chef::Resource::File.new("whateva")
-      lambda {Chef::Platform.provider_for_resource(file)}.should raise_error(ArgumentError)
+      expect {Chef::Platform.provider_for_resource(file)}.to raise_error(ArgumentError)
     end
 
     it "does not support finding a provider by resource and node -- a run context is required" do
-      lambda {Chef::Platform.provider_for_node('node', 'resource')}.should raise_error(NotImplementedError)
+      expect {Chef::Platform.provider_for_node('node', 'resource')}.to raise_error(NotImplementedError)
     end
 
     it "should update the provider map with map" do
@@ -213,18 +213,18 @@ describe Chef::Platform do
            :resource => :file,
            :provider => "masterful"
       )
-      Chef::Platform.platforms[:darwin]["9.2.2"][:file].should eql("masterful")
+      expect(Chef::Platform.platforms[:darwin]["9.2.2"][:file]).to eql("masterful")
       Chef::Platform.set(
            :platform => :darwin,
            :resource => :file,
            :provider => "masterful"
       )
-      Chef::Platform.platforms[:darwin][:default][:file].should eql("masterful")
+      expect(Chef::Platform.platforms[:darwin][:default][:file]).to eql("masterful")
       Chef::Platform.set(
            :resource => :file,
            :provider => "masterful"
       )
-      Chef::Platform.platforms[:default][:file].should eql("masterful")
+      expect(Chef::Platform.platforms[:default][:file]).to eql("masterful")
 
       Chef::Platform.set(
            :platform => :hero,
@@ -232,13 +232,13 @@ describe Chef::Platform do
            :resource => :file,
            :provider => "masterful"
       )
-      Chef::Platform.platforms[:hero]["9.2.2"][:file].should eql("masterful")
+      expect(Chef::Platform.platforms[:hero]["9.2.2"][:file]).to eql("masterful")
 
       Chef::Platform.set(
            :resource => :file,
            :provider => "masterful"
       )
-      Chef::Platform.platforms[:default][:file].should eql("masterful")
+      expect(Chef::Platform.platforms[:default][:file]).to eql("masterful")
 
       Chef::Platform.platforms = {}
 
@@ -246,11 +246,11 @@ describe Chef::Platform do
            :resource => :file,
            :provider => "masterful"
       )
-      Chef::Platform.platforms[:default][:file].should eql("masterful")
+      expect(Chef::Platform.platforms[:default][:file]).to eql("masterful")
 
       Chef::Platform.platforms = { :neurosis => {} }
       Chef::Platform.set(:platform => :neurosis, :resource => :package, :provider => "masterful")
-      Chef::Platform.platforms[:neurosis][:default][:package].should eql("masterful")
+      expect(Chef::Platform.platforms[:neurosis][:default][:package]).to eql("masterful")
 
     end
 
@@ -260,8 +260,8 @@ describe Chef::Platform do
         :platform => :default,
         :provider => "new school"
       )
-      Chef::Platform.platforms[:default][:file].should eql("new school")
-      Chef::Platform.platforms[:default][:cat].should eql("nice")
+      expect(Chef::Platform.platforms[:default][:file]).to eql("new school")
+      expect(Chef::Platform.platforms[:default][:cat]).to eql("nice")
     end
 
   end
@@ -270,14 +270,37 @@ describe Chef::Platform do
 
     it "should use the solaris package provider on Solaris <11" do
       pmap = Chef::Platform.find("Solaris2", "5.9")
-      pmap[:package].should eql(Chef::Provider::Package::Solaris)
+      expect(pmap[:package]).to eql(Chef::Provider::Package::Solaris)
     end
 
     it "should use the IPS package provider on Solaris 11" do
       pmap = Chef::Platform.find("Solaris2", "5.11")
-      pmap[:package].should eql(Chef::Provider::Package::Ips)
+      expect(pmap[:package]).to eql(Chef::Provider::Package::Ips)
     end
 
+    it "should use the Redhat service provider on SLES11" do
+      1.upto(3) do |sp|
+        pmap = Chef::Platform.find("SUSE", "11.#{sp}")
+        expect(pmap[:service]).to eql(Chef::Provider::Service::Redhat)
+      end
+    end
+
+    it "should use the Systemd service provider on SLES12" do
+      pmap = Chef::Platform.find("SUSE", "12.0")
+      expect(pmap[:service]).to eql(Chef::Provider::Service::Systemd)
+    end
+
+    it "should use the SUSE group provider on SLES11" do
+      1.upto(3) do |sp|
+        pmap = Chef::Platform.find("SUSE", "11.#{sp}")
+        expect(pmap[:group]).to eql(Chef::Provider::Group::Suse)
+      end
+    end
+
+    it "should use the Gpasswd group provider on SLES12" do
+      pmap = Chef::Platform.find("SUSE", "12.0")
+      expect(pmap[:group]).to eql(Chef::Provider::Group::Gpasswd)
+    end
   end
 
 end

@@ -26,28 +26,28 @@ describe Chef::Provider::Breakpoint do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @collection = double("resource collection")
-    @run_context.stub(:resource_collection).and_return(@collection)
+    allow(@run_context).to receive(:resource_collection).and_return(@collection)
     @provider = Chef::Provider::Breakpoint.new(@resource, @run_context)
   end
 
   it "responds to load_current_resource" do
-    @provider.should respond_to(:load_current_resource)
+    expect(@provider).to respond_to(:load_current_resource)
   end
 
   it "gets the iterator from @collection and pauses it" do
-    Shell.stub(:running?).and_return(true)
+    allow(Shell).to receive(:running?).and_return(true)
     @iterator = double("stepable_iterator")
-    @collection.stub(:iterator).and_return(@iterator)
-    @iterator.should_receive(:pause)
+    allow(@collection).to receive(:iterator).and_return(@iterator)
+    expect(@iterator).to receive(:pause)
     @provider.action_break
-    @resource.should be_updated
+    expect(@resource).to be_updated
   end
 
   it "doesn't pause the iterator if chef-shell isn't running" do
-    Shell.stub(:running?).and_return(false)
+    allow(Shell).to receive(:running?).and_return(false)
     @iterator = double("stepable_iterator")
-    @collection.stub(:iterator).and_return(@iterator)
-    @iterator.should_not_receive(:pause)
+    allow(@collection).to receive(:iterator).and_return(@iterator)
+    expect(@iterator).not_to receive(:pause)
     @provider.action_break
   end
 

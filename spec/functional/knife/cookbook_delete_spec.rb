@@ -47,13 +47,13 @@ describe Chef::Knife::CookbookDelete do
       Chef::Log.level = :debug
 
       @knife.name_args = %w{no-such-cookbook}
-      @api.get("/cookbooks/no-such-cookbook", 404, {'error'=>'dear Tim, no. -Sent from my iPad'}.to_json)
+      @api.get("/cookbooks/no-such-cookbook", 404, Chef::JSONCompat.to_json({'error'=>'dear Tim, no. -Sent from my iPad'}))
     end
 
     it "logs an error and exits" do
-      @knife.ui.stub(:stderr).and_return(@log_output)
-      lambda {@knife.run}.should raise_error(SystemExit)
-      @log_output.string.should match(/Cannot find a cookbook named no-such-cookbook to delete/)
+      allow(@knife.ui).to receive(:stderr).and_return(@log_output)
+      expect {@knife.run}.to raise_error(SystemExit)
+      expect(@log_output.string).to match(/Cannot find a cookbook named no-such-cookbook to delete/)
     end
 
   end
@@ -62,38 +62,38 @@ describe Chef::Knife::CookbookDelete do
     before do
       @knife.name_args = %w{obsolete-cookbook}
       @cookbook_list = {'obsolete-cookbook' => { 'versions' => ['version' => '1.0.0']} }
-      @api.get("/cookbooks/obsolete-cookbook", 200, @cookbook_list.to_json)
+      @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 
     it "asks for confirmation, then deletes the cookbook" do
       stdin, stdout = StringIO.new("y\n"), StringIO.new
-      @knife.ui.stub(:stdin).and_return(stdin)
-      @knife.ui.stub(:stdout).and_return(stdout)
+      allow(@knife.ui).to receive(:stdin).and_return(stdin)
+      allow(@knife.ui).to receive(:stdout).and_return(stdout)
 
       cb100_deleted = false
       @api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) { cb100_deleted = true; "[\"true\"]" }
 
       @knife.run
 
-      stdout.string.should match(/#{Regexp.escape('Do you really want to delete obsolete-cookbook version 1.0.0? (Y/N)')}/)
-      cb100_deleted.should be_true
+      expect(stdout.string).to match(/#{Regexp.escape('Do you really want to delete obsolete-cookbook version 1.0.0? (Y/N)')}/)
+      expect(cb100_deleted).to be_truthy
     end
 
     it "asks for confirmation before purging" do
       @knife.config[:purge] = true
 
       stdin, stdout = StringIO.new("y\ny\n"), StringIO.new
-      @knife.ui.stub(:stdin).and_return(stdin)
-      @knife.ui.stub(:stdout).and_return(stdout)
+      allow(@knife.ui).to receive(:stdin).and_return(stdin)
+      allow(@knife.ui).to receive(:stdout).and_return(stdout)
 
       cb100_deleted = false
       @api.delete("/cookbooks/obsolete-cookbook/1.0.0?purge=true", 200) { cb100_deleted = true; "[\"true\"]" }
 
       @knife.run
 
-      stdout.string.should match(/#{Regexp.escape('Are you sure you want to purge files')}/)
-      stdout.string.should match(/#{Regexp.escape('Do you really want to delete obsolete-cookbook version 1.0.0? (Y/N)')}/)
-      cb100_deleted.should be_true
+      expect(stdout.string).to match(/#{Regexp.escape('Are you sure you want to purge files')}/)
+      expect(stdout.string).to match(/#{Regexp.escape('Do you really want to delete obsolete-cookbook version 1.0.0? (Y/N)')}/)
+      expect(cb100_deleted).to be_truthy
 
     end
 
@@ -105,7 +105,7 @@ describe Chef::Knife::CookbookDelete do
       versions = ['1.0.0', '1.1.0', '1.2.0']
       with_version = lambda { |version| { 'version' => version } }
       @cookbook_list = {'obsolete-cookbook' => { 'versions' => versions.map(&with_version) } }
-      @api.get("/cookbooks/obsolete-cookbook", 200, @cookbook_list.to_json)
+      @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 
     it "deletes all versions of a cookbook when given the '-a' flag" do
@@ -117,22 +117,22 @@ describe Chef::Knife::CookbookDelete do
       @api.delete("/cookbooks/obsolete-cookbook/1.2.0", 200) { cb120_deleted = true; "[\"true\"]" }
       @knife.run
 
-      cb100_deleted.should be_true
-      cb110_deleted.should be_true
-      cb120_deleted.should be_true
+      expect(cb100_deleted).to be_truthy
+      expect(cb110_deleted).to be_truthy
+      expect(cb120_deleted).to be_truthy
     end
 
     it "asks which version to delete and deletes that when not given the -a flag" do
       cb100_deleted = cb110_deleted = cb120_deleted = nil
       @api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) { cb100_deleted = true; "[\"true\"]" }
       stdin, stdout = StringIO.new, StringIO.new
-      @knife.ui.stub(:stdin).and_return(stdin)
-      @knife.ui.stub(:stdout).and_return(stdout)
+      allow(@knife.ui).to receive(:stdin).and_return(stdin)
+      allow(@knife.ui).to receive(:stdout).and_return(stdout)
       stdin << "1\n"
       stdin.rewind
       @knife.run
-      cb100_deleted.should be_true
-      stdout.string.should match(/Which version\(s\) do you want to delete\?/)
+      expect(cb100_deleted).to be_truthy
+      expect(stdout.string).to match(/Which version\(s\) do you want to delete\?/)
     end
 
     it "deletes all versions of the cookbook when not given the -a flag and the user chooses to delete all" do
@@ -142,14 +142,14 @@ describe Chef::Knife::CookbookDelete do
       @api.delete("/cookbooks/obsolete-cookbook/1.2.0", 200) { cb120_deleted = true; "[\"true\"]" }
 
       stdin, stdout = StringIO.new("4\n"), StringIO.new
-      @knife.ui.stub(:stdin).and_return(stdin)
-      @knife.ui.stub(:stdout).and_return(stdout)
+      allow(@knife.ui).to receive(:stdin).and_return(stdin)
+      allow(@knife.ui).to receive(:stdout).and_return(stdout)
 
       @knife.run
 
-      cb100_deleted.should be_true
-      cb110_deleted.should be_true
-      cb120_deleted.should be_true
+      expect(cb100_deleted).to be_truthy
+      expect(cb110_deleted).to be_truthy
+      expect(cb120_deleted).to be_truthy
     end
 
   end

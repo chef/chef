@@ -19,7 +19,7 @@ require 'support/shared/integration/integration_helper'
 require 'support/shared/context/config'
 require 'chef/knife/list'
 
-describe 'knife list' do
+describe 'knife list', :workstation do
   include IntegrationSupport
   include KnifeSupport
 
@@ -471,7 +471,7 @@ EOM
         end
       end
 
-      when_the_repository 'has a cookbooks directory and a symlinked cookbooks directory', :pending => (Chef::Platform.windows?) do
+      when_the_repository 'has a cookbooks directory and a symlinked cookbooks directory', :skip => (Chef::Platform.windows?) do
         before do
           directory 'cookbooks'
           symlink 'symlinked', 'cookbooks'
@@ -508,7 +508,7 @@ EOM
         end
       end
 
-      when_the_repository 'has a real_cookbooks directory and a cookbooks symlink to it', :pending => (Chef::Platform.windows?) do
+      when_the_repository 'has a real_cookbooks directory and a cookbooks symlink to it', :skip => (Chef::Platform.windows?) do
         before do
           directory 'real_cookbooks'
           symlink 'cookbooks', 'real_cookbooks'
@@ -639,6 +639,227 @@ EOM
           knife('list --local /roles/blarghle/blorghle').should_fail "ERROR: /roles/blarghle/blorghle: No such file or directory\n"
         end
       end
+    end
+  end
+
+  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+    before do
+      organization 'foo'
+    end
+
+    before :each do
+      Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
+    end
+
+    context 'and is empty' do
+      it "knife list / returns all top level directories" do
+        knife('list /').should_succeed <<EOM
+/acls
+/clients
+/containers
+/cookbooks
+/data_bags
+/environments
+/groups
+/invitations.json
+/members.json
+/nodes
+/org.json
+/roles
+EOM
+      end
+
+      it "knife list -R / returns everything" do
+        knife('list -R /').should_succeed <<EOM
+/:
+acls
+clients
+containers
+cookbooks
+data_bags
+environments
+groups
+invitations.json
+members.json
+nodes
+org.json
+roles
+
+/acls:
+clients
+containers
+cookbooks
+data_bags
+environments
+groups
+nodes
+organization.json
+roles
+
+/acls/clients:
+foo-validator.json
+
+/acls/containers:
+clients.json
+containers.json
+cookbooks.json
+data.json
+environments.json
+groups.json
+nodes.json
+roles.json
+sandboxes.json
+
+/acls/cookbooks:
+
+/acls/data_bags:
+
+/acls/environments:
+_default.json
+
+/acls/groups:
+admins.json
+billing-admins.json
+clients.json
+users.json
+
+/acls/nodes:
+
+/acls/roles:
+
+/clients:
+foo-validator.json
+
+/containers:
+clients.json
+containers.json
+cookbooks.json
+data.json
+environments.json
+groups.json
+nodes.json
+roles.json
+sandboxes.json
+
+/cookbooks:
+
+/data_bags:
+
+/environments:
+_default.json
+
+/groups:
+admins.json
+billing-admins.json
+clients.json
+users.json
+
+/nodes:
+
+/roles:
+EOM
+      end
+    end
+  end
+
+  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+    before do
+      organization 'foo'
+    end
+
+    before :each do
+      Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
+    end
+
+    it 'knife list -R / returns everything' do
+      knife('list -R /').should_succeed <<EOM
+/:
+acls
+clients
+containers
+cookbooks
+data_bags
+environments
+groups
+invitations.json
+members.json
+nodes
+org.json
+roles
+
+/acls:
+clients
+containers
+cookbooks
+data_bags
+environments
+groups
+nodes
+organization.json
+roles
+
+/acls/clients:
+foo-validator.json
+
+/acls/containers:
+clients.json
+containers.json
+cookbooks.json
+data.json
+environments.json
+groups.json
+nodes.json
+roles.json
+sandboxes.json
+
+/acls/cookbooks:
+
+/acls/data_bags:
+
+/acls/environments:
+_default.json
+
+/acls/groups:
+admins.json
+billing-admins.json
+clients.json
+users.json
+
+/acls/nodes:
+
+/acls/roles:
+
+/clients:
+foo-validator.json
+
+/containers:
+clients.json
+containers.json
+cookbooks.json
+data.json
+environments.json
+groups.json
+nodes.json
+roles.json
+sandboxes.json
+
+/cookbooks:
+
+/data_bags:
+
+/environments:
+_default.json
+
+/groups:
+admins.json
+billing-admins.json
+clients.json
+users.json
+
+/nodes:
+
+/roles:
+EOM
     end
   end
 end

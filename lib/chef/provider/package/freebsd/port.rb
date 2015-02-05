@@ -34,7 +34,7 @@ class Chef
           end
 
           def current_installed_version
-            pkg_info = if supports_pkgng?
+            pkg_info = if @new_resource.supports_pkgng?
                          shell_out!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,70])
                        else
                          shell_out!("pkg_info -E \"#{@new_resource.package_name}*\"", :env => nil, :returns => [0,1])
@@ -53,14 +53,6 @@ class Chef
           def port_dir
             super(@new_resource.package_name)
           end
-
-          private
-
-          def supports_pkgng?
-            with_pkgng = makefile_variable_value('WITH_PKGNG')
-            with_pkgng && with_pkgng =~ /yes/i
-          end
-
         end
       end
     end

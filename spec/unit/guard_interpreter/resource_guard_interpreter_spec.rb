@@ -19,37 +19,38 @@
 require 'spec_helper'
 
 describe Chef::GuardInterpreter::ResourceGuardInterpreter do
-  before(:each) do
+  let(:node) do
     node = Chef::Node.new
 
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
-
-    run_context = Chef::RunContext.new(node, nil, nil)
-
-    @resource = Chef::Resource.new("powershell_unit_test", run_context)
-    @resource.stub(:run_action)
-    @resource.stub(:updated).and_return(true)
+    node
   end
 
-  describe "when evaluating a guard resource" do
-    let(:resource) { @resource }
+  let(:run_context) { Chef::RunContext.new(node, nil, nil) }
 
-    it "should allow guard interpreter to be set to Chef::Resource::Script" do
+  let(:resource) do
+    resource = Chef::Resource.new("powershell_unit_test", run_context)
+    allow(resource).to receive(:run_action)
+    allow(resource).to receive(:updated).and_return(true)
+    resource
+  end
+
+
+  describe "get_interpreter_resource" do
+    it "allows the guard interpreter to be set to Chef::Resource::Script" do
       resource.guard_interpreter(:script)
-      allow_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:evaluate_action).and_return(false)
-      resource.only_if("echo hi")
+      expect { Chef::GuardInterpreter::ResourceGuardInterpreter.new(resource, "echo hi", nil) }.not_to raise_error
     end
     
-    it "should allow guard interpreter to be set to Chef::Resource::PowershellScript derived indirectly from Chef::Resource::Script" do
+    it "allows the guard interpreter to be set to Chef::Resource::PowershellScript derived indirectly from Chef::Resource::Script" do
       resource.guard_interpreter(:powershell_script)
-      allow_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:evaluate_action).and_return(false)
-      resource.only_if("echo hi")
+      expect { Chef::GuardInterpreter::ResourceGuardInterpreter.new(resource, "echo hi", nil) }.not_to raise_error
     end
     
-    it "should raise an exception if guard_interpreter is set to a resource not derived from Chef::Resource::Script" do
+    it "raises an exception if guard_interpreter is set to a resource not derived from Chef::Resource::Script" do
       resource.guard_interpreter(:file)
-      expect { resource.only_if("echo hi") }.to raise_error ArgumentError
+      expect { Chef::GuardInterpreter::ResourceGuardInterpreter.new(resource, "echo hi", nil) }.to raise_error(ArgumentError)
     end
   end
 end

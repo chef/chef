@@ -75,14 +75,9 @@ class Chef
       # Redefine all of the methods that mutate a Hash to raise an error when called.
       # This is the magic that makes this object "Immutable"
       DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
-        # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
-        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
-          def #{mutator_method_name}(*args, &block)
-            msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
-            %Q(To set an attribute use code like `node.default["key"] = "value"')
-            raise Exceptions::ImmutableAttributeModification, msg
-          end
-        METHOD_DEFN
+        define_method(mutator_method_name) do |*args, &block|
+          raise Exceptions::ImmutableAttributeModification
+        end
       end
 
       # For elements like Fixnums, true, nil...
@@ -157,19 +152,18 @@ class Chef
         end
       end
 
+      def public_method_that_only_deep_merge_should_use(key, value)
+        internal_set(key, immutablize(value))
+      end
+
       alias :attribute? :has_key?
 
       # Redefine all of the methods that mutate a Hash to raise an error when called.
       # This is the magic that makes this object "Immutable"
       DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
-        # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
-        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
-        def #{mutator_method_name}(*args, &block)
-          msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
-          %Q(To set an attribute use code like `node.default["key"] = "value"')
-          raise Exceptions::ImmutableAttributeModification, msg
+        define_method(mutator_method_name) do |*args, &block|
+          raise Exceptions::ImmutableAttributeModification
         end
-        METHOD_DEFN
       end
 
       def method_missing(symbol, *args)

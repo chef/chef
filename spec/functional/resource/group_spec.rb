@@ -28,10 +28,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   def group_should_exist(group)
     case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
-      expect { Etc::getgrnam(group) }.to_not raise_error(ArgumentError, "can't find group for #{group}")
+      expect { Etc::getgrnam(group) }.not_to raise_error
       expect(group).to eq(Etc::getgrnam(group).name)
     when "windows"
-      expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to_not raise_error(ArgumentError, "The group name could not be found.")
+      expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.not_to raise_error
     end
   end
 
@@ -40,6 +40,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     when "windows"
       user_sid = sid_string_from_user(user)
       user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
+    when "mac_os_x"
+      membership_info = shell_out("dscl . -read /Groups/#{group_name}").stdout
+      members = membership_info.split(" ")
+      members.shift # Get rid of GroupMembership: string
+      members.include?(user)
     else
       Etc::getgrnam(group_name).mem.include?(user)
     end
@@ -103,7 +108,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       temp_resource.append(true)
       temp_resource.run_action(:modify)
       members.each do |member|
-        user_exist_in_group?(member).should == true
+        expect(user_exist_in_group?(member)).to eq(true)
       end
     end
 
@@ -114,7 +119,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       temp_resource.run_action(:create)
       group_should_exist(group_name)
       included_members.each do |member|
-        user_exist_in_group?(member).should == false
+        expect(user_exist_in_group?(member)).to eq(false)
       end
     end
 
@@ -144,8 +149,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       it "should remove the existing users and add the new users to the group" do
         group_resource.run_action(tested_action)
 
-        user_exist_in_group?(spec_members[1]).should == true
-        user_exist_in_group?(spec_members[0]).should == false
+        expect(user_exist_in_group?(spec_members[1])).to eq(true)
+        expect(user_exist_in_group?(spec_members[0])).to eq(false)
       end
     end
 
@@ -171,10 +176,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
           group_resource.run_action(tested_action)
 
           included_members.each do |member|
-            user_exist_in_group?(member).should == true
+            expect(user_exist_in_group?(member)).to eq(true)
           end
           excluded_members.each do |member|
-            user_exist_in_group?(member).should == false
+            expect(user_exist_in_group?(member)).to eq(false)
           end
         end
 
@@ -187,10 +192,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
             group_resource.run_action(tested_action)
 
             included_members.each do |member|
-              user_exist_in_group?(member).should == true
+              expect(user_exist_in_group?(member)).to eq(true)
             end
             excluded_members.each do |member|
-              user_exist_in_group?(member).should == false
+              expect(user_exist_in_group?(member)).to eq(false)
             end
           end
         end
@@ -199,13 +204,13 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       describe "when the users doesn't exist" do
         describe "when append is not set" do
           it "should raise an error" do
-            lambda { @grp_resource.run_action(tested_action) }.should raise_error
+            expect { @grp_resource.run_action(tested_action) }.to raise_error
           end
         end
 
         describe "when append is set" do
           it "should raise an error" do
-            lambda { @grp_resource.run_action(tested_action) }.should raise_error
+            expect { @grp_resource.run_action(tested_action) }.to raise_error
           end
         end
       end
@@ -226,24 +231,24 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     describe "when updating membership" do
       it "raises an error for a non well-formed domain name" do
         group_resource.members [invalid_domain_user_name]
-        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+        expect { group_resource.run_action(tested_action) }.to raise_error Chef::Exceptions::Win32APIError
       end
 
       it "raises an error for a nonexistent domain" do
         group_resource.members [nonexistent_domain_user_name]
-        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+        expect { group_resource.run_action(tested_action) }.to raise_error Chef::Exceptions::Win32APIError
       end
     end
 
     describe "when removing members" do
       it "raises an error for a non well-formed domain name" do
         group_resource.excluded_members [invalid_domain_user_name]
-        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+        expect { group_resource.run_action(tested_action) }.to raise_error Chef::Exceptions::Win32APIError
       end
 
       it "raises an error for a nonexistent domain" do
         group_resource.excluded_members [nonexistent_domain_user_name]
-        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+        expect { group_resource.run_action(tested_action) }.to raise_error Chef::Exceptions::Win32APIError
       end
     end
   end
@@ -259,7 +264,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   }
 
   it "append should be false by default" do
-    group_resource.append.should == false
+    expect(group_resource.append).to eq(false)
   end
 
   describe "group create action" do
@@ -292,7 +297,7 @@ theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
 downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
       it "should not create a group" do
-        lambda { group_resource.run_action(:create) }.should raise_error
+        expect { group_resource.run_action(:create) }.to raise_error
         group_should_not_exist(group_name)
       end
     end
@@ -303,7 +308,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
         invalid_resource = group_resource.dup
         invalid_resource.members(["Jack"])
         invalid_resource.excluded_members(["Jack"])
-        lambda { invalid_resource.run_action(:create)}.should raise_error(Chef::Exceptions::ConflictingMembersInGroup)
+        expect { invalid_resource.run_action(:create)}.to raise_error(Chef::Exceptions::ConflictingMembersInGroup)
       end
     end
   end
@@ -337,7 +342,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
     describe "when there is no group" do
       it "should raise an error" do
-        lambda { group_resource.run_action(:modify) }.should raise_error
+        expect { group_resource.run_action(:modify) }.to raise_error
       end
     end
 
@@ -364,9 +369,12 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     let(:tested_action) { :manage }
 
     describe "when there is no group" do
-      it "should raise an error" do
-        lambda { group_resource.run_action(:manage) }.should_not raise_error
-        group_should_not_exist(group_name)
+      it "raises an error on modify" do
+        expect { group_resource.run_action(:modify) }.to raise_error
+      end
+
+      it "does not raise an error on manage" do
+        expect { group_resource.run_action(:manage) }.not_to raise_error
       end
     end
 
@@ -391,15 +399,15 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
       let(:excluded_members) { ["Anthony"] }
 
       it ":manage should raise an error" do
-        lambda {group_resource.run_action(:manage) }.should raise_error
+        expect {group_resource.run_action(:manage) }.to raise_error
       end
 
       it ":modify should raise an error" do
-        lambda {group_resource.run_action(:modify) }.should raise_error
+        expect {group_resource.run_action(:modify) }.to raise_error
       end
 
       it ":create should raise an error" do
-        lambda {group_resource.run_action(:create) }.should raise_error
+        expect {group_resource.run_action(:create) }.to raise_error
       end
     end
 
@@ -411,15 +419,12 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
       end
 
       it ":manage should raise an error" do
-        lambda {group_resource.run_action(:manage) }.should raise_error
+        expect {group_resource.run_action(:manage) }.to raise_error
       end
 
       it ":modify should raise an error" do
-        lambda {group_resource.run_action(:modify) }.should raise_error
+        expect {group_resource.run_action(:modify) }.to raise_error
       end
     end
   end
 end
-
-
-

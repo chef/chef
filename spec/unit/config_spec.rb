@@ -19,6 +19,7 @@
 
 require 'spec_helper'
 require 'chef/exceptions'
+require 'chef/util/path_helper'
 
 describe Chef::Config do
   describe "config attribute writer: chef_server_url" do
@@ -27,7 +28,7 @@ describe Chef::Config do
     end
 
     it "sets the server url" do
-      Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+      expect(Chef::Config.chef_server_url).to eq("https://junglist.gen.nz")
     end
 
     context "when the url has a leading space" do
@@ -36,7 +37,7 @@ describe Chef::Config do
       end
 
       it "strips the space from the url when setting" do
-        Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+        expect(Chef::Config.chef_server_url).to eq("https://junglist.gen.nz")
       end
 
     end
@@ -47,7 +48,7 @@ describe Chef::Config do
       end
 
       it "strips the space from the url when setting without raising an error" do
-        Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+        expect(Chef::Config.chef_server_url).to eq("https://junglist.gen.nz")
       end
     end
 
@@ -78,317 +79,432 @@ describe Chef::Config do
       # end
       #
     it "has an empty list of formatters by default" do
-      Chef::Config.formatters.should == []
+      expect(Chef::Config.formatters).to eq([])
     end
 
     it "configures a formatter with a short name" do
       Chef::Config.add_formatter(:doc)
-      Chef::Config.formatters.should == [[:doc, nil]]
+      expect(Chef::Config.formatters).to eq([[:doc, nil]])
     end
 
     it "configures a formatter with a file output" do
       Chef::Config.add_formatter(:doc, "/var/log/formatter.log")
-      Chef::Config.formatters.should == [[:doc, "/var/log/formatter.log"]]
+      expect(Chef::Config.formatters).to eq([[:doc, "/var/log/formatter.log"]])
     end
 
   end
 
   describe "class method: manage_secret_key" do
     before do
-      Chef::FileCache.stub(:load).and_return(true)
-      Chef::FileCache.stub(:has_key?).with("chef_server_cookie_id").and_return(false)
+      allow(Chef::FileCache).to receive(:load).and_return(true)
+      allow(Chef::FileCache).to receive(:has_key?).with("chef_server_cookie_id").and_return(false)
     end
 
     it "should generate and store a chef server cookie id" do
-      Chef::FileCache.should_receive(:store).with("chef_server_cookie_id", /\w{40}/).and_return(true)
+      expect(Chef::FileCache).to receive(:store).with("chef_server_cookie_id", /\w{40}/).and_return(true)
       Chef::Config.manage_secret_key
     end
 
     describe "when the filecache has a chef server cookie id key" do
       before do
-        Chef::FileCache.stub(:has_key?).with("chef_server_cookie_id").and_return(true)
+        allow(Chef::FileCache).to receive(:has_key?).with("chef_server_cookie_id").and_return(true)
       end
 
       it "should not generate and store a chef server cookie id" do
-        Chef::FileCache.should_not_receive(:store).with("chef_server_cookie_id", /\w{40}/)
+        expect(Chef::FileCache).not_to receive(:store).with("chef_server_cookie_id", /\w{40}/)
         Chef::Config.manage_secret_key
       end
     end
 
   end
 
-  describe "class method: plaform_specific_path" do
-    it "should return given path on non-windows systems" do
-      platform_mock :unix do
-        path = "/etc/chef/cookbooks"
-        Chef::Config.platform_specific_path(path).should == "/etc/chef/cookbooks"
-      end
-    end
+  [ false, true ].each do |is_windows|
 
-    it "should return a windows path on windows systems" do
-      platform_mock :windows do
-        path = "/etc/chef/cookbooks"
-        Chef::Config.stub(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
-        # match on a regex that looks for the base path with an optional
-        # system drive at the beginning (c:)
-        # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems
-        Chef::Config.platform_specific_path(path).should == "C:\\chef\\cookbooks"
-      end
-    end
-  end
-
-  describe "default values" do
-    def primary_cache_path
-      if windows?
-        "#{Chef::Config.env['SYSTEMDRIVE']}\\chef"
-      else
-        "/var/chef"
-      end
-    end
-
-    def secondary_cache_path
-      if windows?
-        "#{Chef::Config[:user_home]}\\.chef"
-      else
-        "#{Chef::Config[:user_home]}/.chef"
-      end
-    end
-
-    before do
-      if windows?
-        Chef::Config.stub(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
-        Chef::Config[:user_home] = 'C:\Users\charlie'
-      else
-        Chef::Config[:user_home] = '/Users/charlie'
+    context "On #{is_windows ? 'Windows' : 'Unix'}" do
+      def to_platform(*args)
+        Chef::Config.platform_specific_path(*args)
       end
 
-      Chef::Config.stub(:path_accessible?).and_return(false)
-    end
+      before :each do
+        allow(Chef::Platform).to receive(:windows?).and_return(is_windows)
+      end
 
-    describe "Chef::Config[:cache_path]" do
-      context "when /var/chef exists and is accessible" do
-        it "defaults to /var/chef" do
-          Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
-          Chef::Config[:cache_path].should == primary_cache_path
+      describe "class method: platform_specific_path" do
+        if is_windows
+          it "should return a windows path on windows systems" do
+            path = "/etc/chef/cookbooks"
+            allow(Chef::Config).to receive(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
+            # match on a regex that looks for the base path with an optional
+            # system drive at the beginning (c:)
+            # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems
+            expect(Chef::Config.platform_specific_path(path)).to eq("C:\\chef\\cookbooks")
+          end
+        else
+          it "should return given path on non-windows systems" do
+            path = "/etc/chef/cookbooks"
+            expect(Chef::Config.platform_specific_path(path)).to eq("/etc/chef/cookbooks")
+          end
         end
       end
 
-      context "when /var/chef does not exist and /var is accessible" do
-        it "defaults to /var/chef" do
-          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
-          Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var")).and_return(true)
-          Chef::Config[:cache_path].should == primary_cache_path
+      describe "default values" do
+        let :primary_cache_path do
+          if is_windows
+            "#{Chef::Config.env['SYSTEMDRIVE']}\\chef"
+          else
+            "/var/chef"
+          end
         end
-      end
 
-      context "when /var/chef does not exist and /var is not accessible" do
-        it "defaults to $HOME/.chef" do
-          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
-          Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var")).and_return(false)
-          Chef::Config[:cache_path].should == secondary_cache_path
+        let :secondary_cache_path do
+          if is_windows
+            "#{Chef::Config[:user_home]}\\.chef"
+          else
+            "#{Chef::Config[:user_home]}/.chef"
+          end
         end
-      end
 
-      context "when /var/chef exists and is not accessible" do
-        it "defaults to $HOME/.chef" do
-          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
-          File.stub(:readable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
-          File.stub(:writable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
-
-          Chef::Config[:cache_path].should == secondary_cache_path
-        end
-      end
-    end
-
-    it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
-      Chef::Config.stub(:cache_path).and_return(primary_cache_path)
-      backup_path = windows? ? "#{primary_cache_path}\\backup" : "#{primary_cache_path}/backup"
-      Chef::Config[:file_backup_path].should == backup_path
-    end
-
-    it "Chef::Config[:ssl_verify_mode] defaults to :verify_none" do
-      Chef::Config[:ssl_verify_mode].should == :verify_none
-    end
-
-    it "Chef::Config[:ssl_ca_path] defaults to nil" do
-      Chef::Config[:ssl_ca_path].should be_nil
-    end
-
-    describe "when on UNIX" do
-      before do
-        Chef::Config.stub(:on_windows?).and_return(false)
-      end
-
-      it "Chef::Config[:ssl_ca_file] defaults to nil" do
-        Chef::Config[:ssl_ca_file].should be_nil
-      end
-    end
-
-    it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do
-      Chef::Config.stub(:cache_path).and_return(primary_cache_path)
-      data_bag_path = windows? ? "#{primary_cache_path}\\data_bags" : "#{primary_cache_path}/data_bags"
-      Chef::Config[:data_bag_path].should == data_bag_path
-    end
-
-    it "Chef::Config[:environment_path] defaults to /var/chef/environments" do
-      Chef::Config.stub(:cache_path).and_return(primary_cache_path)
-      environment_path = windows? ? "#{primary_cache_path}\\environments" : "#{primary_cache_path}/environments"
-      Chef::Config[:environment_path].should == environment_path
-    end
-
-    describe "joining platform specific paths" do
-
-      context "on UNIX" do
         before do
-          Chef::Config.stub(:on_windows?).and_return(false)
+          if is_windows
+            allow(Chef::Config).to receive(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
+            Chef::Config[:user_home] = 'C:\Users\charlie'
+          else
+            Chef::Config[:user_home] = '/Users/charlie'
+          end
+
+          allow(Chef::Config).to receive(:path_accessible?).and_return(false)
         end
 
-        it "joins components when some end with separators" do
-          Chef::Config.path_join("/foo/", "bar", "baz").should == "/foo/bar/baz"
+        describe "Chef::Config[:cache_path]" do
+          context "when /var/chef exists and is accessible" do
+            it "defaults to /var/chef" do
+              allow(Chef::Config).to receive(:path_accessible?).with(to_platform("/var/chef")).and_return(true)
+              expect(Chef::Config[:cache_path]).to eq(primary_cache_path)
+            end
+          end
+
+          context "when /var/chef does not exist and /var is accessible" do
+            it "defaults to /var/chef" do
+              allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(false)
+              allow(Chef::Config).to receive(:path_accessible?).with(to_platform("/var")).and_return(true)
+              expect(Chef::Config[:cache_path]).to eq(primary_cache_path)
+            end
+          end
+
+          context "when /var/chef does not exist and /var is not accessible" do
+            it "defaults to $HOME/.chef" do
+              allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(false)
+              allow(Chef::Config).to receive(:path_accessible?).with(to_platform("/var")).and_return(false)
+              expect(Chef::Config[:cache_path]).to eq(secondary_cache_path)
+            end
+          end
+
+          context "when /var/chef exists and is not accessible" do
+            it "defaults to $HOME/.chef" do
+              allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(true)
+              allow(File).to receive(:readable?).with(to_platform("/var/chef")).and_return(true)
+              allow(File).to receive(:writable?).with(to_platform("/var/chef")).and_return(false)
+
+              expect(Chef::Config[:cache_path]).to eq(secondary_cache_path)
+            end
+          end
+
+          context "when chef is running in local mode" do
+            before do
+              Chef::Config.local_mode = true
+            end
+
+            context "and config_dir is /a/b/c" do
+              before do
+                Chef::Config.config_dir to_platform('/a/b/c')
+              end
+
+              it "cache_path is /a/b/c/local-mode-cache" do
+                expect(Chef::Config.cache_path).to eq(to_platform('/a/b/c/local-mode-cache'))
+              end
+            end
+
+            context "and config_dir is /a/b/c/" do
+              before do
+                Chef::Config.config_dir to_platform('/a/b/c/')
+              end
+
+              it "cache_path is /a/b/c/local-mode-cache" do
+                expect(Chef::Config.cache_path).to eq(to_platform('/a/b/c/local-mode-cache'))
+              end
+            end
+          end
         end
 
-        it "joins components that don't end in separators" do
-          Chef::Config.path_join("/foo", "bar", "baz").should == "/foo/bar/baz"
+        it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
+          allow(Chef::Config).to receive(:cache_path).and_return(primary_cache_path)
+          backup_path = is_windows ? "#{primary_cache_path}\\backup" : "#{primary_cache_path}/backup"
+          expect(Chef::Config[:file_backup_path]).to eq(backup_path)
         end
 
+        it "Chef::Config[:ssl_verify_mode] defaults to :verify_peer" do
+          expect(Chef::Config[:ssl_verify_mode]).to eq(:verify_peer)
+        end
+
+        it "Chef::Config[:ssl_ca_path] defaults to nil" do
+          expect(Chef::Config[:ssl_ca_path]).to be_nil
+        end
+
+        # TODO can this be removed?
+        if !is_windows
+          it "Chef::Config[:ssl_ca_file] defaults to nil" do
+            expect(Chef::Config[:ssl_ca_file]).to be_nil
+          end
+        end
+
+        it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do
+          allow(Chef::Config).to receive(:cache_path).and_return(primary_cache_path)
+          data_bag_path = is_windows ? "#{primary_cache_path}\\data_bags" : "#{primary_cache_path}/data_bags"
+          expect(Chef::Config[:data_bag_path]).to eq(data_bag_path)
+        end
+
+        it "Chef::Config[:environment_path] defaults to /var/chef/environments" do
+          allow(Chef::Config).to receive(:cache_path).and_return(primary_cache_path)
+          environment_path = is_windows ? "#{primary_cache_path}\\environments" : "#{primary_cache_path}/environments"
+          expect(Chef::Config[:environment_path]).to eq(environment_path)
+        end
+
+        describe "setting the config dir" do
+
+          context "when the config file is /etc/chef/client.rb" do
+
+            before do
+              Chef::Config.config_file = to_platform("/etc/chef/client.rb")
+            end
+
+            it "config_dir is /etc/chef" do
+              expect(Chef::Config.config_dir).to eq(to_platform("/etc/chef"))
+            end
+
+            context "and chef is running in local mode" do
+              before do
+                Chef::Config.local_mode = true
+              end
+
+              it "config_dir is /etc/chef" do
+                expect(Chef::Config.config_dir).to eq(to_platform("/etc/chef"))
+              end
+            end
+
+            context "when config_dir is set to /other/config/dir/" do
+              before do
+                Chef::Config.config_dir = to_platform("/other/config/dir/")
+              end
+
+              it "yields the explicit value" do
+                expect(Chef::Config.config_dir).to eq(to_platform("/other/config/dir/"))
+              end
+            end
+
+          end
+
+          context "when the user's home dir is /home/charlie/" do
+            before do
+              Chef::Config.user_home = to_platform("/home/charlie")
+            end
+
+            it "config_dir is /home/charlie/.chef/" do
+              expect(Chef::Config.config_dir).to eq(Chef::Util::PathHelper.join(to_platform("/home/charlie/.chef"), ''))
+            end
+
+            context "and chef is running in local mode" do
+              before do
+                Chef::Config.local_mode = true
+              end
+
+              it "config_dir is /home/charlie/.chef/" do
+                expect(Chef::Config.config_dir).to eq(Chef::Util::PathHelper.join(to_platform("/home/charlie/.chef"), ''))
+              end
+            end
+          end
+
+        end
+
+        if is_windows
+          describe "finding the windows embedded dir" do
+            let(:default_config_location) { "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+            let(:alternate_install_location) { "c:/my/alternate/install/place/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+            let(:non_omnibus_location) { "c:/my/dev/stuff/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+
+            let(:default_ca_file) { "c:/opscode/chef/embedded/ssl/certs/cacert.pem" }
+
+            it "finds the embedded dir in the default location" do
+              allow(Chef::Config).to receive(:_this_file).and_return(default_config_location)
+              expect(Chef::Config.embedded_dir).to eq("c:/opscode/chef/embedded")
+            end
+
+            it "finds the embedded dir in a custom install location" do
+              allow(Chef::Config).to receive(:_this_file).and_return(alternate_install_location)
+              expect(Chef::Config.embedded_dir).to eq("c:/my/alternate/install/place/chef/embedded")
+            end
+
+            it "doesn't error when not in an omnibus install" do
+              allow(Chef::Config).to receive(:_this_file).and_return(non_omnibus_location)
+              expect(Chef::Config.embedded_dir).to be_nil
+            end
+
+            it "sets the ssl_ca_cert path if the cert file is available" do
+              allow(Chef::Config).to receive(:_this_file).and_return(default_config_location)
+              allow(File).to receive(:exist?).with(default_ca_file).and_return(true)
+              expect(Chef::Config.ssl_ca_file).to eq(default_ca_file)
+            end
+          end
+        end
       end
 
-      context "on Windows" do
+      describe "Chef::Config[:user_home]" do
+        it "should set when HOME is provided" do
+          expected = to_platform("/home/kitten")
+          allow(Chef::Config).to receive(:env).and_return({ 'HOME' => expected })
+          expect(Chef::Config[:user_home]).to eq(expected)
+        end
+
+        it "should be set when only USERPROFILE is provided" do
+          expected = to_platform("/users/kitten")
+          allow(Chef::Config).to receive(:env).and_return({ 'USERPROFILE' => expected })
+          expect(Chef::Config[:user_home]).to eq(expected)
+        end
+
+        it "falls back to the current working directory when HOME and USERPROFILE is not set" do
+          allow(Chef::Config).to receive(:env).and_return({})
+          expect(Chef::Config[:user_home]).to eq(Dir.pwd)
+        end
+      end
+
+      describe "Chef::Config[:encrypted_data_bag_secret]" do
+        let(:db_secret_default_path){ to_platform("/etc/chef/encrypted_data_bag_secret") }
+
         before do
-          Chef::Config.stub(:on_windows?).and_return(true)
+          allow(File).to receive(:exist?).with(db_secret_default_path).and_return(secret_exists)
         end
 
-        it "joins components with the windows separator" do
-          Chef::Config.path_join('c:\\foo\\', 'bar', "baz").should == 'c:\\foo\\bar\\baz'
+        context "/etc/chef/encrypted_data_bag_secret exists" do
+          let(:secret_exists) { true }
+          it "sets the value to /etc/chef/encrypted_data_bag_secret" do
+            expect(Chef::Config[:encrypted_data_bag_secret]).to eq db_secret_default_path
+          end
         end
-      end
-    end
 
-    describe "setting the config dir" do
-
-      before do
-        Chef::Config.stub(:on_windows?).and_return(false)
-        Chef::Config.config_file = "/etc/chef/client.rb"
-      end
-
-      context "by default" do
-        it "is the parent dir of the config file" do
-          Chef::Config.config_dir.should == "/etc/chef"
+        context "/etc/chef/encrypted_data_bag_secret does not exist" do
+          let(:secret_exists) { false }
+          it "sets the value to nil" do
+            expect(Chef::Config[:encrypted_data_bag_secret]).to be_nil
+          end
         end
       end
 
-      context "when chef is running in local mode" do
+      describe "Chef::Config[:event_handlers]" do
+        it "sets a event_handlers to an empty array by default" do
+          expect(Chef::Config[:event_handlers]).to eq([])
+        end
+        it "should be able to add custom handlers" do
+          o = Object.new
+          Chef::Config[:event_handlers] << o
+          expect(Chef::Config[:event_handlers]).to be_include(o)
+        end
+      end
+
+      describe "Chef::Config[:user_valid_regex]" do
+        context "on a platform that is not Windows" do
+          it "allows one letter usernames" do
+            any_match = Chef::Config[:user_valid_regex].any? { |regex| regex.match('a') }
+            expect(any_match).to be_truthy
+          end
+        end
+      end
+
+      describe "Chef::Config[:internal_locale]" do
+        let(:shell_out) do
+          double("Chef::Mixin::ShellOut double", :exitstatus => 0, :stdout => locales)
+        end
+
+        let(:locales) { locale_array.join("\n") }
+
         before do
-          Chef::Config.local_mode = true
-          Chef::Config.user_home = "/home/charlie"
+          allow(Chef::Config).to receive(:shell_out_with_systems_locale!).with("locale -a").and_return(shell_out)
         end
 
-        it "is in the user's home dir" do
-          Chef::Config.config_dir.should == "/home/charlie/.chef/"
+        shared_examples_for "a suitable locale" do
+          it "returns an English UTF-8 locale" do
+            expect(Chef::Log).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef to use/)
+            expect(Chef::Log).to_not receive(:debug).with(/Defaulting to locale en_US.UTF-8 on Windows/)
+            expect(Chef::Log).to_not receive(:debug).with(/No usable locale -a command found/)
+            expect(Chef::Config.guess_internal_locale).to eq expected_locale
+          end
         end
-      end
 
-      context "when explicitly set" do
-        before do
-          Chef::Config.config_dir = "/other/config/dir/"
+        context "when the result includes 'C.UTF-8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { [expected_locale, "en_US.UTF-8"] }
+            let(:expected_locale) { "C.UTF-8" }
+          end
         end
 
-        it "uses the explicit value" do
-          Chef::Config.config_dir.should == "/other/config/dir/"
+        context "when the result includes 'en_US.UTF-8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { ["en_CA.UTF-8", expected_locale, "en_NZ.UTF-8"] }
+            let(:expected_locale) { "en_US.UTF-8" }
+          end
         end
-      end
 
-    end
+        context "when the result includes 'en_US.utf8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { ["en_CA.utf8", "en_US.utf8", "en_NZ.utf8"] }
+            let(:expected_locale) { "en_US.UTF-8" }
+          end
+        end
 
-    describe "finding the windows embedded dir" do
-      let(:default_config_location) { "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
-      let(:alternate_install_location) { "c:/my/alternate/install/place/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
-      let(:non_omnibus_location) { "c:/my/dev/stuff/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+        context "when the result includes 'en.UTF-8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { ["en.ISO8859-1", expected_locale] }
+            let(:expected_locale) { "en.UTF-8" }
+          end
+        end
 
-      let(:default_ca_file) { "c:/opscode/chef/embedded/ssl/certs/cacert.pem" }
+        context "when the result includes 'en_*.UTF-8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { [expected_locale, "en_CA.UTF-8", "en_GB.UTF-8"] }
+            let(:expected_locale) { "en_AU.UTF-8" }
+          end
+        end
 
-      it "finds the embedded dir in the default location" do
-        Chef::Config.stub(:_this_file).and_return(default_config_location)
-        Chef::Config.embedded_dir.should == "c:/opscode/chef/embedded"
-      end
+        context "when the result includes 'en_*.utf8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { ["en_AU.utf8", "en_CA.utf8", "en_GB.utf8"] }
+            let(:expected_locale) { "en_AU.UTF-8" }
+          end
+        end
 
-      it "finds the embedded dir in a custom install location" do
-        Chef::Config.stub(:_this_file).and_return(alternate_install_location)
-        Chef::Config.embedded_dir.should == "c:/my/alternate/install/place/chef/embedded"
-      end
+        context "when the result does not include 'en_*.UTF-8'" do
+          let(:locale_array) { ["af_ZA", "af_ZA.ISO8859-1", "af_ZA.ISO8859-15", "af_ZA.UTF-8"] }
 
-      it "doesn't error when not in an omnibus install" do
-        Chef::Config.stub(:_this_file).and_return(non_omnibus_location)
-        Chef::Config.embedded_dir.should be_nil
-      end
+          it "should fall back to C locale" do
+            expect(Chef::Log).to receive(:warn).with("Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support.")
+            expect(Chef::Config.guess_internal_locale).to eq 'C'
+          end
+        end
 
-      it "sets the ssl_ca_cert path if the cert file is available" do
-        Chef::Config.stub(:_this_file).and_return(default_config_location)
-        Chef::Config.stub(:on_windows?).and_return(true)
-        File.stub(:exist?).with(default_ca_file).and_return(true)
-        Chef::Config.ssl_ca_file.should == default_ca_file
-      end
-    end
-  end
+        context "on error" do
+          let(:locale_array) { [] }
 
-  describe "Chef::Config[:user_home]" do
-    it "should set when HOME is provided" do
-      Chef::Config.stub(:env).and_return({ 'HOME' => "/home/kitten" })
-      Chef::Config[:user_home].should == "/home/kitten"
-    end
+          before do
+            allow(Chef::Config).to receive(:shell_out_with_systems_locale!).and_raise("THIS IS AN ERROR")
+          end
 
-    it "should be set when only USERPROFILE is provided" do
-      Chef::Config.stub(:env).and_return({ 'USERPROFILE' => "/users/kitten" })
-      Chef::Config[:user_home].should == "/users/kitten"
-    end
-
-    it "falls back to the current working directory when HOME and USERPROFILE is not set" do
-      Chef::Config.stub(:env).and_return({})
-      Chef::Config[:user_home].should == Dir.pwd
-    end
-  end
-
-  describe "Chef::Config[:encrypted_data_bag_secret]" do
-    db_secret_default_path =
-      Chef::Config.platform_specific_path("/etc/chef/encrypted_data_bag_secret")
-
-    let(:db_secret_default_path){ db_secret_default_path }
-
-    before do
-      File.stub(:exist?).with(db_secret_default_path).and_return(secret_exists)
-    end
-
-    context "#{db_secret_default_path} exists" do
-      let(:secret_exists) { true }
-      it "sets the value to #{db_secret_default_path}" do
-        Chef::Config[:encrypted_data_bag_secret].should eq db_secret_default_path
-      end
-    end
-
-    context "#{db_secret_default_path} does not exist" do
-      let(:secret_exists) { false }
-      it "sets the value to nil" do
-        Chef::Config[:encrypted_data_bag_secret].should be_nil
-      end
-    end
-  end
-
-  describe "Chef::Config[:event_handlers]" do
-    it "sets a event_handlers to an empty array by default" do
-      Chef::Config[:event_handlers].should eq([])
-    end
-    it "should be able to add custom handlers" do
-      o = Object.new
-      Chef::Config[:event_handlers] << o
-      Chef::Config[:event_handlers].should be_include(o)
-    end
-  end
-
-  describe "Chef::Config[:user_valid_regex]" do
-    context "on a platform that is not Windows" do
-      it "allows one letter usernames" do
-        any_match = Chef::Config[:user_valid_regex].any? { |regex| regex.match('a') }
-        expect(any_match).to be_true
+          it "should default to 'en_US.UTF-8'" do
+            if is_windows
+              expect(Chef::Log).to receive(:debug).with("Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else.")
+            else
+              expect(Chef::Log).to receive(:debug).with("No usable locale -a command found, assuming you have en_US.UTF-8 installed.")
+            end
+            expect(Chef::Config.guess_internal_locale).to eq "en_US.UTF-8"
+          end
+        end
       end
     end
   end

@@ -27,29 +27,9 @@ class Chef
     #   http://trac.misuse.org/science/wiki/DeepMerge
     module DeepMerge
 
-      class InvalidSubtractiveMerge < ArgumentError; end
-
-
-      OLD_KNOCKOUT_PREFIX = "!merge:".freeze
-
-      # Regex to match the "knockout prefix" that was used to indicate
-      # subtractive merging in Chef 10.x and previous. Subtractive merging is
-      # removed as of Chef 11, but we detect attempted use of it and raise an
-      # error (see: raise_if_knockout_used!)
-      OLD_KNOCKOUT_MATCH = %r[!merge].freeze
-
       extend self
 
       def merge(first, second)
-        first  = Mash.new(first)  unless first.kind_of?(Mash)
-        second = Mash.new(second) unless second.kind_of?(Mash)
-
-        DeepMerge.deep_merge(second, first)
-      end
-
-      # Inherited roles use the knockout_prefix array subtraction functionality
-      # This is likely to go away in Chef >= 0.11
-      def role_merge(first, second)
         first  = Mash.new(first)  unless first.kind_of?(Mash)
         second = Mash.new(second) unless second.kind_of?(Mash)
 
@@ -78,8 +58,6 @@ class Chef
           dest = source; return dest
         end
 
-        raise_if_knockout_used!(source)
-        raise_if_knockout_used!(dest)
         case source
         when nil
           dest
@@ -89,7 +67,6 @@ class Chef
               if dest[src_key]
                 dest[src_key] = deep_merge!(src_value, dest[src_key])
               else # dest[src_key] doesn't exist so we take whatever source has
-                raise_if_knockout_used!(src_value)
                 dest[src_key] = src_value
               end
             end
@@ -128,11 +105,19 @@ class Chef
         # If there are two Hashes, recursively merge.
         if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
           merge_with.each do |key, merge_with_value|
-            merge_onto[key] = if merge_onto.has_key?(key)
-                                hash_only_merge(merge_onto[key], merge_with_value)
-                              else
-                                merge_with_value
-                              end
+            value =
+              if merge_onto.has_key?(key)
+                hash_only_merge(merge_onto[key], merge_with_value)
+              else
+                merge_with_value
+              end
+
+            if merge_onto.respond_to?(:public_method_that_only_deep_merge_should_use)
+              # we can't call ImmutableMash#[]= because its immutable, but we need to mutate it to build it in-place
+              merge_onto.public_method_that_only_deep_merge_should_use(key, value)
+            else
+              merge_onto[key] = value
+            end
           end
           merge_onto
 
@@ -143,27 +128,6 @@ class Chef
         # In all other cases, replace merge_onto with merge_with
         else
           merge_with
-        end
-      end
-
-      # Checks for attempted use of subtractive merge, which was removed for
-      # Chef 11.0. If subtractive merge use is detected, will raise an
-      # InvalidSubtractiveMerge exception.
-      def raise_if_knockout_used!(obj)
-        if uses_knockout?(obj)
-          raise InvalidSubtractiveMerge, "subtractive merge with !merge is no longer supported"
-        end
-      end
-
-      # Checks for attempted use of subtractive merge in +obj+.
-      def uses_knockout?(obj)
-        case obj
-        when String
-          obj =~ OLD_KNOCKOUT_MATCH
-        when Array
-          obj.any? {|element| element.respond_to?(:gsub) && element =~ OLD_KNOCKOUT_MATCH }
-        else
-          false
         end
       end
 

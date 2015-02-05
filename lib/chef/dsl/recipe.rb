@@ -17,8 +17,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource_platform_map'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/exceptions'
+require 'chef/resource_builder'
 
 class Chef
   module DSL
@@ -52,9 +53,7 @@ class Chef
       end
 
       def has_resource_definition?(name)
-        yes_or_no = run_context.definitions.has_key?(name)
-
-        yes_or_no
+        run_context.definitions.has_key?(name)
       end
 
       # Processes the arguments and block as a resource definition.
@@ -68,12 +67,10 @@ class Chef
         # This sets up the parameter overrides
         new_def.instance_eval(&block) if block
 
-
         new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, run_context)
         new_recipe.params = new_def.params
         new_recipe.params[:name] = args[0]
         new_recipe.instance_eval(&new_def.recipe)
-        new_recipe
       end
 
       # Instantiates a resource (via #build_resource), then adds it to the
@@ -85,7 +82,7 @@ class Chef
 
         resource = build_resource(type, name, created_at, &resource_attrs_block)
 
-        run_context.resource_collection.insert(resource)
+        run_context.resource_collection.insert(resource, resource_type: type, instance_name: name)
         resource
       end
 
@@ -96,36 +93,16 @@ class Chef
       def build_resource(type, name, created_at=nil, &resource_attrs_block)
         created_at ||= caller[0]
 
-        # Checks the new platform => short_name => resource mapping initially
-        # then fall back to the older approach (Chef::Resource.const_get) for
-        # backward compatibility
-        resource_class = resource_class_for(type)
-
-        raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
-
-        resource = resource_class.new(name, run_context)
-        resource.source_line = created_at
-        # If we have a resource like this one, we want to steal its state
-        # This behavior is very counter-intuitive and should be removed.
-        # See CHEF-3694, https://tickets.opscode.com/browse/CHEF-3694
-        # Moved to this location to resolve CHEF-5052, https://tickets.opscode.com/browse/CHEF-5052
-        resource.load_prior_resource
-        resource.cookbook_name = cookbook_name
-        resource.recipe_name = recipe_name
-        # Determine whether this resource is being created in the context of an enclosing Provider
-        resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
-
-        # XXX: This is very crufty, but it's required for resource definitions
-        # to work properly :(
-        resource.params = @params
-
-        # Evaluate resource attribute DSL
-        resource.instance_eval(&resource_attrs_block) if block_given?
-
-        # Run optional resource hook
-        resource.after_created
-
-        resource
+        Chef::ResourceBuilder.new(
+          type:                type,
+          name:                name,
+          created_at:          created_at,
+          params:              @params,
+          run_context:         run_context,
+          cookbook_name:       cookbook_name,
+          recipe_name:         recipe_name,
+          enclosing_provider:  self.is_a?(Chef::Provider) ? self :  nil
+        ).build(&resource_attrs_block)
       end
 
       def resource_class_for(snake_case_name)
@@ -146,6 +123,10 @@ class Chef
         else
           to_s
         end
+      end
+
+      def exec(args)
+        raise Chef::Exceptions::ResourceNotFound, "exec was called, but you probably meant to use an execute resource.  If not, please call Kernel#exec explicitly.  The exec block called was \"#{args}\""
       end
 
     end

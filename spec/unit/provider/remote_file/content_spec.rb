@@ -47,31 +47,31 @@ describe Chef::Provider::RemoteFile::Content do
 
   describe "when the checksum of the current_resource matches the checksum set on the resource" do
     before do
-      new_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-      current_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      allow(new_resource).to receive(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      allow(current_resource).to receive(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     end
 
     it "should return nil for the tempfile" do
-      content.tempfile.should be_nil
+      expect(content.tempfile).to be_nil
     end
 
     it "should not call any fetcher" do
-      Chef::Provider::RemoteFile::Fetcher.should_not_receive(:for_resource)
+      expect(Chef::Provider::RemoteFile::Fetcher).not_to receive(:for_resource)
     end
   end
 
   describe "when the checksum of the current_resource is a partial match for the checksum set on the resource" do
     before do
-      new_resource.stub(:checksum).and_return("0fd012fd")
-      current_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      allow(new_resource).to receive(:checksum).and_return("0fd012fd")
+      allow(current_resource).to receive(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     end
 
     it "should return nil for the tempfile" do
-      content.tempfile.should be_nil
+      expect(content.tempfile).to be_nil
     end
 
     it "should not call any fetcher" do
-      Chef::Provider::RemoteFile::Fetcher.should_not_receive(:for_resource)
+      expect(Chef::Provider::RemoteFile::Fetcher).not_to receive(:for_resource)
     end
   end
 
@@ -79,17 +79,17 @@ describe Chef::Provider::RemoteFile::Content do
     before do
       # FIXME: test one or the other nil, test both not nil and not equal, abuse the regexp a little
       @uri = double("URI")
-      URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri)
+      expect(URI).to receive(:parse).with(new_resource.source[0]).and_return(@uri)
     end
 
     describe "when the fetcher returns nil for the tempfile" do
       before do
         http_fetcher = double("Chef::Provider::RemoteFile::HTTP", :fetch => nil)
-        Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
+        expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
       end
 
       it "should return nil for the tempfile" do
-        content.tempfile.should be_nil
+        expect(content.tempfile).to be_nil
       end
     end
 
@@ -100,43 +100,43 @@ describe Chef::Provider::RemoteFile::Content do
       let(:http_fetcher) { double("Chef::Provider::RemoteFile::HTTP", :fetch => tempfile) }
 
       before do
-        Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
+        expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
       end
 
       it "should return the tempfile object to the caller" do
-        content.tempfile.should == tempfile
+        expect(content.tempfile).to eq(tempfile)
       end
 
     end
   end
   describe "when the checksum are both nil" do
     before do
-      new_resource.checksum.should be_nil
-      current_resource.checksum.should be_nil
+      expect(new_resource.checksum).to be_nil
+      expect(current_resource.checksum).to be_nil
     end
     it_behaves_like "the resource needs fetching"
   end
 
   describe "when the current_resource checksum is nil" do
     before do
-      new_resource.stub(:checksum).and_return("fd012fd")
-      current_resource.stub(:checksum).and_return(nil)
+      allow(new_resource).to receive(:checksum).and_return("fd012fd")
+      allow(current_resource).to receive(:checksum).and_return(nil)
     end
     it_behaves_like "the resource needs fetching"
   end
 
   describe "when the new_resource checksum is nil" do
     before do
-      new_resource.stub(:checksum).and_return(nil)
-      current_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      allow(new_resource).to receive(:checksum).and_return(nil)
+      allow(current_resource).to receive(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     end
     it_behaves_like "the resource needs fetching"
   end
 
   describe "when the checksums are a partial match, but not to the leading portion" do
     before do
-      new_resource.stub(:checksum).and_return("fd012fd")
-      current_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      allow(new_resource).to receive(:checksum).and_return("fd012fd")
+      allow(current_resource).to receive(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     end
     it_behaves_like "the resource needs fetching"
   end
@@ -144,17 +144,17 @@ describe Chef::Provider::RemoteFile::Content do
 
   describe "when the fetcher throws an exception" do
     before do
-      new_resource.stub(:checksum).and_return(nil)
-      current_resource.stub(:checksum).and_return(nil)
+      allow(new_resource).to receive(:checksum).and_return(nil)
+      allow(current_resource).to receive(:checksum).and_return(nil)
       @uri = double("URI")
-      URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri)
+      expect(URI).to receive(:parse).with(new_resource.source[0]).and_return(@uri)
       http_fetcher = double("Chef::Provider::RemoteFile::HTTP")
-      http_fetcher.should_receive(:fetch).and_raise(Errno::ECONNREFUSED)
-      Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
+      expect(http_fetcher).to receive(:fetch).and_raise(Errno::ECONNREFUSED)
+      expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
     end
 
     it "should propagate the error back to the caller" do
-      lambda { content.tempfile }.should raise_error(Errno::ECONNREFUSED)
+      expect { content.tempfile }.to raise_error(Errno::ECONNREFUSED)
     end
   end
 
@@ -184,15 +184,15 @@ describe Chef::Provider::RemoteFile::Content do
     ].each do |exception|
       describe "with an exception of #{exception}" do
         before do
-          new_resource.stub(:checksum).and_return(nil)
-          current_resource.stub(:checksum).and_return(nil)
+          allow(new_resource).to receive(:checksum).and_return(nil)
+          allow(current_resource).to receive(:checksum).and_return(nil)
           @uri0 = double("URI0")
           @uri1 = double("URI1")
-          URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri0)
-          URI.should_receive(:parse).with(new_resource.source[1]).and_return(@uri1)
+          expect(URI).to receive(:parse).with(new_resource.source[0]).and_return(@uri0)
+          expect(URI).to receive(:parse).with(new_resource.source[1]).and_return(@uri1)
           @http_fetcher_throws_exception = double("Chef::Provider::RemoteFile::HTTP")
-          @http_fetcher_throws_exception.should_receive(:fetch).at_least(:once).and_raise(create_exception(exception))
-          Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri0, new_resource, current_resource).and_return(@http_fetcher_throws_exception)
+          expect(@http_fetcher_throws_exception).to receive(:fetch).at_least(:once).and_raise(create_exception(exception))
+          expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri0, new_resource, current_resource).and_return(@http_fetcher_throws_exception)
         end
 
         describe "the second url should succeed" do
@@ -200,26 +200,26 @@ describe Chef::Provider::RemoteFile::Content do
             @tempfile = double("Tempfile")
             mtime = Time.now
             http_fetcher_works = double("Chef::Provider::RemoteFile::HTTP", :fetch => @tempfile)
-            Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(http_fetcher_works)
+            expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(http_fetcher_works)
           end
 
           it "should return a valid tempfile" do
-            content.tempfile.should == @tempfile
+            expect(content.tempfile).to eq(@tempfile)
           end
 
           it "should not mutate the new_resource" do
             content.tempfile
-            new_resource.source.length.should == 2
+            expect(new_resource.source.length).to eq(2)
           end
         end
 
         describe "when both urls fail" do
           before do
-            Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(@http_fetcher_throws_exception)
+            expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(@http_fetcher_throws_exception)
           end
 
           it "should propagate the error back to the caller" do
-            lambda { content.tempfile }.should raise_error(exception)
+            expect { content.tempfile }.to raise_error(exception)
           end
         end
       end
@@ -229,24 +229,24 @@ describe Chef::Provider::RemoteFile::Content do
   describe "when there is an array of sources and the first succeeds" do
     let(:source) { [ "http://opscode.com/seattle.txt", "http://opscode.com/nyc.txt" ] }
     before do
-      new_resource.stub(:checksum).and_return(nil)
-      current_resource.stub(:checksum).and_return(nil)
+      allow(new_resource).to receive(:checksum).and_return(nil)
+      allow(current_resource).to receive(:checksum).and_return(nil)
       @uri0 = double("URI0")
-      URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri0)
-      URI.should_not_receive(:parse).with(new_resource.source[1])
+      expect(URI).to receive(:parse).with(new_resource.source[0]).and_return(@uri0)
+      expect(URI).not_to receive(:parse).with(new_resource.source[1])
       @tempfile = double("Tempfile")
       mtime = Time.now
       http_fetcher_works = double("Chef::Provider::RemoteFile::HTTP", :fetch => @tempfile)
-      Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri0, new_resource, current_resource).and_return(http_fetcher_works)
+      expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri0, new_resource, current_resource).and_return(http_fetcher_works)
     end
 
     it "should return a valid tempfile" do
-      content.tempfile.should == @tempfile
+      expect(content.tempfile).to eq(@tempfile)
     end
 
     it "should not mutate the new_resource" do
       content.tempfile
-      new_resource.source.length.should == 2
+      expect(new_resource.source.length).to eq(2)
     end
   end
 

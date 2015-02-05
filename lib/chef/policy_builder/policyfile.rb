@@ -237,7 +237,12 @@ class Chef
       end
 
       def policyfile_location
-        "data/policyfiles/#{deployment_group}"
+        if Chef::Config[:policy_document_native_api]
+          validate_policy_config!
+          "policies/#{policy_group}/#{policy_name}"
+        else
+          "data/policyfiles/#{deployment_group}"
+        end
       end
 
       # Do some mimimal validation of the policyfile we fetched from the
@@ -279,6 +284,22 @@ class Chef
       def deployment_group
         Chef::Config[:deployment_group] or
           raise ConfigurationError, "Setting `deployment_group` is not configured."
+      end
+
+      def validate_policy_config!
+        policy_group or
+          raise ConfigurationError, "Setting `policy_group` is not configured."
+
+        policy_name or
+          raise ConfigurationError, "Setting `policy_name` is not configured."
+      end
+
+      def policy_group
+        Chef::Config[:policy_group]
+      end
+
+      def policy_name
+        Chef::Config[:policy_name]
       end
 
       # Builds a 'cookbook_hash' map of the form

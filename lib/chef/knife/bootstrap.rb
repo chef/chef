@@ -17,11 +17,13 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/data_bag_secret_options'
 require 'erubis'
 
 class Chef
   class Knife
     class Bootstrap < Knife
+      include DataBagSecretOptions
 
       deps do
         require 'chef/knife/core/bootstrap_context'
@@ -94,11 +96,20 @@ class Chef
         :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
         :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
+      # DEPR: Remove this option in Chef 13
       option :distro,
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
-        :description => "Bootstrap a distro using a template",
-        :default => "chef-full"
+        :description => "Bootstrap a distro using a template. [DEPRECATED] Use -t / --bootstrap-template option instead.",
+        :proc        => Proc.new { |v|
+          Chef::Log.warn("[DEPRECATED] -d / --distro option is deprecated. Use -t / --bootstrap-template option instead.")
+          v
+        }
+
+      option :bootstrap_template,
+        :short => "-t TEMPLATE",
+        :long => "--bootstrap-template TEMPLATE",
+        :description => "Bootstrap Chef using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
 
       option :use_sudo,
         :long => "--sudo",
@@ -110,10 +121,14 @@ class Chef
         :description => "Execute the bootstrap via sudo with password",
         :boolean => false
 
+      # DEPR: Remove this option in Chef 13
       option :template_file,
         :long => "--template-file TEMPLATE",
-        :description => "Full path to location of template to use",
-        :default => false
+        :description => "Full path to location of template to use. [DEPRECATED] Use -t / --bootstrap-template option instead.",
+        :proc        => Proc.new { |v|
+          Chef::Log.warn("[DEPRECATED] --template-file option is deprecated. Use -t / --bootstrap-template option instead.")
+          v
+        }
 
       option :run_list,
         :short => "-r RUN_LIST",
@@ -141,18 +156,8 @@ class Chef
         :proc => Proc.new { |h|
           Chef::Config[:knife][:hints] ||= Hash.new
           name, path = h.split("=")
-          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new  }
-
-      option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
-
-      option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
+          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new
+        }
 
       option :bootstrap_url,
         :long        => "--bootstrap-url URL",
@@ -174,53 +179,77 @@ class Chef
         :description => "Add options to curl when install chef-client",
         :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
-      def find_template(template=nil)
-        # Are we bootstrapping using an already shipped template?
-        if config[:template_file]
-          bootstrap_files = config[:template_file]
-        else
-          bootstrap_files = []
-          bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
-          bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{config[:distro]}.erb") if Knife.chef_config_dir
-          bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb") if ENV['HOME']
-          bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
-          bootstrap_files.flatten!
+      option :node_ssl_verify_mode,
+        :long        => "--node-ssl-verify-mode [peer|none]",
+        :description => "Whether or not to verify the SSL cert for all HTTPS requests.",
+        :proc        => Proc.new { |v|
+          valid_values = ["none", "peer"]
+          unless valid_values.include?(v)
+            raise "Invalid value '#{v}' for --node-ssl-verify-mode. Valid values are: #{valid_values.join(", ")}"
+          end
+        }
+
+      option :node_verify_api_cert,
+        :long        => "--[no-]node-verify-api-cert",
+        :description => "Verify the SSL cert for HTTPS requests to the Chef server API.",
+        :boolean     => true
+
+      def default_bootstrap_template
+        "chef-full"
+      end
+
+      def bootstrap_template
+        # The order here is important. We want to check if we have the new Chef 12 option is set first.
+        # Knife cloud plugins unfortunately all set a default option for the :distro so it should be at
+        # the end.
+        config[:bootstrap_template] || config[:template_file] || config[:distro] || default_bootstrap_template
+      end
+
+      def find_template
+        template = bootstrap_template
+
+        # Use the template directly if it's a path to an actual file
+        if File.exists?(template)
+          Chef::Log.debug("Using the specified bootstrap template: #{File.dirname(template)}")
+          return template
         end
 
-        template = Array(bootstrap_files).find do |bootstrap_template|
+        # Otherwise search the template directories until we find the right one
+        bootstrap_files = []
+        bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{template}.erb")
+        bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
+        bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{template}.erb") if ENV['HOME']
+        bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{template}.erb"))
+        bootstrap_files.flatten!
+
+        template_file = Array(bootstrap_files).find do |bootstrap_template|
           Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
           File.exists?(bootstrap_template)
         end
 
-        unless template
-          ui.info("Can not find bootstrap definition for #{config[:distro]}")
+        unless template_file
+          ui.info("Can not find bootstrap definition for #{template}")
           raise Errno::ENOENT
         end
 
-        Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
+        Chef::Log.debug("Found bootstrap template in #{File.dirname(template_file)}")
 
-        template
+        template_file
       end
 
-      def render_template(template=nil)
-        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
+      def render_template
+        template_file = find_template
+        template = IO.read(template_file).chomp
+        secret = encryption_secret_provided_ignore_encrypt_flag? ? read_secret : nil
+        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config, secret)
         Erubis::Eruby.new(template).evaluate(context)
-      end
-
-      def read_template
-        IO.read(@template_file).chomp
       end
 
       def run
         validate_name_args!
-        warn_chef_config_secret_key
-        @template_file = find_template(config[:bootstrap_template])
         @node_name = Array(@name_args).first
-        # back compat--templates may use this setting:
-        config[:server_name] = @node_name
 
         $stdout.sync = true
-
         ui.info("Connecting to #{ui.color(@node_name, :bold)}")
 
         begin
@@ -252,14 +281,16 @@ class Chef
         ssh = Chef::Knife::Ssh.new
         ssh.ui = ui
         ssh.name_args = [ server_name, ssh_command ]
-        ssh.config[:ssh_user] = Chef::Config[:knife][:ssh_user] || config[:ssh_user]
+
+        # command line arguments and config file values are now merged into config in Chef::Knife#merge_configs
+        ssh.config[:ssh_user] = config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
-        ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
-        ssh.config[:ssh_gateway] = Chef::Config[:knife][:ssh_gateway] || config[:ssh_gateway]
-        ssh.config[:forward_agent] = Chef::Config[:knife][:forward_agent] || config[:forward_agent]
-        ssh.config[:identity_file] = Chef::Config[:knife][:identity_file] || config[:identity_file]
+        ssh.config[:ssh_port] = config[:ssh_port]
+        ssh.config[:ssh_gateway] = config[:ssh_gateway]
+        ssh.config[:forward_agent] = config[:forward_agent]
+        ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
-        ssh.config[:host_key_verify] = Chef::Config[:knife][:host_key_verify] || config[:host_key_verify]
+        ssh.config[:host_key_verify] = config[:host_key_verify]
         ssh.config[:on_error] = :raise
         ssh
       end
@@ -272,35 +303,13 @@ class Chef
       end
 
       def ssh_command
-        command = render_template(read_template)
+        command = render_template
 
         if config[:use_sudo]
           command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S #{command}" : "sudo #{command}"
         end
 
         command
-      end
-
-      def warn_chef_config_secret_key
-        unless Chef::Config[:encrypted_data_bag_secret].nil?
-          ui.warn "* " * 40
-          ui.warn(<<-WARNING)
-Specifying the encrypted data bag secret key using an 'encrypted_data_bag_secret'
-entry in 'knife.rb' is deprecated. Please see CHEF-4011 for more details. You
-can supress this warning and still distribute the secret key to all bootstrapped
-machines by adding the following to your 'knife.rb' file:
-
-  knife[:secret_file] = "/path/to/your/secret"
-
-If you would like to selectively distribute a secret key during bootstrap
-please use the '--secret' or '--secret-file' options of this command instead.
-
-#{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this
-behavior will be removed and any 'encrypted_data_bag_secret' entries in
-'knife.rb' will be ignored completely.
-WARNING
-          ui.warn "* " * 40
-        end
       end
 
     end

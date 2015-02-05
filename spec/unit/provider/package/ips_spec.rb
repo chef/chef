@@ -28,56 +28,72 @@ describe Chef::Provider::Package::Ips do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new("crypto/gnupg", @run_context)
     @current_resource = Chef::Resource::Package.new("crypto/gnupg", @run_context)
-    Chef::Resource::Package.stub(:new).and_return(@current_resource)
+    allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
     @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context)
+  end
 
-    @stdin = StringIO.new
-    @stderr = StringIO.new
-    @stdout =<<-PKG_STATUS
-          Name: crypto/gnupg
-       Summary: GNU Privacy Guard
-   Description: A complete and free implementation of the OpenPGP Standard as
-                defined by RFC4880.
-      Category: Applications/System Utilities
-         State: Not installed
-     Publisher: solaris
-       Version: 2.0.17
- Build Release: 5.11
-        Branch: 0.175.0.0.0.2.537
-Packaging Date: October 19, 2011 09:14:50 AM
-          Size: 8.07 MB
-          FMRI: pkg://solaris/crypto/gnupg@2.0.17,5.11-0.175.0.0.0.2.537:20111019T091450Z
+  def local_output
+    stdin  = StringIO.new
+    stdout = ''
+    stderr =<<-PKG_STATUS
+pkg: info: no packages matching the following patterns you specified are
+installed on the system.  Try specifying -r to query remotely:
+
+   crypto/gnupg
 PKG_STATUS
-    @pid = 12345
-    @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
+    return OpenStruct.new(:stdout => stdout,:stdin => stdin,:stderr => stderr,:status => @status,:exitstatus => 1)
+  end
+
+  def remote_output
+
+    stdout = <<-PKG_STATUS
+          Name: security/sudo
+       Summary: sudo - authority delegation tool
+         State: Not Installed
+     Publisher: omnios
+       Version: 1.8.4.1 (1.8.4p1)
+ Build Release: 5.11
+        Branch: 0.151002
+Packaging Date: April  1, 2012 05:55:52 PM
+          Size: 2.57 MB
+          FMRI: pkg://omnios/security/sudo@1.8.4.1,5.11-0.151002:20120401T175552Z
+PKG_STATUS
+  stdin = StringIO.new
+  stderr = ''
+  return OpenStruct.new(:stdout => stdout,:stdin => stdin,:stderr => stderr,:status => @status,:exitstatus => 0)
   end
 
   context "when loading current resource" do
     it "should create a current resource with the name of the new_resource" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
+      expect(@provider).to receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      expect(@provider).to receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
+      expect(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
       @provider.load_current_resource
     end
 
     it "should set the current resources package name to the new resources package name" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      @current_resource.should_receive(:package_name).with(@new_resource.package_name)
+      expect(@provider).to receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      expect(@provider).to receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource
+      expect(@current_resource.package_name).to eq(@new_resource.package_name)
     end
 
     it "should run pkg info with the package name" do
-      @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(@shell_out)
+      expect(@provider).to receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      expect(@provider).to receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource
     end
 
     it "should set the installed version to nil on the current resource if package state is not installed" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      @current_resource.should_receive(:version).with(nil).and_return(true)
+      expect(@provider).to receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      expect(@provider).to receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource
+      expect(@current_resource.version).to be_nil
     end
 
     it "should set the installed version if package has one" do
-      @stdout.replace(<<-INSTALLED)
+      local = local_output
+      local.stdout = <<-INSTALLED
           Name: crypto/gnupg
        Summary: GNU Privacy Guard
    Description: A complete and free implementation of the OpenPGP Standard as
@@ -92,56 +108,34 @@ Packaging Date: October 19, 2011 09:14:50 AM
           Size: 8.07 MB
           FMRI: pkg://solaris/crypto/gnupg@2.0.17,5.11-0.175.0.0.0.2.537:20111019T091450Z
 INSTALLED
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
+      expect(@provider).to receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local)
+      expect(@provider).to receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource
-      @current_resource.version.should == "2.0.17"
-      @provider.candidate_version.should eql("2.0.17")
+      expect(@current_resource.version).to eq("2.0.17")
     end
 
-    it "should return the current resouce" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      @provider.load_current_resource.should eql(@current_resource)
+    it "should return the current resource" do
+      expect(@provider).to receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      expect(@provider).to receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
+      expect(@provider.load_current_resource).to eql(@current_resource)
     end
   end
 
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg install -q crypto/gnupg@2.0.17"
-      })
+      expect(@provider).to receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17")
       @provider.install_package("crypto/gnupg", "2.0.17")
     end
-
 
     it "should run pkg install with the package name and version and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg --no-refresh install -q crypto/gnupg@2.0.17"
-      })
-      @new_resource.stub(:options).and_return("--no-refresh")
+      expect(@provider).to receive(:shell_out).with("pkg --no-refresh install -q crypto/gnupg@2.0.17")
+      allow(@new_resource).to receive(:options).and_return("--no-refresh")
       @provider.install_package("crypto/gnupg", "2.0.17")
-    end
-
-    it "should not contain invalid characters for the version string" do
-      @stdout.replace(<<-PKG_STATUS)
-          Name: security/sudo
-       Summary: sudo - authority delegation tool
-         State: Not Installed
-     Publisher: omnios
-       Version: 1.8.4.1 (1.8.4p1)
- Build Release: 5.11
-        Branch: 0.151002
-Packaging Date: April  1, 2012 05:55:52 PM
-          Size: 2.57 MB
-          FMRI: pkg://omnios/security/sudo@1.8.4.1,5.11-0.151002:20120401T175552Z
-PKG_STATUS
-      @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "pkg install -q security/sudo@1.8.4.1"
-      })
-      @provider.install_package("security/sudo", "1.8.4.1")
     end
 
     it "should not include the human-readable version in the candidate_version" do
-      @stdout.replace(<<-PKG_STATUS)
+      remote = remote_output
+      remote.stdout = <<-PKG_STATUS
           Name: security/sudo
        Summary: sudo - authority delegation tool
          State: Not Installed
@@ -153,56 +147,81 @@ Packaging Date: April  1, 2012 05:55:52 PM
           Size: 2.57 MB
           FMRI: pkg://omnios/security/sudo@1.8.4.1,5.11-0.151002:20120401T175552Z
 PKG_STATUS
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
+      expect(@provider).to receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      expect(@provider).to receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote)
       @provider.load_current_resource
-      @current_resource.version.should be_nil
-      @provider.candidate_version.should eql("1.8.4.1")
+      expect(@current_resource.version).to be_nil
+      expect(@provider.candidate_version).to eql("1.8.4.1")
     end
 
-    context "using the ips_package resource" do
+    it "should not upgrade the package if it is already installed" do
+      local = local_output
+      local.stdout = <<-INSTALLED
+          Name: crypto/gnupg
+       Summary: GNU Privacy Guard
+   Description: A complete and free implementation of the OpenPGP Standard as
+                defined by RFC4880.
+      Category: Applications/System Utilities
+         State: Installed
+     Publisher: solaris
+       Version: 2.0.17
+ Build Release: 5.11
+        Branch: 0.175.0.0.0.2.537
+Packaging Date: October 19, 2011 09:14:50 AM
+          Size: 8.07 MB
+          FMRI: pkg://solaris/crypto/gnupg@2.0.17,5.11-0.175.0.0.0.2.537:20111019T091450Z
+INSTALLED
+      remote = remote_output
+      remote.stdout = <<-REMOTE
+          Name: crypto/gnupg
+       Summary: GNU Privacy Guard
+   Description: A complete and free implementation of the OpenPGP Standard as
+                defined by RFC4880.
+      Category: Applications/System Utilities
+         State: Not Installed
+     Publisher: solaris
+       Version: 2.0.18
+ Build Release: 5.11
+        Branch: 0.175.0.0.0.2.537
+Packaging Date: October 19, 2011 09:14:50 AM
+          Size: 8.07 MB
+          FMRI: pkg://solaris/crypto/gnupg@2.0.18,5.11-0.175.0.0.0.2.537:20111019T091450Z
+REMOTE
+
+      expect(@provider).to receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local)
+      expect(@provider).to receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote)
+      expect(@provider).to receive(:install_package).exactly(0).times
+      @provider.run_action(:install)
+    end
+
+    context "when accept_license is true" do
       before do
-        @new_resource = Chef::Resource::IpsPackage.new("crypto/gnupg", @run_context)
-        @current_resource = Chef::Resource::IpsPackage.new("crypto/gnupg", @run_context)
-        @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context)
+        allow(@new_resource).to receive(:accept_license).and_return(true)
       end
 
-      context "when accept_license is true" do
-        before do
-          @new_resource.stub(:accept_license).and_return(true)
-        end
-
-        it "should run pkg install with the --accept flag" do
-          @provider.should_receive(:run_command_with_systems_locale).with({
-            :command => "pkg install -q --accept crypto/gnupg@2.0.17"
-          })
-          @provider.install_package("crypto/gnupg", "2.0.17")
-        end
+      it "should run pkg install with the --accept flag" do
+        expect(@provider).to receive(:shell_out).with("pkg install -q --accept crypto/gnupg@2.0.17")
+        @provider.install_package("crypto/gnupg", "2.0.17")
       end
     end
   end
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg install -q crypto/gnupg@2.0.17"
-      })
+      expect(@provider).to receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17")
       @provider.upgrade_package("crypto/gnupg", "2.0.17")
     end
   end
 
   context "when uninstalling a package" do
     it "should run pkg uninstall with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg uninstall -q crypto/gnupg@2.0.17"
-      })
+      expect(@provider).to receive(:shell_out!).with("pkg uninstall -q crypto/gnupg@2.0.17")
       @provider.remove_package("crypto/gnupg", "2.0.17")
     end
 
     it "should run pkg uninstall with the package name and version and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg --no-refresh uninstall -q crypto/gnupg@2.0.17"
-      })
-      @new_resource.stub(:options).and_return("--no-refresh")
+      expect(@provider).to receive(:shell_out!).with("pkg --no-refresh uninstall -q crypto/gnupg@2.0.17")
+      allow(@new_resource).to receive(:options).and_return("--no-refresh")
       @provider.remove_package("crypto/gnupg", "2.0.17")
     end
   end

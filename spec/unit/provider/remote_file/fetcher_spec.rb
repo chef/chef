@@ -27,47 +27,47 @@ describe Chef::Provider::RemoteFile::Fetcher do
   describe "when passed an http url" do
     let(:uri) { double("uri", :scheme => "http" ) }
     before do
-      Chef::Provider::RemoteFile::HTTP.should_receive(:new).and_return(fetcher_instance)
+      expect(Chef::Provider::RemoteFile::HTTP).to receive(:new).and_return(fetcher_instance)
     end
     it "returns an http fetcher" do
-      described_class.for_resource(uri, new_resource, current_resource).should == fetcher_instance
+      expect(described_class.for_resource(uri, new_resource, current_resource)).to eq(fetcher_instance)
     end
   end
 
   describe "when passed an https url" do
     let(:uri) { double("uri", :scheme => "https" ) }
     before do
-      Chef::Provider::RemoteFile::HTTP.should_receive(:new).and_return(fetcher_instance)
+      expect(Chef::Provider::RemoteFile::HTTP).to receive(:new).and_return(fetcher_instance)
     end
     it "returns an http fetcher" do
-      described_class.for_resource(uri, new_resource, current_resource).should == fetcher_instance
+      expect(described_class.for_resource(uri, new_resource, current_resource)).to eq(fetcher_instance)
     end
   end
 
   describe "when passed an ftp url" do
     let(:uri) { double("uri", :scheme => "ftp" ) }
     before do
-      Chef::Provider::RemoteFile::FTP.should_receive(:new).and_return(fetcher_instance)
+      expect(Chef::Provider::RemoteFile::FTP).to receive(:new).and_return(fetcher_instance)
     end
     it "returns an ftp fetcher" do
-      described_class.for_resource(uri, new_resource, current_resource).should == fetcher_instance
+      expect(described_class.for_resource(uri, new_resource, current_resource)).to eq(fetcher_instance)
     end
   end
 
   describe "when passed a file url" do
     let(:uri) { double("uri", :scheme => "file" ) }
     before do
-      Chef::Provider::RemoteFile::LocalFile.should_receive(:new).and_return(fetcher_instance)
+      expect(Chef::Provider::RemoteFile::LocalFile).to receive(:new).and_return(fetcher_instance)
     end
     it "returns a localfile fetcher" do
-      described_class.for_resource(uri, new_resource, current_resource).should == fetcher_instance
+      expect(described_class.for_resource(uri, new_resource, current_resource)).to eq(fetcher_instance)
     end
   end
 
   describe "when passed a url we do not recognize" do
     let(:uri) { double("uri", :scheme => "xyzzy" ) }
     it "throws an ArgumentError exception" do
-      lambda { described_class.for_resource(uri, new_resource, current_resource) }.should raise_error(ArgumentError)
+      expect { described_class.for_resource(uri, new_resource, current_resource) }.to raise_error(ArgumentError)
     end
   end
 

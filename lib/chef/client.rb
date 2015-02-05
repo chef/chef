@@ -25,7 +25,7 @@ require 'chef/log'
 require 'chef/rest'
 require 'chef/api_client'
 require 'chef/api_client/registration'
-require 'chef/platform/query_helpers'
+require 'chef/audit/runner'
 require 'chef/node'
 require 'chef/role'
 require 'chef/file_cache'
@@ -37,14 +37,19 @@ require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook/remote_file_vendor'
 require 'chef/event_dispatch/dispatcher'
+require 'chef/event_loggers/base'
+require 'chef/event_loggers/windows_eventlog'
+require 'chef/exceptions'
 require 'chef/formatters/base'
 require 'chef/formatters/doc'
 require 'chef/formatters/minimal'
 require 'chef/version'
 require 'chef/resource_reporter'
+require 'chef/audit/audit_reporter'
 require 'chef/run_lock'
 require 'chef/policy_builder'
 require 'chef/request_id'
+require 'chef/platform/rebooter'
 require 'ohai'
 require 'rbconfig'
 
@@ -151,7 +156,7 @@ class Chef
       @runner = nil
       @ohai = Ohai::System.new
 
-      event_handlers = configure_formatters
+      event_handlers = configure_formatters + configure_event_loggers
       event_handlers += Array(Chef::Config[:event_handlers])
 
       @events = EventDispatch::Dispatcher.new(*event_handlers)
@@ -191,52 +196,31 @@ class Chef
       end
     end
 
-    # Do a full run for this Chef::Client.  Calls:
-    # * do_run
-    #
-    # This provides a wrapper around #do_run allowing the
-    # run to be optionally forked.
-    # === Returns
-    # boolean:: Return value from #do_run. Should always returns true.
-    def run
-      # win32-process gem exposes some form of :fork for Process
-      # class. So we are seperately ensuring that the platform we're
-      # running on is not windows before forking.
-      if(Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?)
-        Chef::Log.info "Forking chef instance to converge..."
-        pid = fork do
-          [:INT, :TERM].each {|s| trap(s, "EXIT") }
-          client_solo = Chef::Config[:solo] ? "chef-solo" : "chef-client"
-          $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
-          begin
-            Chef::Log.debug "Forked instance now converging"
-            do_run
-          rescue Exception => e
-            Chef::Log.error(e.to_s)
-            exit 1
+    def configure_event_loggers
+      if Chef::Config.disable_event_logger
+        []
+      else
+        Chef::Config.event_loggers.map do |evt_logger|
+          case evt_logger
+          when Symbol
+            Chef::EventLoggers.new(evt_logger)
+          when Class
+            evt_logger.new
           else
-            exit 0
           end
         end
-        Chef::Log.debug "Fork successful. Waiting for new chef pid: #{pid}"
-        result = Process.waitpid2(pid)
-        handle_child_exit(result)
-        Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
-        true
-      else
-        do_run
       end
     end
 
-    def handle_child_exit(pid_and_status)
-      status = pid_and_status[1]
-      return true if status.success?
-      message = if status.signaled?
-        "Chef run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
-      else
-        "Chef run process exited unsuccessfully (exit code #{status.exitstatus})"
+    # Resource repoters send event information back to the chef server for processing.
+    # Can only be called after we have a @rest object
+    def register_reporters
+      [
+        Chef::ResourceReporter.new(rest),
+        Chef::Audit::AuditReporter.new(rest)
+      ].each do |r|
+        events.register(r)
       end
-      raise Exceptions::ChildConvergeError, message
     end
 
     # Instantiates a Chef::Node object, possibly loading the node's prior state
@@ -276,7 +260,6 @@ class Chef
       @policy_builder ||= Chef::PolicyBuilder.strategy.new(node_name, ohai.data, json_attribs, @override_runlist, events)
     end
 
-
     def save_updated_node
       if Chef::Config[:solo]
         # nothing to do
@@ -290,6 +273,7 @@ class Chef
 
     def run_ohai
       ohai.all_plugins
+      @events.ohai_completed(node)
     end
 
     def node_name
@@ -325,30 +309,67 @@ class Chef
       end
       # We now have the client key, and should use it from now on.
       @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
-      @resource_reporter = Chef::ResourceReporter.new(@rest)
-      @events.register(@resource_reporter)
+      register_reporters
     rescue Exception => e
       # TODO: munge exception so a semantic failure message can be given to the
       # user
-      @events.registration_failed(node_name, e, config)
+      @events.registration_failed(client_name, e, config)
       raise
     end
 
     # Converges the node.
     #
     # === Returns
-    # true:: Always returns true
+    # The thrown exception, if there was one.  If this returns nil the converge was successful.
     def converge(run_context)
-      @events.converge_start(run_context)
-      Chef::Log.debug("Converging node #{node_name}")
-      @runner = Chef::Runner.new(run_context)
-      runner.converge
-      @events.converge_complete
-      true
-    rescue Exception
-      # TODO: should this be a separate #converge_failed(exception) method?
-      @events.converge_complete
-      raise
+      converge_exception = nil
+      catch(:end_client_run_early) do
+        begin
+          @events.converge_start(run_context)
+          Chef::Log.debug("Converging node #{node_name}")
+          @runner = Chef::Runner.new(run_context)
+          runner.converge
+          @events.converge_complete
+        rescue Exception => e
+          Chef::Log.error("Converge failed with error message #{e.message}")
+          @events.converge_failed(e)
+          converge_exception = e
+        end
+      end
+      converge_exception
+    end
+
+    # We don't want to change the old API on the `converge` method to have it perform
+    # saving.  So we wrap it in this method.
+    def converge_and_save(run_context)
+      converge_exception = converge(run_context)
+      unless converge_exception
+        begin
+          save_updated_node
+        rescue Exception => e
+          converge_exception = e
+        end
+      end
+      converge_exception
+    end
+
+    def run_audits(run_context)
+      audit_exception = nil
+      begin
+        @events.audit_phase_start(run_status)
+        Chef::Log.info("Starting audit phase")
+        auditor = Chef::Audit::Runner.new(run_context)
+        auditor.run
+        if auditor.failed?
+          raise Chef::Exceptions::AuditsFailed.new(auditor.num_failed, auditor.num_total)
+        end
+        @events.audit_phase_complete
+      rescue Exception => e
+        Chef::Log.error("Audit phase failed with error message: #{e.message}")
+        @events.audit_phase_failed(e)
+        audit_exception = e
+      end
+      audit_exception
     end
 
     # Expands the run list. Delegates to the policy_builder.
@@ -362,7 +383,6 @@ class Chef
     def expanded_run_list
       policy_builder.expand_run_list
     end
-
 
     def do_windows_admin_check
       if Chef::Platform.windows?
@@ -383,8 +403,6 @@ class Chef
       end
     end
 
-    private
-
     # Do a full run for this Chef::Client.  Calls:
     #
     #  * run_ohai - Collect information about the system
@@ -395,14 +413,12 @@ class Chef
     #
     # === Returns
     # true:: Always returns true.
-    def do_run
+    def run
       runlock = RunLock.new(Chef::Config.lockfile)
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
       begin
         runlock.save_pid
-
-        check_ssl_config
 
         request_id = Chef::RequestID.instance.request_id
         run_context = nil
@@ -412,7 +428,7 @@ class Chef
         Chef::Log.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
         run_ohai
-        @events.ohai_completed(node)
+
         register unless Chef::Config[:solo]
 
         load_node
@@ -428,15 +444,33 @@ class Chef
 
         run_context = setup_run_context
 
-        converge(run_context)
+        if Chef::Config[:audit_mode] != :audit_only
+          converge_error = converge_and_save(run_context)
+        end
 
-        save_updated_node
+        if Chef::Config[:why_run] == true
+          # why_run should probably be renamed to why_converge
+          Chef::Log.debug("Not running audits in 'why_run' mode - this mode is used to see potential converge changes")
+        elsif Chef::Config[:audit_mode] != :disabled
+          audit_error = run_audits(run_context)
+        end
+
+        if converge_error || audit_error
+          e = Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
+          e.fill_backtrace
+          raise e
+        end
 
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
         @events.run_completed(node)
+
+        # rebooting has to be the last thing we do, no exceptions.
+        Chef::Platform::Rebooter.reboot_if_needed!(node)
+
         true
+
       rescue Exception => e
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
@@ -459,6 +493,8 @@ class Chef
       end
       true
     end
+
+    private
 
     def empty_directory?(path)
       !File.exists?(path) || (Dir.entries(path).size <= 2)
@@ -490,37 +526,6 @@ class Chef
       require 'chef/win32/security'
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
-    end
-
-    def check_ssl_config
-      if Chef::Config[:ssl_verify_mode] == :verify_none and !Chef::Config[:verify_api_cert]
-        Chef::Log.warn(<<-WARN)
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-SSL validation of HTTPS requests is disabled. HTTPS connections are still
-encrypted, but chef is not able to detect forged replies or man in the middle
-attacks.
-
-To fix this issue add an entry like this to your configuration file:
-
-```
-  # Verify all HTTPS connections (recommended)
-  ssl_verify_mode :verify_peer
-
-  # OR, Verify only connections to chef-server
-  verify_api_cert true
-```
-
-To check your SSL configuration, or troubleshoot errors, you can use the
-`knife ssl check` command like so:
-
-```
-  knife ssl check -c #{Chef::Config.config_file}
-```
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-WARN
-      end
     end
 
   end

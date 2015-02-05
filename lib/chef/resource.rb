@@ -23,215 +23,73 @@ require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/dsl/reboot_pending'
 require 'chef/mixin/convert_to_class_name'
-require 'chef//guard_interpreter/resource_guard_interpreter'
+require 'chef/guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
-require 'chef/resource_platform_map'
+require 'chef/node_map'
 require 'chef/node'
 require 'chef/platform'
+require 'chef/resource/resource_notification'
 
 require 'chef/mixin/deprecation'
+require 'chef/mixin/descendants_tracker'
 
 class Chef
   class Resource
-    class Notification < Struct.new(:resource, :action, :notifying_resource)
 
-      def duplicates?(other_notification)
-        unless other_notification.respond_to?(:resource) && other_notification.respond_to?(:action)
-          msg = "only duck-types of Chef::Resource::Notification can be checked for duplication "\
-                "you gave #{other_notification.inspect}"
-          raise ArgumentError, msg
-        end
-        other_notification.resource == resource && other_notification.action == action
-      end
-
-      # If resource and/or notifying_resource is not a resource object, this will look them up in the resource collection
-      # and fix the references from strings to actual Resource objects.
-      def resolve_resource_reference(resource_collection)
-        return resource if resource.kind_of?(Chef::Resource) && notifying_resource.kind_of?(Chef::Resource)
-
-        if not(resource.kind_of?(Chef::Resource))
-          fix_resource_reference(resource_collection)
-        end
-
-        if not(notifying_resource.kind_of?(Chef::Resource))
-          fix_notifier_reference(resource_collection)
-        end
-      end
-
-      # This will look up the resource if it is not a Resource Object.  It will complain if it finds multiple
-      # resources, can't find a resource, or gets invalid syntax.
-      def fix_resource_reference(resource_collection)
-        matching_resource = resource_collection.find(resource)
-        if Array(matching_resource).size > 1
-          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple resources, "\
-          "but can only notify one resource. Notifying resource was defined on #{notifying_resource.source_line}"
-          raise Chef::Exceptions::InvalidResourceReference, msg
-        end
-        self.resource = matching_resource
-
-      rescue Chef::Exceptions::ResourceNotFound => e
-        err = Chef::Exceptions::ResourceNotFound.new(<<-FAIL)
-resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
-but #{resource} cannot be found in the resource collection. #{notifying_resource} is defined in \
-#{notifying_resource.source_line}
-FAIL
-        err.set_backtrace(e.backtrace)
-        raise err
-      rescue Chef::Exceptions::InvalidResourceSpecification => e
-          err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
-Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
-but #{resource.inspect} is not valid syntax to look up a resource in the resource collection. Notification \
-is defined near #{notifying_resource.source_line}
-F
-          err.set_backtrace(e.backtrace)
-        raise err
-      end
-
-      # This will look up the notifying_resource if it is not a Resource Object.  It will complain if it finds multiple
-      # resources, can't find a resource, or gets invalid syntax.
-      def fix_notifier_reference(resource_collection)
-        matching_notifier = resource_collection.find(notifying_resource)
-        if Array(matching_notifier).size > 1
-          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple notifying "\
-          "resources, but can only originate from one resource.  Destination resource was defined "\
-          "on #{resource.source_line}"
-          raise Chef::Exceptions::InvalidResourceReference, msg
-        end
-        self.notifying_resource = matching_notifier
-
-      rescue Chef::Exceptions::ResourceNotFound => e
-        err = Chef::Exceptions::ResourceNotFound.new(<<-FAIL)
-Resource #{resource} is configured to receive notifications from #{notifying_resource} with action #{action}, \
-but #{notifying_resource} cannot be found in the resource collection. #{resource} is defined in \
-#{resource.source_line}
-FAIL
-        err.set_backtrace(e.backtrace)
-        raise err
-      rescue Chef::Exceptions::InvalidResourceSpecification => e
-          err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
-Resource #{resource} is configured to receive notifications from  #{notifying_resource} with action #{action}, \
-but #{notifying_resource.inspect} is not valid syntax to look up a resource in the resource collection. Notification \
-is defined near #{resource.source_line}
-F
-          err.set_backtrace(e.backtrace)
-        raise err
-      end
-
-    end
-
-    FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
+    #
+    # Generic User DSL (not resource-specific)
+    #
 
     include Chef::DSL::DataQuery
-    include Chef::Mixin::ParamsValidate
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
-    include Chef::Mixin::ConvertToClassName
-    include Chef::Mixin::Deprecation
 
-    extend Chef::Mixin::ConvertToClassName
-
-    if Module.method(:const_defined?).arity == 1
-      def self.strict_const_defined?(const)
-        const_defined?(const)
-      end
-    else
-      def self.strict_const_defined?(const)
-        const_defined?(const, false)
-      end
-    end
-
-    # Track all subclasses of Resource. This is used so names can be looked up
-    # when attempting to deserialize from JSON. (See: json_compat)
-    def self.resource_classes
-      # Using a class variable here ensures we have one variable to track
-      # subclasses shared by the entire class hierarchy; without this, each
-      # subclass would have its own list of subclasses.
-      @@resource_classes ||= []
-    end
-
-    # Callback when subclass is defined. Adds subclass to list of subclasses.
-    def self.inherited(subclass)
-      resource_classes << subclass
-    end
-
-    # Look up a subclass by +class_name+ which should be a string that matches
-    # `Subclass.name`
-    def self.find_subclass_by_name(class_name)
-      resource_classes.first {|c| c.name == class_name }
-    end
-
-    # Set or return the list of "state attributes" implemented by the Resource
-    # subclass. State attributes are attributes that describe the desired state
-    # of the system, such as file permissions or ownership. In general, state
-    # attributes are attributes that could be populated by examining the state
-    # of the system (e.g., File.stat can tell you the permissions on an
-    # existing file). Contrarily, attributes that are not "state attributes"
-    # usually modify the way Chef itself behaves, for example by providing
-    # additional options for a package manager to use when installing a
-    # package.
     #
-    # This list is used by the Chef client auditing system to extract
-    # information from resources to describe changes made to the system.
-    def self.state_attrs(*attr_names)
-      @state_attrs ||= []
-      @state_attrs = attr_names unless attr_names.empty?
-
-      # Return *all* state_attrs that this class has, including inherited ones
-      if superclass.respond_to?(:state_attrs)
-        superclass.state_attrs + @state_attrs
-      else
-        @state_attrs
-      end
+    # The node the current Chef run is using.
+    #
+    # Corresponds to `run_context.node`.
+    #
+    # @return [Chef::Node] The node the current Chef run is using.
+    #
+    def node
+      run_context && run_context.node
     end
 
-    # Set or return the "identity attribute" for this resource class. This is
-    # generally going to be the "name attribute" for this resource. In other
-    # words, the resource type plus this attribute uniquely identify a given
-    # bit of state that chef manages. For a File resource, this would be the
-    # path, for a package resource, it will be the package name. This will show
-    # up in chef-client's audit records as a searchable field.
-    def self.identity_attr(attr_name=nil)
-      @identity_attr ||= nil
-      @identity_attr = attr_name if attr_name
-
-      # If this class doesn't have an identity attr, we'll defer to the superclass:
-      if @identity_attr || !superclass.respond_to?(:identity_attr)
-        @identity_attr
-      else
-        superclass.identity_attr
-      end
+    #
+    # Find existing resources by searching the list of existing resources.  Possible
+    # forms are:
+    #
+    #   find(:file => "foobar")
+    #   find(:file => [ "foobar", "baz" ])
+    #   find("file[foobar]", "file[baz]")
+    #   find("file[foobar,baz]")
+    #
+    # Calls `run_context.resource_collection.find(*args)`
+    #
+    # @return the matching resource, or an Array of matching resources.
+    #
+    # @raise ArgumentError if you feed it bad lookup information
+    # @raise RuntimeError if it can't find the resources you are looking for.
+    #
+    def resources(*args)
+      run_context.resource_collection.find(*args)
     end
 
-    def self.dsl_name
-      convert_to_snake_case(name, 'Chef::Resource')
-    end
 
-    attr_accessor :params
-    attr_accessor :provider
-    attr_accessor :allowed_actions
-    attr_accessor :run_context
-    attr_accessor :cookbook_name
-    attr_accessor :recipe_name
-    attr_accessor :enclosing_provider
-    attr_accessor :source_line
-    attr_accessor :retries
-    attr_accessor :retry_delay
+    #
+    # Resource User Interface (for users)
+    #
 
-    attr_reader :updated
-
-    attr_reader :resource_name
-    attr_reader :not_if_args
-    attr_reader :only_if_args
-
-    attr_reader :elapsed_time
-
-    # Each notify entry is a resource/action pair, modeled as an
-    # Struct with a #resource and #action member
-
+    #
+    # Create a new Resource.
+    #
+    # @param name The name of this resource (corresponds to the #name attribute,
+    #   used for notifications to this resource).
+    # @param run_context The context of the Chef run. Corresponds to #run_context.
+    #
     def initialize(name, run_context=nil)
       @name = name
       @run_context = run_context
@@ -250,115 +108,34 @@ F
       @not_if = []
       @only_if = []
       @source_line = nil
-      @guard_interpreter = :default
+      # We would like to raise an error when the user gives us a guard
+      # interpreter and a ruby_block to the guard. In order to achieve this
+      # we need to understand when the user overrides the default guard
+      # interpreter. Therefore we store the default separately in a different
+      # attribute.
+      @guard_interpreter = nil
+      @default_guard_interpreter = :default
       @elapsed_time = 0
       @sensitive = false
-
-      @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
     end
 
-    # Returns a Hash of attribute => value for the state attributes declared in
-    # the resource's class definition.
-    def state
-      self.class.state_attrs.inject({}) do |state_attrs, attr_name|
-        state_attrs[attr_name] = send(attr_name)
-        state_attrs
-      end
-    end
-
-    # Returns the value of the identity attribute, if declared. Falls back to
-    # #name if no identity attribute is declared.
-    def identity
-      if identity_attr = self.class.identity_attr
-        send(identity_attr)
-      else
-        name
-      end
-    end
-
-    def updated=(true_or_false)
-      Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
-      Chef::Log.warn("Called from:")
-      caller[0..3].each {|line| Chef::Log.warn(line)}
-      updated_by_last_action(true_or_false)
-      @updated = true_or_false
-    end
-
-    def node
-      run_context && run_context.node
-    end
-
-    # If an unknown method is invoked, determine whether the enclosing Provider's
-    # lexical scope can fulfill the request. E.g. This happens when the Resource's
-    # block invokes new_resource.
-    def method_missing(method_symbol, *args, &block)
-      if enclosing_provider && enclosing_provider.respond_to?(method_symbol)
-        enclosing_provider.send(method_symbol, *args, &block)
-      else
-        raise NoMethodError, "undefined method `#{method_symbol.to_s}' for #{self.class.to_s}"
-      end
-    end
-
-    def load_prior_resource
-      begin
-        prior_resource = run_context.resource_collection.lookup(self.to_s)
-        # if we get here, there is a prior resource (otherwise we'd have jumped
-        # to the rescue clause).
-        Chef::Log.warn("Cloning resource attributes for #{self.to_s} from prior resource (CHEF-3694)")
-        Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
-        Chef::Log.warn("Current  #{self}: #{self.source_line}") if self.source_line
-        prior_resource.instance_variables.each do |iv|
-          unless iv.to_sym == :@source_line || iv.to_sym == :@action || iv.to_sym == :@not_if || iv.to_sym == :@only_if
-            self.instance_variable_set(iv, prior_resource.instance_variable_get(iv))
-          end
-        end
-        true
-      rescue Chef::Exceptions::ResourceNotFound
-        true
-      end
-    end
-
-    def supports(args={})
-      if args.any?
-        @supports = args
-      else
-        @supports
-      end
-    end
-
-    def provider(arg=nil)
-      klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
-                lookup_provider_constant(arg)
-              else
-                arg
-              end
-      set_or_return(
-        :provider,
-        klass,
-        :kind_of => [ Class ]
-      )
-    end
-
-    def action(arg=nil)
-      if arg
-        action_list = arg.kind_of?(Array) ? arg : [ arg ]
-        action_list = action_list.collect { |a| a.to_sym }
-        action_list.each do |action|
-          validate(
-            {
-              :action => action,
-            },
-            {
-              :action => { :kind_of => Symbol, :equal_to => @allowed_actions },
-            }
-          )
-        end
-        @action = action_list
-      else
-        @action
-      end
-    end
-
+    #
+    # The name of this particular resource.
+    #
+    # This special resource attribute is set automatically from the declaration
+    # of the resource, e.g.
+    #
+    #   execute 'Vitruvius' do
+    #     command 'ls'
+    #   end
+    #
+    # Will set the name to "Vitruvius".
+    #
+    # This is also used in to_s to show the resource name, e.g. `execute[Vitruvius]`.
+    #
+    # @param name [String] The name to set.
+    # @return [String] The name of this Resource.
+    #
     def name(name=nil)
       if !name.nil?
         raise ArgumentError, "name must be a string!" unless name.kind_of?(String)
@@ -367,66 +144,89 @@ F
       @name
     end
 
-    def noop(tf=nil)
-      if !tf.nil?
-        raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
-        @noop = tf
+    #
+    # The action or actions that will be taken when this resource is run.
+    #
+    # @param arg [Array[Symbol], Symbol] A list of actions (e.g. `:create`)
+    # @return [Array[Symbol]] the list of actions.
+    #
+    def action(arg=nil)
+      if arg
+        action_list = arg.kind_of?(Array) ? arg : [ arg ]
+        action_list = action_list.collect { |a| a.to_sym }
+        action_list.each do |action|
+          validate(
+            { action: action },
+            { action: { kind_of: Symbol, equal_to: @allowed_actions } }
+          )
+        end
+        @action = action_list
+      else
+        @action
       end
-      @noop
     end
 
-    def ignore_failure(arg=nil)
-      set_or_return(
-        :ignore_failure,
-        arg,
-        :kind_of => [ TrueClass, FalseClass ]
-      )
-    end
-
-    def retries(arg=nil)
-      set_or_return(
-        :retries,
-        arg,
-        :kind_of => Integer
-      )
-    end
-
-    def retry_delay(arg=nil)
-      set_or_return(
-        :retry_delay,
-        arg,
-        :kind_of => Integer
-      )
-    end
-
-    def sensitive(arg=nil)
-      set_or_return(
-        :sensitive,
-        arg,
-        :kind_of => [ TrueClass, FalseClass ]
-      )
-    end
-
-    def epic_fail(arg=nil)
-      ignore_failure(arg)
-    end
-
-    def guard_interpreter(arg=nil)
-      set_or_return(
-        :guard_interpreter,
-        arg,
-        :kind_of => Symbol
-      )
-    end
-
-    # Sets up a notification from this resource to the resource specified by +resource_spec+.
+    #
+    # Sets up a notification that will run a particular action on another resource
+    # if and when *this* resource is updated by an action.
+    #
+    # If the action does nothing--does not update this resource, the
+    # notification never triggers.)
+    #
+    # Only one resource may be specified per notification.
+    #
+    # `delayed` notifications will only *ever* happen once per resource, so if
+    # multiple resources all notify a single resource to perform the same action,
+    # the action will only happen once.  However, if they ask for different
+    # actions, each action will happen once, in the order they were updated.
+    #
+    # `immediate` notifications will cause the action to be triggered once per
+    # notification, regardless of how many other resources have triggered the
+    # notification as well.
+    #
+    # @param action The action to run on the other resource.
+    # @param resource_spec [String, Hash, Chef::Resource] The resource to run.
+    # @param timing [String, Symbol] When to notify.  Has these values:
+    #   - `delayed`: Will run the action on the other resource after all other
+    #     actions have been run.  This is the default.
+    #   - `immediate`, `immediately`: Will run the action on the other resource
+    #     immediately (before any other action is run).
+    #
+    # @example Resource by string
+    #   file '/foo.txt' do
+    #     content 'hi'
+    #     notifies :create, 'file[/bar.txt]'
+    #   end
+    #   file '/bar.txt' do
+    #     action :nothing
+    #     content 'hi'
+    #   end
+    # @example Resource by hash
+    #   file '/foo.txt' do
+    #     content 'hi'
+    #     notifies :create, file: '/bar.txt'
+    #   end
+    #   file '/bar.txt' do
+    #     action :nothing
+    #     content 'hi'
+    #   end
+    # @example Direct Resource
+    #   bar = file '/bar.txt' do
+    #     action :nothing
+    #     content 'hi'
+    #   end
+    #   file '/foo.txt' do
+    #     content 'hi'
+    #     notifies :create, bar
+    #   end
+    #
     def notifies(action, resource_spec, timing=:delayed)
       # when using old-style resources(:template => "/foo.txt") style, you
       # could end up with multiple resources.
+      validate_resource_spec!(resource_spec)
+
       resources = [ resource_spec ].flatten
       resources.each do |resource|
-
-        validate_resource_spec!(resource_spec)
 
         case timing.to_s
         when 'delayed'
@@ -435,41 +235,74 @@ F
           notifies_immediately(action, resource)
         else
           raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
-                                "Valid timings are: :delayed, :immediate, :immediately"
+          "Valid timings are: :delayed, :immediate, :immediately"
         end
       end
 
       true
     end
 
-    # Iterates over all immediate and delayed notifications, calling
-    # resolve_resource_reference on each in turn, causing them to
-    # resolve lazy/forward references.
-    def resolve_notification_references
-      run_context.immediate_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
-      run_context.delayed_notifications(self).each {|n| n.resolve_resource_reference(run_context.resource_collection) }
-    end
-
-    def notifies_immediately(action, resource_spec)
-      run_context.notifies_immediately(Notification.new(resource_spec, action, self))
-    end
-
-    def notifies_delayed(action, resource_spec)
-      run_context.notifies_delayed(Notification.new(resource_spec, action, self))
-    end
-
-    def immediate_notifications
-      run_context.immediate_notifications(self)
-    end
-
-    def delayed_notifications
-      run_context.delayed_notifications(self)
-    end
-
-    def resources(*args)
-      run_context.resource_collection.find(*args)
-    end
-
+    #
+    # Subscribes to updates from other resources, causing a particular action to
+    # run on *this* resource when the other resource is updated.
+    #
+    # If multiple resources are specified, this resource action will be run if
+    # *any* of them change.
+    #
+    # This notification will only trigger *once*, no matter how many other
+    # resources are updated (or how many actions are run by a particular resource).
+    #
+    # @param action The action to run on the other resource.
+    # @param resources [String, Resource, Array[String, Resource]] The resources to subscribe to.
+    # @param timing [String, Symbol] When to notify.  Has these values:
+    #   - `delayed`: An update will cause the action to run after all other
+    #     actions have been run.  This is the default.
+    #   - `immediate`, `immediately`: The action will run immediately following
+    #     the other resource being updated.
+    #
+    # @example Resources by string
+    #   file '/foo.txt' do
+    #     content 'hi'
+    #     action :nothing
+    #     subscribes :create, 'file[/bar.txt]'
+    #   end
+    #   file '/bar.txt' do
+    #     content 'hi'
+    #   end
+    # @example Direct resource
+    #   bar = file '/bar.txt' do
+    #     content 'hi'
+    #   end
+    #   file '/foo.txt' do
+    #     content 'hi'
+    #     action :nothing
+    #     subscribes :create, '/bar.txt'
+    #   end
+    # @example Multiple resources by string
+    #   file '/foo.txt' do
+    #     content 'hi'
+    #     action :nothing
+    #     subscribes :create, [ 'file[/bar.txt]', 'file[/baz.txt]' ]
+    #   end
+    #   file '/bar.txt' do
+    #     content 'hi'
+    #   end
+    #   file '/baz.txt' do
+    #     content 'hi'
+    #   end
+    # @example Multiple resources
+    #   bar = file '/bar.txt' do
+    #     content 'hi'
+    #   end
+    #   baz = file '/bar.txt' do
+    #     content 'hi'
+    #   end
+    #   file '/foo.txt' do
+    #     content 'hi'
+    #     action :nothing
+    #     subscribes :create, [ bar, baz ]
+    #   end
+    #
     def subscribes(action, resources, timing=:delayed)
       resources = [resources].flatten
       resources.each do |resource|
@@ -484,17 +317,265 @@ F
       true
     end
 
-    def validate_resource_spec!(resource_spec)
-      run_context.resource_collection.validate_lookup_spec!(resource_spec)
+    #
+    # A command or block that indicates whether to actually run this resource.
+    # The command or block is run just before the action actually executes, and
+    # the action will be skipped if the block returns false.
+    #
+    # If a block is specified, it must return `true` in order for the Resource
+    # to be executed.
+    #
+    # If a command is specified, the resource's #guard_interpreter will run the
+    # command and interpret the results according to `opts`.  For example, the
+    # default `execute` resource will be treated as `false` if the command
+    # returns a non-zero exit code, and `true` if it returns 0.  Thus, in the
+    # default case:
+    #
+    # - `only_if "your command"` will perform the action only if `your command`
+    # returns 0.
+    # - `only_if "your command", valid_exit_codes: [ 1, 2, 3 ]` will perform the
+    #   action only if `your command` returns 1, 2, or 3.
+    #
+    # @param command [String] A string to execute.
+    # @param opts [Hash] Options control the execution of the command
+    # @param block [Proc] A ruby block to run. Ignored if a command is given.
+    #
+    def only_if(command=nil, opts={}, &block)
+      if command || block_given?
+        @only_if << Conditional.only_if(self, command, opts, &block)
+      end
+      @only_if
     end
 
-    def is(*args)
-      if args.size == 1
-        args.first
+    #
+    # A command or block that indicates whether to actually run this resource.
+    # The command or block is run just before the action actually executes, and
+    # the action will be skipped if the block returns true.
+    #
+    # If a block is specified, it must return `false` in order for the Resource
+    # to be executed.
+    #
+    # If a command is specified, the resource's #guard_interpreter will run the
+    # command and interpret the results according to `opts`.  For example, the
+    # default `execute` resource will be treated as `false` if the command
+    # returns a non-zero exit code, and `true` if it returns 0.  Thus, in the
+    # default case:
+    #
+    # - `not_if "your command"` will perform the action only if `your command`
+    # returns a non-zero code.
+    # - `only_if "your command", valid_exit_codes: [ 1, 2, 3 ]` will perform the
+    #   action only if `your command` returns something other than 1, 2, or 3.
+    #
+    # @param command [String] A string to execute.
+    # @param opts [Hash] Options control the execution of the command
+    # @param block [Proc] A ruby block to run. Ignored if a command is given.
+    #
+    def not_if(command=nil, opts={}, &block)
+      if command || block_given?
+        @not_if << Conditional.not_if(self, command, opts, &block)
+      end
+      @not_if
+    end
+
+    #
+    # The number of times to retry this resource if it fails by throwing an
+    # exception while running an action.  Default: 0
+    #
+    # When the retries have run out, the Resource will throw the last
+    # exception.
+    #
+    # @param arg [Integer] The number of retries.
+    # @return [Integer] The number of retries.
+    #
+    def retries(arg=nil)
+      set_or_return(:retries, arg, kind_of: Integer)
+    end
+    attr_writer :retries
+
+    #
+    # The number of seconds to wait between retries.  Default: 2.
+    #
+    # @param arg [Integer] The number of seconds to wait between retries.
+    # @return [Integer] The number of seconds to wait between retries.
+    #
+    def retry_delay(arg=nil)
+      set_or_return(:retry_delay, arg, kind_of: Integer)
+    end
+    attr_writer :retry_delay
+
+    #
+    # Whether to treat this resource's data as sensitive.  If set, no resource
+    # data will be displayed in log output.
+    #
+    # @param arg [Boolean] Whether this resource is sensitive or not.
+    # @return [Boolean] Whether this resource is sensitive or not.
+    #
+    def sensitive(arg=nil)
+      set_or_return(:sensitive, arg, :kind_of => [ TrueClass, FalseClass ])
+    end
+    attr_writer :sensitive
+
+    # ??? TODO unreferenced.  Delete?
+    attr_reader :not_if_args
+    # ??? TODO unreferenced.  Delete?
+    attr_reader :only_if_args
+
+    #
+    # The time it took (in seconds) to run the most recently-run action.  Not
+    # cumulative across actions.  This is set to 0 as soon as a new action starts
+    # running, and set to the elapsed time at the end of the action.
+    #
+    # @return [Integer] The time (in seconds) it took to process the most recent
+    # action.  Not cumulative.
+    #
+    attr_reader :elapsed_time
+
+    #
+    # The guard interpreter that will be used to process `only_if` and `not_if`
+    # statements.  If left unset, the #default_guard_interpreter will be used.
+    #
+    # Must be a resource class like `Chef::Resource::Execute`, or
+    # a corresponding to the name of a resource.  The resource must descend from
+    # `Chef::Resource::Execute`.
+    #
+    # TODO this needs to be coerced on input so that retrieval is consistent.
+    #
+    # @param arg [Class, Symbol, String] The Guard interpreter resource class/
+    #   symbol/name.
+    # @return [Class, Symbol, String] The Guard interpreter resource.
+    #
+    def guard_interpreter(arg=nil)
+      if arg.nil?
+        @guard_interpreter || @default_guard_interpreter
       else
-        return *args
+        set_or_return(:guard_interpreter, arg, :kind_of => Symbol)
       end
     end
+
+    #
+    # Get the value of the state attributes in this resource as a hash.
+    #
+    # @return [Hash{Symbol => Object}] A Hash of attribute => value for the
+    #   Resource class's `state_attrs`.
+    def state
+      self.class.state_attrs.inject({}) do |state_attrs, attr_name|
+        state_attrs[attr_name] = send(attr_name)
+        state_attrs
+      end
+    end
+
+    #
+    # The value of the identity attribute, if declared. Falls back to #name if
+    # no identity attribute is declared.
+    #
+    # @return The value of the identity attribute.
+    #
+    def identity
+      if identity_attr = self.class.identity_attr
+        send(identity_attr)
+      else
+        name
+      end
+    end
+
+    #
+    # Whether to ignore failures.  If set to `true`, and this resource when an
+    # action is run, the resource will be marked as failed but no exception will
+    # be thrown (and no error will be output).  Defaults to `false`.
+    #
+    # TODO ignore_failure and retries seem to be mutually exclusive; I doubt
+    # that was intended.
+    #
+    # @param arg [Boolean] Whether to ignore failures.
+    # @return Whether this resource will ignore failures.
+    #
+    def ignore_failure(arg=nil)
+      set_or_return(:ignore_failure, arg, kind_of: [ TrueClass, FalseClass ])
+    end
+    attr_writer :ignore_failure
+
+    #
+    # Equivalent to #ignore_failure.
+    #
+    def epic_fail(arg=nil)
+      ignore_failure(arg)
+    end
+
+    #
+    # Make this resource into an exact (shallow) copy of the other resource.
+    #
+    # @param resource [Chef::Resource] The resource to copy from.
+    #
+    def load_from(resource)
+      resource.instance_variables.each do |iv|
+        unless iv == :@source_line || iv == :@action || iv == :@not_if || iv == :@only_if
+          self.instance_variable_set(iv, resource.instance_variable_get(iv))
+        end
+      end
+    end
+
+    #
+    # Runs the given action on this resource, immediately.
+    #
+    # @param action The action to run (e.g. `:create`)
+    # @param notification_type The notification type that triggered this (if any)
+    # @param notifying_resource The resource that triggered this notification (if any)
+    #
+    # @raise Any error that occurs during the actual action.
+    #
+    def run_action(action, notification_type=nil, notifying_resource=nil)
+      # reset state in case of multiple actions on the same resource.
+      @elapsed_time = 0
+      start_time = Time.now
+      events.resource_action_start(self, action, notification_type, notifying_resource)
+      # Try to resolve lazy/forward references in notifications again to handle
+      # the case where the resource was defined lazily (ie. in a ruby_block)
+      resolve_notification_references
+      validate_action(action)
+
+      if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
+        # This can be noisy
+        Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
+      end
+
+      # ensure that we don't leave @updated_by_last_action set to true
+      # on accident
+      updated_by_last_action(false)
+
+      # Don't modify @retries directly and keep it intact, so that the
+      # recipe_snippet from ResourceFailureInspector can print the value
+      # that was set in the resource block initially.
+      remaining_retries = retries
+
+      begin
+        return if should_skip?(action)
+        provider_for_action(action).run_action
+      rescue Exception => e
+        if ignore_failure
+          Chef::Log.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
+          events.resource_failed(self, action, e)
+        elsif remaining_retries > 0
+          events.resource_failed_retriable(self, action, remaining_retries, e)
+          remaining_retries -= 1
+          Chef::Log.info("Retrying execution of #{self}, #{remaining_retries} attempt(s) left")
+          sleep retry_delay
+          retry
+        else
+          events.resource_failed(self, action, e)
+          raise customize_exception(e)
+        end
+      ensure
+        @elapsed_time = Time.now - start_time
+        # Reporting endpoint doesn't accept a negative resource duration so set it to 0.
+        # A negative value can occur when a resource changes the system time backwards
+        @elapsed_time = 0 if @elapsed_time < 0
+        events.resource_completed(self)
+      end
+    end
+
+    #
+    # Generic Ruby and Data Structure Stuff (for user)
+    #
 
     def to_s
       "#{@resource_name}[#{@name}]"
@@ -555,46 +636,340 @@ F
       instance_vars
     end
 
-    # If command is a block, returns true if the block returns true, false if it returns false.
-    # ("Only run this resource if the block is true")
-    #
-    # If the command is not a block, executes the command.  If it returns any status other than
-    # 0, it returns false (clearly, a 0 status code is true)
-    #
-    # === Parameters
-    # command<String>:: A a string to execute.
-    # opts<Hash>:: Options control the execution of the command
-    # block<Proc>:: A ruby block to run. Ignored if a command is given.
-    #
-    # === Evaluation
-    # * evaluates to true if the block is true, or if the command returns 0
-    # * evaluates to false if the block is false, or if the command returns a non-zero exit code.
-    def only_if(command=nil, opts={}, &block)
-      if command || block_given?
-        @only_if << Conditional.only_if(self, command, opts, &block)
+    def self.json_create(o)
+      resource = self.new(o["instance_vars"]["@name"])
+      o["instance_vars"].each do |k,v|
+        resource.instance_variable_set("@#{k}".to_sym, v)
       end
-      @only_if
+      resource
     end
 
-    # If command is a block, returns false if the block returns true, true if it returns false.
-    # ("Do not run this resource if the block is true")
     #
-    # If the command is not a block, executes the command.  If it returns a 0 exitstatus, returns false.
-    # ("Do not run this resource if the command returns 0")
+    # Resource Definition Interface (for resource developers)
     #
-    # === Parameters
-    # command<String>:: A a string to execute.
-    # opts<Hash>:: Options control the execution of the command
-    # block<Proc>:: A ruby block to run. Ignored if a command is given.
+
+    include Chef::Mixin::ParamsValidate
+    include Chef::Mixin::Deprecation
+
     #
-    # === Evaluation
-    # * evaluates to true if the block is false, or if the command returns a non-zero exit status.
-    # * evaluates to false if the block is true, or if the command returns a 0 exit status.
-    def not_if(command=nil, opts={}, &block)
-      if command || block_given?
-        @not_if << Conditional.not_if(self, command, opts, &block)
+    # The provider class for this resource.
+    #
+    # If this is not set, `provider_for_action` will dynamically determine the
+    # provider.
+    #
+    # @param arg [String, Symbol, Class] Sets the provider class for this resource.
+    #   If passed a String or Symbol, e.g. `:file` or `"file"`, looks up the
+    #   provider based on the name.
+    # @return The provider class for this resource.
+    #
+    def provider(arg=nil)
+      klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
+        lookup_provider_constant(arg)
+      else
+        arg
       end
-      @not_if
+      set_or_return(:provider, klass, kind_of: [ Class ])
+    end
+    def provider=(arg)
+      provider(arg)
+    end
+
+    # Set or return the list of "state attributes" implemented by the Resource
+    # subclass. State attributes are attributes that describe the desired state
+    # of the system, such as file permissions or ownership. In general, state
+    # attributes are attributes that could be populated by examining the state
+    # of the system (e.g., File.stat can tell you the permissions on an
+    # existing file). Contrarily, attributes that are not "state attributes"
+    # usually modify the way Chef itself behaves, for example by providing
+    # additional options for a package manager to use when installing a
+    # package.
+    #
+    # This list is used by the Chef client auditing system to extract
+    # information from resources to describe changes made to the system.
+    def self.state_attrs(*attr_names)
+      @state_attrs ||= []
+      @state_attrs = attr_names unless attr_names.empty?
+
+      # Return *all* state_attrs that this class has, including inherited ones
+      if superclass.respond_to?(:state_attrs)
+        superclass.state_attrs + @state_attrs
+      else
+        @state_attrs
+      end
+    end
+
+    # Set or return the "identity attribute" for this resource class. This is
+    # generally going to be the "name attribute" for this resource. In other
+    # words, the resource type plus this attribute uniquely identify a given
+    # bit of state that chef manages. For a File resource, this would be the
+    # path, for a package resource, it will be the package name. This will show
+    # up in chef-client's audit records as a searchable field.
+    def self.identity_attr(attr_name=nil)
+      @identity_attr ||= nil
+      @identity_attr = attr_name if attr_name
+
+      # If this class doesn't have an identity attr, we'll defer to the superclass:
+      if @identity_attr || !superclass.respond_to?(:identity_attr)
+        @identity_attr
+      else
+        superclass.identity_attr
+      end
+    end
+
+    #
+    # The guard interpreter that will be used to process `only_if` and `not_if`
+    # statements by default.  If left unset, or set to `:default`, the guard
+    # interpreter used will be Chef::GuardInterpreter::DefaultGuardInterpreter.
+    #
+    # Must be a resource class like `Chef::Resource::Execute`, or
+    # a corresponding to the name of a resource.  The resource must descend from
+    # `Chef::Resource::Execute`.
+    #
+    # TODO this needs to be coerced on input so that retrieval is consistent.
+    #
+    # @return [Class, Symbol, String] the default Guard interpreter resource.
+    #
+    attr_reader :default_guard_interpreter
+
+    #
+    # The list of actions this Resource is allowed to have.  Setting `action`
+    # will fail unless it is in this list.  Default: [ :nothing ]
+    #
+    # @return [Array<Symbol>] The list of actions this Resource is allowed to
+    #   have.
+    #
+    attr_accessor :allowed_actions
+
+    #
+    # Whether or not this resource was updated during an action.  If multiple
+    # actions are set on the resource, this will be `true` if *any* action
+    # caused an update to happen.
+    #
+    # @return [Boolean] Whether the resource was updated during an action.
+    #
+    attr_reader :updated
+
+    #
+    # Whether or not this resource was updated during an action.  If multiple
+    # actions are set on the resource, this will be `true` if *any* action
+    # caused an update to happen.
+    #
+    # @return [Boolean] Whether the resource was updated during an action.
+    #
+    def updated?
+      updated
+    end
+
+    #
+    # Whether or not this resource was updated during the most recent action.
+    # This is set to `false` at the beginning of each action.
+    #
+    # @param true_or_false [Boolean] Whether the resource was updated during the
+    #   current / most recent action.
+    # @return [Boolean] Whether the resource was updated during the most recent action.
+    #
+    def updated_by_last_action(true_or_false)
+      @updated ||= true_or_false
+      @updated_by_last_action = true_or_false
+    end
+
+    #
+    # Whether or not this resource was updated during the most recent action.
+    # This is set to `false` at the beginning of each action.
+    #
+    # @return [Boolean] Whether the resource was updated during the most recent action.
+    #
+    def updated_by_last_action?
+      @updated_by_last_action
+    end
+
+    #
+    # Set whether this class was updated during an action.
+    #
+    # @deprecated Multiple actions are supported by resources.  Please call {}#updated_by_last_action} instead.
+    #
+    def updated=(true_or_false)
+      Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
+      Chef::Log.warn("Called from:")
+      caller[0..3].each {|line| Chef::Log.warn(line)}
+      updated_by_last_action(true_or_false)
+      @updated = true_or_false
+    end
+
+    #
+    # The DSL name of this resource (e.g. `package` or `yum_package`)
+    #
+    # @return [String] The DSL name of this resource.
+    def self.dsl_name
+      convert_to_snake_case(name, 'Chef::Resource')
+    end
+
+    #
+    # The name of this resource (e.g. `file`)
+    #
+    # @return [String] The name of this resource.
+    #
+    attr_reader :resource_name
+
+    #
+    # Sets a list of capabilities of the real resource.  For example, `:remount`
+    # (for filesystems) and `:restart` (for services).
+    #
+    # TODO Calling resource.supports({}) will not set this to empty; it will do
+    # a get instead.  That's wrong.
+    #
+    # @param args Hash{Symbol=>Boolean} If non-empty, sets the capabilities of
+    #   this resource. Default: {}
+    # @return Hash{Symbol=>Boolean} An array of things this resource supports.
+    #
+    def supports(args={})
+      if args.any?
+        @supports = args
+      else
+        @supports
+      end
+    end
+    def supports=(args)
+      supports(args)
+    end
+
+    #
+    # A hook called after a resource is created.  Meant to be overriden by
+    # subclasses.
+    #
+    def after_created
+      nil
+    end
+
+    #
+    # The module where Chef should look for providers for this resource.
+    # The provider for `MyResource` will be looked up using
+    # `provider_base::MyResource`.  Defaults to `Chef::Provider`.
+    #
+    # @param arg [Module] The module containing providers for this resource
+    # @return [Module] The module containing providers for this resource
+    #
+    # @example
+    #   class MyResource < Chef::Resource
+    #     provider_base Chef::Provider::Deploy
+    #     # ...other stuff
+    #   end
+    #
+    def self.provider_base(arg=nil)
+      @provider_base ||= arg
+      @provider_base ||= Chef::Provider
+    end
+
+
+    #
+    # Internal Resource Interface (for Chef)
+    #
+
+    FORBIDDEN_IVARS = [:@run_context, :@not_if, :@only_if, :@enclosing_provider]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
+
+    include Chef::Mixin::ConvertToClassName
+    extend Chef::Mixin::ConvertToClassName
+    extend Chef::Mixin::DescendantsTracker
+
+    # XXX: this is required for definition params inside of the scope of a
+    # subresource to work correctly.
+    attr_accessor :params
+
+    # @return [Chef::RunContext] The run context for this Resource.  This is
+    # where the context for the current Chef run is stored, including the node
+    # and the resource collection.
+    attr_accessor :run_context
+
+    # @return [String] The cookbook this resource was declared in.
+    attr_accessor :cookbook_name
+
+    # @return [String] The recipe this resource was declared in.
+    attr_accessor :recipe_name
+
+    # @return [Chef::Provider] The provider this resource was declared in (if
+    #   it was declared in an LWRP).  When you call methods that do not exist
+    #   on this Resource, Chef will try to call the method on the provider
+    #   as well before giving up.
+    attr_accessor :enclosing_provider
+
+    # @return [String] The source line where this resource was declared.
+    #   Expected to come from caller() or a stack trace, it usually follows one
+    #   of these formats:
+    #     /some/path/to/file.rb:80:in `wombat_tears'
+    #     C:/some/path/to/file.rb:80 in 1`wombat_tears'
+    attr_accessor :source_line
+
+    # @return [String] The actual name that was used to create this resource.
+    #   Sometimes, when you say something like `package 'blah'`, the system will
+    #   create a different resource (i.e. `YumPackage`).  When this happens, the
+    #   user will expect to see the thing they wrote, not the type that was
+    #   returned.  May be `nil`, in which case callers should read #resource_name.
+    #   See #declared_key.
+    attr_accessor :declared_type
+
+    #
+    # Iterates over all immediate and delayed notifications, calling
+    # resolve_resource_reference on each in turn, causing them to
+    # resolve lazy/forward references.
+    def resolve_notification_references
+      run_context.immediate_notifications(self).each { |n|
+        n.resolve_resource_reference(run_context.resource_collection)
+      }
+      run_context.delayed_notifications(self).each {|n|
+        n.resolve_resource_reference(run_context.resource_collection)
+      }
+    end
+
+    # Helper for #notifies
+    def notifies_immediately(action, resource_spec)
+      run_context.notifies_immediately(Notification.new(resource_spec, action, self))
+    end
+
+    # Helper for #notifies
+    def notifies_delayed(action, resource_spec)
+      run_context.notifies_delayed(Notification.new(resource_spec, action, self))
+    end
+
+    class << self
+      # back-compat
+      # NOTE: that we do not support unregistering classes as descendents like
+      # we used to for LWRP unloading because that was horrible and removed in
+      # Chef-12.
+      alias :resource_classes :descendants
+      alias :find_subclass_by_name :find_descendants_by_name
+    end
+
+    # If an unknown method is invoked, determine whether the enclosing Provider's
+    # lexical scope can fulfill the request. E.g. This happens when the Resource's
+    # block invokes new_resource.
+    def method_missing(method_symbol, *args, &block)
+      if enclosing_provider && enclosing_provider.respond_to?(method_symbol)
+        enclosing_provider.send(method_symbol, *args, &block)
+      else
+        raise NoMethodError, "undefined method `#{method_symbol.to_s}' for #{self.class.to_s}"
+      end
+    end
+
+    # Helper for #notifies
+    def validate_resource_spec!(resource_spec)
+      run_context.resource_collection.validate_lookup_spec!(resource_spec)
+    end
+
+    # We usually want to store and reference resources by their declared type and not the actual type that
+    # was looked up by the Resolver (IE, "package" becomes YumPackage class).  If we have not been provided
+    # the declared key we want to fall back on the old to_s key.
+    def declared_key
+      return to_s if declared_type.nil?
+      "#{declared_type}[#{@name}]"
+    end
+
+    def immediate_notifications
+      run_context.immediate_notifications(self)
+    end
+
+    def delayed_notifications
+      run_context.delayed_notifications(self)
     end
 
     def defined_at
@@ -612,6 +987,11 @@ F
       end
     end
 
+    #
+    # The cookbook in which this Resource was defined (if any).
+    #
+    # @return Chef::CookbookVersion The cookbook in which this Resource was defined.
+    #
     def cookbook_version
       if cookbook_name
         run_context.cookbook_collection[cookbook_name]
@@ -622,65 +1002,40 @@ F
       run_context.events
     end
 
-    def run_action(action, notification_type=nil, notifying_resource=nil)
-      # reset state in case of multiple actions on the same resource.
-      @elapsed_time = 0
-      start_time = Time.now
-      events.resource_action_start(self, action, notification_type, notifying_resource)
-      # Try to resolve lazy/forward references in notifications again to handle
-      # the case where the resource was defined lazily (ie. in a ruby_block)
-      resolve_notification_references
-      validate_action(action)
-
-      if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
-        # This can be noisy
-        Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
-      end
-
-      # ensure that we don't leave @updated_by_last_action set to true
-      # on accident
-      updated_by_last_action(false)
-
-      begin
-        return if should_skip?(action)
-        provider_for_action(action).run_action
-      rescue Exception => e
-        if ignore_failure
-          Chef::Log.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
-          events.resource_failed(self, action, e)
-        elsif retries > 0
-          events.resource_failed_retriable(self, action, retries, e)
-          @retries -= 1
-          Chef::Log.info("Retrying execution of #{self}, #{retries} attempt(s) left")
-          sleep retry_delay
-          retry
-        else
-          events.resource_failed(self, action, e)
-          raise customize_exception(e)
-        end
-      ensure
-        @elapsed_time = Time.now - start_time
-        events.resource_completed(self)
-      end
-    end
-
     def validate_action(action)
       raise ArgumentError, "nil is not a valid action for resource #{self}" if action.nil?
     end
 
     def provider_for_action(action)
-      # leverage new platform => short_name => resource
-      # which requires explicitly setting provider in
-      # resource class
-      if self.provider
-        provider = self.provider.new(self, self.run_context)
-        provider.action = action
-        provider
-      else # fall back to old provider resolution
-        Chef::Platform.provider_for_resource(self, action)
+      provider = Chef::ProviderResolver.new(node, self, action).resolve.new(self, run_context)
+      provider.action = action
+      provider
+    end
+
+    # ??? TODO Seems unused.  Delete?
+    def noop(tf=nil)
+      if !tf.nil?
+        raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
+        @noop = tf
+      end
+      @noop
+    end
+
+    # TODO Seems unused.  Delete?
+    def is(*args)
+      if args.size == 1
+        args.first
+      else
+        return *args
       end
     end
 
+    #
+    # Preface an exception message with generic Resource information.
+    #
+    # @param e [StandardError] An exception with `e.message`
+    # @return [String] An exception message customized with class name.
+    #
     def custom_exception_message(e)
       "#{self} (#{defined_at}) had an error: #{e.class.name}: #{e.message}"
     end
@@ -690,6 +1045,7 @@ F
       new_exception.set_backtrace(e.backtrace)
       new_exception
     end
+
     # Evaluates not_if and only_if conditionals. Returns a falsey value if any
     # of the conditionals indicate that this resource should be skipped, i.e.,
     # if an only_if evaluates to false or a not_if evaluates to true.
@@ -715,100 +1071,34 @@ F
       end
     end
 
-    def updated_by_last_action(true_or_false)
-      @updated ||= true_or_false
-      @updated_by_last_action = true_or_false
-    end
-
-    def updated_by_last_action?
-      @updated_by_last_action
-    end
-
-    def updated?
-      updated
-    end
-
-    def self.json_create(o)
-      resource = self.new(o["instance_vars"]["@name"])
-      o["instance_vars"].each do |k,v|
-        resource.instance_variable_set("@#{k}".to_sym, v)
-      end
-      resource
-    end
-
-    # Hook to allow a resource to run specific code after creation
-    def after_created
-      nil
-    end
-
-    # Resources that want providers namespaced somewhere other than
-    # Chef::Provider can set the namespace with +provider_base+
-    # Ex:
-    #   class MyResource < Chef::Resource
-    #     provider_base Chef::Provider::Deploy
-    #     # ...other stuff
-    #   end
-    def self.provider_base(arg=nil)
-      @provider_base ||= arg
-      @provider_base ||= Chef::Provider
-    end
-
-    def self.platform_map
-      @@platform_map ||= PlatformMap.new
-    end
-
     # Maps a short_name (and optionally a platform  and version) to a
     # Chef::Resource.  This allows finer grained per platform resource
     # attributes and the end of overloaded resource definitions
     # (I'm looking at you Chef::Resource::Package)
     # Ex:
     #   class WindowsFile < Chef::Resource
-    #     provides :file, :on_platforms => ["windows"]
+    #     provides :file, os: "linux", platform_family: "rhel", platform: "redhat"
+    #     provides :file, os: "!windows
+    #     provides :file, os: [ "linux", "aix" ]
+    #     provides :file, os: "solaris2" do |node|
+    #       node['platform_version'].to_f <= 5.11
+    #     end
     #     # ...other stuff
     #   end
     #
-    # TODO: 2011-11-02 schisamo - platform_version support
-    def self.provides(short_name, opts={})
+    def self.provides(short_name, opts={}, &block)
       short_name_sym = short_name
       if short_name.kind_of?(String)
+        # YAGNI: this is probably completely unnecessary and can be removed?
+        Chef::Log.warn "[DEPRECATION] Passing a String to Chef::Resource#provides will be removed"
         short_name.downcase!
         short_name.gsub!(/\s/, "_")
         short_name_sym = short_name.to_sym
       end
-      if opts.has_key?(:on_platforms)
-        platforms = [opts[:on_platforms]].flatten
-        platforms.each do |p|
-          p = :default if :all == p.to_sym
-          platform_map.set(
-            :platform => p.to_sym,
-            :short_name => short_name_sym,
-            :resource => self
-          )
-        end
-      else
-        platform_map.set(
-          :short_name => short_name_sym,
-          :resource => self
-        )
-      end
+      node_map.set(short_name_sym, constantize(self.name), opts, &block)
     end
 
-    # Returns a resource based on a short_name anda platform and version.
-    #
-    #
-    # ==== Parameters
-    # short_name<Symbol>:: short_name of the resource (ie :directory)
-    # platform<Symbol,String>:: platform name
-    # version<String>:: platform version
-    #
-    # === Returns
-    # <Chef::Resource>:: returns the proper Chef::Resource class
-    def self.resource_for_platform(short_name, platform=nil, version=nil)
-      platform_map.get(short_name, platform, version)
-    end
-
-    # Returns a resource based on a short_name and a node's
-    # platform and version.
+    # Returns a resource based on a short_name and node
     #
     # ==== Parameters
     # short_name<Symbol>:: short_name of the resource (ie :directory)
@@ -817,12 +1107,29 @@ F
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_for_node(short_name, node)
+      klass = node_map.get(node, short_name) ||
+        resource_matching_short_name(short_name)
+      raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
+      klass
+    end
+
+    def self.node_map
+      @@node_map ||= NodeMap.new
+    end
+
+    # Returns the class of a Chef::Resource based on the short name
+    # ==== Parameters
+    # short_name<Symbol>:: short_name of the resource (ie :directory)
+    #
+    # === Returns
+    # <Chef::Resource>:: returns the proper Chef::Resource class
+    def self.resource_matching_short_name(short_name)
       begin
-        platform, version = Chef::Platform.find_platform_and_version(node)
-      rescue ArgumentError
+        rname = convert_to_class_name(short_name.to_s)
+        Chef::Resource.const_get(rname)
+      rescue NameError
+        nil
       end
-      resource = resource_for_platform(short_name, platform, version)
-      resource
     end
 
     private
@@ -840,3 +1147,7 @@ F
     end
   end
 end
+
+# We require this at the BOTTOM of this file to avoid circular requires (it is used
+# at runtime but not load time)
+require 'chef/provider_resolver'

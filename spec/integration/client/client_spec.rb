@@ -1,5 +1,34 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
+require 'tiny_server'
+require 'tmpdir'
+
+def recipes_filename
+  File.join(CHEF_SPEC_DATA, 'recipes.tgz')
+end
+
+def start_tiny_server(server_opts={})
+  recipes_size = File::Stat.new(recipes_filename).size
+  @server = TinyServer::Manager.new(server_opts)
+  @server.start
+    @api = TinyServer::API.instance
+  @api.clear
+  #
+  # trivial endpoints
+  #
+  # just a normal file
+  # (expected_content should be uncompressed)
+  @api.get("/recipes.tgz", 200) {
+    File.open(recipes_filename, "rb") do |f|
+      f.read
+    end
+  }
+end
+
+def stop_tiny_server
+  @server.stop
+  @server = @api = nil
+end
 
 describe "chef-client" do
   include IntegrationSupport
@@ -16,7 +45,7 @@ describe "chef-client" do
   # machine that has omnibus chef installed. In that case we need to ensure
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
-  let(:chef_client) { "ruby #{chef_dir}/chef-client" }
+  let(:chef_client) { "ruby '#{chef_dir}/chef-client'" }
 
   when_the_repository "has a cookbook with a no-op recipe" do
     before { file 'cookbooks/x/recipes/default.rb', '' }
@@ -33,18 +62,18 @@ EOM
 
     context 'and no config file' do
       it 'should complete with success when cwd is just above cookbooks and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => path_to(''))
         result.error!
       end
 
       it 'should complete with success when cwd is below cookbooks and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to('cookbooks/x'))
+        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => path_to('cookbooks/x'))
         result.error!
       end
 
       it 'should fail when cwd is below high above and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => File.expand_path('..', path_to('')))
-        result.exitstatus.should == 1
+        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => File.expand_path('..', path_to('')))
+        expect(result.exitstatus).to eq(1)
       end
     end
 
@@ -52,15 +81,11 @@ EOM
       before { file '.chef/knife.rb', 'xxx.xxx' }
 
       it 'should load .chef/knife.rb when -z is specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -z -o 'x::default'", :cwd => path_to(''))
         # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
-        result.stdout.should include("xxx")
+        expect(result.stdout).to include("xxx")
       end
 
-      it 'fails to load .chef/knife.rb when -z is specified and --config-file-jail does not include the .chef/knife.rb' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('roles')}\"", :cwd => path_to(''))
-        result.error!
-      end
     end
 
     it "should complete with success" do
@@ -139,8 +164,8 @@ EOM
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" #{path_to('arbitrary.rb')} #{path_to('arbitrary2.rb')}", :cwd => chef_dir)
         result.error!
 
-        IO.read(path_to('tempfile.txt')).should == '1'
-        IO.read(path_to('tempfile2.txt')).should == '2'
+        expect(IO.read(path_to('tempfile.txt'))).to eq('1')
+        expect(IO.read(path_to('tempfile2.txt'))).to eq('2')
       end
 
       it "should run recipes specified as relative paths directly on the command line" do
@@ -159,7 +184,7 @@ EOM
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" arbitrary.rb", :cwd => path_to(''))
         result.error!
 
-        IO.read(path_to('tempfile.txt')).should == '1'
+        expect(IO.read(path_to('tempfile.txt'))).to eq('1')
       end
 
       it "should run recipes specified directly on the command line AFTER recipes in the run list" do
@@ -183,7 +208,7 @@ EOM
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", :cwd => path_to(''))
         result.error!
 
-        IO.read(path_to('tempfile.txt')).should == '1'
+        expect(IO.read(path_to('tempfile.txt'))).to eq('1')
       end
 
     end
@@ -215,7 +240,7 @@ cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", :cwd => chef_dir)
-      result.stdout.should_not include("SSL validation of HTTPS requests is disabled.")
+      expect(result.stdout).not_to include("SSL validation of HTTPS requests is disabled.")
       result.error!
     end
 
@@ -236,11 +261,75 @@ cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", :cwd => chef_dir)
-      result.stdout.should_not include("Overridden Run List")
-      result.stdout.should include("Run List is [recipe[x::default]]")
+      expect(result.stdout).not_to include("Overridden Run List")
+      expect(result.stdout).to include("Run List is [recipe[x::default]]")
       #puts result.stdout
       result.error!
     end
 
+  end
+
+  when_the_repository "has a cookbook with only an audit recipe" do
+
+    before do
+      file 'config/client.rb', <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+audit_mode :enabled
+EOM
+    end
+
+    it "should exit with a zero code when there is not an audit failure" do
+      file 'cookbooks/audit_test/recipes/succeed.rb', <<-RECIPE
+controls "control group without top level control" do
+  it "should succeed" do
+    expect(2 - 2).to eq(0)
+  end
+end
+      RECIPE
+
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed'", :cwd => chef_dir)
+      expect(result.error?).to be_falsey
+      expect(result.stdout).to include("Successfully executed all `controls` blocks and contained examples")
+    end
+
+    it "should exit with a non-zero code when there is an audit failure" do
+      file 'cookbooks/audit_test/recipes/fail.rb', <<-RECIPE
+controls "control group without top level control" do
+  it "should fail" do
+    expect(2 - 2).to eq(1)
+  end
+end
+      RECIPE
+
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::fail'", :cwd => chef_dir)
+      expect(result.error?).to be_truthy
+      expect(result.stdout).to include("Failure/Error: expect(2 - 2).to eq(1)")
+    end
+  end
+
+  context "when using recipe-url" do
+    before(:all) do
+      start_tiny_server
+    end
+
+    after(:all) do
+      stop_tiny_server
+    end
+
+    let(:tmp_dir) { Dir.mktmpdir("recipe-url") }
+
+    it "should complete with success when passed -z and --recipe-url" do
+      file 'config/client.rb', <<EOM
+chef_repo_path "#{tmp_dir}"
+EOM
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", :cwd => tmp_dir)
+      result.error!
+    end
+
+    it 'should fail when passed --recipe-url and not passed -z' do
+      result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
+      expect(result.exitstatus).to eq(1)
+    end
   end
 end

@@ -26,43 +26,43 @@ describe Chef::Resource::Env do
   end
 
   it "should create a new Chef::Resource::Env" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Env)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Env)
   end
 
   it "should have a name" do
-    @resource.name.should eql("FOO")
+    expect(@resource.name).to eql("FOO")
   end
 
   it "should have a default action of 'create'" do
-    @resource.action.should eql(:create)
+    expect(@resource.action).to eql(:create)
   end
 
   { :create => false, :delete => false, :modify => false, :flibber => true }.each do |action,bad_value|
     it "should #{bad_value ? 'not' : ''} accept #{action.to_s}" do
       if bad_value
-        lambda { @resource.action action }.should raise_error(ArgumentError)
+        expect { @resource.action action }.to raise_error(ArgumentError)
       else
-        lambda { @resource.action action }.should_not raise_error
+        expect { @resource.action action }.not_to raise_error
       end
     end
   end
 
   it "should use the object name as the key_name by default" do
-    @resource.key_name.should eql("FOO")
+    expect(@resource.key_name).to eql("FOO")
   end
 
   it "should accept a string as the env value via 'value'" do
-    lambda { @resource.value "bar" }.should_not raise_error
+    expect { @resource.value "bar" }.not_to raise_error
   end
 
   it "should not accept a Hash for the env value via 'to'" do
-    lambda { @resource.value Hash.new }.should raise_error(ArgumentError)
+    expect { @resource.value Hash.new }.to raise_error(ArgumentError)
   end
 
   it "should allow you to set an env value via 'to'" do
     @resource.value "bar"
-    @resource.value.should eql("bar")
+    expect(@resource.value).to eql("bar")
   end
 
   describe "when it has key name and value" do
@@ -74,11 +74,11 @@ describe Chef::Resource::Env do
 
     it "describes its state" do
       state = @resource.state
-      state[:value].should == "level7"
+      expect(state[:value]).to eq("level7")
     end
 
     it "returns the key name as its identity" do
-      @resource.identity.should == "charmander"
+      expect(@resource.identity).to eq("charmander")
     end
   end
 

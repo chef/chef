@@ -42,6 +42,8 @@ class Chef
     extend Forwardable
 
     def_delegators :attributes, :keys, :each_key, :each_value, :key?, :has_key?
+    def_delegators :attributes, :rm, :rm_default, :rm_normal, :rm_override
+    def_delegators :attributes, :default!, :normal!, :override!, :force_default!, :force_override!
 
     attr_accessor :recipe_list, :run_state, :override_runlist
 
@@ -125,6 +127,7 @@ class Chef
     # Set a normal attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def normal
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = false
       attributes.normal
     end
@@ -134,28 +137,25 @@ class Chef
     # Set a normal attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def normal_unless
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = true
       attributes.normal
     end
+
     alias_method :set_unless, :normal_unless
 
     # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = false
       attributes.default
-    end
-
-    # Set a force default attribute. Intermediate mashes will be created by
-    # auto-vivify if necessary.
-    def default!
-      attributes.set_unless_value_present = false
-      attributes.default!
     end
 
     # Set a default attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def default_unless
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = true
       attributes.default
     end
@@ -163,42 +163,29 @@ class Chef
     # Set an override attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def override
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = false
       attributes.override
-    end
-
-    # Set a force override attribute. Intermediate mashes will be created by
-    # auto-vivify if needed.
-    def override!
-      attributes.set_unless_value_present = false
-      attributes.override!
     end
 
     # Set an override attribute of this node, auto-vivifying any mashes that
     # are missing, but if the final value already exists, don't set it
     def override_unless
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = true
       attributes.override
     end
 
-    def override_attrs
-     attributes.override
-    end
+    alias :override_attrs :override
+    alias :default_attrs :default
+    alias :normal_attrs :normal
 
     def override_attrs=(new_values)
       attributes.override = new_values
     end
 
-    def default_attrs
-      attributes.default
-    end
-
     def default_attrs=(new_values)
       attributes.default = new_values
-    end
-
-    def normal_attrs
-      attributes.normal
     end
 
     def normal_attrs=(new_values)
@@ -206,6 +193,8 @@ class Chef
     end
 
     def automatic_attrs
+      attributes.top_level_breadcrumb = nil
+      attributes.set_unless_value_present = false
       attributes.automatic
     end
 
@@ -397,7 +386,7 @@ class Chef
       end
       index_hash["recipe"] = run_list.recipe_names if run_list.recipe_names.length > 0
       index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
-      index_hash["run_list"] = run_list.run_list if run_list.run_list.length > 0
+      index_hash["run_list"] = run_list.run_list_items
       index_hash
     end
 
@@ -409,7 +398,7 @@ class Chef
       display["normal"]           = normal_attrs
       display["default"]          = attributes.combined_default
       display["override"]         = attributes.combined_override
-      display["run_list"]         = run_list.run_list
+      display["run_list"]         = run_list.run_list_items
       display
     end
 

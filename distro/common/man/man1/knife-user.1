@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-USER" "1" "Chef 11.14" "" "knife user"
+.TH "KNIFE-USER" "1" "Chef 12.0" "" "knife user"
 .SH NAME
 knife-user \- The man page for the knife user subcommand.
 .
@@ -54,7 +54,7 @@ The configuration file to use.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -69,7 +69,7 @@ The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, 
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
 Use to view colored output.
@@ -81,7 +81,7 @@ Use to show data after a destructive operation.
 The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -90,7 +90,7 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
@@ -102,7 +102,7 @@ The \fBcreate\fP argument is used to create a user. This process will generate a
 .IP \(bu 2
 For the user, the private key should be copied to the system as \fB/etc/chef/client.pem\fP\&.
 .IP \(bu 2
-For Knife, the private key is typically copied to \fB~/.chef/client_name.pem\fP and referenced in the knife.rb configuration file.
+For knife, the private key is typically copied to \fB~/.chef/client_name.pem\fP and referenced in the knife.rb configuration file.
 .UNINDENT
 .sp
 \fBSyntax\fP
@@ -183,7 +183,7 @@ $ knife user delete "Steve Danno"
 .UNINDENT
 .SH EDIT
 .sp
-The \fBedit\fP argument is used to edit the details of a user. When this argument is run, Knife will open $EDITOR\&. When finished, Knife will update the Chef server with those changes.
+The \fBedit\fP argument is used to edit the details of a user. When this argument is run, knife will open $EDITOR\&. When finished, knife will update the Chef server with those changes.
 .sp
 \fBSyntax\fP
 .sp
@@ -310,7 +310,7 @@ The attribute (or attributes) to show.
 .sp
 \fBExamples\fP
 .sp
-To view a user named "Dennis Teck", enter:
+To view a user named \fBDennis Teck\fP, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp

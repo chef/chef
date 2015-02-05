@@ -39,13 +39,13 @@ describe Chef::Provider::RemoteFile::FTP do
 
   let(:ftp) do
     ftp = double(Net::FTP, { })
-    ftp.stub(:connect)
-    ftp.stub(:login)
-    ftp.stub(:voidcmd)
-    ftp.stub(:mtime).and_return(Time.now)
-    ftp.stub(:getbinaryfile)
-    ftp.stub(:close)
-    ftp.stub(:passive=)
+    allow(ftp).to receive(:connect)
+    allow(ftp).to receive(:login)
+    allow(ftp).to receive(:voidcmd)
+    allow(ftp).to receive(:mtime).and_return(Time.now)
+    allow(ftp).to receive(:getbinaryfile)
+    allow(ftp).to receive(:close)
+    allow(ftp).to receive(:passive=)
     ftp
   end
 
@@ -53,49 +53,49 @@ describe Chef::Provider::RemoteFile::FTP do
 
   let(:tempfile) do
     t = StringIO.new
-    t.stub(:path).and_return(tempfile_path)
+    allow(t).to receive(:path).and_return(tempfile_path)
     t
   end
 
   let(:uri) { URI.parse("ftp://opscode.com/seattle.txt") }
 
   before(:each) do
-    Net::FTP.stub(:new).with().and_return(ftp)
-    Tempfile.stub(:new).and_return(tempfile)
+    allow(Net::FTP).to receive(:new).with(no_args).and_return(ftp)
+    allow(Tempfile).to receive(:new).and_return(tempfile)
   end
 
   describe "when first created" do
 
     it "throws an argument exception when no path is given" do
       uri.path = ""
-      lambda { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }.should raise_error(ArgumentError)
+      expect { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }.to raise_error(ArgumentError)
     end
 
     it "throws an argument exception when only a / is given" do
       uri.path = "/"
-      lambda { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }.should raise_error(ArgumentError)
+      expect { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }.to raise_error(ArgumentError)
     end
 
     it "throws an argument exception when no filename is given" do
       uri.path = "/the/whole/path/"
-      lambda { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }.should raise_error(ArgumentError)
+      expect { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }.to raise_error(ArgumentError)
     end
 
     it "throws an argument exception when the typecode is invalid" do
       uri.typecode = "d"
-      lambda { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }.should raise_error(ArgumentError)
+      expect { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }.to raise_error(ArgumentError)
     end
 
     it "does not use passive mode when new_resource sets ftp_active_mode to true" do
       new_resource.ftp_active_mode(true)
       fetcher = Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
-      fetcher.use_passive_mode?.should be_false
+      expect(fetcher.use_passive_mode?).to be_falsey
     end
 
     it "uses passive mode when new_resource sets ftp_active_mode to false" do
       new_resource.ftp_active_mode(false)
       fetcher = Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
-      fetcher.use_passive_mode?.should be_true
+      expect(fetcher.use_passive_mode?).to be_truthy
     end
   end
 
@@ -112,24 +112,24 @@ describe Chef::Provider::RemoteFile::FTP do
     end
 
     it "should connect to the host from the uri on the default port 21" do
-      ftp.should_receive(:connect).with("opscode.com", 21)
+      expect(ftp).to receive(:connect).with("opscode.com", 21)
       fetcher.fetch
     end
 
     it "should set passive true when ftp_active_mode is false" do
       new_resource.ftp_active_mode(false)
-      ftp.should_receive(:passive=).with(true)
+      expect(ftp).to receive(:passive=).with(true)
       fetcher.fetch
     end
 
     it "should set passive false when ftp_active_mode is false" do
       new_resource.ftp_active_mode(true)
-      ftp.should_receive(:passive=).with(false)
+      expect(ftp).to receive(:passive=).with(false)
       fetcher.fetch
     end
 
     it "should use anonymous ftp when no userinfo is provided" do
-      ftp.should_receive(:login).with("anonymous", nil)
+      expect(ftp).to receive(:login).with("anonymous", nil)
       fetcher.fetch
     end
 
@@ -138,7 +138,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
       it "should connect on an alternate port when one is provided" do
         uri = URI.parse("ftp://opscode.com:8021/seattle.txt")
-        ftp.should_receive(:connect).with("opscode.com", 8021)
+        expect(ftp).to receive(:connect).with("opscode.com", 8021)
         fetcher.fetch
       end
 
@@ -148,7 +148,7 @@ describe Chef::Provider::RemoteFile::FTP do
       let(:uri) { URI.parse("ftp://the_user:the_password@opscode.com/seattle.txt") }
 
       it "should use authenticated ftp when userinfo is provided" do
-        ftp.should_receive(:login).with("the_user", "the_password")
+        expect(ftp).to receive(:login).with("the_user", "the_password")
         fetcher.fetch
       end
     end
@@ -157,7 +157,7 @@ describe Chef::Provider::RemoteFile::FTP do
       let(:uri) { URI.parse("ftp://the_user:the_password@opscode.com/seattle.txt;type=a") }
 
       it "fetches the file with ascii typecode set" do
-        ftp.should_receive(:voidcmd).with("TYPE A").once
+        expect(ftp).to receive(:voidcmd).with("TYPE A").once
         fetcher.fetch
       end
 
@@ -167,7 +167,7 @@ describe Chef::Provider::RemoteFile::FTP do
       let(:uri) { URI.parse("ftp://the_user:the_password@opscode.com/seattle.txt;type=i") }
 
       it "should accept image for the typecode" do
-        ftp.should_receive(:voidcmd).with("TYPE I").once
+        expect(ftp).to receive(:voidcmd).with("TYPE I").once
         fetcher.fetch
       end
 
@@ -177,10 +177,10 @@ describe Chef::Provider::RemoteFile::FTP do
       let(:uri) { URI.parse("ftp://opscode.com/the/whole/path/seattle.txt") }
 
       it "should fetch the file from the correct path" do
-        ftp.should_receive(:voidcmd).with("CWD the").once
-        ftp.should_receive(:voidcmd).with("CWD whole").once
-        ftp.should_receive(:voidcmd).with("CWD path").once
-        ftp.should_receive(:getbinaryfile).with("seattle.txt", tempfile.path)
+        expect(ftp).to receive(:voidcmd).with("CWD the").once
+        expect(ftp).to receive(:voidcmd).with("CWD whole").once
+        expect(ftp).to receive(:voidcmd).with("CWD path").once
+        expect(ftp).to receive(:getbinaryfile).with("seattle.txt", tempfile.path)
         fetcher.fetch
       end
 
@@ -193,7 +193,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
       it "should return a tempfile in the result" do
         result = fetcher.fetch
-        result.should equal(tempfile)
+        expect(result).to equal(tempfile)
       end
 
     end
@@ -207,10 +207,10 @@ describe Chef::Provider::RemoteFile::FTP do
 
       it "fetches the file via the proxy" do
         current_socks_server = ENV["SOCKS_SERVER"]
-        ENV.should_receive(:[]=).with("SOCKS_SERVER", "socks5://bill:ted@socks.example.com:5000").ordered
-        ENV.should_receive(:[]=).with("SOCKS_SERVER", current_socks_server).ordered
+        expect(ENV).to receive(:[]=).with("SOCKS_SERVER", "socks5://bill:ted@socks.example.com:5000").ordered
+        expect(ENV).to receive(:[]=).with("SOCKS_SERVER", current_socks_server).ordered
         result = fetcher.fetch
-        result.should equal(tempfile)
+        expect(result).to equal(tempfile)
       end
 
     end

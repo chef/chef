@@ -17,29 +17,24 @@
 #
 
 require 'chef/run_list'
+require 'chef/util/path_helper'
+
 class Chef
   class Knife
     module Core
       # Instances of BootstrapContext are the context objects (i.e., +self+) for
-      # bootstrap templates. For backwards compatability, they +must+ set the
+      # bootstrap templates. For backwards compatibility, they +must+ set the
       # following instance variables:
       # * @config   - a hash of knife's config values
       # * @run_list - the run list for the node to boostrap
       #
       class BootstrapContext
 
-        def initialize(config, run_list, chef_config)
+        def initialize(config, run_list, chef_config, secret = nil)
           @config       = config
           @run_list     = run_list
           @chef_config  = chef_config
-        end
-
-        def bootstrap_version_string
-          if @config[:prerelease]
-            "--prerelease"
-          else
-            "--version #{chef_version}"
-          end
+          @secret       = secret
         end
 
         def bootstrap_environment
@@ -51,13 +46,13 @@ class Chef
         end
 
         def encrypted_data_bag_secret
-          knife_config[:secret] || begin
-            if knife_config[:secret_file] && File.exist?(knife_config[:secret_file])
-              IO.read(File.expand_path(knife_config[:secret_file]))
-            elsif @chef_config[:encrypted_data_bag_secret] && File.exist?(@chef_config[:encrypted_data_bag_secret])
-              IO.read(File.expand_path(@chef_config[:encrypted_data_bag_secret]))
-            end
-          end
+          @secret
+        end
+
+        # Contains commands and content, see trusted_certs_content
+        # TODO: Rename to trusted_certs_script
+        def trusted_certs
+          @trusted_certs ||= trusted_certs_content
         end
 
         def config_content
@@ -70,6 +65,36 @@ CONFIG
             client_rb << %Q{node_name "#{@config[:chef_node_name]}"\n}
           else
             client_rb << "# Using default node name (fqdn)\n"
+          end
+
+          # We configure :verify_api_cert only when it's overridden on the CLI
+          # or when specified in the knife config.
+          if !@config[:node_verify_api_cert].nil? || knife_config.has_key?(:verify_api_cert)
+            value = @config[:node_verify_api_cert].nil? ? knife_config[:verify_api_cert] : @config[:node_verify_api_cert]
+            client_rb << %Q{verify_api_cert #{value}\n}
+          end
+
+          # We configure :ssl_verify_mode only when it's overridden on the CLI
+          # or when specified in the knife config.
+          if @config[:node_ssl_verify_mode] || knife_config.has_key?(:ssl_verify_mode)
+            value = case @config[:node_ssl_verify_mode]
+            when "peer"
+              :verify_peer
+            when "none"
+              :verify_none
+            when nil
+              knife_config[:ssl_verify_mode]
+            else
+              nil
+            end
+
+            if value
+              client_rb << %Q{ssl_verify_mode :#{value}\n}
+            end
+          end
+
+          if @config[:ssl_verify_mode]
+            client_rb << %Q{ssl_verify_mode :#{knife_config[:ssl_verify_mode]}\n}
           end
 
           if knife_config[:bootstrap_proxy]
@@ -85,6 +110,10 @@ CONFIG
             client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
           end
 
+          unless trusted_certs.empty?
+            client_rb << %Q{trusted_certs_dir "/etc/chef/trusted_certs"\n}
+          end
+
           client_rb
         end
 
@@ -93,7 +122,7 @@ CONFIG
           client_path = @chef_config[:chef_client_path] || 'chef-client'
           s = "#{client_path} -j /etc/chef/first-boot.json"
           s << ' -l debug' if @config[:verbosity] and @config[:verbosity] >= 2
-          s << " -E #{bootstrap_environment}" if chef_version.to_f != 0.9 # only use the -E option on Chef 0.10+
+          s << " -E #{bootstrap_environment}"
           s
         end
 
@@ -102,29 +131,26 @@ CONFIG
         end
 
         #
-        # This function is used by older bootstrap templates other than chef-full
-        # and potentially by custom templates as well hence it's logic needs to be
-        # preserved for backwards compatibility reasons until we hit Chef 12.
-        def chef_version
-          knife_config[:bootstrap_version] || Chef::VERSION
-        end
-
-        #
         # chef version string to fetch the latest current version from omnitruck
         # If user is on X.Y.Z bootstrap will use the latest X release
         # X here can be 10 or 11
         def latest_current_chef_version_string
-          chef_version_string = if knife_config[:bootstrap_version]
-            knife_config[:bootstrap_version]
+          installer_version_string = nil
+          if @config[:prerelease]
+            installer_version_string = ["-p"]
           else
-            Chef::VERSION.split(".").first
-          end
+            chef_version_string = if knife_config[:bootstrap_version]
+              knife_config[:bootstrap_version]
+            else
+              Chef::VERSION.split(".").first
+            end
 
-          installer_version_string = ["-v", chef_version_string]
+            installer_version_string = ["-v", chef_version_string]
 
-          # If bootstrapping a pre-release version add -p to the installer string
-          if chef_version_string.split(".").length > 3
-            installer_version_string << "-p"
+            # If bootstrapping a pre-release version add -p to the installer string
+            if chef_version_string.split(".").length > 3
+              installer_version_string << "-p"
+            end
           end
 
           installer_version_string.join(" ")
@@ -132,6 +158,21 @@ CONFIG
 
         def first_boot
           (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+        end
+
+        private
+       
+        # Returns a string for copying the trusted certificates on the workstation to the system being bootstrapped
+        # This string should contain both the commands necessary to both create the files, as well as their content
+        def trusted_certs_content
+          content = ""
+          if @chef_config[:trusted_certs_dir]
+            Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(@chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
+              content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
+                         IO.read(File.expand_path(cert)) + "\nEOP\n"
+            end
+          end
+          content
         end
 
       end

@@ -24,6 +24,8 @@ class Chef
     class Package
       class Paludis < Chef::Provider::Package
 
+        provides :paludis_package, os: "linux"
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.package_name)
           @current_resource.package_name(@new_resource.package_name)
@@ -34,7 +36,7 @@ class Chef
           installed = false
           re = Regexp.new('(.*)[[:blank:]](.*)[[:blank:]](.*)$')
 
-          shell_out!("cave -L warning print-ids -M none -m \"*/#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
+          shell_out!("cave -L warning print-ids -M none -m \"#{@new_resource.package_name}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             res = re.match(line)
             unless res.nil?
               case res[3]
@@ -45,7 +47,7 @@ class Chef
                 @current_resource.version(res[2])
               else
                 @candidate_version = res[2]
-                @current_resource.version(nil)              
+                @current_resource.version(nil)
               end
             end
           end

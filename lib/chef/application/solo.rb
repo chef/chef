@@ -99,6 +99,11 @@ class Chef::Application::Solo < Chef::Application
       :proc => lambda { |p| true }
   end
 
+  option :lockfile,
+    :long         => "--lockfile LOCKFILE",
+    :description  => "Set the lockfile location. Prevents multiple processes from converging at the same time",
+    :proc         => nil
+
   option :interval,
     :short => "-i SECONDS",
     :long => "--interval SECONDS",
@@ -160,6 +165,11 @@ class Chef::Application::Solo < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :ez,
+    :long         => '--ez',
+    :description  => 'A memorial for Ezra Zygmuntowicz',
+    :boolean      => true
+
   option :environment,
     :short        => '-E ENVIRONMENT',
     :long         => '--environment ENVIRONMENT',
@@ -185,25 +195,30 @@ class Chef::Application::Solo < Chef::Application
       Chef::Config[:interval] ||= 1800
     end
 
-    if Chef::Config[:json_attribs]
-      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
-      @chef_client_json = config_fetcher.fetch_json
-    end
+    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
 
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
 
+      Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+      FileUtils.rm_rf(recipes_path, :secure => true)
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
-      FileUtils.mkdir_p recipes_path
-      path = File.join(recipes_path, 'recipes.tgz')
-      File.open(path, 'wb') do |f|
-        open(Chef::Config[:recipe_url]) do |r|
-          f.write(r.read)
-        end
-      end
-      Chef::Mixin::Command.run_command(:command => "tar zxvf #{path} -C #{recipes_path}")
+      FileUtils.mkdir_p(recipes_path)
+      tarball_path = File.join(recipes_path, 'recipes.tgz')
+      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+      Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} -C #{recipes_path}")
     end
+
+    # json_attribs shuld be fetched after recipe_url tarball is unpacked.
+    # Otherwise it may fail if points to local file from tarball.
+    if Chef::Config[:json_attribs]
+      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
+      @chef_client_json = config_fetcher.fetch_json
+    end
+
+    # Disable auditing for solo
+    Chef::Config[:audit_mode] = :disabled
   end
 
   def setup_application
@@ -211,23 +226,52 @@ class Chef::Application::Solo < Chef::Application
   end
 
   def run_application
+    for_ezra if Chef::Config[:ez]
+    if !Chef::Config[:client_fork] || Chef::Config[:once]
+      # Run immediately without interval sleep or splay
+      begin
+        run_chef_client(Chef::Config[:specific_recipes])
+      rescue SystemExit
+        raise
+      rescue Exception => e
+        Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+      end
+    else
+      interval_run_chef_client
+    end
+  end
+
+
+  private
+
+  def for_ezra
+    puts <<-EOH
+For Ezra Zygmuntowicz:
+  The man who brought you Chef Solo
+  Early contributor to Chef
+  Kind hearted open source advocate
+  Rest in peace, Ezra.
+EOH
+  end
+
+  def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
     end
 
     loop do
       begin
-        if Chef::Config[:splay]
-          splay = rand Chef::Config[:splay]
-          Chef::Log.debug("Splay sleep #{splay} seconds")
-          sleep splay
+
+        sleep_sec = 0
+        sleep_sec += rand(Chef::Config[:splay]) if Chef::Config[:splay]
+        sleep_sec += Chef::Config[:interval] if Chef::Config[:interval]
+        if sleep_sec != 0
+          Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
+          sleep(sleep_sec)
         end
 
         run_chef_client
-        if Chef::Config[:interval]
-          Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
-          sleep Chef::Config[:interval]
-        else
+        if !Chef::Config[:interval]
           Chef::Application.exit! "Exiting", 0
         end
       rescue SystemExit => e
@@ -236,8 +280,6 @@ class Chef::Application::Solo < Chef::Application
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
           Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
-          Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
-          sleep Chef::Config[:interval]
           retry
         else
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
@@ -246,4 +288,19 @@ class Chef::Application::Solo < Chef::Application
     end
   end
 
+  def fetch_recipe_tarball(url, path)
+    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
+    File.open(path, 'wb') do |f|
+      open(url) do |r|
+        f.write(r.read)
+      end
+    end
+  end
+
+  def unforked_interval_error_message
+    "Unforked chef-client interval runs are disabled in Chef 12." +
+    "\nConfiguration settings:" +
+    "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+    "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+  end
 end

@@ -30,79 +30,79 @@ describe Chef::Provider::Package::EasyInstall do
     @current_resource.version('1.8d')
 
     @provider = Chef::Provider::Package::EasyInstall.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub(:new).and_return(@current_resource)
+    allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
 
     @stdin = StringIO.new
     @stdout = StringIO.new
     @status = double("Status", :exitstatus => 0)
     @stderr = StringIO.new
     @pid = 2342
-    @provider.stub(:popen4).and_return(@status)
+    allow(@provider).to receive(:popen4).and_return(@status)
   end
 
   describe "easy_install_binary_path" do
     it "should return a Chef::Provider::EasyInstall object" do
       provider = Chef::Provider::Package::EasyInstall.new(@node, @new_resource)
-      provider.should be_a_kind_of(Chef::Provider::Package::EasyInstall)
+      expect(provider).to be_a_kind_of(Chef::Provider::Package::EasyInstall)
     end
 
     it "should set the current resources package name to the new resources package name" do
-      $stdout.stub(:write)
-      @current_resource.should_receive(:package_name).with(@new_resource.package_name)
+      allow($stdout).to receive(:write)
+      expect(@current_resource).to receive(:package_name).with(@new_resource.package_name)
       @provider.load_current_resource
     end
 
     it "should return a relative path to easy_install if no easy_install_binary is given" do
-      @provider.easy_install_binary_path.should eql("easy_install")
+      expect(@provider.easy_install_binary_path).to eql("easy_install")
     end
 
     it "should return a specific path to easy_install if a easy_install_binary is given" do
-      @new_resource.should_receive(:easy_install_binary).and_return("/opt/local/bin/custom/easy_install")
-      @provider.easy_install_binary_path.should eql("/opt/local/bin/custom/easy_install")
+      expect(@new_resource).to receive(:easy_install_binary).and_return("/opt/local/bin/custom/easy_install")
+      expect(@provider.easy_install_binary_path).to eql("/opt/local/bin/custom/easy_install")
     end
 
   end
 
   describe "actions_on_package" do
     it "should run easy_install with the package name and version" do
-      @provider.should_receive(:run_command).with({
+      expect(@provider).to receive(:run_command).with({
         :command => "easy_install \"boto==1.8d\""
       })
       @provider.install_package("boto", "1.8d")
     end
 
     it "should run easy_install with the package name and version and specified options" do
-      @provider.should_receive(:run_command).with({
+      expect(@provider).to receive(:run_command).with({
         :command => "easy_install --always-unzip \"boto==1.8d\""
       })
-      @new_resource.stub(:options).and_return("--always-unzip")
+      allow(@new_resource).to receive(:options).and_return("--always-unzip")
       @provider.install_package("boto", "1.8d")
     end
 
     it "should run easy_install with the package name and version" do
-      @provider.should_receive(:run_command).with({
+      expect(@provider).to receive(:run_command).with({
         :command => "easy_install \"boto==1.8d\""
       })
       @provider.upgrade_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version" do
-      @provider.should_receive(:run_command).with({
+      expect(@provider).to receive(:run_command).with({
         :command => "easy_install -m boto"
       })
       @provider.remove_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version and specified options" do
-      @provider.should_receive(:run_command).with({
+      expect(@provider).to receive(:run_command).with({
         :command => "easy_install -x -m boto"
       })
-      @new_resource.stub(:options).and_return("-x")
+      allow(@new_resource).to receive(:options).and_return("-x")
       @provider.remove_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version" do
-      @provider.should_receive(:run_command).with({
+      expect(@provider).to receive(:run_command).with({
         :command => "easy_install -m boto"
       })
       @provider.purge_package("boto", "1.8d")

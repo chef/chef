@@ -19,8 +19,9 @@ require 'support/shared/integration/integration_helper'
 require 'chef/knife/upload'
 require 'chef/knife/diff'
 require 'chef/knife/raw'
+require 'chef/json_compat'
 
-describe 'knife upload' do
+describe 'knife upload', :workstation do
   include IntegrationSupport
   include KnifeSupport
 
@@ -261,7 +262,7 @@ Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed <<EOM
 EOM
-          JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.sort.should == [ 'foo', 'id' ]
+          expect(Chef::JSONCompat.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.sort).to eq([ 'foo', 'id' ])
         end
 
         it 'knife upload /data_bags/x /data_bags/x/y.json uploads x once' do
@@ -284,10 +285,10 @@ Created /data_bags/x
 Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed ''
-          result = JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false)
-          result.keys.sort.should == [ 'chef_type', 'data_bag', 'id' ]
-          result['chef_type'].should == 'aaa'
-          result['data_bag'].should == 'bbb'
+          result = Chef::JSONCompat.parse(knife('raw /data/x/y').stdout, :create_additions => false)
+          expect(result.keys.sort).to eq([ 'chef_type', 'data_bag', 'id' ])
+          expect(result['chef_type']).to eq('aaa')
+          expect(result['data_bag']).to eq('bbb')
         end
       end
 
@@ -487,7 +488,7 @@ EOM
 Updated /cookbooks/x
 EOM
           # Modify a file and attempt to upload
-          file 'cookbooks/x/metadata.rb', "name 'x'; version '1.0.0'#different"
+          file 'cookbooks/x/metadata.rb', 'name "x"; version "1.0.0"#different'
           knife('upload /cookbooks/x').should_fail "ERROR: /cookbooks failed to write: Cookbook x is frozen\n"
         end
       end
@@ -1213,6 +1214,159 @@ EOM
       end
       it 'knife upload /users/x.json succeeds' do
         knife('upload /users/x.json').should_succeed "Updated /users/x.json\n"
+      end
+    end
+  end
+
+  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+    before do
+      user 'foo', {}
+      user 'bar', {}
+      user 'foobar', {}
+      organization 'foo', { 'full_name' => 'Something'}
+    end
+
+    before :each do
+      Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
+    end
+
+    context 'and has nothing but a single group named blah' do
+      group 'blah', {}
+
+      when_the_repository 'has one of each thing' do
+
+        before do
+          # TODO We have to upload acls for an existing group due to a lack of
+          # dependency detection during upload.  Fix that!
+          file 'acls/groups/blah.json', {}
+          file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'containers/x.json', {}
+          file 'cookbooks/x/metadata.rb', cb_metadata("x", "1.0.0")
+          file 'data_bags/x/y.json', {}
+          file 'environments/x.json', {}
+          file 'groups/x.json', {}
+          file 'invitations.json', [ 'foo' ]
+          file 'members.json', [ 'bar' ]
+          file 'nodes/x.json', {}
+          file 'org.json', { 'full_name' => 'wootles' }
+          file 'roles/x.json', {}
+        end
+
+        it 'knife upload / uploads everything' do
+          knife('upload /').should_succeed <<EOM
+Updated /acls/groups/blah.json
+Created /clients/x.json
+Created /containers/x.json
+Created /cookbooks/x
+Created /data_bags/x
+Created /data_bags/x/y.json
+Created /environments/x.json
+Created /groups/x.json
+Updated /invitations.json
+Updated /members.json
+Created /nodes/x.json
+Updated /org.json
+Created /roles/x.json
+EOM
+          expect(api.get('association_requests').map { |a| a['username'] }).to eq([ 'foo' ])
+          expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar' ])
+        end
+      end
+
+      when_the_repository 'has an org.json that does not change full_name' do
+        before do
+          file 'org.json', { 'full_name' => 'Something' }
+        end
+
+        it 'knife upload / emits a warning for bar and adds foo and foobar' do
+          knife('upload /').should_succeed ''
+          expect(api.get('/')['full_name']).to eq('Something')
+        end
+      end
+
+      when_the_repository 'has an org.json that changes full_name' do
+        before do
+          file 'org.json', { 'full_name' => 'Something Else'}
+        end
+
+        it 'knife upload / emits a warning for bar and adds foo and foobar' do
+          knife('upload /').should_succeed "Updated /org.json\n"
+          expect(api.get('/')['full_name']).to eq('Something Else')
+        end
+      end
+
+      context 'and has invited foo and bar is already a member' do
+        org_invite 'foo'
+        org_member 'bar'
+
+        when_the_repository 'wants to invite foo, bar and foobar' do
+          before do
+            file 'invitations.json', [ 'foo', 'bar', 'foobar' ]
+          end
+
+          it 'knife upload / emits a warning for bar and invites foobar' do
+            knife('upload /').should_succeed "Updated /invitations.json\n", :stderr => "WARN: Could not invite bar to organization foo: User bar is already in organization foo\n"
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ 'foo', 'foobar' ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar' ])
+          end
+        end
+
+        when_the_repository 'wants to make foo, bar and foobar members' do
+          before do
+            file 'members.json', [ 'foo', 'bar', 'foobar' ]
+          end
+
+          it 'knife upload / emits a warning for bar and adds foo and foobar' do
+            knife('upload /').should_succeed "Updated /members.json\n"
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar', 'foo', 'foobar' ])
+          end
+        end
+
+        when_the_repository 'wants to invite foo and have bar as a member' do
+          before do
+            file 'invitations.json', [ 'foo' ]
+            file 'members.json', [ 'bar' ]
+          end
+
+          it 'knife upload / does nothing' do
+            knife('upload /').should_succeed ''
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ 'foo' ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar' ])
+          end
+        end
+      end
+
+      context 'and has invited bar and foo' do
+        org_invite 'bar', 'foo'
+
+        when_the_repository 'wants to invite foo and bar (different order)' do
+          before do
+            file 'invitations.json', [ 'foo', 'bar' ]
+          end
+
+          it 'knife upload / does nothing' do
+            knife('upload /').should_succeed ''
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ 'bar', 'foo' ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ ])
+          end
+        end
+      end
+
+      context 'and has already added bar and foo as members of the org' do
+        org_member 'bar', 'foo'
+
+        when_the_repository 'wants to add foo and bar (different order)' do
+          before do
+            file 'members.json', [ 'foo', 'bar' ]
+          end
+
+          it 'knife upload / does nothing' do
+            knife('upload /').should_succeed ''
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar', 'foo' ])
+          end
+        end
       end
     end
   end

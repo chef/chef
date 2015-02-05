@@ -30,52 +30,52 @@ describe Chef::Knife::ClientDelete do
 
   describe 'run' do
     it 'should delete the client' do
-      @knife.should_receive(:delete_object).with(Chef::ApiClient, 'adam', 'client')
+      expect(@knife).to receive(:delete_object).with(Chef::ApiClient, 'adam', 'client')
       @knife.run
     end
 
     it 'should print usage and exit when a client name is not provided' do
       @knife.name_args = []
-      @knife.should_receive(:show_usage)
-      @knife.ui.should_receive(:fatal)
-      lambda { @knife.run }.should raise_error(SystemExit)
+      expect(@knife).to receive(:show_usage)
+      expect(@knife.ui).to receive(:fatal)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
   end
 
   describe 'with a validator' do
     before(:each) do
-      Chef::Knife::UI.stub(:confirm).and_return(true)
-      @knife.stub(:confirm).and_return(true)
+      allow(Chef::Knife::UI).to receive(:confirm).and_return(true)
+      allow(@knife).to receive(:confirm).and_return(true)
       @client = Chef::ApiClient.new
-      Chef::ApiClient.should_receive(:load).and_return(@client)
+      expect(Chef::ApiClient).to receive(:load).and_return(@client)
     end
 
     it 'should delete non-validator client if --delete-validators is not set' do
       @knife.config[:delete_validators] = false
-      @client.should_receive(:destroy).and_return(@client)
-      @knife.should_receive(:msg)
+      expect(@client).to receive(:destroy).and_return(@client)
+      expect(@knife).to receive(:msg)
 
       @knife.run
     end
 
     it 'should delete non-validator client if --delete-validators is set' do
       @knife.config[:delete_validators] = true
-      @client.should_receive(:destroy).and_return(@client)
-      @knife.should_receive(:msg)
+      expect(@client).to receive(:destroy).and_return(@client)
+      expect(@knife).to receive(:msg)
 
       @knife.run
     end
 
     it 'should not delete validator client if --delete-validators is not set' do
       @client.validator(true)
-      @knife.ui.should_receive(:fatal)
-      lambda { @knife.run}.should raise_error(SystemExit)
+      expect(@knife.ui).to receive(:fatal)
+      expect { @knife.run}.to raise_error(SystemExit)
     end
 
     it 'should delete validator client if --delete-validators is set' do
       @knife.config[:delete_validators] = true
-      @client.should_receive(:destroy).and_return(@client)
-      @knife.should_receive(:msg)
+      expect(@client).to receive(:destroy).and_return(@client)
+      expect(@knife).to receive(:msg)
 
       @knife.run
     end

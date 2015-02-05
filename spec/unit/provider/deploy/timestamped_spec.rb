@@ -22,7 +22,7 @@ describe Chef::Provider::Deploy::Timestamped do
 
   before do
     @release_time = Time.utc( 2004, 8, 15, 16, 23, 42)
-    Time.stub(:now).and_return(@release_time)
+    allow(Time).to receive(:now).and_return(@release_time)
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @node = Chef::Node.new
@@ -30,11 +30,11 @@ describe Chef::Provider::Deploy::Timestamped do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @timestamped_deploy = Chef::Provider::Deploy::Timestamped.new(@resource, @run_context)
     @runner = double("runnah")
-    Chef::Runner.stub(:new).and_return(@runner)
+    allow(Chef::Runner).to receive(:new).and_return(@runner)
   end
 
   it "gives a timestamp for release_slug" do
-    @timestamped_deploy.send(:release_slug).should == "20040815162342"
+    expect(@timestamped_deploy.send(:release_slug)).to eq("20040815162342")
   end
 
 end

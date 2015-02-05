@@ -11,7 +11,7 @@ class Chef
           })
         end
 
-        def preserve_key(key)
+        def preserve_key?(key)
           return key == 'containername'
         end
 

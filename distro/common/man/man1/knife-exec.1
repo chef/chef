@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-EXEC" "1" "Chef 11.14" "" "knife exec"
+.TH "KNIFE-EXEC" "1" "Chef 12.0" "" "knife exec"
 .SH NAME
 knife-exec \- The man page for the knife exec subcommand.
 .
@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
 .sp
-The \fBknife exec\fP subcommand uses the Knife configuration file to execute Ruby scripts in the context of a fully configured chef\-client\&. This subcommand is most often used to run scripts that will only access Chef server one time (or otherwise very infrequently). Use this subcommand any time that an operation does not warrant full usage of the Knife subcommand library.
+The \fBknife exec\fP subcommand uses the knife configuration file to execute Ruby scripts in the context of a fully configured chef\-client\&. This subcommand is most often used to run scripts that will only access Chef server one time (or otherwise very infrequently). Use this subcommand any time that an operation does not warrant full usage of the knife subcommand library.
 .sp
 \fBAuthenticated API Requests\fP
 .sp
@@ -89,7 +89,7 @@ where:
 .IP \(bu 2
 \fBapi.method\fP is the corresponding authentication method \-\-\- \fBapi.delete\fP, \fBapi.get\fP, \fBapi.post\fP, or \fBapi.put\fP
 .IP \(bu 2
-\fB/endpoint\fP is an endpoint in the Chef Server API
+\fB/endpoint\fP is an endpoint in the Chef server API
 .UNINDENT
 .sp
 For example, to get the data for a node named "Example_Node":
@@ -168,7 +168,7 @@ Use to view colored output.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-E CODE\fP, \fB\-\-exec CODE\fP
 A string of code that will be executed.
@@ -186,7 +186,7 @@ The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, 
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-p PATH:PATH\fP, \fB\-\-script\-path PATH:PATH\fP
 A colon\-separated path at which Ruby scripts are located.
@@ -198,7 +198,7 @@ Use to show data after a destructive operation.
 The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
 The version of the chef\-client\&.
@@ -207,7 +207,7 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
@@ -227,7 +227,7 @@ $ knife exec /path/to/script_file
 .UNINDENT
 .UNINDENT
 .sp
-Or:
+or:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -239,7 +239,7 @@ $ knife exec \-E \(aqRUBY CODE\(aq
 .UNINDENT
 .UNINDENT
 .sp
-Or:
+or:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -253,7 +253,7 @@ RUBY CODE
 .UNINDENT
 .UNINDENT
 .sp
-To check the status of Knife using a Ruby script named "status.rb" (which looks like):
+To check the status of knife using a Ruby script named \fBstatus.rb\fP (which looks like):
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -271,7 +271,7 @@ end
 .UNINDENT
 .UNINDENT
 .sp
-and is located in a directory named "scripts", enter:
+and is located in a directory named \fBscripts/\fP, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp

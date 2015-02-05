@@ -26,42 +26,42 @@ describe Chef::Resource::Package do
   end
 
   it "should create a new Chef::Resource::Package" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Package)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Package)
   end
 
   it "should set the package_name to the first argument to new" do
-    @resource.package_name.should eql("emacs")
+    expect(@resource.package_name).to eql("emacs")
   end
 
   it "should accept a string for the package name" do
     @resource.package_name "something"
-    @resource.package_name.should eql("something")
+    expect(@resource.package_name).to eql("something")
   end
 
   it "should accept a string for the version" do
     @resource.version "something"
-    @resource.version.should eql("something")
+    expect(@resource.version).to eql("something")
   end
 
   it "should accept a string for the response file" do
     @resource.response_file "something"
-    @resource.response_file.should eql("something")
+    expect(@resource.response_file).to eql("something")
   end
 
   it "should accept a hash for response file template variables" do
     @resource.response_file_variables({:variables => true})
-    @resource.response_file_variables.should eql({:variables => true})
+    expect(@resource.response_file_variables).to eql({:variables => true})
   end
 
   it "should accept a string for the source" do
     @resource.source "something"
-    @resource.source.should eql("something")
+    expect(@resource.source).to eql("something")
   end
 
   it "should accept a string for the options" do
     @resource.options "something"
-    @resource.options.should eql("something")
+    expect(@resource.options).to eql("something")
   end
 
   describe "when it has a package_name and version" do
@@ -73,12 +73,12 @@ describe Chef::Resource::Package do
 
     it "describes its state" do
       state = @resource.state
-      state[:version].should == "10.9.8"
-      state[:options].should == "-al"
+      expect(state[:version]).to eq("10.9.8")
+      expect(state[:options]).to eq("-al")
     end
 
     it "returns the file path as its identity" do
-      @resource.identity.should == "tomcat"
+      expect(@resource.identity).to eq("tomcat")
     end
   end
 

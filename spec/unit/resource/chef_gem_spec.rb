@@ -18,37 +18,84 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::ChefGem, "initialize" do
 
-  before(:each) do
-    @resource = Chef::Resource::ChefGem.new("foo")
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::ChefGem,
+    provider: Chef::Provider::Package::Rubygems,
+    name: :chef_gem,
+    action: :install,
+  )
 
-  it "should return a Chef::Resource::ChefGem" do
-    @resource.should be_a_kind_of(Chef::Resource::ChefGem)
-  end
-
-  it "should set the resource_name to :chef_gem" do
-    @resource.resource_name.should eql(:chef_gem)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Rubygems" do
-    @resource.provider.should eql(Chef::Provider::Package::Rubygems)
-  end
 end
 
 describe Chef::Resource::ChefGem, "gem_binary" do
+  let(:resource) { Chef::Resource::ChefGem.new("foo") }
+
   before(:each) do
     expect(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
-    @resource = Chef::Resource::ChefGem.new("foo")
   end
 
   it "should raise an exception when gem_binary is set" do
-    lambda { @resource.gem_binary("/lol/cats/gem") }.should raise_error(ArgumentError)
+    expect { resource.gem_binary("/lol/cats/gem") }.to raise_error(ArgumentError)
   end
 
   it "should set the gem_binary based on computing it from RbConfig" do
-    expect(@resource.gem_binary).to eql("/opt/chef/embedded/bin/gem")
+    expect(resource.gem_binary).to eql("/opt/chef/embedded/bin/gem")
+  end
+
+  it "should set the gem_binary based on computing it from RbConfig" do
+    expect(resource.compile_time).to be nil
+  end
+
+  context "when building the resource" do
+    let(:node) do
+      Chef::Node.new.tap {|n| n.normal[:tags] = [] }
+    end
+
+    let(:run_context) do
+      Chef::RunContext.new(node, {}, nil)
+    end
+
+    let(:recipe) do
+      Chef::Recipe.new("hjk", "test", run_context)
+    end
+
+    let(:resource) { Chef::Resource::ChefGem.new("foo", run_context) }
+
+    before do
+      expect(Chef::Resource::ChefGem).to receive(:new).and_return(resource)
+    end
+
+    it "runs the install at compile-time by default", :chef_lt_13_only do
+      expect(resource).to receive(:run_action).with(:install)
+      expect(Chef::Log).to receive(:warn).at_least(:once)
+      recipe.chef_gem "foo"
+    end
+
+    # the default behavior will change in Chef-13
+    it "does not runs the install at compile-time by default", :chef_gte_13_only do
+      expect(resource).not_to receive(:run_action).with(:install)
+      expect(Chef::Log).not_to receive(:warn)
+      recipe.chef_gem "foo"
+    end
+
+    it "compile_time true installs at compile-time" do
+      expect(resource).to receive(:run_action).with(:install)
+      expect(Chef::Log).not_to receive(:warn)
+      recipe.chef_gem "foo" do
+        compile_time true
+      end
+    end
+
+    it "compile_time false does not install at compile-time" do
+      expect(resource).not_to receive(:run_action).with(:install)
+      expect(Chef::Log).not_to receive(:warn)
+      recipe.chef_gem "foo" do
+        compile_time false
+      end
+    end
   end
 end

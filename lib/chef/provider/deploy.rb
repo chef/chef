@@ -18,10 +18,10 @@
 
 require "chef/mixin/command"
 require "chef/mixin/from_file"
-require "chef/monkey_patches/fileutils"
 require "chef/provider/git"
 require "chef/provider/subversion"
 require "chef/dsl/recipe"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
@@ -125,7 +125,7 @@ class Chef
         # * Move release_path directory before deploy and move it back when error occurs
         # * Rollback to previous commit
         # * Do nothing - because deploy is force, it will be retried in short time
-        # Because last is simpliest, keep it
+        # Because last is simplest, keep it
         deploy
       end
 
@@ -243,7 +243,7 @@ class Chef
       end
 
       def all_releases
-        Dir.glob(@new_resource.deploy_to + "/releases/*").sort
+        Dir.glob(Chef::Util::PathHelper.escape_glob(@new_resource.deploy_to) + "/releases/*").sort
       end
 
       def update_cached_repo
@@ -374,7 +374,7 @@ class Chef
 
       def gem_resource_collection_runner
         gems_collection = Chef::ResourceCollection.new
-        gem_packages.each { |rbgem| gems_collection << rbgem }
+        gem_packages.each { |rbgem| gems_collection.insert(rbgem) }
         gems_run_context = run_context.dup
         gems_run_context.resource_collection = gems_collection
         Chef::Runner.new(gems_run_context)

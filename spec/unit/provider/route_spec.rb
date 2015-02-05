@@ -36,14 +36,14 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "hex2ip" do
     it "should return nil if ip address is invalid" do
-      @provider.hex2ip('foo').should be_nil # does not even look like an ip
-      @provider.hex2ip('ABCDEFGH').should be_nil # 8 chars, but invalid
+      expect(@provider.hex2ip('foo')).to be_nil # does not even look like an ip
+      expect(@provider.hex2ip('ABCDEFGH')).to be_nil # 8 chars, but invalid
     end
 
     it "should return quad-dotted notation for a valid IP" do
-      @provider.hex2ip('01234567').should == '103.69.35.1'
-      @provider.hex2ip('0064a8c0').should == '192.168.100.0'
-      @provider.hex2ip('00FFFFFF').should == '255.255.255.0'
+      expect(@provider.hex2ip('01234567')).to eq('103.69.35.1')
+      expect(@provider.hex2ip('0064a8c0')).to eq('192.168.100.0')
+      expect(@provider.hex2ip('00FFFFFF')).to eq('255.255.255.0')
     end
   end
 
@@ -55,158 +55,158 @@ describe Chef::Provider::Route do
         routing_table = "Iface	Destination	Gateway 	Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT\n" +
                         "eth0	0064A8C0	0984A8C0	0003	0	0	0	00FFFFFF	0	0	0\n"
         route_file = StringIO.new(routing_table)
-        File.stub(:open).with("/proc/net/route", "r").and_return(route_file)
+        allow(File).to receive(:open).with("/proc/net/route", "r").and_return(route_file)
       end
 
       it "should set is_running to false when a route is not detected" do
         resource = Chef::Resource::Route.new('10.10.10.0/24')
-        resource.stub(:gateway).and_return("10.0.0.1")
-        resource.stub(:device).and_return("eth0")
+        allow(resource).to receive(:gateway).and_return("10.0.0.1")
+        allow(resource).to receive(:device).and_return("eth0")
         provider = Chef::Provider::Route.new(resource, @run_context)
 
         provider.load_current_resource
-        provider.is_running.should be_false
+        expect(provider.is_running).to be_falsey
       end
 
       it "should detect existing routes and set is_running attribute correctly" do
         resource = Chef::Resource::Route.new('192.168.100.0/24')
-        resource.stub(:gateway).and_return("192.168.132.9")
-        resource.stub(:device).and_return("eth0")
+        allow(resource).to receive(:gateway).and_return("192.168.132.9")
+        allow(resource).to receive(:device).and_return("eth0")
         provider = Chef::Provider::Route.new(resource, @run_context)
 
         provider.load_current_resource
-        provider.is_running.should be_true
+        expect(provider.is_running).to be_truthy
       end
 
       it "should use gateway value when matching routes" do
         resource = Chef::Resource::Route.new('192.168.100.0/24')
-        resource.stub(:gateway).and_return("10.10.10.10")
-        resource.stub(:device).and_return("eth0")
+        allow(resource).to receive(:gateway).and_return("10.10.10.10")
+        allow(resource).to receive(:device).and_return("eth0")
         provider = Chef::Provider::Route.new(resource, @run_context)
 
         provider.load_current_resource
-        provider.is_running.should be_false
+        expect(provider.is_running).to be_falsey
       end
     end
   end
 
   describe Chef::Provider::Route, "action_add" do
     it "should add the route if it does not exist" do
-      @provider.stub(:run_command).and_return(true)
-      @current_resource.stub(:gateway).and_return(nil)
-      @provider.should_receive(:generate_command).once.with(:add)
-      @provider.should_receive(:generate_config)
+      allow(@provider).to receive(:run_command).and_return(true)
+      allow(@current_resource).to receive(:gateway).and_return(nil)
+      expect(@provider).to receive(:generate_command).once.with(:add)
+      expect(@provider).to receive(:generate_config)
       @provider.run_action(:add)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
 
     it "should not add the route if it exists" do
-      @provider.stub(:run_command).and_return(true)
-      @provider.stub(:is_running).and_return(true)
-      @provider.should_not_receive(:generate_command).with(:add)
-      @provider.should_receive(:generate_config)
+      allow(@provider).to receive(:run_command).and_return(true)
+      allow(@provider).to receive(:is_running).and_return(true)
+      expect(@provider).not_to receive(:generate_command).with(:add)
+      expect(@provider).to receive(:generate_config)
       @provider.run_action(:add)
-      @new_resource.should_not be_updated
+      expect(@new_resource).not_to be_updated
     end
 
     it "should not delete config file for :add action (CHEF-3332)" do
       @node.automatic_attrs[:platform] = 'centos'
 
       route_file = StringIO.new
-      File.should_receive(:new).and_return(route_file)
+      expect(File).to receive(:new).and_return(route_file)
       @resource_add = Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
       @run_context.resource_collection << @resource_add
-      @provider.stub(:run_command).and_return(true)
+      allow(@provider).to receive(:run_command).and_return(true)
 
       @resource_add.action(:add)
       @provider.run_action(:add)
-      route_file.string.split("\n").should have(1).items
-      route_file.string.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      expect(route_file.string.split("\n").size).to eq(1)
+      expect(route_file.string).to match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 
   describe Chef::Provider::Route, "action_delete" do
     it "should delete the route if it exists" do
-      @provider.stub(:run_command).and_return(true)
-      @provider.should_receive(:generate_command).once.with(:delete)
-      @provider.stub(:is_running).and_return(true)
+      allow(@provider).to receive(:run_command).and_return(true)
+      expect(@provider).to receive(:generate_command).once.with(:delete)
+      allow(@provider).to receive(:is_running).and_return(true)
       @provider.run_action(:delete)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
 
     it "should not delete the route if it does not exist" do
-      @current_resource.stub(:gateway).and_return(nil)
-      @provider.stub(:run_command).and_return(true)
-      @provider.should_not_receive(:generate_command).with(:add)
+      allow(@current_resource).to receive(:gateway).and_return(nil)
+      allow(@provider).to receive(:run_command).and_return(true)
+      expect(@provider).not_to receive(:generate_command).with(:add)
       @provider.run_action(:delete)
-      @new_resource.should_not be_updated
+      expect(@new_resource).not_to be_updated
     end
   end
 
   describe Chef::Provider::Route, "generate_command for action_add" do
     it "should include a netmask when a one is specified" do
-      @new_resource.stub(:netmask).and_return('255.255.0.0')
-      @provider.generate_command(:add).should match(/\/\d{1,2}\s/)
+      allow(@new_resource).to receive(:netmask).and_return('255.255.0.0')
+      expect(@provider.generate_command(:add)).to match(/\/\d{1,2}\s/)
     end
 
     it "should not include a netmask when a one is specified" do
-      @new_resource.stub(:netmask).and_return(nil)
-      @provider.generate_command(:add).should_not match(/\/\d{1,2}\s/)
+      allow(@new_resource).to receive(:netmask).and_return(nil)
+      expect(@provider.generate_command(:add)).not_to match(/\/\d{1,2}\s/)
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
-      @provider.generate_command(:add).should match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
+      expect(@provider.generate_command(:add)).to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
-      @new_resource.stub(:gateway).and_return(nil)
-      @provider.generate_command(:add).should_not match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
+      allow(@new_resource).to receive(:gateway).and_return(nil)
+      expect(@provider.generate_command(:add)).not_to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
   end
 
   describe Chef::Provider::Route, "generate_command for action_delete" do
     it "should include a netmask when a one is specified" do
-      @new_resource.stub(:netmask).and_return('255.255.0.0')
-      @provider.generate_command(:delete).should match(/\/\d{1,2}\s/)
+      allow(@new_resource).to receive(:netmask).and_return('255.255.0.0')
+      expect(@provider.generate_command(:delete)).to match(/\/\d{1,2}\s/)
     end
 
     it "should not include a netmask when a one is specified" do
-      @new_resource.stub(:netmask).and_return(nil)
-      @provider.generate_command(:delete).should_not match(/\/\d{1,2}\s/)
+      allow(@new_resource).to receive(:netmask).and_return(nil)
+      expect(@provider.generate_command(:delete)).not_to match(/\/\d{1,2}\s/)
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
-      @provider.generate_command(:delete).should match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
+      expect(@provider.generate_command(:delete)).to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
-      @new_resource.stub(:gateway).and_return(nil)
-      @provider.generate_command(:delete).should_not match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
+      allow(@new_resource).to receive(:gateway).and_return(nil)
+      expect(@provider.generate_command(:delete)).not_to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
   end
 
   describe Chef::Provider::Route, "config_file_contents for action_add" do
     it "should include a netmask when a one is specified" do
-      @new_resource.stub(:netmask).and_return('255.255.0.0')
-      @provider.config_file_contents(:add, { :target => @new_resource.target, :netmask => @new_resource.netmask}).should match(/\/\d{1,2}.*\n$/)
+      allow(@new_resource).to receive(:netmask).and_return('255.255.0.0')
+      expect(@provider.config_file_contents(:add, { :target => @new_resource.target, :netmask => @new_resource.netmask})).to match(/\/\d{1,2}.*\n$/)
     end
 
     it "should not include a netmask when a one is specified" do
-      @provider.config_file_contents(:add, { :target => @new_resource.target}).should_not match(/\/\d{1,2}.*\n$/)
+      expect(@provider.config_file_contents(:add, { :target => @new_resource.target})).not_to match(/\/\d{1,2}.*\n$/)
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
-      @provider.config_file_contents(:add, { :target => @new_resource.target, :gateway => @new_resource.gateway}).should match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\n/)
+      expect(@provider.config_file_contents(:add, { :target => @new_resource.target, :gateway => @new_resource.gateway})).to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\n/)
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
-      @provider.generate_command(:add).should_not match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\n/)
+      expect(@provider.generate_command(:add)).not_to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\n/)
     end
   end
 
   describe Chef::Provider::Route, "config_file_contents for action_delete" do
     it "should return an empty string" do
-      @provider.config_file_contents(:delete).should match(/^$/)
+      expect(@provider.config_file_contents(:delete)).to match(/^$/)
     end
   end
 
@@ -216,7 +216,7 @@ describe Chef::Provider::Route do
         @node.automatic_attrs[:platform] = platform
 
         route_file = StringIO.new
-        File.should_receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
+        expect(File).to receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
         #Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
         @run_context.resource_collection << @new_resource
         @provider.generate_config
@@ -227,17 +227,17 @@ describe Chef::Provider::Route do
       @node.automatic_attrs[:platform] = 'centos'
 
       route_file = StringIO.new
-      File.should_receive(:new).and_return(route_file)
+      expect(File).to receive(:new).and_return(route_file)
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.2.0/24 via 192.168.0.1')
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.3.0/24 via 192.168.0.1')
 
       @provider.action = :add
       @provider.generate_config
-      route_file.string.split("\n").should have(3).items
-      route_file.string.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
-      route_file.string.should match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
-      route_file.string.should match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
+      expect(route_file.string.split("\n").size).to eq(3)
+      expect(route_file.string).to match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      expect(route_file.string).to match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
+      expect(route_file.string).to match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 end

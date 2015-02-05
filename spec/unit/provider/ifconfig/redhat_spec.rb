@@ -37,34 +37,36 @@ describe Chef::Provider::Ifconfig::Redhat do
     status = double("Status", :exitstatus => 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
- end
+
+    config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
+    @config = double("chef-resource-file")
+    expect(@provider).to receive(:resource_for_config).with(config_filename).and_return(@config)
+  end
 
   describe "generate_config for action_add" do
 
-     it "should write network-script for centos" do
-      @provider.stub(:load_current_resource)
-      @provider.stub(:run_command)
-      config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-      config_file = StringIO.new
-      File.should_receive(:new).with(config_filename, "w").and_return(config_file)
-
+    it "should write network-script for centos" do
+      allow(@provider).to receive(:load_current_resource)
+      allow(@provider).to receive(:run_command)
+      expect(@config).to receive(:content) do |arg|
+        expect(arg).to match(/^\s*DEVICE=eth0\s*$/)
+        expect(arg).to match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
+        expect(arg).to match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
+      end
+      expect(@config).to receive(:run_action).with(:create)
+      expect(@config).to receive(:updated?).and_return(true)
       @provider.run_action(:add)
-      config_file.string.should match(/^\s*DEVICE=eth0\s*$/)
-      config_file.string.should match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
-      config_file.string.should match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
-     end
+    end
   end
 
   describe "delete_config for action_delete" do
 
     it "should delete network-script if it exists for centos" do
       @current_resource.device @new_resource.device
-      @provider.stub(:load_current_resource)
-      @provider.stub(:run_command)
-      config_filename =  "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-      File.should_receive(:exist?).with(config_filename).and_return(true)
-      FileUtils.should_receive(:rm_f).with(config_filename, :verbose => false)
-
+      allow(@provider).to receive(:load_current_resource)
+      allow(@provider).to receive(:run_command)
+      expect(@config).to receive(:run_action).with(:delete)
+      expect(@config).to receive(:updated?).and_return(true)
       @provider.run_action(:delete)
     end
   end

@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-RAW" "1" "Chef 11.14" "" "knife raw"
+.TH "KNIFE-RAW" "1" "Chef 12.0" "" "knife raw"
 .SH NAME
 knife-raw \- The man page for the knife raw subcommand.
 .
@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
 .sp
-The \fBknife raw\fP subcommand is used to send a REST request to a specified path using the Chef Server API\&.
+The \fBknife raw\fP subcommand is used to send a REST request to an endpoint in the Chef server API\&.
 .sp
 \fBSyntax\fP
 .sp
@@ -65,7 +65,7 @@ Use to view colored output.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -83,7 +83,7 @@ Shows help for the command.
 The name of a file to be used with the \fBPUT\fP or a \fBPOST\fP request.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-m METHOD\fP, \fB\-\-method METHOD\fP
 The request method: \fBDELETE\fP, \fBGET\fP, \fBPOST\fP, or \fBPUT\fP\&. Default value: \fBGET\fP\&.
@@ -98,7 +98,7 @@ Use to show data after a destructive operation.
 The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
 The version of the chef\-client\&.
@@ -107,7 +107,7 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.

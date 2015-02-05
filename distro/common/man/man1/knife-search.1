@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-SEARCH" "1" "Chef 11.14" "" "knife search"
+.TH "KNIFE-SEARCH" "1" "Chef 12.0" "" "knife search"
 .SH NAME
 knife-search \- The man page for the knife search subcommand.
 .
@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
 .sp
-Search indexes allow queries to be made for any type of data that is indexed by the Chef server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full\-text query that can be done from several locations, including from within a recipe, by using the \fBsearch\fP subcommand in Knife, or by using the \fB/search\fP or \fB/search/INDEX\fP endpoints in the Chef Server API\&. The search engine is based on Apache Solr and is run from the Chef server\&.
+Search indexes allow queries to be made for any type of data that is indexed by the Chef server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full\-text query that can be done from several locations, including from within a recipe, by using the \fBsearch\fP subcommand in knife, the \fBsearch\fP method in the Recipe DSL, and by using the \fB/search\fP or \fB/search/INDEX\fP endpoints in the Chef server API\&. The search engine is based on Apache Solr and is run from the Chef server\&.
 .sp
 The \fBknife search\fP subcommand is used run a search query for information that is indexed on a Chef server\&.
 .sp
@@ -144,7 +144,7 @@ Use to view colored output.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -165,13 +165,13 @@ Use to show only matching object IDs.
 The name of the index to be queried: \fBclient\fP, \fBenvironment\fP, \fBnode\fP, \fBrole\fP, or \fBDATA_BAG_NAME\fP\&. Default index: \fBnode\fP\&.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-l\fP, \fB\-\-long\fP
-Display long output when searching nodes while using the default summary format.
+Use to display all attributes in the output and to show the output as JSON\&.
 .TP
 .B \fB\-m\fP, \fB\-\-medium\fP
-Display more, but not all, of a node\(aqs data when searching using the default summary format.
+Use to display normal attributes in the output and to show the output as JSON\&.
 .TP
 .B \fB\-o SORT\fP, \fB\-\-sort SORT\fP
 The order in which search results will be sorted.
@@ -195,7 +195,7 @@ The URL for the Chef server\&.
 The search query used to identify a a list of items on a Chef server\&. This option uses the same syntax as the \fBsearch\fP sub\-command.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
 The version of the chef\-client\&.
@@ -204,7 +204,7 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.

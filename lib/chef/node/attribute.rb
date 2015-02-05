@@ -58,7 +58,6 @@ class Chef
         :@force_default
       ]
 
-
       OVERRIDE_COMPONENTS = [
         :@override,
         :@role_override,
@@ -139,13 +138,10 @@ class Chef
        :values,
        :values_at,
        :zip].each do |delegated_method|
-         class_eval(<<-METHOD_DEFN)
-            def #{delegated_method}(*args, &block)
-              merged_attributes.send(:#{delegated_method}, *args, &block)
-            end
-         METHOD_DEFN
+         define_method(delegated_method) do |*args, &block|
+           merged_attributes.send(delegated_method, *args, &block)
+         end
        end
-
 
        # return the cookbook level default attribute component
        attr_reader :default
@@ -158,11 +154,6 @@ class Chef
 
        # return the force_default level attribute component
        attr_reader :force_default
-
-       # default! is the "advertised" method for force_default, but is
-       # implemented as an alias because instance variables can't (easily) have
-       # +!+ characters.
-       alias :default! :force_default
 
        # return the "normal" level attribute component
        attr_reader :normal
@@ -179,13 +170,21 @@ class Chef
        # return the force override level attribute component
        attr_reader :force_override
 
-       # +override!+ is the "advertised" method for +force_override+ but is
-       # implemented as an alias because instance variables can't easily have
-       # +!+ characters.
-       alias :override! :force_override
-
        # return the automatic level attribute component
        attr_reader :automatic
+
+       # This is used to track the top level key as we descend through method chaining into
+       # a precedence level (e.g. node.default['foo']['bar']['baz']= results in 'foo' here).  We
+       # need this so that when we hit the end of a method chain which results in a mutator method
+       # that we can invalidate the whole top-level deep merge cache for the top-level key.  It is
+       # the responsibility of the accessor on the Chef::Node object to reset this to nil, and then
+       # the first VividMash#[] call can ||= and set this to the first key we encounter.
+       attr_accessor :top_level_breadcrumb
+
+       # Cache of deep merged values by top-level key.  This is a simple hash which has keys that are the
+       # top-level keys of the node object, and we save the computed deep-merge for that key here.  There is
+       # no cache of subtrees.
+       attr_accessor :deep_merge_cache
 
        def initialize(normal, default, override, automatic)
          @set_unless_present = false
@@ -207,6 +206,8 @@ class Chef
          @merged_attributes = nil
          @combined_override = nil
          @combined_default = nil
+         @top_level_breadcrumb = nil
+         @deep_merge_cache = {}
        end
 
        # Debug what's going on with an attribute. +args+ is a path spec to the
@@ -242,13 +243,16 @@ class Chef
          @set_unless_present = setting
        end
 
-       # Clears merged_attributes, which will cause it to be recomputed on the
-       # next access.
-       def reset_cache
-         @merged_attributes = nil
-         @combined_default  = nil
-         @combined_override = nil
-         @set_unless_present = false
+       # Invalidate a key in the deep_merge_cache.  If called with nil, or no arg, this will invalidate
+       # the entire deep_merge cache.  In the case of the user doing node.default['foo']['bar']['baz']=
+       # that eventually results in a call to reset_cache('foo') here.  A node.default=hash_thing call
+       # must invalidate the entire cache and re-deep-merge the entire node object.
+       def reset_cache(path = nil)
+         if path.nil?
+           @deep_merge_cache = {}
+         else
+           deep_merge_cache.delete(path.to_s)
+         end
        end
 
        alias :reset :reset_cache
@@ -311,30 +315,136 @@ class Chef
          @automatic = VividMash.new(self, new_data)
        end
 
-       def merged_attributes
-         @merged_attributes ||= begin
-                                  components = [merge_defaults, @normal, merge_overrides, @automatic]
-                                  resolved_attrs = components.inject(Mash.new) do |merged, component|
-                                    Chef::Mixin::DeepMerge.hash_only_merge(merged, component)
-                                  end
-                                  immutablize(resolved_attrs)
-                                end
+       #
+       # Deleting attributes
+       #
+
+       # clears attributes from all precedence levels
+       def rm(*args)
+         reset(args[0])
+         # just easier to compute our retval, rather than collect+merge sub-retvals
+         ret = args.inject(merged_attributes) do |attr, arg|
+           if attr.nil? || !attr.respond_to?(:[])
+             nil
+           else
+             begin
+               attr[arg]
+             rescue TypeError
+               raise TypeError, "Wrong type in index of attribute (did you use a Hash index on an Array?)"
+             end
+           end
+         end
+         rm_default(*args)
+         rm_normal(*args)
+         rm_override(*args)
+         ret
        end
 
-       def combined_override
-         @combined_override ||= immutablize(merge_overrides)
+       # does <level>['foo']['bar'].delete('baz')
+       def remove_from_precedence_level(level, *args, key)
+         multimash = level.element(*args)
+         multimash.nil? ? nil : multimash.delete(key)
        end
 
-       def combined_default
-         @combined_default ||= immutablize(merge_defaults)
+       private :remove_from_precedence_level
+
+       # clears attributes from all default precedence levels
+       #
+       # equivalent to: force_default!['foo']['bar'].delete('baz')
+       def rm_default(*args)
+         reset(args[0])
+         remove_from_precedence_level(force_default!(autovivify: false), *args)
+       end
+
+       # clears attributes from normal precedence
+       #
+       # equivalent to: normal!['foo']['bar'].delete('baz')
+       def rm_normal(*args)
+         reset(args[0])
+         remove_from_precedence_level(normal!(autovivify: false), *args)
+       end
+
+       # clears attributes from all override precedence levels
+       #
+       # equivalent to: force_override!['foo']['bar'].delete('baz')
+       def rm_override(*args)
+         reset(args[0])
+         remove_from_precedence_level(force_override!(autovivify: false), *args)
+       end
+
+       #
+       # Replacing attributes without merging
+       #
+
+       # sets default attributes without merging
+       def default!(opts={})
+         # FIXME: do not flush whole cache
+         reset
+         MultiMash.new(self, @default, [], opts)
+       end
+
+       # sets normal attributes without merging
+       def normal!(opts={})
+         # FIXME: do not flush whole cache
+         reset
+         MultiMash.new(self, @normal, [], opts)
+       end
+
+       # sets override attributes without merging
+       def override!(opts={})
+         # FIXME: do not flush whole cache
+         reset
+         MultiMash.new(self, @override, [], opts)
+       end
+
+       # clears from all default precedence levels and then sets force_default
+       def force_default!(opts={})
+         # FIXME: do not flush whole cache
+         reset
+         MultiMash.new(self, @force_default, [@default, @env_default, @role_default], opts)
+       end
+
+       # clears from all override precedence levels and then sets force_override
+       def force_override!(opts={})
+         # FIXME: do not flush whole cache
+         reset
+         MultiMash.new(self, @force_override, [@override, @env_override, @role_override], opts)
+       end
+
+       #
+       # Accessing merged attributes.
+       #
+       # Note that merged_attributes('foo', 'bar', 'baz') can be called to compute only the
+       # deep merge of node['foo']['bar']['baz'], but in practice we currently always compute
+       # all of node['foo'] even if the user only requires node['foo']['bar']['baz'].
+       #
+
+       def merged_attributes(*path)
+        # immutablize(
+           merge_all(path)
+        # )
+       end
+
+       def combined_override(*path)
+         immutablize(merge_overrides(path))
+       end
+
+       def combined_default(*path)
+         immutablize(merge_defaults(path))
        end
 
        def [](key)
-         merged_attributes[key]
+         if deep_merge_cache.has_key?(key.to_s)
+           # return the cache of the deep merged values by top-level key
+           deep_merge_cache[key.to_s]
+         else
+           # save all the work of computing node[key]
+           deep_merge_cache[key.to_s] = merged_attributes(key)
+         end
        end
 
        def []=(key, value)
-         merged_attributes[key] = value
+         raise Exceptions::ImmutableAttributeModification
        end
 
        def has_key?(key)
@@ -377,20 +487,94 @@ class Chef
 
        private
 
-       def merge_defaults
-         DEFAULT_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
-           component_value = instance_variable_get(component_ivar)
-           Chef::Mixin::DeepMerge.merge(merged, component_value)
+       # Helper method for merge_all/merge_defaults/merge_overrides.
+       #
+       # apply_path(thing, [ "foo", "bar", "baz" ]) = thing["foo"]["bar"]["baz"]
+       #
+       # The path value can be nil in which case the whole component is returned.
+       #
+       # It returns nil (does not raise an exception) if it walks off the end of an Mash/Hash/Array, it does not
+       # raise any TypeError if it attempts to apply a hash key to an Integer/String/TrueClass, and just returns
+       # nil in that case.
+       #
+       def apply_path(component, path)
+         path ||= []
+         path.inject(component) do |val, path_arg|
+           if val.respond_to?(:[])
+             # Have an Array-like or Hash-like thing
+             if !val.respond_to?(:has_key?)
+               # Have an Array-like thing
+               val[path_arg]
+             elsif val.has_key?(path_arg)
+               # Hash-like thing (must check has_key? first to protect against Autovivification)
+               val[path_arg]
+             else
+               nil
+             end
+           else
+             nil
+           end
          end
        end
 
-       def merge_overrides
-         OVERRIDE_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
-           component_value = instance_variable_get(component_ivar)
-           Chef::Mixin::DeepMerge.merge(merged, component_value)
+       # For elements like Fixnums, true, nil...
+       def safe_dup(e)
+         e.dup
+       rescue TypeError
+         e
+       end
+
+       # Deep merge all attribute levels using hash-only merging between different precidence
+       # levels (so override arrays completely replace arrays set at any default level).
+       #
+       # The path allows for selectively deep-merging a subtree of the node object.
+       #
+       # @param path [Array] Array of args to method chain to descend into the node object
+       # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
+       def merge_all(path)
+         components = [
+           merge_defaults(path),
+           apply_path(@normal, path),
+           merge_overrides(path),
+           apply_path(@automatic, path),
+         ]
+
+         components.map! do |component|
+           safe_dup(component)
+         end
+
+         return nil if components.compact.empty?
+
+         components.inject(ImmutableMash.new({})) do |merged, component|
+           Chef::Mixin::DeepMerge.hash_only_merge!(merged, component)
          end
        end
 
+       # Deep merge the default attribute levels with array merging.
+       #
+       # The path allows for selectively deep-merging a subtree of the node object.
+       #
+       # @param path [Array] Array of args to method chain to descend into the node object
+       # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
+       def merge_defaults(path)
+         DEFAULT_COMPONENTS.inject(nil) do |merged, component_ivar|
+           component_value = apply_path(instance_variable_get(component_ivar), path)
+           Chef::Mixin::DeepMerge.deep_merge(component_value, merged)
+         end
+       end
+
+       # Deep merge the override attribute levels with array merging.
+       #
+       # The path allows for selectively deep-merging a subtree of the node object.
+       #
+       # @param path [Array] Array of args to method chain to descend into the node object
+       # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
+       def merge_overrides(path)
+         OVERRIDE_COMPONENTS.inject(nil) do |merged, component_ivar|
+           component_value = apply_path(instance_variable_get(component_ivar), path)
+           Chef::Mixin::DeepMerge.deep_merge(component_value, merged)
+         end
+       end
 
     end
 

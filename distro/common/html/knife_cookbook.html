@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -56,7 +56,7 @@
 <p>The <strong>knife cookbook</strong> subcommand is used to interact with cookbooks that are located on the Chef server or the local chef-repo.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <div class="section" id="bulk-delete">
 <h2>bulk delete<a class="headerlink" href="#bulk-delete" title="Permalink to this headline">¶</a></h2>
@@ -78,7 +78,7 @@
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Bulk delete many cookbooks</strong></p>
 <p>Use a regular expression to define the pattern used to bulk delete cookbooks:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook bulk delete <span class="s2">&quot;^[0-9]{3}$&quot;</span> -p
@@ -123,14 +123,14 @@
 <dt><tt class="docutils literal"><span class="pre">-m</span> <span class="pre">EMAIL</span></tt>, <tt class="docutils literal"><span class="pre">--email</span> <span class="pre">EMAIL</span></tt></dt>
 <dd>The email address for the individual who maintains the cookbook. This option will place an email address in each of the pre-created files. If this option is not specified, an email name of &#8220;your_email&#8221; will be used instead; it can be easily modified later.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">PATH</span></tt>, <tt class="docutils literal"><span class="pre">--cookbook-path</span> <span class="pre">PATH</span></tt></dt>
-<dd>The directory in which cookbook are created. This can be a colon-separated path.</dd>
+<dd>The directory in which cookbooks are created. This can be a colon-separated path.</dd>
 <dt><tt class="docutils literal"><span class="pre">-r</span> <span class="pre">FORMAT</span></tt>, <tt class="docutils literal"><span class="pre">--readme-format</span> <span class="pre">FORMAT</span></tt></dt>
 <dd>The document format of the readme file: <tt class="docutils literal"><span class="pre">md</span></tt> (markdown) and <tt class="docutils literal"><span class="pre">rdoc</span></tt> (Ruby docs).</dd>
 </dl>
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create a cookbook</strong></p>
 <p>To create a cookbook named &#8220;my_cookbook&#8221; with copyright, email, license, and readme format options specified, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook create my_cookbook -C <span class="s2">&quot;My Name&quot;</span> -m <span class="s2">&quot;my@email.com&quot;</span> -I apachev2 -r md
@@ -161,14 +161,14 @@
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
 <dd>Use to delete all cookbooks (and cookbook versions).</dd>
 <dt><tt class="docutils literal"><span class="pre">COOKBOOK_VERSION</span></tt></dt>
-<dd>The version of a cookbook to be deleted. If a cookbook has only one version, this option does not need to be specified. If a cookbook has more than one version and this option is not specified, Knife will prompt for a version.</dd>
+<dd>The version of a cookbook to be deleted. If a cookbook has only one version, this option does not need to be specified. If a cookbook has more than one version and this option is not specified, knife will prompt for a version.</dd>
 <dt><tt class="docutils literal"><span class="pre">-p</span></tt>, <tt class="docutils literal"><span class="pre">--purge</span></tt></dt>
 <dd>Use to entirely remove a cookbook (or cookbook version) from the Chef server. This action should be used carefully because only one copy of any single file is stored on the Chef server. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
 <h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Delete a cookbook</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook delete cookbook_name version
 </pre></div>
@@ -195,7 +195,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-d</span> <span class="pre">DOWNLOAD_DIRECTORY</span></tt>, <tt class="docutils literal"><span class="pre">--dir</span> <span class="pre">DOWNLOAD_DIRECTORY</span></tt></dt>
-<dd>The directory into which a cookbook will be downloaded.</dd>
+<dd>The directory in which cookbooks are located.</dd>
 <dt><tt class="docutils literal"><span class="pre">-f</span></tt>, <tt class="docutils literal"><span class="pre">--force</span></tt></dt>
 <dd>Use to overwrite an existing directory.</dd>
 <dt><tt class="docutils literal"><span class="pre">-N</span></tt>, <tt class="docutils literal"><span class="pre">--latest</span></tt></dt>
@@ -204,7 +204,7 @@
 </div>
 <div class="section" id="id9">
 <h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Download a cookbook</strong></p>
 <p>To download a cookbook named &#8220;smartmon&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook download smartmon
@@ -234,7 +234,7 @@
 </div>
 <div class="section" id="id12">
 <h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>View a list of cookbooks</strong></p>
 <p>To view a list of cookbooks:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook list
@@ -259,12 +259,12 @@
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
 <dd>Use to generate metadata for all cookbooks.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">PATH:PATH</span></tt>, <tt class="docutils literal"><span class="pre">--cookbook-path</span> <span class="pre">PATH:PATH</span></tt></dt>
-<dd>The directory in which cookbook are created. This can be a colon-separated path.</dd>
+<dd>The directory in which cookbooks are created. This can be a colon-separated path.</dd>
 </dl>
 </div>
 <div class="section" id="id15">
 <h3>Examples<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Generate metadata</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook metadata -a
 </pre></div>
@@ -287,7 +287,7 @@
 </div>
 <div class="section" id="id18">
 <h3>Examples<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>View metadata</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook metadata from file /path/to/file
 </pre></div>
@@ -326,7 +326,7 @@
 </div>
 <div class="section" id="id21">
 <h3>Examples<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Show cookbook data</strong></p>
 <p>To get the list of available versions of a cookbook named &#8220;getting-started&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook show getting-started
@@ -395,12 +395,12 @@ url:          https://someurlhere.com
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
 <dd>Use to test all cookbooks.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">PATH:PATH</span></tt>, <tt class="docutils literal"><span class="pre">--cookbook-path</span> <span class="pre">PATH:PATH</span></tt></dt>
-<dd>The directory in which cookbook are created. This can be a colon-separated path.</dd>
+<dd>The directory in which cookbooks are created. This can be a colon-separated path.</dd>
 </dl>
 </div>
 <div class="section" id="id24">
 <h3>Examples<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Test a cookbook</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook <span class="nb">test </span>cookbook_name
 </pre></div>
@@ -442,12 +442,12 @@ url:          https://someurlhere.com
 <dt><tt class="docutils literal"><span class="pre">--freeze</span></tt></dt>
 <dd>Use to require changes to a cookbook be included as a new version. Only the <tt class="docutils literal"><span class="pre">--force</span></tt> option can override this setting.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">PATH:PATH</span></tt>, <tt class="docutils literal"><span class="pre">--cookbook-path</span> <span class="pre">PATH:PATH</span></tt></dt>
-<dd>The directory in which cookbook are created. This can be a colon-separated path.</dd>
+<dd>The directory in which cookbooks are created. This can be a colon-separated path.</dd>
 </dl>
 </div>
 <div class="section" id="id27">
 <h3>Examples<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Upload a cookbook</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook upload cookbook_name
 </pre></div>
@@ -462,7 +462,7 @@ url:          https://someurlhere.com
 Upload completed
 </pre></div>
 </div>
-<p>If a cookbook is frozen and the <tt class="docutils literal"><span class="pre">--force</span></tt> option is not specified, Knife will return an error message similar to the following:</p>
+<p>If a cookbook is frozen and the <tt class="docutils literal"><span class="pre">--force</span></tt> option is not specified, knife will return an error message similar to the following:</p>
 <div class="highlight-bash"><div class="highlight"><pre>Uploading redis...
 ERROR: Version 0.1.6 of cookbook redis is frozen. Use --force to override.
 </pre></div>

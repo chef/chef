@@ -27,7 +27,7 @@ class Chef
     class Template < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      provides :template, :on_platforms => :all
+      provides :template
 
       attr_reader :inline_helper_blocks
       attr_reader :inline_helper_modules
@@ -40,7 +40,6 @@ class Chef
         @cookbook = nil
         @local = false
         @variables = Hash.new
-        @provider = Chef::Provider::Template
         @inline_helper_blocks = {}
         @inline_helper_modules = []
         @helper_modules = []
@@ -50,7 +49,7 @@ class Chef
         set_or_return(
           :source,
           file,
-          :kind_of => [ String ]
+          :kind_of => [ String, Array ]
         )
       end
 
@@ -103,9 +102,8 @@ class Chef
       #
       # ==== Method Arguments:
       # Helper methods can also take arguments. The syntax available for
-      # argument specification will be dependent on ruby version. Ruby 1.8 only
-      # supports a subset of the argument specification syntax available for
-      # method definition, whereas 1.9 supports the full syntax.
+      # argument specification supports full syntax available for method
+      # definition.
       #
       # Continuing the above example of simplifying attribute access, we can
       # define a helper to look up app-specific attributes like this:

@@ -28,89 +28,89 @@ describe Chef::User do
 
   describe "initialize" do
     it "should be a Chef::User" do
-      @user.should be_a_kind_of(Chef::User)
+      expect(@user).to be_a_kind_of(Chef::User)
     end
   end
 
   describe "name" do
     it "should let you set the name to a string" do
-      @user.name("ops_master").should == "ops_master"
+      expect(@user.name("ops_master")).to eq("ops_master")
     end
 
     it "should return the current name" do
       @user.name "ops_master"
-      @user.name.should == "ops_master"
+      expect(@user.name).to eq("ops_master")
     end
 
     # It is not feasible to check all invalid characters.  Here are a few
     # that we probably care about.
     it "should not accept invalid characters" do
       # capital letters
-      lambda { @user.name "Bar" }.should raise_error(ArgumentError)
+      expect { @user.name "Bar" }.to raise_error(ArgumentError)
       # slashes
-      lambda { @user.name "foo/bar" }.should raise_error(ArgumentError)
+      expect { @user.name "foo/bar" }.to raise_error(ArgumentError)
       # ?
-      lambda { @user.name "foo?" }.should raise_error(ArgumentError)
+      expect { @user.name "foo?" }.to raise_error(ArgumentError)
       # &
-      lambda { @user.name "foo&" }.should raise_error(ArgumentError)
+      expect { @user.name "foo&" }.to raise_error(ArgumentError)
     end
 
 
     it "should not accept spaces" do
-      lambda { @user.name "ops master" }.should raise_error(ArgumentError)
+      expect { @user.name "ops master" }.to raise_error(ArgumentError)
     end
 
     it "should throw an ArgumentError if you feed it anything but a string" do
-      lambda { @user.name Hash.new }.should raise_error(ArgumentError)
+      expect { @user.name Hash.new }.to raise_error(ArgumentError)
     end
   end
 
   describe "admin" do
     it "should let you set the admin bit" do
-      @user.admin(true).should == true
+      expect(@user.admin(true)).to eq(true)
     end
 
     it "should return the current admin value" do
       @user.admin true
-      @user.admin.should == true
+      expect(@user.admin).to eq(true)
     end
 
     it "should default to false" do
-      @user.admin.should == false
+      expect(@user.admin).to eq(false)
     end
 
     it "should throw an ArgumentError if you feed it anything but true or false" do
-      lambda { @user.name Hash.new }.should raise_error(ArgumentError)
+      expect { @user.name Hash.new }.to raise_error(ArgumentError)
     end
   end
 
   describe "public_key" do
     it "should let you set the public key" do
-      @user.public_key("super public").should == "super public"
+      expect(@user.public_key("super public")).to eq("super public")
     end
 
     it "should return the current public key" do
       @user.public_key("super public")
-      @user.public_key.should == "super public"
+      expect(@user.public_key).to eq("super public")
     end
 
     it "should throw an ArgumentError if you feed it something lame" do
-      lambda { @user.public_key Hash.new }.should raise_error(ArgumentError)
+      expect { @user.public_key Hash.new }.to raise_error(ArgumentError)
     end
   end
 
   describe "private_key" do
     it "should let you set the private key" do
-      @user.private_key("super private").should == "super private"
+      expect(@user.private_key("super private")).to eq("super private")
     end
 
     it "should return the private key" do
       @user.private_key("super private")
-      @user.private_key.should == "super private"
+      expect(@user.private_key).to eq("super private")
     end
 
     it "should throw an ArgumentError if you feed it something lame" do
-      lambda { @user.private_key Hash.new }.should raise_error(ArgumentError)
+      expect { @user.private_key Hash.new }.to raise_error(ArgumentError)
     end
   end
 
@@ -122,37 +122,41 @@ describe Chef::User do
     end
 
     it "serializes as a JSON object" do
-      @json.should match(/^\{.+\}$/)
+      expect(@json).to match(/^\{.+\}$/)
     end
 
     it "includes the name value" do
-      @json.should include(%q{"name":"black"})
+      expect(@json).to include(%q{"name":"black"})
     end
 
     it "includes the public key value" do
-      @json.should include(%{"public_key":"crowes"})
+      expect(@json).to include(%{"public_key":"crowes"})
     end
 
     it "includes the 'admin' flag" do
-      @json.should include(%q{"admin":false})
+      expect(@json).to include(%q{"admin":false})
     end
 
     it "includes the private key when present" do
       @user.private_key("monkeypants")
-      @user.to_json.should include(%q{"private_key":"monkeypants"})
+      expect(@user.to_json).to include(%q{"private_key":"monkeypants"})
     end
 
     it "does not include the private key if not present" do
-      @json.should_not include("private_key")
+      expect(@json).not_to include("private_key")
     end
 
     it "includes the password if present" do
       @user.password "password"
-      @user.to_json.should include(%q{"password":"password"})
+      expect(@user.to_json).to include(%q{"password":"password"})
     end
 
     it "does not include the password if not present" do
-      @json.should_not include("password")
+      expect(@json).not_to include("password")
+    end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:jsonable) { @user }
     end
   end
 
@@ -163,31 +167,31 @@ describe Chef::User do
         "private_key" => "pandas",
         "password" => "password",
         "admin" => true }
-      @user = Chef::User.from_json(user.to_json)
+      @user = Chef::User.from_json(Chef::JSONCompat.to_json(user))
     end
 
     it "should deserialize to a Chef::User object" do
-      @user.should be_a_kind_of(Chef::User)
+      expect(@user).to be_a_kind_of(Chef::User)
     end
 
     it "preserves the name" do
-      @user.name.should == "mr_spinks"
+      expect(@user.name).to eq("mr_spinks")
     end
 
     it "preserves the public key" do
-      @user.public_key.should == "turtles"
+      expect(@user.public_key).to eq("turtles")
     end
 
     it "preserves the admin status" do
-      @user.admin.should be_true
+      expect(@user.admin).to be_truthy
     end
 
     it "includes the private key if present" do
-      @user.private_key.should == "pandas"
+      expect(@user.private_key).to eq("pandas")
     end
 
     it "includes the password if present" do
-      @user.password.should == "password"
+      expect(@user.password).to eq("password")
     end
 
   end
@@ -197,7 +201,7 @@ describe Chef::User do
       @user = Chef::User.new
       @user.name "foobar"
       @http_client = double("Chef::REST mock")
-      Chef::REST.stub(:new).and_return(@http_client)
+      allow(Chef::REST).to receive(:new).and_return(@http_client)
     end
 
     describe "list" do
@@ -205,61 +209,61 @@ describe Chef::User do
         Chef::Config[:chef_server_url] = "http://www.example.com"
         @osc_response = { "admin" => "http://www.example.com/users/admin"}
         @ohc_response = [ { "user" => { "username" => "admin" }} ]
-        Chef::User.stub(:load).with("admin").and_return(@user)
+        allow(Chef::User).to receive(:load).with("admin").and_return(@user)
         @osc_inflated_response = { "admin" => @user }
       end
 
       it "lists all clients on an OSC server" do
-        @http_client.stub(:get_rest).with("users").and_return(@osc_response)
-        Chef::User.list.should == @osc_response
+        allow(@http_client).to receive(:get_rest).with("users").and_return(@osc_response)
+        expect(Chef::User.list).to eq(@osc_response)
       end
 
       it "inflate all clients on an OSC server" do
-        @http_client.stub(:get_rest).with("users").and_return(@osc_response)
-        Chef::User.list(true).should == @osc_inflated_response
+        allow(@http_client).to receive(:get_rest).with("users").and_return(@osc_response)
+        expect(Chef::User.list(true)).to eq(@osc_inflated_response)
       end
 
       it "lists all clients on an OHC/OPC server" do
-        @http_client.stub(:get_rest).with("users").and_return(@ohc_response)
+        allow(@http_client).to receive(:get_rest).with("users").and_return(@ohc_response)
         # We expect that Chef::User.list will give a consistent response
         # so OHC API responses should be transformed to OSC-style output.
-        Chef::User.list.should == @osc_response
+        expect(Chef::User.list).to eq(@osc_response)
       end
 
       it "inflate all clients on an OHC/OPC server" do
-        @http_client.stub(:get_rest).with("users").and_return(@ohc_response)
-        Chef::User.list(true).should == @osc_inflated_response
+        allow(@http_client).to receive(:get_rest).with("users").and_return(@ohc_response)
+        expect(Chef::User.list(true)).to eq(@osc_inflated_response)
       end
     end
 
     describe "create" do
       it "creates a new user via the API" do
         @user.password "password"
-        @http_client.should_receive(:post_rest).with("users", {:name => "foobar", :admin => false, :password => "password"}).and_return({})
+        expect(@http_client).to receive(:post_rest).with("users", {:name => "foobar", :admin => false, :password => "password"}).and_return({})
         @user.create
       end
     end
 
     describe "read" do
       it "loads a named user from the API" do
-        @http_client.should_receive(:get_rest).with("users/foobar").and_return({"name" => "foobar", "admin" => true, "public_key" => "pubkey"})
+        expect(@http_client).to receive(:get_rest).with("users/foobar").and_return({"name" => "foobar", "admin" => true, "public_key" => "pubkey"})
         user = Chef::User.load("foobar")
-        user.name.should == "foobar"
-        user.admin.should == true
-        user.public_key.should == "pubkey"
+        expect(user.name).to eq("foobar")
+        expect(user.admin).to eq(true)
+        expect(user.public_key).to eq("pubkey")
       end
     end
 
     describe "update" do
       it "updates an existing user on via the API" do
-        @http_client.should_receive(:put_rest).with("users/foobar", {:name => "foobar", :admin => false}).and_return({})
+        expect(@http_client).to receive(:put_rest).with("users/foobar", {:name => "foobar", :admin => false}).and_return({})
         @user.update
       end
     end
 
     describe "destroy" do
       it "deletes the specified user via the API" do
-        @http_client.should_receive(:delete_rest).with("users/foobar")
+        expect(@http_client).to receive(:delete_rest).with("users/foobar")
         @user.destroy
       end
     end

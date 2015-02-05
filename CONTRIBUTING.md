@@ -11,9 +11,7 @@ We utilize **Github Issues** for issue tracking and contributions. You can contr
 
 We have a 3 step process that utilizes **Github Issues**:
 
-1. Sign our
-  [Individual Contributor License Agreement (CLA)](https://supermarket.getchef.com/icla-signatures/new)
-  or [Corporate CLA](https://supermarket.getchef.com/ccla-signatures/new) online once.
+1. Sign or be added to an existing [Contributor License Agreement (CLA)](https://supermarket.getchef.com/become-a-contributor).
 2. Create a Github Pull Request.
 3. Do [Code Review](#cr) with the **Chef Engineering Team** or **Chef Core Committers** on the pull request.
 
@@ -130,6 +128,9 @@ If you are familiar with Chef and know the component that is causing you a probl
   Github project. All of our Open Source Software can be found in our
   [Github organization](https://github.com/opscode/).
 
+There is also a listing of the various Chef products and where to file issues that can be
+  found in the Chef docs in the [community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
+
 Otherwise you can file your issue in the [Chef project](https://github.com/opscode/chef/issues)
   and we will make sure it gets filed against the appropriate project.
 
@@ -161,12 +162,21 @@ In order to decrease the back and forth an issues and help us get to the bottom 
 [What actually happens after the reproduction steps?]
 ```
 
+### Useful Github Queries
+
+Contributions go through a review process to improve code quality and avoid regressions. Managing a large number of contributions requires a workflow to provide queues for work such as triage, code review, and merging. A semi-formal process has evolved over the life of the project. Chef maintains this process pending community development and acceptance of an [RFC](https://github.com/opscode/chef-rfc). These queries will help track contributions through this process:
+
+* [Issues that are not assigned to a team](https://github.com/opscode/chef/issues?q=is%3Aopen+-label%3AAIX+-label%3ABSD+-label%3Awindows+-label%3A%22Chef+Core%22++-label%3A%22Dev+Tools%22+-label%3AUbuntu+-label%3A%22Enterprise+Linux%22+-label%3A%22Ready+For+Merge%22+-label%3AMac+-label%3ASolaris+)
+* [Untriaged Issues](https://github.com/opscode/chef/issues?q=is%3Aopen+is%3Aissue+-label%3ABug+-label%3AEnhancement+-label%3A%22Tech+Cleanup%22+-label%3A%22Ready+For+Merge%22)
+* [PRs to be Reviewed](https://github.com/opscode/chef/labels/Pending%20Maintainer%20Review)
+* [Suitable for First Contribution](https://github.com/opscode/chef/labels/Easy)
+
 ## <a name="release"></a> Chef Release Cycles
 
 Our primary shipping vehicle is operating system specific packages that includes
   all the requirements of Chef. We call these [Omnibus packages](https://github.com/opscode/omnibus-ruby)
 
-We also release our software as gems to [Rubygems](http://rubygems.org/) but we strongly
+We also release our software as gems to [Rubygems](https://rubygems.org/) but we strongly
   recommend using Chef packages since they are the only combination of native libraries &
   gems required by Chef that we test throughly.
 

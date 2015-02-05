@@ -27,11 +27,21 @@ class Chef
       class Upstart < Chef::Provider::Service::Simple
         UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
 
+        provides :service, os: "linux"
+
+        def self.provides?(node, resource)
+          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
+        end
+
+        def self.supports?(resource, action)
+          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
+        end
+
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.
         # In chef, when we ask a service to start, we expect it to have started before performing the next step
         # since we have top down dependencies. Which is to say we may follow witha resource next that requires
         # that service to be running. According to [2] we can trust that sending a 'goal' such as start will not
-        # return until that 'goal' is reached, or some error has occured.
+        # return until that 'goal' is reached, or some error has occurred.
         #
         # [1] http://upstart.ubuntu.com/wiki/JobStates
         # [2] http://www.netsplit.com/2008/04/27/upstart-05-events/
@@ -97,10 +107,10 @@ class Chef
             Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
             begin
-              if run_command_with_systems_locale(:command => @new_resource.status_command) == 0
+              if shell_out!(@new_resource.status_command) == 0
                 @current_resource.running true
               end
-            rescue Chef::Exceptions::Exec
+            rescue
               @command_success = false
               @current_resource.running false
               nil
@@ -153,7 +163,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              run_command_with_systems_locale(:command => "/sbin/start #{@job}")
+              shell_out_with_systems_locale!("/sbin/start #{@job}")
             end
           end
         end
@@ -167,7 +177,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              run_command_with_systems_locale(:command => "/sbin/stop #{@job}")
+              shell_out_with_systems_locale!("/sbin/stop #{@job}")
             end
           end
         end
@@ -179,7 +189,7 @@ class Chef
           # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
           else
             if @current_resource.running
-              run_command_with_systems_locale(:command => "/sbin/restart #{@job}")
+              shell_out_with_systems_locale!("/sbin/restart #{@job}")
             else
               start_service
             end
@@ -191,7 +201,7 @@ class Chef
             super
           else
             # upstart >= 0.6.3-4 supports reload (HUP)
-            run_command_with_systems_locale(:command => "/sbin/reload #{@job}")
+            shell_out_with_systems_locale!("/sbin/reload #{@job}")
           end
         end
 

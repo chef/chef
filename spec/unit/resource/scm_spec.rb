@@ -26,137 +26,141 @@ describe Chef::Resource::Scm do
   end
 
   it "should be a SCM resource" do
-    @resource.should be_a_kind_of(Chef::Resource::Scm)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Scm)
   end
 
   it "supports :checkout, :export, :sync, :diff, and :log actions" do
-    @resource.allowed_actions.should include(:checkout)
-    @resource.allowed_actions.should include(:export)
-    @resource.allowed_actions.should include(:sync)
-    @resource.allowed_actions.should include(:diff)
-    @resource.allowed_actions.should include(:log)
+    expect(@resource.allowed_actions).to include(:checkout)
+    expect(@resource.allowed_actions).to include(:export)
+    expect(@resource.allowed_actions).to include(:sync)
+    expect(@resource.allowed_actions).to include(:diff)
+    expect(@resource.allowed_actions).to include(:log)
   end
 
   it "takes the destination path as a string" do
     @resource.destination "/path/to/deploy/dir"
-    @resource.destination.should eql("/path/to/deploy/dir")
+    expect(@resource.destination).to eql("/path/to/deploy/dir")
   end
 
   it "takes a string for the repository URL" do
     @resource.repository "git://github.com/opscode/chef.git"
-    @resource.repository.should eql("git://github.com/opscode/chef.git")
+    expect(@resource.repository).to eql("git://github.com/opscode/chef.git")
   end
 
   it "takes a string for the revision" do
     @resource.revision "abcdef"
-    @resource.revision.should eql("abcdef")
+    expect(@resource.revision).to eql("abcdef")
   end
 
   it "defaults to the ``HEAD'' revision" do
-    @resource.revision.should eql("HEAD")
+    expect(@resource.revision).to eql("HEAD")
   end
 
   it "takes a string for the user to run as" do
     @resource.user "dr_deploy"
-    @resource.user.should eql("dr_deploy")
+    expect(@resource.user).to eql("dr_deploy")
   end
 
   it "also takes an integer for the user to run as" do
     @resource.user 0
-    @resource.user.should eql(0)
+    expect(@resource.user).to eql(0)
   end
 
   it "takes a string for the group to run as, defaulting to nil" do
-    @resource.group.should be_nil
+    expect(@resource.group).to be_nil
     @resource.group "opsdevs"
-    @resource.group.should == "opsdevs"
+    expect(@resource.group).to eq("opsdevs")
   end
 
   it "also takes an integer for the group to run as" do
     @resource.group 23
-    @resource.group.should == 23
+    expect(@resource.group).to eq(23)
   end
 
   it "has a svn_username String attribute" do
     @resource.svn_username "moartestsplz"
-    @resource.svn_username.should eql("moartestsplz")
+    expect(@resource.svn_username).to eql("moartestsplz")
   end
 
   it "has a svn_password String attribute" do
     @resource.svn_password "taftplz"
-    @resource.svn_password.should eql("taftplz")
+    expect(@resource.svn_password).to eql("taftplz")
   end
 
   it "has a svn_arguments String attribute" do
     @resource.svn_arguments "--more-taft plz"
-    @resource.svn_arguments.should eql("--more-taft plz")
+    expect(@resource.svn_arguments).to eql("--more-taft plz")
   end
 
   it "has a svn_info_args String attribute" do
-    @resource.svn_info_args.should be_nil
+    expect(@resource.svn_info_args).to be_nil
     @resource.svn_info_args("--no-moar-plaintext-creds yep")
-    @resource.svn_info_args.should == "--no-moar-plaintext-creds yep"
+    expect(@resource.svn_info_args).to eq("--no-moar-plaintext-creds yep")
   end
 
   it "takes the depth as an integer for shallow clones" do
     @resource.depth 5
-    @resource.depth.should == 5
-    lambda {@resource.depth "five"}.should raise_error(ArgumentError)
+    expect(@resource.depth).to eq(5)
+    expect {@resource.depth "five"}.to raise_error(ArgumentError)
   end
 
   it "defaults to nil depth for a full clone" do
-    @resource.depth.should be_nil
+    expect(@resource.depth).to be_nil
   end
 
   it "takes a boolean for #enable_submodules" do
     @resource.enable_submodules true
-    @resource.enable_submodules.should be_true
-    lambda {@resource.enable_submodules "lolz"}.should raise_error(ArgumentError)
+    expect(@resource.enable_submodules).to be_truthy
+    expect {@resource.enable_submodules "lolz"}.to raise_error(ArgumentError)
   end
 
   it "defaults to not enabling submodules" do
-    @resource.enable_submodules.should be_false
+    expect(@resource.enable_submodules).to be_falsey
   end
 
   it "takes a boolean for #enable_checkout" do
     @resource.enable_checkout true
-    @resource.enable_checkout.should be_true
-    lambda {@resource.enable_checkout "lolz"}.should raise_error(ArgumentError)
+    expect(@resource.enable_checkout).to be_truthy
+    expect {@resource.enable_checkout "lolz"}.to raise_error(ArgumentError)
   end
 
   it "defaults to enabling checkout" do
-    @resource.enable_checkout.should be_true
+    expect(@resource.enable_checkout).to be_truthy
   end
 
   it "takes a string for the remote" do
     @resource.remote "opscode"
-    @resource.remote.should eql("opscode")
-    lambda {@resource.remote 1337}.should raise_error(ArgumentError)
+    expect(@resource.remote).to eql("opscode")
+    expect {@resource.remote 1337}.to raise_error(ArgumentError)
   end
 
   it "defaults to ``origin'' for the remote" do
-    @resource.remote.should == "origin"
+    expect(@resource.remote).to eq("origin")
   end
 
   it "takes a string for the ssh wrapper" do
     @resource.ssh_wrapper "with_ssh_fu"
-    @resource.ssh_wrapper.should eql("with_ssh_fu")
+    expect(@resource.ssh_wrapper).to eql("with_ssh_fu")
   end
 
   it "defaults to nil for the ssh wrapper" do
-    @resource.ssh_wrapper.should be_nil
+    expect(@resource.ssh_wrapper).to be_nil
+  end
+
+  it "defaults to nil for the environment" do
+    expect(@resource.environment).to be_nil
   end
 
   describe "when it has a timeout attribute" do
     let(:ten_seconds) { 10 }
     before { @resource.timeout(ten_seconds) }
     it "stores this timeout" do
-      @resource.timeout.should == ten_seconds
+      expect(@resource.timeout).to eq(ten_seconds)
     end
   end
   describe "when it has no timeout attribute" do
     it "should have no default timeout" do
-      @resource.timeout.should be_nil
+      expect(@resource.timeout).to be_nil
     end
   end
 
@@ -171,12 +175,19 @@ describe Chef::Resource::Scm do
 
     it "describes its state" do
       state = @resource.state
-      state[:revision].should == "1.2.3"
+      expect(state[:revision]).to eq("1.2.3")
     end
 
     it "returns the destination as its identity" do
-      @resource.identity.should == "hell"
+      expect(@resource.identity).to eq("hell")
     end
   end
 
+  describe "when it has a environment attribute" do
+    let(:test_environment) { {'CHEF_ENV' => '/tmp' } }
+    before { @resource.environment(test_environment) }
+    it "stores this environment" do
+      expect(@resource.environment).to eq(test_environment)
+    end
+  end
 end

@@ -25,8 +25,11 @@ class Chef
     class Package
       class Windows < Chef::Provider::Package
 
-        # Depending on the installer, we may need to examine installer_type or 
-        # source attributes, or search for text strings in the installer file 
+        provides :package, os: "windows"
+        provides :windows_package, os: "windows"
+
+        # Depending on the installer, we may need to examine installer_type or
+        # source attributes, or search for text strings in the installer file
         # binary to determine the installer type for the user. Since the file
         # must be on disk to do so, we have to make this choice in the provider.
         require 'chef/provider/package/windows/msi.rb'

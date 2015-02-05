@@ -25,18 +25,21 @@ class Chef
   class Provider
     class Cron
       class Unix < Chef::Provider::Cron
+        include Chef::Mixin::ShellOut
 
         private
 
         def read_crontab
-          crontab = nil
-          status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
-            crontab = stdout.read
+          crontab = shell_out('/usr/bin/crontab -l', :user => @new_resource.user)
+          status = crontab.status.exitstatus
+
+          Chef::Log.debug crontab.format_for_exception if status > 0
+
+          if status > 1
+            raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status}"
           end
-          if status.exitstatus > 1
-            raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
-          end
-          crontab
+          return nil if status > 0
+          crontab.stdout.chomp << "\n"
         end
 
         def write_crontab(crontab)
@@ -47,8 +50,9 @@ class Chef
           exit_status = 0
           error_message = ""
           begin
-            status, stdout, stderr = run_command_and_return_stdout_stderr(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
-            exit_status = status.exitstatus
+            crontab_write = shell_out("/usr/bin/crontab #{tempcron.path}", :user => @new_resource.user)
+            stderr = crontab_write.stderr
+            exit_status = crontab_write.status.exitstatus
             # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(
             if stderr && stderr.include?("errors detected in input, no crontab file generated")
               error_message = stderr
