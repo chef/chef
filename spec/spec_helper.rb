@@ -164,6 +164,12 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Chef::Config.reset
+
+    # By default, treat deprecation warnings as errors in tests.
+    Chef::Config.treat_deprecation_warnings_as_errors(true)
+
+    # Set environment variable so the setting persists in child processes
+    ENV['CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS'] = "1"
   end
 
   config.before(:suite) do

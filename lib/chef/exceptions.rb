@@ -212,6 +212,8 @@ class Chef
 
     class NoProviderAvailable < RuntimeError; end
 
+    class DeprecatedFeatureError < RuntimeError; end
+
     class MissingRole < RuntimeError
       NULL = Object.new
 

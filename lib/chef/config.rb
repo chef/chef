@@ -499,6 +499,21 @@ class Chef
     # Deprecated:
     default(:cache_options) { { :path => PathHelper.join(file_cache_path, "checksums") } }
 
+    # Whether errors should be raised for deprecation warnings. When set to
+    # `false` (the default setting), a warning is emitted but code using
+    # deprecated methods/features/etc. should work normally otherwise. When set
+    # to `true`, usage of deprecated methods/features will raise a
+    # `DeprecatedFeatureError`. This is used by Chef's tests to ensure that
+    # deprecated functionality is not used internally by Chef.  End users
+    # should generally leave this at the default setting (especially in
+    # production), but it may be useful when testing cookbooks or other code if
+    # the user wishes to aggressively address deprecations.
+    default(:treat_deprecation_warnings_as_errors) do
+      # Using an environment variable allows this setting to be inherited in
+      # tests that spawn new processes.
+      ENV.key?("CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS")
+    end
+
     # knife configuration data
     config_context :knife do
       default :ssh_port, nil

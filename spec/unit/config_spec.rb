@@ -508,4 +508,43 @@ describe Chef::Config do
       end
     end
   end
+
+  describe "Treating deprecation warnings as errors" do
+
+    context "when using our default RSpec configuration" do
+
+      it "defaults to treating deprecation warnings as errors" do
+        expect(Chef::Config[:treat_deprecation_warnings_as_errors]).to be(true)
+      end
+
+      it "sets CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS environment variable" do
+        expect(ENV['CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS']).to eq("1")
+      end
+
+      it "treats deprecation warnings as errors in child processes when testing" do
+        # Doing a full integration test where we launch a child process is slow
+        # and liable to break for weird reasons (bundler env stuff, etc.), so
+        # we're just checking that the presence of the environment variable
+        # causes treat_deprecation_warnings_as_errors to be set to true after a
+        # config reset.
+        Chef::Config.reset
+        expect(Chef::Config[:treat_deprecation_warnings_as_errors]).to be(true)
+      end
+
+    end
+
+    context "outside of our test environment" do
+
+      before do
+        ENV.delete('CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS')
+        Chef::Config.reset
+      end
+
+      it "defaults to NOT treating deprecation warnings as errors" do
+        expect(Chef::Config[:treat_deprecation_warnings_as_errors]).to be(false)
+      end
+    end
+
+
+  end
 end
