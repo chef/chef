@@ -63,14 +63,27 @@ class Chef
       cookbook_manifest.update_from(new_manifest)
     end
 
+    def save_url
+      cookbook_manifest.save_url
+    end
+
+    def force_save_url
+      cookbook_manifest.force_save_url
+    end
+
+    def to_hash
+      cookbook_manifest.to_hash
+    end
+
+    def to_json(*a)
+      cookbook_manifest.to_json
+    end
+
     include Comparable
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
 
-    # TODO: deprecate setter
     attr_accessor :root_paths
-
-    # TODO: deprecate setter for all *_filenames, only used when consuming JSON
     attr_accessor :definition_filenames
     attr_accessor :template_filenames
     attr_accessor :file_filenames
@@ -81,8 +94,15 @@ class Chef
     attr_accessor :name
     attr_accessor :metadata_filenames
 
-    # TODO: unused, deprecate
-    attr_accessor :status
+    def status=(new_status)
+      Chef::Log.warn("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
+      @status = new_status
+    end
+
+    def status
+      Chef::Log.warn("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
+      @status
+    end
 
     # A Chef::Cookbook::Metadata object. It has a setter that fixes up the
     # metadata to add descriptions of the recipes contained in this
@@ -139,7 +159,7 @@ class Chef
       @metadata_filenames = Array.new
       @root_filenames = Array.new
 
-      # TODO: unused, deprecate.
+      # deprecated
       @status = :ready
       @file_vendor = nil
       @metadata = Chef::Cookbook::Metadata.new
@@ -448,19 +468,6 @@ class Chef
     end
     private :preferences_for_path
 
-    def to_hash
-      result = manifest.dup
-      result['frozen?'] = frozen_version?
-      result['chef_type'] = 'cookbook_version'
-      result.to_hash
-    end
-
-    def to_json(*a)
-      result = to_hash
-      result['json_class'] = self.class.name
-      Chef::JSONCompat.to_json(result, *a)
-    end
-
     def self.json_create(o)
       cookbook_version = new(o["cookbook_name"])
       # We want the Chef::Cookbook::Metadata object to always be inflated
@@ -514,20 +521,6 @@ class Chef
 
     def chef_server_rest
       self.class.chef_server_rest
-    end
-
-    # Return the URL to save (PUT) this object to the server via the
-    # REST api. If there is an existing document on the server and it
-    # is marked frozen, a PUT will result in a 409 Conflict.
-    def save_url
-      "cookbooks/#{name}/#{version}"
-    end
-
-    # Adds the `force=true` parameter to the upload URL. This allows
-    # the user to overwrite a frozen cookbook (a PUT against the
-    # normal #save_url raises a 409 Conflict in this case).
-    def force_save_url
-      "cookbooks/#{name}/#{version}?force=true"
     end
 
     def destroy

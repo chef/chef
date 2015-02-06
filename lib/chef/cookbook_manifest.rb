@@ -36,6 +36,8 @@ class Chef
     def_delegator :@cookbook_version, :name
     def_delegator :@cookbook_version, :metadata
     def_delegator :@cookbook_version, :full_name
+    def_delegator :@cookbook_version, :version
+    def_delegator :@cookbook_version, :frozen_version?
 
     def initialize(cookbook_version)
       @cookbook_version = cookbook_version
@@ -97,6 +99,51 @@ class Chef
       @manifest_records_by_path
     end
 
+    def to_hash
+      result = manifest.dup
+      result['frozen?'] = frozen_version?
+      result['chef_type'] = 'cookbook_version'
+      result.to_hash
+    end
+
+    def to_json(*a)
+      result = to_hash
+      result['json_class'] = "Chef::CookbookVersion"
+      Chef::JSONCompat.to_json(result, *a)
+    end
+
+    # Return the URL to save (PUT) this object to the server via the
+    # REST api. If there is an existing document on the server and it
+    # is marked frozen, a PUT will result in a 409 Conflict.
+    def save_url
+      "cookbooks/#{name}/#{version}"
+    end
+
+    # Adds the `force=true` parameter to the upload URL. This allows
+    # the user to overwrite a frozen cookbook (a PUT against the
+    # normal #save_url raises a 409 Conflict in this case).
+    def force_save_url
+      "cookbooks/#{name}/#{version}?force=true"
+    end
+
+    # TODO: This is kind of terrible. investigate removing it
+    def update_from(new_manifest)
+      @manifest = Mash.new new_manifest
+      @checksums = extract_checksums_from_manifest(@manifest)
+      @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
+
+      # TODO: this part of this method is "feature envious" it only deals with
+      # mutating the CookbookVersion object.
+      COOKBOOK_SEGMENTS.each do |segment|
+        next unless @manifest.has_key?(segment)
+        filenames = @manifest[segment].map{|manifest_record| manifest_record['name']}
+
+        cookbook_version.replace_segment_filenames(segment, filenames)
+      end
+    end
+
+    private
+
     # See #manifest for a description of the manifest return value.
     # See #preferred_manifest_record for a description an individual manifest record.
     def generate_manifest
@@ -146,24 +193,6 @@ class Chef
       @manifest_records_by_path = extract_manifest_records_by_path(manifest)
       @manifest = manifest
     end
-
-    # TODO: This is kind of terrible. investigate removing it
-    def update_from(new_manifest)
-      @manifest = Mash.new new_manifest
-      @checksums = extract_checksums_from_manifest(@manifest)
-      @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
-
-      # TODO: this part of this method is "feature envious" it only deals with
-      # mutating the CookbookVersion object.
-      COOKBOOK_SEGMENTS.each do |segment|
-        next unless @manifest.has_key?(segment)
-        filenames = @manifest[segment].map{|manifest_record| manifest_record['name']}
-
-        cookbook_version.replace_segment_filenames(segment, filenames)
-      end
-    end
-
-    private
 
     def parse_segment_file_from_root_paths(segment, segment_file)
       root_paths.each do |root_path|
