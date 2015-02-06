@@ -1888,7 +1888,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
   describe "when loading the current system state" do
     it "should create a current resource with the name of the new_resource" do
       @provider.load_current_resource
-      expect(@provider.current_resource.name).to eq(['cups', 'vim'])
+      expect(@provider.current_resource.name).to eq('cups, vim')
     end
 
     it "should set the current resources package name to the new resources package name" do

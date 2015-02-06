@@ -91,7 +91,7 @@ class Chef
     # @param run_context The context of the Chef run. Corresponds to #run_context.
     #
     def initialize(name, run_context=nil)
-      @name = name
+      name(name)
       @run_context = run_context
       @noop = nil
       @before = nil
@@ -133,13 +133,22 @@ class Chef
     #
     # This is also used in to_s to show the resource name, e.g. `execute[Vitruvius]`.
     #
-    # @param name [String] The name to set.
+    # This is also used for resource notifications and subscribes in the same manner.
+    #
+    # This will coerce any object into a string via #to_s.  Arrays are a special case
+    # so that `package ["foo", "bar"]` becomes package[foo, bar] instead of the more
+    # awkward `package[["foo", "bar"]]` that #to_s would produce.
+    #
+    # @param name [Object] The name to set, typically a String or Array
     # @return [String] The name of this Resource.
     #
     def name(name=nil)
       if !name.nil?
-        raise ArgumentError, "name must be a string!" unless name.kind_of?(String)
-        @name = name
+        if name.is_a?(Array)
+          @name = name.join(', ')
+        else
+          @name = name.to_s
+        end
       end
       @name
     end

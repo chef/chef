@@ -194,12 +194,12 @@ describe Chef::Resource do
       expect(@resource.name).to eql("monkey")
     end
 
-    it "should not be valid without a name" do
-      expect { @resource.name false }.to raise_error(ArgumentError)
+    it "coerces arrays to names" do
+      expect(@resource.name ['a', 'b']).to eql('a, b')
     end
 
-    it "should always have a string for name" do
-      expect { @resource.name Hash.new }.to raise_error(ArgumentError)
+    it "should coerce objects to a string" do
+      expect(@resource.name Object.new).to be_a(String)
     end
   end
 
@@ -257,6 +257,12 @@ describe Chef::Resource do
       @resource.notifies_delayed(:restart, :service => "apache")
       expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, @resource)
       expect(@resource.delayed_notifications).to include(expected_notification)
+    end
+
+    it "notifies a resource with an array for its name via its prettified string name" do
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new(["coffee", "tea"])
+      @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee, tea")
+      expect(@resource.delayed_notifications.detect{|e| e.resource.name == "coffee, tea" && e.action == :reload}).not_to be_nil
     end
   end
 
