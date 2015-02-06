@@ -94,6 +94,10 @@ describe Chef::CookbookUploader do
       end
     end
 
+    def expected_save_url(cookbook)
+      "cookbooks/#{cookbook.name}/#{cookbook.version}"
+    end
+
     def expect_sandbox_commit
       expect(http_client).to receive(:put).with(sandbox_commit_uri, {:is_completed => true})
     end
@@ -102,7 +106,7 @@ describe Chef::CookbookUploader do
       cookbooks_to_upload.each do |cookbook|
 
         expect(http_client).to receive(:put).
-          with(cookbook.save_url, cookbook)
+          with(expected_save_url(cookbook), cookbook)
 
       end
     end

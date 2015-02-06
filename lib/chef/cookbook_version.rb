@@ -64,18 +64,46 @@ class Chef
     end
 
     def save_url
+      # TODO: double check this code suggestion
+      msg = <<-WARNING
+Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
+To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).save_url`
+WARNING
+      raise msg
+      # TODO: change to warning
       cookbook_manifest.save_url
     end
 
     def force_save_url
+      # TODO: double check this code suggestion
+      msg = <<-WARNING
+Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
+To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).force_save_url`
+WARNING
+      raise msg
+      # TODO: change to warning
       cookbook_manifest.force_save_url
     end
 
     def to_hash
+      # TODO: double check this code suggestion
+      msg = <<-WARNING
+Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
+To get the Hash representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_hash`
+WARNING
+      raise msg
+      # TODO: change to warning
       cookbook_manifest.to_hash
     end
 
     def to_json(*a)
+      # TODO: double check this code suggestion
+      msg = <<-WARNING
+Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
+To get the JSON representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_json`
+WARNING
+      raise msg
+      # TODO: change to warning
       cookbook_manifest.to_json
     end
 

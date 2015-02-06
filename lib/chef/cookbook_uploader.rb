@@ -92,9 +92,12 @@ class Chef
 
       # files are uploaded, so save the manifest
       cookbooks.each do |cb|
-        save_url = opts[:force] ? cb.force_save_url : cb.save_url
+
+        manifest = Chef::CookbookManifest.new(cb)
+
+        save_url = opts[:force] ? manifest.force_save_url : manifest.save_url
         begin
-          rest.put(save_url, cb)
+          rest.put(save_url, manifest)
         rescue Net::HTTPServerException => e
           case e.response.code
           when "409"
