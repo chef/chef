@@ -110,8 +110,9 @@ subsequent warnings in the chef-client run.
 If this setting is changed to 'false' then it will adopt Chef-13 style behavior and will default all chef_gem installs to not run at compile_time by default.  This
 may break existing cookbooks.
 
-All existing cookbooks which require compile_time true MUST be updated to be explicit about this setting.
-All existing cookbooks which do not require compile_time true SHOULD be updated to be explicit about this setting.
+* All existing cookbooks which require compile_time true MUST be updated to be explicit about this setting.
+* To be considered high quality, cookbooks which require compile_time true MUST be rewritten to avoid this setting.
+* All existing cookbooks which do not require compile_time true SHOULD be updated to be explicit about this setting.
 
 For cookbooks that need to maintain backwards compatibility a `respond_to?` check should be used:
 
