@@ -498,7 +498,44 @@ describe Chef::CookbookVersion do
     end
 
   end
-  pending "These should work when deprecation errors are changed back to warning" do
+
+  describe "when deprecation warnings are errors" do
+
+    subject(:cbv) { Chef::CookbookVersion.new("version validation", '/tmp/blah') }
+
+    it "errors on #save_url" do
+      expect { cbv.save_url }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    end
+
+    it "errors on #force_save_url" do
+      expect { cbv.force_save_url }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    end
+
+    it "errors on #to_hash" do
+      expect { cbv.to_hash }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    end
+
+    it "errors on #to_json" do
+      expect { cbv.to_json }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    end
+
+  end
+
+  describe "deprecated features" do
+
+    subject(:cbv) { Chef::CookbookVersion.new("tatft", '/tmp/blah').tap { |c| c.version = "1.2.3" } }
+
+    before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
+    it "gives a save URL for the standard cookbook API" do
+      expect(cbv.save_url).to eq("cookbooks/tatft/1.2.3")
+    end
+
+    it "gives a force save URL for the standard cookbook API" do
+      expect(cbv.force_save_url).to eq("cookbooks/tatft/1.2.3?force=true")
+    end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
       let(:jsonable) { Chef::CookbookVersion.new("tatft", '/tmp/blah') }
