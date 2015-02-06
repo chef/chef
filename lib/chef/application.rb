@@ -49,6 +49,7 @@ class Chef
       configure_logging
       configure_proxy_environment_variables
       configure_encoding
+      emit_warnings
     end
 
     # Get this party started
@@ -370,6 +371,12 @@ class Chef
     # This is a hook for testing
     def env
       ENV
+    end
+
+    def emit_warnings
+      if Chef::Config[:chef_gem_compile_time]
+        Chef::Log.warn "setting chef_gem_compile_time to true is deprecated"
+      end
     end
 
     class << self

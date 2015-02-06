@@ -73,6 +73,54 @@ The `package` provider has been extended to support multiple packages. This
 support is new and and not all subproviders yet support it. Full support for
 `apt` and `yum` has been implemented.
 
+## chef_gem deprecation of installation at compile time
+
+A `compile_time` flag has been added to the chef_gem resource to control if it is installed at compile_time or not.  The prior behavior has been that this
+resource forces itself to install at compile_time which is problematic since if the gem is native it forces build_essentials and other dependent libraries
+to have to be installed at compile_time in an escalating war of forcing compile time execution.  This default was engineered before it was understood that a better
+approach was to lazily require gems inside of provider code which only ran at converge time and that requiring gems in recipe code was bad practice.
+
+The default behavior has not changed, but every chef_gem resource will now emit out a warning:
+
+```
+[2015-02-06T13:13:48-08:00] WARN: chef_gem[aws-sdk] chef_gem compile_time installation is deprecated
+[2015-02-06T13:13:48-08:00] WARN: chef_gem[aws-sdk] Please set `compile_time false` on the resource to use the new behavior.
+[2015-02-06T13:13:48-08:00] WARN: chef_gem[aws-sdk] or set `compile_time true` on the resource if compile_time behavior is required.
+```
+
+The preferred way to fix this is to make every chef_gem resource explicit about compile_time installation (keeping in mind the best-practice to default to false
+unless there is a reason):
+
+```ruby
+chef_gem 'aws-sdk' do
+  compile_time false
+end
+```
+
+There is also a Chef::Config[:chef_gem_compile_time] flag which has been added.  If this is set to true (not recommended) then chef will only emit a single
+warning at the top of the chef-client run:
+
+```
+[2015-02-06T13:27:35-08:00] WARN: setting chef_gem_compile_time to true is deprecated
+```
+
+It will behave like Chef 10 and Chef 11 and will default chef_gem to compile_time installations and will suppress
+subsequent warnings in the chef-client run.
+
+If this setting is changed to 'false' then it will adopt Chef-13 style behavior and will default all chef_gem installs to not run at compile_time by default.  This
+may break existing cookbooks.
+
+All existing cookbooks which require compile_time true MUST be updated to be explicit about this setting.
+All existing cookbooks which do not require compile_time true SHOULD be updated to be explicit about this setting.
+
+For cookbooks that need to maintain backwards compatibility a `respond_to?` check should be used:
+
+```
+chef_gem 'aws-sdk' do
+  compile_time false if respond_to?(:compile_time)
+end
+```
+
 # Chef Client Release Notes 12.0.0:
 
 # Internal API Changes in this Release
