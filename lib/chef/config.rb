@@ -499,9 +499,6 @@ class Chef
     # Deprecated:
     default(:cache_options) { { :path => PathHelper.join(file_cache_path, "checksums") } }
 
-    # Set to false to silence Chef 11 deprecation warnings:
-    default :chef11_deprecation_warnings, true
-
     # knife configuration data
     config_context :knife do
       default :ssh_port, nil
