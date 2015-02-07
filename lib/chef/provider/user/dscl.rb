@@ -630,15 +630,19 @@ user password using shadow hash.")
         end
 
         def mac_osx_version_less_than_10_7?
-          versions = mac_osx_version.split(".")
-          # Make integer comparison in order not to report 10.10 less than 10.7
-          (versions[0].to_i <= 10 && versions[1].to_i < 7)
+          major, minor = mac_osx_major_and_minor_versions
+
+          major <= 10 && minor < 7
         end
 
         def mac_osx_version_greater_than_10_7?
-          versions = mac_osx_version.split(".")
-          # Make integer comparison in order not to report 10.10 less than 10.7
-          (versions[0].to_i >= 10 && versions[1].to_i > 7)
+          major, minor = mac_osx_major_and_minor_versions
+
+          major >= 10 && minor > 7
+        end
+
+        def mac_osx_major_and_minor_versions
+          mac_osx_version.split('.').first(2).map(&:to_i)
         end
 
         def run_dscl(*args)
