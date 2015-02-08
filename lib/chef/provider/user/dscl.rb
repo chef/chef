@@ -536,7 +536,7 @@ class Chef
         end
 
         #
-        # We need a special check function for password since we support both
+        # We need a special check function for password since DSCL supports both
         # plain text and shadow hash data.
         #
         # Checks if password needs update based on platform version and the
@@ -545,30 +545,33 @@ class Chef
         def diverged_password?
           return false if @new_resource.password.nil?
 
-          # Dscl provider supports both plain text passwords and shadow hashes.
-          if mac_osx_version_10_7?
-            if salted_sha512?(@new_resource.password)
-              diverged?(:password)
-            else
-              !salted_sha512_password_match?
-            end
+          if mac_osx_version_greater_than_10_7?
+            diverged_10_8_password?
           else
-            # When a system is upgraded to a version 10.7+ shadow hashes of the users
-            # will be updated when the user logs in. So it's possible that we will have
-            # SALTED-SHA512 password in the current_resource. In that case we will force
-            # password to be updated.
-            return true if salted_sha512?(@current_resource.password)
+            diverged_10_7_password?
+          end
+        end
 
-            # Some system users don't have salts; this can happen if the system is
-            # upgraded and the user hasn't logged in yet. In this case, we will force
-            # the password to be updated.
-            return true if @current_resource.salt.nil?
+        def diverged_10_7_password?
+          if salted_sha512?(@new_resource.password)
+            diverged?(:password)
+          else
+            !salted_sha512_password_match?
+          end
+        end
 
-            if salted_sha512_pbkdf2?(@new_resource.password)
-              diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
-            else
-              !salted_sha512_pbkdf2_password_match?
-            end
+        def diverged_10_8_password?
+          # When a system is upgraded to a version >= 10.8, shadow hashes of the
+          # users will not be updated until login, so it's possible that
+          # we will have a SALTED-SHA512 password or no salt in the
+          # current_resource.
+          return true if salted_sha512?(@current_resource.password) ||
+                         @current_resource.salt.nil?
+
+          if salted_sha512_pbkdf2?(@new_resource.password)
+            diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
+          else
+            !salted_sha512_pbkdf2_password_match?
           end
         end
 
