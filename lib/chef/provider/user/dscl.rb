@@ -216,22 +216,37 @@ class Chef
         #
         def dscl_set_home
           if @new_resource.home.nil? || @new_resource.home.empty?
-            run_dscl("delete /Users/#{@new_resource.username} NFSHomeDirectory")
-            return
+            delete_home
+          else
+            create_home
           end
+        end
 
-          if @new_resource.supports[:manage_home]
-            validate_home_dir_specification!
+        def delete_home
+          command = "delete /Users/#{@new_resource.username} NFSHomeDirectory"
 
-            if (@current_resource.home == @new_resource.home) && !new_home_exists?
-              ditto_home
-            elsif !current_home_exists? && !new_home_exists?
-              ditto_home
-            elsif current_home_exists?
-              move_home
-            end
+          run_dscl(command)
+        end
+
+        def create_home
+          command = "create /Users/#{@new_resource.username} NFSHomeDirectory" \
+                      " '#{@new_resource.home}'"
+
+          manage_home
+          run_dscl(command)
+        end
+
+        def manage_home
+          return unless @new_resource.supports[:manage_home]
+
+          homes_match = @current_resource.home == @new_resource.home
+
+          validate_home_dir_specification!
+          if (homes_match || !current_home_exists?) && !new_home_exists?
+            ditto_home
+          elsif current_home_exists?
+            move_home
           end
-          run_dscl("create /Users/#{@new_resource.username} NFSHomeDirectory '#{@new_resource.home}'")
         end
 
         def validate_home_dir_specification!
