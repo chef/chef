@@ -327,53 +327,11 @@ class Chef
         # Prepares the password shadow info based on the platform version.
         #
         def prepare_password_shadow_info
-          shadow_info = { }
-          entropy = nil
-          salt = nil
-          iterations = nil
-
           if mac_osx_version_10_7?
-            hash_value = if salted_sha512?(@new_resource.password)
-              @new_resource.password
-            else
-              # Create a random 4 byte salt
-              salt = OpenSSL::Random.random_bytes(4)
-              encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + @new_resource.password)
-              hash_value = salt.unpack('H*').first + encoded_password
-            end
-
-            shadow_info["SALTED-SHA512"] = StringIO.new
-            shadow_info["SALTED-SHA512"].string = convert_to_binary(hash_value)
-            shadow_info
+            salted_sha512_shadow_info
           else
-            if salted_sha512_pbkdf2?(@new_resource.password)
-              entropy = convert_to_binary(@new_resource.password)
-              salt = convert_to_binary(@new_resource.salt)
-              iterations = @new_resource.iterations
-            else
-              salt = OpenSSL::Random.random_bytes(32)
-              iterations = @new_resource.iterations # Use the default if not specified by the user
-
-              entropy = OpenSSL::PKCS5::pbkdf2_hmac(
-                @new_resource.password,
-                salt,
-                iterations,
-                128,
-                OpenSSL::Digest::SHA512.new
-              )
-            end
-
-            pbkdf_info = { }
-            pbkdf_info["entropy"] = StringIO.new
-            pbkdf_info["entropy"].string = entropy
-            pbkdf_info["salt"] = StringIO.new
-            pbkdf_info["salt"].string = salt
-            pbkdf_info["iterations"] = iterations
-
-            shadow_info["SALTED-SHA512-PBKDF2"] = pbkdf_info
+            salted_sha512_pbkdf2_shadow_info
           end
-
-          shadow_info
         end
 
         #
@@ -588,6 +546,74 @@ class Chef
           else
             !salted_sha512_pbkdf2_password_match?
           end
+        end
+
+        def salted_sha512_shadow_info
+          binary_value = convert_to_binary(hash_value)
+
+          { 'SALTED-SHA512' => StringIO.new(binary_value) }
+        end
+
+        def salted_sha512_pbkdf2_shadow_info
+          salt, entropy = pbkdf2_salt_and_entropy
+
+          {
+            'SALTED-SHA512-PBKDF2' => {
+              'salt' => StringIO.new(salt),
+              'iterations' => @new_resource.iterations,
+              'entropy' => StringIO.new(entropy)
+            }
+          }
+        end
+
+        def hash_value
+          password = @new_resource.password
+          # Create a random 4 byte salt
+          salt = OpenSSL::Random.random_bytes(4)
+
+          salted_sha512?(password) ? password : new_hash_value(salt)
+        end
+
+        def new_hash_value(salt)
+          encoded_password = encoded_password(salt)
+          salt_hex = salt.unpack('H*').first
+
+          "#{salt_hex}#{encoded_password}"
+        end
+
+        def encoded_password(salt)
+          salted_password = "#{salt}#{@new_resource.password}"
+
+          OpenSSL::Digest::SHA512.hexdigest(salted_password)
+        end
+
+        def pbkdf2_salt_and_entropy
+          if salted_sha512_pbkdf2?(@new_resource.password)
+            provided_salt_and_entropy
+          else
+            new_salt_and_entropy
+          end
+        end
+
+        def provided_salt_and_entropy
+          %i(salt password).map do |attribute|
+            value = @new_resource.send(attribute)
+
+            convert_to_binary(value)
+          end
+        end
+
+        def new_salt_and_entropy
+          salt = OpenSSL::Random.random_bytes(32)
+
+          [salt, new_entropy(salt)]
+        end
+
+        def new_entropy(salt)
+          OpenSSL::PKCS5.pbkdf2_hmac(
+            @new_resource.password, salt, @new_resource.iterations, 128,
+            OpenSSL::Digest::SHA512.new
+          )
         end
 
         #
