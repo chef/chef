@@ -43,69 +43,15 @@ class Chef
       #
       # This provider only supports Mac OSX versions 10.7 and above
       class Dscl < Chef::Provider::User
-
         provides :user, os: "darwin"
 
         def define_resource_requirements
           super
 
-          requirements.assert(:all_actions) do |a|
-            a.assertion { mac_osx_version_less_than_10_7? == false }
-            a.failure_message(Chef::Exceptions::User, "Chef::Provider::User::Dscl only supports Mac OS X versions 10.7 and above.")
-          end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/bin/dscl") }
-            a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/dscl' on the system for #{@new_resource}!")
-          end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/bin/plutil") }
-            a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/plutil' on the system for #{@new_resource}!")
-          end
-
-          requirements.assert(:create, :modify, :manage) do |a|
-            a.assertion do
-              if @new_resource.password && mac_osx_version_greater_than_10_7?
-                # SALTED-SHA512 password shadow hashes are not supported on 10.8 and above.
-                !salted_sha512?(@new_resource.password)
-              else
-                true
-              end
-            end
-            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512 passwords are not supported on Mac 10.8 and above. \
-If you want to set the user password using shadow info make sure you specify a SALTED-SHA512-PBKDF2 shadow hash \
-in 'password', with the associated 'salt' and 'iterations'.")
-          end
-
-          requirements.assert(:create, :modify, :manage) do |a|
-            a.assertion do
-              if @new_resource.password && mac_osx_version_greater_than_10_7? && salted_sha512_pbkdf2?(@new_resource.password)
-                # salt and iterations should be specified when
-                # SALTED-SHA512-PBKDF2 password shadow hash is given
-                !@new_resource.salt.nil? && !@new_resource.iterations.nil?
-              else
-                true
-              end
-            end
-            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512-PBKDF2 shadow hash is given without associated \
-'salt' and 'iterations'. Please specify 'salt' and 'iterations' in order to set the user password using shadow hash.")
-          end
-
-          requirements.assert(:create, :modify, :manage) do |a|
-            a.assertion do
-              if @new_resource.password && !mac_osx_version_greater_than_10_7?
-                # On 10.7 SALTED-SHA512-PBKDF2 is not supported
-                !salted_sha512_pbkdf2?(@new_resource.password)
-              else
-                true
-              end
-            end
-            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512-PBKDF2 shadow hashes are not supported on \
-Mac OS X version 10.7. Please specify a SALTED-SHA512 shadow hash in 'password' attribute to set the \
-user password using shadow hash.")
-          end
-
+          require_mac_osx_version_greater_than_10_7
+          require_binary('/usr/bin/dscl')
+          require_binary('/usr/bin/plutil')
+          potentially_require_key_stretching
         end
 
         def load_current_resource
@@ -479,6 +425,81 @@ user password using shadow hash.")
         #
         # Helper functions
         #
+
+        def require_mac_osx_version_greater_than_10_7
+          requirement = proc { !mac_osx_version_less_than_10_7? }
+          message = 'Chef::Provider::User::Dscl only supports Mac OS X ' \
+                      'versions 10.7 and above.'
+
+          define_requirement(requirement, message)
+        end
+
+        def require_binary(binary_path)
+          requirement = proc { ::File.exists?(binary_path) }
+          message = "Cannot find binary '#{binary_path}' on the system for " \
+                      "#{@new_resource}!"
+
+          define_requirement(requirement, message)
+        end
+
+        def potentially_require_key_stretching
+          return unless @new_resource.password
+
+          if mac_osx_version_greater_than_10_7?
+            require_pbkdf2_for_salted_sha512
+            require_salt_and_iterations_for_pbkdf2
+          else
+            require_no_pbkdf2_for_salted_sha512
+          end
+        end
+
+        def require_pbkdf2_for_salted_sha512
+          requirement = proc { !salted_sha512?(@new_resource.password) }
+          message = 'SALTED-SHA512 passwords are not supported on Mac 10.8 ' \
+                      'and above. If you want to set the user password using ' \
+                      'shadow info make sure you specify a ' \
+                      "SALTED-SHA512-PBKDF2 shadow hash in 'password', with " \
+                      "the associated 'salt' and 'iterations'."
+
+          define_scoped_requirement(requirement, message)
+        end
+
+        def require_salt_and_iterations_for_pbkdf2
+          return unless salted_sha512_pbkdf2?(@new_resource.password)
+
+          requirement = proc do
+            !@new_resource.salt.nil? && !@new_resource.iterations.nil?
+          end
+          message = 'SALTED-SHA512-PBKDF2 shadow hash is given without ' \
+                      "associated 'salt' and 'iterations'. Please specify " \
+                      "'salt' and 'iterations' in order to set the user " \
+                      'password using shadow hash.'
+
+          define_scoped_requirement(requirement, message)
+        end
+
+        def require_no_pbkdf2_for_salted_sha512
+          requirement = proc { !salted_sha512_pbkdf2?(@new_resource.password) }
+          message = 'SALTED-SHA512-PBKDF2 shadow hashes are not supported on ' \
+                      'Mac OS X version 10.7. Please specify a SALTED-SHA512 ' \
+                      "shadow hash in 'password' attribute to set the user " \
+                      'password using shadow hash.'
+
+          define_scoped_requirement(requirement, message)
+        end
+
+        def define_requirement(requirement, message, actions = [:all_actions])
+          requirements.assert(*actions) do |with|
+            with.assertion(&requirement)
+            with.failure_message(Chef::Exceptions::User, message)
+          end
+        end
+
+        def define_scoped_requirement(assertion, message)
+          actions = %i(create modify manage)
+
+          define_requirement(assertion, message, actions)
+        end
 
         #
         # Returns true if the system state and desired state is different for
