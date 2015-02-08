@@ -60,38 +60,7 @@ class Chef
 
           @user_info = read_user_info
           if @user_info
-            @current_resource.uid(dscl_get(@user_info, :uid))
-            @current_resource.gid(dscl_get(@user_info, :gid))
-            @current_resource.home(dscl_get(@user_info, :home))
-            @current_resource.shell(dscl_get(@user_info, :shell))
-            @current_resource.comment(dscl_get(@user_info, :comment))
-            @authentication_authority = dscl_get(@user_info, :auth_authority)
-
-            if @new_resource.password && dscl_get(@user_info, :password) == "********"
-              # A password is set. Let's get the password information from shadow file
-              shadow_hash_binary = dscl_get(@user_info, :shadow_hash)
-
-              # Calling shell_out directly since we want to give an input stream
-              shadow_hash_xml = convert_binary_plist_to_xml(shadow_hash_binary.string)
-              shadow_hash = Plist::parse_xml(shadow_hash_xml)
-
-              if shadow_hash["SALTED-SHA512"]
-                # Convert the shadow value from Base64 encoding to hex before consuming them
-                @password_shadow_conversion_algorithm = "SALTED-SHA512"
-                @current_resource.password(shadow_hash["SALTED-SHA512"].string.unpack('H*').first)
-              elsif shadow_hash["SALTED-SHA512-PBKDF2"]
-                @password_shadow_conversion_algorithm = "SALTED-SHA512-PBKDF2"
-                # Convert the entropy from Base64 encoding to hex before consuming them
-                @current_resource.password(shadow_hash["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first)
-                @current_resource.iterations(shadow_hash["SALTED-SHA512-PBKDF2"]["iterations"])
-                # Convert the salt from Base64 encoding to hex before consuming them
-                @current_resource.salt(shadow_hash["SALTED-SHA512-PBKDF2"]["salt"].string.unpack('H*').first)
-              else
-                raise(Chef::Exceptions::User,"Unknown shadow_hash format: #{shadow_hash.keys.join(' ')}")
-              end
-            end
-
-            convert_group_name if @new_resource.gid
+            load_user_info
           else
             @user_exists = false
             Chef::Log.debug("#{@new_resource} user does not exist")
@@ -616,6 +585,74 @@ class Chef
           )
         end
 
+        def load_user_info
+          load_attributes
+          @authentication_authority = dscl_get(@user_info, :auth_authority)
+          convert_group_name if @new_resource.gid
+        end
+
+        def load_attributes
+          encrypted_password = dscl_get(@user_info, :password) == "********"
+
+          %i(uid gid home shell comment).each do |attribute|
+            load_attribute(attribute)
+          end
+          load_password if @new_resource.password && encrypted_password
+        end
+
+        def load_attribute(attribute)
+          value = dscl_get(@user_info, attribute)
+
+          @current_resource.send(attribute, value)
+        end
+
+        def load_password
+          salted_sha512 = shadow_hash['SALTED-SHA512']
+          salted_sha512_pbkdf2 = shadow_hash['SALTED-SHA512-PBKDF2']
+
+          if salted_sha512
+            load_salted_sha512_password(salted_sha512)
+          elsif salted_sha512_pbkdf2
+            load_salted_sha512_pbkdf2_password(salted_sha512_pbkdf2)
+          else
+            invalid_shadow_hash_format!
+          end
+        end
+
+        def load_salted_sha512_password(salted_sha512)
+          password = salted_sha512.string.unpack('H*').first
+
+          @password_shadow_conversion_algorithm = 'SALTED-SHA512'
+          @current_resource.password(password)
+        end
+
+        def load_salted_sha512_pbkdf2_password(salted_sha512_pbkdf2)
+          password = salted_sha512_pbkdf2['entropy'].string.unpack('H*').first
+          iterations = salted_sha512_pbkdf2['iterations']
+          salt = salted_sha512_pbkdf2['salt'].string.unpack('H*').first
+
+          @password_shadow_conversion_algorithm = 'SALTED-SHA512-PBKDF2'
+          @current_resource.password(password)
+          @current_resource.iterations(iterations)
+          @current_resource.salt(salt)
+        end
+
+        def invalid_shadow_hash_format!
+          format = shadow_hash.keys.join(' ')
+
+          fail(Chef::Exceptions::User, "Unknown shadow_hash format: #{format}")
+        end
+
+        def shadow_hash
+          @shadow_hash ||= Plist.parse_xml(shadow_hash_xml)
+        end
+
+        def shadow_hash_xml
+          shadow_hash_string = dscl_get(@user_info, :shadow_hash).string
+
+          convert_binary_plist_to_xml(shadow_hash_string)
+        end
+
         #
         # Returns true if user is member of the specified group, false otherwise.
         #
@@ -751,6 +788,7 @@ class Chef
         end
 
         def convert_binary_plist_to_xml(binary_plist_string)
+          # Calling shell_out directly since we want to give an input stream
           Mixlib::ShellOut.new("plutil -convert xml1 -o - -", :input => binary_plist_string).run_command.stdout
         end
 
