@@ -206,15 +206,8 @@ class Chef
         # exist on the system with given group id.
         #
         def dscl_set_gid
-          unless @new_resource.gid && @new_resource.gid.to_s.match(/^\d+$/)
-            begin
-              possible_gid = run_dscl("read /Groups/#{@new_resource.gid} PrimaryGroupID").split(" ").last
-            rescue Chef::Exceptions::DsclCommandFailed => e
-              raise Chef::Exceptions::GroupIDNotFound.new("Group not found for #{@new_resource.gid} when creating user #{@new_resource.username}")
-            end
-            @new_resource.gid(possible_gid) if possible_gid && possible_gid.match(/^\d+$/)
-          end
-          run_dscl("create /Users/#{@new_resource.username} PrimaryGroupID '#{@new_resource.gid}'")
+          read_gid
+          write_gid
         end
 
         #
@@ -499,6 +492,35 @@ class Chef
           actions = %i(create modify manage)
 
           define_requirement(assertion, message, actions)
+        end
+
+        def read_gid
+          return if valid_gid?(@new_resource.gid)
+
+          possible_gid = primary_group_id
+
+          @new_resource.gid(possible_gid) if valid_gid?(possible_gid)
+        rescue Chef::Exceptions::DsclCommandFailed
+          raise(Chef::Exceptions::GroupIDNotFound,
+                "Group not found for #{@new_resource.gid} when creating user " \
+                  "#{@new_resource.username}")
+        end
+
+        def write_gid
+          command = "create /Users/#{@new_resource.username} PrimaryGroupID " \
+                      "'#{@new_resource.gid}'"
+
+          run_dscl(command)
+        end
+
+        def primary_group_id
+          command = "read /Groups/#{@new_resource.gid} PrimaryGroupID"
+
+          run_dscl(command).split(' ').last
+        end
+
+        def valid_gid?(gid)
+          gid.to_s.match(/^\d+$/) unless gid.nil?
         end
 
         #
