@@ -167,5 +167,21 @@ describe Chef::Util::DSC::ConfigurationGenerator do
       end
       expect(found_configuration).to be_truthy
     end
+    context "with imports" do
+      it "should import all resources when a module has an empty list" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => []})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule\s*\n/)
+      end
+
+      it "should import all resources when a module has a list with *" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', '*', 'BarResource']})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule\s*\n/)
+      end
+
+      it "should import specific resources when a module has list without * that is not empty" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', 'BarResource']})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule -Name FooResource,BarResource/)
+      end
+    end
   end
 end
