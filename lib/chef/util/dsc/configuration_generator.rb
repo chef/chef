@@ -97,10 +97,10 @@ Configuration '#{configuration_name}'
     def generate_import_resource_statements(imports)
       if imports
         imports.map do |resource_module, resources|
-          if resources.length > 0
-            "Import-DscResource -ModuleName #{resource_module} -Name #{resources.join(',')}"
-          else
+          if resources.length == 0 || resources.include?('*')
             "Import-DscResource -ModuleName #{resource_module}"
+          else
+            "Import-DscResource -ModuleName #{resource_module} -Name #{resources.join(',')}"
           end
         end
       else
