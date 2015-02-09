@@ -72,6 +72,7 @@ describe Chef::Resource::DscScript do
 
     context "when calling imports" do
       let(:module_name)   { 'FooModule' }
+      let(:module_name_b)   { 'BarModule' }
       let(:dsc_resources) { ['ResourceA', 'ResourceB'] }
 
       it "allows an arbitrary number of resources to be set for a module to be set" do
@@ -84,6 +85,13 @@ describe Chef::Resource::DscScript do
         dsc_test_resource.imports module_name
         module_imports = dsc_test_resource.imports[module_name]
         expect(module_imports).to eq(['*'])
+      end
+
+      it "allows an arbitrary number of modules" do
+        dsc_test_resource.imports module_name
+        dsc_test_resource.imports module_name_b
+        expect(dsc_test_resource.imports).to have_key(module_name)
+        expect(dsc_test_resource.imports).to have_key(module_name_b)
       end
     end
 
