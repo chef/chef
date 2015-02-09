@@ -76,20 +76,20 @@ describe Chef::Resource::ChefGem, "gem_binary" do
 
     it "runs the install at compile-time by default", :chef_lt_13_only do
       expect(resource).to receive(:run_action).with(:install)
-      expect(Chef::Log).to receive(:warn).at_least(:once)
+      expect(Chef::Log).to receive(:deprecation).at_least(:once)
       recipe.chef_gem "foo"
     end
 
     # the default behavior will change in Chef-13
     it "does not runs the install at compile-time by default", :chef_gte_13_only do
       expect(resource).not_to receive(:run_action).with(:install)
-      expect(Chef::Log).not_to receive(:warn)
+      expect(Chef::Log).not_to receive(:deprecation)
       recipe.chef_gem "foo"
     end
 
     it "compile_time true installs at compile-time" do
       expect(resource).to receive(:run_action).with(:install)
-      expect(Chef::Log).not_to receive(:warn)
+      expect(Chef::Log).not_to receive(:deprecation)
       recipe.chef_gem "foo" do
         compile_time true
       end
@@ -97,7 +97,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
 
     it "compile_time false does not install at compile-time" do
       expect(resource).not_to receive(:run_action).with(:install)
-      expect(Chef::Log).not_to receive(:warn)
+      expect(Chef::Log).not_to receive(:deprecation)
       recipe.chef_gem "foo" do
         compile_time false
       end
@@ -107,7 +107,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
       let(:chef_gem_compile_time) { true }
 
       before do
-        expect(Chef::Log).not_to receive(:warn)
+        expect(Chef::Log).not_to receive(:deprecation)
       end
 
       it "by default installs at compile-time" do
@@ -135,7 +135,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
       let(:chef_gem_compile_time) { false }
 
       before do
-        expect(Chef::Log).not_to receive(:warn)
+        expect(Chef::Log).not_to receive(:deprecation)
       end
 
       it "by default does not install at compile-time" do

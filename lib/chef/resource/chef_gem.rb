@@ -53,9 +53,9 @@ class Chef
         # Chef::Resource.run_action: Caveat: this skips Chef::Runner.run_action, where notifications are handled
         # Action could be an array of symbols, but probably won't (think install + enable for a package)
         if compile_time.nil?
-          Chef::Log.warn "#{self} chef_gem compile_time installation is deprecated"
-          Chef::Log.warn "#{self} Please set `compile_time false` on the resource to use the new behavior."
-          Chef::Log.warn "#{self} or set `compile_time true` on the resource if compile_time behavior is required."
+          Chef::Log.deprecation "#{self} chef_gem compile_time installation is deprecated"
+          Chef::Log.deprecation "#{self} Please set `compile_time false` on the resource to use the new behavior."
+          Chef::Log.deprecation "#{self} or set `compile_time true` on the resource if compile_time behavior is required."
         end
 
         if compile_time || compile_time.nil?

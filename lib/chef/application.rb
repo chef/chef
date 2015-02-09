@@ -375,7 +375,7 @@ class Chef
 
     def emit_warnings
       if Chef::Config[:chef_gem_compile_time]
-        Chef::Log.warn "setting chef_gem_compile_time to true is deprecated"
+        Chef::Log.deprecation "setting chef_gem_compile_time to true is deprecated"
       end
     end
 
