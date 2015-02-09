@@ -93,6 +93,13 @@ describe Chef::Resource::DscScript do
         expect(dsc_test_resource.imports).to have_key(module_name)
         expect(dsc_test_resource.imports).to have_key(module_name_b)
       end
+
+      it "allows resources to be added for a module" do
+        dsc_test_resource.imports module_name, dsc_resources[0]
+        dsc_test_resource.imports module_name, dsc_resources[1]
+        module_imports = dsc_test_resource.imports[module_name]
+        expect(module_imports).to eq(dsc_resources)
+      end
     end
 
     it "raises an ArgumentError exception if an attempt is made to set the code attribute when the command attribute is already set" do
