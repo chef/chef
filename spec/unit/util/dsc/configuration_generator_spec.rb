@@ -182,6 +182,12 @@ describe Chef::Util::DSC::ConfigurationGenerator do
         dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', 'BarResource']})
         expect(dsc).to match(/Import-DscResource -ModuleName FooModule -Name FooResource,BarResource/)
       end
+
+      it "should import multiple modules with multiple import statements" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', 'BarResource'], 'BazModule' => []})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule -Name FooResource,BarResource/)
+        expect(dsc).to match(/Import-DscResource -ModuleName BazModule\s*\n/)
+      end 
     end
   end
 end
