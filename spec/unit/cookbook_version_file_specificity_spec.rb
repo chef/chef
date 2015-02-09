@@ -19,7 +19,7 @@
 
 require 'spec_helper'
 
-describe "Chef::CookbookVersion manifest" do
+describe Chef::CookbookVersion, "file specificity" do
   before(:each) do
     @cookbook = Chef::CookbookVersion.new "test-cookbook"
     @cookbook.manifest = {
