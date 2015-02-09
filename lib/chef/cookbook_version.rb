@@ -76,6 +76,8 @@ class Chef
       deprecated!(<<-DEPRECATED)
 Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
 To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).save_url`
+
+Called from #{caller(1).first}
 DEPRECATED
 
       cookbook_manifest.save_url
@@ -86,6 +88,8 @@ DEPRECATED
       deprecated!(<<-DEPRECATED)
 Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
 To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).force_save_url`
+
+Called from #{caller(1).first}
 DEPRECATED
       cookbook_manifest.force_save_url
     end
@@ -95,6 +99,8 @@ DEPRECATED
       deprecated!(<<-DEPRECATED)
 Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
 To get the Hash representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_hash`
+
+Called from #{caller(1).first}
 DEPRECATED
       cookbook_manifest.to_hash
     end
@@ -104,6 +110,8 @@ DEPRECATED
       deprecated!(<<-DEPRECATED)
 Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
 To get the JSON representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_json`
+
+Called from #{caller(1).first}
 DEPRECATED
       cookbook_manifest.to_json
     end
@@ -124,12 +132,12 @@ DEPRECATED
     attr_accessor :metadata_filenames
 
     def status=(new_status)
-      Chef::Log.warn("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
+      deprecated!("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
       @status = new_status
     end
 
     def status
-      Chef::Log.warn("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
+      deprecated!("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
       @status
     end
 

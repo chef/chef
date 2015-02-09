@@ -68,12 +68,6 @@ describe Chef::CookbookVersion do
       expect(@cookbook_version).to be_frozen_version
     end
 
-    it "is \"ready\"" do
-      # WTF is this? what are the valid states? and why aren't they set with encapsulating methods?
-      # [Dan 15-Jul-2010]
-      expect(@cookbook_version.status).to eq(:ready)
-    end
-
     it "has empty metadata" do
       expect(@cookbook_version.metadata).to eq(Chef::Cookbook::Metadata.new)
     end
@@ -519,6 +513,11 @@ describe Chef::CookbookVersion do
       expect { cbv.to_json }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
 
+    it "errors on #status and #status=" do
+      expect { cbv.status = :wat }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+      expect { cbv.status }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    end
+
   end
 
   describe "deprecated features" do
@@ -536,6 +535,13 @@ describe Chef::CookbookVersion do
     it "gives a force save URL for the standard cookbook API" do
       expect(cbv.force_save_url).to eq("cookbooks/tatft/1.2.3?force=true")
     end
+
+    it "is \"ready\"" do
+      # WTF is this? what are the valid states? and why aren't they set with encapsulating methods?
+      # [Dan 15-Jul-2010]
+      expect(cbv.status).to eq(:ready)
+    end
+
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
       let(:jsonable) { Chef::CookbookVersion.new("tatft", '/tmp/blah') }
