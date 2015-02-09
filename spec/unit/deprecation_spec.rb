@@ -92,8 +92,7 @@ describe Chef::Deprecation do
     # rspec should set this
     expect(Chef::Config[:treat_deprecation_warnings_as_errors]).to be true
     test_instance = TestClass.new
-    test_instance.deprecated_method(10)
-    expect { test_instance.get_value }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    expect { test_instance.deprecated_method(10) }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
   end
 
 end
