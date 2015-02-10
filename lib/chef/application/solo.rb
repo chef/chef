@@ -216,7 +216,6 @@ class Chef::Application::Solo < Chef::Application
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
       if Chef::Config[:github]
         cookbooks_dir = File.join(recipes_path, 'cookbooks')
-        FileUtils.rm_rf(cookbooks_dir, :secure => true)
         FileUtils.mkdir_p(cookbooks_dir)
         Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} --strip-components=1 -C #{cookbooks_dir}")
       else
