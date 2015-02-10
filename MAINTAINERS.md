@@ -83,6 +83,8 @@ The specific components of Chef related to a given platform - including (but not
 
 ### Lieutenant
 
+* [Bryan McLellan](http://github.com/btm)
+
 ### Maintainers
 * [Steven Murawski](http://github.com/smurawski)
 * [Jay Mundrawala](http://github.com/jdmundrawala)
