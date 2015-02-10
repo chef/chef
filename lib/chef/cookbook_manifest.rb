@@ -39,6 +39,10 @@ class Chef
     def_delegator :@cookbook_version, :version
     def_delegator :@cookbook_version, :frozen_version?
 
+    # Create a new CookbookManifest object for the given `cookbook_version`.
+    # You can subsequently call #to_hash to get a Hash representation of the
+    # cookbook_version in the "manifest" format, or #to_json to get a JSON
+    # representation of the cookbook_version.
     def initialize(cookbook_version, policy_mode: false)
       @cookbook_version = cookbook_version
       @policy_mode = !!policy_mode

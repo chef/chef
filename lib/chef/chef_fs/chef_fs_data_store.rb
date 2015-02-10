@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/cookbook_manifest'
 require 'chef_zero/data_store/memory_store'
 require 'chef_zero/data_store/data_already_exists_error'
 require 'chef_zero/data_store/data_not_found_error'
