@@ -45,7 +45,13 @@ describe Chef::CookbookUploader do
 
   let(:sandbox_commit_uri) { "https://chef.example.org/sandboxes/abc123" }
 
-  let(:uploader) { described_class.new(cookbooks_to_upload, :rest => http_client) }
+  let(:policy_mode) { false }
+
+  let(:uploader) { described_class.new(cookbooks_to_upload, rest: http_client, policy_mode: policy_mode) }
+
+  it "defaults to not enabling policy mode" do
+    expect(described_class.new(cookbooks_to_upload, rest: http_client).policy_mode?).to be(false)
+  end
 
   it "has a list of cookbooks to upload" do
     expect(uploader.cookbooks).to eq(cookbooks_to_upload)
@@ -157,6 +163,30 @@ describe Chef::CookbookUploader do
 
         uploader.upload_cookbooks
       end
+
+    end
+
+    context "when policy_mode is specified" do
+
+      let(:cksums_not_on_remote) do
+        checksums_of_cookbook_files.keys
+      end
+
+      let(:policy_mode) { true }
+
+      def expected_save_url(cookbook)
+        "cookbook_artifacts/#{cookbook.name}/#{cookbook.version}"
+      end
+
+      it "uploads all files in a sandbox transaction, then creates cookbooks on the server using cookbook_artifacts API" do
+        expect_sandbox_create
+        expect_checksum_upload
+        expect_sandbox_commit
+        expect_cookbook_create
+
+        uploader.upload_cookbooks
+      end
+
 
     end
   end
