@@ -43,6 +43,15 @@ class Chef
     # You can subsequently call #to_hash to get a Hash representation of the
     # cookbook_version in the "manifest" format, or #to_json to get a JSON
     # representation of the cookbook_version.
+    #
+    # @param policy_mode [Boolean] whether to convert cookbooks to Hash/JSON in
+    #   the format used by the `cookbook_artifacts` endpoint (for policyfiles).
+    #   Setting this option also changes the behavior of #save_url and
+    #   #force_save_url such that CookbookVersions will be uploaded to the new
+    #   `cookbook_artifacts` API. This endpoint is currently under active
+    #   development and the format is expected to change frequently, therefore
+    #   the result of #manifest, #to_hash, and #to_json will not be stable when
+    #   `policy_mode` is enabled.
     def initialize(cookbook_version, policy_mode: false)
       @cookbook_version = cookbook_version
       @policy_mode = !!policy_mode
