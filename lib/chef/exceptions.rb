@@ -213,8 +213,8 @@ class Chef
     class NoProviderAvailable < RuntimeError; end
 
     class DeprecatedFeatureError < RuntimeError;
-      def initalize
-        super("raising deprecation error due to treat_deprecation_warnings_as_errors being set")
+      def initalize(message)
+        super("#{message} (raising error due to treat_deprecation_warnings_as_errors being set)")
       end
     end
 

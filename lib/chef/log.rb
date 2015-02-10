@@ -37,10 +37,10 @@ class Chef
 
     def self.deprecation(msg=nil, &block)
       if Chef::Config[:treat_deprecation_warnings_as_errors]
-        error(msg, *block)
+        error(msg, &block)
         raise Chef::Exceptions::DeprecatedFeatureError
       else
-        warn(msg, *block)
+        warn(msg, &block)
       end
     end
 
