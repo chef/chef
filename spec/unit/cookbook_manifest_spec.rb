@@ -38,7 +38,19 @@ describe Chef::CookbookManifest do
     end
   end
 
-  subject(:cookbook_manifest) { Chef::CookbookManifest.new(cookbook_version) }
+  let(:policy_mode) { false }
+
+  subject(:cookbook_manifest) { Chef::CookbookManifest.new(cookbook_version, policy_mode: policy_mode) }
+
+  context "when policy mode is not specified" do
+
+    subject(:cookbook_manifest) { Chef::CookbookManifest.new(cookbook_version) }
+
+    it "defaults to policies disabled" do
+      expect(cookbook_manifest.policy_mode?).to be(false)
+    end
+
+  end
 
   describe "collecting cookbook data from the cookbook version object" do
 
@@ -157,6 +169,7 @@ describe Chef::CookbookManifest do
         "root_files"  => map_to_file_specs(root_filenames),
       }
     end
+
     before do
       cookbook_version.attribute_filenames   = attribute_filenames
       cookbook_version.definition_filenames  = definition_filenames
@@ -183,14 +196,31 @@ describe Chef::CookbookManifest do
 
   describe "providing upstream URLs for save" do
 
-    it "gives the save URL" do
-      expect(cookbook_manifest.save_url).to eq("cookbooks/tatft/1.2.3")
+    context "and policy mode is disabled" do
+
+      it "gives the save URL" do
+        expect(cookbook_manifest.save_url).to eq("cookbooks/tatft/1.2.3")
+      end
+
+      it "gives the force save URL" do
+        expect(cookbook_manifest.force_save_url).to eq("cookbooks/tatft/1.2.3?force=true")
+      end
+
     end
 
-    it "gives the force save URL" do
-      expect(cookbook_manifest.force_save_url).to eq("cookbooks/tatft/1.2.3?force=true")
-    end
+    context "and policy mode is enabled" do
 
+      let(:policy_mode) { true }
+
+      it "gives the save URL" do
+        expect(cookbook_manifest.save_url).to eq("cookbook_artifacts/tatft/1.2.3")
+      end
+
+      it "gives the force save URL" do
+        expect(cookbook_manifest.force_save_url).to eq("cookbook_artifacts/tatft/1.2.3?force=true")
+      end
+
+    end
   end
 
 end
