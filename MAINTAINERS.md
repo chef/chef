@@ -31,6 +31,7 @@ another component.
 * [Daniel DeLeo](https://github.com/danielsdeleo)
 * [Claire McQuin](https://github.com/mcquin)
 * [Jay Mundrawala](http://github.com/jdmundrawala)
+* [Bryan McLellan](http://github.com/btm)
 
 ## Dev Tools
 
