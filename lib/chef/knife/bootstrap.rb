@@ -19,11 +19,16 @@
 require 'chef/knife'
 require 'chef/knife/data_bag_secret_options'
 require 'erubis'
+require 'chef/knife/bootstrap/chef_vault_handler'
+require 'chef/knife/bootstrap/client_builder'
 
 class Chef
   class Knife
     class Bootstrap < Knife
       include DataBagSecretOptions
+
+      attr_accessor :client_builder
+      attr_accessor :chef_vault_handler
 
       deps do
         require 'chef/knife/core/bootstrap_context'
@@ -194,8 +199,52 @@ class Chef
         :description => "Verify the SSL cert for HTTPS requests to the Chef server API.",
         :boolean     => true
 
+      option :vault_file,
+        :long        => '--vault-file VAULT_FILE',
+        :description => 'A JSON file with a list of vault(s) and item(s) to be updated'
+
+      option :vault_list,
+        :long        => '--vault-list VAULT_LIST',
+        :description => 'A JSON string with the vault(s) and item(s) to be updated'
+
+      option :vault_item,
+        :long        => '--vault-item VAULT_ITEM',
+        :description => 'A single vault and item to update as "vault:item"',
+        :proc        => Proc.new { |i|
+          (vault, item) = i.split(/:/)
+          vault_item ||= {}
+          vault_item[vault] ||= []
+          vault_item[vault].push(item)
+        }
+
+      def initialize(argv=[])
+        super
+        @client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(
+          chef_config: Chef::Config,
+          knife_config: config,
+          ui: ui,
+        )
+        @chef_vault_handler = Chef::Knife::Bootstrap::ChefVaultHandler.new(
+          knife_config: config,
+          ui: ui
+        )
+      end
+
+      # The default bootstrap template to use to bootstrap a server This is a public API hook
+      # which knife plugins use or inherit and override.
+      #
+      # @return [String] Default bootstrap template
       def default_bootstrap_template
         "chef-full"
+      end
+
+      # The server_name is the DNS or IP we are going to connect to, it is not necessarily
+      # the node name, the fqdn, or the hostname of the server.  This is a public API hook
+      # which knife plugins use or inherit and override.
+      #
+      # @return [String] The DNS or IP that bootstrap will connect to
+      def server_name
+        Array(@name_args).first
       end
 
       def bootstrap_template
@@ -237,20 +286,45 @@ class Chef
         template_file
       end
 
+      def secret
+        @secret ||= encryption_secret_provided_ignore_encrypt_flag? ? read_secret : nil
+      end
+
+      def bootstrap_context
+        @bootstrap_context ||= Knife::Core::BootstrapContext.new(
+          config,
+          config[:run_list],
+          Chef::Config,
+          secret
+        )
+      end
+
       def render_template
         template_file = find_template
         template = IO.read(template_file).chomp
-        secret = encryption_secret_provided_ignore_encrypt_flag? ? read_secret : nil
-        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config, secret)
-        Erubis::Eruby.new(template).evaluate(context)
+        Erubis::Eruby.new(template).evaluate(bootstrap_context)
       end
 
       def run
         validate_name_args!
-        @node_name = Array(@name_args).first
 
         $stdout.sync = true
-        ui.info("Connecting to #{ui.color(@node_name, :bold)}")
+
+        # chef-vault integration must use the new client-side hawtness, otherwise to use the
+        # new client-side hawtness, just delete your validation key.
+        if chef_vault_handler.doing_chef_vault? || !File.exist?(File.expand_path(Chef::Config[:validation_key]))
+          client_builder.run
+
+          chef_vault_handler.run(node_name: config[:chef_node_name])
+
+          bootstrap_context.client_pem = client_builder.client_path
+        else
+          ui.info("Doing old-style registration with a validation key...")
+          ui.info("Delete your validation key in order to use your user credentials instead")
+          ui.info("")
+        end
+
+        ui.info("Connecting to #{ui.color(server_name, :bold)}")
 
         begin
           knife_ssh.run
@@ -265,24 +339,19 @@ class Chef
       end
 
       def validate_name_args!
-        if Array(@name_args).first.nil?
+        if server_name.nil?
           ui.error("Must pass an FQDN or ip to bootstrap")
           exit 1
-        elsif Array(@name_args).first == "windows"
+        elsif server_name == "windows"
+          # catches "knife bootstrap windows" when that command is not installed
           ui.warn("Hostname containing 'windows' specified. Please install 'knife-windows' if you are attempting to bootstrap a Windows node via WinRM.")
         end
-      end
-
-      def server_name
-        Array(@name_args).first
       end
 
       def knife_ssh
         ssh = Chef::Knife::Ssh.new
         ssh.ui = ui
         ssh.name_args = [ server_name, ssh_command ]
-
-        # command line arguments and config file values are now merged into config in Chef::Knife#merge_configs
         ssh.config[:ssh_user] = config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = config[:ssh_port]
@@ -311,7 +380,6 @@ class Chef
 
         command
       end
-
     end
   end
 end
