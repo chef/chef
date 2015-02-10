@@ -87,6 +87,7 @@ class Chef
     def self.inherited(subclass)
       unless subclass.unnamed?
         subcommands[subclass.snake_case_name] = subclass
+        subcommand_files[subclass.snake_case_name] += [caller[0].split(/:\d+/).first]
       end
     end
 
@@ -121,15 +122,27 @@ class Chef
     end
 
     def self.subcommand_loader
-      @subcommand_loader ||= Knife::SubcommandLoader.new(chef_config_dir)
+      @subcommand_loader ||= Chef::Knife::SubcommandLoader.for_config(chef_config_dir)
     end
 
     def self.load_commands
       @commands_loaded ||= subcommand_loader.load_commands
     end
 
+    def self.guess_category(args)
+      subcommand_loader.guess_category(args)
+    end
+
+    def self.subcommand_class_from(args)
+      subcommand_loader.command_class_from(args) || subcommand_not_found!(args)
+    end
+
     def self.subcommands
       @@subcommands ||= {}
+    end
+
+    def self.subcommand_files
+      @@subcommand_files ||= Hash.new([])
     end
 
     def self.subcommands_by_category
@@ -140,30 +153,6 @@ class Chef
         end
       end
       @subcommands_by_category
-    end
-
-    # Print the list of subcommands knife knows about. If +preferred_category+
-    # is given, only subcommands in that category are shown
-    def self.list_commands(preferred_category=nil)
-      load_commands
-
-      category_desc = preferred_category ? preferred_category + " " : ''
-      msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
-
-      if preferred_category && subcommands_by_category.key?(preferred_category)
-        commands_to_show = {preferred_category => subcommands_by_category[preferred_category]}
-      else
-        commands_to_show = subcommands_by_category
-      end
-
-      commands_to_show.sort.each do |category, commands|
-        next if category =~ /deprecated/i
-        msg "** #{category.upcase} COMMANDS **"
-        commands.sort.each do |command|
-          msg subcommands[command].banner if subcommands[command]
-        end
-        msg
-      end
     end
 
     # Shared with subclasses
@@ -206,41 +195,12 @@ class Chef
         Chef::Log.level(:debug)
       end
 
-      load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
       subcommand_class.load_deps
       instance = subcommand_class.new(args)
       instance.configure_chef
       instance.run_with_pretty_exceptions
-    end
-
-    def self.guess_category(args)
-      category_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
-      category_words.map! {|w| w.split('-')}.flatten!
-      matching_category = nil
-      while (!matching_category) && (!category_words.empty?)
-        candidate_category = category_words.join(' ')
-        matching_category = candidate_category if subcommands_by_category.key?(candidate_category)
-        matching_category || category_words.pop
-      end
-      matching_category
-    end
-
-    def self.subcommand_class_from(args)
-      command_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
-
-      subcommand_class = nil
-
-      while ( !subcommand_class ) && ( !command_words.empty? )
-        snake_case_class_name = command_words.join("_")
-        unless subcommand_class = subcommands[snake_case_class_name]
-          command_words.pop
-        end
-      end
-      # see if we got the command as e.g., knife node-list
-      subcommand_class ||= subcommands[args.first.gsub('-', '_')]
-      subcommand_class || subcommand_not_found!(args)
     end
 
     def self.dependency_loaders
@@ -278,6 +238,20 @@ class Chef
       end
 
       exit 10
+    end
+
+    def self.list_commands(preferred_category=nil)
+      category_desc = preferred_category ? preferred_category + " " : ''
+      msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
+      subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
+        next if category =~ /deprecated/i
+        msg "** #{category.upcase} COMMANDS **"
+        commands.sort.each do |command|
+          subcommand_loader.load_command(command)
+          msg subcommands[command].banner if subcommands[command]
+        end
+        msg
+      end
     end
 
     def self.reset_config_path!
