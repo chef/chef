@@ -212,7 +212,11 @@ class Chef
 
     class NoProviderAvailable < RuntimeError; end
 
-    class DeprecatedFeatureError < RuntimeError; end
+    class DeprecatedFeatureError < RuntimeError;
+      def initalize(message)
+        super("#{message} (raising error due to treat_deprecation_warnings_as_errors being set)")
+      end
+    end
 
     class MissingRole < RuntimeError
       NULL = Object.new

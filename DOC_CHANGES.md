@@ -44,3 +44,11 @@ checking is off.
 The `package` provider has been extended to support multiple packages. This
 support is new and and not all subproviders yet support it. Full support for
 `apt` and `yum` has been implemented.
+
+## Add compile_time option to chef_gem
+
+This option defaults to true, which is deprecated, and setting this to false
+will stop chef_gem from automatically installing at compile_time.  False is
+the recommended setting as long as the gem is only used in provider code (a
+best practice) and not used directly in recipe code.
+

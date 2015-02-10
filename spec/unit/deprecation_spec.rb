@@ -59,27 +59,40 @@ describe Chef::Deprecation do
     end
   end
 
-  context 'deprecation warning messages' do
-    before(:each) do
-      @warning_output = [ ]
-      allow(Chef::Log).to receive(:warn) { |msg| @warning_output << msg }
+  context 'when Chef::Config[:treat_deprecation_warnings_as_errors] is off' do
+    before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
     end
 
-    it 'should be enabled for deprecated methods' do
-      TestClass.new.deprecated_method(10)
-      expect(@warning_output).not_to be_empty
+    context 'deprecation warning messages' do
+      before(:each) do
+        @warning_output = [ ]
+        allow(Chef::Log).to receive(:warn) { |msg| @warning_output << msg }
+      end
+
+      it 'should be enabled for deprecated methods' do
+        TestClass.new.deprecated_method(10)
+        expect(@warning_output).not_to be_empty
+      end
+
+      it 'should contain stack trace' do
+        TestClass.new.deprecated_method(10)
+        expect(@warning_output.join("").include?(".rb")).to be_truthy
+      end
     end
 
-    it 'should contain stack trace' do
-      TestClass.new.deprecated_method(10)
-      expect(@warning_output.join("").include?(".rb")).to be_truthy
+    it 'deprecated methods should still be called' do
+      test_instance = TestClass.new
+      test_instance.deprecated_method(10)
+      expect(test_instance.get_value).to eq(10)
     end
   end
 
-  it 'deprecated methods should still be called' do
+  it 'should raise when deprecation warnings are treated as errors' do
+    # rspec should set this
+    expect(Chef::Config[:treat_deprecation_warnings_as_errors]).to be true
     test_instance = TestClass.new
-    test_instance.deprecated_method(10)
-    expect(test_instance.get_value).to eq(10)
+    expect { test_instance.deprecated_method(10) }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
   end
 
 end
