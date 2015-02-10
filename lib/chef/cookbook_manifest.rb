@@ -24,7 +24,9 @@ class Chef
   # to a Chef Server.
   class CookbookManifest
 
-    # TODO: duplicates the same constant in CookbookVersion
+    # Duplicates the same constant in CookbookVersion. We cannot remove it
+    # there because it is treated by other code as part of CookbookVersion's
+    # public API (also used in some deprecated methods).
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ].freeze
 
     extend Forwardable
@@ -144,14 +146,14 @@ class Chef
       "#{cookbook_url_path}/#{name}/#{version}?force=true"
     end
 
-    # TODO: This is kind of terrible. investigate removing it
+    # Update this CookbookManifest from the contents of another manifest, and
+    # make the corresponding changes to the cookbook_version object. Required
+    # to provide backward compatibility with CookbookVersion#manifest= method.
     def update_from(new_manifest)
       @manifest = Mash.new new_manifest
       @checksums = extract_checksums_from_manifest(@manifest)
       @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
 
-      # TODO: this part of this method is "feature envious" it only deals with
-      # mutating the CookbookVersion object.
       COOKBOOK_SEGMENTS.each do |segment|
         next unless @manifest.has_key?(segment)
         filenames = @manifest[segment].map{|manifest_record| manifest_record['name']}
@@ -250,9 +252,6 @@ class Chef
       checksums
     end
 
-    # TODO: delegating to a class method like this is ugly. We should be able
-    # to fix this by moving logic into a class in a way that will make it easy
-    # to add support for SHA-2
     def checksum_cookbook_file(filepath)
       CookbookVersion.checksum_cookbook_file(filepath)
     end

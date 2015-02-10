@@ -33,88 +33,7 @@ class Chef
   # cookbook. Chef supports maintaining multiple versions of a cookbook on a
   # single server; each version is represented by a distinct instance of this
   # class.
-  #--
-  # TODO: timh/cw: 5-24-2010: mutators for files (e.g., recipe_filenames=,
-  # recipe_filenames.insert) should dirty the manifest so it gets regenerated.
   class CookbookVersion
-
-    ## METHODS DELEGATED TO CookbookResourceAdapter
-    # TODO: reorganize these
-
-    private def cookbook_manifest
-      @cookbook_manifest ||= CookbookManifest.new(self)
-    end
-
-    def manifest
-      cookbook_manifest.manifest
-    end
-
-    # Returns a hash of checksums to either nil or the on disk path (which is
-    # done by generate_manifest).
-    def checksums
-      cookbook_manifest.checksums
-    end
-
-    def manifest_records_by_path
-      cookbook_manifest.manifest_records_by_path
-    end
-
-    def manifest=(new_manifest)
-      cookbook_manifest.update_from(new_manifest)
-    end
-
-    private def deprecated!(message)
-      if Chef::Config[:treat_deprecation_warnings_as_errors]
-        raise Exceptions::DeprecatedFeatureError, message
-      else
-        Chef::Log.warn(message)
-      end
-    end
-
-    def save_url
-      # TODO: double check this code suggestion
-      deprecated!(<<-DEPRECATED)
-Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
-To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).save_url`
-
-Called from #{caller(1).first}
-DEPRECATED
-
-      cookbook_manifest.save_url
-    end
-
-    def force_save_url
-      # TODO: double check this code suggestion
-      deprecated!(<<-DEPRECATED)
-Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
-To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).force_save_url`
-
-Called from #{caller(1).first}
-DEPRECATED
-      cookbook_manifest.force_save_url
-    end
-
-    def to_hash
-      # TODO: double check this code suggestion
-      deprecated!(<<-DEPRECATED)
-Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
-To get the Hash representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_hash`
-
-Called from #{caller(1).first}
-DEPRECATED
-      cookbook_manifest.to_hash
-    end
-
-    def to_json(*a)
-      # TODO: double check this code suggestion
-      deprecated!(<<-DEPRECATED)
-Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
-To get the JSON representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_json`
-
-Called from #{caller(1).first}
-DEPRECATED
-      cookbook_manifest.to_json
-    end
 
     include Comparable
 
@@ -241,6 +160,24 @@ DEPRECATED
     ## BACKCOMPAT/DEPRECATED - Remove these and fix breakage before release [DAN - 5/20/2010]##
     alias :attribute_files :attribute_filenames
     alias :attribute_files= :attribute_filenames=
+
+    def manifest
+      cookbook_manifest.manifest
+    end
+
+    # Returns a hash of checksums to either nil or the on disk path (which is
+    # done by generate_manifest).
+    def checksums
+      cookbook_manifest.checksums
+    end
+
+    def manifest_records_by_path
+      cookbook_manifest.manifest_records_by_path
+    end
+
+    def manifest=(new_manifest)
+      cookbook_manifest.update_from(new_manifest)
+    end
 
     # Return recipe names in the form of cookbook_name::recipe_name
     def fully_qualified_recipe_names
@@ -535,6 +472,28 @@ DEPRECATED
       rendered_manifest
     end
 
+
+    def to_hash
+      deprecated!(<<-DEPRECATED)
+Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
+To get the Hash representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_hash`
+
+Called from #{caller(1).first}
+DEPRECATED
+      cookbook_manifest.to_hash
+    end
+
+    def to_json(*a)
+      deprecated!(<<-DEPRECATED)
+Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
+To get the JSON representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_json`
+
+Called from #{caller(1).first}
+DEPRECATED
+      cookbook_manifest.to_json
+    end
+
+
     def metadata_json_file
       File.join(root_paths[0], "metadata.json")
     end
@@ -552,6 +511,28 @@ DEPRECATED
     ##
     # REST API
     ##
+
+    def save_url
+      deprecated!(<<-DEPRECATED)
+Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
+To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).save_url`
+
+Called from #{caller(1).first}
+DEPRECATED
+
+      cookbook_manifest.save_url
+    end
+
+    def force_save_url
+      deprecated!(<<-DEPRECATED)
+Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
+To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).force_save_url`
+
+Called from #{caller(1).first}
+DEPRECATED
+      cookbook_manifest.force_save_url
+    end
+
     def self.chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
@@ -612,6 +593,18 @@ DEPRECATED
     end
 
     private
+
+    def deprecated!(message)
+      if Chef::Config[:treat_deprecation_warnings_as_errors]
+        raise Exceptions::DeprecatedFeatureError, message
+      else
+        Chef::Log.warn(message)
+      end
+    end
+
+    def cookbook_manifest
+      @cookbook_manifest ||= CookbookManifest.new(self)
+    end
 
     def find_preferred_manifest_record(node, segment, filename)
       preferences = preferences_for_path(node, segment, filename)
