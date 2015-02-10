@@ -32,11 +32,11 @@ class Chef
         @dsc_resource = dsc_resource
         @resource_converged = false
         @operations = {
-          :set => Proc.new { |config_manager, document|
-            config_manager.set_configuration(document)
+          :set => Proc.new { |config_manager, document, shellout_flags|
+            config_manager.set_configuration(document, shellout_flags)
           },
-          :test => Proc.new { |config_manager, document|
-            config_manager.test_configuration(document)
+          :test => Proc.new { |config_manager, document, shellout_flags|
+            config_manager.test_configuration(document, shellout_flags)
           }}
       end
 
@@ -89,9 +89,15 @@ class Chef
 
         config_manager = Chef::Util::DSC::LocalConfigurationManager.new(@run_context.node, config_directory)
 
+        shellout_flags = {
+          :cwd => @dsc_resource.cwd,
+          :environment => @dsc_resource.environment,
+          :timeout => @dsc_resource.timeout
+        }
+
         begin
           configuration_document = generate_configuration_document(config_directory, configuration_flags)
-          @operations[operation].call(config_manager, configuration_document)
+          @operations[operation].call(config_manager, configuration_document, shellout_flags)
         rescue Exception => e
           Chef::Log.error("DSC operation failed: #{e.message.to_s}")
           raise e
