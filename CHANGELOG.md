@@ -52,6 +52,11 @@
   refactor to use shell_out in rpm provider
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   Multi-package support
+* [**Naotoshi Seo**](https://github.com/sonots):
+  Support HTTP/FTP source on rpm_package
+  add json_attribs option for chef-apply command
+* [**AJ Christensen**](https://github.com/fujin):
+  Isolate/fix the no-fork fault. [Issue 2709](https://github.com/chef/chef/issues/2709)
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
@@ -71,6 +76,7 @@
 * Add comments to trusted_certs_content
 * fixes a bug where providers would not get defined if a top-level ruby constant with the same name was already defined (ark cookbook, chrome cookbook)
 * Fix a bug in `reboot`, `ips_package`, `paludis_package`, `windows_package` resources where `action :nothing` was not permitted
+* Use Chef::ApiClient#from_hash in `knife client create` to avoid json_class requirement. [Issue 2542](https://github.com/chef/chef/issues/2542)
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
