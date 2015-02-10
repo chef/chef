@@ -32,6 +32,7 @@ another component.
 * [Claire McQuin](https://github.com/mcquin)
 * [Jay Mundrawala](http://github.com/jdmundrawala)
 * [Bryan McLellan](http://github.com/btm)
+* [Ranjib Dey](http://github.com/ranjib)
 
 ## Dev Tools
 
@@ -58,6 +59,7 @@ Chef Zero, Knife, Chef Apply and Chef Shell.
 
 * [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](http://github.com/lamont-granquist)
+* [Ranjib Dey](http://github.com/ranjib)
 
 ## Platform Specific Components
 
@@ -79,6 +81,7 @@ The specific components of Chef related to a given platform - including (but not
 ### Maintainers
 
 * [Lamont Granquist](http://github.com/lamont-granquist)
+* [Ranjib Dey](http://github.com/ranjib)
 
 ## Windows
 
