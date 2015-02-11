@@ -35,15 +35,15 @@ class Chef
 
       def example_group_started(notification)
         if notification.group.parent_groups.size == 1
-          # top level `controls` block
+          # top level `control_group` block
           desc = notification.group.description
-          Chef::Log.debug("Entered `controls` block named #{desc}")
+          Chef::Log.debug("Entered `control_group` block named #{desc}")
           events.control_group_started(desc)
         end
       end
 
       def stop(notification)
-        Chef::Log.info("Successfully executed all `controls` blocks and contained examples")
+        Chef::Log.info("Successfully executed all `control_group` blocks and contained examples")
         notification.examples.each do |example|
           control_group_name, control_data = build_control_from(example)
           e = example.exception
@@ -75,7 +75,7 @@ class Chef
           group = group[:parent_example_group]
         end
 
-        # We know all of our examples each live in a top-level `controls` block - get this name now
+        # We know all of our examples each live in a top-level `control_group` block - get this name now
         outermost_group_desc = describe_groups.shift
 
         return outermost_group_desc, {

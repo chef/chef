@@ -54,7 +54,7 @@ describe Chef::Audit::Runner do
 
     let(:audits) { {} }
     let(:run_context) { instance_double(Chef::RunContext, :events => events, :audits => audits) }
-    let(:controls_name) { "controls_name" }
+    let(:control_group_name) { "control_group_name" }
 
     it "Correctly runs an empty controls block" do
       in_sub_process do
@@ -69,7 +69,7 @@ describe Chef::Audit::Runner do
             expect(2 - 2).to eq(0)
           end
         end
-        { controls_name => Struct.new(:args, :block).new([controls_name], should_pass)}
+        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_pass)}
       end
     end
 
@@ -80,7 +80,7 @@ describe Chef::Audit::Runner do
             expect(2 - 1).to eq(0)
           end
         end
-        { controls_name => Struct.new(:args, :block).new([controls_name], should_fail)}
+        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_fail)}
       end
     end
 
@@ -103,7 +103,7 @@ describe Chef::Audit::Runner do
 
           expect(stdout.string).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
           expect(stdout.string).to match(/1 example, 1 failure/)
-          expect(stdout.string).to match(/# controls_name should fail/)
+          expect(stdout.string).to match(/# control_group_name should fail/)
         end
       end
     end
@@ -127,7 +127,7 @@ describe Chef::Audit::Runner do
           contents = tmpfile.read
           expect(contents).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
           expect(contents).to match(/1 example, 1 failure/)
-          expect(contents).to match(/# controls_name should fail/)
+          expect(contents).to match(/# control_group_name should fail/)
         end
       end
     end

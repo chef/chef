@@ -9,7 +9,7 @@ file "/tmp/audit_test_file" do
   content "Welcome to audit mode."
 end
 
-controls "file auditing" do
+control_group "file auditing" do
   describe "test file" do
     it "says welcome" do
       expect(file("/tmp/audit_test_file")).to contain("Welcome")
@@ -22,7 +22,7 @@ file "/tmp/audit_test_file_2" do
   content "Bye to audit mode."
 end
 
-controls "end file auditing" do
+control_group "end file auditing" do
   describe "end file" do
     it "says bye" do
       expect(file("/tmp/audit_test_file_2")).to contain("Bye")

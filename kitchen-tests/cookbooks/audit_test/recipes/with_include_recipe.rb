@@ -6,7 +6,7 @@
 
 include_recipe "audit_test::serverspec_collision"
 
-controls "basic example" do
+control_group "basic example" do
   it "should pass" do
     expect(2 - 2).to eq(0)
   end

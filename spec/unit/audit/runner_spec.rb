@@ -78,14 +78,14 @@ describe Chef::Audit::Runner do
       end
     end
 
-    describe "#register_controls" do
+    describe "#register_control_groups" do
       let(:audits) { [] }
       let(:run_context) { instance_double(Chef::RunContext, :audits => audits) }
 
       it "adds the control group aliases" do
-        runner.send(:register_controls)
+        runner.send(:register_control_groups)
 
-        expect(RSpec::Core::DSL.example_group_aliases).to include(:__controls__)
+        expect(RSpec::Core::DSL.example_group_aliases).to include(:__control_group__)
         expect(RSpec::Core::DSL.example_group_aliases).to include(:control)
       end
 
@@ -94,7 +94,7 @@ describe Chef::Audit::Runner do
         let(:group) {Struct.new(:args, :block).new(["group_name"], nil)}
 
         it "sends the audits to the world" do
-          runner.send(:register_controls)
+          runner.send(:register_control_groups)
 
           expect(RSpec.world.example_groups.size).to eq(1)
           # For whatever reason, `kind_of` is not working

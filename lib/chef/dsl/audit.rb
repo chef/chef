@@ -24,7 +24,7 @@ class Chef
 
       # Can encompass tests in a `control` block or `describe` block
       # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
-      def controls(*args, &block)
+      def control_group(*args, &block)
         raise Chef::Exceptions::NoAuditsProvided unless block
 
         name = args[0]

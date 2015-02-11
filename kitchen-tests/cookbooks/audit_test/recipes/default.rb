@@ -4,7 +4,7 @@
 #
 # Copyright (c) 2014 The Authors, All Rights Reserved.
 
-controls "basic control group" do
+control_group "basic control group" do
   control "basic math" do
     it "should pass" do
       expect(2 - 2).to eq(0)
@@ -12,15 +12,15 @@ controls "basic control group" do
   end
 end
 
-controls "control group without top level control" do
+control_group "control group without top level control" do
   it "should pass" do
     expect(2 - 2).to eq(0)
   end
 end
 
-controls "control group with empty control" do
+control_group "control group with empty control" do
   control "empty"
 end
 
-controls "empty control group with block" do
+control_group "empty control group with block" do
 end

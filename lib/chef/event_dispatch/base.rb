@@ -248,15 +248,15 @@ class Chef
       def audit_phase_failed(exception)
       end
 
-      # Signifies the start of a `controls` block with a defined name
+      # Signifies the start of a `control_group` block with a defined name
       def control_group_started(name)
       end
 
-      # An example in a `controls` block completed successfully
+      # An example in a `control_group` block completed successfully
       def control_example_success(control_group_name, example_data)
       end
 
-      # An example in a `controls` block failed with the provided error
+      # An example in a `control_group` block failed with the provided error
       def control_example_failure(control_group_name, example_data, error)
       end
 

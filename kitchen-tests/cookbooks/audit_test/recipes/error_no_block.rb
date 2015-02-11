@@ -4,4 +4,4 @@
 #
 # Copyright (c) 2014 The Authors, All Rights Reserved.
 
-controls "empty control group without block"
+control_group "empty control group without block"
