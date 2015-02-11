@@ -357,6 +357,7 @@ class Chef
         safe_attach_function :ConvertSidToStringSidA, [ :pointer, :pointer ], :BOOL
         safe_attach_function :ConvertStringSidToSidW, [ :pointer, :pointer ], :BOOL
         safe_attach_function :DeleteAce, [ :pointer, :DWORD ], :BOOL
+        safe_attach_function :DuplicateToken, [:HANDLE, :SECURITY_IMPERSONATION_LEVEL, :PHANDLE], :BOOL
         safe_attach_function :EqualSid, [ :pointer, :pointer ], :BOOL
         safe_attach_function :FreeSid, [ :pointer ], :pointer
         safe_attach_function :GetAce, [ :pointer, :DWORD, :pointer ], :BOOL
