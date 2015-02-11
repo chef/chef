@@ -190,6 +190,11 @@ describe Chef::CookbookLoader do
   end
 
   describe "loading only one cookbook" do
+
+    let(:openldap_cookbook) { cookbook_loader["openldap"] }
+
+    let(:cookbook_as_hash) { Chef::CookbookManifest.new(openldap_cookbook).to_hash }
+
     before(:each) do
       cookbook_loader.load_cookbook("openldap")
     end
@@ -205,12 +210,11 @@ describe Chef::CookbookLoader do
     it "should not duplicate keys when serialized to JSON" do
       # Chef JSON serialization will generate duplicate keys if given
       # a Hash containing matching string and symbol keys. See CHEF-4571.
-      aa = cookbook_loader["openldap"]
-      expect(aa.to_hash["metadata"].recipes.keys).not_to include(:openldap)
-      expect(aa.to_hash["metadata"].recipes.keys).to include("openldap")
+      expect(cookbook_as_hash["metadata"].recipes.keys).not_to include(:openldap)
+      expect(cookbook_as_hash["metadata"].recipes.keys).to include("openldap")
       expected_desc = "Main Open LDAP configuration"
-      expect(aa.to_hash["metadata"].recipes["openldap"]).to eq(expected_desc)
-      raw = Chef::JSONCompat.to_json(aa.to_hash["metadata"].recipes)
+      expect(cookbook_as_hash["metadata"].recipes["openldap"]).to eq(expected_desc)
+      raw = Chef::JSONCompat.to_json(cookbook_as_hash["metadata"].recipes)
       search_str = "\"openldap\":\""
       key_idx = raw.index(search_str)
       expect(key_idx).to be > 0

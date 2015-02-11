@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/cookbook_manifest'
 require 'chef_zero/data_store/memory_store'
 require 'chef_zero/data_store/data_already_exists_error'
 require 'chef_zero/data_store/data_not_found_error'
@@ -147,7 +148,7 @@ class Chef
               # get /cookbooks/NAME/version
               result = nil
               begin
-                result = entry.chef_object.to_hash
+                result = Chef::CookbookManifest.new(entry.chef_object).to_hash
               rescue Chef::ChefFS::FileSystem::NotFoundError => e
                 raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
               end

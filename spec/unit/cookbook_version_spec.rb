@@ -68,32 +68,10 @@ describe Chef::CookbookVersion do
       expect(@cookbook_version).to be_frozen_version
     end
 
-    it "is \"ready\"" do
-      # WTF is this? what are the valid states? and why aren't they set with encapsulating methods?
-      # [Dan 15-Jul-2010]
-      expect(@cookbook_version.status).to eq(:ready)
-    end
-
     it "has empty metadata" do
       expect(@cookbook_version.metadata).to eq(Chef::Cookbook::Metadata.new)
     end
 
-    it "creates a manifest hash of its contents" do
-      expected = {"recipes"=>[],
-                  "definitions"=>[],
-                  "libraries"=>[],
-                  "attributes"=>[],
-                  "files"=>[],
-                  "templates"=>[],
-                  "resources"=>[],
-                  "providers"=>[],
-                  "root_files"=>[],
-                  "cookbook_name"=>"tatft",
-                  "metadata"=>Chef::Cookbook::Metadata.new,
-                  "version"=>"0.0.0",
-                  "name"=>"tatft-0.0.0"}
-      expect(@cookbook_version.manifest).to eq(expected)
-    end
   end
 
   describe "with a cookbook directory named tatft" do
@@ -141,85 +119,6 @@ describe Chef::CookbookVersion do
         @node.name("testing")
       end
 
-      it "generates a manifest containing the cookbook's files" do
-        manifest = @cookbook_version.manifest
-
-        expect(manifest["metadata"]).to eq(Chef::Cookbook::Metadata.new)
-        expect(manifest["cookbook_name"]).to eq("tatft")
-
-        expect(manifest["recipes"].size).to eq(1)
-
-        recipe = manifest["recipes"].first
-        expect(recipe["name"]).to eq("default.rb")
-        expect(recipe["path"]).to eq("recipes/default.rb")
-        expect(recipe["checksum"]).to match(MD5)
-        expect(recipe["specificity"]).to eq("default")
-
-        expect(manifest["definitions"].size).to eq(1)
-
-        definition = manifest["definitions"].first
-        expect(definition["name"]).to eq("runit_service.rb")
-        expect(definition["path"]).to eq("definitions/runit_service.rb")
-        expect(definition["checksum"]).to match(MD5)
-        expect(definition["specificity"]).to eq("default")
-
-        expect(manifest["libraries"].size).to eq(1)
-
-        library = manifest["libraries"].first
-        expect(library["name"]).to eq("ownage.rb")
-        expect(library["path"]).to eq("libraries/ownage.rb")
-        expect(library["checksum"]).to match(MD5)
-        expect(library["specificity"]).to eq("default")
-
-        expect(manifest["attributes"].size).to eq(1)
-
-        attribute_file = manifest["attributes"].first
-        expect(attribute_file["name"]).to eq("default.rb")
-        expect(attribute_file["path"]).to eq("attributes/default.rb")
-        expect(attribute_file["checksum"]).to match(MD5)
-        expect(attribute_file["specificity"]).to eq("default")
-
-        expect(manifest["files"].size).to eq(1)
-
-        cookbook_file = manifest["files"].first
-        expect(cookbook_file["name"]).to eq("giant_blob.tgz")
-        expect(cookbook_file["path"]).to eq("files/default/giant_blob.tgz")
-        expect(cookbook_file["checksum"]).to match(MD5)
-        expect(cookbook_file["specificity"]).to eq("default")
-
-        expect(manifest["templates"].size).to eq(1)
-
-        template = manifest["templates"].first
-        expect(template["name"]).to eq("configuration.erb")
-        expect(template["path"]).to eq("templates/default/configuration.erb")
-        expect(template["checksum"]).to match(MD5)
-        expect(template["specificity"]).to eq("default")
-
-        expect(manifest["resources"].size).to eq(1)
-
-        lwr = manifest["resources"].first
-        expect(lwr["name"]).to eq("lwr.rb")
-        expect(lwr["path"]).to eq("resources/lwr.rb")
-        expect(lwr["checksum"]).to match(MD5)
-        expect(lwr["specificity"]).to eq("default")
-
-        expect(manifest["providers"].size).to eq(1)
-
-        lwp = manifest["providers"].first
-        expect(lwp["name"]).to eq("lwp.rb")
-        expect(lwp["path"]).to eq("providers/lwp.rb")
-        expect(lwp["checksum"]).to match(MD5)
-        expect(lwp["specificity"]).to eq("default")
-
-        expect(manifest["root_files"].size).to eq(1)
-
-        readme = manifest["root_files"].first
-        expect(readme["name"]).to eq("README.rdoc")
-        expect(readme["path"]).to eq("README.rdoc")
-        expect(readme["checksum"]).to match(MD5)
-        expect(readme["specificity"]).to eq("default")
-      end
-
       it "determines whether a template is available for a given node" do
         expect(@cookbook_version).to have_template_for_node(@node, "configuration.erb")
         expect(@cookbook_version).not_to have_template_for_node(@node, "missing.erb")
@@ -253,102 +152,6 @@ describe Chef::CookbookVersion do
       end
     end
 
-    describe "and a cookbook_version with a different name" do
-      before do
-        # Currently the cookbook loader finds all the files then tells CookbookVersion
-        # where they are.
-        @cookbook_version = Chef::CookbookVersion.new("blarghle", @cookbook_root)
-        @cookbook_version.attribute_filenames  = @cookbook[:attribute_filenames]
-        @cookbook_version.definition_filenames = @cookbook[:definition_filenames]
-        @cookbook_version.recipe_filenames     = @cookbook[:recipe_filenames]
-        @cookbook_version.template_filenames   = @cookbook[:template_filenames]
-        @cookbook_version.file_filenames       = @cookbook[:file_filenames]
-        @cookbook_version.library_filenames    = @cookbook[:library_filenames]
-        @cookbook_version.resource_filenames   = @cookbook[:resource_filenames]
-        @cookbook_version.provider_filenames   = @cookbook[:provider_filenames]
-        @cookbook_version.root_filenames       = @cookbook[:root_filenames]
-        @cookbook_version.metadata_filenames   = @cookbook[:metadata_filenames]
-      end
-
-      it "generates a manifest containing the cookbook's files" do
-        manifest = @cookbook_version.manifest
-
-        expect(manifest["metadata"]).to eq(Chef::Cookbook::Metadata.new)
-        expect(manifest["cookbook_name"]).to eq("blarghle")
-
-        expect(manifest["recipes"].size).to eq(1)
-
-        recipe = manifest["recipes"].first
-        expect(recipe["name"]).to eq("default.rb")
-        expect(recipe["path"]).to eq("recipes/default.rb")
-        expect(recipe["checksum"]).to match(MD5)
-        expect(recipe["specificity"]).to eq("default")
-
-        expect(manifest["definitions"].size).to eq(1)
-
-        definition = manifest["definitions"].first
-        expect(definition["name"]).to eq("runit_service.rb")
-        expect(definition["path"]).to eq("definitions/runit_service.rb")
-        expect(definition["checksum"]).to match(MD5)
-        expect(definition["specificity"]).to eq("default")
-
-        expect(manifest["libraries"].size).to eq(1)
-
-        library = manifest["libraries"].first
-        expect(library["name"]).to eq("ownage.rb")
-        expect(library["path"]).to eq("libraries/ownage.rb")
-        expect(library["checksum"]).to match(MD5)
-        expect(library["specificity"]).to eq("default")
-
-        expect(manifest["attributes"].size).to eq(1)
-
-        attribute_file = manifest["attributes"].first
-        expect(attribute_file["name"]).to eq("default.rb")
-        expect(attribute_file["path"]).to eq("attributes/default.rb")
-        expect(attribute_file["checksum"]).to match(MD5)
-        expect(attribute_file["specificity"]).to eq("default")
-
-        expect(manifest["files"].size).to eq(1)
-
-        cookbook_file = manifest["files"].first
-        expect(cookbook_file["name"]).to eq("giant_blob.tgz")
-        expect(cookbook_file["path"]).to eq("files/default/giant_blob.tgz")
-        expect(cookbook_file["checksum"]).to match(MD5)
-        expect(cookbook_file["specificity"]).to eq("default")
-
-        expect(manifest["templates"].size).to eq(1)
-
-        template = manifest["templates"].first
-        expect(template["name"]).to eq("configuration.erb")
-        expect(template["path"]).to eq("templates/default/configuration.erb")
-        expect(template["checksum"]).to match(MD5)
-        expect(template["specificity"]).to eq("default")
-
-        expect(manifest["resources"].size).to eq(1)
-
-        lwr = manifest["resources"].first
-        expect(lwr["name"]).to eq("lwr.rb")
-        expect(lwr["path"]).to eq("resources/lwr.rb")
-        expect(lwr["checksum"]).to match(MD5)
-        expect(lwr["specificity"]).to eq("default")
-
-        expect(manifest["providers"].size).to eq(1)
-
-        lwp = manifest["providers"].first
-        expect(lwp["name"]).to eq("lwp.rb")
-        expect(lwp["path"]).to eq("providers/lwp.rb")
-        expect(lwp["checksum"]).to match(MD5)
-        expect(lwp["specificity"]).to eq("default")
-
-        expect(manifest["root_files"].size).to eq(1)
-
-        readme = manifest["root_files"].first
-        expect(readme["name"]).to eq("README.rdoc")
-        expect(readme["path"]).to eq("README.rdoc")
-        expect(readme["checksum"]).to match(MD5)
-        expect(readme["specificity"]).to eq("default")
-      end
-    end
   end
 
   describe 'with a cookbook directory named cookbook2 that has unscoped files' do
@@ -499,8 +302,63 @@ describe Chef::CookbookVersion do
 
   end
 
-  include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-    let(:jsonable) { Chef::CookbookVersion.new("tatft", '/tmp/blah') }
+  describe "when deprecation warnings are errors" do
+
+    subject(:cbv) { Chef::CookbookVersion.new("version validation", '/tmp/blah') }
+
+    describe "HTTP Resource behaviors", pending: "will be deprected when CookbookManifest API is stablized" do
+
+      it "errors on #save_url" do
+        expect { cbv.save_url }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+      end
+
+      it "errors on #force_save_url" do
+        expect { cbv.force_save_url }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+      end
+
+      it "errors on #to_hash" do
+        expect { cbv.to_hash }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+      end
+
+      it "errors on #to_json" do
+        expect { cbv.to_json }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+      end
+
+    end
+
+    it "errors on #status and #status=" do
+      expect { cbv.status = :wat }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+      expect { cbv.status }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    end
+
   end
 
+  describe "deprecated features" do
+
+    subject(:cbv) { Chef::CookbookVersion.new("tatft", '/tmp/blah').tap { |c| c.version = "1.2.3" } }
+
+    before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
+    it "gives a save URL for the standard cookbook API" do
+      expect(cbv.save_url).to eq("cookbooks/tatft/1.2.3")
+    end
+
+    it "gives a force save URL for the standard cookbook API" do
+      expect(cbv.force_save_url).to eq("cookbooks/tatft/1.2.3?force=true")
+    end
+
+    it "is \"ready\"" do
+      # WTF is this? what are the valid states? and why aren't they set with encapsulating methods?
+      # [Dan 15-Jul-2010]
+      expect(cbv.status).to eq(:ready)
+    end
+
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:jsonable) { Chef::CookbookVersion.new("tatft", '/tmp/blah') }
+    end
+
+  end
 end
