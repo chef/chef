@@ -356,6 +356,18 @@ EOM
         @ui.config[:attribute] = ["gi", "hi"]
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "gi" => "go", "hi"=> "ho" } })
       end
+
+      it "should handle attributes named the same as methods" do
+        input = { "keys" =>  "values", "hi" => "ho", "id" => "sample-data-bag-item" }
+        @ui.config[:attribute] = "keys"
+        expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "keys" => "values" } })
+      end
+
+      it "should handle nested attributes named the same as methods" do
+        input = { "keys" =>  {"keys" => "values"}, "hi" => "ho", "id" => "sample-data-bag-item" }
+        @ui.config[:attribute] = "keys.keys"
+        expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "keys.keys" => "values" } })
+      end
     end
 
     describe "with --run-list passed" do
