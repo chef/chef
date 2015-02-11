@@ -270,6 +270,15 @@ class Chef
              :MaxTokenInfoClass
         ]
 
+        # https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572%28v=vs.85%29.aspx
+        SECURITY_IMPERSONATION_LEVEL = enum :SECURITY_IMPERSONATION_LEVEL, [
+             :SecurityAnonymous,
+             :SecurityIdentification,
+             :SecurityImpersonation,
+             :SecurityDelegation
+        ]
+
+
         # SECURITY_DESCRIPTOR is an opaque structure whose contents can vary.  Pass the
         # pointer around and free it with LocalFree.
         # http://msdn.microsoft.com/en-us/library/windows/desktop/aa379561(v=vs.85).aspx
