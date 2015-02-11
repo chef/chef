@@ -415,7 +415,7 @@ describe Chef::PolicyBuilder::Policyfile do
               policy_builder.load_node
               policy_builder.build_node
 
-              expect(http_api).to receive(:get).with("cookbooks/example1/#{example1_xyz_version}").
+              expect(http_api).to receive(:get).with(cookbook1_url).
                 and_raise(error404)
             end
 
@@ -432,9 +432,9 @@ describe Chef::PolicyBuilder::Policyfile do
               policy_builder.load_node
               policy_builder.build_node
 
-              expect(http_api).to receive(:get).with("cookbooks/example1/#{example1_xyz_version}").
+              expect(http_api).to receive(:get).with(cookbook1_url).
                 and_return(example1_cookbook_object)
-              expect(http_api).to receive(:get).with("cookbooks/example2/#{example2_xyz_version}").
+              expect(http_api).to receive(:get).with(cookbook2_url).
                 and_return(example2_cookbook_object)
 
               allow(Chef::CookbookSynchronizer).to receive(:new).
@@ -463,8 +463,32 @@ describe Chef::PolicyBuilder::Policyfile do
         end # shared_examples_for "fetching cookbooks"
 
         context "when using compatibility mode (policy_document_native_api == false)" do
-          include_examples "fetching cookbooks"
+          include_examples "fetching cookbooks" do
+
+            let(:cookbook1_url) { "cookbooks/example1/#{example1_xyz_version}" }
+            let(:cookbook2_url) { "cookbooks/example2/#{example2_xyz_version}" }
+
+          end
+
         end
+
+        context "when using native API mode (policy_document_native_api == true)" do
+
+          before do
+            Chef::Config[:policy_document_native_api] = true
+            Chef::Config[:policy_group] = "policy-stage"
+            Chef::Config[:policy_name] = "example"
+          end
+
+          include_examples "fetching cookbooks" do
+
+            let(:cookbook1_url) { "cookbook_artifacts/example1/#{example1_xyz_version}" }
+            let(:cookbook2_url) { "cookbook_artifacts/example2/#{example2_xyz_version}" }
+
+          end
+
+        end
+
       end
     end
 
