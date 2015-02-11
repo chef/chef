@@ -175,6 +175,11 @@ do_download() {
   fi
 
   echo ">>>>>> wget, curl, fetch, perl or python not found on this instance."
+
+  if test "x$stderr_results" != "x"; then
+    echo "\nDEBUG OUTPUT FOLLOWS:\n$stderr_results"
+  fi
+
   return 16
 }
 
