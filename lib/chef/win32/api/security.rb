@@ -386,6 +386,7 @@ class Chef
         safe_attach_function :LookupPrivilegeDisplayNameW, [ :LPCWSTR, :LPCWSTR, :LPWSTR, :LPDWORD, :LPDWORD ], :BOOL
         safe_attach_function :LookupPrivilegeValueW, [ :LPCWSTR, :LPCWSTR, :PLUID ], :BOOL
         safe_attach_function :MakeAbsoluteSD, [ :pointer, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD], :BOOL
+        safe_attach_function :MapGenericMask, [ :PDWORD, :PGENERICMAPPING ], :void
         safe_attach_function :OpenProcessToken, [ :HANDLE, :DWORD, :PHANDLE ], :BOOL
         safe_attach_function :QuerySecurityAccessMask, [ :DWORD, :LPDWORD ], :void
         safe_attach_function :SetFileSecurityW, [ :LPWSTR, :DWORD, :pointer ], :BOOL

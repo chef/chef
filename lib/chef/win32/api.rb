@@ -159,6 +159,7 @@ class Chef
         host.typedef :pointer, :PDWORD32 # Pointer to a DWORD32.
         host.typedef :pointer, :PDWORD64 # Pointer to a DWORD64.
         host.typedef :pointer, :PFLOAT # Pointer to a FLOAT.
+        host.typedef :pointer, :PGENERICMAPPING #Pointer to GENERIC_MAPPING
         host.typedef :pointer, :PHALF_PTR # Pointer to a HALF_PTR.
         host.typedef :pointer, :PHANDLE # Pointer to a HANDLE.
         host.typedef :pointer, :PHKEY # Pointer to an HKEY.
