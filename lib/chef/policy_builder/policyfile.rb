@@ -358,9 +358,10 @@ class Chef
 
       def compat_mode_manifest_for(cookbook_name, lock_data)
         xyz_version = lock_data["dotted_decimal_identifier"]
-        http_api.get("cookbooks/#{cookbook_name}/#{xyz_version}")
+        rel_url = "cookbooks/#{cookbook_name}/#{xyz_version}"
+        http_api.get(rel_url)
       rescue Exception => e
-        message = "Error loading cookbook #{cookbook_name} at version #{xyz_version}: #{e.class} - #{e.message}"
+        message = "Error loading cookbook #{cookbook_name} at version #{xyz_version} from #{rel_url}: #{e.class} - #{e.message}"
         err = Chef::Exceptions::CookbookNotFound.new(message)
         err.set_backtrace(e.backtrace)
         raise err
@@ -368,9 +369,10 @@ class Chef
 
       def artifact_manifest_for(cookbook_name, lock_data)
         xyz_version = lock_data["dotted_decimal_identifier"]
-        http_api.get("cookbook_artifacts/#{cookbook_name}/#{xyz_version}")
+        rel_url = "cookbook_artifacts/#{cookbook_name}/#{xyz_version}"
+        http_api.get(rel_url)
       rescue Exception => e
-        message = "Error loading cookbook #{cookbook_name} at version #{xyz_version}: #{e.class} - #{e.message}"
+        message = "Error loading cookbook #{cookbook_name} at version #{xyz_version} from #{rel_url}: #{e.class} - #{e.message}"
         err = Chef::Exceptions::CookbookNotFound.new(message)
         err.set_backtrace(e.backtrace)
         raise err
