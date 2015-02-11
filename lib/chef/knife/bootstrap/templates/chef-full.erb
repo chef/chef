@@ -1,6 +1,16 @@
 sh -c '
 <%= "export https_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
+if test "x$TMPDIR" = "x"; then
+  tmp="/tmp"
+else
+  tmp=$TMPDIR
+fi
+
+# secure-ish temp dir creation without having mktemp available (DDoS-able but not exploitable)
+tmp_dir="$tmp/install.sh.$$"
+(umask 077 && mkdir $tmp_dir) || exit 1
+
 # @param $1 the omnibus root directory
 # @param $2 the requested version of omnibus package
 # @return 0 if omnibus needs to be installed, non-zero otherwise
@@ -27,38 +37,66 @@ exists() {
   fi
 }
 
+http_404_error() {
+  echo "Could not retrieve a valid install.sh!"
+  exit 1
+}
+
+capture_tmp_stderr() {
+  # spool up /tmp/stderr from all the commands we called
+  if test -f "$tmp_dir/stderr"; then
+    output=`cat $tmp_dir/stderr`
+    stderr_results="${stderr_results}\nSTDERR from $1:\n\n$output\n"
+    rm $tmp_dir/stderr
+  fi
+}
+
 # do_wget URL FILENAME
 do_wget() {
   echo "trying wget..."
-  wget -O "$2" "$1" 2>/tmp/stderr
-  # check for bad return status
-  test $? -ne 0 && return 1
-  # check for 404 or empty file
-  grep "ERROR 404" /tmp/stderr 2>&1 >/dev/null
-  if test $? -eq 0 || test ! -s "$2"; then
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_wget_options] %> -O "$2" "$1" 2>$tmp_dir/stderr
+  rc=$?
+  # check for 404
+  grep "ERROR 404" $tmp_dir/stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    echo "ERROR 404"
+    http_404_error
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 || test ! -s "$2"; then
+    capture_tmp_stderr "wget"
     return 1
   fi
+
   return 0
 }
 
 # do_curl URL FILENAME
 do_curl() {
   echo "trying curl..."
-  curl -L "$1" > "$2"
-  # check for bad return status
-  [ $? -ne 0 ] && return 1
-  # check for bad output or empty file
-  grep "The specified key does not exist." "$2" 2>&1 >/dev/null
-  if test $? -eq 0 || test ! -s "$2"; then
+  curl -sL <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_curl_options] %> -D $tmp_dir/stderr "$1" > "$2"
+  rc=$?
+  # check for 404
+  grep "404 Not Found" $tmp_dir/stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    echo "ERROR 404"
+    http_404_error
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 || test ! -s "$2"; then
+    capture_tmp_stderr "curl"
     return 1
   fi
+
   return 0
 }
 
 # do_fetch URL FILENAME
 do_fetch() {
   echo "trying fetch..."
-  fetch -o "$2" "$1" 2>/tmp/stderr
+  fetch -o "$2" "$1" 2>$tmp_dir/stderr
   # check for bad return status
   test $? -ne 0 && return 1
   return 0
@@ -67,28 +105,41 @@ do_fetch() {
 # do_perl URL FILENAME
 do_perl() {
   echo "trying perl..."
-  perl -e "use LWP::Simple; getprint($ARGV[0]);" "$1" > "$2"
-  # check for bad return status
-  test $? -ne 0 && return 1
-  # check for bad output or empty file
-  # grep "The specified key does not exist." "$2" 2>&1 >/dev/null
-  # if test $? -eq 0 || test ! -s "$2"; then
-  #   unable_to_retrieve_package
-  # fi
+  perl -e 'use LWP::Simple; getprint($ARGV[0]);' "$1" > "$2" 2>$tmp_dir/stderr
+  rc=$?
+  # check for 404
+  grep "404 Not Found" $tmp_dir/stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    echo "ERROR 404"
+    http_404_error
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 || test ! -s "$2"; then
+    capture_tmp_stderr "perl"
+    return 1
+  fi
+
   return 0
 }
 
 # do_python URL FILENAME
 do_python() {
   echo "trying python..."
-  python -c "import sys,urllib2 ; sys.stdout.write(urllib2.urlopen(sys.argv[1]).read())" "$1" > "$2"
-  # check for bad return status
-  test $? -ne 0 && return 1
-  # check for bad output or empty file
-  #grep "The specified key does not exist." "$2" 2>&1 >/dev/null
-  #if test $? -eq 0 || test ! -s "$2"; then
-  #  unable_to_retrieve_package
-  #fi
+  python -c "import sys,urllib2 ; sys.stdout.write(urllib2.urlopen(sys.argv[1]).read())" "$1" > "$2" 2>$tmp_dir/stderr
+  rc=$?
+  # check for 404
+  grep "HTTP Error 404" $tmp_dir/stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    echo "ERROR 404"
+    http_404_error
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 || test ! -s "$2"; then
+    capture_tmp_stderr "python"
+    return 1
+  fi
   return 0
 }
 
@@ -133,12 +184,16 @@ do_download() {
   install_sh="<%= knife_config[:bootstrap_url] ? knife_config[:bootstrap_url] : "https://www.opscode.com/chef/install.sh" %>"
   if ! exists /usr/bin/chef-client; then
     echo "-----> Installing Chef Omnibus (<%= latest_current_chef_version_string %>)"
-    do_download ${install_sh} /tmp/install.sh
-    sh /tmp/install.sh -P chef <%= latest_current_chef_version_string %>
+    do_download ${install_sh} $tmp_dir/install.sh
+    sh $tmp_dir/install.sh -P chef <%= latest_current_chef_version_string %>
   else
     echo "-----> Chef Omnibus installation detected (<%= latest_current_chef_version_string %>)"
   fi
 <% end %>
+
+if test "x$tmp_dir" != "x"; then
+  rm -r "$tmp_dir"
+fi
 
 mkdir -p /etc/chef
 
