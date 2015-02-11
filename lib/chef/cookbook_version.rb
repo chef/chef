@@ -51,12 +51,12 @@ class Chef
     attr_accessor :metadata_filenames
 
     def status=(new_status)
-      deprecated!("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
+      Chef::Log.deprecation("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
       @status = new_status
     end
 
     def status
-      deprecated!("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
+      Chef::Log.deprecation("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
       @status
     end
 
@@ -458,7 +458,7 @@ class Chef
     # @deprecated This method was used by the Ruby Chef Server and is no longer
     #   needed. There is no replacement.
     def generate_manifest_with_urls(&url_generator)
-      Chef::Log.warn("Deprecated method #generate_manifest_with_urls called from #{caller(1).first}")
+      Chef::Log.deprecation("Deprecated method #generate_manifest_with_urls called from #{caller(1).first}")
 
       rendered_manifest = manifest.dup
       COOKBOOK_SEGMENTS.each do |segment|
@@ -474,7 +474,7 @@ class Chef
 
 
     def to_hash
-      deprecated!(<<-DEPRECATED)
+      Chef::Log.deprecation(<<-DEPRECATED)
 Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
 To get the Hash representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_hash`
 
@@ -484,7 +484,7 @@ DEPRECATED
     end
 
     def to_json(*a)
-      deprecated!(<<-DEPRECATED)
+      Chef::Log.deprecation(<<-DEPRECATED)
 Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
 To get the JSON representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_json`
 
@@ -513,7 +513,7 @@ DEPRECATED
     ##
 
     def save_url
-      deprecated!(<<-DEPRECATED)
+      Chef::Log.deprecation(<<-DEPRECATED)
 Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
 To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).save_url`
 
@@ -524,7 +524,7 @@ DEPRECATED
     end
 
     def force_save_url
-      deprecated!(<<-DEPRECATED)
+      Chef::Log.deprecation(<<-DEPRECATED)
 Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
 To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).force_save_url`
 
@@ -593,14 +593,6 @@ DEPRECATED
     end
 
     private
-
-    def deprecated!(message)
-      if Chef::Config[:treat_deprecation_warnings_as_errors]
-        raise Exceptions::DeprecatedFeatureError, message
-      else
-        Chef::Log.warn(message)
-      end
-    end
 
     def cookbook_manifest
       @cookbook_manifest ||= CookbookManifest.new(self)
