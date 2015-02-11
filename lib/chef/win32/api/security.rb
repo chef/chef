@@ -328,12 +328,13 @@ class Chef
           layout :Luid, LUID,
                  :Attributes, :DWORD
         end
-      class GENERIC_MAPPING < FFI::Struct
-        layout :GenericRead, :DWORD,
-               :GenericWrite, :DWORD,
-               :GenericExecute, :DWORD,
-               :GenericAll, :DWORD
-      end
+
+        class GENERIC_MAPPING < FFI::Struct
+          layout :GenericRead, :DWORD,
+            :GenericWrite, :DWORD,
+            :GenericExecute, :DWORD,
+            :GenericAll, :DWORD
+        end
 
         class TOKEN_PRIVILEGES < FFI::Struct
           layout :PrivilegeCount, :DWORD,
