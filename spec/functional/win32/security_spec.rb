@@ -34,4 +34,19 @@ describe 'Chef::Win32::Security', :windows_only do
   it "has_admin_privileges? returns false when running as non-admin" do
     skip "requires user support in mixlib-shellout"
   end
+
+  describe 'Chef::Win32::Security::Token' do
+    let(:token) {
+      Chef::ReservedNames::Win32::Security.open_process_token(
+        Chef::ReservedNames::Win32::Process.get_current_process,
+        token_rights)
+    }
+    context 'with all rights' do
+      let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_ALL_ACCESS }
+
+      it 'can duplicate a token' do
+        expect{ token.duplicate_token(:SecurityImpersonation) }.not_to raise_error
+      end
+    end
+  end
 end
