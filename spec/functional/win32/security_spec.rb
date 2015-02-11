@@ -48,5 +48,13 @@ describe 'Chef::Win32::Security', :windows_only do
         expect{ token.duplicate_token(:SecurityImpersonation) }.not_to raise_error
       end
     end
+
+    context 'with read only rights' do
+      let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_READ }
+
+      it 'raises an exception when trying to duplicate' do
+        expect{ token.duplicate_token(:SecurityImpersonation) }.to raise_error(Chef::Exceptions::Win32APIError)
+      end
+    end
   end
 end
