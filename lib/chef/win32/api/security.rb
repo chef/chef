@@ -361,6 +361,7 @@ class Chef
         safe_attach_function :EqualSid, [ :pointer, :pointer ], :BOOL
         safe_attach_function :FreeSid, [ :pointer ], :pointer
         safe_attach_function :GetAce, [ :pointer, :DWORD, :pointer ], :BOOL
+        safe_attach_function :GetFileSecurityW, [:LPCWSTR, :DWORD, :pointer, :DWORD, :pointer], :BOOL
         safe_attach_function :GetLengthSid, [ :pointer ], :DWORD
         safe_attach_function :GetNamedSecurityInfoW,  [ :LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer, :pointer ], :DWORD
         safe_attach_function :GetSecurityDescriptorControl, [ :pointer, :PWORD, :LPDWORD], :BOOL

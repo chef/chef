@@ -148,6 +148,24 @@ class Chef
         GetLengthSid(sid)
       end
 
+      def self.get_file_security(path, info = OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION)
+        size_ptr = FFI::MemoryPointer.new(:ulong)
+
+        success = GetFileSecurityW(path.to_wstring, info, nil, 0, size_ptr)
+
+        if !success && FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+
+        security_descriptor_ptr = FFI::MemoryPointer.new(size_ptr.read_ulong)
+        unless GetFileSecurityW(path.to_wstring, info, security_descriptor_ptr, size_ptr.read_ulong, size_ptr)
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+
+        SecurityDescriptor.new(security_descriptor_ptr)
+      end
+
+
       def self.get_named_security_info(path, type = :SE_FILE_OBJECT, info = OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION)
         security_descriptor = FFI::MemoryPointer.new :pointer
         hr = GetNamedSecurityInfoW(path.to_wstring, type, info, nil, nil, nil, nil, security_descriptor)
