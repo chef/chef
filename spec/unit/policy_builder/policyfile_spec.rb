@@ -406,12 +406,6 @@ describe Chef::PolicyBuilder::Policyfile do
             before do
               expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
 
-              # Remove references to example2 cookbook because we're iterating
-              # over a Hash data structure and on ruby 1.8.7 iteration order will
-              # not be stable.
-              parsed_policyfile_json["cookbook_locks"].delete("example2")
-              parsed_policyfile_json["run_list"].delete("recipe[example2::server]")
-
               policy_builder.load_node
               policy_builder.build_node
 
