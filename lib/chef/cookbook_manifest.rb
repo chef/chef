@@ -148,7 +148,7 @@ class Chef
     # the user to overwrite a frozen cookbook (a PUT against the
     # normal #save_url raises a 409 Conflict in this case).
     def force_save_url
-      "#{cookbook_url_path}/#{name}/#{version}?force=true"
+      "#{save_url}?force=true"
     end
 
     # Update this CookbookManifest from the contents of another manifest, and
