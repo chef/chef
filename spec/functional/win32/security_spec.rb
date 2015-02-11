@@ -35,6 +35,15 @@ describe 'Chef::Win32::Security', :windows_only do
     skip "requires user support in mixlib-shellout"
   end
 
+  describe 'get_file_security' do
+    it 'should return a security descriptor when called with a path that exists' do
+      security_descriptor = Chef::ReservedNames::Win32::Security.get_file_security(
+        "C:\\Program Files")
+      # Make sure the security descriptor works
+      expect(security_descriptor.dacl_present?).to be true
+    end
+  end
+
   describe 'Chef::Win32::Security::Token' do
     let(:token) {
       Chef::ReservedNames::Win32::Security.open_process_token(
