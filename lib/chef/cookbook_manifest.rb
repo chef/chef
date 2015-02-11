@@ -46,6 +46,11 @@ class Chef
     # cookbook_version in the "manifest" format, or #to_json to get a JSON
     # representation of the cookbook_version.
     #
+    # The inferface for this behavior is expected to change as we implement new
+    # manifest formats. The entire class should be considered a private API for
+    # now.
+    #
+    # @api private
     # @param policy_mode [Boolean] whether to convert cookbooks to Hash/JSON in
     #   the format used by the `cookbook_artifacts` endpoint (for policyfiles).
     #   Setting this option also changes the behavior of #save_url and

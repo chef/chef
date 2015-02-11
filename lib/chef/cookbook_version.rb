@@ -474,22 +474,12 @@ class Chef
 
 
     def to_hash
-      Chef::Log.deprecation(<<-DEPRECATED)
-Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
-To get the Hash representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_hash`
-
-Called from #{caller(1).first}
-DEPRECATED
+      # TODO: this should become deprecated when the API for CookbookManifest becomes stable
       cookbook_manifest.to_hash
     end
 
     def to_json(*a)
-      Chef::Log.deprecation(<<-DEPRECATED)
-Cookbooks now have multiple JSON representations based on the capabilities of the Chef Server.
-To get the JSON representation, use code like `Chef::CookbookManifest.new(cookbook_version).to_json`
-
-Called from #{caller(1).first}
-DEPRECATED
+      # TODO: this should become deprecated when the API for CookbookManifest becomes stable
       cookbook_manifest.to_json
     end
 
@@ -513,23 +503,12 @@ DEPRECATED
     ##
 
     def save_url
-      Chef::Log.deprecation(<<-DEPRECATED)
-Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
-To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).save_url`
-
-Called from #{caller(1).first}
-DEPRECATED
-
+      # TODO: this should become deprecated when the API for CookbookManifest becomes stable
       cookbook_manifest.save_url
     end
 
     def force_save_url
-      Chef::Log.deprecation(<<-DEPRECATED)
-Cookbooks now have multiple save URLs based on the capabilities of the Chef Server.
-To get the default save URL, use code like `Chef::CookbookManifest.new(cookbook_version).force_save_url`
-
-Called from #{caller(1).first}
-DEPRECATED
+      # TODO: this should become deprecated when the API for CookbookManifest becomes stable
       cookbook_manifest.force_save_url
     end
 
