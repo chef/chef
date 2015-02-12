@@ -199,22 +199,22 @@ class Chef
         :description => "Verify the SSL cert for HTTPS requests to the Chef server API.",
         :boolean     => true
 
-      option :vault_file,
-        :long        => '--vault-file VAULT_FILE',
+      option :bootstrap_vault_file,
+        :long        => '--bootstrap-vault-file VAULT_FILE',
         :description => 'A JSON file with a list of vault(s) and item(s) to be updated'
 
-      option :vault_list,
-        :long        => '--vault-list VAULT_LIST',
+      option :bootstrap_vault_json,
+        :long        => '--bootstrap-vault-json VAULT_JSON',
         :description => 'A JSON string with the vault(s) and item(s) to be updated'
 
-      option :vault_item,
-        :long        => '--vault-item VAULT_ITEM',
+      option :bootstrap_vault_item,
+        :long        => '--bootstrap-vault-item VAULT_ITEM',
         :description => 'A single vault and item to update as "vault:item"',
         :proc        => Proc.new { |i|
           (vault, item) = i.split(/:/)
-          vault_item ||= {}
-          vault_item[vault] ||= []
-          vault_item[vault].push(item)
+          bootstrap_vault_item ||= {}
+          bootstrap_vault_item[vault] ||= []
+          bootstrap_vault_item[vault].push(item)
         }
 
       def initialize(argv=[])

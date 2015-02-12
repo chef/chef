@@ -549,7 +549,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "creates the client and adds chef-vault items if vault_list is set" do
-        knife.config[:vault_file] = "/not/our/responsibility/to/check/if/this/exists"
+        knife.config[:bootstrap_vault_file] = "/not/our/responsibility/to/check/if/this/exists"
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).to receive(:run)
         expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
@@ -557,7 +557,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "creates the client and adds chef-vault items if vault_items is set" do
-        knife.config[:vault_list] = '{ "vault" => "item" }'
+        knife.config[:bootstrap_vault_json] = '{ "vault" => "item" }'
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).to receive(:run)
         expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])

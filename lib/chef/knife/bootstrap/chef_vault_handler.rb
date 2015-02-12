@@ -50,7 +50,7 @@ class Chef
 
           ui.info("Updating Chef Vault, waiting for client to be searchable..") while wait_for_client
 
-          update_vault_list!
+          update_bootstrap_vault_json!
         end
 
         # Iterate through all the vault items to update.  Items may be either a String
@@ -61,7 +61,7 @@ class Chef
         #   "vault2":  [ "item1", "item2", "item2" ]
         # }
         #
-        def update_vault_list!
+        def update_bootstrap_vault_json!
           vault_json.each do |vault, items|
             [ items ].flatten.each do |item|
               update_vault(vault, item)
@@ -71,35 +71,35 @@ class Chef
 
         # @return [Boolean] if we've got chef vault options to act on or not
         def doing_chef_vault?
-          !!(vault_list || vault_file || vault_item)
+          !!(bootstrap_vault_json || bootstrap_vault_file || bootstrap_vault_item)
         end
 
         private
 
         # warn if the user has given mutual conflicting options
         def sanity_check
-          if vault_item && (vault_list || vault_file)
+          if bootstrap_vault_item && (bootstrap_vault_json || bootstrap_vault_file)
             ui.warn "--vault-item given with --vault-list or --vault-file, ignoring the latter"
           end
 
-          if vault_list && vault_file
+          if bootstrap_vault_json && bootstrap_vault_file
             ui.warn "--vault-list given with --vault-file, ignoring the latter"
           end
         end
 
         # @return [String] string with serialized JSON representing the chef vault items
-        def vault_list
-          knife_config[:vault_list]
+        def bootstrap_vault_json
+          knife_config[:bootstrap_vault_json]
         end
 
         # @return [String] JSON text in a file representing the chef vault items
-        def vault_file
-          knife_config[:vault_file]
+        def bootstrap_vault_file
+          knife_config[:bootstrap_vault_file]
         end
 
         # @return [Hash] Ruby object representing the chef vault items to create
-        def vault_item
-          knife_config[:vault_item]
+        def bootstrap_vault_item
+          knife_config[:bootstrap_vault_item]
         end
 
         # Helper to return a ruby object represeting all the data bags and items
@@ -109,10 +109,10 @@ class Chef
         def vault_json
           @vault_json ||=
             begin
-              if vault_item
-                vault_item
+              if bootstrap_vault_item
+                bootstrap_vault_item
               else
-                json = vault_list ? vault_list : File.read(vault_file)
+                json = bootstrap_vault_json ? bootstrap_vault_json : File.read(bootstrap_vault_file)
                 Chef::JSONCompat.from_json(json)
               end
             end
@@ -124,9 +124,9 @@ class Chef
         # @param item [String] name of the chef-vault encrypted item
         def update_vault(vault, item)
           require_chef_vault!
-          vault_item = load_chef_vault_item(vault, item)
-          vault_item.clients("name:#{node_name}")
-          vault_item.save
+          bootstrap_vault_item = load_chef_bootstrap_vault_item(vault, item)
+          bootstrap_vault_item.clients("name:#{node_name}")
+          bootstrap_vault_item.save
         end
 
         # Hook to stub out ChefVault
@@ -134,11 +134,11 @@ class Chef
         # @param vault [String] name of the chef-vault encrypted data bag
         # @param item [String] name of the chef-vault encrypted item
         # @returns [ChefVault::Item] ChefVault::Item object
-        def load_chef_vault_item(vault, item)
+        def load_chef_bootstrap_vault_item(vault, item)
           ChefVault::Item.load(vault, item)
         end
 
-        public :load_chef_vault_item  # for stubbing
+        public :load_chef_bootstrap_vault_item  # for stubbing
 
         # Helper used to spin waiting for the client to appear in search.
         #
