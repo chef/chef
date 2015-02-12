@@ -44,6 +44,37 @@ describe 'Chef::Win32::Security', :windows_only do
     end
   end
 
+  describe 'access_check' do
+    let(:security_descriptor) {
+      Chef::ReservedNames::Win32::Security.get_file_security(
+        "C:\\Program Files")
+    }
+
+    let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_ALL_ACCESS }
+
+    let(:token) {
+      Chef::ReservedNames::Win32::Security.open_process_token(
+        Chef::ReservedNames::Win32::Process.get_current_process,
+        token_rights).duplicate_token(:SecurityImpersonation)
+    }
+
+    let(:mapping) {
+      mapping = Chef::ReservedNames::Win32::Security::GENERIC_MAPPING.new
+      mapping[:GenericRead] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_READ
+      mapping[:GenericWrite] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_WRITE
+      mapping[:GenericExecute] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_EXECUTE
+      mapping[:GenericAll] = Chef::ReservedNames::Win32::Security::FILE_ALL_ACCESS
+      mapping
+    }
+
+    let(:desired_access) { Chef::ReservedNames::Win32::Security::FILE_GENERIC_READ }
+
+    it 'should check if the provided token has the desired access' do
+      expect(Chef::ReservedNames::Win32::Security.access_check(security_descriptor, 
+                     token, desired_access, mapping)).to be true
+    end
+  end
+
   describe 'Chef::Win32::Security::Token' do
     let(:token) {
       Chef::ReservedNames::Win32::Security.open_process_token(
