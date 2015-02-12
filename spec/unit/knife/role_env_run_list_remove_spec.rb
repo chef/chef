@@ -31,14 +31,14 @@ describe Chef::Knife::RoleEnvRunListRemove do
       :print_after => nil
     }
     @knife.name_args = [ "will", "QA", "role[monkey]" ]
-    @knife.stub!(:output).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
 
     @role = Chef::Role.new()
     @role.name("will")
-    @role.stub!(:save).and_return(true)
+    allow(@role).to receive(:save).and_return(true)
 
-    @knife.ui.stub!(:confirm).and_return(true)
-    Chef::Role.stub!(:load).and_return(@role)
+    allow(@knife.ui).to receive(:confirm).and_return(true)
+    allow(Chef::Role).to receive(:load).and_return(@role)
 
   end
 
@@ -53,25 +53,25 @@ describe Chef::Knife::RoleEnvRunListRemove do
 #    end
 
     it "should load the node" do
-      Chef::Role.should_receive(:load).with("will").and_return(@role)
+      expect(Chef::Role).to receive(:load).with("will").and_return(@role)
       @knife.run
     end
 
      it "should remove the item from the run list" do
        @setup.run
        @knife.run
-       @role.run_list_for('QA')[0].should_not == 'role[monkey]'
-       @role.run_list_for('QA')[0].should == 'role[person]'
-       @role.run_list[0].should be_nil
+       expect(@role.run_list_for('QA')[0]).not_to eq('role[monkey]')
+       expect(@role.run_list_for('QA')[0]).to eq('role[person]')
+       expect(@role.run_list[0]).to be_nil
      end
 
      it "should save the node" do
-       @role.should_receive(:save).and_return(true)
+       expect(@role).to receive(:save).and_return(true)
        @knife.run
      end
 
      it "should print the run list" do
-       @knife.should_receive(:output).and_return(true)
+       expect(@knife).to receive(:output).and_return(true)
        @knife.config[:print_after] = true
        @setup.run
        @knife.run
@@ -87,18 +87,18 @@ describe Chef::Knife::RoleEnvRunListRemove do
          @knife.run
          @knife.name_args = [ 'will', 'QA', 'recipe[duck::type]' ]
          @knife.run
-         @role.run_list_for('QA').should_not include('role[monkey]')
-         @role.run_list_for('QA').should_not include('recipe[duck::type]')
-         @role.run_list_for('QA')[0].should == 'recipe[orange::chicken]'
-         @role.run_list_for('QA')[1].should == 'role[person]'
-         @role.run_list_for('QA')[2].should == 'role[bird]'
-         @role.run_list_for('QA')[3].should == 'role[town]'
-         @role.run_list_for('PRD')[0].should == 'recipe[orange::chicken]'
-         @role.run_list_for('PRD')[1].should == 'role[monkey]'
-         @role.run_list_for('PRD')[2].should == 'recipe[duck::type]'
-         @role.run_list_for('PRD')[3].should == 'role[person]'
-         @role.run_list_for('PRD')[4].should == 'role[bird]'
-         @role.run_list_for('PRD')[5].should == 'role[town]'
+         expect(@role.run_list_for('QA')).not_to include('role[monkey]')
+         expect(@role.run_list_for('QA')).not_to include('recipe[duck::type]')
+         expect(@role.run_list_for('QA')[0]).to eq('recipe[orange::chicken]')
+         expect(@role.run_list_for('QA')[1]).to eq('role[person]')
+         expect(@role.run_list_for('QA')[2]).to eq('role[bird]')
+         expect(@role.run_list_for('QA')[3]).to eq('role[town]')
+         expect(@role.run_list_for('PRD')[0]).to eq('recipe[orange::chicken]')
+         expect(@role.run_list_for('PRD')[1]).to eq('role[monkey]')
+         expect(@role.run_list_for('PRD')[2]).to eq('recipe[duck::type]')
+         expect(@role.run_list_for('PRD')[3]).to eq('role[person]')
+         expect(@role.run_list_for('PRD')[4]).to eq('role[bird]')
+         expect(@role.run_list_for('PRD')[5]).to eq('role[town]')
        end
      end
   end

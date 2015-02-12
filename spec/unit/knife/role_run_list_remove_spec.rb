@@ -30,14 +30,14 @@ describe Chef::Knife::RoleRunListRemove do
       :print_after => nil
     }
     @knife.name_args = [ "will", "role[monkey]" ]
-    @knife.stub!(:output).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
 
     @role = Chef::Role.new()
     @role.name("will")
-    @role.stub!(:save).and_return(true)
+    allow(@role).to receive(:save).and_return(true)
 
-    @knife.ui.stub!(:confirm).and_return(true)
-    Chef::Role.stub!(:load).and_return(@role)
+    allow(@knife.ui).to receive(:confirm).and_return(true)
+    allow(Chef::Role).to receive(:load).and_return(@role)
 
   end
 
@@ -52,24 +52,24 @@ describe Chef::Knife::RoleRunListRemove do
 #    end
 
     it "should load the node" do
-      Chef::Role.should_receive(:load).with("will").and_return(@role)
+      expect(Chef::Role).to receive(:load).with("will").and_return(@role)
       @knife.run
     end
 
      it "should remove the item from the run list" do
        @setup.run
        @knife.run
-       @role.run_list[0].should == 'role[person]'
-       @role.run_list[1].should be_nil
+       expect(@role.run_list[0]).to eq('role[person]')
+       expect(@role.run_list[1]).to be_nil
      end
 
      it "should save the node" do
-       @role.should_receive(:save).and_return(true)
+       expect(@role).to receive(:save).and_return(true)
        @knife.run
      end
 
      it "should print the run list" do
-       @knife.should_receive(:output).and_return(true)
+       expect(@knife).to receive(:output).and_return(true)
        @knife.config[:print_after] = true
        @setup.run
        @knife.run
@@ -83,12 +83,12 @@ describe Chef::Knife::RoleRunListRemove do
          @knife.run
          @knife.name_args = [ 'will', 'recipe[duck::type]' ]
          @knife.run
-         @role.run_list.should_not include('role[monkey]')
-         @role.run_list.should_not include('recipe[duck::type]')
-         @role.run_list[0].should == 'recipe[orange::chicken]'
-         @role.run_list[1].should == 'role[person]'
-         @role.run_list[2].should == 'role[bird]'
-         @role.run_list[3].should == 'role[town]'
+         expect(@role.run_list).not_to include('role[monkey]')
+         expect(@role.run_list).not_to include('recipe[duck::type]')
+         expect(@role.run_list[0]).to eq('recipe[orange::chicken]')
+         expect(@role.run_list[1]).to eq('role[person]')
+         expect(@role.run_list[2]).to eq('role[bird]')
+         expect(@role.run_list[3]).to eq('role[town]')
        end
      end
   end
