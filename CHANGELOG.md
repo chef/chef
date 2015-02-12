@@ -66,7 +66,7 @@
 * Audit mode feature added - see the RELEASE_NOTES for details
 * shell_out now sets `LANGUAGE` and `LANG` to the `Chef::Config[:internal_locale]` in addition to `LC_ALL` forcing
 * chef_gem supports a compile_time flag and will warn if it is not set (behavior will change in the future)
-* suppress 3694 warnings on the most trivial resource cloning
+* suppress CHEF-3694 warnings on the most trivial resource cloning
 * fixed bugs in the deep_merge_cache logic introduced in 12.0.0 around `node['foo']` vs `node[:foo]` vs. `node.foo`
 * add `include_recipe "::recipe"` sugar to reference a recipe in the current cookbook
 * Add --proxy-auth option to `knife raw`
