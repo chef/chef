@@ -361,6 +361,7 @@ class Chef
 
         ffi_lib "advapi32"
 
+        safe_attach_function :AccessCheck, [:pointer, :HANDLE, :DWORD, :pointer, :pointer, :pointer, :pointer, :pointer], :BOOL
         safe_attach_function :AddAce, [ :pointer, :DWORD, :DWORD, :LPVOID, :DWORD ], :BOOL
         safe_attach_function :AddAccessAllowedAce, [ :pointer, :DWORD, :DWORD, :pointer ], :BOOL
         safe_attach_function :AddAccessAllowedAceEx, [ :pointer, :DWORD, :DWORD, :DWORD, :pointer ], :BOOL

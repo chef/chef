@@ -32,6 +32,34 @@ class Chef
       extend Chef::ReservedNames::Win32::API::Security
       extend Chef::ReservedNames::Win32::API::Macros
 
+      def self.access_check(security_descriptor, token, desired_access, generic_mapping)
+        token_handle = token.handle.handle
+        security_descriptor_ptr = security_descriptor.pointer
+
+        rights_ptr = FFI::MemoryPointer.new(:ulong)
+        rights_ptr.write_ulong(desired_access)
+
+        # This function takes care of calling MapGenericMask, so you don't have to
+        MapGenericMask(rights_ptr, generic_mapping)
+
+        result_ptr = FFI::MemoryPointer.new(:ulong)
+
+        # Because optional actually means required
+        privileges = PRIVILEGE_SET.new
+        privileges[:PrivilegeCount] = 0
+        privileges_length_ptr = FFI::MemoryPointer.new(:ulong)
+        privileges_length_ptr.write_ulong(privileges.size)
+
+        granted_access_ptr = FFI::MemoryPointer.new(:ulong)
+
+        unless AccessCheck(security_descriptor_ptr, token_handle, rights_ptr.read_ulong,
+                           generic_mapping, privileges, privileges_length_ptr, granted_access_ptr,
+                           result_ptr)
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+        result_ptr.read_ulong == 1
+      end
+
       def self.add_ace(acl, ace, insert_position = MAXDWORD, revision = ACL_REVISION)
         acl = acl.pointer if acl.respond_to?(:pointer)
         ace = ace.pointer if ace.respond_to?(:pointer)
