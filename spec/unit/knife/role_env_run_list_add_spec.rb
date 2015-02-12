@@ -28,10 +28,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
       :after => nil
     }
     @knife.name_args = [ "will", "QA", "role[monkey]" ]
-    @knife.stub!(:output).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
     @role = Chef::Role.new() 
-    @role.stub!(:save).and_return(true)
-    Chef::Role.stub!(:load).and_return(@role)
+    allow(@role).to receive(:save).and_return(true)
+    allow(Chef::Role).to receive(:load).and_return(@role)
   end
 
   describe "run" do
@@ -43,31 +43,31 @@ describe Chef::Knife::RoleEnvRunListAdd do
 
     it "should have an empty default run list" do
       @knife.run
-      @role.run_list[0].should be_nil
+      expect(@role.run_list[0]).to be_nil
     end
 
     it "should have a QA environment" do
       @knife.run
-      @role.active_run_list_for('QA').should == 'QA'
+      expect(@role.active_run_list_for('QA')).to eq('QA')
     end
 
     it "should load the role named will" do
-      Chef::Role.should_receive(:load).with("will")
+      expect(Chef::Role).to receive(:load).with("will")
       @knife.run
     end
 
     it "should be able to add an environment specific run list" do
       @knife.run
-      @role.run_list_for('QA')[0].should == 'role[monkey]'
+      expect(@role.run_list_for('QA')[0]).to eq('role[monkey]')
     end
 
     it "should save the role" do
-      @role.should_receive(:save)
+      expect(@role).to receive(:save)
       @knife.run
     end
 
     it "should print the run list" do
-      @knife.should_receive(:output).and_return(true)
+      expect(@knife).to receive(:output).and_return(true)
       @knife.run
     end
 
@@ -78,10 +78,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.config[:after] = "role[acorns]"
         @knife.name_args = [ "will", "QA", "role[pad]" ]
         @knife.run
-        @role.run_list_for("QA")[0].should be_nil
-        @role.run_list[0].should == "role[acorns]"
-        @role.run_list[1].should == "role[barn]"
-        @role.run_list[2].should be_nil
+        expect(@role.run_list_for("QA")[0]).to be_nil
+        expect(@role.run_list[0]).to eq("role[acorns]")
+        expect(@role.run_list[1]).to eq("role[barn]")
+        expect(@role.run_list[2]).to be_nil
       end
 
       it "should add to the run list after the specified entries in the QA run list" do
@@ -96,14 +96,14 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.name_args = [ "will", "QA", "role[pad]", "role[whackadoo]" ]
         @knife.run
         #The actual tests
-        @role.run_list_for("QA")[0].should == "role[monkey]"
-        @role.run_list_for("QA")[1].should == "role[pencil]"
-        @role.run_list_for("QA")[2].should == "role[pad]"
-        @role.run_list_for("QA")[3].should == "role[whackadoo]"
-        @role.run_list_for("QA")[4].should == "role[pen]"
-        @role.run_list[0].should == "role[acorns]"
-        @role.run_list[1].should == "role[barn]"
-        @role.run_list[2].should be_nil
+        expect(@role.run_list_for("QA")[0]).to eq("role[monkey]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[pencil]")
+        expect(@role.run_list_for("QA")[2]).to eq("role[pad]")
+        expect(@role.run_list_for("QA")[3]).to eq("role[whackadoo]")
+        expect(@role.run_list_for("QA")[4]).to eq("role[pen]")
+        expect(@role.run_list[0]).to eq("role[acorns]")
+        expect(@role.run_list[1]).to eq("role[barn]")
+        expect(@role.run_list[2]).to be_nil
       end
     end
 
@@ -112,10 +112,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.name_args = [ "will", "QA", "role[monkey],role[duck]" ]
         @role.run_list_for("_default") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[monkey]"
-        @role.run_list_for("QA")[1].should == "role[duck]"
-        @role.run_list[0].should == "role[acorns]"
-        @role.run_list[1].should be_nil
+        expect(@role.run_list_for("QA")[0]).to eq("role[monkey]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[duck]")
+        expect(@role.run_list[0]).to eq("role[acorns]")
+        expect(@role.run_list[1]).to be_nil
       end
     end
 
@@ -124,10 +124,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.name_args = [ "will", "QA", "role[monkey], role[duck]" ]
         @role.run_list_for("_default") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[monkey]"
-        @role.run_list_for("QA")[1].should == "role[duck]"
-        @role.run_list[0].should == "role[acorns]"
-        @role.run_list[1].should be_nil
+        expect(@role.run_list_for("QA")[0]).to eq("role[monkey]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[duck]")
+        expect(@role.run_list[0]).to eq("role[acorns]")
+        expect(@role.run_list[1]).to be_nil
       end
     end
 
@@ -136,10 +136,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.name_args = [ "will", "QA", "role[monkey]", "role[duck]" ]
         @role.run_list_for("_default") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[monkey]"
-        @role.run_list_for("QA")[1].should == "role[duck]"
-        @role.run_list[0].should == "role[acorns]"
-        @role.run_list[1].should be_nil
+        expect(@role.run_list_for("QA")[0]).to eq("role[monkey]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[duck]")
+        expect(@role.run_list[0]).to eq("role[acorns]")
+        expect(@role.run_list[1]).to be_nil
       end
     end
 
@@ -148,11 +148,11 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.name_args = [ "will", "QA", "role[monkey]", "role[duck],recipe[bird::fly]" ]
         @role.run_list_for("_default") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[monkey]"
-        @role.run_list_for("QA")[1].should == "role[duck]"
-        @role.run_list_for("QA")[2].should == "recipe[bird::fly]"
-        @role.run_list[0].should == "role[acorns]"
-        @role.run_list[1].should be_nil
+        expect(@role.run_list_for("QA")[0]).to eq("role[monkey]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[duck]")
+        expect(@role.run_list_for("QA")[2]).to eq("recipe[bird::fly]")
+        expect(@role.run_list[0]).to eq("role[acorns]")
+        expect(@role.run_list[1]).to be_nil
       end
     end
 
@@ -161,11 +161,11 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.name_args = [ "will", "QA", "role[monkey]", "role[duck],recipe[bird::fly@1.1.3]" ]
         @role.run_list_for("_default") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[monkey]"
-        @role.run_list_for("QA")[1].should == "role[duck]"
-        @role.run_list_for("QA")[2].should == "recipe[bird::fly@1.1.3]"
-        @role.run_list[0].should == "role[acorns]"
-        @role.run_list[1].should be_nil
+        expect(@role.run_list_for("QA")[0]).to eq("role[monkey]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[duck]")
+        expect(@role.run_list_for("QA")[2]).to eq("recipe[bird::fly@1.1.3]")
+        expect(@role.run_list[0]).to eq("role[acorns]")
+        expect(@role.run_list[1]).to be_nil
       end
     end
 
@@ -174,10 +174,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @role.run_list_for("_default") << "role[acorns]"
         @knife.name_args = [ "will", "QA", "role[monkey]," ]
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[monkey]"
-        @role.run_list_for("QA")[1].should be_nil
-        @role.run_list[0].should == "role[acorns]"
-        @role.run_list[1].should be_nil
+        expect(@role.run_list_for("QA")[0]).to eq("role[monkey]")
+        expect(@role.run_list_for("QA")[1]).to be_nil
+        expect(@role.run_list[0]).to eq("role[acorns]")
+        expect(@role.run_list[1]).to be_nil
       end
     end
     
@@ -187,9 +187,9 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.run
         @knife.name_args = [ "will", "QA", "role[black]," ]
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[blue]"
-        @role.run_list_for("QA")[1].should == "role[black]"
-        @role.run_list[0].should be_nil
+        expect(@role.run_list_for("QA")[0]).to eq("role[blue]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[black]")
+        expect(@role.run_list[0]).to be_nil
       end
     end
 
@@ -204,12 +204,12 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.run
         @role.run_list_for("PRD") << "role[pen]"
 
-        @role.run_list_for("QA")[0].should == "role[blue]"
-        @role.run_list_for("PRD")[0].should == "role[ball]"
-        @role.run_list_for("QA")[1].should == "role[walnuts]"
-        @role.run_list_for("PRD")[1].should == "role[pen]"
-        @role.run_list[0].should == "role[acorns]"
-        @role.run_list[1].should be_nil
+        expect(@role.run_list_for("QA")[0]).to eq("role[blue]")
+        expect(@role.run_list_for("PRD")[0]).to eq("role[ball]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[walnuts]")
+        expect(@role.run_list_for("PRD")[1]).to eq("role[pen]")
+        expect(@role.run_list[0]).to eq("role[acorns]")
+        expect(@role.run_list[1]).to be_nil
       end
     end
 

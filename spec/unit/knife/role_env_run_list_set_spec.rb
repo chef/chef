@@ -31,14 +31,14 @@ describe Chef::Knife::RoleEnvRunListSet do
       :print_after => nil
     }
     @knife.name_args = [ "will", "QA", "role[owen]", "role[mauntel]" ]
-    @knife.stub!(:output).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
 
     @role = Chef::Role.new()
     @role.name("will")
-    @role.stub!(:save).and_return(true)
+    allow(@role).to receive(:save).and_return(true)
 
-    @knife.ui.stub!(:confirm).and_return(true)
-    Chef::Role.stub!(:load).and_return(@role)
+    allow(@knife.ui).to receive(:confirm).and_return(true)
+    allow(Chef::Role).to receive(:load).and_return(@role)
 
   end
 
@@ -53,26 +53,26 @@ describe Chef::Knife::RoleEnvRunListSet do
 #    end
 
     it "should load the node" do
-      Chef::Role.should_receive(:load).with("will").and_return(@role)
+      expect(Chef::Role).to receive(:load).with("will").and_return(@role)
       @knife.run
     end
 
     it "should replace all the items in the runlist with what is specified" do
       @setup.run
       @knife.run
-      @role.run_list_for('QA')[0].should == "role[owen]" 
-      @role.run_list_for('QA')[1].should == "role[mauntel]" 
-      @role.run_list_for('QA')[2].should be_nil
-      @role.run_list[0].should be_nil
+      expect(@role.run_list_for('QA')[0]).to eq("role[owen]") 
+      expect(@role.run_list_for('QA')[1]).to eq("role[mauntel]") 
+      expect(@role.run_list_for('QA')[2]).to be_nil
+      expect(@role.run_list[0]).to be_nil
     end
 
     it "should save the node" do
-      @role.should_receive(:save).and_return(true)
+      expect(@role).to receive(:save).and_return(true)
       @knife.run
     end
 
     it "should print the run list" do
-      @knife.should_receive(:output).and_return(true)
+      expect(@knife).to receive(:output).and_return(true)
       @knife.config[:print_after] = true
       @setup.run
       @knife.run
@@ -86,16 +86,16 @@ describe Chef::Knife::RoleEnvRunListSet do
         @setup.run
         @knife.name_args = [ "will", "QA", "role[coke]", "role[pepsi]" ]
         @knife.run
-        @role.run_list_for('QA')[0].should == "role[coke]"
-        @role.run_list_for('QA')[1].should == "role[pepsi]"
-        @role.run_list_for('QA')[2].should be_nil
-        @role.run_list_for('PRD')[0].should == 'recipe[orange::chicken]'
-        @role.run_list_for('PRD')[1].should == 'role[monkey]'
-        @role.run_list_for('PRD')[2].should == 'recipe[duck::type]'
-        @role.run_list_for('PRD')[3].should == 'role[person]'
-        @role.run_list_for('PRD')[4].should == 'role[bird]'
-        @role.run_list_for('PRD')[5].should == 'role[town]'
-        @role.run_list[0].should be_nil
+        expect(@role.run_list_for('QA')[0]).to eq("role[coke]")
+        expect(@role.run_list_for('QA')[1]).to eq("role[pepsi]")
+        expect(@role.run_list_for('QA')[2]).to be_nil
+        expect(@role.run_list_for('PRD')[0]).to eq('recipe[orange::chicken]')
+        expect(@role.run_list_for('PRD')[1]).to eq('role[monkey]')
+        expect(@role.run_list_for('PRD')[2]).to eq('recipe[duck::type]')
+        expect(@role.run_list_for('PRD')[3]).to eq('role[person]')
+        expect(@role.run_list_for('PRD')[4]).to eq('role[bird]')
+        expect(@role.run_list_for('PRD')[5]).to eq('role[town]')
+        expect(@role.run_list[0]).to be_nil
       end
     end
   end

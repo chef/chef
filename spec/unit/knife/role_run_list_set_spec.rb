@@ -30,14 +30,14 @@ describe Chef::Knife::RoleRunListSet do
       :print_after => nil
     }
     @knife.name_args = [ "will", "role[owen]", "role[mauntel]" ]
-    @knife.stub!(:output).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
 
     @role = Chef::Role.new()
     @role.name("will")
-    @role.stub!(:save).and_return(true)
+    allow(@role).to receive(:save).and_return(true)
 
-    @knife.ui.stub!(:confirm).and_return(true)
-    Chef::Role.stub!(:load).and_return(@role)
+    allow(@knife.ui).to receive(:confirm).and_return(true)
+    allow(Chef::Role).to receive(:load).and_return(@role)
 
   end
 
@@ -52,25 +52,25 @@ describe Chef::Knife::RoleRunListSet do
 #    end
 
     it "should load the node" do
-      Chef::Role.should_receive(:load).with("will").and_return(@role)
+      expect(Chef::Role).to receive(:load).with("will").and_return(@role)
       @knife.run
     end
 
     it "should replace all the items in the runlist with what is specified" do
       @setup.run
       @knife.run
-      @role.run_list[0].should == "role[owen]" 
-      @role.run_list[1].should == "role[mauntel]" 
-      @role.run_list[2].should be_nil
+      expect(@role.run_list[0]).to eq("role[owen]") 
+      expect(@role.run_list[1]).to eq("role[mauntel]") 
+      expect(@role.run_list[2]).to be_nil
     end
 
     it "should save the node" do
-      @role.should_receive(:save).and_return(true)
+      expect(@role).to receive(:save).and_return(true)
       @knife.run
     end
 
     it "should print the run list" do
-      @knife.should_receive(:output).and_return(true)
+      expect(@knife).to receive(:output).and_return(true)
       @knife.config[:print_after] = true
       @setup.run
       @knife.run
@@ -82,10 +82,10 @@ describe Chef::Knife::RoleRunListSet do
         @setup.run
         @knife.name_args = [ "will", "role[coke]", "role[pepsi]" ]
         @knife.run
-        @role.run_list[0].should == "role[coke]"
-        @role.run_list[1].should == "role[pepsi]"
-        @role.run_list[2].should be_nil
-        @role.run_list[3].should be_nil
+        expect(@role.run_list[0]).to eq("role[coke]")
+        expect(@role.run_list[1]).to eq("role[pepsi]")
+        expect(@role.run_list[2]).to be_nil
+        expect(@role.run_list[3]).to be_nil
       end
     end
   end
