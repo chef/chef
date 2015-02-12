@@ -55,8 +55,13 @@
 * [**Naotoshi Seo**](https://github.com/sonots):
   Support HTTP/FTP source on rpm_package
   add json_attribs option for chef-apply command
+  allow_downgrade in rpm_package
 * [**AJ Christensen**](https://github.com/fujin):
   Isolate/fix the no-fork fault. [Issue 2709](https://github.com/chef/chef/issues/2709)
+* [**Cory Stephenson**](https://github.com/Aevin1387):
+  Remove comments of a service being enabled/disabled in FreeBSD. [Fixes #1791](https://github.com/chef/chef/issues/1791)
+* [**Will Albenzi**](https://github.com/walbenzi):
+  CHEF-4591: Knife commands to manipulate env_run_list on nodes
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
@@ -77,9 +82,9 @@
 * fixes a bug where providers would not get defined if a top-level ruby constant with the same name was already defined (ark cookbook, chrome cookbook)
 * Fix a bug in `reboot`, `ips_package`, `paludis_package`, `windows_package` resources where `action :nothing` was not permitted
 * Use Chef::ApiClient#from_hash in `knife client create` to avoid json_class requirement. [Issue 2542](https://github.com/chef/chef/issues/2542)
-* Add support for policyfile native API (preview). These APIs are
-  unstable, and you may be forced to delete data uploaded to them in a
+* Add support for policyfile native API (preview). These APIs are unstable, and you may be forced to delete data uploaded to them in a
   future release, so only use them for demonstration purposes.
+* Deprecation warning for 'knife cookbook test'
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
