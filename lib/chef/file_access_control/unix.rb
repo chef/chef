@@ -26,6 +26,16 @@ class Chef
       UINT = (1 << 32)
       UID_MAX = (1 << 32) - 10
 
+      module ClassMethods
+        def writable?(path)
+          ::File.writable?(path)
+        end
+      end
+
+      def self.included(base)
+        base.send :extend, ClassMethods
+      end
+
       def set_all!
         set_owner!
         set_group!
