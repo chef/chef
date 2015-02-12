@@ -33,6 +33,7 @@ another component.
 * [Jay Mundrawala](http://github.com/jdmundrawala)
 * [Bryan McLellan](http://github.com/btm)
 * [Ranjib Dey](http://github.com/ranjib)
+* [AJ Christensen](https://github.com/fujin)
 
 ## Dev Tools
 
