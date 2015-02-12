@@ -112,7 +112,7 @@ describe Chef::Provider::Directory do
 
     expect(File).to receive(:exists?).with('/path/to').ordered.and_return(false)
     expect(File).to receive(:exists?).with('/path').ordered.and_return(true)
-    expect(File).to receive(:writable?).with('/path').ordered.and_return(true)
+    expect(Chef::FileAccessControl).to receive(:writable?).with('/path').ordered.and_return(true)
     expect(File).to receive(:exists?).with(@new_resource.path).ordered.and_return(false)
 
     expect(FileUtils).to receive(:mkdir_p).with(@new_resource.path).and_return(true)
@@ -137,7 +137,7 @@ describe Chef::Provider::Directory do
     stub_file_cstats
     @new_resource.path "/tmp/foo"
     expect(File).to receive(:directory?).at_least(:once).and_return(true)
-    expect(File).to receive(:writable?).with("/tmp").and_return(true)
+    expect(Chef::FileAccessControl).to receive(:writable?).with("/tmp").and_return(true)
     expect(File).to receive(:exists?).at_least(:once).and_return(true)
     expect(Dir).not_to receive(:mkdir).with(@new_resource.path)
     expect(@directory).to receive(:do_acl_changes)
@@ -146,14 +146,14 @@ describe Chef::Provider::Directory do
 
   it "should delete the directory if it exists, and is writable with action_delete" do
     expect(File).to receive(:directory?).and_return(true)
-    expect(File).to receive(:writable?).once.and_return(true)
+    expect(Chef::FileAccessControl).to receive(:writable?).once.and_return(true)
     expect(Dir).to receive(:delete).with(@new_resource.path).once.and_return(true)
     @directory.run_action(:delete)
   end
 
   it "should raise an exception if it cannot delete the directory due to bad permissions" do
     allow(File).to receive(:exists?).and_return(true)
-    allow(File).to receive(:writable?).and_return(false)
+    allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
     expect {  @directory.run_action(:delete) }.to raise_error(RuntimeError)
   end
 
