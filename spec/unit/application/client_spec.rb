@@ -26,7 +26,7 @@ describe Chef::Application::Client, "reconfigure" do
 
   before do
     allow(Kernel).to receive(:trap).and_return(:ok)
-    allow(::File).to receive(:read).with(/client\.rb/).and_return("")
+    allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
 
     @original_argv = ARGV.dup
     ARGV.clear
@@ -262,7 +262,7 @@ describe Chef::Application::Client, "configure_chef" do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
-    allow(::File).to receive(:read).with(/client\.rb/).and_return("")
+    allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
     app.configure_chef
   end
 
