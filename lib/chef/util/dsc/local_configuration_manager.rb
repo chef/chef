@@ -27,14 +27,14 @@ class Chef::Util::DSC
       clear_execution_time
     end
 
-    def test_configuration(configuration_document)
-      status = run_configuration_cmdlet(configuration_document)
+    def test_configuration(configuration_document, shellout_flags)
+      status = run_configuration_cmdlet(configuration_document, false, shellout_flags)
       log_what_if_exception(status.stderr) unless status.succeeded?
       configuration_update_required?(status.return_value)
     end
 
-    def set_configuration(configuration_document)
-      run_configuration_cmdlet(configuration_document, true)
+    def set_configuration(configuration_document, shellout_flags)
+      run_configuration_cmdlet(configuration_document, true, shellout_flags)
     end
 
     def last_operation_execution_time_seconds
@@ -45,7 +45,7 @@ class Chef::Util::DSC
 
     private
 
-    def run_configuration_cmdlet(configuration_document, apply_configuration = false)
+    def run_configuration_cmdlet(configuration_document, apply_configuration, shellout_flags)
       Chef::Log.debug("DSC: Calling DSC Local Config Manager to #{apply_configuration ? "set" : "test"} configuration document.")
       test_only_parameters = ! apply_configuration ? '-whatif; if (! $?) { exit 1 }' : ''
 
@@ -57,9 +57,9 @@ class Chef::Util::DSC
         save_configuration_document(configuration_document)
         cmdlet = ::Chef::Util::Powershell::Cmdlet.new(@node, "#{command_code}")
         if apply_configuration
-          status = cmdlet.run!
+          status = cmdlet.run!({}, shellout_flags)
         else
-          status = cmdlet.run
+          status = cmdlet.run({}, shellout_flags)
         end
       ensure
         end_operation_timing
