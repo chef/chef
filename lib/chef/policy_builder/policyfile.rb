@@ -335,13 +335,11 @@ class Chef
       # cookbooks are fetched by the "dotted_decimal_identifier": a
       # representation of a SHA1 in the traditional x.y.z version format.
       def manifest_for(cookbook_name, lock_data)
-        xyz_version = lock_data["dotted_decimal_identifier"]
-        http_api.get("cookbooks/#{cookbook_name}/#{xyz_version}")
-      rescue Exception => e
-        message = "Error loading cookbook #{cookbook_name} at version #{xyz_version}: #{e.class} - #{e.message}"
-        err = Chef::Exceptions::CookbookNotFound.new(message)
-        err.set_backtrace(e.backtrace)
-        raise err
+        if Chef::Config[:policy_document_native_api]
+          artifact_manifest_for(cookbook_name, lock_data)
+        else
+          compat_mode_manifest_for(cookbook_name, lock_data)
+        end
       end
 
       def cookbook_locks
@@ -354,6 +352,30 @@ class Chef
 
       def config
         Chef::Config
+      end
+
+      private
+
+      def compat_mode_manifest_for(cookbook_name, lock_data)
+        xyz_version = lock_data["dotted_decimal_identifier"]
+        rel_url = "cookbooks/#{cookbook_name}/#{xyz_version}"
+        http_api.get(rel_url)
+      rescue Exception => e
+        message = "Error loading cookbook #{cookbook_name} at version #{xyz_version} from #{rel_url}: #{e.class} - #{e.message}"
+        err = Chef::Exceptions::CookbookNotFound.new(message)
+        err.set_backtrace(e.backtrace)
+        raise err
+      end
+
+      def artifact_manifest_for(cookbook_name, lock_data)
+        xyz_version = lock_data["dotted_decimal_identifier"]
+        rel_url = "cookbook_artifacts/#{cookbook_name}/#{xyz_version}"
+        http_api.get(rel_url)
+      rescue Exception => e
+        message = "Error loading cookbook #{cookbook_name} at version #{xyz_version} from #{rel_url}: #{e.class} - #{e.message}"
+        err = Chef::Exceptions::CookbookNotFound.new(message)
+        err.set_backtrace(e.backtrace)
+        raise err
       end
 
     end
