@@ -336,6 +336,12 @@ class Chef
             :GenericAll, :DWORD
         end
 
+        class PRIVILEGE_SET < FFI::Struct
+          layout :PrivilegeCount, :DWORD,
+                 :Control, :DWORD,
+                 :Privilege, [LUID_AND_ATTRIBUTES, 1]
+        end
+
         class TOKEN_PRIVILEGES < FFI::Struct
           layout :PrivilegeCount, :DWORD,
                  :Privileges, LUID_AND_ATTRIBUTES
