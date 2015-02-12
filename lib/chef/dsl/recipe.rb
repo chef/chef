@@ -73,10 +73,31 @@ class Chef
         new_recipe.instance_eval(&new_def.recipe)
       end
 
+      #
       # Instantiates a resource (via #build_resource), then adds it to the
       # resource collection. Note that resource classes are looked up directly,
       # so this will create the resource you intended even if the method name
       # corresponding to that resource has been overridden.
+      #
+      # @param type [Symbol] The type of resource (e.g. `:file` or `:package`)
+      # @param name [String] The name of the resource (e.g. '/x/y.txt' or 'apache2')
+      # @param created_at [String] The caller of the resource.  Use `caller[0]`
+      #   to get the caller of your function.  Defaults to the caller of this
+      #   function.
+      # @param resource_attrs_block A block that lets you set attributes of the
+      #   resource (it is instance_eval'd on the resource instance).
+      #
+      # @return [Chef::Resource] The new resource.
+      #
+      # @example
+      #   declare_resource(:file, '/x/y.txy', caller[0]) do
+      #     action :delete
+      #   end
+      #   # Equivalent to
+      #   file '/x/y.txt' do
+      #     action :delete
+      #   end
+      #
       def declare_resource(type, name, created_at=nil, &resource_attrs_block)
         created_at ||= caller[0]
 
@@ -86,10 +107,27 @@ class Chef
         resource
       end
 
+      #
       # Instantiate a resource of the given +type+ with the given +name+ and
       # attributes as given in the +resource_attrs_block+.
       #
       # The resource is NOT added to the resource collection.
+      #
+      # @param type [Symbol] The type of resource (e.g. `:file` or `:package`)
+      # @param name [String] The name of the resource (e.g. '/x/y.txt' or 'apache2')
+      # @param created_at [String] The caller of the resource.  Use `caller[0]`
+      #   to get the caller of your function.  Defaults to the caller of this
+      #   function.
+      # @param resource_attrs_block A block that lets you set attributes of the
+      #   resource (it is instance_eval'd on the resource instance).
+      #
+      # @return [Chef::Resource] The new resource.
+      #
+      # @example
+      #   build_resource(:file, '/x/y.txy', caller[0]) do
+      #     action :delete
+      #   end
+      #
       def build_resource(type, name, created_at=nil, &resource_attrs_block)
         created_at ||= caller[0]
 
