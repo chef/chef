@@ -90,7 +90,7 @@ class Chef
       # Checks the new platform => short_name => resource mapping initially
       # then fall back to the older approach (Chef::Resource.const_get) for
       # backward compatibility
-      resource_class ||= Chef::Resource.resource_for_node(type, run_context.node)
+      @resource_class ||= Chef::Resource.resource_for_node(type, run_context.node)
     end
 
     def is_trivial_resource?(resource)
