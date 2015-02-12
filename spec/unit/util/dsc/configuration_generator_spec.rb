@@ -130,7 +130,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
         [a,b].join("++")
       end
       allow(file_like_object).to receive(:write)
-      conf_man.send(:write_document_generation_script, 'file', 'hello')
+      conf_man.send(:write_document_generation_script, 'file', 'hello', {})
       expect(file_like_object).to have_received(:write)
     end
   end
@@ -158,7 +158,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
   describe "#configuration_code" do
     it "should build dsc" do
-      dsc = conf_man.send(:configuration_code, 'archive{}', 'hello')
+      dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {})
       found_configuration = false
       dsc.split(';').each do |command|
         if command.downcase =~ /\s*configuration\s+'hello'\s*\{\s*node\s+'localhost'\s*\{\s*archive\s*\{\s*\}\s*\}\s*\}\s*/
@@ -166,6 +166,28 @@ describe Chef::Util::DSC::ConfigurationGenerator do
         end
       end
       expect(found_configuration).to be_truthy
+    end
+    context "with imports" do
+      it "should import all resources when a module has an empty list" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => []})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule\s*\n/)
+      end
+
+      it "should import all resources when a module has a list with *" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', '*', 'BarResource']})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule\s*\n/)
+      end
+
+      it "should import specific resources when a module has list without * that is not empty" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', 'BarResource']})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule -Name FooResource,BarResource/)
+      end
+
+      it "should import multiple modules with multiple import statements" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', 'BarResource'], 'BazModule' => []})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule -Name FooResource,BarResource/)
+        expect(dsc).to match(/Import-DscResource -ModuleName BazModule\s*\n/)
+      end 
     end
   end
 end
