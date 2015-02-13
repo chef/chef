@@ -59,6 +59,16 @@ describe Chef::Resource::DscResource do
           dsc_test_resource.property('Foo', dsc_test_property_value)
         }.to raise_error(TypeError)
       end
+
+      context "when using DelayedEvaluators" do
+        it "allows setting a dsc property with a property name of type Symbol" do
+          dsc_test_resource.property(dsc_test_property_name, Chef::DelayedEvaluator.new {
+            dsc_test_property_value
+          })
+          expect(dsc_test_resource.property(dsc_test_property_name)).to eq(dsc_test_property_value)
+          expect(dsc_test_resource.properties[dsc_test_property_name]).to eq(dsc_test_property_value)
+        end
+      end
     end
   end
 end
