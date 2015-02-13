@@ -62,6 +62,8 @@
   Remove comments of a service being enabled/disabled in FreeBSD. [Fixes #1791](https://github.com/chef/chef/issues/1791)
 * [**Will Albenzi**](https://github.com/walbenzi):
   CHEF-4591: Knife commands to manipulate env_run_list on nodes
+* [**Jon Cowie**](https://github.com/jonlives):
+  CHEF-2911: Fix yum_package provider to respect version requirements in package name and version attribute
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
