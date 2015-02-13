@@ -21,8 +21,6 @@ class Chef
 
       provides :dsc_resource, platform: "windows"
 
-      attr_reader :properties
-
       def initialize(name, run_context)
         super
         @properties = {}
@@ -46,9 +44,26 @@ class Chef
         end
 
         if value.nil?
-          @properties[property_name]
+          value_of(@properties[property_name])
         else
           @properties[property_name] = value
+        end
+      end
+
+      def properties
+        @properties.reduce({}) do |memo, (k, v)|
+          memo[k] = value_of(v)
+          memo
+        end
+      end
+
+      private
+
+      def value_of(value)
+        if value.is_a?(DelayedEvaluator)
+          value.call
+        else
+          value
         end
       end
     end
