@@ -52,3 +52,9 @@ will stop chef_gem from automatically installing at compile_time.  False is
 the recommended setting as long as the gem is only used in provider code (a
 best practice) and not used directly in recipe code.
 
+## Yum Package provider now supports version requirements
+
+A documented feature of the yum_package provider was the ability to specify a version requirement such as ` = 1.0.1.el5` in the resource name.
+However, this did not actually work. It has now been fixed, and additionally version requirements are now supported in the `version` attribute
+of yum_package as well.
+

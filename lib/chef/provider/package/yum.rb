@@ -1046,15 +1046,17 @@ class Chef
           # 3) or a dependency, eg: "foo >= 1.1"
 
           # Check if we have name or name+arch which has a priority over a dependency
-          package_name_array.each do |n|
+          package_name_array.each_with_index do |n, index|
             unless @yum.package_available?(n)
               # If they aren't in the installed packages they could be a dependency
-              dep = parse_dependency(n)
+              dep = parse_dependency(n, new_version_array[index])
               if dep
                 if @new_resource.package_name.is_a?(Array)
-                  @new_resource.package_name(package_name_array - [n] + [dep])
+                  @new_resource.package_name(package_name_array - [n] + [dep.first])
+                  @new_resource.version(new_version_array - [new_version_array[index]] + [dep.last]) if dep.last
                 else
-                  @new_resource.package_name(dep)
+                  @new_resource.package_name(dep.first)
+                  @new_resource.version(dep.last) if dep.last
                 end
               end
             end
@@ -1265,9 +1267,19 @@ class Chef
         # matching them up with an actual package so the standard resource handling can apply.
         #
         # There is currently no support for filename matching.
-        def parse_dependency(name)
+        def parse_dependency(name,version)
           # Transform the package_name into a requirement
-          yum_require = RPMRequire.parse(name)
+
+          # If we are passed a version or a version constraint we have to assume it's a requirement first. If it can't be
+          # parsed only yum_require.name will be set and @new_resource.version will be left intact
+          if version
+            require_string = "#{name} #{version}"
+          else
+            # Transform the package_name into a requirement, might contain a version, could just be
+            # a match for virtual provides
+            require_string = name
+          end
+          yum_require = RPMRequire.parse(require_string)
           # and gather all the packages that have a Provides feature satisfying the requirement.
           # It could be multiple be we can only manage one
           packages = @yum.packages_from_require(yum_require)
@@ -1285,8 +1297,11 @@ class Chef
 
           unless packages.empty?
             new_package_name = packages.first.name
-            Chef::Log.debug("#{@new_resource} no package found for #{@new_resource.package_name} " +
-                            "but matched Provides for #{new_package_name}")
+            new_package_version = packages.first.version.to_s
+            debug_msg = "#{name}: Unable to match package '#{name}' but matched #{packages.size} "
+            debug_msg << packages.size == 1 ? "package" : "packages"
+            debug_msg << ", selected '#{new_package_name}' version '#{new_package_version}'"
+            Chef::Log.debug(debug_msg)
 
             # Ensure it's not the same package under a different architecture
             unique_names = []
@@ -1301,7 +1316,11 @@ class Chef
                              "specific version.")
             end
 
-            new_package_name
+            if yum_require.version.to_s.nil?
+              new_package_version = nil
+            end
+
+            [new_package_name,new_package_version]
           end
         end
 

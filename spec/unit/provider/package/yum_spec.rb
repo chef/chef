@@ -231,26 +231,102 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
     end
 
-    it "should search provides if package name can't be found then set package_name to match" do
+    context "when the package name isn't found" do
+      let(:yum_cache) { double(
+          'Chef::Provider::Yum::YumCache',
+          :reload_installed => true,
+          :reset => true,
+          :installed_version => "1.0.1.el5",
+          :candidate_version => "2.0.1.el5",
+          :package_available? => false,
+          :version_available? => true,
+          :disable_extra_repo_control => true
+      )
+      }
+
+      before do
+        allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(yum_cache)
+        @pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
+        expect(yum_cache).to receive(:packages_from_require).and_return([@pkg])
+      end
+
+      it "should search provides then set package_name to match" do
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        expect(@new_resource.package_name).to eq('test-package')
+        expect(@new_resource.version).to eq(nil)
+      end
+
+      it "should search provides then set version to match if a requirement was passed in the package name" do
+        @new_resource = Chef::Resource::YumPackage.new('test-package = 2.0.1.el5')
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        expect(@new_resource.package_name).to eq('test-package')
+        expect(@new_resource.version).to eq('2.0.1.el5')
+      end
+
+
+      it "should search provides then set version to match if a requirement was passed in the version" do
+        @new_resource = Chef::Resource::YumPackage.new('test-package')
+        @new_resource.version('= 2.0.1.el5')
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        expect(@new_resource.package_name).to eq('test-package')
+        expect(@new_resource.version).to eq('2.0.1.el5')
+      end
+
+
+      it "should search provides and not set the version to match if a specific version was requested" do
+        @new_resource = Chef::Resource::YumPackage.new('test-package')
+        @new_resource.version('3.0.1.el5')
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        expect(@new_resource.package_name).to eq('test-package')
+        expect(@new_resource.version).to eq('3.0.1.el5')
+      end
+
+      it "should search provides then set versions to match if requirements were passed in the package name as an array" do
+        @new_resource = Chef::Resource::YumPackage.new(['test-package = 2.0.1.el5'])
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        expect(@new_resource.package_name).to eq(['test-package'])
+        expect(@new_resource.version).to eq(['2.0.1.el5'])
+      end
+
+      it "should search provides and not set the versions to match if specific versions were requested in an array" do
+        @new_resource = Chef::Resource::YumPackage.new(['test-package'])
+        @new_resource.version(['3.0.1.el5'])
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        expect(@new_resource.package_name).to eq(['test-package'])
+        expect(@new_resource.version).to eq(['3.0.1.el5'])
+      end
+
+    end
+
+    it "should not return an error if no version number is specified in the resource" do
+      @new_resource = Chef::Resource::YumPackage.new('test-package')
       @yum_cache = double(
-        'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.18.el5",
-        :package_available? => false,
-        :version_available? => true,
-        :disable_extra_repo_control => true
+          'Chef::Provider::Yum::YumCache',
+          :reload_installed => true,
+          :reset => true,
+          :installed_version => "1.0.1.el5",
+          :candidate_version => "2.0.1.el5",
+          :package_available? => false,
+          :version_available? => true,
+          :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
-      pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "1.2.4-11.18.el5", "x86_64", [])
+      pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
       expect(@yum_cache).to receive(:packages_from_require).and_return([pkg])
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
       expect(@new_resource.package_name).to eq("test-package")
+      expect(@new_resource.version).to eq(nil)
     end
 
-    it "should search provides if package name can't be found, warn about multiple matches, but use the first one" do
+    it "should give precedence to the version attribute when both a requirement in the resource name and a version attribute are specified" do
+      @new_resource = Chef::Resource::YumPackage.new('test-package')
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
@@ -262,13 +338,38 @@ describe Chef::Provider::Package::Yum do
         :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
-      pkg_x = Chef::Provider::Package::Yum::RPMPackage.new("test-package-x", "1.2.4-11.18.el5", "x86_64", [])
-      pkg_y = Chef::Provider::Package::Yum::RPMPackage.new("test-package-y", "1.2.6-11.3.el5", "i386", [])
-      expect(@yum_cache).to receive(:packages_from_require).and_return([pkg_x, pkg_y])
-      expect(Chef::Log).to receive(:warn).exactly(1).times.with(%r{matched multiple Provides})
+      pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
+      expect(@yum_cache).to receive(:packages_from_require).and_return([pkg])
+      @new_resource = Chef::Resource::YumPackage.new('test-package = 2.0.1.el5')
+      @new_resource.version('3.0.1.el5')
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
-      expect(@new_resource.package_name).to eq("test-package-x")
+      expect(@new_resource.package_name).to eq('test-package')
+      expect(@new_resource.version).to eq('3.0.1.el5')
+    end
+
+    it "should correctly detect the installed states of an array of package names and version numbers" do
+      @yum_cache = double(
+          'Chef::Provider::Yum::YumCache',
+          :reload_installed => true,
+          :reset => true,
+          :installed_version => "1.0.1.el5",
+          :candidate_version => "2.0.1.el5",
+          :package_available? => false,
+          :version_available? => true,
+          :disable_extra_repo_control => true
+      )
+      allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
+
+      expect(@yum_cache).to receive(:packages_from_require).exactly(4).times.and_return([])
+      expect(@yum_cache).to receive(:reload_provides).twice
+
+      @new_resource = Chef::Resource::YumPackage.new(['test-package','test-package2'])
+      @new_resource.version(['2.0.1.el5','3.0.1.el5'])
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      expect(@new_resource.package_name).to eq(['test-package','test-package2'])
+      expect(@new_resource.version).to eq(['2.0.1.el5','3.0.1.el5'])
     end
 
     it "should search provides if no package is available - if no match in installed provides then load the complete set" do
@@ -287,6 +388,7 @@ describe Chef::Provider::Package::Yum do
       expect(@yum_cache).to receive(:reload_provides)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
+      expect(@new_resource.version).to eq(nil)
     end
 
     it "should search provides if no package is available and not load the complete set if action is :remove or :purge" do
