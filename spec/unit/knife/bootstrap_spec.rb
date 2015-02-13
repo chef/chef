@@ -51,7 +51,7 @@ describe Chef::Knife::Bootstrap do
   context "with --bootstrap-vault-item" do
     let(:bootstrap_cli_options) { [ "--bootstrap-vault-item", "vault1:item1", "--bootstrap-vault-item", "vault1:item2", "--bootstrap-vault-item", "vault2:item1" ] }
     it "sets the knife config cli option correctly" do
-      expect(knife.config[:bootstrap_vault_item]).to be({"vault1"=>["item1", "item2"], "vault2"=>["item1"]})
+      expect(knife.config[:bootstrap_vault_item]).to eq({"vault1"=>["item1", "item2"], "vault2"=>["item1"]})
     end
   end
 
