@@ -27,12 +27,14 @@ class Chef
       UID_MAX = (1 << 32) - 10
 
       module ClassMethods
+        # We want to mix these in as class methods
         def writable?(path)
           ::File.writable?(path)
         end
       end
 
       def self.included(base)
+        # When this file is mixed in, make sure we also add the class methods
         base.send :extend, ClassMethods
       end
 
