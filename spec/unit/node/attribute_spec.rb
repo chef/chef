@@ -1108,6 +1108,26 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "to_s" do
+    it "should output simple attributes" do
+      attributes = Chef::Node::Attribute.new(nil, nil, nil, nil)
+      expect(attributes.to_s).to eq("{}")
+    end
+
+    it "should output merged attributes" do
+      default_hash = {
+          "a" => 1,
+          "b" => 2
+      }
+      override_hash = {
+          "b" => 3,
+          "c" => 4
+      }
+      attributes = Chef::Node::Attribute.new(nil, default_hash, override_hash, nil)
+      expect(attributes.to_s).to eq('{"a"=>1, "b"=>3, "c"=>4}')
+    end
+  end
+
   describe "inspect" do
     it "should be readable" do
       # NOTE: previous implementation hid the values, showing @automatic={...}
