@@ -83,21 +83,34 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
       expect(guard_interpreter.evaluate).to eq(true)
     end
 
-    describe "Script command opts switch" do
+    describe "script command opts switch" do
       let(:command_opts) { {} }
-      let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "echo hi", command_opts) }
+      let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "exit 0", command_opts) }
 
       context "resource is a Script" do
-        context "and guard_interpreter is :script" do
+        context "and guard_interpreter is a :script" do
           let(:parent_resource) do
             parent_resource = Chef::Resource::Script.new("resource", run_context)
-            parent_resource.guard_interpreter(:script)
+            # Ruby scripts are cross platform to both Linux and Windows
+            parent_resource.guard_interpreter(:ruby)
             parent_resource
           end
 
+          let(:shell_out) {
+            instance_double(Mixlib::ShellOut, :live_stream => true, :run_command => true, :error! => nil)
+          }
+
+          before do
+            # TODO for some reason Windows is failing on executing a ruby script
+            expect(Mixlib::ShellOut).to receive(:new) do |*args|
+              expect(args[0]).to match(/^"ruby"/)
+              shell_out
+            end
+          end
+
           it "merges to :code" do
-            expect(command_opts).to receive(:merge).with({:code => "echo hi"}).and_call_original
-            guard_interpreter.evaluate
+            expect(command_opts).to receive(:merge).with({:code => "exit 0"}).and_call_original
+            expect(guard_interpreter.evaluate).to eq(true)
           end
         end
 
@@ -109,8 +122,8 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
           end
 
           it "merges to :code" do
-            expect(command_opts).to receive(:merge).with({:command => "echo hi"}).and_call_original
-            guard_interpreter.evaluate
+            expect(command_opts).to receive(:merge).with({:command => "exit 0"}).and_call_original
+            expect(guard_interpreter.evaluate).to eq(true)
           end
         end
       end
@@ -123,8 +136,8 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
         end
 
         it "merges to :command" do
-          expect(command_opts).to receive(:merge).with({:command => "echo hi"}).and_call_original
-          guard_interpreter.evaluate
+          expect(command_opts).to receive(:merge).with({:command => "exit 0"}).and_call_original
+          expect(guard_interpreter.evaluate).to eq(true)
         end
       end
 
