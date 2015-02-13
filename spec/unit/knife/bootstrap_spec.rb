@@ -48,6 +48,13 @@ describe Chef::Knife::Bootstrap do
     expect(File.basename(knife.bootstrap_template)).to eq("chef-full")
   end
 
+  context "with --bootstrap-vault-item" do
+    let(:bootstrap_cli_options) { [ "--bootstrap-vault-item", "vault1:item1", "--bootstrap-vault-item", "vault1:item2", "--bootstrap-vault-item", "vault2:item1" ] }
+    it "sets the knife config cli option correctly" do
+      expect(knife.config[:bootstrap_vault_item]).to be({"vault1"=>["item1", "item2"], "vault2"=>["item1"]})
+    end
+  end
+
   context "with :distro and :bootstrap_template cli options" do
     let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--distro", "other-template" ] }
 

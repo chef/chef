@@ -212,9 +212,10 @@ class Chef
         :description => 'A single vault and item to update as "vault:item"',
         :proc        => Proc.new { |i|
           (vault, item) = i.split(/:/)
-          bootstrap_vault_item ||= {}
-          bootstrap_vault_item[vault] ||= []
-          bootstrap_vault_item[vault].push(item)
+          Chef::Config[:knife][:bootstrap_vault_item] ||= {}
+          Chef::Config[:knife][:bootstrap_vault_item][vault] ||= []
+          Chef::Config[:knife][:bootstrap_vault_item][vault].push(item)
+          Chef::Config[:knife][:bootstrap_vault_item]
         }
 
       def initialize(argv=[])
