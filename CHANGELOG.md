@@ -64,10 +64,14 @@
   CHEF-4591: Knife commands to manipulate env_run_list on nodes
 * [**Jon Cowie**](https://github.com/jonlives):
   CHEF-2911: Fix yum_package provider to respect version requirements in package name and version attribute
+* [**Anshul Sharma**](https://github.com/justanshulsharma):
+  * Node::Attribute to_s should print merged attributes [Issue 1526](https://github.com/chef/chef/issues/1562)
+  * Access keys attribute in `knife show` list incorrect information [Issue 1974](https://github.com/chef/chef/issues/1974)
+  * Guard interpreter loading incorrect resource [Issue 2683](https://github.com/chef/chef/issues/2683)
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
-* Update Chef to use RSpec 3.
+* Update Chef to use RSpec 3.2
 * Cleaned up script and execute provider + specs
 * Added deprecation warnings around the use of command attribute in script resources
 * Audit mode feature added - see the RELEASE_NOTES for details
@@ -89,6 +93,7 @@
 * Deprecation warning for 'knife cookbook test'
 * dsc_script should now correctly honor timeout. See [Issue 2831](https://github.com/chef/chef/issues/2831)
 * Added an `imports` attribute to dsc_script. This attribute allows you to specify DSC resources that need to be imported for your script.
+* Fixed error where guard resources (using :guard_interpreter) were not ran in `why_run` mode [Issue 2694](https://github.com/chef/chef/issues/2694)
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
