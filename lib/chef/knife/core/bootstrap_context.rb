@@ -30,6 +30,8 @@ class Chef
       #
       class BootstrapContext
 
+        attr_accessor :client_pem
+
         def initialize(config, run_list, chef_config, secret = nil)
           @config       = config
           @run_list     = run_list
@@ -42,7 +44,11 @@ class Chef
         end
 
         def validation_key
-          IO.read(File.expand_path(@chef_config[:validation_key]))
+          if File.exist?(File.expand_path(@chef_config[:validation_key]))
+            IO.read(File.expand_path(@chef_config[:validation_key]))
+          else
+            false
+          end
         end
 
         def encrypted_data_bag_secret

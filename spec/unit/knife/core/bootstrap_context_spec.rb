@@ -77,6 +77,7 @@ EXPECTED
   describe "validation key path that contains a ~" do
     let(:chef_config){ {:validation_key => '~/my.key'} }
     it "reads the validation key when it contains a ~" do
+      expect(File).to receive(:exist?).with(File.expand_path("my.key", ENV['HOME'])).and_return(true)
       expect(IO).to receive(:read).with(File.expand_path("my.key", ENV['HOME']))
       bootstrap_context.validation_key
     end

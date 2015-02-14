@@ -37,6 +37,8 @@ class Chef
 
     VALID_ID = /^[\.\-[:alnum:]_]+$/
 
+    attr_accessor :chef_server_rest
+
     def self.validate_id!(id_str)
       if id_str.nil? || ( id_str !~ VALID_ID )
         raise Exceptions::InvalidDataBagItemID, "Data Bag items must have an id matching #{VALID_ID.inspect}, you gave: #{id_str.inspect}"
@@ -49,13 +51,14 @@ class Chef
     attr_reader :raw_data
 
     # Create a new Chef::DataBagItem
-    def initialize
+    def initialize(chef_server_rest: nil)
       @data_bag = nil
       @raw_data = Mash.new
+      @chef_server_rest = chef_server_rest
     end
 
     def chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest

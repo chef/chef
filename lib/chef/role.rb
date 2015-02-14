@@ -32,17 +32,20 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
+    attr_accessor :chef_server_rest
+
     # Create a new Chef::Role object.
-    def initialize
+    def initialize(chef_server_rest: nil)
       @name = ''
       @description = ''
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @env_run_lists = {"_default" => Chef::RunList.new}
+      @chef_server_rest = chef_server_rest
     end
 
     def chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest

@@ -11,10 +11,12 @@ fi
 
 mkdir -p /etc/chef
 
+<% if validation_key -%>
 cat > /etc/chef/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
 chmod 0600 /etc/chef/validation.pem
+<% end -%>
 
 <% if encrypted_data_bag_secret -%>
 cat > /etc/chef/encrypted_data_bag_secret <<'EOP'
@@ -37,6 +39,13 @@ cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
 <%= Chef::JSONCompat.to_json(hash) %>
 EOP
 <% end -%>
+<% end -%>
+
+<% if client_pem -%>
+cat > /etc/chef/client.pem <<'EOP'
+<%= ::File.read(::File.expand_path(client_pem)) %>
+EOP
+chmod 0600 /etc/chef/client.pem
 <% end -%>
 
 cat > /etc/chef/client.rb <<'EOP'

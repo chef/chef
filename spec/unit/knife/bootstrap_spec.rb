@@ -48,6 +48,13 @@ describe Chef::Knife::Bootstrap do
     expect(File.basename(knife.bootstrap_template)).to eq("chef-full")
   end
 
+  context "with --bootstrap-vault-item" do
+    let(:bootstrap_cli_options) { [ "--bootstrap-vault-item", "vault1:item1", "--bootstrap-vault-item", "vault1:item2", "--bootstrap-vault-item", "vault2:item1" ] }
+    it "sets the knife config cli option correctly" do
+      expect(knife.config[:bootstrap_vault_item]).to eq({"vault1"=>["item1", "item2"], "vault2"=>["item1"]})
+    end
+  end
+
   context "with :distro and :bootstrap_template cli options" do
     let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--distro", "other-template" ] }
 
@@ -95,7 +102,7 @@ describe Chef::Knife::Bootstrap do
     context "when :bootstrap_template config is set to a template name" do
       let(:bootstrap_template) { "example" }
 
-      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), '../../../lib/chef/knife/bootstrap', "example.erb"))}
+      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), '../../../lib/chef/knife/bootstrap/templates', "example.erb"))}
 
       let(:chef_config_dir_template_path) { "/knife/chef/config/bootstrap/example.erb" }
 
@@ -520,25 +527,71 @@ describe Chef::Knife::Bootstrap do
       knife_ssh
     end
 
-    it "configures the underlying ssh command and then runs it" do
-      expect(knife_ssh).to receive(:run)
-      knife.run
+    context "when running with a configured and present validation key" do
+      before do
+        # this tests runs the old code path where we have a validation key, so we need to pass that check
+        allow(File).to receive(:exist?).with(File.expand_path(Chef::Config[:validation_key])).and_return(true)
+      end
+
+
+      it "configures the underlying ssh command and then runs it" do
+        expect(knife_ssh).to receive(:run)
+        knife.run
+      end
+
+      it "falls back to password based auth when auth fails the first time" do
+        allow(knife).to receive(:puts)
+
+        fallback_knife_ssh = knife_ssh.dup
+        expect(knife_ssh).to receive(:run).and_raise(Net::SSH::AuthenticationFailed.new("no ssh for you"))
+        allow(knife).to receive(:knife_ssh_with_password_auth).and_return(fallback_knife_ssh)
+        expect(fallback_knife_ssh).to receive(:run)
+        knife.run
+      end
+
+      it "raises the exception if config[:ssh_password] is set and an authentication exception is raised" do
+        knife.config[:ssh_password] = "password"
+        expect(knife_ssh).to receive(:run).and_raise(Net::SSH::AuthenticationFailed)
+        expect { knife.run }.to raise_error(Net::SSH::AuthenticationFailed)
+      end
+
+      it "creates the client and adds chef-vault items if vault_list is set" do
+        knife.config[:bootstrap_vault_file] = "/not/our/responsibility/to/check/if/this/exists"
+        expect(knife_ssh).to receive(:run)
+        expect(knife.client_builder).to receive(:run)
+        expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
+        knife.run
+      end
+
+      it "creates the client and adds chef-vault items if vault_items is set" do
+        knife.config[:bootstrap_vault_json] = '{ "vault" => "item" }'
+        expect(knife_ssh).to receive(:run)
+        expect(knife.client_builder).to receive(:run)
+        expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
+        knife.run
+      end
+
+      it "does old-style validation without creating a client key if vault_list+vault_items is not set" do
+        expect(File).to receive(:exist?).with(File.expand_path(Chef::Config[:validation_key])).and_return(true)
+        expect(knife_ssh).to receive(:run)
+        expect(knife.client_builder).not_to receive(:run)
+        expect(knife.chef_vault_handler).not_to receive(:run).with(node_name: knife.config[:chef_node_name])
+        knife.run
+      end
     end
 
-    it "falls back to password based auth when auth fails the first time" do
-      allow(knife).to receive(:puts)
+    context "when the validation key is not present" do
+      before do
+        # this tests runs the old code path where we have a validation key, so we need to pass that check
+        allow(File).to receive(:exist?).with(File.expand_path(Chef::Config[:validation_key])).and_return(false)
+      end
 
-      fallback_knife_ssh = knife_ssh.dup
-      expect(knife_ssh).to receive(:run).and_raise(Net::SSH::AuthenticationFailed.new("no ssh for you"))
-      allow(knife).to receive(:knife_ssh_with_password_auth).and_return(fallback_knife_ssh)
-      expect(fallback_knife_ssh).to receive(:run)
-      knife.run
-    end
-
-    it "raises the exception if config[:ssh_password] is set and an authentication exception is raised" do
-      knife.config[:ssh_password] = "password"
-      expect(knife_ssh).to receive(:run).and_raise(Net::SSH::AuthenticationFailed)
-      expect { knife.run }.to raise_error(Net::SSH::AuthenticationFailed)
+      it "creates the client (and possibly adds chef-vault items)" do
+        expect(knife_ssh).to receive(:run)
+        expect(knife.client_builder).to receive(:run)
+        expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
+        knife.run
+      end
     end
   end
 
