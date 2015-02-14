@@ -106,8 +106,8 @@ class Chef
       # the output stream to be changed for a formatter once the formatter has
       # been added.
       def set_streams
-        RSpec.configuration.output_stream = Chef::Config[:log_location]
-        RSpec.configuration.error_stream = Chef::Config[:log_location]
+        RSpec.configuration.output_stream = Chef::Config[:log_location] unless STDOUT.tty?
+        RSpec.configuration.error_stream = Chef::Config[:log_location] unless STDOUT.tty?
       end
 
       # Add formatters which we use to
