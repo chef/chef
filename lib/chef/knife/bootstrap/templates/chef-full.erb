@@ -16,6 +16,7 @@ tmp_dir="$tmp/install.sh.$$"
 # @return 0 if omnibus needs to be installed, non-zero otherwise
 should_update_chef() {
   if test ! -d "$1" ; then return 0
+  elif test ! -f "$1/bin/chef-client" ; then return 0
   elif test "$2" = "true" ; then return 1
   elif test "$2" = "latest" ; then return 0
   fi
@@ -75,7 +76,7 @@ do_wget() {
 # do_curl URL FILENAME
 do_curl() {
   echo "trying curl..."
-  curl -sL <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_curl_options] %> -D $tmp_dir/stderr "$1" > "$2"
+  curl -sL <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_curl_options] %> -D $tmp_dir/stderr -o "$2" "$1" 2>$tmp_dir/stderr
   rc=$?
   # check for 404
   grep "404 Not Found" $tmp_dir/stderr 2>&1 >/dev/null
@@ -105,7 +106,7 @@ do_fetch() {
 # do_perl URL FILENAME
 do_perl() {
   echo "trying perl..."
-  perl -e 'use LWP::Simple; getprint($ARGV[0]);' "$1" > "$2" 2>$tmp_dir/stderr
+  perl -e "use LWP::Simple; getprint(shift @ARGV);" "$1" > "$2" 2>$tmp_dir/stderr
   rc=$?
   # check for 404
   grep "404 Not Found" $tmp_dir/stderr 2>&1 >/dev/null
