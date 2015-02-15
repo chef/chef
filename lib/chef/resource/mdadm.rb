@@ -33,11 +33,11 @@ class Chef
       def initialize(name, run_context = nil)
         super
 
-        @chunk = 16
+        @chunk = nil
         @devices = []
         @exists = false
         @level = 1
-        @metadata = "0.90"
+        @metadata = nil
         @bitmap = nil
         @raid_device = name
       end
