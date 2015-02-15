@@ -42,6 +42,10 @@ module Mixlib
     attr_accessor :password
     attr_accessor :with_logon
 
+    # Whether to simulate logon as the user. Normally set via options passed to new
+    # Always enabled on windows
+    attr_accessor :login
+
     # Group the command will run as. Normally set via options passed to new
     attr_accessor :group
 
@@ -141,6 +145,8 @@ module Mixlib
     #   child process. Generally this is used to copy data from the child to
     #   the parent's stdout so that users may observe the progress of
     #   long-running commands.
+    # * +login+: Whether to simulate a login (set secondary groups, primary group, environment
+    #   variables etc) as done by the OS in an actual login
     # === Examples:
     # Invoke find(1) to search for .rb files:
     #   find = Mixlib::ShellOut.new("find . -name '*.rb'")
@@ -200,8 +206,9 @@ module Mixlib
     # The gid that the subprocess will switch to. If the group attribute is
     # given as a group name, it is converted to a gid by Etc.getgrnam
     def gid
-      return nil unless group
-      group.kind_of?(Integer) ? group : Etc.getgrnam(group.to_s).gid
+      return group.kind_of?(Integer) ? group : Etc.getgrnam(group.to_s).gid if group
+      return Etc.getpwuid(uid).gid if using_login?
+      return nil
     end
 
     def timeout
@@ -322,7 +329,8 @@ module Mixlib
           self.log_tag = setting
         when 'environment', 'env'
           self.environment = setting || {}
-
+        when 'login'
+          self.login = setting
         else
           raise InvalidCommandOption, "option '#{option.inspect}' is not a valid option for #{self.class.name}"
         end
@@ -332,6 +340,9 @@ module Mixlib
     end
 
     def validate_options(opts)
+      if login && !user
+        raise InvalidCommandOption, "cannot set login without specifying a user"
+      end
       super
     end
   end

@@ -33,6 +33,7 @@ describe Mixlib::ShellOut do
       its(:cwd) { should be_nil }
       its(:user) { should be_nil }
       its(:with_logon) { should be_nil }
+      its(:login) { should be_nil }
       its(:domain) { should be_nil }
       its(:password) { should be_nil }
       its(:group) { should be_nil }
@@ -87,6 +88,15 @@ describe Mixlib::ShellOut do
         let(:value) { 'root' }
 
         it "should set the with_logon" do
+          should eql(value)
+        end
+      end
+
+      context 'when setting login' do
+        let(:accessor) { :login }
+        let(:value) { true }
+
+        it "should set the login" do
           should eql(value)
         end
       end
@@ -262,15 +272,80 @@ describe Mixlib::ShellOut do
       end
     end
 
+    context 'testing login', :unix_only do
+      subject {shell_cmd}
+      let (:uid) {1005}
+      let (:gid) {1002}
+      let (:shell) {'/bin/money'}
+      let (:dir) {'/home/castle'}
+      let (:path) {'/sbin:/bin:/usr/sbin:/usr/bin'}
+      before :each do
+        shell_cmd.login=true
+        catbert_user=double("Etc::Passwd", :name=>'catbert', :passwd=>'x', :uid=>1005, :gid=>1002, :gecos=>"Catbert,,,", :dir=>'/home/castle', :shell=>'/bin/money')
+        group_double=[
+          double("Etc::Group", :name=>'catbert', :passwd=>'x', :gid=>1002, :mem=>[]),
+          double("Etc::Group", :name=>'sudo', :passwd=>'x', :gid=>52, :mem=>['catbert']),
+          double("Etc::Group", :name=>'rats', :passwd=>'x', :gid=>43, :mem=>['ratbert']),
+          double("Etc::Group", :name=>'dilbertpets', :passwd=>'x', :gid=>700, :mem=>['catbert', 'ratbert']),
+        ]
+        Etc.stub(:getpwuid).with(1005) {catbert_user}
+        Etc.stub(:getpwnam).with('catbert') {catbert_user}
+        shell_cmd.stub(:all_seconderies) {group_double}
+      end
+
+      # Setting the user by name should change the uid
+      context 'when setting user by name' do
+        before(:each){ shell_cmd.user='catbert' }
+          its(:uid) { should eq(uid) }
+      end
+
+      context 'when setting user by id' do
+        before(:each){shell_cmd.user=uid}
+        # Setting the user by uid should change the uid
+        #it 'should set the uid' do
+        its(:uid) { should eq(uid) }
+        #end
+        # Setting the user without a different gid should change the gid to 1002
+        its(:gid) { should eq(gid) }
+        # Setting the user and the group (to 43) should change the gid to 43
+        context 'when setting the group manually' do
+          before(:each){shell_cmd.group=43}
+          its(:gid) {should eq(43)}
+        end
+        # Setting the user should set the env variables
+	its(:process_environment) { should eq ({'HOME'=>dir, 'SHELL'=>shell, 'USER'=>'catbert', 'LOGNAME'=>'catbert', 'PATH'=>path, 'IFS'=>"\t\n"}) }
+        # Setting the user with overriding env variables should override
+	context 'when adding environment variables' do
+	  before(:each){shell_cmd.environment={'PATH'=>'/lord:/of/the/dance', 'CUSTOM'=>'costume'}}
+	  it 'should preserve custom variables' do
+	    expect(shell_cmd.process_environment['PATH']).to eq('/lord:/of/the/dance')
+	  end
+          # Setting the user with additional env variables should have both
+	  it 'should allow new variables' do
+	    expect(shell_cmd.process_environment['CUSTOM']).to eq('costume')
+	  end
+	end
+        # Setting the user should set secondary groups
+	its(:sgids) { should =~ [52,700] }
+      end
+      # Setting login with user should throw errors
+      context 'when not setting a user id' do
+        it 'should fail showing an error' do
+          lambda { Mixlib::ShellOut.new('hostname', {login:true}) }.should raise_error(Mixlib::ShellOut::InvalidCommandOption)
+        end
+      end
+    end
+
     context "with options hash" do
       let(:cmd) { 'brew install couchdb' }
-      let(:options) { { :cwd => cwd, :user => user, :domain => domain, :password => password, :group => group,
+      let(:options) { { :cwd => cwd, :user => user, :login => true, :domain => domain, :password => password, :group => group,
         :umask => umask, :timeout => timeout, :environment => environment, :returns => valid_exit_codes,
         :live_stream => stream, :input => input } }
 
       let(:cwd) { '/tmp' }
       let(:user) { 'toor' }
       let(:with_logon) { user }
+      let(:login) { true }
       let(:domain) { 'localhost' }
       let(:password) { 'vagrant' }
       let(:group) { 'wheel' }
@@ -291,6 +366,10 @@ describe Mixlib::ShellOut do
 
       it "should set the with_logon" do
         shell_cmd.with_logon.should eql(with_logon)
+      end
+
+      it "should set the login" do
+        shell_cmd.login.should eql(login)
       end
 
       it "should set the domain" do
