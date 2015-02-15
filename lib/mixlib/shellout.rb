@@ -40,6 +40,7 @@ module Mixlib
     attr_accessor :user
     attr_accessor :domain
     attr_accessor :password
+    # TODO remove
     attr_accessor :with_logon
 
     # Whether to simulate logon as the user. Normally set via options passed to new
@@ -198,6 +199,7 @@ module Mixlib
 
     # The uid that the subprocess will switch to. If the user attribute was
     # given as a username, it is converted to a uid by Etc.getpwnam
+    # TODO migrate to shellout/unix.rb
     def uid
       return nil unless user
       user.kind_of?(Integer) ? user : Etc.getpwnam(user.to_s).uid
@@ -205,6 +207,7 @@ module Mixlib
 
     # The gid that the subprocess will switch to. If the group attribute is
     # given as a group name, it is converted to a gid by Etc.getgrnam
+    # TODO migrate to shellout/unix.rb
     def gid
       return group.kind_of?(Integer) ? group : Etc.getgrnam(group.to_s).gid if group
       return Etc.getpwuid(uid).gid if using_login?

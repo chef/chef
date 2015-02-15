@@ -63,6 +63,7 @@ describe Mixlib::ShellOut do
           should eql(value)
         end
 
+        # TODO add :unix_only
         context 'with an integer value for user' do
           let(:value) { 0 }
           it "should use the user-supplied uid" do
@@ -70,6 +71,7 @@ describe Mixlib::ShellOut do
           end
         end
 
+        # TODO add :unix_only
         context 'with string value for user' do
           let(:value) { username }
 
@@ -127,6 +129,7 @@ describe Mixlib::ShellOut do
           should eql(value)
         end
 
+        # TODO add :unix_only
         context 'with integer value for group' do
           let(:value) { 0 }
           it "should use the user-supplied gid" do
