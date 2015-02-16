@@ -33,16 +33,22 @@ class Chef
       def initialize(name, run_context = nil)
         super
 
-        @chunk = nil
+        @chunk = 16
         @devices = []
         @exists = false
         @level = 1
-        @metadata = nil
+        @metadata = "0.90"
         @bitmap = nil
         @raid_device = name
       end
 
       def chunk(arg = nil)
+        unless arg
+          warn_msg = "The default chunk size of 16k will be removed in a "\
+            "future release.  This change will allow mdadm to choose "\
+            "the default chunk size."
+          Chef::Log.warn(warn_msg)
+        end
         set_or_return(
           :chunk,
           arg,
@@ -75,6 +81,12 @@ class Chef
       end
 
       def metadata(arg = nil)
+        unless arg
+          warn_msg = "The default metadata version of 0.90 will be removed in "\
+            "a future release. This change will allow mdadm to choose the "\
+            "default metadata version."
+          Chef::Log.warn(warn_msg)
+        end
         set_or_return(
           :metadata,
           arg,
