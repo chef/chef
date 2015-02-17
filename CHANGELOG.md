@@ -95,6 +95,9 @@
 * Added an `imports` attribute to dsc_script. This attribute allows you to specify DSC resources that need to be imported for your script.
 * Fixed error where guard resources (using :guard_interpreter) were not ran in `why_run` mode [Issue 2694](https://github.com/chef/chef/issues/2694)
 * Add `verify` method to File resource per RFC027
+* Move supermarket.getchef.com to supermarket.chef.io
+* Check with AccessCheck for permission to write to directory on Windows
+* Add declare_resource/build_resource comments, fix faulty ||=
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
