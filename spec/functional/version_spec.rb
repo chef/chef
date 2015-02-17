@@ -28,7 +28,7 @@ describe "Chef Versions" do
 
   binaries.each do |binary|
     it "#{binary} version should be sane" do
-      expect(shell_out!("ruby #{File.join("bin", binary)} -v", :cwd => chef_dir).stdout.chomp).to eq("Chef: #{Chef::VERSION}")
+      expect(shell_out!("ruby #{File.join("bin", binary)} -v", :cwd => chef_dir).stdout.chomp).to include("Chef: #{Chef::VERSION}")
     end
   end
 
