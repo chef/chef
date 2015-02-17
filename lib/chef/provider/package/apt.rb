@@ -81,7 +81,7 @@ class Chef
                 if candidate_version == '(none)'
                   # This may not be an appropriate assumption, but it shouldn't break anything that already worked -- btm
                   virtual = true
-                  showpkg = shell_out!("apt-cache showpkg #{package}", {:timeout => 900}).stdout
+                  showpkg = shell_out!("apt-cache showpkg #{pkg}", {:timeout => 900}).stdout
                   providers = Hash.new
                   showpkg.rpartition(/Reverse Provides: ?#{$/}/)[2].each_line do |line|
                     provider, version = line.split
