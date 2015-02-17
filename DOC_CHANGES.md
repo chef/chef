@@ -67,3 +67,14 @@ A documented feature of the yum_package provider was the ability to specify a ve
 However, this did not actually work. It has now been fixed, and additionally version requirements are now supported in the `version` attribute
 of yum_package as well.
 
+## Validatorless bootstraps
+
+Validation keys are now optional.   If the validation key is simply deleted and does not exist, then knife bootstrap will use the
+user's key to create a client for the node and create the node object and bootstrap the host.  Validation keys can continue to be
+used, particularly for autoscaling, but even for that use case a dedicated user for autoscaling would be preferable to the shared
+validation key.
+
+## Bootstrap will create chef-vault items
+
+The --bootstrap-vault-item, --bootstrap-vault-json, and --bootstrap-vault-file arguments have been added to knife bootstrap providing
+three alternative ways to set chef vault items when bootstrapping a host.
