@@ -92,8 +92,8 @@ class Chef
                 # Check if the package providing this virtual package is installed
                 Chef::Log.info("#{@new_resource} is a virtual package, actually acting on package[#{providers.keys.first}]")
                 ret = check_package_state(providers.keys.first)
-                pp ret
                 installed = ret[:installed]
+                installed_version = ret[:installed_version]
               else
                 Chef::Log.debug("#{@new_resource} candidate version is #{$1}")
               end
@@ -115,7 +115,6 @@ class Chef
 
           [package].flatten.each do |pkg|
             ret = check_package_state(pkg)
-            pp ret
             is_virtual_package[pkg] = ret[:is_virtual_package]
             installed[pkg]          = ret[:installed]
             installed_version[pkg]  = ret[:installed_version]
