@@ -80,7 +80,7 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should raise an exception if the source is not set but we are installing" do
-      status = double("Status", :stdout => "", :exitstatus => 1)
+      status = double("Status", :stdout => "", :exitstatus => 1, :format_for_exception => "")
       @new_resource = Chef::Resource::Package.new("samba.base")
       @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
       allow(@provider).to receive(:shell_out).and_return(status)
@@ -88,7 +88,7 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should raise an exception if installp/lslpp fails to run" do
-      status = double(:stdout => "", :exitstatus => -1)
+      status = double(:stdout => "", :exitstatus => -1, :format_for_exception => "")
       allow(@provider).to receive(:shell_out).and_return(status)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
     end
@@ -116,7 +116,7 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should throw and exception if the exitstatus is not 0" do
-      @status = double(:stdout => "", :exitstatus => 1)
+      @status = double(:stdout => "", :exitstatus => 1, :format_for_exception => "")
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
     end

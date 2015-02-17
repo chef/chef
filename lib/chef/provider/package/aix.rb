@@ -75,7 +75,7 @@ class Chef
           end
 
           unless ret.exitstatus == 0 || ret.exitstatus == 1
-            raise Chef::Exceptions::Package, "lslpp failed - #{ret.inspect}!"
+            raise Chef::Exceptions::Package, "lslpp failed - #{ret.format_for_exception}!"
           end
 
           @current_resource
@@ -94,7 +94,7 @@ class Chef
             end
           end
           unless ret.exitstatus == 0
-            raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.inspect}!"
+            raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.format_for_exception}!"
           end
           @candidate_version
         end
