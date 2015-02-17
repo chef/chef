@@ -174,7 +174,7 @@ describe Chef::Knife::CookbookSiteShare do
       response_text = Chef::JSONCompat.to_json({:uri => 'https://supermarket.chef.io/cookbooks/cookbook_name'})
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(201)
-      expect(Chef::CookbookSiteStreamingUploader).to receive(:post).with(/supermarket\.getchef\.com/, anything(), anything(), anything())
+      expect(Chef::CookbookSiteStreamingUploader).to receive(:post).with(/supermarket\.chef\.io/, anything(), anything(), anything())
       @knife.run
     end
 
