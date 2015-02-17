@@ -88,6 +88,7 @@
 * fixes a bug where providers would not get defined if a top-level ruby constant with the same name was already defined (ark cookbook, chrome cookbook)
 * Fix a bug in `reboot`, `ips_package`, `paludis_package`, `windows_package` resources where `action :nothing` was not permitted
 
+
 * Use Chef::ApiClient#from_hash in `knife client create` to avoid json_class requirement. [Issue 2542](https://github.com/chef/chef/issues/2542)
 * Add support for policyfile native API (preview). These APIs are unstable, and you may be forced to delete data uploaded to them in a
   future release, so only use them for demonstration purposes.
