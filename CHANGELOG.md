@@ -98,6 +98,8 @@
 * Move supermarket.getchef.com to supermarket.chef.io
 * Check with AccessCheck for permission to write to directory on Windows
 * Add declare_resource/build_resource comments, fix faulty ||=
+* Knife bootstrap creates a client and ships it to the node to implement validatorless bootstraps
+* Knife bootstrap can use the client it creates to setup chef-vault items for the node
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):

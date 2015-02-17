@@ -586,3 +586,18 @@ inflexible since it cannot handle the case where an admin installs or removes a 
 handle the case where there may be multiple providers that handle different kinds of services (e.g. Upstart, SysV,
 etc).  This fixes the Ubuntu 14.04 service resource problems, and can handle arbitrarily complicated future distro
 and administrative preferences dynamically.
+
+## Knife Bootstrap Validatorless Bootstraps and Chef Vault integration
+
+The knife bootstrap command now supports validatorless bootstraps.  This can be enabled via deleting the validation key.
+When the validation key is not present, knife bootstrap will use the user key in order to create a client for the node
+being bootstrapped.  It will also then create a node object and set the environment, run_list, initial attributes, etc (avoiding
+the problem of the first chef-client failing and not saving the node's run_list correctly).
+
+Also knife vault integration has been added so that knife bootstrap can use the client key to add chef vault items to
+the node, reducing the number of steps necessary to bootstrap a node with chef vault.
+
+There is no support for validatorless bootstraps when the node object has been precreated by the user beforehand, as part
+of the process any old node or client will be deleted when doing validatorless bootstraps.  The old process with the validation
+key still works for this use case.  The setting of the run_list, environment and json attributes first via knife bootstrap
+should mitigate some of the need to precreate the node object by hand first.
