@@ -40,6 +40,14 @@ class Chef
         @metadata = "0.90"
         @bitmap = nil
         @raid_device = name
+        
+        # Can be removed once the chunk member defaults to nil
+        @user_set_chunk = false
+        # Can be removed once the metadata member defaults to nil
+        @user_set_metadata = false
+
+        @action = :create
+        @allowed_actions.push(:create, :assemble, :stop)
       end
 
       def chunk(arg = nil)
@@ -49,6 +57,7 @@ class Chef
             "the default chunk size."
           Chef::Log.warn(warn_msg)
         end
+        @user_set_chunk = true
         set_or_return(
           :chunk,
           arg,
@@ -87,6 +96,7 @@ class Chef
             "default metadata version."
           Chef::Log.warn(warn_msg)
         end
+        @user_set_metadata = true
         set_or_return(
           :metadata,
           arg,
@@ -110,6 +120,23 @@ class Chef
         )
       end
 
+      # Can be removed once metadata and chunk defaults are set to nil
+      def user_set_metadata(arg=nil)
+        set_or_return(
+          :exists,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      # Can be removed once metadata and chunk defaults are set to nil
+      def user_set_chunk(arg=nil)
+        set_or_return(
+          :exists,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
     end
   end
 end
