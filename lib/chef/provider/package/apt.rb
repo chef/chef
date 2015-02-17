@@ -130,7 +130,6 @@ class Chef
             end
             @current_resource.version(final_installed_version)
           else
-            pp candidate_version
             @candiate_version = candidate_version[package]
             @current_resource.version(installed_version[package])
           end
