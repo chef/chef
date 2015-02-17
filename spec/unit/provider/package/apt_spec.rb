@@ -334,7 +334,7 @@ mpg123 1.12.1-0ubuntu1
           end
 
           it "should not run debconf-set-selections if the preseed file has not changed" do
-            allow(@provider).to receive(:check_package_state)
+            allow(@provider).to receive(:check_all_packages_state)
             @current_resource.version "0.8.11"
             @new_resource.response_file "/tmp/file"
             allow(@provider).to receive(:get_preseed_file).and_return(false)

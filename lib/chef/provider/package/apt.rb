@@ -130,14 +130,15 @@ class Chef
             end
             @current_resource.version(final_installed_version)
           else
-            @candiate_version = candidate_version[package]
+            @candidate_version = candidate_version[package]
             @current_resource.version(installed_version[package])
           end
         end
 
         def install_package(name, version)
           name_array = [ name ].flatten
-          package_name = name_array.zip(version).map do |n, v|
+          version_array = [ version ].flatten
+          package_name = name_array.zip(version_array).map do |n, v|
             is_virtual_package[n] ? n : "#{n}=#{v}"
           end.join(' ')
           run_noninteractive("apt-get -q -y#{expand_options(default_release_options)}#{expand_options(@new_resource.options)} install #{package_name}")
