@@ -276,6 +276,8 @@ class Chef::Application::Client < Chef::Application
     if !Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
       Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
     elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+      Chef::Log.debug "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
+      FileUtils.rm_rf(Chef::Config.chef_repo_path, :secure => true)
       Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
       FileUtils.mkdir_p(Chef::Config.chef_repo_path)
       tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
