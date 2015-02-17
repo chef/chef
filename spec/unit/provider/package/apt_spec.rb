@@ -365,6 +365,21 @@ mpg123 1.12.1-0ubuntu1
             @provider.install_package("libmysqlclient-dev", "not_a_real_version")
           end
         end
+
+        describe "when installing multiple packages" do
+          it "can install a virtual package followed by a non-virtual package" do
+            # https://github.com/chef/chef/issues/2914
+            @provider.is_virtual_package['libmysqlclient-dev'] = true
+            @provider.is_virtual_package['irssi'] = false
+            expect(@provider).to receive(:shell_out!).with(
+              "apt-get -q -y install libmysqlclient-dev irssi=0.8.12-7",
+              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              :timeout => @timeout
+            )
+            @provider.install_package(["libmysqlclient-dev", "irssi"], ["not_a_real_version", "0.8.12-7"])
+          end
+        end
+
       end
     end
   end
