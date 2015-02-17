@@ -356,7 +356,7 @@ mpg123 1.12.1-0ubuntu1
 
         describe "when installing a virtual package" do
           it "should install the package without specifying a version" do
-            @provider.is_virtual_package = true
+            @provider.is_virtual_package['libmysqlclient-dev'] = true
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y install libmysqlclient-dev",
               :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },

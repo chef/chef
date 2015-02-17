@@ -27,7 +27,13 @@ class Chef
 
         provides :apt_package, os: "linux"
 
+        # return [Hash] mapping of package name to Boolean value
         attr_accessor :is_virtual_package
+
+        def initialize(new_resource, run_context)
+          super
+          @is_virtual_package = {}
+        end
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -108,8 +114,11 @@ class Chef
           end
           @candidate_version = final_candidate_version
           @current_resource.version(final_installed_version)
-          @is_virtual_package = final_virtual
- 
+
+          [package].flatten.each do |pkg|
+            @is_virtual_package[pkg] = final_virtual
+          end
+
           return final_installed.is_a?(Array) ? final_installed.any? : final_installed
         end
 
@@ -118,7 +127,7 @@ class Chef
             index = 0
             package_name = name.zip(version).map do |x, y|
               namestr = nil
-              if @is_virtual_package[index]
+              if is_virtual_package[name]
                 namestr = x
               else
                 namestr = "#{x}=#{y}"
@@ -128,7 +137,7 @@ class Chef
             end.join(' ')
           else
             package_name = "#{name}=#{version}"
-            package_name = name if @is_virtual_package
+            package_name = name if is_virtual_package[name]
           end
           run_noninteractive("apt-get -q -y#{expand_options(default_release_options)}#{expand_options(@new_resource.options)} install #{package_name}")
         end
