@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'chef/mixin/command'
 require 'chef/log'
 require 'chef/file_cache'
@@ -25,7 +26,7 @@ class Chef
   class Provider
     class Package < Chef::Provider
 
-      # @todo: validate no subclasses need this and nuke it
+      include Chef::Mixin::ShellOut
       include Chef::Mixin::Command
 
       #

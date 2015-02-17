@@ -24,10 +24,9 @@ class Chef
         def dscl(*args)
           host = "."
           stdout_result = ""; stderr_result = ""; cmd = "dscl #{host} -#{args.join(' ')}"
-          status = popen4(cmd) do |pid, stdin, stdout, stderr|
-            stdout.each { |line| stdout_result << line }
-            stderr.each { |line| stderr_result << line }
-          end
+          status = shell_out(cmd)
+          status.stdout.each_line { |line| stdout_result << line }
+          status.stderr.each_line { |line| stderr_result << line }
           return [cmd, status, stdout_result, stderr_result]
         end
 
