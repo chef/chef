@@ -1,5 +1,7 @@
 ## 12.1.0 (Unreleased)
 
+* [**Andre Elizondo**](https://github.com/andrewelizondo)
+  Typo fixes
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   cleanup cookbook path from stale files (when using chef-solo with a tarball url)
 * [**Nathan Cerny**](https://github.com/ncerny):
