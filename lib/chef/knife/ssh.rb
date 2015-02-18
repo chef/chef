@@ -103,6 +103,10 @@ class Chef
         :boolean => true,
         :default => true
 
+      option :sudo_password,
+        :long => "--sudo-password PASSWORD",
+        :description => "The password to use for 'sudo' commands. WARNING: using this option has limited security issues"
+
       def session
         config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|
@@ -272,7 +276,7 @@ class Chef
       end
 
       def get_password
-        @password ||= prompt_for_password
+        @password ||= config[:sudo_password] || prompt_for_password
       end
 
       def prompt_for_password(prompt = "Enter your password: ")
