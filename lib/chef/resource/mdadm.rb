@@ -51,13 +51,7 @@ class Chef
       end
 
       def chunk(arg = nil)
-        unless arg
-          warn_msg = "The default chunk size of 16k will be removed in a "\
-            "future release.  This change will allow mdadm to choose "\
-            "the default chunk size."
-          Chef::Log.warn(warn_msg)
-        end
-        @user_set_chunk = true
+        @user_set_chunk = true unless arg.nil?
         set_or_return(
           :chunk,
           arg,
@@ -90,13 +84,7 @@ class Chef
       end
 
       def metadata(arg = nil)
-        unless arg
-          warn_msg = "The default metadata version of 0.90 will be removed in "\
-            "a future release. This change will allow mdadm to choose the "\
-            "default metadata version."
-          Chef::Log.warn(warn_msg)
-        end
-        @user_set_metadata = true
+        @user_set_metadata = true unless arg.nil?
         set_or_return(
           :metadata,
           arg,
@@ -136,6 +124,23 @@ class Chef
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
+      end
+      
+      def after_created
+        metadata_warn_msg = "#{self} the default metadata version of 0.90 "\
+          "will be removed in a future release. To maintain backwards "\
+          "compatibility please explicitly specify the metadata version that "\
+          "you desire on the the mdadm resource if the mdadm default is not "\
+          "desired. This future change will only impact newly created md "\
+          "devices."
+        chunk_warn_msg = "#{self} default chunk size of 16k will be removed "\
+          "in a future release. To maintain backwards compatibility please "\
+          "explicitly specify the chunk size that you desire on the the mdadm "\
+          "resource if the mdadm default is not desired. This future change "\
+          "will only impact newly created md devices."
+
+        Chef::Log.warn(metadata_warn_msg) unless @user_set_metadata
+        Chef::Log.warn(chunk_warn_msg) unless @user_set_chunk
       end
     end
   end
