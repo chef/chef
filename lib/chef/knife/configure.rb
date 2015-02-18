@@ -134,18 +134,18 @@ EOH
       def ask_user_for_config
         server_name = guess_servername
         @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "https://#{server_name}:443")
+        @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository: ")
         if config[:initial]
           @new_client_name        = config[:node_name] || ask_question("Please enter a name for the new user: ", :default => Etc.getlogin)
           @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin name: ", :default => 'admin')
-          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", :default => '/etc/chef-server/admin.pem')
+          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", :default => "#{@chef_repo}/.chef/#{@admin_client_name}.pem")
           @admin_client_key       = File.expand_path(@admin_client_key)
         else
           @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", :default => Etc.getlogin)
         end
         @validation_client_name = config[:validation_client_name] || ask_question("Please enter the validation clientname: ", :default => 'chef-validator')
-        @validation_key         = config[:validation_key] || ask_question("Please enter the location of the validation key: ", :default => '/etc/chef-server/chef-validator.pem')
+        @validation_key         = config[:validation_key] || ask_question("Please enter the location of the validation key: ", :default => "#{@chef_repo}/.chef/#{@validation_client_name}.pem")
         @validation_key         = File.expand_path(@validation_key)
-        @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository (or leave blank): ")
 
         @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")
         @new_client_key = File.expand_path(@new_client_key)
