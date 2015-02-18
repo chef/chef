@@ -42,7 +42,7 @@ class Chef
           def installed_version
             Chef::Log.debug("#{@new_resource} getting product code for package at #{@new_resource.source}")
             product_code = get_product_property(@new_resource.source, "ProductCode")
-            Chef::Log.debug("#{@new_resource} checking package status and verion for #{product_code}")
+            Chef::Log.debug("#{@new_resource} checking package status and version for #{product_code}")
             get_installed_version(product_code)
           end
 
