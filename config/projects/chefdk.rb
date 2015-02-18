@@ -16,7 +16,7 @@
 
 name "chefdk"
 friendly_name "Chef Development Kit"
-maintainer "Chef Software, Inc."
+maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.getchef.com"
 
 build_iteration 1
