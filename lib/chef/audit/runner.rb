@@ -97,7 +97,8 @@ class Chef
         RSpec.configure do |c|
           c.color = Chef::Config[:color]
           c.expose_dsl_globally = false
-          c.backtrace_exclusion_patterns << Regexp.new(Chef::Config.platform_specific_path('/opt/chef'))
+          separator = File::ALT_SEPARATOR ? File::ALT_SEPARATOR : File::SEPARATOR
+          c.backtrace_exclusion_patterns << Regexp.new(__FILE__.split(separator)[0..2].join(separator))
         end
       end
 
