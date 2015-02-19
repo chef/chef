@@ -76,17 +76,17 @@ class Chef
       def run_command_compatible_options(command_args)
         return command_args unless command_args.last.is_a?(Hash)
 
-        _command_args = command_args.dup
-        _options = _command_args.last
+        my_command_args = command_args.dup
+        my_options = my_command_args.last
 
         DEPRECATED_OPTIONS.each do |old_option, new_option|
           # Edge case: someone specifies :command_log_level and 'command_log_level' in the option hash
-          next unless value = _options.delete(old_option) || _options.delete(old_option.to_s)
+          next unless value = my_options.delete(old_option) || my_options.delete(old_option.to_s)
           deprecate_option old_option, new_option
-          _options[new_option] = value
+          my_options[new_option] = value
         end
 
-        return _command_args
+        return my_command_args
       end
 
       private
