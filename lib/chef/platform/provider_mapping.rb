@@ -473,7 +473,6 @@ class Chef
 
       def provider_for_node(node, resource_type)
         raise NotImplementedError, "#{self.class.name} no longer supports #provider_for_node"
-        find_provider_for_node(node, resource_type).new(node, resource_type)
       end
 
       def find_provider_for_node(node, resource_type)
