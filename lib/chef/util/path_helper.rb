@@ -26,7 +26,7 @@ class Chef
         if Chef::Platform.windows?
           # Find the first slash, not counting trailing slashes
           end_slash = path.size
-          while true
+          loop do
             slash = path.rindex(/[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(path_separator)}]/, end_slash - 1)
             if !slash
               return end_slash == path.size ? '.' : path_separator
