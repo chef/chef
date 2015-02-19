@@ -33,18 +33,21 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::FromFile
 
+    attr_accessor :chef_server_rest
+
     COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
 
-    def initialize
+    def initialize(chef_server_rest: nil)
       @name = ''
       @description = ''
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @cookbook_versions = Hash.new
+      @chef_server_rest = chef_server_rest
     end
 
     def chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest

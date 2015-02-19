@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife/ssl_fetch'
+require 'chef/knife'
 require 'chef/config'
 
 class Chef
@@ -136,6 +136,19 @@ TRUST_TRUST
         remote_cert_chain.each do |cert|
           write_cert(cert)
         end
+      rescue OpenSSL::SSL::SSLError => e
+        # 'unknown protocol' usually means you tried to connect to a non-ssl
+        # service. We handle that specially here, any other error we let bubble
+        # up (probably a bug of some sort).
+        raise unless e.message.include?("unknown protocol")
+
+        ui.error("The service at the given URI (#{uri}) does not accept SSL connections")
+
+        if uri.scheme == "http"
+          https_uri = uri.to_s.sub(/^http/, 'https')
+          ui.error("Perhaps you meant to connect to '#{https_uri}'?")
+        end
+        exit 1
       end
 
 

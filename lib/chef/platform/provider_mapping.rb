@@ -365,7 +365,9 @@ class Chef
             },
             :openbsd => {
               :default => {
-                :group => Chef::Provider::Group::Usermod
+                :group => Chef::Provider::Group::Usermod,
+                :package => Chef::Provider::Package::Openbsd,
+                :service => Chef::Provider::Service::Openbsd
               }
             },
             :hpux => {
@@ -471,7 +473,6 @@ class Chef
 
       def provider_for_node(node, resource_type)
         raise NotImplementedError, "#{self.class.name} no longer supports #provider_for_node"
-        find_provider_for_node(node, resource_type).new(node, resource_type)
       end
 
       def find_provider_for_node(node, resource_type)

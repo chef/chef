@@ -198,6 +198,11 @@ mpg123 1.12.1-0ubuntu1
 
         it "raises an exception if a source is specified (CHEF-5113)" do
           @new_resource.source "pluto"
+          expect(@provider).to receive(:shell_out!).with(
+            "apt-cache policy #{@new_resource.package_name}",
+            :timeout => @timeout
+          ).and_return(@shell_out)
+          @provider.load_current_resource
           @provider.define_resource_requirements
           expect(@provider).to receive(:shell_out!).with("apt-cache policy irssi", {:timeout=>900}).and_return(@shell_out)
           expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
@@ -307,8 +312,7 @@ mpg123 1.12.1-0ubuntu1
           end
 
           it "should get the full path to the preseed response file" do
-            expect(@provider).to receive(:get_preseed_file).with("irssi", "0.8.12-7").and_return("/tmp/irssi-0.8.12-7.seed")
-            file = @provider.get_preseed_file("irssi", "0.8.12-7")
+            file = "/tmp/irssi-0.8.12-7.seed"
 
             expect(@provider).to receive(:shell_out!).with(
               "debconf-set-selections /tmp/irssi-0.8.12-7.seed",
@@ -330,7 +334,7 @@ mpg123 1.12.1-0ubuntu1
           end
 
           it "should not run debconf-set-selections if the preseed file has not changed" do
-            allow(@provider).to receive(:check_package_state)
+            allow(@provider).to receive(:check_all_packages_state)
             @current_resource.version "0.8.11"
             @new_resource.response_file "/tmp/file"
             allow(@provider).to receive(:get_preseed_file).and_return(false)
@@ -352,7 +356,7 @@ mpg123 1.12.1-0ubuntu1
 
         describe "when installing a virtual package" do
           it "should install the package without specifying a version" do
-            @provider.is_virtual_package = true
+            @provider.is_virtual_package['libmysqlclient-dev'] = true
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y install libmysqlclient-dev",
               :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
@@ -361,6 +365,21 @@ mpg123 1.12.1-0ubuntu1
             @provider.install_package("libmysqlclient-dev", "not_a_real_version")
           end
         end
+
+        describe "when installing multiple packages" do
+          it "can install a virtual package followed by a non-virtual package" do
+            # https://github.com/chef/chef/issues/2914
+            @provider.is_virtual_package['libmysqlclient-dev'] = true
+            @provider.is_virtual_package['irssi'] = false
+            expect(@provider).to receive(:shell_out!).with(
+              "apt-get -q -y install libmysqlclient-dev irssi=0.8.12-7",
+              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              :timeout => @timeout
+            )
+            @provider.install_package(["libmysqlclient-dev", "irssi"], ["not_a_real_version", "0.8.12-7"])
+          end
+        end
+
       end
     end
   end

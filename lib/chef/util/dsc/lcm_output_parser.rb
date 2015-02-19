@@ -18,6 +18,7 @@
 
 require 'chef/log'
 require 'chef/util/dsc/resource_info'
+require 'chef/exceptions'
 
 class Chef
   class Util
@@ -53,8 +54,7 @@ class Chef
           #   ]
           #
           def self.parse(lcm_output)
-            return [] unless lcm_output
-
+            lcm_output ||= ""
             current_resource = Hash.new
 
             resources = []
@@ -96,7 +96,11 @@ class Chef
               resources.push(current_resource)
             end
 
-            build_resource_info(resources)
+            if resources.length > 0
+              build_resource_info(resources)
+            else
+              raise Chef::Exceptions::LCMParser, "Could not parse:\n#{lcm_output}"
+            end
           end
 
           def self.parse_line(line)

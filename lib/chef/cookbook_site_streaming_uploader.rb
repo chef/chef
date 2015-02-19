@@ -18,6 +18,7 @@
 # limitations under the License.
 #
 
+require 'uri'
 require 'net/http'
 require 'mixlib/authentication/signedheaderauth'
 require 'openssl'
@@ -34,22 +35,22 @@ class Chef
 
     class << self
 
-       def create_build_dir(cookbook)
-         tmp_cookbook_path = Tempfile.new("chef-#{cookbook.name}-build")
-         tmp_cookbook_path.close
-         tmp_cookbook_dir = tmp_cookbook_path.path
-         File.unlink(tmp_cookbook_dir)
-         FileUtils.mkdir_p(tmp_cookbook_dir)
-         Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
-         checksums_to_on_disk_paths = cookbook.checksums
-         Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-           cookbook.manifest[segment].each do |manifest_record|
-             path_in_cookbook = manifest_record[:path]
-             on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
-             dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
-             FileUtils.mkdir_p(File.dirname(dest))
-             Chef::Log.debug("Staging #{on_disk_path} to #{dest}")
-             FileUtils.cp(on_disk_path, dest)
+      def create_build_dir(cookbook)
+        tmp_cookbook_path = Tempfile.new("chef-#{cookbook.name}-build")
+        tmp_cookbook_path.close
+        tmp_cookbook_dir = tmp_cookbook_path.path
+        File.unlink(tmp_cookbook_dir)
+        FileUtils.mkdir_p(tmp_cookbook_dir)
+        Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
+        checksums_to_on_disk_paths = cookbook.checksums
+        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
+          cookbook.manifest[segment].each do |manifest_record|
+            path_in_cookbook = manifest_record[:path]
+            on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
+            dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
+            FileUtils.mkdir_p(File.dirname(dest))
+            Chef::Log.debug("Staging #{on_disk_path} to #{dest}")
+            FileUtils.cp(on_disk_path, dest)
           end
         end
 
@@ -86,13 +87,13 @@ class Chef
               filepath = value.path
               filename = File.basename(filepath)
               parts << StringPart.new( "--" + boundary + "\r\n" +
-                                       "Content-Disposition: form-data; name=\"" + key.to_s + "\"; filename=\"" + filename + "\"\r\n" +
-                                       "Content-Type: application/octet-stream\r\n\r\n")
+                                      "Content-Disposition: form-data; name=\"" + key.to_s + "\"; filename=\"" + filename + "\"\r\n" +
+                                      "Content-Type: application/octet-stream\r\n\r\n")
               parts << StreamPart.new(value, File.size(filepath))
               parts << StringPart.new("\r\n")
             else
               parts << StringPart.new( "--" + boundary + "\r\n" +
-                                       "Content-Disposition: form-data; name=\"" + key.to_s + "\"\r\n\r\n")
+                                      "Content-Disposition: form-data; name=\"" + key.to_s + "\"\r\n\r\n")
               parts << StringPart.new(value.to_s + "\r\n")
             end
           end
@@ -243,10 +244,10 @@ class Chef
           @part_offset = 0
           next_part = read(how_much_next_part)
           result = current_part + if next_part
-                           next_part
-                         else
-                           ''
-                         end
+                                    next_part
+          else
+            ''
+          end
         else
           @part_offset += how_much_current_part
           result = current_part

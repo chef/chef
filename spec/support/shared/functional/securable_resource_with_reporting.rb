@@ -56,18 +56,18 @@ shared_examples_for "a securable resource with reporting" do
       end
 
       it "has empty values for file metadata in 'current_resource'" do
-        current_resource.owner.should be_nil
-        current_resource.group.should be_nil
-        current_resource.mode.should be_nil
+        expect(current_resource.owner).to be_nil
+        expect(current_resource.group).to be_nil
+        expect(current_resource.mode).to be_nil
       end
 
       context "and no security metadata is specified in new_resource" do
         it "sets the metadata values on the new_resource as strings after creating" do
           resource.run_action(:create)
           # TODO: most stable way to specify?
-          resource.owner.should == Etc.getpwuid(Process.uid).name
-          resource.group.should == @expected_group_name
-          resource.mode.should == "0#{default_mode}"
+          expect(resource.owner).to eq(Etc.getpwuid(Process.uid).name)
+          expect(resource.group).to eq(@expected_group_name)
+          expect(resource.mode).to eq("0#{default_mode}")
         end
       end
 
@@ -87,7 +87,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the owner on new_resource to the username (String) of the desired owner" do
-          resource.owner.should == expected_user_name
+          expect(resource.owner).to eq(expected_user_name)
         end
 
       end
@@ -110,7 +110,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the owner on new_resource to the uid (Integer) of the desired owner" do
-          resource.owner.should == expected_uid
+          expect(resource.owner).to eq(expected_uid)
         end
       end
 
@@ -124,7 +124,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the group on new_resource to the group name (String) of the group" do
-          resource.group.should == expected_group_name
+          expect(resource.group).to eq(expected_group_name)
         end
 
       end
@@ -138,7 +138,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the group on new_resource to the gid (Integer)" do
-          resource.group.should == expected_gid
+          expect(resource.group).to eq(expected_gid)
         end
 
       end
@@ -155,7 +155,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets mode on the new_resource as a String" do
-          resource.mode.should == expected_mode
+          expect(resource.mode).to eq(expected_mode)
         end
       end
 
@@ -169,7 +169,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets mode on the new resource as a String" do
-          resource.mode.should == expected_mode
+          expect(resource.mode).to eq(expected_mode)
         end
       end
     end
@@ -183,9 +183,9 @@ shared_examples_for "a securable resource with reporting" do
       context "and no security metadata is specified in new_resource" do
         it "sets the current values on current resource as strings" do
           # TODO: most stable way to specify?
-          current_resource.owner.should == Etc.getpwuid(Process.uid).name
-          current_resource.group.should == @expected_group_name
-          current_resource.mode.should == "0#{((0100666 - File.umask) & 07777).to_s(8)}"
+          expect(current_resource.owner).to eq(Etc.getpwuid(Process.uid).name)
+          expect(current_resource.group).to eq(@expected_group_name)
+          expect(current_resource.mode).to eq("0#{((0100666 - File.umask) & 07777).to_s(8)}")
         end
       end
 
@@ -198,7 +198,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the owner on new_resource to the username (String) of the desired owner" do
-          current_resource.owner.should == expected_user_name
+          expect(current_resource.owner).to eq(expected_user_name)
         end
 
       end
@@ -212,7 +212,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the owner on new_resource to the uid (Integer) of the desired owner" do
-          current_resource.owner.should == expected_uid
+          expect(current_resource.owner).to eq(expected_uid)
         end
       end
 
@@ -222,7 +222,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the group on new_resource to the group name (String) of the group" do
-          current_resource.group.should == @expected_group_name
+          expect(current_resource.group).to eq(@expected_group_name)
         end
 
       end
@@ -233,7 +233,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the group on new_resource to the gid (Integer)" do
-          current_resource.group.should == @expected_gid
+          expect(current_resource.group).to eq(@expected_gid)
         end
 
       end
@@ -247,7 +247,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets mode on the new_resource as a String" do
-          current_resource.mode.should == expected_mode
+          expect(current_resource.mode).to eq(expected_mode)
         end
       end
 
@@ -260,18 +260,13 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets mode on the new resource as a String" do
-          current_resource.mode.should == expected_mode
+          expect(current_resource.mode).to eq(expected_mode)
         end
       end
     end
   end
 
   describe "reading file security metadata for reporting on windows", :windows_only do
-
-    before do
-      pending "windows reporting not yet fully supported"
-    end
-
 
     context "when the target file doesn't exist" do
 
@@ -284,23 +279,28 @@ shared_examples_for "a securable resource with reporting" do
       end
 
       it "has empty values for file metadata in 'current_resource'" do
-        current_resource.owner.should be_nil
-        current_resource.expanded_rights.should be_nil
+        pending "windows reporting not yet fully supported"
+        expect(current_resource.owner).to be_nil
+        expect(current_resource.expanded_rights).to be_nil
       end
 
       context "and no security metadata is specified in new_resource" do
+        before do
+          pending "windows reporting not yet fully supported"
+        end
+
         it "sets the metadata values on the new_resource as strings after creating" do
           resource.run_action(:create)
           # TODO: most stable way to specify?
-          resource.owner.should == etc.getpwuid(process.uid).name
-          resource.state[:expanded_rights].should == { "CURRENTUSER" => { "permissions" => ALL_EXPANDED_PERMISSIONS, "flags" => [] }}
-          resource.state[:expanded_deny_rights].should == {}
-          resource.state[:inherits].should be_true
+          expect(resource.owner).to eq(etc.getpwuid(process.uid).name)
+          expect(resource.state[:expanded_rights]).to eq({ "CURRENTUSER" => { "permissions" => ALL_EXPANDED_PERMISSIONS, "flags" => [] }})
+          expect(resource.state[:expanded_deny_rights]).to eq({})
+          expect(resource.state[:inherits]).to be_truthy
         end
       end
 
 
-      context "and owner is specified with a string (username) in new_resource" do
+      context "and owner is specified with a string (username) in new_resource"  do
 
         # TODO/bug: duplicated from the "securable resource" tests
         let(:expected_user_name) { 'Guest' }
@@ -311,7 +311,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the owner on new_resource to the username (string) of the desired owner" do
-          resource.owner.should == expected_user_name
+          expect(resource.owner).to eq(expected_user_name)
         end
 
       end
@@ -322,12 +322,13 @@ shared_examples_for "a securable resource with reporting" do
         let(:expected_user_name) { 'domain\user' }
 
         before do
+          pending "windows reporting not yet fully supported"
           resource.owner(expected_user_name)
           resource.run_action(:create)
         end
 
         it "sets the owner on new_resource to the fully qualified name of the desired owner" do
-          resource.owner.should == expected_user_name
+          expect(resource.owner).to eq(expected_user_name)
         end
       end
 
@@ -335,6 +336,7 @@ shared_examples_for "a securable resource with reporting" do
 
     context "when the target file exists" do
       before do
+        pending "windows reporting not yet fully supported"
         FileUtils.touch(resource.path)
         resource.action(:create)
       end
@@ -342,8 +344,8 @@ shared_examples_for "a securable resource with reporting" do
       context "and no security metadata is specified in new_resource" do
         it "sets the current values on current resource as strings" do
           # TODO: most stable way to specify?
-          current_resource.owner.should == etc.getpwuid(process.uid).name
-          current_resource.expanded_rights.should == { "CURRENTUSER" => ALL_EXPANDED_PERMISSIONS }
+          expect(current_resource.owner).to eq(etc.getpwuid(process.uid).name)
+          expect(current_resource.expanded_rights).to eq({ "CURRENTUSER" => ALL_EXPANDED_PERMISSIONS })
         end
       end
 
@@ -356,7 +358,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the owner on current_resource to the username (string) of the desired owner" do
-          current_resource.owner.should == expected_user_name
+          expect(current_resource.owner).to eq(expected_user_name)
         end
 
       end
@@ -370,7 +372,7 @@ shared_examples_for "a securable resource with reporting" do
         end
 
         it "sets the owner on current_resource to the fully qualified name of the desired owner" do
-          current_resource.owner.should == expected_uid
+          expect(current_resource.owner).to eq(expected_uid)
         end
       end
 
@@ -378,7 +380,7 @@ shared_examples_for "a securable resource with reporting" do
         # TODO: before do blah
 
         it "sets the expanded_rights on the current resource" do
-          pending
+          skip
         end
       end
 
@@ -386,7 +388,7 @@ shared_examples_for "a securable resource with reporting" do
         # TODO: before do blah
 
         it "sets the expanded rights on the current resource" do
-          pending
+          skip
         end
       end
 

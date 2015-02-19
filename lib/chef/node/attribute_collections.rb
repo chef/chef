@@ -61,12 +61,10 @@ class Chef
       # also invalidate the cached merged_attributes on the root
       # Node::Attribute object.
       MUTATOR_METHODS.each do |mutator|
-        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
-          def #{mutator}(*args, &block)
-            root.reset_cache(root.top_level_breadcrumb)
-            super
-          end
-        METHOD_DEFN
+        define_method(mutator) do |*args, &block|
+          root.reset_cache(root.top_level_breadcrumb)
+          super(*args, &block)
+        end
       end
 
       attr_reader :root
@@ -126,12 +124,10 @@ class Chef
       # also invalidate the cached `merged_attributes` on the root Attribute
       # object.
       MUTATOR_METHODS.each do |mutator|
-        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
-          def #{mutator}(*args, &block)
-            root.reset_cache(root.top_level_breadcrumb)
-            super
-          end
-        METHOD_DEFN
+        define_method(mutator) do |*args, &block|
+          root.reset_cache(root.top_level_breadcrumb)
+          super(*args, &block)
+        end
       end
 
       def initialize(root, data={})

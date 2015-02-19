@@ -25,9 +25,9 @@ class Chef::Util::DSC
       @config_directory = config_directory
     end
 
-    def configuration_document_from_script_code(code, configuration_flags, shellout_flags)
+    def configuration_document_from_script_code(code, configuration_flags, imports, shellout_flags)
       Chef::Log.debug("DSC: DSC code:\n '#{code}'")
-      generated_script_path = write_document_generation_script(code, 'chef_dsc')
+      generated_script_path = write_document_generation_script(code, 'chef_dsc', imports)
       begin
         configuration_document_from_script_path(generated_script_path, 'chef_dsc', configuration_flags, shellout_flags)
       ensure
@@ -80,18 +80,42 @@ class Chef::Util::DSC
       merged_configuration_flags
     end
 
-    def configuration_code(code, configuration_name)
-      "$ProgressPreference = 'SilentlyContinue';Configuration '#{configuration_name}'\n{\n\tnode 'localhost'\n{\n\t#{code}\n}}\n"
+    def configuration_code(code, configuration_name, imports)
+      <<-EOF
+$ProgressPreference = 'SilentlyContinue';
+Configuration '#{configuration_name}'
+{
+  #{generate_import_resource_statements(imports).join("  \n")}
+  node 'localhost'
+  {
+    #{code}
+  }
+}
+      EOF
+    end
+
+    def generate_import_resource_statements(imports)
+      if imports
+        imports.map do |resource_module, resources|
+          if resources.length == 0 || resources.include?('*')
+            "Import-DscResource -ModuleName #{resource_module}"
+          else
+            "Import-DscResource -ModuleName #{resource_module} -Name #{resources.join(',')}"
+          end
+        end
+      else
+        []
+      end
     end
 
     def configuration_document_generation_code(configuration_script, configuration_name)
       ". '#{configuration_script}';#{configuration_name}"
     end
 
-    def write_document_generation_script(code, configuration_name)
+    def write_document_generation_script(code, configuration_name, imports)
       script_path = "#{@config_directory}/chef_dsc_config.ps1"
       ::File.open(script_path, 'wt') do | script |
-        script.write(configuration_code(code, configuration_name))
+        script.write(configuration_code(code, configuration_name, imports))
       end
       script_path
     end

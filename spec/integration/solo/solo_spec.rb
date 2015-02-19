@@ -28,7 +28,7 @@ file_cache_path "#{path_to('config/cache')}"
 EOM
       result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
       result.error!
-      result.stdout.should include("ITWORKS")
+      expect(result.stdout).to include("ITWORKS")
     end
 
     it "should evaluate its node.json file" do
@@ -43,7 +43,7 @@ E
 
       result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -j '#{path_to('config/node.json')}' -l debug", :cwd => chef_dir)
       result.error!
-      result.stdout.should include("ITWORKS")
+      expect(result.stdout).to include("ITWORKS")
     end
 
   end
@@ -63,8 +63,8 @@ cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
       result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
-      result.exitstatus.should == 0 # For CHEF-5120 this becomes 1
-      result.stdout.should include("WARN: MissingCookbookDependency")
+      expect(result.exitstatus).to eq(0) # For CHEF-5120 this becomes 1
+      expect(result.stdout).to include("WARN: MissingCookbookDependency")
     end
   end
 
@@ -83,15 +83,14 @@ end
 EOM
     end
 
-    # Ruby 1.8.7 doesn't have Process.spawn :(
-    it "while running solo concurrently", :ruby_gte_19_only => true do
+    it "while running solo concurrently" do
       file 'config/solo.rb', <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
       # We have a timeout protection here so that if due to some bug
       # run_lock gets stuck we can discover it.
-      lambda {
+      expect {
         Timeout.timeout(120) do
           chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
 
@@ -109,7 +108,7 @@ EOM
           Process.waitpid(s1)
           Process.waitpid(s2)
         end
-      }.should_not raise_error
+      }.not_to raise_error
 
       # Unfortunately file / directory helpers in integration tests
       # are implemented using before(:each) so we need to do all below
@@ -117,13 +116,13 @@ EOM
       run_log = File.read(path_to('logs/runs.log'))
 
       # both of the runs should succeed
-      run_log.lines.reject {|l| !l.include? "INFO: Chef Run complete in"}.length.should == 2
+      expect(run_log.lines.reject {|l| !l.include? "INFO: Chef Run complete in"}.length).to eq(2)
 
       # second run should have a message which indicates it's waiting for the first run
       pid_lines = run_log.lines.reject {|l| !l.include? "Chef-client pid:"}
-      pid_lines.length.should == 2
+      expect(pid_lines.length).to eq(2)
       pids = pid_lines.map {|l| l.split(" ").last}
-      run_log.should include("Chef client #{pids[0]} is running, will wait for it to finish and then run.")
+      expect(run_log).to include("Chef client #{pids[0]} is running, will wait for it to finish and then run.")
 
       # second run should start after first run ends
       starts = [ ]
@@ -135,7 +134,7 @@ EOM
           ends << index
         end
       end
-      starts[1].should > ends[0]
+      expect(starts[1]).to be > ends[0]
     end
 
   end

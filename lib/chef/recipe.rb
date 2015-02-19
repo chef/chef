@@ -24,6 +24,7 @@ require 'chef/dsl/platform_introspection'
 require 'chef/dsl/include_recipe'
 require 'chef/dsl/registry_helper'
 require 'chef/dsl/reboot_pending'
+require 'chef/dsl/audit'
 
 require 'chef/mixin/from_file'
 
@@ -40,6 +41,7 @@ class Chef
     include Chef::DSL::Recipe
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
+    include Chef::DSL::Audit
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::Deprecation
@@ -52,12 +54,16 @@ class Chef
     # For example:
     #   "aws::elastic_ip" returns [:aws, "elastic_ip"]
     #   "aws" returns [:aws, "default"]
+    #   "::elastic_ip" returns [ current_cookbook, "elastic_ip" ]
     #--
     # TODO: Duplicates functionality of RunListItem
-    def self.parse_recipe_name(recipe_name)
-      rmatch = recipe_name.match(/(.+?)::(.+)/)
-      if rmatch
-        [ rmatch[1].to_sym, rmatch[2] ]
+    def self.parse_recipe_name(recipe_name, current_cookbook: nil)
+      case recipe_name
+      when /(.+?)::(.+)/
+        [ $1.to_sym, $2 ]
+      when /^::(.+)/
+        raise "current_cookbook is nil, cannot resolve #{recipe_name}" if current_cookbook.nil?
+        [ current_cookbook.to_sym, $1 ]
       else
         [ recipe_name.to_sym, "default" ]
       end
@@ -82,7 +88,7 @@ class Chef
       run_context.resource_collection.find(*args)
     end
 
-    # This was moved to Chef::Node#tag, redirecting here for compatability
+    # This was moved to Chef::Node#tag, redirecting here for compatibility
     def tag(*tags)
       run_context.node.tag(*tags)
     end

@@ -45,7 +45,7 @@ describe Chef::Provider::User do
   end
 
   it "assumes the group exists by default" do
-    expect(@provider.group_exists).to be_true
+    expect(@provider.group_exists).to be_truthy
   end
 
   describe "when establishing the current state of the group" do
@@ -76,7 +76,7 @@ describe Chef::Provider::User do
     it "should flip the value of exists if it cannot be found in /etc/group" do
       allow(Etc).to receive(:getgrnam).and_raise(ArgumentError)
       @provider.load_current_resource
-      expect(@provider.group_exists).to be_false
+      expect(@provider.group_exists).to be_falsey
     end
 
     it "should return the current resource" do
@@ -88,42 +88,42 @@ describe Chef::Provider::User do
     [ :gid, :members ].each do |attribute|
       it "should return true if #{attribute} doesn't match" do
         allow(@current_resource).to receive(attribute).and_return("looooooooooooooooooool")
-        expect(@provider.compare_group).to be_true
+        expect(@provider.compare_group).to be_truthy
       end
     end
 
     it "should return false if gid and members are equal" do
-      expect(@provider.compare_group).to be_false
+      expect(@provider.compare_group).to be_falsey
     end
 
     it "should coerce an integer to a string for comparison" do
       allow(@current_resource).to receive(:gid).and_return("500")
-      expect(@provider.compare_group).to be_false
+      expect(@provider.compare_group).to be_falsey
     end
 
     it "should return false if append is true and the group member(s) already exists" do
       @current_resource.members << "extra_user"
       allow(@new_resource).to receive(:append).and_return(true)
-      expect(@provider.compare_group).to be_false
+      expect(@provider.compare_group).to be_falsey
     end
 
     it "should return true if append is true and the group member(s) do not already exist" do
       @new_resource.members << "extra_user"
       allow(@new_resource).to receive(:append).and_return(true)
-      expect(@provider.compare_group).to be_true
+      expect(@provider.compare_group).to be_truthy
     end
 
     it "should return false if append is true and excluded_members include a non existing member" do
       @new_resource.excluded_members << "extra_user"
       allow(@new_resource).to receive(:append).and_return(true)
-      expect(@provider.compare_group).to be_false
+      expect(@provider.compare_group).to be_falsey
     end
 
     it "should return true if the append is true and excluded_members include an existing user" do
       @new_resource.members.each {|m| @new_resource.excluded_members << m }
       @new_resource.members.clear
       allow(@new_resource).to receive(:append).and_return(true)
-      expect(@provider.compare_group).to be_true
+      expect(@provider.compare_group).to be_truthy
     end
 
   end
@@ -259,26 +259,26 @@ describe Chef::Provider::User do
        @new_resource.members << "user1"
        @new_resource.members << "user2"
        allow(@new_resource).to receive(:append).and_return true
-       expect(@provider.compare_group).to be_true
+       expect(@provider.compare_group).to be_truthy
        expect(@provider.change_desc).to eq([ "add missing member(s): user1, user2" ])
     end
 
     it "should report that the group members will be overwritten if not appending" do
        @new_resource.members << "user1"
        allow(@new_resource).to receive(:append).and_return false
-       expect(@provider.compare_group).to be_true
+       expect(@provider.compare_group).to be_truthy
        expect(@provider.change_desc).to eq([ "replace group members with new list of members" ])
     end
 
     it "should report the gid will be changed when it does not match" do
       allow(@current_resource).to receive(:gid).and_return("BADF00D")
-      expect(@provider.compare_group).to be_true
+      expect(@provider.compare_group).to be_truthy
       expect(@provider.change_desc).to eq([ "change gid #{@current_resource.gid} to #{@new_resource.gid}" ])
 
     end
 
     it "should report no change reason when no change is required" do
-      expect(@provider.compare_group).to be_false
+      expect(@provider.compare_group).to be_falsey
       expect(@provider.change_desc).to eq([ ])
     end
   end

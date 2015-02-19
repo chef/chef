@@ -85,7 +85,7 @@ describe Chef::ResourceDefinition do
     expect(defn.recipe.call).to eql("I am what I am")
   end
 
-  it "should set paramaters based on method_missing" do
+  it "should set parameters based on method_missing" do
     defn.mind "to fly"
     expect(defn.params[:mind]).to eql("to fly")
   end

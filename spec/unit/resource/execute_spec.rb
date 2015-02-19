@@ -28,4 +28,8 @@ describe Chef::Resource::Execute do
     expect(execute_resource.guard_interpreter).to be(:execute)
   end
 
+  it "defaults to not being a guard interpreter" do
+    expect(execute_resource.is_guard_interpreter).to eq(false)
+  end
+
 end

@@ -29,26 +29,26 @@ describe Chef::Mixin::ConvertToClassName do
   end
 
   it "converts a_snake_case_word to a CamelCaseWord" do
-    @convert.convert_to_class_name("now_camelized").should == "NowCamelized"
+    expect(@convert.convert_to_class_name("now_camelized")).to eq("NowCamelized")
   end
 
   it "converts a CamelCaseWord to a snake_case_word" do
-    @convert.convert_to_snake_case("NowImASnake").should == "now_im_a_snake"
+    expect(@convert.convert_to_snake_case("NowImASnake")).to eq("now_im_a_snake")
   end
 
   it "removes the base classes before snake casing" do
-    @convert.convert_to_snake_case("NameSpaced::Class::ThisIsWin", "NameSpaced::Class").should == "this_is_win"
+    expect(@convert.convert_to_snake_case("NameSpaced::Class::ThisIsWin", "NameSpaced::Class")).to eq("this_is_win")
   end
 
   it "removes the base classes without explicitly naming them and returns snake case" do
-    @convert.snake_case_basename("NameSpaced::Class::ExtraWin").should == "extra_win"
+    expect(@convert.snake_case_basename("NameSpaced::Class::ExtraWin")).to eq("extra_win")
   end
 
   it "interprets non-alphanumeric characters in snake case as word boundaries" do
-    @convert.convert_to_class_name("now_camelized_without-hyphen").should == "NowCamelizedWithoutHyphen"
+    expect(@convert.convert_to_class_name("now_camelized_without-hyphen")).to eq("NowCamelizedWithoutHyphen")
   end
 
   it "interprets underscore" do
-    @convert.convert_to_class_name("_remove_leading_underscore").should == "RemoveLeadingUnderscore"
+    expect(@convert.convert_to_class_name("_remove_leading_underscore")).to eq("RemoveLeadingUnderscore")
   end
 end

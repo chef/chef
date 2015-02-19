@@ -25,7 +25,7 @@ shared_examples_for "a directory resource" do
   context "when the target directory does not exist" do
     before do
       # assert pre-condition
-      File.should_not exist(path)
+      expect(File).not_to exist(path)
     end
 
     describe "when running action :create" do
@@ -35,17 +35,17 @@ shared_examples_for "a directory resource" do
         end
 
         it "creates the directory when the :create action is run" do
-          File.should exist(path)
+          expect(File).to exist(path)
         end
 
         it "is marked updated by last action" do
-          resource.should be_updated_by_last_action
+          expect(resource).to be_updated_by_last_action
         end
       end
 
       context "and the recursive option is set" do
         before do
-          File.should_not exist(path)
+          expect(File).not_to exist(path)
 
           resource.recursive(true)
           @recursive_path = File.join(path, 'red-headed-stepchild')
@@ -54,12 +54,12 @@ shared_examples_for "a directory resource" do
         end
 
         it "recursively creates required directories" do
-          File.should exist(path)
-          File.should exist(@recursive_path)
+          expect(File).to exist(path)
+          expect(File).to exist(@recursive_path)
         end
 
         it "is marked updated by last action" do
-          resource.should be_updated_by_last_action
+          expect(resource).to be_updated_by_last_action
         end
       end
     end
@@ -97,7 +97,7 @@ shared_examples_for "a directory resource" do
       # so we run the resource twice--otherwise the updated_by_last_action test
       # will fail.
       resource.dup.run_action(:create)
-      File.should exist(path)
+      expect(File).to exist(path)
 
       resource.run_action(:create)
     end
@@ -108,11 +108,11 @@ shared_examples_for "a directory resource" do
       end
 
       it "does not re-create the directory" do
-        File.should exist(path)
+        expect(File).to exist(path)
       end
 
       it "is not marked updated by last action" do
-        resource.should_not be_updated_by_last_action
+        expect(resource).not_to be_updated_by_last_action
       end
     end
 
@@ -123,11 +123,11 @@ shared_examples_for "a directory resource" do
         end
 
         it "deletes the directory" do
-          File.should_not exist(path)
+          expect(File).not_to exist(path)
         end
 
         it "is marked as updated by last action" do
-          resource.should be_updated_by_last_action
+          expect(resource).to be_updated_by_last_action
         end
       end
 
@@ -139,7 +139,7 @@ shared_examples_for "a directory resource" do
         end
 
         it "recursively deletes directories" do
-          File.should_not exist(path)
+          expect(File).not_to exist(path)
         end
       end
     end

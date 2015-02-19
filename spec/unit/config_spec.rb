@@ -28,7 +28,7 @@ describe Chef::Config do
     end
 
     it "sets the server url" do
-      Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+      expect(Chef::Config.chef_server_url).to eq("https://junglist.gen.nz")
     end
 
     context "when the url has a leading space" do
@@ -37,7 +37,7 @@ describe Chef::Config do
       end
 
       it "strips the space from the url when setting" do
-        Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+        expect(Chef::Config.chef_server_url).to eq("https://junglist.gen.nz")
       end
 
     end
@@ -48,7 +48,7 @@ describe Chef::Config do
       end
 
       it "strips the space from the url when setting without raising an error" do
-        Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+        expect(Chef::Config.chef_server_url).to eq("https://junglist.gen.nz")
       end
     end
 
@@ -79,39 +79,39 @@ describe Chef::Config do
       # end
       #
     it "has an empty list of formatters by default" do
-      Chef::Config.formatters.should == []
+      expect(Chef::Config.formatters).to eq([])
     end
 
     it "configures a formatter with a short name" do
       Chef::Config.add_formatter(:doc)
-      Chef::Config.formatters.should == [[:doc, nil]]
+      expect(Chef::Config.formatters).to eq([[:doc, nil]])
     end
 
     it "configures a formatter with a file output" do
       Chef::Config.add_formatter(:doc, "/var/log/formatter.log")
-      Chef::Config.formatters.should == [[:doc, "/var/log/formatter.log"]]
+      expect(Chef::Config.formatters).to eq([[:doc, "/var/log/formatter.log"]])
     end
 
   end
 
   describe "class method: manage_secret_key" do
     before do
-      Chef::FileCache.stub(:load).and_return(true)
-      Chef::FileCache.stub(:has_key?).with("chef_server_cookie_id").and_return(false)
+      allow(Chef::FileCache).to receive(:load).and_return(true)
+      allow(Chef::FileCache).to receive(:has_key?).with("chef_server_cookie_id").and_return(false)
     end
 
     it "should generate and store a chef server cookie id" do
-      Chef::FileCache.should_receive(:store).with("chef_server_cookie_id", /\w{40}/).and_return(true)
+      expect(Chef::FileCache).to receive(:store).with("chef_server_cookie_id", /\w{40}/).and_return(true)
       Chef::Config.manage_secret_key
     end
 
     describe "when the filecache has a chef server cookie id key" do
       before do
-        Chef::FileCache.stub(:has_key?).with("chef_server_cookie_id").and_return(true)
+        allow(Chef::FileCache).to receive(:has_key?).with("chef_server_cookie_id").and_return(true)
       end
 
       it "should not generate and store a chef server cookie id" do
-        Chef::FileCache.should_not_receive(:store).with("chef_server_cookie_id", /\w{40}/)
+        expect(Chef::FileCache).not_to receive(:store).with("chef_server_cookie_id", /\w{40}/)
         Chef::Config.manage_secret_key
       end
     end
@@ -126,23 +126,23 @@ describe Chef::Config do
       end
 
       before :each do
-        Chef::Platform.stub(:windows?).and_return(is_windows)
+        allow(Chef::Platform).to receive(:windows?).and_return(is_windows)
       end
 
       describe "class method: platform_specific_path" do
         if is_windows
           it "should return a windows path on windows systems" do
             path = "/etc/chef/cookbooks"
-            Chef::Config.stub(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
+            allow(Chef::Config).to receive(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
             # match on a regex that looks for the base path with an optional
             # system drive at the beginning (c:)
             # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems
-            Chef::Config.platform_specific_path(path).should == "C:\\chef\\cookbooks"
+            expect(Chef::Config.platform_specific_path(path)).to eq("C:\\chef\\cookbooks")
           end
         else
           it "should return given path on non-windows systems" do
             path = "/etc/chef/cookbooks"
-            Chef::Config.platform_specific_path(path).should == "/etc/chef/cookbooks"
+            expect(Chef::Config.platform_specific_path(path)).to eq("/etc/chef/cookbooks")
           end
         end
       end
@@ -166,46 +166,46 @@ describe Chef::Config do
 
         before do
           if is_windows
-            Chef::Config.stub(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
+            allow(Chef::Config).to receive(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
             Chef::Config[:user_home] = 'C:\Users\charlie'
           else
             Chef::Config[:user_home] = '/Users/charlie'
           end
 
-          Chef::Config.stub(:path_accessible?).and_return(false)
+          allow(Chef::Config).to receive(:path_accessible?).and_return(false)
         end
 
         describe "Chef::Config[:cache_path]" do
           context "when /var/chef exists and is accessible" do
             it "defaults to /var/chef" do
-              Chef::Config.stub(:path_accessible?).with(to_platform("/var/chef")).and_return(true)
-              Chef::Config[:cache_path].should == primary_cache_path
+              allow(Chef::Config).to receive(:path_accessible?).with(to_platform("/var/chef")).and_return(true)
+              expect(Chef::Config[:cache_path]).to eq(primary_cache_path)
             end
           end
 
           context "when /var/chef does not exist and /var is accessible" do
             it "defaults to /var/chef" do
-              File.stub(:exists?).with(to_platform("/var/chef")).and_return(false)
-              Chef::Config.stub(:path_accessible?).with(to_platform("/var")).and_return(true)
-              Chef::Config[:cache_path].should == primary_cache_path
+              allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(false)
+              allow(Chef::Config).to receive(:path_accessible?).with(to_platform("/var")).and_return(true)
+              expect(Chef::Config[:cache_path]).to eq(primary_cache_path)
             end
           end
 
           context "when /var/chef does not exist and /var is not accessible" do
             it "defaults to $HOME/.chef" do
-              File.stub(:exists?).with(to_platform("/var/chef")).and_return(false)
-              Chef::Config.stub(:path_accessible?).with(to_platform("/var")).and_return(false)
-              Chef::Config[:cache_path].should == secondary_cache_path
+              allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(false)
+              allow(Chef::Config).to receive(:path_accessible?).with(to_platform("/var")).and_return(false)
+              expect(Chef::Config[:cache_path]).to eq(secondary_cache_path)
             end
           end
 
           context "when /var/chef exists and is not accessible" do
             it "defaults to $HOME/.chef" do
-              File.stub(:exists?).with(to_platform("/var/chef")).and_return(true)
-              File.stub(:readable?).with(to_platform("/var/chef")).and_return(true)
-              File.stub(:writable?).with(to_platform("/var/chef")).and_return(false)
+              allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(true)
+              allow(File).to receive(:readable?).with(to_platform("/var/chef")).and_return(true)
+              allow(File).to receive(:writable?).with(to_platform("/var/chef")).and_return(false)
 
-              Chef::Config[:cache_path].should == secondary_cache_path
+              expect(Chef::Config[:cache_path]).to eq(secondary_cache_path)
             end
           end
 
@@ -220,7 +220,7 @@ describe Chef::Config do
               end
 
               it "cache_path is /a/b/c/local-mode-cache" do
-                Chef::Config.cache_path.should == to_platform('/a/b/c/local-mode-cache')
+                expect(Chef::Config.cache_path).to eq(to_platform('/a/b/c/local-mode-cache'))
               end
             end
 
@@ -230,43 +230,43 @@ describe Chef::Config do
               end
 
               it "cache_path is /a/b/c/local-mode-cache" do
-                Chef::Config.cache_path.should == to_platform('/a/b/c/local-mode-cache')
+                expect(Chef::Config.cache_path).to eq(to_platform('/a/b/c/local-mode-cache'))
               end
             end
           end
         end
 
         it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
-          Chef::Config.stub(:cache_path).and_return(primary_cache_path)
+          allow(Chef::Config).to receive(:cache_path).and_return(primary_cache_path)
           backup_path = is_windows ? "#{primary_cache_path}\\backup" : "#{primary_cache_path}/backup"
-          Chef::Config[:file_backup_path].should == backup_path
+          expect(Chef::Config[:file_backup_path]).to eq(backup_path)
         end
 
         it "Chef::Config[:ssl_verify_mode] defaults to :verify_peer" do
-          Chef::Config[:ssl_verify_mode].should == :verify_peer
+          expect(Chef::Config[:ssl_verify_mode]).to eq(:verify_peer)
         end
 
         it "Chef::Config[:ssl_ca_path] defaults to nil" do
-          Chef::Config[:ssl_ca_path].should be_nil
+          expect(Chef::Config[:ssl_ca_path]).to be_nil
         end
 
         # TODO can this be removed?
         if !is_windows
           it "Chef::Config[:ssl_ca_file] defaults to nil" do
-            Chef::Config[:ssl_ca_file].should be_nil
+            expect(Chef::Config[:ssl_ca_file]).to be_nil
           end
         end
 
         it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do
-          Chef::Config.stub(:cache_path).and_return(primary_cache_path)
+          allow(Chef::Config).to receive(:cache_path).and_return(primary_cache_path)
           data_bag_path = is_windows ? "#{primary_cache_path}\\data_bags" : "#{primary_cache_path}/data_bags"
-          Chef::Config[:data_bag_path].should == data_bag_path
+          expect(Chef::Config[:data_bag_path]).to eq(data_bag_path)
         end
 
         it "Chef::Config[:environment_path] defaults to /var/chef/environments" do
-          Chef::Config.stub(:cache_path).and_return(primary_cache_path)
+          allow(Chef::Config).to receive(:cache_path).and_return(primary_cache_path)
           environment_path = is_windows ? "#{primary_cache_path}\\environments" : "#{primary_cache_path}/environments"
-          Chef::Config[:environment_path].should == environment_path
+          expect(Chef::Config[:environment_path]).to eq(environment_path)
         end
 
         describe "setting the config dir" do
@@ -278,7 +278,7 @@ describe Chef::Config do
             end
 
             it "config_dir is /etc/chef" do
-              Chef::Config.config_dir.should == to_platform("/etc/chef")
+              expect(Chef::Config.config_dir).to eq(to_platform("/etc/chef"))
             end
 
             context "and chef is running in local mode" do
@@ -287,7 +287,7 @@ describe Chef::Config do
               end
 
               it "config_dir is /etc/chef" do
-                Chef::Config.config_dir.should == to_platform("/etc/chef")
+                expect(Chef::Config.config_dir).to eq(to_platform("/etc/chef"))
               end
             end
 
@@ -297,7 +297,7 @@ describe Chef::Config do
               end
 
               it "yields the explicit value" do
-                Chef::Config.config_dir.should == to_platform("/other/config/dir/")
+                expect(Chef::Config.config_dir).to eq(to_platform("/other/config/dir/"))
               end
             end
 
@@ -309,7 +309,7 @@ describe Chef::Config do
             end
 
             it "config_dir is /home/charlie/.chef/" do
-              Chef::Config.config_dir.should == Chef::Util::PathHelper.join(to_platform("/home/charlie/.chef"), '')
+              expect(Chef::Config.config_dir).to eq(Chef::Util::PathHelper.join(to_platform("/home/charlie/.chef"), ''))
             end
 
             context "and chef is running in local mode" do
@@ -318,7 +318,7 @@ describe Chef::Config do
               end
 
               it "config_dir is /home/charlie/.chef/" do
-                Chef::Config.config_dir.should == Chef::Util::PathHelper.join(to_platform("/home/charlie/.chef"), '')
+                expect(Chef::Config.config_dir).to eq(Chef::Util::PathHelper.join(to_platform("/home/charlie/.chef"), ''))
               end
             end
           end
@@ -334,24 +334,24 @@ describe Chef::Config do
             let(:default_ca_file) { "c:/opscode/chef/embedded/ssl/certs/cacert.pem" }
 
             it "finds the embedded dir in the default location" do
-              Chef::Config.stub(:_this_file).and_return(default_config_location)
-              Chef::Config.embedded_dir.should == "c:/opscode/chef/embedded"
+              allow(Chef::Config).to receive(:_this_file).and_return(default_config_location)
+              expect(Chef::Config.embedded_dir).to eq("c:/opscode/chef/embedded")
             end
 
             it "finds the embedded dir in a custom install location" do
-              Chef::Config.stub(:_this_file).and_return(alternate_install_location)
-              Chef::Config.embedded_dir.should == "c:/my/alternate/install/place/chef/embedded"
+              allow(Chef::Config).to receive(:_this_file).and_return(alternate_install_location)
+              expect(Chef::Config.embedded_dir).to eq("c:/my/alternate/install/place/chef/embedded")
             end
 
             it "doesn't error when not in an omnibus install" do
-              Chef::Config.stub(:_this_file).and_return(non_omnibus_location)
-              Chef::Config.embedded_dir.should be_nil
+              allow(Chef::Config).to receive(:_this_file).and_return(non_omnibus_location)
+              expect(Chef::Config.embedded_dir).to be_nil
             end
 
             it "sets the ssl_ca_cert path if the cert file is available" do
-              Chef::Config.stub(:_this_file).and_return(default_config_location)
-              File.stub(:exist?).with(default_ca_file).and_return(true)
-              Chef::Config.ssl_ca_file.should == default_ca_file
+              allow(Chef::Config).to receive(:_this_file).and_return(default_config_location)
+              allow(File).to receive(:exist?).with(default_ca_file).and_return(true)
+              expect(Chef::Config.ssl_ca_file).to eq(default_ca_file)
             end
           end
         end
@@ -360,19 +360,19 @@ describe Chef::Config do
       describe "Chef::Config[:user_home]" do
         it "should set when HOME is provided" do
           expected = to_platform("/home/kitten")
-          Chef::Config.stub(:env).and_return({ 'HOME' => expected })
-          Chef::Config[:user_home].should == expected
+          allow(Chef::Config).to receive(:env).and_return({ 'HOME' => expected })
+          expect(Chef::Config[:user_home]).to eq(expected)
         end
 
         it "should be set when only USERPROFILE is provided" do
           expected = to_platform("/users/kitten")
-          Chef::Config.stub(:env).and_return({ 'USERPROFILE' => expected })
-          Chef::Config[:user_home].should == expected
+          allow(Chef::Config).to receive(:env).and_return({ 'USERPROFILE' => expected })
+          expect(Chef::Config[:user_home]).to eq(expected)
         end
 
         it "falls back to the current working directory when HOME and USERPROFILE is not set" do
-          Chef::Config.stub(:env).and_return({})
-          Chef::Config[:user_home].should == Dir.pwd
+          allow(Chef::Config).to receive(:env).and_return({})
+          expect(Chef::Config[:user_home]).to eq(Dir.pwd)
         end
       end
 
@@ -380,32 +380,32 @@ describe Chef::Config do
         let(:db_secret_default_path){ to_platform("/etc/chef/encrypted_data_bag_secret") }
 
         before do
-          File.stub(:exist?).with(db_secret_default_path).and_return(secret_exists)
+          allow(File).to receive(:exist?).with(db_secret_default_path).and_return(secret_exists)
         end
 
         context "/etc/chef/encrypted_data_bag_secret exists" do
           let(:secret_exists) { true }
           it "sets the value to /etc/chef/encrypted_data_bag_secret" do
-            Chef::Config[:encrypted_data_bag_secret].should eq db_secret_default_path
+            expect(Chef::Config[:encrypted_data_bag_secret]).to eq db_secret_default_path
           end
         end
 
         context "/etc/chef/encrypted_data_bag_secret does not exist" do
           let(:secret_exists) { false }
           it "sets the value to nil" do
-            Chef::Config[:encrypted_data_bag_secret].should be_nil
+            expect(Chef::Config[:encrypted_data_bag_secret]).to be_nil
           end
         end
       end
 
       describe "Chef::Config[:event_handlers]" do
         it "sets a event_handlers to an empty array by default" do
-          Chef::Config[:event_handlers].should eq([])
+          expect(Chef::Config[:event_handlers]).to eq([])
         end
         it "should be able to add custom handlers" do
           o = Object.new
           Chef::Config[:event_handlers] << o
-          Chef::Config[:event_handlers].should be_include(o)
+          expect(Chef::Config[:event_handlers]).to be_include(o)
         end
       end
 
@@ -413,7 +413,7 @@ describe Chef::Config do
         context "on a platform that is not Windows" do
           it "allows one letter usernames" do
             any_match = Chef::Config[:user_valid_regex].any? { |regex| regex.match('a') }
-            expect(any_match).to be_true
+            expect(any_match).to be_truthy
           end
         end
       end
@@ -507,5 +507,44 @@ describe Chef::Config do
         end
       end
     end
+  end
+
+  describe "Treating deprecation warnings as errors" do
+
+    context "when using our default RSpec configuration" do
+
+      it "defaults to treating deprecation warnings as errors" do
+        expect(Chef::Config[:treat_deprecation_warnings_as_errors]).to be(true)
+      end
+
+      it "sets CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS environment variable" do
+        expect(ENV['CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS']).to eq("1")
+      end
+
+      it "treats deprecation warnings as errors in child processes when testing" do
+        # Doing a full integration test where we launch a child process is slow
+        # and liable to break for weird reasons (bundler env stuff, etc.), so
+        # we're just checking that the presence of the environment variable
+        # causes treat_deprecation_warnings_as_errors to be set to true after a
+        # config reset.
+        Chef::Config.reset
+        expect(Chef::Config[:treat_deprecation_warnings_as_errors]).to be(true)
+      end
+
+    end
+
+    context "outside of our test environment" do
+
+      before do
+        ENV.delete('CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS')
+        Chef::Config.reset
+      end
+
+      it "defaults to NOT treating deprecation warnings as errors" do
+        expect(Chef::Config[:treat_deprecation_warnings_as_errors]).to be(false)
+      end
+    end
+
+
   end
 end

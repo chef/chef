@@ -203,6 +203,10 @@ class Chef
     # Does not apply to Enterprise Chef commands.
     default(:user_path) { derive_path_from_chef_repo_path('users') }
 
+    # Location of policies on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/policies.
+    default(:policy_path) { derive_path_from_chef_repo_path('policies') }
+
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
     default :enforce_path_sanity, true
 
@@ -271,7 +275,7 @@ class Chef
     # * :fatal
     # These work as you'd expect. There is also a special `:auto` setting.
     # When set to :auto, Chef will auto adjust the log verbosity based on
-    # context. When a tty is available (usually becase the user is running chef
+    # context. When a tty is available (usually because the user is running chef
     # in a console), the log level is set to :warn, and output formatters are
     # used as the primary mode of output. When a tty is not available, the
     # logger is the primary mode of output, and the log level is set to :info
@@ -317,8 +321,17 @@ class Chef
     default :why_run, false
     default :color, false
     default :client_fork, true
+    default :ez, false
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
+    # Possible values for :audit_mode
+    # :enabled, :disabled, :audit_only,
+    #
+    # TODO: 11 Dec 2014: Currently audit-mode is an experimental feature
+    # and is disabled by default. When users choose to enable audit-mode,
+    # a warning is issued in application/client#reconfigure.
+    # This can be removed when audit-mode is enabled by default.
+    default :audit_mode, :disabled
 
     # Policyfile is an experimental feature where a node gets its run list and
     # cookbook version set from a single document on the server instead of
@@ -486,8 +499,20 @@ class Chef
     # Deprecated:
     default(:cache_options) { { :path => PathHelper.join(file_cache_path, "checksums") } }
 
-    # Set to false to silence Chef 11 deprecation warnings:
-    default :chef11_deprecation_warnings, true
+    # Whether errors should be raised for deprecation warnings. When set to
+    # `false` (the default setting), a warning is emitted but code using
+    # deprecated methods/features/etc. should work normally otherwise. When set
+    # to `true`, usage of deprecated methods/features will raise a
+    # `DeprecatedFeatureError`. This is used by Chef's tests to ensure that
+    # deprecated functionality is not used internally by Chef.  End users
+    # should generally leave this at the default setting (especially in
+    # production), but it may be useful when testing cookbooks or other code if
+    # the user wishes to aggressively address deprecations.
+    default(:treat_deprecation_warnings_as_errors) do
+      # Using an environment variable allows this setting to be inherited in
+      # tests that spawn new processes.
+      ENV.key?("CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS")
+    end
 
     # knife configuration data
     config_context :knife do
@@ -601,6 +626,13 @@ class Chef
     # (leading to many confusing 403 errors on template/cookbook_file resources).
     #
     default :no_lazy_load, true
+
+    # Default for the chef_gem compile_time attribute.  Nil is the same as false but will emit
+    # warnings on every use of chef_gem prompting the user to be explicit.  If the user sets this to
+    # true then the user will get backcompat behavior but with a single nag warning that cookbooks
+    # may break with this setting in the future.  The false setting is the recommended setting and
+    # will become the default.
+    default :chef_gem_compile_time, nil
 
     # A whitelisted array of attributes you want sent over the wire when node
     # data is saved.

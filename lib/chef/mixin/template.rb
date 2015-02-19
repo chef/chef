@@ -23,18 +23,6 @@ class Chef
   module Mixin
     module Template
 
-      # A compatibility wrapper around IO.binread so it works on Ruby 1.8.7.
-      # --
-      # Used in the TemplateContext class, but that method namespace is shared
-      # with user code, so we want to avoid adding methods there when possible.
-      def self.binread(file)
-        if IO.respond_to?(:binread)
-          IO.binread(file)
-        else
-          File.open(file, "rb") {|f| f.read }
-        end
-      end
-
       # == ChefContext
       # ChefContext was previously used to mix behavior into Erubis::Context so
       # that it would be available to templates. This behavior has now moved to
@@ -105,11 +93,11 @@ class Chef
           partial_context._extend_modules(@_extension_modules)
 
           template_location = @template_finder.find(partial_name, options)
-          _render_template(Mixin::Template.binread(template_location), partial_context)
+          _render_template(IO.binread(template_location), partial_context)
         end
 
         def render_template(template_location)
-          _render_template(Mixin::Template.binread(template_location), self)
+          _render_template(IO.binread(template_location), self)
         end
 
         def render_template_from_string(template)

@@ -35,7 +35,7 @@ describe "HTTP Connection" do
     end
 
     it "should set an open timeout" do
-      subject.build_http_client.open_timeout.should_not be_nil
+      expect(subject.build_http_client.open_timeout).not_to be_nil
     end
   end
 
@@ -52,12 +52,12 @@ describe "HTTP Connection" do
 
       it "should contain the host" do
         proxy_uri = subject.proxy_uri
-        proxy_uri.host.should == proxy_host
+        expect(proxy_uri.host).to eq(proxy_host)
       end
 
       it "should contain the port" do
         proxy_uri = subject.proxy_uri
-        proxy_uri.port.should == proxy_port
+        expect(proxy_uri.port).to eq(proxy_port)
       end
     end
 

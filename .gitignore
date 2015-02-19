@@ -38,3 +38,6 @@ Berksfile.lock
 # Vagrant
 Vagrantfile
 .vagrant/
+
+# Kitchen Tests Local Mode Data
+kitchen-tests/nodes/*

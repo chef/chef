@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "CHEF-SHELL" "1" "Chef 11.16" "" "chef-shell"
+.TH "CHEF-SHELL" "1" "Chef 12.0" "" "chef-shell"
 .SH NAME
 chef-shell \- The man page for the chef-shell command line tool.
 .
@@ -101,6 +101,77 @@ Shows help for the command.
 .TP
 .B \fB\-j PATH\fP, \fB\-\-json\-attributes PATH\fP
 The path to a file that contains JSON data.
+.sp
+Use this option to define a \fBrun_list\fP object. For example, a JSON file similar to:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+"run_list": [
+  "recipe[base]",
+  "recipe[foo]",
+  "recipe[bar]",
+  "role[webserver]"
+],
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+may be used by running \fBchef\-client \-j path/to/file.json\fP\&.
+.sp
+In certain situations this option may be used to update \fBnormal\fP attributes.
+.sp
+\fBWARNING:\fP
+.INDENT 7.0
+.INDENT 3.5
+Any other attribute type that is contained in this JSON file will be treated as a \fBnormal\fP attribute. For example, attempting to update \fBoverride\fP attributes using the \fB\-j\fP option:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+{
+  "name": "dev\-99",
+  "description": "Install some stuff",
+  "override_attributes": {
+    "apptastic": {
+      "enable_apptastic": "false",
+      "apptastic_tier_name": "dev\-99.bomb.com"
+    }
+  }
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+will result in a node object similar to:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+{
+  "name": "maybe\-dev\-99",
+  "normal": {
+  "name": "dev\-99",
+    "description": "Install some stuff",
+    "override_attributes": {
+      "apptastic": {
+        "enable_apptastic": "false",
+        "apptastic_tier_name": "dev\-99.bomb.com"
+      }
+    }
+  }
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
 .TP
 .B \fB\-l LEVEL\fP, \fB\-\-log\-level LEVEL\fP
 The level of logging that will be stored in a log file.

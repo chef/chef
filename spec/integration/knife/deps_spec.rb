@@ -251,8 +251,8 @@ EOM
         end
         it 'knife deps --tree prints each once' do
           knife('deps --tree /roles/foo.json /roles/self.json') do
-            stdout.should == "/roles/foo.json\n  /roles/bar.json\n    /roles/baz.json\n      /roles/foo.json\n/roles/self.json\n  /roles/self.json\n"
-            stderr.should == "WARNING: No knife configuration file found\n"
+            expect(stdout).to eq("/roles/foo.json\n  /roles/bar.json\n    /roles/baz.json\n      /roles/foo.json\n/roles/self.json\n  /roles/self.json\n")
+            expect(stderr).to eq("WARNING: No knife configuration file found\n")
           end
         end
       end
@@ -589,8 +589,8 @@ EOM
         end
         it 'knife deps --tree prints each once' do
           knife('deps --remote --tree /roles/foo.json /roles/self.json') do
-            stdout.should == "/roles/foo.json\n  /roles/bar.json\n    /roles/baz.json\n      /roles/foo.json\n/roles/self.json\n  /roles/self.json\n"
-            stderr.should == "WARNING: No knife configuration file found\n"
+            expect(stdout).to eq("/roles/foo.json\n  /roles/bar.json\n    /roles/baz.json\n      /roles/foo.json\n/roles/self.json\n  /roles/self.json\n")
+            expect(stderr).to eq("WARNING: No knife configuration file found\n")
           end
         end
       end

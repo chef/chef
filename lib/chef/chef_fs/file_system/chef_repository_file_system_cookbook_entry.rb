@@ -53,7 +53,7 @@ class Chef
 
           # Check chefignore
           ignorer = parent
-          begin
+          loop do
             if ignorer.is_a?(ChefRepositoryFileSystemCookbooksDir)
               # Grab the path from entry to child
               path_to_child = name
@@ -66,7 +66,8 @@ class Chef
               return !ignorer.chefignore || !ignorer.chefignore.ignored?(path_to_child)
             end
             ignorer = ignorer.parent
-          end while ignorer
+            break unless ignorer
+          end
 
           true
         end

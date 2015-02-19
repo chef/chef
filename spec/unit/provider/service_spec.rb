@@ -69,7 +69,7 @@ describe Chef::Provider::Service do
   describe "action_start" do
     it "should start the service if it isn't running and set the resource as updated" do
       @current_resource.running(false)
-      expect(@provider).to receive(:start_service).with.and_return(true)
+      expect(@provider).to receive(:start_service).with(no_args).and_return(true)
       @provider.run_action(:start)
       expect(@provider.new_resource).to be_updated
     end

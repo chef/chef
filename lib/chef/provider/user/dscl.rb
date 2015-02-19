@@ -39,7 +39,7 @@ class Chef
       # > 10.7  => password shadow calculation format SALTED-SHA512-PBKDF2
       #         => stored in: /var/db/dslocal/nodes/Default/users/#{name}.plist
       #         => shadow binary length 128 bytes
-      #         => Salt / Iterations are stored seperately in the same file
+      #         => Salt / Iterations are stored separately in the same file
       #
       # This provider only supports Mac OSX versions 10.7 and above
       class Dscl < Chef::Provider::User
@@ -239,8 +239,18 @@ user password using shadow hash.")
         #
         def uid_used?(uid)
           return false unless uid
-          users_uids = run_dscl("list /Users uid")
-          !! ( users_uids =~ Regexp.new("#{Regexp.escape(uid.to_s)}\n") )
+          users_uids = run_dscl("list /Users uid").split("\n")
+          uid_map = users_uids.inject({}) do |tmap, tuid|
+            x = tuid.split
+            tmap[x[1]] = x[0]
+            tmap
+          end
+          if uid_map[uid.to_s]
+            unless uid_map[uid.to_s] == @new_resource.username.to_s
+              return true
+            end
+          end
+          return false
         end
 
         #
@@ -504,6 +514,11 @@ user password using shadow hash.")
             # password to be updated.
             return true if salted_sha512?(@current_resource.password)
 
+            # Some system users don't have salts; this can happen if the system is
+            # upgraded and the user hasn't logged in yet. In this case, we will force
+            # the password to be updated.
+            return true if @current_resource.salt.nil?
+
             if salted_sha512_pbkdf2?(@new_resource.password)
               diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
             else
@@ -535,7 +550,7 @@ user password using shadow hash.")
 
         # A simple map of Chef's terms to DSCL's terms.
         DSCL_PROPERTY_MAP = {
-          :uid => "generateduid",
+          :uid => "uid",
           :gid => "gid",
           :home => "home",
           :shell => "shell",

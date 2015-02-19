@@ -1,5 +1,4 @@
 require 'logger'
-
 require 'pp'
 
 #== MonoLogger
@@ -89,4 +88,3 @@ class MonoLogger < Logger
 
 
 end
-

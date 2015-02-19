@@ -379,7 +379,7 @@ class Chef
                   should_copy = true
                   src_value = nil
                 else
-                  are_same, src_value, dest_value = compare(src_entry, dest_entry)
+                  are_same, src_value, _dest_value = compare(src_entry, dest_entry)
                   should_copy = !are_same
                 end
                 if should_copy

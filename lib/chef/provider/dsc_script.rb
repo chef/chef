@@ -32,11 +32,11 @@ class Chef
         @dsc_resource = dsc_resource
         @resource_converged = false
         @operations = {
-          :set => Proc.new { |config_manager, document|
-            config_manager.set_configuration(document)
+          :set => Proc.new { |config_manager, document, shellout_flags|
+            config_manager.set_configuration(document, shellout_flags)
           },
-          :test => Proc.new { |config_manager, document|
-            config_manager.test_configuration(document)
+          :test => Proc.new { |config_manager, document, shellout_flags|
+            config_manager.test_configuration(document, shellout_flags)
           }}
       end
 
@@ -89,9 +89,15 @@ class Chef
 
         config_manager = Chef::Util::DSC::LocalConfigurationManager.new(@run_context.node, config_directory)
 
+        shellout_flags = {
+          :cwd => @dsc_resource.cwd,
+          :environment => @dsc_resource.environment,
+          :timeout => @dsc_resource.timeout
+        }
+
         begin
           configuration_document = generate_configuration_document(config_directory, configuration_flags)
-          @operations[operation].call(config_manager, configuration_document)
+          @operations[operation].call(config_manager, configuration_document, shellout_flags)
         rescue Exception => e
           Chef::Log.error("DSC operation failed: #{e.message.to_s}")
           raise e
@@ -123,7 +129,7 @@ class Chef
         else
           # If code is also not provided, we mimic what the other script resources do (execute nothing)
           Chef::Log.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
-          generator.configuration_document_from_script_code(@dsc_resource.code || '', configuration_flags, shellout_flags)
+          generator.configuration_document_from_script_code(@dsc_resource.code || '', configuration_flags, @dsc_resource.imports, shellout_flags)
         end
       end
 
@@ -161,7 +167,7 @@ class Chef
               cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, '').strip }
               "converge DSC resource #{resource.name} by #{cleaned_messages.find_all{ |c| c != ''}.join("\n")}"
             else
-              # This is needed because a dsc script can have resouces that are both converged and not
+              # This is needed because a dsc script can have resources that are both converged and not
               "converge DSC resource #{resource.name} by doing nothing because it is already converged"
             end
           end

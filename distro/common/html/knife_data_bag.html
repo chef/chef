@@ -65,7 +65,7 @@
 <dt><tt class="docutils literal"><span class="pre">DATA_BAG_ITEM</span></tt></dt>
 <dd>The name of a specific item within a data bag.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret</span> <span class="pre">SECRET</span></tt></dt>
-<dd>The encryption key that is used for values contained within a data bag item.</dd>
+<dd>The encryption key that is used for values contained within a data bag item. If <tt class="docutils literal"><span class="pre">secret</span></tt> is not specified, the chef-client will look for a secret at the path specified by the <tt class="docutils literal"><span class="pre">encrypted_data_bag_secret</span></tt> setting in the client.rb file.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret-file</span> <span class="pre">FILE</span></tt></dt>
 <dd>The path to the file that contains the encryption key.</dd>
 </dl>
@@ -138,7 +138,7 @@
 <dt><tt class="docutils literal"><span class="pre">DATA_BAG_ITEM</span></tt></dt>
 <dd>The name of a specific item within a data bag.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret</span> <span class="pre">SECRET</span></tt></dt>
-<dd>The encryption key that is used for values contained within a data bag item.</dd>
+<dd>The encryption key that is used for values contained within a data bag item. If <tt class="docutils literal"><span class="pre">secret</span></tt> is not specified, the chef-client will look for a secret at the path specified by the <tt class="docutils literal"><span class="pre">encrypted_data_bag_secret</span></tt> setting in the client.rb file.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret-file</span> <span class="pre">FILE</span></tt></dt>
 <dd>The path to the file that contains the encryption key.</dd>
 </dl>
@@ -219,7 +219,7 @@
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
 <dd>Use to upload all data bags found at the specified path.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret</span> <span class="pre">SECRET</span></tt></dt>
-<dd>The encryption key that is used for values contained within a data bag item.</dd>
+<dd>The encryption key that is used for values contained within a data bag item. If <tt class="docutils literal"><span class="pre">secret</span></tt> is not specified, the chef-client will look for a secret at the path specified by the <tt class="docutils literal"><span class="pre">encrypted_data_bag_secret</span></tt> setting in the client.rb file.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret-file</span> <span class="pre">FILE</span></tt></dt>
 <dd>The path to the file that contains the encryption key.</dd>
 </dl>
@@ -287,7 +287,7 @@
 <dt><tt class="docutils literal"><span class="pre">DATA_BAG_ITEM</span></tt></dt>
 <dd>The name of a specific item within a data bag.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret</span> <span class="pre">SECRET</span></tt></dt>
-<dd>The encryption key that is used for values contained within a data bag item.</dd>
+<dd>The encryption key that is used for values contained within a data bag item. If <tt class="docutils literal"><span class="pre">secret</span></tt> is not specified, the chef-client will look for a secret at the path specified by the <tt class="docutils literal"><span class="pre">encrypted_data_bag_secret</span></tt> setting in the client.rb file.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret-file</span> <span class="pre">FILE</span></tt></dt>
 <dd>The path to the file that contains the encryption key.</dd>
 </dl>

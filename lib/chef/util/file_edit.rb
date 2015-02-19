@@ -47,7 +47,7 @@ class Chef
       end
 
       #search the file line by line and match each line with the given regex
-      #if matched, replace the match (all occurances)  with the replace parameter
+      #if matched, replace the match (all occurrences)  with the replace parameter
       def search_file_replace(regex, replace)
         @changes = (editor.replace(regex, replace) > 0) || @changes
       end
@@ -59,7 +59,7 @@ class Chef
       end
 
       #search the file line by line and match each line with the given regex
-      #if matched, delete the match (all occurances) from the line
+      #if matched, delete the match (all occurrences) from the line
       def search_file_delete(regex)
         search_file_replace(regex, '')
       end
