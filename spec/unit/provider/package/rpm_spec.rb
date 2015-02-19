@@ -58,7 +58,7 @@ describe Chef::Provider::Package::Rpm do
 
       it "should get the source package version from rpm if provided" do
         expect(provider).to receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm").and_return(status)
-        expect(provider).to receive(:shell_out!).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(status)
+        expect(provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(status)
         provider.load_current_resource
         expect(provider.current_resource.package_name).to eq("ImageMagick-c++")
         expect(provider.new_resource.version).to eq("6.5.4.7-7.el6_5")
@@ -66,7 +66,7 @@ describe Chef::Provider::Package::Rpm do
 
       it "should return the current version installed if found by rpm" do
         expect(provider).to receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm").and_return(status)
-        expect(provider).to receive(:shell_out!).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(status)
+        expect(provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(status)
         provider.load_current_resource
         expect(provider.current_resource.version).to eq("6.5.4.7-7.el6_5")
       end
@@ -116,13 +116,13 @@ describe Chef::Provider::Package::Rpm do
       end
 
       it "should raise an exception if rpm fails to run" do
-        allow(provider).to receive(:shell_out!).and_return(status)
+        allow(provider).to receive(:shell_out).and_return(status)
         expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
       end
 
       it "should not detect the package name as version when not installed" do
         expect(provider).to receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(status)
-        expect(provider).to receive(:shell_out!).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(status)
+        expect(provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(status)
         provider.load_current_resource
         expect(provider.current_resource.version).to be_nil
       end

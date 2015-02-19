@@ -61,12 +61,10 @@ class Chef
             if @source_exists
               # Get information from the package if supplied
               Chef::Log.debug("#{@new_resource} checking dpkg status")
-              status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
-                stdout.each_line do |line|
-                  if pkginfo = DPKG_INFO.match(line)
-                    @current_resource.package_name(pkginfo[1])
-                    @new_resource.version(pkginfo[2])
-                  end
+              shell_out("dpkg-deb -W #{@new_resource.source}").stdout.each_line do |line|
+                if pkginfo = DPKG_INFO.match(line)
+                  @current_resource.package_name(pkginfo[1])
+                  @new_resource.version(pkginfo[2])
                 end
               end
             else
@@ -79,16 +77,15 @@ class Chef
           # Check to see if it is installed
           package_installed = nil
           Chef::Log.debug("#{@new_resource} checking install state")
-          status = popen4("dpkg -s #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each_line do |line|
-              case line
-              when DPKG_INSTALLED
-                package_installed = true
-              when DPKG_VERSION
-                if package_installed
-                  Chef::Log.debug("#{@new_resource} current version is #{$1}")
-                  @current_resource.version($1)
-                end
+          status = shell_out("dpkg -s #{@current_resource.package_name}")
+          status.stdout.each_line do |line|
+            case line
+            when DPKG_INSTALLED
+              package_installed = true
+            when DPKG_VERSION
+              if package_installed
+                Chef::Log.debug("#{@new_resource} current version is #{$1}")
+                @current_resource.version($1)
               end
             end
           end
