@@ -102,9 +102,9 @@ class Chef
           return true #do not delete the key
         else
           new_value =
-            current_values.select { |item|
+            current_values.select do |item|
               not new_values.include?(item)
-          }.join(@new_resource.delim)
+            end.join(@new_resource.delim)
 
           if new_value.empty?
             return false #nothing left here, delete the key
