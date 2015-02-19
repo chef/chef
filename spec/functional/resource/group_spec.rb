@@ -19,12 +19,15 @@
 
 require 'spec_helper'
 require 'functional/resource/base'
+require 'chef/mixin/shell_out'
 
 # Chef::Resource::Group are turned off on Mac OS X 10.6 due to caching
 # issues around Etc.getgrnam() not picking up the group membership
 # changes that are done on the system. Etc.endgrent is not functioning
 # correctly on certain 10.6 boxes.
 describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supported_on_mac_osx_106 do
+  include Chef::Mixin::ShellOut
+
   def group_should_exist(group)
     case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
