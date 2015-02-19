@@ -85,8 +85,13 @@ class Chef
 
       def nillable_set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
-        if arg == NULL_ARG && self.instance_variable_defined?(iv_symbol) == true
-          get_ivar(iv_symbol, symbol, validation)
+        if arg == NULL_ARG
+          if self.instance_variable_defined?(iv_symbol) == true
+            get_ivar(iv_symbol, symbol, validation)
+          else
+            # on access we create the iv and set it to nil for back-compat
+            set_ivar(iv_symbol, symbol, nil, validation)
+          end
         else
           set_ivar(iv_symbol, symbol, arg, validation)
         end
