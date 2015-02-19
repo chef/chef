@@ -1,4 +1,6 @@
-## 12.1.0 (Unreleased)
+## Unreleased
+
+## 12.1.0
 
 * [**Andre Elizondo**](https://github.com/andrewelizondo)
   Typo fixes
