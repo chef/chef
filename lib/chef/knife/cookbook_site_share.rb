@@ -131,33 +131,33 @@ class Chef
       end
 
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
-         uri = "https://supermarket.chef.io/api/v1/cookbooks"
+        uri = "https://supermarket.chef.io/api/v1/cookbooks"
 
-         category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
+        category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
 
-         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
-           :tarball => File.open(cookbook_filename),
-           :cookbook => category_string
-         })
+        http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
+          :tarball => File.open(cookbook_filename),
+          :cookbook => category_string
+        })
 
-         res = Chef::JSONCompat.from_json(http_resp.body)
-         if http_resp.code.to_i != 201
-           if res['error_messages']
-             if res['error_messages'][0] =~ /Version already exists/
-               ui.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
-               exit(1)
-             else
-               ui.error "#{res['error_messages'][0]}"
-               exit(1)
-             end
-           else
-             ui.error "Unknown error while sharing cookbook"
-             ui.error "Server response: #{http_resp.body}"
-             exit(1)
-           end
-         end
-         res
-       end
+        res = Chef::JSONCompat.from_json(http_resp.body)
+        if http_resp.code.to_i != 201
+          if res['error_messages']
+            if res['error_messages'][0] =~ /Version already exists/
+              ui.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
+              exit(1)
+            else
+              ui.error "#{res['error_messages'][0]}"
+              exit(1)
+            end
+          else
+            ui.error "Unknown error while sharing cookbook"
+            ui.error "Server response: #{http_resp.body}"
+            exit(1)
+          end
+        end
+        res
+      end
     end
 
   end
