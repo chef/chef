@@ -23,6 +23,8 @@ another component.
 ### Lieutenant
 * [Thom May](https://github.com/thommay)
 
+* [Jon Cowie](http://github.com/jonlives)
+
 ### Maintainers
 
 * [Jon Cowie](http://github.com/jonlives)
