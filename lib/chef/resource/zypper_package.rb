@@ -29,8 +29,6 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :zypper_package
-        @flush_cache = { :before => false, :after => false }
-        @allow_downgrade = false
         @timeout = 1800
       end
 
@@ -42,32 +40,6 @@ class Chef
         )
       end
 
-      # Install a specific arch
-      def arch(arg=nil)
-        set_or_return(
-          :arch,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def flush_cache(args={})
-        if args.is_a? Array
-          args.each { |arg| @flush_cache[arg] = true }
-        elsif args.any?
-          @flush_cache = args
-        else
-          @flush_cache
-        end
-      end
-
-      def allow_downgrade(arg=nil)
-        set_or_return(
-          :allow_downgrade,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
 
     end
   end
