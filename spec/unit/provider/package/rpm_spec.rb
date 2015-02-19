@@ -116,7 +116,7 @@ describe Chef::Provider::Package::Rpm do
       end
 
       it "should raise an exception if rpm fails to run" do
-        allow(provider).to receive(:shell_out!).and_return(status)
+        allow(provider).to receive(:shell_out).and_return(status)
         expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
       end
 
