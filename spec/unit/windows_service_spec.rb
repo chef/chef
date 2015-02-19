@@ -25,29 +25,29 @@ describe "Chef::Application::WindowsService", :windows_only do
   let (:shell_out_result) {Object.new}
   let (:tempfile) {Tempfile.new "log_file"}
   before do
-    instance.stub(:parse_options)
-    shell_out_result.stub(:stdout)
-    shell_out_result.stub(:stderr)
+    allow(instance).to receive(:parse_options)
+    allow(shell_out_result).to receive(:stdout)
+    allow(shell_out_result).to receive(:stderr)
   end
   it "runs chef-client in new process" do
-    instance.should_receive(:configure_chef).twice
+    expect(instance).to receive(:configure_chef).twice
     instance.service_init
-    instance.should_receive(:run_chef_client).and_call_original
-    instance.should_receive(:shell_out).and_return(shell_out_result)
-    instance.stub(:running?).and_return(true, false)
-    instance.instance_variable_get(:@service_signal).stub(:wait)
-    instance.stub(:state).and_return(4)
+    expect(instance).to receive(:run_chef_client).and_call_original
+    expect(instance).to receive(:shell_out).and_return(shell_out_result)
+    allow(instance).to receive(:running?).and_return(true, false)
+    allow(instance.instance_variable_get(:@service_signal)).to receive(:wait)
+    allow(instance).to receive(:state).and_return(4)
     instance.service_main
   end
   it "passes config params to new process" do
     Chef::Config.merge!({:log_location => tempfile.path, :config_file => "test_config_file", :log_level => :info})
-    instance.should_receive(:configure_chef).twice
+    expect(instance).to receive(:configure_chef).twice
     instance.service_init
-    instance.stub(:running?).and_return(true, false)
-    instance.instance_variable_get(:@service_signal).stub(:wait)
-    instance.stub(:state).and_return(4)
-    instance.should_receive(:run_chef_client).and_call_original
-    instance.should_receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}").and_return(shell_out_result)
+    allow(instance).to receive(:running?).and_return(true, false)
+    allow(instance.instance_variable_get(:@service_signal)).to receive(:wait)
+    allow(instance).to receive(:state).and_return(4)
+    expect(instance).to receive(:run_chef_client).and_call_original
+    expect(instance).to receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}").and_return(shell_out_result)
     instance.service_main
     tempfile.unlink
   end

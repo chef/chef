@@ -60,7 +60,7 @@ describe Chef::Provider::RemoteFile::FTP do
   let(:uri) { URI.parse("ftp://opscode.com/seattle.txt") }
 
   before(:each) do
-    allow(Net::FTP).to receive(:new).with().and_return(ftp)
+    allow(Net::FTP).to receive(:new).with(no_args).and_return(ftp)
     allow(Tempfile).to receive(:new).and_return(tempfile)
   end
 
@@ -89,13 +89,13 @@ describe Chef::Provider::RemoteFile::FTP do
     it "does not use passive mode when new_resource sets ftp_active_mode to true" do
       new_resource.ftp_active_mode(true)
       fetcher = Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
-      expect(fetcher.use_passive_mode?).to be_false
+      expect(fetcher.use_passive_mode?).to be_falsey
     end
 
     it "uses passive mode when new_resource sets ftp_active_mode to false" do
       new_resource.ftp_active_mode(false)
       fetcher = Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
-      expect(fetcher.use_passive_mode?).to be_true
+      expect(fetcher.use_passive_mode?).to be_truthy
     end
   end
 

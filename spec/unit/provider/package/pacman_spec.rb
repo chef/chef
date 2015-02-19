@@ -26,10 +26,11 @@ describe Chef::Provider::Package::Pacman do
     @new_resource = Chef::Resource::Package.new("nano")
     @current_resource = Chef::Resource::Package.new("nano")
 
-    @status = double("Status", :exitstatus => 0)
+    @status = double(:stdout => "", :exitstatus => 0)
     @provider = Chef::Provider::Package::Pacman.new(@new_resource, @run_context)
     allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
-    allow(@provider).to receive(:popen4).and_return(@status)
+
+    allow(@provider).to receive(:shell_out).and_return(@status)
     @stdin = StringIO.new
     @stdout = StringIO.new(<<-ERR)
 error: package "nano" not found
@@ -50,24 +51,23 @@ ERR
     end
 
     it "should run pacman query with the package name" do
-      expect(@provider).to receive(:popen4).with("pacman -Qi #{@new_resource.package_name}").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("pacman -Qi #{@new_resource.package_name}").and_return(@status)
       @provider.load_current_resource
     end
 
     it "should read stdout on pacman" do
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      expect(@stdout).to receive(:each).and_return(true)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       @provider.load_current_resource
     end
 
     it "should set the installed version to nil on the current resource if pacman installed version not exists" do
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@current_resource).to receive(:version).with(nil).and_return(true)
       @provider.load_current_resource
     end
 
     it "should set the installed version if pacman has one" do
-      @stdout = StringIO.new(<<-PACMAN)
+      stdout = <<-PACMAN
 Name           : nano
 Version        : 2.2.2-1
 URL            : http://www.nano-editor.org
@@ -88,14 +88,16 @@ Install Reason : Explicitly installed
 Install Script : Yes
 Description    : Pico editor clone with enhancements
 PACMAN
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+
+      status = double(:stdout => stdout, :exitstatus => 0)
+      allow(@provider).to receive(:shell_out).and_return(status)
       @provider.load_current_resource
       expect(@current_resource.version).to eq("2.2.2-1")
     end
 
     it "should set the candidate version if pacman has one" do
-      allow(@stdout).to receive(:each).and_yield("core nano 2.2.3-1")
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      status = double(:stdout => "core nano 2.2.3-1", :exitstatus => 0)
+      allow(@provider).to receive(:shell_out).and_return(status)
       @provider.load_current_resource
       expect(@provider.candidate_version).to eql("2.2.3-1")
     end
@@ -119,10 +121,10 @@ Include = /etc/pacman.d/mirrorlist
 Include = /etc/pacman.d/mirrorlist
 PACMAN_CONF
 
+      status = double(:stdout => "customrepo nano 1.2.3-4", :exitstatus => 0)
       allow(::File).to receive(:exists?).with("/etc/pacman.conf").and_return(true)
       allow(::File).to receive(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
-      allow(@stdout).to receive(:each).and_yield("customrepo nano 1.2.3-4")
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(status)
 
       @provider.load_current_resource
       expect(@provider.candidate_version).to eql("1.2.3-4")
@@ -139,8 +141,7 @@ PACMAN_CONF
     end
 
     it "should raise an exception if pacman does not return a candidate version" do
-      allow(@stdout).to receive(:each).and_yield("")
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
     end
 

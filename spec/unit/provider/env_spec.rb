@@ -30,7 +30,7 @@ describe Chef::Provider::Env do
   end
 
   it "assumes the key_name exists by default" do
-    expect(@provider.key_exists).to be_true
+    expect(@provider.key_exists).to be_truthy
   end
 
   describe "when loading the current status" do
@@ -55,13 +55,13 @@ describe Chef::Provider::Env do
     it "should check if the key_name exists" do
       expect(@provider).to receive(:env_key_exists).with("FOO").and_return(true)
       @provider.load_current_resource
-      expect(@provider.key_exists).to be_true
+      expect(@provider.key_exists).to be_truthy
     end
 
     it "should flip the value of exists if the key does not exist" do
       expect(@provider).to receive(:env_key_exists).with("FOO").and_return(false)
       @provider.load_current_resource
-      expect(@provider.key_exists).to be_false
+      expect(@provider.key_exists).to be_falsey
     end
 
     it "should return the current resource" do
@@ -230,40 +230,47 @@ describe Chef::Provider::Env do
     end
 
     it "should return false if the values are equal" do
-      expect(@provider.requires_modify_or_create?).to be_false
+      expect(@provider.requires_modify_or_create?).to be_falsey
     end
 
     it "should return true if the values not are equal" do
       @new_resource.value("C:/elsewhere")
-      expect(@provider.requires_modify_or_create?).to be_true
+      expect(@provider.requires_modify_or_create?).to be_truthy
     end
 
     it "should return false if the current value contains the element" do
       @new_resource.delim(";")
       @current_resource.value("C:/bar;C:/foo;C:/baz")
 
-      expect(@provider.requires_modify_or_create?).to be_false
+      expect(@provider.requires_modify_or_create?).to be_falsey
     end
 
     it "should return true if the current value does not contain the element" do
       @new_resource.delim(";")
       @current_resource.value("C:/biz;C:/foo/bin;C:/baz")
-      expect(@provider.requires_modify_or_create?).to be_true
+      expect(@provider.requires_modify_or_create?).to be_truthy
     end
 
     context "when new_resource's value contains the delimiter"  do
-      it "should return false if all the current values are contained" do
+      it "should return false if all the current values are contained in specified order" do
         @new_resource.value("C:/biz;C:/baz")
         @new_resource.delim(";")
         @current_resource.value("C:/biz;C:/foo/bin;C:/baz")
-        expect(@provider.requires_modify_or_create?).to be_false
+        expect(@provider.requires_modify_or_create?).to be_falsey
       end
 
       it "should return true if any of the new values are not contained" do
         @new_resource.value("C:/biz;C:/baz;C:/bin")
         @new_resource.delim(";")
         @current_resource.value("C:/biz;C:/foo/bin;C:/baz")
-        expect(@provider.requires_modify_or_create?).to be_true
+        expect(@provider.requires_modify_or_create?).to be_truthy
+      end
+
+      it "should return true if values are contained in different order" do
+        @new_resource.value("C:/biz;C:/baz")
+        @new_resource.delim(";")
+        @current_resource.value("C:/baz;C:/foo/bin;C:/biz")
+        expect(@provider.requires_modify_or_create?).to be_truthy
       end
     end
   end
@@ -286,12 +293,18 @@ describe Chef::Provider::Env do
       expect(passed_value).to eq(new_value)
     end
 
-    it "should only add values not already contained when a delimiter is provided" do
+    it "should only add values not already contained" do
       @new_resource.value("C:/foo;C:/bar;C:/baz")
-      @new_resource.delim(";")
-      @current_resource.value("C:/foo/bar;C:/bar;C:/baz")
+      @current_resource.value("C:/bar;C:/baz;C:/foo/bar")
       @provider.modify_env
-      expect(@new_resource.value).to eq("C:/foo;C:/foo/bar;C:/bar;C:/baz")
+      expect(@new_resource.value).to eq("C:/foo;C:/bar;C:/baz;C:/foo/bar")
+    end
+
+    it "should reorder values to keep order which asked" do
+      @new_resource.value("C:/foo;C:/bar;C:/baz")
+      @current_resource.value("C:/foo/bar;C:/baz;C:/bar")
+      @provider.modify_env
+      expect(@new_resource.value).to eq("C:/foo;C:/bar;C:/baz;C:/foo/bar")
     end
   end
 end

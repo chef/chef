@@ -26,15 +26,15 @@ describe Chef::Knife::ClientEdit do
 
   describe 'run' do
     it 'should edit the client' do
-      @knife.should_receive(:edit_object).with(Chef::ApiClient, 'adam')
+      expect(@knife).to receive(:edit_object).with(Chef::ApiClient, 'adam')
       @knife.run
     end
 
     it 'should print usage and exit when a client name is not provided' do
       @knife.name_args = []
-      @knife.should_receive(:show_usage)
-      @knife.ui.should_receive(:fatal)
-      lambda { @knife.run }.should raise_error(SystemExit)
+      expect(@knife).to receive(:show_usage)
+      expect(@knife.ui).to receive(:fatal)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
   end
 end

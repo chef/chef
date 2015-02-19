@@ -126,13 +126,9 @@ class Chef
         # https://github.com/ruby/ruby/commit/588504b20f5cc880ad51827b93e571e32446e5db
         # https://github.com/ruby/ruby/commit/27ed294c7134c0de582007af3c915a635a6506cd
 
-        WIN32OLE.ole_initialize
-
         wmi = WmiLite::Wmi.new
         os_info = wmi.first_of('Win32_OperatingSystem')
         os_version = os_info['version']
-
-        WIN32OLE.ole_uninitialize
 
         # The operating system version is a string in the following form
         # that can be split into components based on the '.' delimiter:

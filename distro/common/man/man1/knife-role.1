@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-ROLE" "1" "Chef 11.16" "" "knife role"
+.TH "KNIFE-ROLE" "1" "Chef 12.0" "" "knife role"
 .SH NAME
 knife-role \- The man page for the knife role subcommand.
 .
@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
 .sp
-A role is a way to define certain patterns and processes that exist across nodes in an organization as belonging to a single job function. Each role consists of zero (or more) attributes and a run list. Each node can have zero (or more) roles assigned to it. When a role is run against a node, the configuration details of that node are compared against the attributes of the role, and then the contents of that role\(aqs run list are applied to the node\(aqs configuration details. When a chef\-client runs, it merges its own attributes and run lists with those contained within each assigned role.
+A role is a way to define certain patterns and processes that exist across nodes in an organization as belonging to a single job function. Each role consists of zero (or more) attributes and a run\-list. Each node can have zero (or more) roles assigned to it. When a role is run against a node, the configuration details of that node are compared against the attributes of the role, and then the contents of that role\(aqs run\-list are applied to the node\(aqs configuration details. When a chef\-client runs, it merges its own attributes and run\-lists with those contained within each assigned role.
 .sp
 The \fBknife role\fP subcommand is used to manage the roles that are associated with one or more nodes on a Chef server\&.
 .SH COMMON OPTIONS

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>chef-server-ctl &mdash; chef-client Man Pages</title>
+    <title>chef-server-ctl (executable) &mdash; chef-client Man Pages</title>
     
     <link rel="stylesheet" href="_static/guide.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -39,8 +39,8 @@
 
           <div class="body">
             
-  <div class="section" id="chef-server-ctl">
-<h1>chef-server-ctl<a class="headerlink" href="#chef-server-ctl" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="chef-server-ctl-executable">
+<h1>chef-server-ctl (executable)<a class="headerlink" href="#chef-server-ctl-executable" title="Permalink to this headline">¶</a></h1>
 <p>The Chef server includes a command-line utility named chef-server-ctl. This command-line tool is used to start and stop individual services, reconfigure the Chef server, run chef-pedant, and then tail Chef server log files.</p>
 <div class="section" id="backup-recover">
 <h2>backup-recover<a class="headerlink" href="#backup-recover" title="Permalink to this headline">¶</a></h2>
@@ -132,11 +132,21 @@
 <div class="section" id="install">
 <h2>install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
 <p>The <tt class="docutils literal"><span class="pre">install</span></tt> subcommand is used to install premium features of the Chef server: Chef management console, Chef analytics, chef-client run reporting, high availability configurations, Chef push jobs, and Chef server replication.</p>
+<p><strong>Syntax</strong></p>
 <p>This subcommand has the following syntax:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl install name_of_premium_feature
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl install name_of_premium_feature <span class="o">(</span>options<span class="o">)</span>
 </pre></div>
 </div>
 <p>where <tt class="docutils literal"><span class="pre">name_of_premium_feature</span></tt> represents the command line value associated with the premium feature:</p>
+<p><strong>Options</strong></p>
+<p>This subcommand has the following options:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">--path</span> <span class="pre">PATH</span></tt></dt>
+<dd>Use to specify the location of a package. This option is not required when packages are downloaded from <a class="reference external" href="https://packagecloud.io/">https://packagecloud.io/</a>.</dd>
+</dl>
+<div class="section" id="use-downloads">
+<h3>Use Downloads<a class="headerlink" href="#use-downloads" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">install</span></tt> subcommand downloads packages from <a class="reference external" href="https://packagecloud.io/">https://packagecloud.io/</a> by default. For systems that are not behind a firewall (and have connectivity to <a class="reference external" href="https://packagecloud.io/">https://packagecloud.io/</a>), these packages can be installed as described below.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="20%" />
@@ -150,12 +160,16 @@
 <tbody valign="top">
 <tr class="row-even"><td>Chef Manage</td>
 <td><p class="first">Use Chef management console to manage data bags, attributes, run-lists, roles, environments, and cookbooks from a web user interface.</p>
-<p>Run:</p>
+<p>(Front end machines only.) Run:</p>
 <div class="highlight-ruby"><div class="highlight"><pre>$ chef-server-ctl install opscode-manage
 </pre></div>
 </div>
+<p>then:</p>
+<div class="highlight-ruby"><div class="highlight"><pre>$ opscode-manage-ctl reconfigure
+</pre></div>
+</div>
 <p>and then:</p>
-<div class="last highlight-ruby"><div class="highlight"><pre>$ opscode-manage-ctl reconfigure
+<div class="last highlight-ruby"><div class="highlight"><pre>$ chef-server-ctl reconfigure
 </pre></div>
 </div>
 </td>
@@ -166,8 +180,12 @@
 <div class="highlight-ruby"><div class="highlight"><pre>$ chef-server-ctl install opscode-push-jobs-server
 </pre></div>
 </div>
+<p>then:</p>
+<div class="highlight-ruby"><div class="highlight"><pre>$ opscode-push-jobs-server-ctl reconfigure
+</pre></div>
+</div>
 <p>and then:</p>
-<div class="last highlight-ruby"><div class="highlight"><pre>$ opscode-push-jobs-server-ctl reconfigure
+<div class="last highlight-ruby"><div class="highlight"><pre>$ chef-server-ctl reconfigure
 </pre></div>
 </div>
 </td>
@@ -190,12 +208,16 @@
 </tr>
 <tr class="row-odd"><td>Reporting</td>
 <td><p class="first">Use Chef reporting to keep track of what happens during every chef-client runs across all of the infrastructure being managed by Chef. Run Chef reporting with Chef management console to view reports from a web user interface.</p>
-<p>Run:</p>
+<p>(Front end machines only.) Run:</p>
 <div class="highlight-ruby"><div class="highlight"><pre>$ chef-server-ctl install opscode-reporting
 </pre></div>
 </div>
+<p>then:</p>
+<div class="highlight-ruby"><div class="highlight"><pre>$ opscode-reporting-ctl reconfigure
+</pre></div>
+</div>
 <p>and then:</p>
-<div class="last highlight-ruby"><div class="highlight"><pre>$ opscode-reporting-ctl reconfigure
+<div class="last highlight-ruby"><div class="highlight"><pre>$ chef-server-ctl reconfigure
 </pre></div>
 </div>
 </td>
@@ -203,27 +225,23 @@
 </tbody>
 </table>
 </div>
+<div class="section" id="use-local-packages">
+<h3>Use Local Packages<a class="headerlink" href="#use-local-packages" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">install</span></tt> subcommand downloads packages from <a class="reference external" href="https://packagecloud.io/">https://packagecloud.io/</a> by default. For systems that are behind a firewall (and do not have connectivity to <a class="reference external" href="https://packagecloud.io/">https://packagecloud.io/</a>), these packages can be installed manually. First download the package that is appropriate for the platform and save it to a local path. Then run the <tt class="docutils literal"><span class="pre">install</span></tt> command using the <tt class="docutils literal"><span class="pre">--path</span></tt> option to specify the location for the package:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl install NAME_OF_PACKAGE --path /path/to/package
+</pre></div>
+</div>
+<p>For example:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl install opscode-manage-1.6.2-1.el6.x86_64 --path /home/vagrant
+</pre></div>
+</div>
+</div>
+</div>
 <div class="section" id="master-recover">
 <h2>master-recover<a class="headerlink" href="#master-recover" title="Permalink to this headline">¶</a></h2>
 <p>The <tt class="docutils literal"><span class="pre">master-recover</span></tt> subcommand is used to force the Chef server to attempt to become the master server. This command is typically run in tandem with the <tt class="docutils literal"><span class="pre">backup-recover</span></tt> subcommand on the back-end peer, unless the back-end peer is no longer available.</p>
 <p>This subcommand has the following syntax:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl master-recover
-</pre></div>
-</div>
-</div>
-<div class="section" id="org-associate">
-<h2>org-associate<a class="headerlink" href="#org-associate" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">org-associate</span></tt> subcommand is used to associate a user to an organization.</p>
-<p><strong>Syntax</strong></p>
-<p>This subcommand has the following syntax:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-associate ORG_NAME USER_NAME
-</pre></div>
-</div>
-<p><strong>Examples</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-associate prod john_smith
-</pre></div>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-associate preprod testmaster
 </pre></div>
 </div>
 </div>
@@ -270,22 +288,6 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="org-disassociate">
-<h2>org-disassociate<a class="headerlink" href="#org-disassociate" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">org-disassociate</span></tt> subcommand is used to disassociate a user from an organization.</p>
-<p><strong>Syntax</strong></p>
-<p>This subcommand has the following syntax:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-disassociate ORG_NAME USER_NAME
-</pre></div>
-</div>
-<p><strong>Examples</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-disassociate prod john_smith
-</pre></div>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-disassociate prod testmaster
-</pre></div>
-</div>
-</div>
 <div class="section" id="org-list">
 <h2>org-list<a class="headerlink" href="#org-list" title="Permalink to this headline">¶</a></h2>
 <p>The <tt class="docutils literal"><span class="pre">org-list</span></tt> subcommand is used to list all of the organizations currently present on the Chef server.</p>
@@ -309,6 +311,47 @@
 <p><strong>Syntax</strong></p>
 <p>This subcommand has the following syntax:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-show ORG_NAME
+</pre></div>
+</div>
+</div>
+<div class="section" id="org-user-add">
+<h2>org-user-add<a class="headerlink" href="#org-user-add" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">org-user-add</span></tt> subcommand is used to add a user to an organization.</p>
+<p><strong>Syntax</strong></p>
+<p>This subcommand has the following syntax:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-user-add ORG_NAME USER_NAME <span class="o">(</span>options<span class="o">)</span>
+</pre></div>
+</div>
+<p><strong>Options</strong></p>
+<p>This subcommand has the following options:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">--admin</span></tt></dt>
+<dd>Use to add the user to the <tt class="docutils literal"><span class="pre">admins</span></tt> group.</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-user-add prod john_smith
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-user-add preprod testmaster
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-user-add dev grantmc --admin
+</pre></div>
+</div>
+</div>
+<div class="section" id="org-user-remove">
+<h2>org-user-remove<a class="headerlink" href="#org-user-remove" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">org-user-remove</span></tt> subcommand is used to remove a user from an organization.</p>
+<p><strong>Syntax</strong></p>
+<p>This subcommand has the following syntax:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-user-remove ORG_NAME USER_NAME
+</pre></div>
+</div>
+<p><strong>Examples</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-user-remove prod john_smith
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-server-ctl org-user-remove prod testmaster
 </pre></div>
 </div>
 </div>

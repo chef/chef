@@ -45,31 +45,31 @@ describe "HTTP SSL Policy" do
       end
 
       it "configures the HTTP client to use SSL when given a URL with the https protocol" do
-        http_client.use_ssl?.should be_true
+        expect(http_client.use_ssl?).to be_truthy
       end
 
       it "sets the OpenSSL verify mode to verify_peer" do
-        http_client.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+        expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
       end
 
       it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
         Chef::Config[:ssl_ca_path] = "/dev/null/nothing_here"
-        lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "should set the CA path if that is set in the configuration" do
         Chef::Config[:ssl_ca_path] = File.join(CHEF_SPEC_DATA, "ssl")
-        http_client.ca_path.should == File.join(CHEF_SPEC_DATA, "ssl")
+        expect(http_client.ca_path).to eq(File.join(CHEF_SPEC_DATA, "ssl"))
       end
 
       it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
         Chef::Config[:ssl_ca_file] = "/dev/null/nothing_here"
-        lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "should set the CA file if that is set in the configuration" do
         Chef::Config[:ssl_ca_file] = CHEF_SPEC_DATA + '/ssl/5e707473.0'
-        http_client.ca_file.should == CHEF_SPEC_DATA + '/ssl/5e707473.0'
+        expect(http_client.ca_file).to eq(CHEF_SPEC_DATA + '/ssl/5e707473.0')
       end
     end
 
@@ -80,7 +80,7 @@ describe "HTTP SSL Policy" do
       end
 
       it "sets the OpenSSL verify mode to :verify_none" do
-        http_client.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
+        expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
       end
     end
 
@@ -90,26 +90,26 @@ describe "HTTP SSL Policy" do
       it "raises ConfigurationError if the certificate file doesn't exist" do
         Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
         Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
-        lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "raises ConfigurationError if the certificate file doesn't exist" do
         Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
         Chef::Config[:ssl_client_key]  = "/dev/null/nothing_here"
-        lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "raises a ConfigurationError if one of :ssl_client_cert and :ssl_client_key is set but not both" do
         Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
         Chef::Config[:ssl_client_key]  = nil
-        lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "configures the HTTP client's cert and private key" do
         Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
         Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
-        http_client.cert.to_s.should == OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.cert')).to_s
-        http_client.key.to_s.should  == IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.key')
+        expect(http_client.cert.to_s).to eq(OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.cert')).to_s)
+        expect(http_client.key.to_s).to  eq(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.key'))
       end
     end
 
@@ -125,7 +125,7 @@ describe "HTTP SSL Policy" do
       end
 
       it "enables verification of self-signed certificates" do
-        http_client.cert_store.verify(self_signed_crt).should be_true
+        expect(http_client.cert_store.verify(self_signed_crt)).to be_truthy
       end
 
       it "enables verification of cert chains" do
@@ -137,7 +137,7 @@ describe "HTTP SSL Policy" do
         # If the machine running the test doesn't have ruby SSL configured correctly,
         # then the root cert also has to be loaded for the test to succeed.
         # The system under test **SHOULD** do both of these things.
-        http_client.cert_store.verify(additional_pem).should be_true
+        expect(http_client.cert_store.verify(additional_pem)).to be_truthy
       end
 
       context "and some certs are duplicates" do
@@ -161,7 +161,7 @@ describe "HTTP SSL Policy" do
       end
 
       it "sets the OpenSSL verify mode to verify_peer" do
-        http_client.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+        expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
       end
     end
 

@@ -44,49 +44,49 @@ shared_examples_for "a platform introspector" do
 
   it "returns a default value when there is no known platform" do
     node = Hash.new
-    platform_introspector.value_for_platform(@platform_hash).should == "default"
+    expect(platform_introspector.value_for_platform(@platform_hash)).to eq("default")
   end
 
   it "returns a default value when there is no known platform family" do
-    platform_introspector.value_for_platform_family(@platform_family_hash).should == "default value"
+    expect(platform_introspector.value_for_platform_family(@platform_family_hash)).to eq("default value")
   end
 
   it "returns a default value when the current platform doesn't match" do
     node.automatic_attrs[:platform] = "not-a-known-platform"
-    platform_introspector.value_for_platform(@platform_hash).should == "default"
+    expect(platform_introspector.value_for_platform(@platform_hash)).to eq("default")
   end
 
   it "returns a default value when current platform_family doesn't match" do
     node.automatic_attrs[:platform_family] = "ultra-derived-linux"
-    platform_introspector.value_for_platform_family(@platform_family_hash).should == "default value"
+    expect(platform_introspector.value_for_platform_family(@platform_family_hash)).to eq("default value")
   end
 
   it "returns a value based on the current platform" do
     node.automatic_attrs[:platform] = "openbsd"
-    platform_introspector.value_for_platform(@platform_hash).should == "openbsd"
+    expect(platform_introspector.value_for_platform(@platform_hash)).to eq("openbsd")
   end
 
   it "returns a value based on the current platform family" do
     node.automatic_attrs[:platform_family] = "debian"
-    platform_introspector.value_for_platform_family(@platform_family_hash).should == "debian value"
+    expect(platform_introspector.value_for_platform_family(@platform_family_hash)).to eq("debian value")
   end
 
   it "returns a version-specific value based on the current platform" do
     node.automatic_attrs[:platform] = "openbsd"
     node.automatic_attrs[:platform_version] = "1.2.3"
-    platform_introspector.value_for_platform(@platform_hash).should == "openbsd-1.2.3"
+    expect(platform_introspector.value_for_platform(@platform_hash)).to eq("openbsd-1.2.3")
   end
 
   it "returns a value based on the current platform if version not found" do
     node.automatic_attrs[:platform] = "openbsd"
     node.automatic_attrs[:platform_version] = "0.0.0"
-    platform_introspector.value_for_platform(@platform_hash).should == "openbsd"
+    expect(platform_introspector.value_for_platform(@platform_hash)).to eq("openbsd")
   end
 
   it 'returns the exact match' do
     node.automatic_attrs[:platform] = 'exact_match'
     node.automatic_attrs[:platform_version] = '1.2.3'
-    platform_introspector.value_for_platform(@platform_hash).should == 'exact'
+    expect(platform_introspector.value_for_platform(@platform_hash)).to eq('exact')
   end
 
   it 'raises RuntimeError' do
@@ -98,20 +98,20 @@ shared_examples_for "a platform introspector" do
   it 'should return the value for that match' do
     node.automatic_attrs[:platform] = 'successful_matches'
     node.automatic_attrs[:platform_version] = '2.9'
-    platform_introspector.value_for_platform(@platform_hash).should == 'matched < 3.0'
+    expect(platform_introspector.value_for_platform(@platform_hash)).to eq('matched < 3.0')
   end
 
   describe "when platform versions is an array" do
     it "returns a version-specific value based on the current platform" do
       node.automatic_attrs[:platform] = "debian"
       node.automatic_attrs[:platform_version] = "6"
-      platform_introspector.value_for_platform(@platform_hash).should == "debian-5/6"
+      expect(platform_introspector.value_for_platform(@platform_hash)).to eq("debian-5/6")
     end
 
     it "returns a value based on the current platform if version not found" do
       node.automatic_attrs[:platform] = "debian"
       node.automatic_attrs[:platform_version] = "0.0.0"
-      platform_introspector.value_for_platform(@platform_hash).should == "debian"
+      expect(platform_introspector.value_for_platform(@platform_hash)).to eq("debian")
     end
   end
 
@@ -119,17 +119,17 @@ shared_examples_for "a platform introspector" do
 
     it "returns true if the node is a provided platform and platforms are provided as symbols" do
       node.automatic_attrs[:platform] = 'ubuntu'
-      platform_introspector.platform?([:redhat, :ubuntu]).should == true
+      expect(platform_introspector.platform?([:redhat, :ubuntu])).to eq(true)
     end
 
     it "returns true if the node is a provided platform and platforms are provided as strings" do
       node.automatic_attrs[:platform] = 'ubuntu'
-      platform_introspector.platform?(["redhat", "ubuntu"]).should == true
+      expect(platform_introspector.platform?(["redhat", "ubuntu"])).to eq(true)
     end
 
     it "returns false if the node is not of the provided platforms" do
       node.automatic_attrs[:platform] = 'ubuntu'
-      platform_introspector.platform?(:splatlinux).should == false
+      expect(platform_introspector.platform?(:splatlinux)).to eq(false)
     end
   end
 
@@ -137,21 +137,21 @@ shared_examples_for "a platform introspector" do
 
     it "returns true if the node is in a provided platform family and families are provided as symbols" do
       node.automatic_attrs[:platform_family] = 'debian'
-      platform_introspector.platform_family?([:rhel, :debian]).should == true
+      expect(platform_introspector.platform_family?([:rhel, :debian])).to eq(true)
     end
 
     it "returns true if the node is a provided platform and platforms are provided as strings" do
       node.automatic_attrs[:platform_family] = 'rhel'
-      platform_introspector.platform_family?(["rhel", "debian"]).should == true
+      expect(platform_introspector.platform_family?(["rhel", "debian"])).to eq(true)
     end
 
     it "returns false if the node is not of the provided platforms" do
       node.automatic_attrs[:platform_family] = 'suse'
-      platform_introspector.platform_family?(:splatlinux).should == false
+      expect(platform_introspector.platform_family?(:splatlinux)).to eq(false)
     end
 
     it "returns false if the node is not of the provided platforms and platform_family is not set" do
-      platform_introspector.platform_family?(:splatlinux).should == false
+      expect(platform_introspector.platform_family?(:splatlinux)).to eq(false)
     end
 
   end
@@ -170,13 +170,13 @@ shared_examples_for "a platform introspector" do
     it "returns the correct default for a given platform" do
       node.automatic_attrs[:platform] = "debian"
       node.automatic_attrs[:platform_version] = '9000'
-      platform_introspector.value_for_platform(@platform_hash).should == [ :restart, :reload, :status ]
+      expect(platform_introspector.value_for_platform(@platform_hash)).to eq([ :restart, :reload, :status ])
     end
 
     it "returns the correct platform+version specific value " do
       node.automatic_attrs[:platform] = "debian"
       node.automatic_attrs[:platform_version] = '4.0'
-      platform_introspector.value_for_platform(@platform_hash).should == [:restart, :reload]
+      expect(platform_introspector.value_for_platform(@platform_hash)).to eq([:restart, :reload])
     end
   end
 

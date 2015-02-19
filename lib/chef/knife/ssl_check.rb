@@ -162,7 +162,7 @@ We are working on documentation for resolving common issues uncovered here.
 server's certificate. By default, the certificate is stored in the following
 location on the host where your chef-server runs:
 
-  /var/opt/chef-server/nginx/ca/SERVER_HOSTNAME.crt
+  /var/opt/opscode/nginx/ca/SERVER_HOSTNAME.crt
 
 Copy that file to your trusted_certs_dir (currently: #{configuration.trusted_certs_dir})
 using SSH/SCP or some other secure method, then re-run this command to confirm
@@ -191,7 +191,7 @@ configure chef to trust that server's certificate.
 By default, the certificate is stored in the following location on the host
 where your chef-server runs:
 
-  /var/opt/chef-server/nginx/ca/SERVER_HOSTNAME.crt
+  /var/opt/opscode/nginx/ca/SERVER_HOSTNAME.crt
 
 Copy that file to your trusted_certs_dir (currently: #{configuration.trusted_certs_dir})
 using SSH/SCP or some other secure method, then re-run this command to confirm

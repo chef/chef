@@ -171,7 +171,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
   describe "uid_used?" do
     it "should return false if not given any valid uid number" do
-      expect(provider.uid_used?(nil)).to be_false
+      expect(provider.uid_used?(nil)).to be_falsey
     end
 
     describe "when called with a user id" do
@@ -180,11 +180,11 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       end
 
       it "should return true for a used uid number" do
-        expect(provider.uid_used?(500)).to be_true
+        expect(provider.uid_used?(500)).to be_truthy
       end
 
       it "should return false for an unused uid number" do
-        expect(provider.uid_used?(501)).to be_false
+        expect(provider.uid_used?(501)).to be_falsey
       end
     end
   end
@@ -400,7 +400,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
       it "should set @user_exists" do
         provider.load_current_resource
-        expect(provider.instance_variable_get(:@user_exists)).to be_false
+        expect(provider.instance_variable_get(:@user_exists)).to be_falsey
       end
 
       it "should set username" do
@@ -422,7 +422,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
         it "collects the user data correctly" do
           provider.load_current_resource
           expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.uid).to eq("501")
           expect(provider.current_resource.gid).to eq("80")
           expect(provider.current_resource.home).to eq("/Users/vagrant")
           expect(provider.current_resource.shell).to eq("/bin/bash")
@@ -434,7 +434,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report false" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_false
+            expect(provider.diverged_password?).to be_falsey
           end
         end
 
@@ -443,7 +443,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_true
+            expect(provider.diverged_password?).to be_truthy
           end
         end
 
@@ -453,7 +453,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report false" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_false
+            expect(provider.diverged_password?).to be_falsey
           end
         end
 
@@ -462,7 +462,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_true
+            expect(provider.diverged_password?).to be_truthy
           end
         end
 
@@ -472,7 +472,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report false" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_false
+            expect(provider.diverged_password?).to be_falsey
           end
         end
       end
@@ -487,7 +487,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
         it "collects the user data correctly" do
           provider.load_current_resource
           expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.uid).to eq("501")
           expect(provider.current_resource.gid).to eq("80")
           expect(provider.current_resource.home).to eq("/Users/vagrant")
           expect(provider.current_resource.shell).to eq("/bin/bash")
@@ -513,7 +513,7 @@ e68d1f9821b26689312366")
         it "collects the user data correctly" do
           provider.load_current_resource
           expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.uid).to eq("501")
           expect(provider.current_resource.gid).to eq("80")
           expect(provider.current_resource.home).to eq("/Users/vagrant")
           expect(provider.current_resource.shell).to eq("/bin/bash")
@@ -525,7 +525,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         describe "when a plain text password is set" do
           it "reports password needs to be updated" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_true
+            expect(provider.diverged_password?).to be_truthy
           end
         end
 
@@ -536,7 +536,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "reports password needs to be updated" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_true
+            expect(provider.diverged_password?).to be_truthy
           end
         end
       end
@@ -551,7 +551,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         it "collects the user data correctly" do
           provider.load_current_resource
           expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.uid).to eq("501")
           expect(provider.current_resource.gid).to eq("80")
           expect(provider.current_resource.home).to eq("/Users/vagrant")
           expect(provider.current_resource.shell).to eq("/bin/bash")
@@ -565,7 +565,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report false" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_false
+            expect(provider.diverged_password?).to be_falsey
           end
         end
 
@@ -574,7 +574,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_true
+            expect(provider.diverged_password?).to be_truthy
           end
         end
 
@@ -585,7 +585,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_true
+            expect(provider.diverged_password?).to be_truthy
           end
         end
 
@@ -596,7 +596,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_true
+            expect(provider.diverged_password?).to be_truthy
           end
         end
 
@@ -607,7 +607,15 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            expect(provider.diverged_password?).to be_true
+            expect(provider.diverged_password?).to be_truthy
+          end
+        end
+
+        describe "when salt isn't found" do
+          it "diverged_password? should report true" do
+            provider.load_current_resource
+            provider.current_resource.salt(nil)
+            expect(provider.diverged_password?).to be_truthy
           end
         end
       end
@@ -616,23 +624,23 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
   describe "salted_sha512_pbkdf2?" do
     it "should return true when the string is a salted_sha512_pbkdf2 hash" do
-      expect(provider.salted_sha512_pbkdf2?(salted_sha512_pbkdf2_password)).to be_true
+      expect(provider.salted_sha512_pbkdf2?(salted_sha512_pbkdf2_password)).to be_truthy
     end
 
     it "should return false otherwise" do
-      expect(provider.salted_sha512_pbkdf2?(salted_sha512_password)).to be_false
-      expect(provider.salted_sha512_pbkdf2?("any other string")).to be_false
+      expect(provider.salted_sha512_pbkdf2?(salted_sha512_password)).to be_falsey
+      expect(provider.salted_sha512_pbkdf2?("any other string")).to be_falsey
     end
   end
 
   describe "salted_sha512?" do
     it "should return true when the string is a salted_sha512_pbkdf2 hash" do
-      expect(provider.salted_sha512_pbkdf2?(salted_sha512_pbkdf2_password)).to be_true
+      expect(provider.salted_sha512_pbkdf2?(salted_sha512_pbkdf2_password)).to be_truthy
     end
 
     it "should return false otherwise" do
-      expect(provider.salted_sha512?(salted_sha512_pbkdf2_password)).to be_false
-      expect(provider.salted_sha512?("any other string")).to be_false
+      expect(provider.salted_sha512?(salted_sha512_pbkdf2_password)).to be_falsey
+      expect(provider.salted_sha512?("any other string")).to be_falsey
     end
   end
 
@@ -649,7 +657,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
           shadow_info = provider.prepare_password_shadow_info
           expect(shadow_info).to have_key("SALTED-SHA512")
           info = shadow_info["SALTED-SHA512"].string.unpack('H*').first
-          expect(provider.salted_sha512?(info)).to be_true
+          expect(provider.salted_sha512?(info)).to be_truthy
         end
       end
 
@@ -660,7 +668,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
           shadow_info = provider.prepare_password_shadow_info
           expect(shadow_info).to have_key("SALTED-SHA512")
           info = shadow_info["SALTED-SHA512"].string.unpack('H*').first
-          expect(provider.salted_sha512?(info)).to be_true
+          expect(provider.salted_sha512?(info)).to be_truthy
           expect(info).to eq(vagrant_sha_512)
         end
       end
@@ -682,7 +690,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
             info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first
-            expect(provider.salted_sha512_pbkdf2?(info)).to be_true
+            expect(provider.salted_sha512_pbkdf2?(info)).to be_truthy
           end
         end
 
@@ -698,7 +706,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
             info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first
-            expect(provider.salted_sha512_pbkdf2?(info)).to be_true
+            expect(provider.salted_sha512_pbkdf2?(info)).to be_truthy
             expect(info).to eq(vagrant_sha_512_pbkdf2)
           end
         end

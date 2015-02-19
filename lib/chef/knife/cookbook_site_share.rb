@@ -29,7 +29,10 @@ class Chef
         require 'chef/cookbook_loader'
         require 'chef/cookbook_uploader'
         require 'chef/cookbook_site_streaming_uploader'
+        require 'mixlib/shellout'
       end
+
+      include Chef::Mixin::ShellOut
 
       banner "knife cookbook site share COOKBOOK [CATEGORY] (options)"
       category "cookbook site"
@@ -70,7 +73,15 @@ class Chef
           begin
             Chef::Log.debug("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
             ui.info("Making tarball #{cookbook_name}.tgz")
-            shell_out!("tar -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
+            tar_cmd = "tar"
+            begin
+              # Unix and Mac only - prefer gnutar
+              if shell_out("which gnutar").exitstatus.equal?(0)
+                tar_cmd = "gnutar"
+              end
+            rescue Errno::ENOENT
+            end
+            shell_out!("#{tar_cmd} -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
           rescue => e
             ui.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
@@ -120,33 +131,33 @@ class Chef
       end
 
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
-         uri = "https://supermarket.getchef.com/api/v1/cookbooks"
+        uri = "https://supermarket.chef.io/api/v1/cookbooks"
 
-         category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
+        category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
 
-         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
-           :tarball => File.open(cookbook_filename),
-           :cookbook => category_string
-         })
+        http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
+          :tarball => File.open(cookbook_filename),
+          :cookbook => category_string
+        })
 
-         res = Chef::JSONCompat.from_json(http_resp.body)
-         if http_resp.code.to_i != 201
-           if res['error_messages']
-             if res['error_messages'][0] =~ /Version already exists/
-               ui.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
-               exit(1)
-             else
-               ui.error "#{res['error_messages'][0]}"
-               exit(1)
-             end
-           else
-             ui.error "Unknown error while sharing cookbook"
-             ui.error "Server response: #{http_resp.body}"
-             exit(1)
-           end
-         end
-         res
-       end
+        res = Chef::JSONCompat.from_json(http_resp.body)
+        if http_resp.code.to_i != 201
+          if res['error_messages']
+            if res['error_messages'][0] =~ /Version already exists/
+              ui.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
+              exit(1)
+            else
+              ui.error "#{res['error_messages'][0]}"
+              exit(1)
+            end
+          else
+            ui.error "Unknown error while sharing cookbook"
+            ui.error "Server response: #{http_resp.body}"
+            exit(1)
+          end
+        end
+        res
+      end
     end
 
   end

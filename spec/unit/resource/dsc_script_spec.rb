@@ -70,6 +70,38 @@ describe Chef::Resource::DscScript do
       expect(dsc_test_resource.configuration_data_script).to eq(configuration_data_script)
     end
 
+    context "when calling imports" do
+      let(:module_name)   { 'FooModule' }
+      let(:module_name_b)   { 'BarModule' }
+      let(:dsc_resources) { ['ResourceA', 'ResourceB'] }
+
+      it "allows an arbitrary number of resources to be set for a module to be set" do
+        dsc_test_resource.imports module_name, *dsc_resources
+        module_imports = dsc_test_resource.imports[module_name]
+        expect(module_imports).to eq(dsc_resources)
+      end
+
+      it "adds * to the imports when no resources are set for a moudle" do
+        dsc_test_resource.imports module_name
+        module_imports = dsc_test_resource.imports[module_name]
+        expect(module_imports).to eq(['*'])
+      end
+
+      it "allows an arbitrary number of modules" do
+        dsc_test_resource.imports module_name
+        dsc_test_resource.imports module_name_b
+        expect(dsc_test_resource.imports).to have_key(module_name)
+        expect(dsc_test_resource.imports).to have_key(module_name_b)
+      end
+
+      it "allows resources to be added for a module" do
+        dsc_test_resource.imports module_name, dsc_resources[0]
+        dsc_test_resource.imports module_name, dsc_resources[1]
+        module_imports = dsc_test_resource.imports[module_name]
+        expect(module_imports).to eq(dsc_resources)
+      end
+    end
+
     it "raises an ArgumentError exception if an attempt is made to set the code attribute when the command attribute is already set" do
       dsc_test_resource.command(configuration_path)
       expect { dsc_test_resource.code(configuration_code) }.to raise_error(ArgumentError)

@@ -24,8 +24,8 @@ class Chef
 
       protected
       EXIT_STATUS_EXCEPTION_HANDLER = "\ntrap [Exception] {write-error -exception ($_.Exception.Message);exit 1}".freeze
-      EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -ne $true) { if ( $LASTEXITCODE -ne 0) {exit $LASTEXITCODE} else { exit 1 }}".freeze
-      EXIT_STATUS_RESET_SCRIPT = "\n$LASTEXITCODE=0".freeze
+      EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -ne $true) { if ( $LASTEXITCODE ) {exit $LASTEXITCODE} else { exit 1 }}".freeze
+      EXIT_STATUS_RESET_SCRIPT = "\n$global:LASTEXITCODE=$null".freeze
 
       # Process exit codes are strange with PowerShell. Unless you
       # explicitly call exit in Powershell, the powershell.exe
@@ -43,7 +43,7 @@ class Chef
                         code.to_s +
                         EXIT_STATUS_NORMALIZATION_SCRIPT )
         convert_boolean_return = @new_resource.convert_boolean_return
-        @code = <<EOH
+        self.code = <<EOH
 new-variable -name interpolatedexitcode -visibility private -value $#{convert_boolean_return}
 new-variable -name chefscriptresult -visibility private
 $chefscriptresult = {
@@ -52,7 +52,7 @@ $chefscriptresult = {
 if ($interpolatedexitcode -and $chefscriptresult.gettype().name -eq 'boolean') { exit [int32](!$chefscriptresult) } else { exit 0 }
 EOH
         Chef::Log.debug("powershell_script provider called with script code:\n\n#{code}\n")
-        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{@code}\n")
+        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
       end
 
       public

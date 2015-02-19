@@ -257,14 +257,22 @@ describe Chef::Provider::Service::Systemd do
         end
       end
 
-      it "should return true if '#{systemctl_path} is-enabled service_name' returns 0" do
-        expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_success)
-        expect(provider.is_enabled?).to be true
-      end
+      describe "is_enabled?" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.service_name(service_name)
+          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+        end
 
-      it "should return false if '#{systemctl_path} is-enabled service_name' returns anything except 0" do
-        expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_failure)
-        expect(provider.is_enabled?).to be false
+        it "should return true if '#{systemctl_path} is-enabled service_name' returns 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_success)
+          expect(provider.is_enabled?).to be true
+        end
+
+        it "should return false if '#{systemctl_path} is-enabled service_name' returns anything except 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_failure)
+          expect(provider.is_enabled?).to be false
+        end
       end
     end
   end

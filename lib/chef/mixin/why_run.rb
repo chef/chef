@@ -48,7 +48,7 @@ class Chef
         # block/proc that implements the action.
         def add_action(descriptions, &block)
           @actions << [descriptions, block]
-          if !Chef::Config[:why_run]
+          if (@resource.respond_to?(:is_guard_interpreter) && @resource.is_guard_interpreter) || !Chef::Config[:why_run]
             block.call
           end
           events.resource_update_applied(@resource, @action, descriptions)

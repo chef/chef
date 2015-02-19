@@ -40,66 +40,66 @@ describe Chef::Application::Knife do
 
   before(:each) do
     # Prevent code from getting loaded on every test invocation.
-    Chef::Knife.stub(:load_commands)
+    allow(Chef::Knife).to receive(:load_commands)
 
     @knife = Chef::Application::Knife.new
-    @knife.stub(:puts)
-    @knife.stub(:trap)
-    Chef::Knife.stub(:list_commands)
+    allow(@knife).to receive(:puts)
+    allow(@knife).to receive(:trap)
+    allow(Chef::Knife).to receive(:list_commands)
   end
 
   it "should exit 1 and print the options if no arguments are given at all" do
     with_argv([]) do
-      lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 1 }
+      expect { @knife.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(1) }
     end
   end
 
   it "should exit 2 if run without a sub command" do
     with_argv("--user", "adam") do
-      Chef::Log.should_receive(:error).with(/you need to pass a sub\-command/i)
-      lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 2 }
+      expect(Chef::Log).to receive(:error).with(/you need to pass a sub\-command/i)
+      expect { @knife.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(2) }
     end
   end
 
   it "should run a sub command with the applications command line option prototype" do
     with_argv(*%w{noop knife command with some args}) do
       knife = double(Chef::Knife)
-      Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
-      @knife.should_receive(:exit).with(0)
+      expect(Chef::Knife).to receive(:run).with(ARGV, @knife.options).and_return(knife)
+      expect(@knife).to receive(:exit).with(0)
       @knife.run
     end
   end
 
   it "should set the colored output to false by default on windows and true otherwise" do
     with_argv(*%w{noop knife command}) do
-      @knife.should_receive(:exit).with(0)
+      expect(@knife).to receive(:exit).with(0)
       @knife.run
     end
     if windows?
-      Chef::Config[:color].should be_false
+      expect(Chef::Config[:color]).to be_falsey
     else
-      Chef::Config[:color].should be_true
+      expect(Chef::Config[:color]).to be_truthy
     end
   end
 
   describe "when given a path to the client key" do
     it "expands a relative path relative to the CWD" do
       relative_path = '.chef/client.pem'
-      Dir.stub(:pwd).and_return(CHEF_SPEC_DATA)
+      allow(Dir).to receive(:pwd).and_return(CHEF_SPEC_DATA)
       with_argv(*%W{noop knife command -k #{relative_path}}) do
-        @knife.should_receive(:exit).with(0)
+        expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:client_key].should == File.join(CHEF_SPEC_DATA, relative_path)
+      expect(Chef::Config[:client_key]).to eq(File.join(CHEF_SPEC_DATA, relative_path))
     end
 
     it "expands a ~/home/path to the correct full path" do
       home_path = '~/.chef/client.pem'
       with_argv(*%W{noop knife command -k #{home_path}}) do
-        @knife.should_receive(:exit).with(0)
+        expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:client_key].should == File.join(ENV['HOME'], '.chef/client.pem').gsub((File::ALT_SEPARATOR || '\\'), File::SEPARATOR)
+      expect(Chef::Config[:client_key]).to eq(File.join(ENV['HOME'], '.chef/client.pem').gsub((File::ALT_SEPARATOR || '\\'), File::SEPARATOR))
     end
 
     it "does not expand a full path" do
@@ -109,10 +109,10 @@ describe Chef::Application::Knife do
         '/etc/chef/client.pem'
       end
       with_argv(*%W{noop knife command -k #{full_path}}) do
-        @knife.should_receive(:exit).with(0)
+        expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:client_key].should == full_path
+      expect(Chef::Config[:client_key]).to eq(full_path)
     end
   end
 
@@ -123,52 +123,52 @@ describe Chef::Application::Knife do
 
     it "should default to no environment" do
       with_argv(*%w{noop knife command}) do
-        @knife.should_receive(:exit).with(0)
+        expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:environment].should == nil
+      expect(Chef::Config[:environment]).to eq(nil)
     end
 
     it "should load the environment from the config file" do
       config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
       with_argv(*%W{noop knife command -c #{config_file}}) do
-        @knife.should_receive(:exit).with(0)
+        expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:environment].should == 'production'
+      expect(Chef::Config[:environment]).to eq('production')
     end
 
     it "should load the environment from the CLI options" do
       with_argv(*%W{noop knife command -E development}) do
-        @knife.should_receive(:exit).with(0)
+        expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:environment].should == 'development'
+      expect(Chef::Config[:environment]).to eq('development')
     end
 
     it "should override the config file environment with the CLI environment" do
       config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
       with_argv(*%W{noop knife command -c #{config_file} -E override}) do
-        @knife.should_receive(:exit).with(0)
+        expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:environment].should == 'override'
+      expect(Chef::Config[:environment]).to eq('override')
     end
 
     it "should override the config file environment with the CLI environment regardless of order" do
       config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
       with_argv(*%W{noop knife command -E override -c #{config_file}}) do
-        @knife.should_receive(:exit).with(0)
+        expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:environment].should == 'override'
+      expect(Chef::Config[:environment]).to eq('override')
     end
 
     it "should run a sub command with the applications command line option prototype" do
       with_argv(*%w{noop knife command with some args}) do
         knife = double(Chef::Knife)
-        Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
-        @knife.should_receive(:exit).with(0)
+        expect(Chef::Knife).to receive(:run).with(ARGV, @knife.options).and_return(knife)
+        expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
     end

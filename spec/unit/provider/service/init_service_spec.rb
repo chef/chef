@@ -64,20 +64,20 @@ PS
     it "should set running to true if the status command returns 0" do
       allow(@provider).to receive(:shell_out).with("/etc/init.d/#{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_true
+      expect(@current_resource.running).to be_truthy
     end
 
     it "should set running to false if the status command returns anything except 0" do
       allow(@status).to receive(:exitstatus).and_return(1)
       allow(@provider).to receive(:shell_out).with("/etc/init.d/#{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_false
+      expect(@current_resource.running).to be_falsey
     end
 
     it "should set running to false if the status command raises" do
       allow(@provider).to receive(:shell_out).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_false
+      expect(@current_resource.running).to be_falsey
     end
   end
 
@@ -139,13 +139,13 @@ aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 RUNNING_PS
       allow(@status).to receive(:stdout).and_return(@stdout)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_true
+      expect(@current_resource.running).to be_truthy
     end
 
     it "should set running to false if the regex doesn't match" do
       allow(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_false
+      expect(@current_resource.running).to be_falsey
     end
 
     it "should raise an exception if ps fails" do

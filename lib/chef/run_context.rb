@@ -50,6 +50,9 @@ class Chef
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
 
+    # The list of audits (control groups) to execute during the audit phase
+    attr_accessor :audits
+
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
     attr_accessor :immediate_notification_collection
@@ -73,6 +76,7 @@ class Chef
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
+      @audits = {}
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
       @definitions = Hash.new
@@ -132,10 +136,10 @@ class Chef
     end
 
     # Evaluates the recipes +recipe_names+. Used by DSL::IncludeRecipe
-    def include_recipe(*recipe_names)
+    def include_recipe(*recipe_names, current_cookbook: nil)
       result_recipes = Array.new
       recipe_names.flatten.each do |recipe_name|
-        if result = load_recipe(recipe_name)
+        if result = load_recipe(recipe_name, current_cookbook: current_cookbook)
           result_recipes << result
         end
       end
@@ -143,10 +147,10 @@ class Chef
     end
 
     # Evaluates the recipe +recipe_name+. Used by DSL::IncludeRecipe
-    def load_recipe(recipe_name)
+    def load_recipe(recipe_name, current_cookbook: nil)
       Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
 
-      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name, current_cookbook: current_cookbook)
 
       if unreachable_cookbook?(cookbook_name) # CHEF-4367
         Chef::Log.warn(<<-ERROR_MESSAGE)
@@ -194,7 +198,7 @@ ERROR_MESSAGE
     end
 
     # An Array of all recipes that have been loaded. This is stored internally
-    # as a Hash, so ordering is not preserved when using ruby 1.8.
+    # as a Hash, so ordering is predictable.
     #
     # Recipe names are given in fully qualified form, e.g., the recipe "nginx"
     # will be given as "nginx::default"
@@ -205,7 +209,7 @@ ERROR_MESSAGE
     end
 
     # An Array of all attributes files that have been loaded. Stored internally
-    # using a Hash, so order is not preserved on ruby 1.8.
+    # using a Hash, so order is predictable.
     #
     # Attribute file names are given in fully qualified form, e.g.,
     # "nginx::default" instead of "nginx".

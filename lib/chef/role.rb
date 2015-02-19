@@ -32,17 +32,20 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
+    attr_accessor :chef_server_rest
+
     # Create a new Chef::Role object.
-    def initialize
+    def initialize(chef_server_rest: nil)
       @name = ''
       @description = ''
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @env_run_lists = {"_default" => Chef::RunList.new}
+      @chef_server_rest = chef_server_rest
     end
 
     def chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest
@@ -102,6 +105,16 @@ class Chef
     end
 
     alias :env_run_list :env_run_lists
+
+    def env_run_lists_add(env_run_lists=nil)
+      if (!env_run_lists.nil?)
+        env_run_lists.each { |k,v| @env_run_lists[k] = Chef::RunList.new(*Array(v))}
+      end
+      @env_run_lists
+    end
+
+    alias :env_run_list_add :env_run_lists_add
+
 
     def default_attributes(arg=nil)
       set_or_return(
@@ -236,8 +249,8 @@ class Chef
       paths = Array(Chef::Config[:role_path])
       paths.each do |path|
         roles_files = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(path), "**", "**"))
-        js_files = roles_files.select { |file| file.match /\/#{name}\.json$/ }
-        rb_files = roles_files.select { |file| file.match /\/#{name}\.rb$/ }
+        js_files = roles_files.select { |file| file.match(/\/#{name}\.json$/) }
+        rb_files = roles_files.select { |file| file.match(/\/#{name}\.rb$/) }
         if js_files.count > 1 or rb_files.count > 1
           raise Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
         end

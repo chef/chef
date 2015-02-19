@@ -18,18 +18,21 @@
 require 'spec_helper'
 
 describe Chef::Application::Client, "reconfigure" do
+  let(:app) do
+    a = described_class.new
+    a.cli_arguments = []
+    a
+  end
+
   before do
-    Kernel.stub(:trap).and_return(:ok)
+    allow(Kernel).to receive(:trap).and_return(:ok)
+    allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
 
     @original_argv = ARGV.dup
     ARGV.clear
 
-    @app = Chef::Application::Client.new
-    @app.stub(:trap)
-    @app.stub(:configure_opt_parser).and_return(true)
-    @app.stub(:configure_chef).and_return(true)
-    @app.stub(:configure_logging).and_return(true)
-    @app.cli_arguments = []
+    allow(app).to receive(:trap)
+    allow(app).to receive(:configure_logging).and_return(true)
     Chef::Config[:interval] = 10
 
     Chef::Config[:once] = false
@@ -37,6 +40,13 @@ describe Chef::Application::Client, "reconfigure" do
 
   after do
     ARGV.replace(@original_argv)
+  end
+
+  describe 'parse cli_arguments' do
+    it 'should call set_specific_recipes' do
+      expect(app).to receive(:set_specific_recipes).and_return(true)
+      app.reconfigure
+    end
   end
 
   describe "when configured to not fork the client process" do
@@ -54,13 +64,13 @@ describe Chef::Application::Client, "reconfigure" do
       end
 
       it "should terminate with message" do
-        Chef::Application.should_receive(:fatal!).with(
+        expect(Chef::Application).to receive(:fatal!).with(
 "Unforked chef-client interval runs are disabled in Chef 12.
 Configuration settings:
   interval  = 600 seconds
 Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
         )
-        @app.reconfigure
+        app.reconfigure
       end
     end
 
@@ -72,7 +82,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
       it "should not terminate" do
         expect(Chef::Application).not_to receive(:fatal!)
-        @app.reconfigure
+        app.reconfigure
       end
     end
 
@@ -83,8 +93,8 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       end
 
       it "should reconfigure chef-client" do
-        @app.reconfigure
-        Chef::Config[:interval].should be_nil
+        app.reconfigure
+        expect(Chef::Config[:interval]).to be_nil
       end
     end
   end
@@ -96,8 +106,8 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
 
     it "should set the interval to 1800" do
-      @app.reconfigure
-      Chef::Config.interval.should == 1800
+      app.reconfigure
+      expect(Chef::Config.interval).to eq(1800)
     end
   end
 
@@ -110,13 +120,13 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
 
     it "ignores the splay" do
-      @app.reconfigure
-      Chef::Config.splay.should be_nil
+      app.reconfigure
+      expect(Chef::Config.splay).to be_nil
     end
 
     it "forces the interval to nil" do
-      @app.reconfigure
-      Chef::Config.interval.should be_nil
+      app.reconfigure
+      expect(Chef::Config.interval).to be_nil
     end
 
   end
@@ -128,29 +138,117 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     let(:json_source) { "https://foo.com/foo.json" }
 
     before do
+      allow(app).to receive(:configure_chef).and_return(true)
       Chef::Config[:json_attribs] = json_source
-      Chef::ConfigFetcher.should_receive(:new).with(json_source).
+      expect(Chef::ConfigFetcher).to receive(:new).with(json_source).
         and_return(config_fetcher)
     end
 
     it "reads the JSON attributes from the specified source" do
-      @app.reconfigure
-      @app.chef_client_json.should == json_attribs
+      app.reconfigure
+      expect(app.chef_client_json).to eq(json_attribs)
+    end
+  end
+
+  describe "audit mode" do
+    shared_examples "experimental feature" do
+      before do
+        allow(Chef::Log).to receive(:warn)
+      end
+
+      it "emits a warning that audit mode is an experimental feature" do
+        expect(Chef::Log).to receive(:warn).with(/Audit mode is an experimental feature/)
+        app.reconfigure
+      end
+    end
+
+    shared_examples "unrecognized setting" do
+      it "fatals with a message including the incorrect setting" do
+        expect(Chef::Application).to receive(:fatal!).with(/Unrecognized setting #{mode} for audit mode/)
+        app.reconfigure
+      end
+    end
+
+    shared_context "set via config file" do
+      before do
+        Chef::Config[:audit_mode] = mode
+      end
+    end
+
+    shared_context "set via command line" do
+      before do
+        ARGV.replace(["--audit-mode", mode])
+      end
+    end
+
+    describe "enabled via config file" do
+      include_context "set via config file" do
+        let(:mode) { :enabled }
+        include_examples "experimental feature"
+      end
+    end
+
+    describe "enabled via command line" do
+      include_context "set via command line" do
+        let(:mode) { "enabled" }
+        include_examples "experimental feature"
+      end
+    end
+
+    describe "audit_only via config file" do
+      include_context "set via config file" do
+        let(:mode) { :audit_only }
+        include_examples "experimental feature"
+      end
+    end
+
+    describe "audit-only via command line" do
+      include_context "set via command line" do
+        let(:mode) { "audit-only" }
+        include_examples "experimental feature"
+      end
+    end
+
+    describe "unrecognized setting via config file" do
+      include_context "set via config file" do
+        let(:mode) { :derp }
+        include_examples "unrecognized setting"
+      end
+    end
+
+    describe "unrecognized setting via command line" do
+      include_context "set via command line" do
+        let(:mode) { "derp" }
+        include_examples "unrecognized setting"
+      end
+    end
+  end
+
+  describe "when both the pidfile and lockfile opts are set to the same value" do
+
+    before do
+      Chef::Config[:pid_file] = "/path/to/file"
+      Chef::Config[:lockfile] = "/path/to/file"
+    end
+
+    it "should throw an exception" do
+      expect { @app.reconfigure }.to raise_error
     end
   end
 end
+
 
 describe Chef::Application::Client, "setup_application" do
   before do
     @app = Chef::Application::Client.new
     # this is all stuff the reconfigure method needs
-    @app.stub(:configure_opt_parser).and_return(true)
-    @app.stub(:configure_chef).and_return(true)
-    @app.stub(:configure_logging).and_return(true)
+    allow(@app).to receive(:configure_opt_parser).and_return(true)
+    allow(@app).to receive(:configure_chef).and_return(true)
+    allow(@app).to receive(:configure_logging).and_return(true)
   end
 
   it "should change privileges" do
-    Chef::Daemon.should_receive(:change_privilege).and_return(true)
+    expect(Chef::Daemon).to receive(:change_privilege).and_return(true)
     @app.setup_application
   end
   after do
@@ -159,11 +257,13 @@ describe Chef::Application::Client, "setup_application" do
 end
 
 describe Chef::Application::Client, "configure_chef" do
+  let(:app) { Chef::Application::Client.new }
+
   before do
     @original_argv = ARGV.dup
     ARGV.clear
-    @app = Chef::Application::Client.new
-    @app.configure_chef
+    allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
+    app.configure_chef
   end
 
   after do
@@ -172,9 +272,9 @@ describe Chef::Application::Client, "configure_chef" do
 
   it "should set the colored output to false by default on windows and true otherwise" do
     if windows?
-      Chef::Config[:color].should be_false
+      expect(Chef::Config[:color]).to be_falsey
     else
-      Chef::Config[:color].should be_true
+      expect(Chef::Config[:color]).to be_truthy
     end
   end
 end
@@ -190,8 +290,8 @@ describe Chef::Application::Client, "run_application", :unix_only do
 
     @pipe = IO.pipe
     @client = Chef::Client.new
-    Chef::Client.stub(:new).and_return(@client)
-    @client.stub(:run) do
+    allow(Chef::Client).to receive(:new).and_return(@client)
+    allow(@client).to receive(:run) do
       @pipe[1].puts 'started'
       sleep 1
       @pipe[1].puts 'finished'
@@ -202,7 +302,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
     context "when converging in forked process" do
       before do
         Chef::Config[:daemonize] = true
-        Chef::Daemon.stub(:daemonize).and_return(true)
+        allow(Chef::Daemon).to receive(:daemonize).and_return(true)
       end
 
       it "should exit hard with exitstatus 3" do
@@ -211,19 +311,19 @@ describe Chef::Application::Client, "run_application", :unix_only do
         end
         Process.kill("TERM", pid)
         _pid, result = Process.waitpid2(pid)
-        result.exitstatus.should == 3
+        expect(result.exitstatus).to eq(3)
       end
 
       it "should allow child to finish converging" do
         pid = fork do
           @app.run_application
         end
-        @pipe[0].gets.should == "started\n"
+        expect(@pipe[0].gets).to eq("started\n")
         Process.kill("TERM", pid)
         Process.wait
         sleep 1 # Make sure we give the converging child process enough time to finish
-        IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
-        @pipe[0].gets.should == "finished\n"
+        expect(IO.select([@pipe[0]], nil, nil, 0)).not_to be_nil
+        expect(@pipe[0].gets).to eq("finished\n")
       end
     end
 
@@ -237,12 +337,12 @@ describe Chef::Application::Client, "run_application", :unix_only do
         pid = fork do
           @app.run_application
         end
-        @pipe[0].gets.should == "started\n"
+        expect(@pipe[0].gets).to eq("started\n")
         Process.kill("TERM", pid)
         _pid, result = Process.waitpid2(pid)
-        result.exitstatus.should == 0
-        IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
-        @pipe[0].gets.should == "finished\n"
+        expect(result.exitstatus).to eq(0)
+        expect(IO.select([@pipe[0]], nil, nil, 0)).not_to be_nil
+        expect(@pipe[0].gets).to eq("finished\n")
       end
 
       it "should exit hard when sent before converge" do
@@ -252,7 +352,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
         end
         Process.kill("TERM", pid)
         _pid, result = Process.waitpid2(pid)
-        result.exitstatus.should == 3
+        expect(result.exitstatus).to eq(3)
       end
     end
   end
@@ -268,7 +368,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
       # Chef::Log.init($stderr)
       # Chef::Log.level = :debug
 
-      @app.stub(:run_chef_client) do
+      allow(@app).to receive(:run_chef_client) do
 
         run_count += 1
         if run_count > 3
@@ -290,7 +390,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
       # We have to do it this way because the main loop of
       # Chef::Application::Client swallows most exceptions, and we need to be
       # able to expose our expectation failures to the parent process in the test.
-      @app.stub(:interval_sleep) do |arg|
+      allow(@app).to receive(:interval_sleep) do |arg|
         number_of_sleep_calls += 1
         if number_of_sleep_calls > 1
           exit 127
@@ -299,12 +399,12 @@ describe Chef::Application::Client, "run_application", :unix_only do
     end
 
     it "shouldn't sleep when sent USR1" do
-      @app.stub(:interval_sleep).with(0).and_call_original
+      allow(@app).to receive(:interval_sleep).with(0).and_call_original
       pid = fork do
         @app.run_application
       end
       _pid, result = Process.waitpid2(pid)
-      result.exitstatus.should == 0
+      expect(result.exitstatus).to eq(0)
     end
   end
 end

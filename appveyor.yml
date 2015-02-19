@@ -1,4 +1,4 @@
-version: "12-stable-{build}"
+version: "master-{build}"
 
 os: Windows Server 2012
 platform:
@@ -29,4 +29,5 @@ build_script:
   - bundle install
 
 test_script:
+  - SET SPEC_OPTS=--format progress
   - bundle exec rake spec

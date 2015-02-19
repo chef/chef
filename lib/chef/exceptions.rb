@@ -45,6 +45,7 @@ class Chef
     class FileNotFound < RuntimeError; end
     class Package < RuntimeError; end
     class Service < RuntimeError; end
+    class Script < RuntimeError; end
     class Route < RuntimeError; end
     class SearchIndex < RuntimeError; end
     class Override < RuntimeError; end
@@ -89,6 +90,7 @@ class Chef
     class ConflictingMembersInGroup < ArgumentError; end
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
+    class VerificationNotFound < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
     class NoSuchResourceType < NameError
@@ -123,6 +125,7 @@ class Chef
     class DuplicateDataBagItem < RuntimeError; end
 
     class PowershellCmdletException < RuntimeError; end
+    class LCMParser < RuntimeError; end
 
     class CannotDetermineHomebrewOwner < Package; end
 
@@ -209,6 +212,12 @@ class Chef
     class ChildConvergeError < RuntimeError; end
 
     class NoProviderAvailable < RuntimeError; end
+
+    class DeprecatedFeatureError < RuntimeError;
+      def initalize(message)
+        super("#{message} (raising error due to treat_deprecation_warnings_as_errors being set)")
+      end
+    end
 
     class MissingRole < RuntimeError
       NULL = Object.new
@@ -385,6 +394,52 @@ class Chef
     class AmbiguousProviderResolution < RuntimeError
       def initialize(resource, classes)
         super "Found more than one provider for #{resource.resource_name} resource: #{classes}"
+      end
+    end
+
+    class AuditControlGroupDuplicate < RuntimeError
+      def initialize(name)
+        super "Audit control group with name '#{name}' has already been defined"
+      end
+    end
+    class AuditNameMissing < RuntimeError; end
+    class NoAuditsProvided < RuntimeError
+      def initialize
+        super "You must provide a block with audits"
+      end
+    end
+    class AuditsFailed < RuntimeError
+      def initialize(num_failed, num_total)
+        super "Audit phase found failures - #{num_failed}/#{num_total} audits failed"
+      end
+    end
+
+    # If a converge or audit fails, we want to wrap the output from those errors into 1 error so we can
+    # see both issues in the output.  It is possible that nil will be provided.  You must call `fill_backtrace`
+    # to correctly populate the backtrace with the wrapped backtraces.
+    class RunFailedWrappingError < RuntimeError
+      attr_reader :wrapped_errors
+      def initialize(*errors)
+        errors = errors.select {|e| !e.nil?}
+        output = "Found #{errors.size} errors, they are stored in the backtrace"
+        @wrapped_errors = errors
+        super output
+      end
+
+      def fill_backtrace
+        backtrace = []
+        wrapped_errors.each_with_index do |e,i|
+          backtrace << "#{i+1}) #{e.class} -  #{e.message}"
+          backtrace += e.backtrace if e.backtrace
+          backtrace << ""
+        end
+        set_backtrace(backtrace)
+      end
+    end
+
+    class PIDFileLockfileMatch < RuntimeError
+      def initialize
+        super "PID file and lockfile are not permitted to match. Specify a different location with --pid or --lockfile"
       end
     end
   end

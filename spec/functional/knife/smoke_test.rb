@@ -29,6 +29,6 @@ describe "knife smoke tests" do
     knife_cmd = Mixlib::ShellOut.new("#{knife_path} -v")
     knife_cmd.run_command
     knife_cmd.error!
-    knife_cmd.stdout.should include(Chef::VERSION)
+    expect(knife_cmd.stdout).to include(Chef::VERSION)
   end
 end

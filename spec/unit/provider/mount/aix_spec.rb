@@ -84,7 +84,7 @@ ENABLED
       stub_mounted_enabled(@provider, @mounted_output, "")
       @provider.load_current_resource
 
-      expect(@provider.current_resource.mounted).to be_true
+      expect(@provider.current_resource.mounted).to be_truthy
     end
 
     it "should set current_resource.mounted to false if device is not mounted" do
@@ -92,7 +92,7 @@ ENABLED
 
       @provider.load_current_resource
 
-      expect(@provider.current_resource.mounted).to be_false
+      expect(@provider.current_resource.mounted).to be_falsey
     end
 
     it "should set current_resource.mounted to false if the mount point is used for another device" do
@@ -100,7 +100,7 @@ ENABLED
 
       @provider.load_current_resource
 
-      expect(@provider.current_resource.mounted).to be_false
+      expect(@provider.current_resource.mounted).to be_falsey
     end
   end
 
@@ -110,8 +110,8 @@ ENABLED
 
     @provider.load_current_resource
 
-    expect(@provider.current_resource.enabled).to be_true
-    expect(@provider.current_resource.mounted).to be_true
+    expect(@provider.current_resource.enabled).to be_truthy
+    expect(@provider.current_resource.mounted).to be_truthy
     expect(@provider.current_resource.mount_point).to eql(@new_resource.mount_point)
     expect(@provider.current_resource.fstype).to eql("jfs2")
     expect(@provider.current_resource.options).to eql(['rw'])

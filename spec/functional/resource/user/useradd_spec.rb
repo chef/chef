@@ -70,9 +70,9 @@ describe Chef::Provider::User::Useradd, metadata do
 
   def password_should_be_set
     if ohai[:platform] == "aix"
-      pw_entry.passwd.should == "!"
+      expect(pw_entry.passwd).to eq("!")
     else
-      pw_entry.passwd.should == "x"
+      expect(pw_entry.passwd).to eq("x")
     end
   end
 
@@ -82,12 +82,25 @@ describe Chef::Provider::User::Useradd, metadata do
   end
 
   after do
-    begin
-      pw_entry # will raise if the user doesn't exist
-      shell_out!("userdel", "-r", username, :returns => [0,12])
-    rescue UserNotFound
-      # nothing to remove
+    max_retries = 3
+    while max_retries > 0
+      begin
+        pw_entry # will raise if the user doesn't exist
+        status = shell_out!("userdel", "-r", username, :returns => [0,8,12])
+
+        # Error code 8 during userdel indicates that the user is logged in.
+        # This occurs randomly because the accounts daemon holds a lock due to which userdel fails.
+        # The work around is to retry userdel for 3 times.
+        break if status.exitstatus != 8
+
+        sleep 1
+        max_retries = max_retries -1
+      rescue UserNotFound
+        break
+      end
     end
+
+    status.error! if max_retries == 0
   end
 
   let(:node) do
@@ -145,12 +158,12 @@ describe Chef::Provider::User::Useradd, metadata do
           pending(reason)
         end
         user_resource.run_action(:create)
-        user_resource.should be_updated_by_last_action
+        expect(user_resource).to be_updated_by_last_action
       end
 
 
       it "ensures the user exists" do
-        pw_entry.name.should == username
+        expect(pw_entry.name).to eq(username)
       end
 
       #  On Debian, the only constraints are that usernames must neither start
@@ -171,7 +184,7 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:username) { "t'bilisi" }
 
         it "ensures the user exists" do
-          pw_entry.name.should == username
+          expect(pw_entry.name).to eq(username)
         end
       end
 
@@ -181,7 +194,7 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:uid) { 1999 }
 
         it "ensures the user has the given uid" do
-          pw_entry.uid.should == "1999"
+          expect(pw_entry.uid).to eq("1999")
         end
       end
 
@@ -189,14 +202,14 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:comment) { "hello this is dog" }
 
         it "ensures the comment is set" do
-          pw_entry.gecos.should == "hello this is dog"
+          expect(pw_entry.gecos).to eq("hello this is dog")
         end
 
         context "in standard gecos format" do
           let(:comment) { "Bobo T. Clown,some building,555-555-5555,@boboclown" }
 
           it "ensures the comment is set" do
-            pw_entry.gecos.should == comment
+            expect(pw_entry.gecos).to eq(comment)
           end
         end
 
@@ -206,7 +219,7 @@ describe Chef::Provider::User::Useradd, metadata do
           it "ensures the comment is set" do
             actual = pw_entry.gecos
             actual.force_encoding(Encoding::UTF_8) if "".respond_to?(:force_encoding)
-            actual.should == comment
+            expect(actual).to eq(comment)
           end
         end
 
@@ -214,7 +227,7 @@ describe Chef::Provider::User::Useradd, metadata do
           let(:comment) { "don't go" }
 
           it "ensures the comment is set" do
-            pw_entry.gecos.should == comment
+            expect(pw_entry.gecos).to eq(comment)
           end
         end
       end
@@ -223,17 +236,17 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:home) { "/home/#{username}" }
 
         it "ensures the user's home is set to the given path" do
-          pw_entry.home.should == "/home/#{username}"
+          expect(pw_entry.home).to eq("/home/#{username}")
         end
 
         if %w{rhel fedora}.include?(OHAI_SYSTEM["platform_family"])
           # Inconsistent behavior. See: CHEF-2205
           it "creates the home dir when not explicitly asked to on RHEL (XXX)" do
-            File.should exist("/home/#{username}")
+            expect(File).to exist("/home/#{username}")
           end
         else
           it "does not create the home dir without `manage_home'" do
-            File.should_not exist("/home/#{username}")
+            expect(File).not_to exist("/home/#{username}")
           end
         end
 
@@ -241,7 +254,7 @@ describe Chef::Provider::User::Useradd, metadata do
           let(:manage_home) { true }
 
           it "ensures the user's home directory exists" do
-            File.should exist("/home/#{username}")
+            expect(File).to exist("/home/#{username}")
           end
         end
       end
@@ -259,7 +272,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
         it "sets the user's shadow password" do
           password_should_be_set
-          etc_shadow.should include(expected_shadow)
+          expect(etc_shadow).to include(expected_shadow)
         end
       end
 
@@ -284,7 +297,7 @@ describe Chef::Provider::User::Useradd, metadata do
         end
 
         it "ensures the user has the properties of a system user" do
-          pw_entry.uid.to_i.should be < uid_min.to_i
+          expect(pw_entry.uid.to_i).to be < uid_min.to_i
         end
       end
     end # when the user does not exist beforehand
@@ -318,9 +331,9 @@ describe Chef::Provider::User::Useradd, metadata do
           pending(reason)
         end
         existing_user.run_action(:create)
-        existing_user.should be_updated_by_last_action
+        expect(existing_user).to be_updated_by_last_action
         user_resource.run_action(:create)
-        user_resource.updated_by_last_action?.should == expect_updated?
+        expect(user_resource.updated_by_last_action?).to eq(expect_updated?)
       end
 
       context "and all properties are in the desired state" do
@@ -350,7 +363,7 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:expect_updated?) { false }
 
         it "does not update the user" do
-          user_resource.should_not be_updated
+          expect(user_resource).not_to be_updated
         end
       end
 
@@ -359,7 +372,7 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:existing_uid) { 1998 }
 
         it "ensures the uid is set to the desired value" do
-          pw_entry.uid.should == "1999"
+          expect(pw_entry.uid).to eq("1999")
         end
       end
 
@@ -368,7 +381,7 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:existing_comment) { "woof" }
 
         it "ensures the comment field is set to the desired value" do
-          pw_entry.gecos.should == "hello this is dog"
+          expect(pw_entry.gecos).to eq("hello this is dog")
         end
       end
 
@@ -376,15 +389,15 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:existing_home) { "/home/foo" }
         let(:home) { "/home/bar" }
         it "ensures the home directory is set to the desired value" do
-          pw_entry.home.should == "/home/bar"
+          expect(pw_entry.home).to eq("/home/bar")
         end
 
         context "and manage_home is enabled" do
           let(:existing_manage_home) { true }
           let(:manage_home) { true }
           it "moves the home directory to the new location" do
-            File.should_not exist("/home/foo")
-            File.should exist("/home/bar")
+            expect(File).not_to exist("/home/foo")
+            expect(File).to exist("/home/bar")
           end
         end
 
@@ -396,19 +409,19 @@ describe Chef::Provider::User::Useradd, metadata do
             # Inconsistent behavior. See: CHEF-2205
             it "created the home dir b/c of CHEF-2205 so it still exists" do
               # This behavior seems contrary to expectation and non-convergent.
-              File.should_not exist("/home/foo")
-              File.should exist("/home/bar")
+              expect(File).not_to exist("/home/foo")
+              expect(File).to exist("/home/bar")
             end
           elsif ohai[:platform] == "aix"
             it "creates the home dir in the desired location" do
-              File.should_not exist("/home/foo")
-              File.should exist("/home/bar")
+              expect(File).not_to exist("/home/foo")
+              expect(File).to exist("/home/bar")
             end
           else
             it "does not create the home dir in the desired location (XXX)" do
               # This behavior seems contrary to expectation and non-convergent.
-              File.should_not exist("/home/foo")
-              File.should_not exist("/home/bar")
+              expect(File).not_to exist("/home/foo")
+              expect(File).not_to exist("/home/bar")
             end
           end
         end
@@ -419,8 +432,8 @@ describe Chef::Provider::User::Useradd, metadata do
 
           it "leaves the old home directory around (XXX)" do
             # Would it be better to remove the old home?
-            File.should exist("/home/foo")
-            File.should_not exist("/home/bar")
+            expect(File).to exist("/home/foo")
+            expect(File).not_to exist("/home/bar")
           end
         end
       end
@@ -439,7 +452,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
         it "ensures the password is set" do
           password_should_be_set
-          etc_shadow.should include(expected_shadow)
+          expect(etc_shadow).to include(expected_shadow)
         end
 
       end
@@ -468,7 +481,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
         it "ensures the password is set to the desired value" do
           password_should_be_set
-          etc_shadow.should include(expected_shadow)
+          expect(etc_shadow).to include(expected_shadow)
         end
       end
 
@@ -514,18 +527,18 @@ describe Chef::Provider::User::Useradd, metadata do
     def user_account_should_be_locked
       case ohai[:platform]
       when "aix"
-        aix_user_lock_status.should == "true"
+        expect(aix_user_lock_status).to eq("true")
       else
-        shadow_password.should include("!")
+        expect(shadow_password).to include("!")
       end
     end
 
     def user_account_should_be_unlocked
       case ohai[:platform]
       when "aix"
-        aix_user_lock_status.should == "false"
+        expect(aix_user_lock_status).to eq("false")
       else
-        shadow_password.should_not include("!")
+        expect(shadow_password).not_to include("!")
       end
     end
 
@@ -596,7 +609,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
         let(:user_locked_context?) { true }
         it "does not update the user" do
-          user_resource.should_not be_updated_by_last_action
+          expect(user_resource).not_to be_updated_by_last_action
         end
       end
     end
@@ -628,8 +641,8 @@ describe Chef::Provider::User::Useradd, metadata do
         if %w[suse opensuse].include?(OHAI_SYSTEM["platform_family"])
           # suse gets this right:
           it "errors out trying to unlock the user" do
-            @error.should be_a(Mixlib::ShellOut::ShellCommandFailed)
-            @error.message.should include("Cannot unlock the password")
+            expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
+            expect(@error.message).to include("Cannot unlock the password")
           end
         else
 
@@ -644,13 +657,13 @@ describe Chef::Provider::User::Useradd, metadata do
             # You should set a password with usermod -p to unlock this user's password.
             # DEBUG: ---- End output of usermod -U chef-functional-test ----
             # DEBUG: Ran usermod -U chef-functional-test returned 0
-            @error.should be_nil
+            expect(@error).to be_nil
             if ohai[:platform] == "aix"
-              pw_entry.passwd.should == '*'
+              expect(pw_entry.passwd).to eq('*')
               user_account_should_be_unlocked
             else
-              pw_entry.passwd.should == 'x'
-              shadow_password.should include("!")
+              expect(pw_entry.passwd).to eq('x')
+              expect(shadow_password).to include("!")
             end
           end
         end
@@ -668,7 +681,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
         context "and the user is not locked" do
           it "does not update the user" do
-            user_resource.should_not be_updated_by_last_action
+            expect(user_resource).not_to be_updated_by_last_action
           end
         end
 

@@ -33,43 +33,43 @@ describe Chef::CookbookVersion do
   end
 
   it "should have a name" do
-    @cookbook.name.should == :openldap
+    expect(@cookbook.name).to eq(:openldap)
   end
 
   it "should allow you to set the list of attribute files and create the mapping from short names to paths" do
     @cookbook.attribute_filenames = [ "attributes/one.rb", "attributes/two.rb" ]
-    @cookbook.attribute_filenames.should == [ "attributes/one.rb", "attributes/two.rb" ]
-    @cookbook.attribute_filenames_by_short_filename.keys.sort.should eql(["one", "two"])
-    @cookbook.attribute_filenames_by_short_filename["one"].should == "attributes/one.rb"
-    @cookbook.attribute_filenames_by_short_filename["two"].should == "attributes/two.rb"
+    expect(@cookbook.attribute_filenames).to eq([ "attributes/one.rb", "attributes/two.rb" ])
+    expect(@cookbook.attribute_filenames_by_short_filename.keys.sort).to eql(["one", "two"])
+    expect(@cookbook.attribute_filenames_by_short_filename["one"]).to eq("attributes/one.rb")
+    expect(@cookbook.attribute_filenames_by_short_filename["two"]).to eq("attributes/two.rb")
   end
 
   it "should allow you to set the list of recipe files and create the mapping of recipe short name to filename" do
     @cookbook.recipe_filenames = [ "recipes/one.rb", "recipes/two.rb" ]
-    @cookbook.recipe_filenames.should == [ "recipes/one.rb", "recipes/two.rb" ]
-    @cookbook.recipe_filenames_by_name.keys.sort.should eql(["one", "two"])
-    @cookbook.recipe_filenames_by_name["one"].should == "recipes/one.rb"
-    @cookbook.recipe_filenames_by_name["two"].should == "recipes/two.rb"
+    expect(@cookbook.recipe_filenames).to eq([ "recipes/one.rb", "recipes/two.rb" ])
+    expect(@cookbook.recipe_filenames_by_name.keys.sort).to eql(["one", "two"])
+    expect(@cookbook.recipe_filenames_by_name["one"]).to eq("recipes/one.rb")
+    expect(@cookbook.recipe_filenames_by_name["two"]).to eq("recipes/two.rb")
   end
 
   it "should generate a list of recipes by fully-qualified name" do
     @cookbook.recipe_filenames = [ "recipes/one.rb", "/recipes/two.rb", "three.rb" ]
-    @cookbook.fully_qualified_recipe_names.include?("openldap::one").should == true
-    @cookbook.fully_qualified_recipe_names.include?("openldap::two").should == true
-    @cookbook.fully_qualified_recipe_names.include?("openldap::three").should == true
+    expect(@cookbook.fully_qualified_recipe_names.include?("openldap::one")).to eq(true)
+    expect(@cookbook.fully_qualified_recipe_names.include?("openldap::two")).to eq(true)
+    expect(@cookbook.fully_qualified_recipe_names.include?("openldap::three")).to eq(true)
   end
 
   it "should find a preferred file" do
-    pending
+    skip
   end
 
   it "should not return an unchanged preferred file" do
     pending
-    @cookbook.preferred_filename(@node, :files, 'a-filename', 'the-checksum').should be_nil
+    expect(@cookbook.preferred_filename(@node, :files, 'a-filename', 'the-checksum')).to be_nil
   end
 
   it "should raise an ArgumentException if you try to load a bad recipe name" do
-    lambda { @cookbook.load_recipe("doesnt_exist", @node) }.should raise_error(ArgumentError)
+    expect { @cookbook.load_recipe("doesnt_exist", @node) }.to raise_error(ArgumentError)
   end
 
 end

@@ -30,26 +30,24 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
 
-  s.add_dependency "chef-zero", "~> 3.2"
+  s.add_dependency "chef-zero", "~> 4.0"
   s.add_dependency "pry", "~> 0.9"
 
   s.add_dependency 'plist', '~> 3.1.0'
+
+  # Audit mode requires these, so they are non-developmental dependencies now
+  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_dependency gem, "~> 3.2" }
+  s.add_dependency "rspec_junit_formatter", "~> 0.2.0"
+  s.add_dependency "serverspec", "~> 2.7"
+  s.add_dependency "specinfra", "~> 2.10"
 
   s.add_development_dependency "rack"
 
   # Rake 10.2 drops Ruby 1.8 support
   s.add_development_dependency "rake", "~> 10.1.0"
 
-  # rspec_junit_formatter 0.2.0 drops ruby 1.8.7 support
-  s.add_development_dependency "rspec_junit_formatter", "~> 0.1.0"
-
-  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.14.0" }
-
   s.bindir       = "bin"
-  # chef-service-manager is a windows only executable.
-  # However gemspec doesn't give us a way to have this executable only
-  # on windows. So we're including this in all platforms.
-  s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply chef-service-manager chef-windows-service )
+  s.executables  = %w( chef-client chef-solo knife chef-shell chef-apply )
 
   s.require_path = 'lib'
   s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }

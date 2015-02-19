@@ -31,18 +31,18 @@ describe 'knife serve', :workstation do
       exception = nil
       t = Thread.new do
         begin
-          knife('serve --chef-zero-port=8889')
+          knife('serve --chef-zero-port=8890')
         rescue
           exception = $!
         end
       end
       begin
         Chef::Config.log_level = :debug
-        Chef::Config.chef_server_url = 'http://localhost:8889'
+        Chef::Config.chef_server_url = 'http://localhost:8890'
         Chef::Config.node_name = nil
         Chef::Config.client_key = nil
         api = Chef::ServerAPI.new
-        api.get('nodes/x')['name'].should == 'x'
+        expect(api.get('nodes/x')['name']).to eq('x')
       rescue
         if exception
           raise exception

@@ -28,7 +28,7 @@ class Chef
         super
         @resource_name = :reboot
         @provider = Chef::Provider::Reboot
-        @allowed_actions = [:request_reboot, :reboot_now, :cancel]
+        @allowed_actions.push(:request_reboot, :reboot_now, :cancel)
 
         @reason = "Reboot by Chef"
         @delay_mins = 0
