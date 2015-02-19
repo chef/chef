@@ -79,6 +79,30 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  context "with :distro and :bootstrap_template cli options" do
+    let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--distro", "other-template" ] }
+
+    it "should select bootstrap template" do
+      expect(File.basename(knife.bootstrap_template)).to eq("my-template")
+    end
+  end
+
+  context "with :distro and :template_file cli options" do
+    let(:bootstrap_cli_options) { [ "--distro", "my-template", "--template-file", "other-template" ] }
+
+    it "should select bootstrap template" do
+      expect(File.basename(knife.bootstrap_template)).to eq("other-template")
+    end
+  end
+
+  context "with :bootstrap_template and :template_file cli options" do
+    let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--template-file", "other-template" ] }
+
+    it "should select bootstrap template" do
+      expect(File.basename(knife.bootstrap_template)).to eq("my-template")
+    end
+  end
+
   context "when finding templates" do
     context "when :bootstrap_template config is set to a file" do
       context "that doesn't exist" do

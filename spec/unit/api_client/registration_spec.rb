@@ -231,6 +231,28 @@ describe Chef::ApiClient::Registration do
         end
       end
     end
+
+    context 'when the client key location is a symlink' do
+      it 'does not follow the symlink', :unix_only do
+        expected_flags = (File::CREAT|File::TRUNC|File::RDWR)
+
+        if defined?(File::NOFOLLOW)
+          expected_flags |= File::NOFOLLOW
+        end
+
+        expect(registration.file_flags).to eq(expected_flags)
+      end
+
+      context 'with follow_client_key_symlink set to true' do
+        before do
+          Chef::Config[:follow_client_key_symlink] = true
+        end
+
+        it 'follows the symlink', :unix_only do
+          expect(registration.file_flags).to eq(File::CREAT|File::TRUNC|File::RDWR)
+        end
+      end
+    end
   end
 
   describe "when registering a client" do

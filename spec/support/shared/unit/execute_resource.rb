@@ -86,6 +86,12 @@ shared_examples_for "an execute resource" do
     expect(@resource.path [ "woot" ]).to raise_error
   end
 
+  it "should accept an array for the execution path in Chef-12 and log deprecation message" do
+    expect(Chef::Log).to receive(:warn).at_least(:once)
+    @resource.path ["woot"]
+    expect(@resource.path).to eql(["woot"])
+  end
+
   it "should accept an integer for the return code" do
     @resource.returns 1
     expect(@resource.returns).to eql(1)
