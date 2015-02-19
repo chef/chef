@@ -34,8 +34,6 @@ class Chef
         )
       end
 
-      protected
-
       # Allow callers evaluating guards to request default
       # attribute values. This is needed to allow
       # convert_boolean_return to be true in guard context by default,
@@ -46,6 +44,8 @@ class Chef
       def self.get_default_attributes(opts)
         {:convert_boolean_return => true}
       end
+
+      private_class_method :get_default_attributes
     end
   end
 end

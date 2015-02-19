@@ -37,8 +37,6 @@ class Chef
       new_data
     end
 
-    private
-
     # Walk the data has according to the keys provided by the whitelisted item
     # and add the data to the whitelisting result.
     def self.add_data(data, new_data, item)
@@ -68,6 +66,8 @@ class Chef
       new_data
     end
 
+    private_class_method :add_data
+
     # Accepts a String or an Array, and returns an Array of String keys that
     # are used to traverse the data hash. Strings are split on "/", Arrays are
     # assumed to contain exact keys (that is, Array elements will not be split
@@ -79,6 +79,8 @@ class Chef
       parts.shift if !parts.empty? && parts[0].empty?
       parts
     end
+
+    private_class_method :to_array
 
   end
 end
