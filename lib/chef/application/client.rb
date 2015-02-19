@@ -288,9 +288,7 @@ class Chef::Application::Client < Chef::Application
       tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
       if Chef::Config[:github]
-        cookbooks_dir = File.join(Chef::Config.chef_repo_path, 'cookbooks')
-        FileUtils.mkdir_p(cookbooks_dir)
-        result = shell_out!("tar zxvf #{tarball_path} --strip-components=1 -C #{cookbooks_dir}")
+        result = shell_out!("tar zxvf #{tarball_path} --strip-components=1 -C #{Chef::Config.chef_repo_path}")
       else
         result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
       end

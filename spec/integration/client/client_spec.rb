@@ -3,12 +3,10 @@ require 'chef/mixin/shell_out'
 require 'tiny_server'
 require 'tmpdir'
 
-def recipes_filename
-  File.join(CHEF_SPEC_DATA, 'recipes.tgz')
-end
 
 def start_tiny_server(server_opts={})
-  recipes_size = File::Stat.new(recipes_filename).size
+  recipes_filename = File.join(CHEF_SPEC_DATA, 'recipes.tgz')
+  githib_recipes_filename = File.join(CHEF_SPEC_DATA, 'github-recipes.tgz')
   @server = TinyServer::Manager.new(server_opts)
   @server.start
     @api = TinyServer::API.instance
@@ -20,6 +18,12 @@ def start_tiny_server(server_opts={})
   # (expected_content should be uncompressed)
   @api.get("/recipes.tgz", 200) {
     File.open(recipes_filename, "rb") do |f|
+      f.read
+    end
+  }
+  # emulate github like tarball
+  @api.get("/github-recipes.tgz", 200) {
+    File.open(githib_recipes_filename, "rb") do |f|
       f.read
     end
   }
@@ -330,6 +334,27 @@ EOM
     it 'should fail when passed --recipe-url and not passed -z' do
       result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
       expect(result.exitstatus).to eq(1)
+    end
+  end
+
+  context "when using recipe-url alongside --github flag" do
+    before(:all) do
+      start_tiny_server
+    end
+
+    after(:all) do
+      stop_tiny_server
+    end
+
+    let(:tmp_dir) { Dir.mktmpdir("github-recipe-url") }
+
+    it "should complete with success when passed -z and --recipe-url --github" do
+
+      file 'config/client.rb', <<EOM
+chef_repo_path "#{tmp_dir}"
+EOM
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/github-recipes.tgz --github -o 'x::default' -z", :cwd => tmp_dir)
+      result.error!
     end
   end
 end
