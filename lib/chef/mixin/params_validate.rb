@@ -81,33 +81,52 @@ class Chef
         DelayedEvaluator.new(&block)
       end
 
+      NULL_ARG = Object.new
+
+      def nillable_set_or_return(symbol, arg, validation)
+        iv_symbol = "@#{symbol.to_s}".to_sym
+        if arg == NULL_ARG && self.instance_variable_defined?(iv_symbol) == true
+          get_ivar(iv_symbol, symbol, validation)
+        else
+          set_ivar(iv_symbol, symbol, arg, validation)
+        end
+      end
+
       def set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
         if arg == nil && self.instance_variable_defined?(iv_symbol) == true
-          ivar = self.instance_variable_get(iv_symbol)
-          if(ivar.is_a?(DelayedEvaluator))
-            validate({ symbol => ivar.call }, { symbol => validation })[symbol]
-          else
-            ivar
-          end
+          get_ivar(iv_symbol, symbol, validation)
         else
-          if(arg.is_a?(DelayedEvaluator))
-            val = arg
-          else
-            val = validate({ symbol => arg }, { symbol => validation })[symbol]
-
-            # Handle the case where the "default" was a DelayedEvaluator. In
-            # this case, the block yields an optional parameter of +self+,
-            # which is the equivalent of "new_resource"
-            if val.is_a?(DelayedEvaluator)
-              val = val.call(self)
-            end
-          end
-          self.instance_variable_set(iv_symbol, val)
+          set_ivar(iv_symbol, symbol, arg, validation)
         end
       end
 
       private
+
+      def get_ivar(iv_symbol, symbol, validation)
+        ivar = self.instance_variable_get(iv_symbol)
+        if(ivar.is_a?(DelayedEvaluator))
+          validate({ symbol => ivar.call }, { symbol => validation })[symbol]
+        else
+          ivar
+        end
+      end
+
+      def set_ivar(iv_symbol, symbol, arg, validation)
+        if(arg.is_a?(DelayedEvaluator))
+          val = arg
+        else
+          val = validate({ symbol => arg }, { symbol => validation })[symbol]
+
+          # Handle the case where the "default" was a DelayedEvaluator. In
+          # this case, the block yields an optional parameter of +self+,
+          # which is the equivalent of "new_resource"
+          if val.is_a?(DelayedEvaluator)
+            val = val.call(self)
+          end
+        end
+        self.instance_variable_set(iv_symbol, val)
+      end
 
         # Return the value of a parameter, or nil if it doesn't exist.
         def _pv_opts_lookup(opts, key)
@@ -239,4 +258,3 @@ class Chef
     end
   end
 end
-

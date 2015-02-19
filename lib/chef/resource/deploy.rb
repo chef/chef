@@ -82,6 +82,7 @@ class Chef
         @keep_releases = 5
         @enable_checkout = true
         @checkout_branch = "deploy"
+        @timeout = nil
       end
 
       # where the checked out/cloned code goes
@@ -104,42 +105,18 @@ class Chef
       end
 
       # note: deploy_to is your application "meta-root."
-      def deploy_to(arg=nil)
-        set_or_return(
-          :deploy_to,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :deploy_to, :kind_of => [ String ]
 
-      def repo(arg=nil)
-        set_or_return(
-          :repo,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :repo, :kind_of => [ String ]
       alias :repository :repo
 
-      def remote(arg=nil)
-        set_or_return(
-          :remote,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :remote, :kind_of => [ String ]
 
-      def role(arg=nil)
-        set_or_return(
-          :role,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :role, :kind_of => [ String ]
 
-      def restart_command(arg=nil, &block)
-        arg ||= block
-        set_or_return(
+      def restart_command(arg=NULL_ARG, &block)
+        arg = block if block_given?
+        nillable_set_or_return(
           :restart_command,
           arg,
           :kind_of => [ String, Proc ]
@@ -147,155 +124,60 @@ class Chef
       end
       alias :restart :restart_command
 
-      def migrate(arg=nil)
-        set_or_return(
-          :migrate,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      attribute :migrate, :kind_of => [ TrueClass, FalseClass ]
 
-      def migration_command(arg=nil)
-        set_or_return(
-          :migration_command,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :migration_command, kind_of: String
 
-      def rollback_on_error(arg=nil)
-        set_or_return(
-          :rollback_on_error,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      attribute :rollback_on_error, :kind_of => [ TrueClass, FalseClass ]
 
-      def user(arg=nil)
-        set_or_return(
-          :user,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :user, kind_of: String
 
-      def group(arg=nil)
-        set_or_return(
-          :group,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :group, kind_of: [ String ]
 
-      def enable_submodules(arg=nil)
-        set_or_return(
-          :enable_submodules,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      attribute :enable_submodules, kind_of: [ TrueClass, FalseClass ]
 
-      def shallow_clone(arg=nil)
-        set_or_return(
-          :shallow_clone,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      attribute :shallow_clone, kind_of: [ TrueClass, FalseClass ]
 
-      def repository_cache(arg=nil)
-        set_or_return(
-          :repository_cache,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :repository_cache, kind_of: String
 
-      def copy_exclude(arg=nil)
-        set_or_return(
-          :copy_exclude,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :copy_exclude, kind_of: String
 
-      def revision(arg=nil)
-        set_or_return(
-          :revision,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :revision, kind_of: String
       alias :branch :revision
 
-      def git_ssh_wrapper(arg=nil)
-        set_or_return(
-          :git_ssh_wrapper,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :git_ssh_wrapper, kind_of: String
       alias :ssh_wrapper :git_ssh_wrapper
 
-      def svn_username(arg=nil)
-        set_or_return(
-          :svn_username,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :svn_username, kind_of: String
 
-      def svn_password(arg=nil)
-        set_or_return(
-          :svn_password,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :svn_password, kind_of: String
 
-      def svn_arguments(arg=nil)
-        set_or_return(
-          :svn_arguments,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      attribute :svn_arguments, kind_of: String
 
-      def svn_info_args(arg=nil)
-        set_or_return(
-          :svn_arguments,
-          arg,
-          :kind_of => [ String ])
-      end
+      attribute :svn_info_args, kind_of: String
 
-      def scm_provider(arg=nil)
+      def scm_provider(arg=NULL_ARG)
         klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
                   lookup_provider_constant(arg)
                 else
                   arg
                 end
-        set_or_return(
+        nillable_set_or_return(
           :scm_provider,
           klass,
           :kind_of => [ Class ]
         )
       end
 
-      def svn_force_export(arg=nil)
-        set_or_return(
-          :svn_force_export,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      attribute :svn_force_export, kind_of: [ TrueClass, FalseClass ]
 
-      def environment(arg=nil)
+      def environment(arg=NULL_ARG)
         if arg.is_a?(String)
           Chef::Log.debug "Setting RAILS_ENV, RACK_ENV, and MERB_ENV to `#{arg}'"
           Chef::Log.warn "[DEPRECATED] please modify your deploy recipe or attributes to set the environment using a hash"
           arg = {"RAILS_ENV"=>arg,"MERB_ENV"=>arg,"RACK_ENV"=>arg}
         end
-        set_or_return(
+        nillable_set_or_return(
           :environment,
           arg,
           :kind_of => [ Hash ]
@@ -303,8 +185,8 @@ class Chef
       end
 
        # The number of old release directories to keep around after cleanup
-      def keep_releases(arg=nil)
-        [set_or_return(
+      def keep_releases(arg=NULL_ARG)
+        [nillable_set_or_return(
           :keep_releases,
           arg,
           :kind_of => [ Integer ]), 1].max
@@ -314,13 +196,7 @@ class Chef
       # SCM clone/checkout before symlinking. Use this to get rid of files and
       # directories you want to be shared between releases.
       # Default: ["log", "tmp/pids", "public/system"]
-      def purge_before_symlink(arg=nil)
-        set_or_return(
-          :purge_before_symlink,
-          arg,
-          :kind_of => Array
-        )
-      end
+      attribute :purge_before_symlink, kind_of: Array
 
       # An array of paths, relative to your app's root, where you expect dirs to
       # exist before symlinking. This runs after #purge_before_symlink, so you
@@ -330,13 +206,7 @@ class Chef
       # then specify tmp here so that the tmp directory will exist when you
       # symlink the pids directory in to the current release.
       # Default: ["tmp", "public", "config"]
-      def create_dirs_before_symlink(arg=nil)
-        set_or_return(
-          :create_dirs_before_symlink,
-          arg,
-          :kind_of => Array
-        )
-      end
+      attribute :create_dirs_before_symlink, kind_of: Array
 
       # A Hash of shared/dir/path => release/dir/path. This attribute determines
       # which files and dirs in the shared directory get symlinked to the current
@@ -344,13 +214,7 @@ class Chef
       # $shared/pids that you would like to symlink as $current_release/tmp/pids
       # you specify it as "pids" => "tmp/pids"
       # Default {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
-      def symlinks(arg=nil)
-        set_or_return(
-          :symlinks,
-          arg,
-          :kind_of => Hash
-        )
-      end
+      attribute :symlinks, kind_of: Hash
 
       # A Hash of shared/dir/path => release/dir/path. This attribute determines
       # which files in the shared directory get symlinked to the current release
@@ -359,74 +223,44 @@ class Chef
       # For a rails/merb app, this is used to link in a known good database.yml
       # (with the production db password) before running migrate.
       # Default {"config/database.yml" => "config/database.yml"}
-      def symlink_before_migrate(arg=nil)
-        set_or_return(
-          :symlink_before_migrate,
-          arg,
-          :kind_of => Hash
-        )
-      end
+      attribute :symlink_before_migrate, kind_of: Hash
 
       # Callback fires before migration is run.
-      def before_migrate(arg=nil, &block)
-        arg ||= block
-        set_or_return(:before_migrate, arg, :kind_of => [Proc, String])
+      def before_migrate(arg=NULL_ARG, &block)
+        arg = block if block_given?
+        nillable_set_or_return(:before_migrate, arg, kind_of: [Proc, String])
       end
 
       # Callback fires before symlinking
-      def before_symlink(arg=nil, &block)
-        arg ||= block
-        set_or_return(:before_symlink, arg, :kind_of => [Proc, String])
+      def before_symlink(arg=NULL_ARG, &block)
+        arg = block if block_given?
+        nillable_set_or_return(:before_symlink, arg, kind_of: [Proc, String])
       end
 
       # Callback fires before restart
-      def before_restart(arg=nil, &block)
-        arg ||= block
-        set_or_return(:before_restart, arg, :kind_of => [Proc, String])
+      def before_restart(arg=NULL_ARG, &block)
+        arg = block if block_given?
+        nillable_set_or_return(:before_restart, arg, kind_of: [Proc, String])
       end
 
       # Callback fires after restart
-      def after_restart(arg=nil, &block)
-        arg ||= block
-        set_or_return(:after_restart, arg, :kind_of => [Proc, String])
+      def after_restart(arg=NULL_ARG, &block)
+        arg = block if block_given?
+        nillable_set_or_return(:after_restart, arg, kind_of: [Proc, String])
       end
 
-      def additional_remotes(arg=nil)
-        set_or_return(
-          :additional_remotes,
-          arg,
-          :kind_of => Hash
-        )
-      end
+      attribute :additional_remotes, kind_of: Hash
 
-      def enable_checkout(arg=nil)
-        set_or_return(
-          :enable_checkout,
-          arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
+      attribute :enable_checkout, kind_of: [ TrueClass, FalseClass ]
 
-      def checkout_branch(arg=nil)
-        set_or_return(
-          :checkout_branch,
-          arg,
-          :kind_of => String
-        )
-      end
+      attribute :checkout_branch, kind_of: String
 
       # FIXME The Deploy resource may be passed to an SCM provider as its
       # resource.  The SCM provider knows that SCM resources can specify a
       # timeout for SCM operations. The deploy resource must therefore support
       # a timeout method, but the timeout it describes is for SCM operations,
       # not the overall deployment. This is potentially confusing.
-      def timeout(arg=nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => Integer
-        )
-      end
+      attribute :timeout, kind_of: Integer
 
     end
   end
