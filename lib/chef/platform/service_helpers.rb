@@ -42,34 +42,34 @@ class Chef
         # different services is NOT a design concern of this module.
         #
         def service_resource_providers
-          service_resource_providers = []
+          @service_resource_providers ||= [].tap do |service_resource_providers|
 
-          if ::File.exist?("/usr/sbin/update-rc.d")
-            service_resource_providers << :debian
+            if ::File.exist?("/usr/sbin/update-rc.d")
+              service_resource_providers << :debian
+            end
+
+            if ::File.exist?("/usr/sbin/invoke-rc.d")
+              service_resource_providers << :invokercd
+            end
+
+            if ::File.exist?("/sbin/insserv")
+              service_resource_providers << :insserv
+            end
+
+            # debian >= 6.0 has /etc/init but does not have upstart
+            if ::File.exist?("/etc/init") && ::File.exist?("/sbin/start")
+              service_resource_providers << :upstart
+            end
+
+            if ::File.exist?("/sbin/chkconfig")
+              service_resource_providers << :redhat
+            end
+
+            if systemd_sanity_check?
+              service_resource_providers << :systemd
+            end
+
           end
-
-          if ::File.exist?("/usr/sbin/invoke-rc.d")
-            service_resource_providers << :invokercd
-          end
-
-          if ::File.exist?("/sbin/insserv")
-            service_resource_providers << :insserv
-          end
-
-          # debian >= 6.0 has /etc/init but does not have upstart
-          if ::File.exist?("/etc/init") && ::File.exist?("/sbin/start")
-            service_resource_providers << :upstart
-          end
-
-          if ::File.exist?("/sbin/chkconfig")
-            service_resource_providers << :redhat
-          end
-
-          if systemd_sanity_check?
-            service_resource_providers << :systemd
-          end
-
-          service_resource_providers
         end
 
         def config_for_service(service_name)
