@@ -55,6 +55,7 @@ describe Chef::Provider::Package::Dpkg do
         @provider.load_current_resource
         expect(@provider.current_resource.package_name).to eq("wget")
         expect(@new_resource.version).to eq(version)
+        expect(@provider.candidate_version).to eq(version)
       end
 
       it 'if short version provided' do

@@ -61,10 +61,12 @@ class Chef
             if @source_exists
               # Get information from the package if supplied
               Chef::Log.debug("#{@new_resource} checking dpkg status")
+
               shell_out("dpkg-deb -W #{@new_resource.source}").stdout.each_line do |line|
                 if pkginfo = DPKG_INFO.match(line)
                   @current_resource.package_name(pkginfo[1])
                   @new_resource.version(pkginfo[2])
+                  @candidate_version = pkginfo[2]
                 end
               end
             else
