@@ -411,4 +411,11 @@ describe Chef::Mixin::ParamsValidate do
 
   test_set_or_return_method(:set_or_return)
   test_set_or_return_method(:nillable_set_or_return)
+
+  it "nillable_set_or_return supports nilling values" do
+    expect(@vo.nillable_set_or_return(:test, "meow", {})).to eq("meow")
+    expect(@vo.nillable_set_or_return(:test, TinyClass::NULL_ARG, {})).to eq("meow")
+    expect(@vo.nillable_set_or_return(:test, nil, {})).to be_nil
+    expect(@vo.nillable_set_or_return(:test, TinyClass::NULL_ARG, {})).to be_nil
+  end
 end
