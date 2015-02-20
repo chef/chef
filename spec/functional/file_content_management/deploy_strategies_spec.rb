@@ -20,15 +20,6 @@ require 'spec_helper'
 
 shared_examples_for "a content deploy strategy" do
 
-  # Ruby 1.8 has no binread
-  def binread(file)
-    if IO.respond_to?(:binread)
-      IO.binread(file)
-    else
-      IO.read(file)
-    end
-  end
-
   def normalize_mode(mode_int)
     ( mode_int & 07777).to_s(8)
   end
@@ -56,11 +47,11 @@ shared_examples_for "a content deploy strategy" do
 
     it "touches the file to create it (UNIX)", :unix_only do
       content_deployer.create(target_file_path)
-      File.should exist(target_file_path)
+      expect(File).to exist(target_file_path)
       file_info = File.stat(target_file_path)
-      file_info.should be_owned
-      file_info.should be_file
-      normalize_mode(file_info.mode).should == default_mode
+      expect(file_info).to be_owned
+      expect(file_info).to be_file
+      expect(normalize_mode(file_info.mode)).to eq(default_mode)
     end
 
     ##
@@ -89,10 +80,10 @@ shared_examples_for "a content deploy strategy" do
 
     it "touches the file to create it (Windows)", :windows_only do
       content_deployer.create(target_file_path)
-      File.should exist(target_file_path)
+      expect(File).to exist(target_file_path)
       file_info = File.stat(target_file_path)
-      file_info.should be_owned
-      file_info.should be_file
+      expect(file_info).to be_owned
+      expect(file_info).to be_file
 
       parent_aces = parent_inheritable_aces
       security_obj = Chef::ReservedNames::Win32::Security::SecurableObject.new(target_file_path)
@@ -106,7 +97,7 @@ shared_examples_for "a content deploy strategy" do
       end
 
       self_aces.each_with_index do |ace, index|
-        ace.mask.should == parent_aces[index].mask
+        expect(ace.mask).to eq(parent_aces[index].mask)
       end
     end
   end
@@ -147,7 +138,7 @@ shared_examples_for "a content deploy strategy" do
       content_deployer.deploy(staging_file_path, target_file_path)
       updated_info = File.stat(target_file_path)
 
-      unix_invariant_properies(original_info).should == unix_invariant_properies(updated_info)
+      expect(unix_invariant_properies(original_info)).to eq(unix_invariant_properies(updated_info))
     end
 
     it "maintains invariant properties on Windows", :windows_only do
@@ -155,12 +146,12 @@ shared_examples_for "a content deploy strategy" do
       content_deployer.deploy(staging_file_path, target_file_path)
       updated_info = Chef::ReservedNames::Win32::Security::SecurableObject.new(target_file_path)
 
-      win_invariant_properties(original_info).should == win_invariant_properties(updated_info)
+      expect(win_invariant_properties(original_info)).to eq(win_invariant_properties(updated_info))
     end
 
     it "updates the target with content from staged" do
       content_deployer.deploy(staging_file_path, target_file_path)
-      binread(target_file_path).should == staging_file_content
+      expect(IO.binread(target_file_path)).to eq(staging_file_content)
     end
 
     context "when the owner of the target file is not the owner of the staging file", :requires_root do
@@ -174,7 +165,7 @@ shared_examples_for "a content deploy strategy" do
         content_deployer.deploy(staging_file_path, target_file_path)
         updated_info = File.stat(target_file_path)
 
-        unix_invariant_properies(original_info).should == unix_invariant_properies(updated_info)
+        expect(unix_invariant_properies(original_info)).to eq(unix_invariant_properies(updated_info))
       end
 
     end

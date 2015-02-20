@@ -7,19 +7,19 @@ describe Chef::Knife::TagDelete do
     @knife.name_args = [ Chef::Config[:node_name], "sadtag" ]
 
     @node = Chef::Node.new
-    @node.stub :save
+    allow(@node).to receive :save
     @node.tags << "sadtag" << "happytag"
-    Chef::Node.stub(:load).and_return @node
+    allow(Chef::Node).to receive(:load).and_return @node
     @stderr = StringIO.new
-    @knife.ui.stub(:stderr).and_return(@stderr)
+    allow(@knife.ui).to receive(:stderr).and_return(@stderr)
   end
 
   describe "run" do
     it "can delete tags on a node" do
-      @node.tags.should == ["sadtag", "happytag"]
+      expect(@node.tags).to eq(["sadtag", "happytag"])
       @knife.run
-      @node.tags.should == ["happytag"]
-      @stderr.string.should match /deleted.+sadtag/i
+      expect(@node.tags).to eq(["happytag"])
+      expect(@stderr.string).to match /deleted.+sadtag/i
     end
   end
 end

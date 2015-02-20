@@ -58,6 +58,14 @@ class Chef
             Chef::ReservedNames::Win32::Security::adjust_token_privileges(self, privileges_struct)
           end
         end
+
+        def duplicate_token(security_impersonation_level)
+          duplicate_token_handle = FFI::Buffer.new(:ulong)
+          unless Chef::ReservedNames::Win32::API::Security.DuplicateToken(handle.handle, security_impersonation_level, duplicate_token_handle)
+            raise Chef::ReservedNames::Win32::Error.raise!
+          end
+          Token.new(Handle.new(duplicate_token_handle.read_ulong))
+        end
       end
     end
   end

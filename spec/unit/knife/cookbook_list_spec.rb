@@ -22,7 +22,7 @@ describe Chef::Knife::CookbookList do
   before do
     @knife = Chef::Knife::CookbookList.new
     @rest_mock = double('rest')
-    @knife.stub(:rest).and_return(@rest_mock)
+    allow(@knife).to receive(:rest).and_return(@rest_mock)
     @cookbook_names = ['apache2', 'mysql']
     @base_url = 'https://server.example.com/cookbooks'
     @cookbook_data = {}
@@ -32,22 +32,22 @@ describe Chef::Knife::CookbookList do
                                               'url' => "#{@base_url}/#{item}/1.0.1"}]}
     end
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
 
   describe 'run' do
     it 'should display the latest version of the cookbooks' do
-      @rest_mock.should_receive(:get_rest).with('/cookbooks?num_versions=1').
+      expect(@rest_mock).to receive(:get_rest).with('/cookbooks?num_versions=1').
                                            and_return(@cookbook_data)
       @knife.run
       @cookbook_names.each do |item|
-        @stdout.string.should match /#{item}\s+1\.0\.1/
+        expect(@stdout.string).to match /#{item}\s+1\.0\.1/
       end
     end
 
     it 'should query cookbooks for the configured environment' do
       @knife.config[:environment] = 'production'
-      @rest_mock.should_receive(:get_rest).
+      expect(@rest_mock).to receive(:get_rest).
                  with('/environments/production/cookbooks?num_versions=1').
                  and_return(@cookbook_data)
       @knife.run
@@ -56,11 +56,11 @@ describe Chef::Knife::CookbookList do
     describe 'with -w or --with-uri' do
       it 'should display the cookbook uris' do
         @knife.config[:with_uri] = true
-        @rest_mock.stub(:get_rest).and_return(@cookbook_data)
+        allow(@rest_mock).to receive(:get_rest).and_return(@cookbook_data)
         @knife.run
         @cookbook_names.each do |item|
           pattern = /#{Regexp.escape(@cookbook_data[item]['versions'].first['url'])}/
-          @stdout.string.should match pattern
+          expect(@stdout.string).to match pattern
         end
       end
     end
@@ -75,11 +75,11 @@ describe Chef::Knife::CookbookList do
 
       it 'should display all versions of the cookbooks' do
         @knife.config[:all_versions] = true
-        @rest_mock.should_receive(:get_rest).with('/cookbooks?num_versions=all').
+        expect(@rest_mock).to receive(:get_rest).with('/cookbooks?num_versions=all').
                                              and_return(@cookbook_data)
         @knife.run
         @cookbook_names.each do |item|
-          @stdout.string.should match /#{item}\s+1\.0\.1\s+1\.0\.0/
+          expect(@stdout.string).to match /#{item}\s+1\.0\.1\s+1\.0\.0/
         end
       end
     end

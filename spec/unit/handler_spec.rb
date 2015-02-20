@@ -42,54 +42,54 @@ describe Chef::Handler do
       @run_status.run_context = @run_context
       @start_time = Time.now
       @end_time = @start_time + 4.2
-      Time.stub(:now).and_return(@start_time, @end_time)
+      allow(Time).to receive(:now).and_return(@start_time, @end_time)
       @run_status.start_clock
       @run_status.stop_clock
     end
 
     it "has a shortcut for the exception" do
-      @handler.exception.should == @exception
+      expect(@handler.exception).to eq(@exception)
     end
 
     it "has a shortcut for the backtrace" do
-      @handler.backtrace.should == @backtrace
+      expect(@handler.backtrace).to eq(@backtrace)
     end
 
     it "has a shortcut for all resources" do
-      @handler.all_resources.should == @all_resources
+      expect(@handler.all_resources).to eq(@all_resources)
     end
 
     it "has a shortcut for just the updated resources" do
-      @handler.updated_resources.should == [@all_resources.first]
+      expect(@handler.updated_resources).to eq([@all_resources.first])
     end
 
     it "has a shortcut for the start time" do
-      @handler.start_time.should == @start_time
+      expect(@handler.start_time).to eq(@start_time)
     end
 
     it "has a shortcut for the end time" do
-      @handler.end_time.should == @end_time
+      expect(@handler.end_time).to eq(@end_time)
     end
 
     it "has a shortcut for the elapsed time" do
-      @handler.elapsed_time.should == 4.2
+      expect(@handler.elapsed_time).to eq(4.2)
     end
 
     it "has a shortcut for the node" do
-      @handler.node.should == @node
+      expect(@handler.node).to eq(@node)
     end
 
     it "has a shortcut for the run context" do
-      @handler.run_context.should == @run_context
+      expect(@handler.run_context).to eq(@run_context)
     end
 
     it "has a shortcut for the success? and failed? predicates" do
-      @handler.success?.should be_false # becuase there's an exception
-      @handler.failed?.should be_true
+      expect(@handler.success?).to be_falsey # because there's an exception
+      expect(@handler.failed?).to be_truthy
     end
 
     it "has a shortcut to the hash representation of the run status" do
-      @handler.data.should == @run_status.to_hash
+      expect(@handler.data).to eq(@run_status.to_hash)
     end
   end
 
@@ -100,16 +100,16 @@ describe Chef::Handler do
         $report_ran = true
         raise Exception, "I died the deth"
       end
-      lambda {@handler.run_report_safely(@run_status)}.should_not raise_error
-      $report_ran.should be_true
+      expect {@handler.run_report_safely(@run_status)}.not_to raise_error
+      expect($report_ran).to be_truthy
     end
     it "does not fail if the report handler does not raise an exception" do
       $report_ran = false
       def @handler.report
         $report_ran = true
       end
-      lambda {@handler.run_report_safely(@run_status)}.should_not raise_error
-      $report_ran.should be_true
+      expect {@handler.run_report_safely(@run_status)}.not_to raise_error
+      expect($report_ran).to be_truthy
     end
   end
 
@@ -123,46 +123,46 @@ describe Chef::Handler do
       @run_status.run_context = @run_context
       @start_time = Time.now
       @end_time = @start_time + 4.2
-      Time.stub(:now).and_return(@start_time, @end_time)
+      allow(Time).to receive(:now).and_return(@start_time, @end_time)
       @run_status.start_clock
       @run_status.stop_clock
     end
 
     it "has a shortcut for all resources" do
-      @handler.all_resources.should == @all_resources
+      expect(@handler.all_resources).to eq(@all_resources)
     end
 
     it "has a shortcut for just the updated resources" do
-      @handler.updated_resources.should == [@all_resources.first]
+      expect(@handler.updated_resources).to eq([@all_resources.first])
     end
 
     it "has a shortcut for the start time" do
-      @handler.start_time.should == @start_time
+      expect(@handler.start_time).to eq(@start_time)
     end
 
     it "has a shortcut for the end time" do
-      @handler.end_time.should == @end_time
+      expect(@handler.end_time).to eq(@end_time)
     end
 
     it "has a shortcut for the elapsed time" do
-      @handler.elapsed_time.should == 4.2
+      expect(@handler.elapsed_time).to eq(4.2)
     end
 
     it "has a shortcut for the node" do
-      @handler.node.should == @node
+      expect(@handler.node).to eq(@node)
     end
 
     it "has a shortcut for the run context" do
-      @handler.run_context.should == @run_context
+      expect(@handler.run_context).to eq(@run_context)
     end
 
     it "has a shortcut for the success? and failed? predicates" do
-      @handler.success?.should be_true
-      @handler.failed?.should be_false
+      expect(@handler.success?).to be_truthy
+      expect(@handler.failed?).to be_falsey
     end
 
     it "has a shortcut to the hash representation of the run status" do
-      @handler.data.should == @run_status.to_hash
+      expect(@handler.data).to eq(@run_status.to_hash)
     end
   end
 
@@ -170,45 +170,45 @@ describe Chef::Handler do
   describe "when running a start handler" do
     before do
       @start_time = Time.now
-      Time.stub(:now).and_return(@start_time)
+      allow(Time).to receive(:now).and_return(@start_time)
       @run_status.start_clock
     end
 
     it "should not have all resources" do
-      @handler.all_resources.should be_false
+      expect(@handler.all_resources).to be_falsey
     end
 
     it "should not have updated resources" do
-      @handler.updated_resources.should be_false
+      expect(@handler.updated_resources).to be_falsey
     end
 
     it "has a shortcut for the start time" do
-      @handler.start_time.should == @start_time
+      expect(@handler.start_time).to eq(@start_time)
     end
 
     it "does not have a shortcut for the end time" do
-      @handler.end_time.should be_false
+      expect(@handler.end_time).to be_falsey
     end
 
     it "does not have a shortcut for the elapsed time" do
-      @handler.elapsed_time.should be_false
+      expect(@handler.elapsed_time).to be_falsey
     end
 
     it "has a shortcut for the node" do
-      @handler.node.should == @node
+      expect(@handler.node).to eq(@node)
     end
 
     it "does not have a shortcut for the run context" do
-      @handler.run_context.should be_false
+      expect(@handler.run_context).to be_falsey
     end
 
     it "has a shortcut for the success? and failed? predicates" do
-      @handler.success?.should be_true # for some reason this is true
-      @handler.failed?.should be_false
+      expect(@handler.success?).to be_truthy # for some reason this is true
+      expect(@handler.failed?).to be_falsey
     end
 
     it "has a shortcut to the hash representation of the run status" do
-      @handler.data.should == @run_status.to_hash
+      expect(@handler.data).to eq(@run_status.to_hash)
     end
   end
 

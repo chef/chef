@@ -42,7 +42,7 @@ describe Chef::Knife do
     allow(Chef::Log).to receive(:init)
     allow(Chef::Log).to receive(:level)
     [:debug, :info, :warn, :error, :crit].each do |level_sym|
-      Chef::Log.stub(level_sym)
+      allow(Chef::Log).to receive(level_sym)
     end
     allow(Chef::Knife).to receive(:puts)
   end
@@ -68,27 +68,27 @@ describe Chef::Knife do
     end
 
     it "has a category based on its name" do
-      KnifeSpecs::TestNameMapping.subcommand_category.should == 'test'
+      expect(KnifeSpecs::TestNameMapping.subcommand_category).to eq('test')
     end
 
-    it "has an explictly defined category if set" do
-      KnifeSpecs::TestExplicitCategory.subcommand_category.should == 'cookbook site'
+    it "has an explicitly defined category if set" do
+      expect(KnifeSpecs::TestExplicitCategory.subcommand_category).to eq('cookbook site')
     end
 
     it "can reference the subcommand by its snake cased name" do
-      Chef::Knife.subcommands['test_name_mapping'].should equal(KnifeSpecs::TestNameMapping)
+      expect(Chef::Knife.subcommands['test_name_mapping']).to equal(KnifeSpecs::TestNameMapping)
     end
 
     it "lists subcommands by category" do
-      Chef::Knife.subcommands_by_category['test'].should include('test_name_mapping')
+      expect(Chef::Knife.subcommands_by_category['test']).to include('test_name_mapping')
     end
 
     it "lists subcommands by category when the subcommands have explicit categories" do
-      Chef::Knife.subcommands_by_category['cookbook site'].should include('test_explicit_category')
+      expect(Chef::Knife.subcommands_by_category['cookbook site']).to include('test_explicit_category')
     end
 
     it "has empty dependency_loader list by default" do
-      KnifeSpecs::TestNameMapping.dependency_loaders.should be_empty
+      expect(KnifeSpecs::TestNameMapping.dependency_loaders).to be_empty
     end
   end
 
@@ -104,22 +104,22 @@ describe Chef::Knife do
 
       Chef::Knife.load_commands
 
-      Chef::Knife.subcommands.should have_key("super_awesome_command")
-      Chef::Knife.subcommands["super_awesome_command"].should == SuperAwesomeCommand
+      expect(Chef::Knife.subcommands).to have_key("super_awesome_command")
+      expect(Chef::Knife.subcommands["super_awesome_command"]).to eq(SuperAwesomeCommand)
     end
 
     it "guesses a category from a given ARGV" do
       Chef::Knife.subcommands_by_category["cookbook"] << :cookbook
       Chef::Knife.subcommands_by_category["cookbook site"] << :cookbook_site
-      Chef::Knife.guess_category(%w{cookbook foo bar baz}).should == 'cookbook'
-      Chef::Knife.guess_category(%w{cookbook site foo bar baz}).should == 'cookbook site'
-      Chef::Knife.guess_category(%w{cookbook site --help}).should == 'cookbook site'
+      expect(Chef::Knife.guess_category(%w{cookbook foo bar baz})).to eq('cookbook')
+      expect(Chef::Knife.guess_category(%w{cookbook site foo bar baz})).to eq('cookbook site')
+      expect(Chef::Knife.guess_category(%w{cookbook site --help})).to eq('cookbook site')
     end
 
     it "finds a subcommand class based on ARGV" do
       Chef::Knife.subcommands["cookbook_site_vendor"] = :CookbookSiteVendor
       Chef::Knife.subcommands["cookbook"] = :Cookbook
-      Chef::Knife.subcommand_class_from(%w{cookbook site vendor --help foo bar baz}).should == :CookbookSiteVendor
+      expect(Chef::Knife.subcommand_class_from(%w{cookbook site vendor --help foo bar baz})).to eq(:CookbookSiteVendor)
     end
 
   end
@@ -137,9 +137,9 @@ describe Chef::Knife do
     let(:request_mock) { {} }
 
     let(:rest) do
-      Net::HTTP.stub(:new).and_return(http_client)
-      Chef::RequestID.instance.stub(:request_id).and_return(request_id)
-      Chef::Config.stub(:chef_server_url).and_return("https://api.opscode.piab")
+      allow(Net::HTTP).to receive(:new).and_return(http_client)
+      allow(Chef::RequestID.instance).to receive(:request_id).and_return(request_id)
+      allow(Chef::Config).to receive(:chef_server_url).and_return("https://api.opscode.piab")
       command = Chef::Knife.run(%w{test yourself})
       rest = command.noauth_rest
       rest
@@ -147,7 +147,7 @@ describe Chef::Knife do
 
     let!(:http_client) do
       http_client = Net::HTTP.new(url.host, url.port)
-      http_client.stub(:request).and_yield(http_response).and_return(http_response)
+      allow(http_client).to receive(:request).and_yield(http_response).and_return(http_response)
       http_client
     end
 
@@ -155,8 +155,8 @@ describe Chef::Knife do
 
     let(:http_response) do
       http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
-      http_response.stub(:read_body)
-      http_response.stub(:body).and_return(body)
+      allow(http_response).to receive(:read_body)
+      allow(http_response).to receive(:body).and_return(body)
       http_response["Content-Length"] = body.bytesize.to_s
       http_response
     end
@@ -173,7 +173,7 @@ describe Chef::Knife do
     end
 
     it "confirms that the headers include X-Remote-Request-Id" do
-      Net::HTTP::Get.should_receive(:new).with("/monkey", headers).and_return(request_mock)
+      expect(Net::HTTP::Get).to receive(:new).with("/monkey", headers).and_return(request_mock)
       rest.get_rest("monkey")
     end
   end
@@ -197,26 +197,26 @@ describe Chef::Knife do
       # there is special hackery to return the subcommand instance going on here.
       command = Chef::Knife.run(%w{test yourself}, extra_opts)
       editor_opts = command.options[:editor]
-      editor_opts[:long].should         == "--editor EDITOR"
-      editor_opts[:description].should  == "Set the editor to use for interactive commands"
-      editor_opts[:short].should        == "-e EDITOR"
-      editor_opts[:default].should      == "/usr/bin/vim"
+      expect(editor_opts[:long]).to         eq("--editor EDITOR")
+      expect(editor_opts[:description]).to  eq("Set the editor to use for interactive commands")
+      expect(editor_opts[:short]).to        eq("-e EDITOR")
+      expect(editor_opts[:default]).to      eq("/usr/bin/vim")
     end
 
     it "creates an instance of the subcommand and runs it" do
       command = Chef::Knife.run(%w{test yourself})
-      command.should be_an_instance_of(KnifeSpecs::TestYourself)
-      command.ran.should be_true
+      expect(command).to be_an_instance_of(KnifeSpecs::TestYourself)
+      expect(command.ran).to be_truthy
     end
 
     it "passes the command specific args to the subcommand" do
       command = Chef::Knife.run(%w{test yourself with some args})
-      command.name_args.should == %w{with some args}
+      expect(command.name_args).to eq(%w{with some args})
     end
 
     it "excludes the command name from the name args when parts are joined with underscores" do
       command = Chef::Knife.run(%w{test_yourself with some args})
-      command.name_args.should == %w{with some args}
+      expect(command.name_args).to eq(%w{with some args})
     end
 
     it "exits if no subcommand matches the CLI args" do
@@ -230,7 +230,7 @@ describe Chef::Knife do
 
     it "loads lazy dependencies" do
       Chef::Knife.run(%w{test yourself})
-      KnifeSpecs::TestYourself.test_deps_loaded.should be_true
+      expect(KnifeSpecs::TestYourself.test_deps_loaded).to be_truthy
     end
 
     it "loads lazy dependencies from multiple deps calls" do
@@ -240,8 +240,8 @@ describe Chef::Knife do
       end
 
       Chef::Knife.run(%w{test yourself})
-      KnifeSpecs::TestYourself.test_deps_loaded.should be_true
-      other_deps_loaded.should be_true
+      expect(KnifeSpecs::TestYourself.test_deps_loaded).to be_truthy
+      expect(other_deps_loaded).to be_truthy
     end
 
     describe "merging configuration options" do
@@ -254,21 +254,21 @@ describe Chef::Knife do
       it "prefers the default value if no config or command line value is present" do
         knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
         knife_command.configure_chef
-        knife_command.config[:opt_with_default].should == "default-value"
+        expect(knife_command.config[:opt_with_default]).to eq("default-value")
       end
 
       it "prefers a value in Chef::Config[:knife] to the default" do
         Chef::Config[:knife][:opt_with_default] = "from-knife-config"
         knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
         knife_command.configure_chef
-        knife_command.config[:opt_with_default].should == "from-knife-config"
+        expect(knife_command.config[:opt_with_default]).to eq("from-knife-config")
       end
 
       it "prefers a value from command line over Chef::Config and the default" do
         Chef::Config[:knife][:opt_with_default] = "from-knife-config"
         knife_command = KnifeSpecs::TestYourself.new(["-D", "from-cli"])
         knife_command.configure_chef
-        knife_command.config[:opt_with_default].should == "from-cli"
+        expect(knife_command.config[:opt_with_default]).to eq("from-cli")
       end
 
       context "verbosity is greater than zero" do
@@ -311,7 +311,7 @@ describe Chef::Knife do
     end
 
     it "does not have lazy dependencies loaded" do
-      expect(knife.class.test_deps_loaded).to be(nil)
+      expect(knife.class.test_deps_loaded).not_to be_truthy
     end
   end
 

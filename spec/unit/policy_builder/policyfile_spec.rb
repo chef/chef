@@ -96,7 +96,7 @@ describe Chef::PolicyBuilder::Policyfile do
     http = double("Chef::REST")
     server_url = "https://api.opscode.com/organizations/example"
     Chef::Config[:chef_server_url] = server_url
-    Chef::REST.should_receive(:new).with(server_url).and_return(http)
+    expect(Chef::REST).to receive(:new).with(server_url).and_return(http)
     expect(policy_builder.http_api).to eq(http)
   end
 
@@ -107,7 +107,7 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     it "always gives `false` for #temporary_policy?" do
-      expect(initialize_pb.temporary_policy?).to be_false
+      expect(initialize_pb.temporary_policy?).to be_falsey
     end
 
     context "chef-solo" do
@@ -144,7 +144,7 @@ describe Chef::PolicyBuilder::Policyfile do
 
   end
 
-  describe "when using compatibility mode" do
+  describe "loading policy data" do
 
     let(:http_api) { double("Chef::REST") }
 
@@ -168,52 +168,116 @@ describe Chef::PolicyBuilder::Policyfile do
     before do
       # TODO: agree on this name and logic.
       Chef::Config[:deployment_group] = "example-policy-stage"
-      policy_builder.stub(:http_api).and_return(http_api)
+      allow(policy_builder).to receive(:http_api).and_return(http_api)
     end
 
-    context "when the deployment group cannot be loaded" do
-      let(:error404) { Net::HTTPServerException.new("404 message", :body) }
+    describe "when using compatibility mode (policy_document_native_api == false)" do
+
+      context "when the deployment group cannot be loaded" do
+        let(:error404) { Net::HTTPServerException.new("404 message", :body) }
+
+        before do
+          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
+          expect(http_api).to receive(:get).
+            with("data/policyfiles/example-policy-stage").
+            and_raise(error404)
+        end
+
+        it "raises an error" do
+          expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
+        end
+
+        it "sends error message to the event system" do
+          expect(events).to receive(:node_load_failed).with(node_name, an_instance_of(err_namespace::ConfigurationError), Chef::Config)
+          expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
+        end
+
+      end
+
+      context "when the deployment_group is not configured" do
+        before do
+          Chef::Config[:deployment_group] = nil
+          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
+        end
+
+        it "errors while loading the node" do
+          expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
+        end
+
+
+        it "passes error information to the event system" do
+          # TODO: also make sure something acceptable happens with the error formatters
+          err_class = err_namespace::ConfigurationError
+          expect(events).to receive(:node_load_failed).with(node_name, an_instance_of(err_class), Chef::Config)
+          expect { policy_builder.load_node }.to raise_error(err_class)
+        end
+      end
+
+      context "when deployment_group is correctly configured" do
+
+        let(:policy_relative_url) { "data/policyfiles/example-policy-stage" }
+
+        before do
+          expect(http_api).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
+        end
+
+        it "fetches the policy file from a data bag item" do
+          expect(policy_builder.policy).to eq(parsed_policyfile_json)
+        end
+
+        it "extracts the run_list from the policyfile" do
+          expect(policy_builder.run_list).to eq(policyfile_run_list)
+        end
+
+      end
+    end
+
+    context "and policy_document_native_api is configured" do
 
       before do
-        Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
-        http_api.should_receive(:get).
-          with("data/policyfiles/example-policy-stage").
-          and_raise(error404)
+        Chef::Config[:policy_document_native_api] = true
+        Chef::Config[:policy_group] = "policy-stage"
+        Chef::Config[:policy_name] = "example"
       end
 
-      it "raises an error" do
-        expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
+      context "and policy_name or policy_group are not configured" do
+
+        it "raises a Configuration error for policy_group" do
+          Chef::Config[:policy_group] = nil
+          expect { policy_builder.policy }.to raise_error(err_namespace::ConfigurationError)
+        end
+
+        it "raises a Configuration error for policy_name" do
+          Chef::Config[:policy_name] = nil
+          expect { policy_builder.policy }.to raise_error(err_namespace::ConfigurationError)
+        end
+
       end
 
-      it "sends error message to the event system" do
-        events.should_receive(:node_load_failed).with(node_name, an_instance_of(err_namespace::ConfigurationError), Chef::Config)
-        expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
+      context "and policy_name and policy_group are configured" do
+
+        let(:policy_relative_url) { "policies/policy-stage/example" }
+
+        before do
+          expect(http_api).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
+        end
+
+        it "fetches the policy file from a data bag item" do
+          expect(policy_builder.policy).to eq(parsed_policyfile_json)
+        end
+
+        it "extracts the run_list from the policyfile" do
+          expect(policy_builder.run_list).to eq(policyfile_run_list)
+        end
       end
 
     end
 
-    describe "when the deployment_group is not configured" do
+
+    describe "building policy from the policyfile" do
+
       before do
-        Chef::Config[:deployment_group] = nil
-        Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
-      end
-
-      it "errors while loading the node" do
-        expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
-      end
-
-
-      it "passes error information to the event system" do
-        # TODO: also make sure something acceptable happens with the error formatters
-        err_class = err_namespace::ConfigurationError
-        events.should_receive(:node_load_failed).with(node_name, an_instance_of(err_class), Chef::Config)
-        expect { policy_builder.load_node }.to raise_error(err_class)
-      end
-    end
-
-    context "and a deployment_group is configured" do
-      before do
-        http_api.should_receive(:get).with("data/policyfiles/example-policy-stage").and_return(parsed_policyfile_json)
+        allow(policy_builder).to receive(:policy).and_return(parsed_policyfile_json)
       end
 
       it "fetches the policy file from a data bag item" do
@@ -239,7 +303,7 @@ describe Chef::PolicyBuilder::Policyfile do
       end
 
       it "implements #expand_run_list in a manner compatible with ExpandNodeObject" do
-        Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+        expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
         policy_builder.load_node
         expect(policy_builder.expand_run_list).to respond_to(:recipes)
         expect(policy_builder.expand_run_list.recipes).to eq(["example1::default", "example2::server"])
@@ -278,7 +342,7 @@ describe Chef::PolicyBuilder::Policyfile do
       describe "building the node object" do
 
         before do
-          Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
 
           policy_builder.load_node
           policy_builder.build_node
@@ -334,67 +398,91 @@ describe Chef::PolicyBuilder::Policyfile do
 
         let(:cookbook_synchronizer) { double("Chef::CookbookSynchronizer") }
 
-        context "and a cookbook is missing" do
+        shared_examples_for "fetching cookbooks" do
+          context "and a cookbook is missing" do
 
-          let(:error404) { Net::HTTPServerException.new("404 message", :body) }
+            let(:error404) { Net::HTTPServerException.new("404 message", :body) }
 
-          before do
-            Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+            before do
+              expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
 
-            # Remove references to example2 cookbook because we're iterating
-            # over a Hash data structure and on ruby 1.8.7 iteration order will
-            # not be stable.
-            parsed_policyfile_json["cookbook_locks"].delete("example2")
-            parsed_policyfile_json["run_list"].delete("recipe[example2::server]")
+              policy_builder.load_node
+              policy_builder.build_node
 
-            policy_builder.load_node
-            policy_builder.build_node
+              expect(http_api).to receive(:get).with(cookbook1_url).
+                and_raise(error404)
+            end
 
-            http_api.should_receive(:get).with("cookbooks/example1/#{example1_xyz_version}").
-              and_raise(error404)
+            it "raises an error indicating which cookbook is missing" do
+              expect { policy_builder.cookbooks_to_sync }.to raise_error(Chef::Exceptions::CookbookNotFound)
+            end
+
           end
 
-          it "raises an error indicating which cookbook is missing" do
-            expect { policy_builder.cookbooks_to_sync }.to raise_error(Chef::Exceptions::CookbookNotFound)
+          context "and the cookbooks can be fetched" do
+            before do
+              expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
+
+              policy_builder.load_node
+              policy_builder.build_node
+
+              expect(http_api).to receive(:get).with(cookbook1_url).
+                and_return(example1_cookbook_object)
+              expect(http_api).to receive(:get).with(cookbook2_url).
+                and_return(example2_cookbook_object)
+
+              allow(Chef::CookbookSynchronizer).to receive(:new).
+                with(expected_cookbook_hash, events).
+                and_return(cookbook_synchronizer)
+            end
+
+            it "builds a Hash of the form 'cookbook_name' => Chef::CookbookVersion" do
+              expect(policy_builder.cookbooks_to_sync).to eq(expected_cookbook_hash)
+            end
+
+            it "syncs the desired cookbooks via CookbookSynchronizer" do
+              expect(cookbook_synchronizer).to receive(:sync_cookbooks)
+              policy_builder.sync_cookbooks
+            end
+
+            it "builds a run context" do
+              expect(cookbook_synchronizer).to receive(:sync_cookbooks)
+              expect_any_instance_of(Chef::RunContext).to receive(:load).with(policy_builder.run_list_expansion_ish)
+              run_context = policy_builder.setup_run_context
+              expect(run_context.node).to eq(node)
+              expect(run_context.cookbook_collection.keys).to match_array(["example1", "example2"])
+            end
+
+          end
+        end # shared_examples_for "fetching cookbooks"
+
+        context "when using compatibility mode (policy_document_native_api == false)" do
+          include_examples "fetching cookbooks" do
+
+            let(:cookbook1_url) { "cookbooks/example1/#{example1_xyz_version}" }
+            let(:cookbook2_url) { "cookbooks/example2/#{example2_xyz_version}" }
+
           end
 
         end
 
-        context "and the cookbooks can be fetched" do
+        context "when using native API mode (policy_document_native_api == true)" do
+
           before do
-            Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
-
-            policy_builder.load_node
-            policy_builder.build_node
-
-            http_api.should_receive(:get).with("cookbooks/example1/#{example1_xyz_version}").
-              and_return(example1_cookbook_object)
-            http_api.should_receive(:get).with("cookbooks/example2/#{example2_xyz_version}").
-              and_return(example2_cookbook_object)
-
-            Chef::CookbookSynchronizer.stub(:new).
-              with(expected_cookbook_hash, events).
-              and_return(cookbook_synchronizer)
+            Chef::Config[:policy_document_native_api] = true
+            Chef::Config[:policy_group] = "policy-stage"
+            Chef::Config[:policy_name] = "example"
           end
 
-          it "builds a Hash of the form 'cookbook_name' => Chef::CookbookVersion" do
-            expect(policy_builder.cookbooks_to_sync).to eq(expected_cookbook_hash)
-          end
+          include_examples "fetching cookbooks" do
 
-          it "syncs the desired cookbooks via CookbookSynchronizer" do
-            cookbook_synchronizer.should_receive(:sync_cookbooks)
-            policy_builder.sync_cookbooks
-          end
+            let(:cookbook1_url) { "cookbook_artifacts/example1/#{example1_xyz_version}" }
+            let(:cookbook2_url) { "cookbook_artifacts/example2/#{example2_xyz_version}" }
 
-          it "builds a run context" do
-            cookbook_synchronizer.should_receive(:sync_cookbooks)
-            Chef::RunContext.any_instance.should_receive(:load).with(policy_builder.run_list_expansion_ish)
-            run_context = policy_builder.setup_run_context
-            expect(run_context.node).to eq(node)
-            expect(run_context.cookbook_collection.keys).to match_array(["example1", "example2"])
           end
 
         end
+
       end
     end
 

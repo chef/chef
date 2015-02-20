@@ -52,7 +52,7 @@ describe Chef::Application do
         shell_out("echo $http_proxy")
       end
 
-      so.stdout.chomp.should == "http://proxy.example.org:8080"
+      expect(so.stdout.chomp).to eq("http://proxy.example.org:8080")
     end
   end
 end

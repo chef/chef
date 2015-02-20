@@ -82,7 +82,7 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
   end
 
   def mount_should_not_exists(mount_point)
-    shell_out("mount").stdout.should_not include(mount_point)
+    expect(shell_out("mount").stdout).not_to include(mount_point)
   end
 
   def unix_mount_config_file
@@ -106,7 +106,7 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
   end
 
   def mount_should_be_disabled(mount_point)
-    shell_out("cat #{unix_mount_config_file}").stdout.should_not include("#{mount_point}:")
+    expect(shell_out("cat #{unix_mount_config_file}").stdout).not_to include("#{mount_point}:")
   end
 
   let(:new_resource) do
@@ -155,10 +155,10 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
 
   describe "when the target state is a mounted filesystem" do
     it "should mount the filesystem if it isn't mounted" do
-      current_resource.enabled.should be_false
-      current_resource.mounted.should be_false
+      expect(current_resource.enabled).to be_falsey
+      expect(current_resource.mounted).to be_falsey
       new_resource.run_action(:mount)
-      new_resource.should be_updated
+      expect(new_resource).to be_updated
       mount_should_exist(new_resource.mount_point, new_resource.device)
     end
   end

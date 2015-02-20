@@ -28,64 +28,64 @@ describe Chef::ApiClient do
 
   it "has a name attribute" do
     @client.name("ops_master")
-    @client.name.should == "ops_master"
+    expect(@client.name).to eq("ops_master")
   end
 
   it "does not allow spaces in the name" do
-    lambda { @client.name "ops master" }.should raise_error(ArgumentError)
+    expect { @client.name "ops master" }.to raise_error(ArgumentError)
   end
 
   it "only allows string values for the name" do
-    lambda { @client.name Hash.new }.should raise_error(ArgumentError)
+    expect { @client.name Hash.new }.to raise_error(ArgumentError)
   end
 
   it "has an admin flag attribute" do
     @client.admin(true)
-    @client.admin.should be_true
+    expect(@client.admin).to be_truthy
   end
 
   it "defaults to non-admin" do
-    @client.admin.should be_false
+    expect(@client.admin).to be_falsey
   end
 
   it "allows only boolean values for the admin flag" do
-    lambda { @client.admin(false) }.should_not raise_error
-    lambda { @client.admin(Hash.new) }.should raise_error(ArgumentError)
+    expect { @client.admin(false) }.not_to raise_error
+    expect { @client.admin(Hash.new) }.to raise_error(ArgumentError)
   end
 
   it "has a 'validator' flag attribute" do
     @client.validator(true)
-    @client.validator.should be_true
+    expect(@client.validator).to be_truthy
   end
 
   it "defaults to non-validator" do
-    @client.validator.should be_false
+    expect(@client.validator).to be_falsey
   end
 
   it "allows only boolean values for the 'validator' flag" do
-    lambda { @client.validator(false) }.should_not raise_error
-    lambda { @client.validator(Hash.new) }.should raise_error(ArgumentError)
+    expect { @client.validator(false) }.not_to raise_error
+    expect { @client.validator(Hash.new) }.to raise_error(ArgumentError)
   end
 
   it "has a public key attribute" do
     @client.public_key("super public")
-    @client.public_key.should == "super public"
+    expect(@client.public_key).to eq("super public")
   end
 
   it "accepts only String values for the public key" do
-    lambda { @client.public_key "" }.should_not raise_error
-    lambda { @client.public_key Hash.new }.should raise_error(ArgumentError)
+    expect { @client.public_key "" }.not_to raise_error
+    expect { @client.public_key Hash.new }.to raise_error(ArgumentError)
   end
 
 
   it "has a private key attribute" do
     @client.private_key("super private")
-    @client.private_key.should == "super private"
+    expect(@client.private_key).to eq("super private")
   end
 
   it "accepts only String values for the private key" do
-    lambda { @client.private_key "" }.should_not raise_error
-    lambda { @client.private_key Hash.new }.should raise_error(ArgumentError)
+    expect { @client.private_key "" }.not_to raise_error
+    expect { @client.private_key Hash.new }.to raise_error(ArgumentError)
   end
 
   describe "when serializing to JSON" do
@@ -96,32 +96,32 @@ describe Chef::ApiClient do
     end
 
     it "serializes as a JSON object" do
-      @json.should match(/^\{.+\}$/)
+      expect(@json).to match(/^\{.+\}$/)
     end
 
     it "includes the name value" do
-      @json.should include(%q{"name":"black"})
+      expect(@json).to include(%q{"name":"black"})
     end
 
     it "includes the public key value" do
-      @json.should include(%{"public_key":"crowes"})
+      expect(@json).to include(%{"public_key":"crowes"})
     end
 
     it "includes the 'admin' flag" do
-      @json.should include(%q{"admin":false})
+      expect(@json).to include(%q{"admin":false})
     end
 
     it "includes the 'validator' flag" do
-      @json.should include(%q{"validator":false})
+      expect(@json).to include(%q{"validator":false})
     end
 
     it "includes the private key when present" do
       @client.private_key("monkeypants")
-      @client.to_json.should include(%q{"private_key":"monkeypants"})
+      expect(@client.to_json).to include(%q{"private_key":"monkeypants"})
     end
 
     it "does not include the private key if not present" do
-      @json.should_not include("private_key")
+      expect(@json).not_to include("private_key")
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
@@ -129,43 +129,83 @@ describe Chef::ApiClient do
     end
   end
 
-  describe "when deserializing from JSON" do
-    before(:each) do
-      client = {
-      "name" => "black",
-      "public_key" => "crowes",
-      "private_key" => "monkeypants",
-      "admin" => true,
-      "validator" => true,
-      "json_class" => "Chef::ApiClient"
-      }
-      @client = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(client))
+  describe "when deserializing from JSON (string) using ApiClient#from_json" do
+    let(:client_string) do
+      "{\"name\":\"black\",\"public_key\":\"crowes\",\"private_key\":\"monkeypants\",\"admin\":true,\"validator\":true}"
+    end
+
+    let(:client) do
+      Chef::ApiClient.from_json(client_string)
+    end
+
+    it "does not require a 'json_class' string" do
+      expect(Chef::JSONCompat.parse(client_string)["json_class"]).to eq(nil)
     end
 
     it "should deserialize to a Chef::ApiClient object" do
-      @client.should be_a_kind_of(Chef::ApiClient)
+      expect(client).to be_a_kind_of(Chef::ApiClient)
     end
 
     it "preserves the name" do
-      @client.name.should == "black"
+      expect(client.name).to eq("black")
     end
 
     it "preserves the public key" do
-      @client.public_key.should == "crowes"
+      expect(client.public_key).to eq("crowes")
     end
 
     it "preserves the admin status" do
-      @client.admin.should be_true
+      expect(client.admin).to be_truthy
     end
 
     it "preserves the 'validator' status" do
-      @client.validator.should be_true
+      expect(client.validator).to be_truthy
     end
 
     it "includes the private key if present" do
-      @client.private_key.should == "monkeypants"
+      expect(client.private_key).to eq("monkeypants")
+    end
+  end
+
+  describe "when deserializing from JSON (hash) using JSONCompat#from_json" do
+    let(:client_hash) do
+      {
+        "name" => "black",
+        "public_key" => "crowes",
+        "private_key" => "monkeypants",
+        "admin" => true,
+        "validator" => true,
+        "json_class" => "Chef::ApiClient"
+      }
     end
 
+    let(:client) do
+      Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(client_hash))
+    end
+
+    it "should deserialize to a Chef::ApiClient object" do
+      expect(client).to be_a_kind_of(Chef::ApiClient)
+    end
+
+    it "preserves the name" do
+      expect(client.name).to eq("black")
+    end
+
+    it "preserves the public key" do
+      expect(client.public_key).to eq("crowes")
+    end
+
+    it "preserves the admin status" do
+      expect(client.admin).to be_truthy
+    end
+
+    it "preserves the 'validator' status" do
+      expect(client.validator).to be_truthy
+    end
+
+    it "includes the private key if present" do
+      expect(client.private_key).to eq("monkeypants")
+    end
   end
 
   describe "when loading from JSON" do
@@ -183,33 +223,33 @@ describe Chef::ApiClient do
       "json_class" => "Chef::ApiClient"
       }
       @http_client = double("Chef::REST mock")
-      Chef::REST.stub(:new).and_return(@http_client)
-      @http_client.should_receive(:get).with("clients/black").and_return(client)
+      allow(Chef::REST).to receive(:new).and_return(@http_client)
+      expect(@http_client).to receive(:get).with("clients/black").and_return(client)
       @client = Chef::ApiClient.load(client['name'])
     end
 
     it "should deserialize to a Chef::ApiClient object" do
-      @client.should be_a_kind_of(Chef::ApiClient)
+      expect(@client).to be_a_kind_of(Chef::ApiClient)
     end
 
     it "preserves the name" do
-      @client.name.should == "black"
+      expect(@client.name).to eq("black")
     end
 
     it "preserves the public key" do
-      @client.public_key.should == "crowes"
+      expect(@client.public_key).to eq("crowes")
     end
 
     it "preserves the admin status" do
-      @client.admin.should be_a_kind_of(TrueClass)
+      expect(@client.admin).to be_a_kind_of(TrueClass)
     end
 
     it "preserves the 'validator' status" do
-      @client.validator.should be_a_kind_of(TrueClass)
+      expect(@client.validator).to be_a_kind_of(TrueClass)
     end
 
     it "includes the private key if present" do
-      @client.private_key.should == "monkeypants"
+      expect(@client.private_key).to eq("monkeypants")
     end
 
   end
@@ -230,9 +270,9 @@ describe Chef::ApiClient do
     end
 
     it "has an HTTP client configured with default credentials" do
-      @client.http_api.should be_a_kind_of(Chef::REST)
-      @client.http_api.client_name.should == "silent-bob"
-      @client.http_api.signing_key.to_s.should == private_key_data
+      expect(@client.http_api).to be_a_kind_of(Chef::REST)
+      expect(@client.http_api.client_name).to eq("silent-bob")
+      expect(@client.http_api.signing_key.to_s).to eq(private_key_data)
     end
   end
 
@@ -240,7 +280,7 @@ describe Chef::ApiClient do
   describe "when requesting a new key" do
     before do
       @http_client = double("Chef::REST mock")
-      Chef::REST.stub(:new).and_return(@http_client)
+      allow(Chef::REST).to receive(:new).and_return(@http_client)
     end
 
     context "and the client does not exist on the server" do
@@ -248,11 +288,11 @@ describe Chef::ApiClient do
         @a_404_response = Net::HTTPNotFound.new("404 not found and such", nil, nil)
         @a_404_exception = Net::HTTPServerException.new("404 not found exception", @a_404_response)
 
-        @http_client.should_receive(:get).with("clients/lost-my-key").and_raise(@a_404_exception)
+        expect(@http_client).to receive(:get).with("clients/lost-my-key").and_raise(@a_404_exception)
       end
 
       it "raises a 404 error" do
-        lambda { Chef::ApiClient.reregister("lost-my-key") }.should raise_error(Net::HTTPServerException)
+        expect { Chef::ApiClient.reregister("lost-my-key") }.to raise_error(Net::HTTPServerException)
       end
     end
 
@@ -260,7 +300,7 @@ describe Chef::ApiClient do
       before do
         @api_client_without_key = Chef::ApiClient.new
         @api_client_without_key.name("lost-my-key")
-        @http_client.should_receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
+        expect(@http_client).to receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
       end
 
 
@@ -269,7 +309,7 @@ describe Chef::ApiClient do
           @api_client_with_key = Chef::ApiClient.new
           @api_client_with_key.name("lost-my-key")
           @api_client_with_key.private_key("the new private key")
-          @http_client.should_receive(:put).
+          expect(@http_client).to receive(:put).
             with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
             and_return(@api_client_with_key)
         end
@@ -277,17 +317,17 @@ describe Chef::ApiClient do
         it "returns an ApiClient with a private key" do
           response = Chef::ApiClient.reregister("lost-my-key")
           # no sane == method for ApiClient :'(
-          response.should == @api_client_without_key
-          response.private_key.should == "the new private key"
-          response.name.should == "lost-my-key"
-          response.admin.should be_false
+          expect(response).to eq(@api_client_without_key)
+          expect(response.private_key).to eq("the new private key")
+          expect(response.name).to eq("lost-my-key")
+          expect(response.admin).to be_falsey
         end
       end
 
       context "and the client exists on a Chef 10-like server" do
         before do
           @api_client_with_key = {"name" => "lost-my-key", "private_key" => "the new private key"}
-          @http_client.should_receive(:put).
+          expect(@http_client).to receive(:put).
             with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
             and_return(@api_client_with_key)
         end
@@ -295,16 +335,14 @@ describe Chef::ApiClient do
         it "returns an ApiClient with a private key" do
           response = Chef::ApiClient.reregister("lost-my-key")
           # no sane == method for ApiClient :'(
-          response.should == @api_client_without_key
-          response.private_key.should == "the new private key"
-          response.name.should == "lost-my-key"
-          response.admin.should be_false
-          response.validator.should be_false
+          expect(response).to eq(@api_client_without_key)
+          expect(response.private_key).to eq("the new private key")
+          expect(response.name).to eq("lost-my-key")
+          expect(response.admin).to be_falsey
+          expect(response.validator).to be_falsey
         end
       end
 
     end
   end
 end
-
-

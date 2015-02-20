@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'chef/mixin/command'
 require 'chef/log'
 require 'chef/file_cache'
@@ -24,10 +25,14 @@ require 'chef/platform'
 class Chef
   class Provider
     class Package < Chef::Provider
+      include Chef::Mixin::ShellOut
 
-      include Chef::Mixin::Command
-
+      #
+      # Hook that subclasses use to populate the candidate_version(s)
+      #
+      # @return [Array, String] candidate_version(s) may be a string or array
       attr_accessor :candidate_version
+
       def initialize(new_resource, run_context)
         super
         @candidate_version = nil
@@ -41,63 +46,89 @@ class Chef
       end
 
       def define_resource_requirements
+        # XXX: upgrade with a specific version doesn't make a whole lot of sense, but why don't we throw this anyway if it happens?
+        # if not, shouldn't we raise to tell the user to use install instead of upgrade if they want to pin a version?
         requirements.assert(:install) do |a|
-          a.assertion { ((@new_resource.version != nil) && !(target_version_already_installed?)) \
-            || !(@current_resource.version.nil? && candidate_version.nil?)  }
-          a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
-          a.whyrun("Assuming a repository that offers #{@new_resource.package_name} would have been configured")
+          a.assertion { candidates_exist_for_all_forced_changes? }
+          a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{forced_packages_missing_candidates.join(", ")}")
+          a.whyrun("Assuming a repository that offers #{forced_packages_missing_candidates.join(", ")} would have been configured")
         end
 
-        requirements.assert(:upgrade) do |a|
-          # Can't upgrade what we don't have
-          a.assertion  { !(@current_resource.version.nil? && candidate_version.nil?) }
-          a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{@new_resource.package_name}")
-          a.whyrun("Assuming a repository that offers #{@new_resource.package_name} would have been configured")
+        requirements.assert(:upgrade, :install) do |a|
+          a.assertion  { candidates_exist_for_all_uninstalled? }
+          a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
+          a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
         end
       end
 
       def action_install
-        # If we specified a version, and it's not the current version, move to the specified version
-        if !@new_resource.version.nil? && !(target_version_already_installed?)
-          install_version = @new_resource.version
-        # If it's not installed at all, install it
-        elsif @current_resource.version.nil?
-          install_version = candidate_version
-        else
+        unless target_version_array.any?
           Chef::Log.debug("#{@new_resource} is already installed - nothing to do")
           return
         end
 
-        # We need to make sure we handle the preseed file
+        # @todo: move the preseed code out of the base class (and complete the fix for Array of preseeds? ugh...)
         if @new_resource.response_file
-          if preseed_file = get_preseed_file(@new_resource.package_name, install_version)
-            converge_by("preseed package #{@new_resource.package_name}") do
+          if preseed_file = get_preseed_file(package_names_for_targets, versions_for_targets)
+            converge_by("preseed package #{package_names_for_targets}") do
               preseed_package(preseed_file)
             end
           end
         end
-        description = install_version ? "version #{install_version} of" : ""
-        converge_by("install #{description} package #{@new_resource.package_name}") do
-          @new_resource.version(install_version)
-          install_package(@new_resource.package_name, install_version)
+
+        # XXX: mutating the new resource is generally bad
+        @new_resource.version(versions_for_new_resource)
+
+        converge_by(install_description) do
+          install_package(package_names_for_targets, versions_for_targets)
+          Chef::Log.info("#{@new_resource} installed #{package_names_for_targets} at #{versions_for_targets}")
         end
       end
+
+      def install_description
+        description = []
+        target_version_array.each_with_index do |target_version, i|
+          next if target_version.nil?
+          package_name = package_name_array[i]
+          description << "install version #{target_version} of package #{package_name}"
+        end
+        description
+      end
+
+      private :install_description
 
       def action_upgrade
-        if candidate_version.nil?
-          Chef::Log.debug("#{@new_resource} no candidate version - nothing to do")
-        elsif @current_resource.version == candidate_version
-          Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
-        else
-          @new_resource.version(candidate_version)
-          orig_version = @current_resource.version || "uninstalled"
-          converge_by("upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
-            upgrade_package(@new_resource.package_name, candidate_version)
-            Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
-          end
+        if !target_version_array.any?
+          Chef::Log.debug("#{@new_resource} no versions to upgrade - nothing to do")
+          return
+        end
+
+        # XXX: mutating the new resource is generally bad
+        @new_resource.version(versions_for_new_resource)
+
+        converge_by(upgrade_description) do
+          upgrade_package(package_names_for_targets, versions_for_targets)
+          log_allow_downgrade = allow_downgrade ? '(allow_downgrade)' : ''
+          Chef::Log.info("#{@new_resource} upgraded#{log_allow_downgrade} #{package_names_for_targets} to #{versions_for_targets}")
         end
       end
 
+      def upgrade_description
+        log_allow_downgrade = allow_downgrade ? '(allow_downgrade)' : ''
+        description = []
+        target_version_array.each_with_index do |target_version, i|
+          next if target_version.nil?
+          package_name = package_name_array[i]
+          candidate_version = candidate_version_array[i]
+          current_version = current_version_array[i] || "uninstalled"
+          description << "upgrade#{log_allow_downgrade} package #{package_name} from #{current_version} to #{candidate_version}"
+        end
+        description
+      end
+
+      private :upgrade_description
+
+      # @todo: ability to remove an array of packages
       def action_remove
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of " :  ""
@@ -110,18 +141,28 @@ class Chef
         end
       end
 
+      def have_any_matching_version?
+        f = []
+        new_version_array.each_with_index do |item, index|
+          f << (item == current_version_array[index])
+        end
+        f.any?
+      end
+
       def removing_package?
-        if @current_resource.version.nil?
-          false # nothing to remove
-        elsif @new_resource.version.nil?
-          true # remove any version of a package
-        elsif @new_resource.version == @current_resource.version
+        if !current_version_array.any?
+          # ! any? means it's all nil's, which means nothing is installed
+          false
+        elsif !new_version_array.any?
+          true # remove any version of all packages
+        elsif have_any_matching_version?
           true # remove the version we have
         else
           false # we don't have the version we want to remove
         end
       end
 
+      # @todo: ability to purge an array of packages
       def action_purge
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of" : ""
@@ -132,6 +173,7 @@ class Chef
         end
       end
 
+      # @todo: ability to reconfigure an array of packages
       def action_reconfig
         if @current_resource.version == nil then
           Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
@@ -154,6 +196,7 @@ class Chef
         end
       end
 
+      # @todo use composition rather than inheritance
       def install_package(name, version)
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :install"
       end
@@ -178,6 +221,17 @@ class Chef
         raise( Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reconfig" )
       end
 
+      # this is heavily used by subclasses
+      def expand_options(options)
+        options ? " #{options}" : ""
+      end
+
+      # this is public and overridden by subclasses (rubygems package implements '>=' and '~>' operators)
+      def target_version_already_installed?(current_version, new_version)
+        new_version == current_version
+      end
+
+      # @todo: extract apt/dpkg specific preseeding to a helper class
       def get_preseed_file(name, version)
         resource = preseed_resource(name, version)
         resource.run_action(:create)
@@ -190,6 +244,7 @@ class Chef
         end
       end
 
+      # @todo: extract apt/dpkg specific preseeding to a helper class
       def preseed_resource(name, version)
         # A directory in our cache to store this cookbook's preseed files in
         file_cache_dir = Chef::FileCache.create_cache_path("preseed/#{@new_resource.cookbook_name}")
@@ -216,24 +271,218 @@ class Chef
         remote_file
       end
 
-      def expand_options(options)
-        options ? " #{options}" : ""
-      end
-
-      def target_version_already_installed?
-        @new_resource.version == @current_resource.version
+      # helper method used by subclasses
+      #
+      def as_array(thing)
+        [ thing ].flatten
       end
 
       private
 
+      # Returns the package names which need to be modified.  If the resource was called with an array of packages
+      # then this will return an array of packages to update (may have 0 or 1 entries).  If the resource was called
+      # with a non-array package_name to manage then this will return a string rather than an Array.  The output
+      # of this is meant to be fed into subclass interfaces to install/upgrade packages and not all of them are
+      # Array-aware.
+      #
+      # @return [String, Array<String>] package_name(s) to actually update/install
+      def package_names_for_targets
+        package_names_for_targets = []
+        target_version_array.each_with_index do |target_version, i|
+          next if target_version.nil?
+          package_name = package_name_array[i]
+          package_names_for_targets.push(package_name)
+        end
+        multipackage? ? package_names_for_targets : package_names_for_targets[0]
+      end
+
+      # Returns the package versions which need to be modified.  If the resource was called with an array of packages
+      # then this will return an array of versions to update (may have 0 or 1 entries).  If the resource was called
+      # with a non-array package_name to manage then this will return a string rather than an Array.  The output
+      # of this is meant to be fed into subclass interfaces to install/upgrade packages and not all of them are
+      # Array-aware.
+      #
+      # @return [String, Array<String>] package version(s) to actually update/install
+      def versions_for_targets
+        versions_for_targets = []
+        target_version_array.each_with_index do |target_version, i|
+          next if target_version.nil?
+          versions_for_targets.push(target_version)
+        end
+        multipackage? ? versions_for_targets : versions_for_targets[0]
+      end
+
+      # We need to mutate @new_resource.version() for some reason and this is a helper so that we inject the right
+      # class (String or Array) into that attribute based on if we're handling an array of package names or not.
+      #
+      # @return [String, Array<String>] target_versions coerced into the correct type for back-compat
+      def versions_for_new_resource
+        if multipackage?
+          target_version_array
+        else
+          target_version_array[0]
+        end
+      end
+
+      # Return an array indexed the same as *_version_array which contains either the target version to install/upgrade to
+      # or else nil if the package is not being modified.
+      #
+      # @return [Array<String,NilClass>] array of package versions which need to be upgraded (nil = not being upgraded)
+      def target_version_array
+        @target_version_array ||=
+          begin
+            target_version_array = []
+
+            each_package do |package_name, new_version, current_version, candidate_version|
+              case action
+              when :upgrade
+
+                if !candidate_version
+                  Chef::Log.debug("#{new_resource} #{package_name} has no candidate_version to upgrade to")
+                  target_version_array.push(nil)
+                elsif current_version == candidate_version
+                  Chef::Log.debug("#{new_resource} #{package_name} the #{candidate_version} is already installed")
+                  target_version_array.push(nil)
+                else
+                  Chef::Log.debug("#{new_resource} #{package_name} is out of date, will upgrade to #{candidate_version}")
+                  target_version_array.push(candidate_version)
+                end
+
+              when :install
+
+                if new_version
+                  if target_version_already_installed?(current_version, new_version)
+                    Chef::Log.debug("#{new_resource} #{package_name} #{current_version} satisifies #{new_version} requirement")
+                    target_version_array.push(nil)
+                  else
+                    Chef::Log.debug("#{new_resource} #{package_name} #{current_version} needs updating to #{new_version}")
+                    target_version_array.push(new_version)
+                  end
+                elsif current_version.nil?
+                  Chef::Log.debug("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
+                  target_version_array.push(candidate_version)
+                else
+                  Chef::Log.debug("#{new_resource} #{package_name} #{current_version} already installed")
+                  target_version_array.push(nil)
+                end
+
+              else
+                # in specs please test the public interface provider.run_action(:install) instead of provider.action_install
+                raise "internal error - target_version_array in package provider does not understand this action"
+              end
+            end
+
+            target_version_array
+          end
+      end
+
+      # Check the list of current_version_array and candidate_version_array. For any of the
+      # packages if both versions are missing (uninstalled and no candidate) this will be an
+      # unsolvable error.
+      #
+      # @return [Boolean] valid candidates exist for all uninstalled packages
+      def candidates_exist_for_all_uninstalled?
+        packages_missing_candidates.empty?
+      end
+
+      # Returns array of all packages which are missing candidate versions.
+      #
+      # @return [Array<String>] names of packages missing candidates
+      def packages_missing_candidates
+        @packages_missing_candidates ||=
+          begin
+            missing = []
+            each_package do |package_name, new_version, current_version, candidate_version|
+              missing.push(package_name) if candidate_version.nil? && current_version.nil?
+            end
+            missing
+          end
+      end
+
+      # This looks for packages which have a new_version and a current_version, and they are
+      # different (a "forced change") and for which there is no candidate.  This is an edge
+      # condition that candidates_exist_for_all_uninstalled? does not catch since in this case
+      # it is not uninstalled but must be installed anyway and no version exists.
+      #
+      # @return [Boolean] valid candidates exist for all uninstalled packages
+      def candidates_exist_for_all_forced_changes?
+        forced_packages_missing_candidates.empty?
+      end
+
+      # Returns an array of all forced packages which are missing candidate versions
+      #
+      # @return [Array] names of packages missing candidates
+      def forced_packages_missing_candidates
+        @forced_packages_missing_candidates ||=
+          begin
+            missing = []
+            each_package do |package_name, new_version, current_version, candidate_version|
+              next if new_version.nil? || current_version.nil?
+              if candidate_version.nil? && !target_version_already_installed?(current_version, new_version)
+                missing.push(package_name)
+              end
+            end
+            missing
+          end
+      end
+
+      # Helper to iterate over all the indexed *_array's in sync
+      #
+      # @yield [package_name, new_version, current_version, candidate_version] Description of block
+      def each_package
+        package_name_array.each_with_index do |package_name, i|
+          candidate_version = candidate_version_array[i]
+          current_version = current_version_array[i]
+          new_version = new_version_array[i]
+          yield package_name, new_version, current_version, candidate_version
+        end
+      end
+
+      # @return [Boolean] if we're doing a multipackage install or not
+      def multipackage?
+        new_resource.package_name.is_a?(Array)
+      end
+
+      # @return [Array] package_name(s) as an array
+      def package_name_array
+        [ new_resource.package_name ].flatten
+      end
+
+      # @return [Array] candidate_version(s) as an array
+      def candidate_version_array
+        [ candidate_version ].flatten
+      end
+
+      # @return [Array] current_version(s) as an array
+      def current_version_array
+        [ current_resource.version ].flatten
+      end
+
+      # @return [Array] new_version(s) as an array
+      def new_version_array
+        @new_version_array ||=
+            [ new_resource.version ].flatten.map do |v|
+              ( v.nil? || v.empty? ) ? nil : v
+            end
+      end
+
+      # @todo: extract apt/dpkg specific preseeding to a helper class
       def template_available?(path)
-        run_context.has_template_in_cookbook?(@new_resource.cookbook_name, path)
+        run_context.has_template_in_cookbook?(new_resource.cookbook_name, path)
       end
 
+      # @todo: extract apt/dpkg specific preseeding to a helper class
       def cookbook_file_available?(path)
-        run_context.has_cookbook_file_in_cookbook?(@new_resource.cookbook_name, path)
+        run_context.has_cookbook_file_in_cookbook?(new_resource.cookbook_name, path)
       end
 
+      def allow_downgrade
+        if @new_resource.respond_to?("allow_downgrade")
+          @new_resource.allow_downgrade
+        else
+          false
+        end
+      end
     end
   end
 end

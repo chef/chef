@@ -39,7 +39,7 @@ class Chef
         rname = filename_to_qualified_string(cookbook_name, filename)
 
         class_name = convert_to_class_name(rname)
-        if Resource.strict_const_defined?(class_name)
+        if Resource.const_defined?(class_name, false)
           Chef::Log.info("#{class_name} light-weight resource is already initialized -- Skipping loading #{filename}!")
           Chef::Log.debug("Overriding already defined LWRPs is not supported anymore starting with Chef 12.")
           resource_class = Resource.const_get(class_name)
@@ -73,16 +73,7 @@ class Chef
       # Define an attribute on this resource, including optional validation
       # parameters.
       def self.attribute(attr_name, validation_opts={})
-        # Ruby 1.8 doesn't support default arguments to blocks, but we have to
-        # use define_method with a block to capture +validation_opts+.
-        # Workaround this by defining two methods :(
-        class_eval(<<-SHIM, __FILE__, __LINE__)
-          def #{attr_name}(arg=nil)
-            _set_or_return_#{attr_name}(arg)
-          end
-        SHIM
-
-        define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
+        define_method(attr_name) do |arg=nil|
           set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end

@@ -36,9 +36,15 @@ class Chef
           options[env_key] ||= {}
           options[env_key] = options[env_key].dup
           options[env_key]['LC_ALL'] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?('LC_ALL')
+          options[env_key]['LANGUAGE'] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?('LANGUAGE')
+          options[env_key]['LANG'] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?('LANG')
           args << options
         else
-          args << { :environment => { 'LC_ALL' => Chef::Config[:internal_locale] } }
+          args << { :environment => {
+            'LC_ALL' => Chef::Config[:internal_locale],
+            'LANGUAGE' => Chef::Config[:internal_locale],
+            'LANG' => Chef::Config[:internal_locale],
+          } }
         end
 
         shell_out_command(*args)

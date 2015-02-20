@@ -54,6 +54,7 @@ class Chef
         #
 
         priority :service, Chef::Provider::Service::Freebsd, os: [ "freebsd", "netbsd" ]
+        priority :service, Chef::Provider::Service::Openbsd, os: [ "openbsd" ]
 
         #
         # Solaris-en
@@ -66,6 +67,7 @@ class Chef
         #
 
         priority :service, Chef::Provider::Service::Macosx, os: "darwin"
+        priority :package, Chef::Provider::Package::Homebrew, os: "darwin"
       end
 
       def priority_map

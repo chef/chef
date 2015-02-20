@@ -137,20 +137,20 @@ describe Chef::Resource::RemoteFile do
       let(:source) { 'http://localhost:9000/nyan_cat_content_length_compressed.png' }
 
       before do
-        File.should_not exist(path)
+        expect(File).not_to exist(path)
         resource.run_action(:create)
       end
 
       it "should create the file" do
-        File.should exist(path)
+        expect(File).to exist(path)
       end
 
       it "should mark the resource as updated" do
-        resource.should be_updated_by_last_action
+        expect(resource).to be_updated_by_last_action
       end
 
       it "has the correct content" do
-        binread(path).should == expected_content
+        expect(binread(path)).to eq(expected_content)
       end
     end
 
@@ -159,20 +159,20 @@ describe Chef::Resource::RemoteFile do
       let(:source) { 'http://localhost:9000/nyan_cat_content_length.png' }
 
       before do
-        File.should_not exist(path)
+        expect(File).not_to exist(path)
         resource.run_action(:create)
       end
 
       it "should create the file" do
-        File.should exist(path)
+        expect(File).to exist(path)
       end
 
       it "should mark the resource as updated" do
-        resource.should be_updated_by_last_action
+        expect(resource).to be_updated_by_last_action
       end
 
       it "has the correct content" do
-        binread(path).should == expected_content
+        expect(binread(path)).to eq(expected_content)
       end
     end
 
@@ -180,11 +180,11 @@ describe Chef::Resource::RemoteFile do
       let(:source) { 'http://localhost:9000/nyan_cat_truncated_compressed.png' }
 
       before do
-        File.should_not exist(path)
+        expect(File).not_to exist(path)
       end
 
       it "should raise ContentLengthMismatch" do
-        lambda { resource.run_action(:create) }.should raise_error(Chef::Exceptions::ContentLengthMismatch)
+        expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
         #File.should_not exist(path) # XXX: CHEF-5081
       end
     end
@@ -193,11 +193,11 @@ describe Chef::Resource::RemoteFile do
       let(:source) { 'http://localhost:9000/nyan_cat_truncated.png' }
 
       before do
-        File.should_not exist(path)
+        expect(File).not_to exist(path)
       end
 
       it "should raise ContentLengthMismatch" do
-        lambda { resource.run_action(:create) }.should raise_error(Chef::Exceptions::ContentLengthMismatch)
+        expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
         #File.should_not exist(path) # XXX: CHEF-5081
       end
     end
@@ -207,20 +207,20 @@ describe Chef::Resource::RemoteFile do
       let(:source) { 'http://localhost:9000/nyan_cat_transfer_encoding.png' }
 
       before do
-        File.should_not exist(path)
+        expect(File).not_to exist(path)
         resource.run_action(:create)
       end
 
       it "should create the file" do
-        File.should exist(path)
+        expect(File).to exist(path)
       end
 
       it "should mark the resource as updated" do
-        resource.should be_updated_by_last_action
+        expect(resource).to be_updated_by_last_action
       end
 
       it "has the correct content" do
-        binread(path).should == expected_content
+        expect(binread(path)).to eq(expected_content)
       end
     end
 
@@ -228,12 +228,12 @@ describe Chef::Resource::RemoteFile do
       let(:source) { 'http://localhost:0000/seattle_capo.png' }
 
       before do
-        File.should_not exist(path)
+        expect(File).not_to exist(path)
       end
 
       it "should not create the file" do
         expect{ resource.run_action(:create) }.to raise_error
-        File.should_not exist(path)
+        expect(File).not_to exist(path)
       end
     end
   end

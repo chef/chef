@@ -345,6 +345,14 @@ class Chef
         if new_resource.checksum && tempfile && ( new_resource.checksum != tempfile_checksum )
           raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(tempfile_checksum))
         end
+
+        if tempfile
+          new_resource.verify.each do |v|
+            if ! v.verify(tempfile.path)
+              raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{v}"
+            end
+          end
+        end
       end
 
       def do_unlink

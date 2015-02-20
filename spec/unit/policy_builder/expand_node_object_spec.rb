@@ -73,7 +73,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
         it "creates a new in-memory node object with the given name" do
           policy_builder.load_node
-          policy_builder.node.name.should == node_name
+          expect(policy_builder.node.name).to eq(node_name)
         end
 
       end
@@ -83,9 +83,9 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
         let(:node) { Chef::Node.new.tap { |n| n.name(node_name) } }
 
         it "loads or creates a node on the server" do
-          Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
           policy_builder.load_node
-          policy_builder.node.should == node
+          expect(policy_builder.node).to eq(node)
         end
 
       end
@@ -95,7 +95,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
       # XXX: Chef::Client just needs to be able to call this, it doesn't depend on the return value.
       it "builds the node and returns the updated node object" do
-        pending
+        skip
       end
 
     end
@@ -133,7 +133,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     end
 
     before do
-      Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
       policy_builder.load_node
     end
 
@@ -167,7 +167,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
     before do
       Chef::Config[:environment] = configured_environment
-      Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
       policy_builder.load_node
       policy_builder.build_node
     end
@@ -186,7 +186,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     end
 
     it "reports that a temporary_policy is not being used" do
-      expect(policy_builder.temporary_policy?).to be_false
+      expect(policy_builder.temporary_policy?).to be_falsey
     end
 
     describe "when the given run list is not in expanded form" do
@@ -210,7 +210,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
         node.override_attrs = original_override_attrs
         node.run_list(primary_runlist)
 
-        node.should_receive(:expand!).with("server") do
+        expect(node).to receive(:expand!).with("server") do
           node.run_list("recipe[from_role::default]")
           expansion
         end
@@ -248,7 +248,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       end
 
       it "reports that a temporary policy is being used" do
-        expect(policy_builder.temporary_policy?).to be_true
+        expect(policy_builder.temporary_policy?).to be_truthy
       end
 
     end
@@ -267,7 +267,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
       let(:environment) do
         environment = Chef::Environment.new.tap {|e| e.name("prod") }
-        Chef::Environment.should_receive(:load).with("prod").and_return(environment)
+        expect(Chef::Environment).to receive(:load).with("prod").and_return(environment)
         environment
       end
 
@@ -302,27 +302,27 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     let(:cookbook_synchronizer) { double("CookbookSynchronizer") }
 
     before do
-      Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
 
-      policy_builder.stub(:api_service).and_return(chef_http)
+      allow(policy_builder).to receive(:api_service).and_return(chef_http)
 
       policy_builder.load_node
       policy_builder.build_node
 
       run_list_expansion = policy_builder.run_list_expansion
 
-      chef_http.should_receive(:post).with(cookbook_resolve_url, cookbook_resolve_post_data).and_return(cookbook_hash)
-      Chef::CookbookSynchronizer.should_receive(:new).with(cookbook_hash, events).and_return(cookbook_synchronizer)
-      cookbook_synchronizer.should_receive(:sync_cookbooks)
+      expect(chef_http).to receive(:post).with(cookbook_resolve_url, cookbook_resolve_post_data).and_return(cookbook_hash)
+      expect(Chef::CookbookSynchronizer).to receive(:new).with(cookbook_hash, events).and_return(cookbook_synchronizer)
+      expect(cookbook_synchronizer).to receive(:sync_cookbooks)
 
-      Chef::RunContext.any_instance.should_receive(:load).with(run_list_expansion)
+      expect_any_instance_of(Chef::RunContext).to receive(:load).with(run_list_expansion)
 
       policy_builder.setup_run_context
     end
 
     it "configures FileVendor to fetch files remotely" do
       manifest = double("cookbook manifest")
-      Chef::Cookbook::RemoteFileVendor.should_receive(:new).with(manifest, chef_http)
+      expect(Chef::Cookbook::RemoteFileVendor).to receive(:new).with(manifest, chef_http)
       Chef::Cookbook::FileVendor.create_from_manifest(manifest)
     end
 
@@ -333,4 +333,3 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
   end
 
 end
-

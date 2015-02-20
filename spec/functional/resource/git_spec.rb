@@ -92,7 +92,7 @@ E
 
   before(:all) do
     @ohai = Ohai::System.new
-    @ohai.all_plugins("os")
+    @ohai.all_plugins(["platform", "os"])
   end
 
   context "working with pathes with special characters" do
@@ -130,10 +130,10 @@ E
     it "checks out the revision pointed to by the tag commit, not the tag commit itself" do
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
-      head_rev.should == v1_commit
+      expect(head_rev).to eq(v1_commit)
       # also verify the tag commit itself is what we expect as an extra sanity check
       rev = shell_out!('git rev-parse v1.0.0', :cwd => deploy_directory, :returns => [0]).stdout.strip
-      rev.should == v1_tag
+      expect(rev).to eq(v1_tag)
     end
 
     it "doesn't update if up-to-date" do
@@ -141,10 +141,10 @@ E
       # properly to the pointed to commit.
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
-      head_rev.should == v1_commit
+      expect(head_rev).to eq(v1_commit)
 
       copy_git_resource.run_action(:sync)
-      copy_git_resource.should_not be_updated
+      expect(copy_git_resource).not_to be_updated
     end
   end
 
@@ -167,25 +167,25 @@ E
       basic_git_resource.revision rev_foo
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
-      head_rev.should == rev_foo
+      expect(head_rev).to eq(rev_foo)
     end
 
     it "doesn't update if up-to-date" do
       basic_git_resource.revision rev_foo
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
-      head_rev.should == rev_foo
+      expect(head_rev).to eq(rev_foo)
 
       copy_git_resource.revision rev_foo
       copy_git_resource.run_action(:sync)
-      copy_git_resource.should_not be_updated
+      expect(copy_git_resource).not_to be_updated
     end
 
     it "checks out the expected revision 972d" do
       basic_git_resource.revision rev_testing
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
-      head_rev.should == rev_testing
+      expect(head_rev).to eq(rev_testing)
     end
   end
 
@@ -200,7 +200,7 @@ E
     it "checks out the expected revision" do
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
-      head_rev.should == rev_head
+      expect(head_rev).to eq(rev_head)
     end
   end
 
@@ -215,7 +215,7 @@ E
     it "checks out HEAD as the default revision" do
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
-      head_rev.should == rev_head
+      expect(head_rev).to eq(rev_head)
     end
   end
 
@@ -244,7 +244,7 @@ E
       head_rev = shell_out!('git rev-parse HEAD',
                             :cwd => deploy_directory,
                             :returns => [0]).stdout.strip
-      head_rev.should == rev_head
+      expect(head_rev).to eq(rev_head)
     end
 
     it "checks out the (master) HEAD revision when no revision is specified (ignores tag)" do
@@ -252,7 +252,7 @@ E
       head_rev = shell_out!('git rev-parse HEAD',
                             :cwd => deploy_directory,
                             :returns => [0]).stdout.strip
-      head_rev.should == rev_head
+      expect(head_rev).to eq(rev_head)
     end
 
   end

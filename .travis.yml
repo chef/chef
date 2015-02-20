@@ -1,15 +1,9 @@
-# Temporary workaround for issue with rubygems 2.2.0 with bundler 1.5 on ruby
-# 1.8.7.
-#
-# A fix has been merged to rubygems but not yet released. See:
-# https://github.com/rubygems/rubygems/commit/f8e0f1d5f67cfc4e1966cc1e2db367aebf8a09e4
-#
-# See also CHEF-4916
-#
-# This workaround should be removed when that fix is released.
+language: ruby
+
+sudo: false
+# Early warning system to catch if Rubygems breaks something
 before_install:
-- gem update --system 2.1.11
-- gem --version
+  gem update --system
 
 branches:
   only:
@@ -18,7 +12,15 @@ branches:
   - 11-stable
   - 12-stable
 
-script: bundle exec rspec --color --format progress
+# do not run expensive spec tests on PRs, only on branches
+script: "
+echo '--color\n-fp' > .rspec;
+if [ ${TRAVIS_PULL_REQUEST} = 'false' ];
+then
+  bundle exec rake spec:all;
+else
+  bundle exec rake spec;
+fi"
 
 env:
   global:
@@ -28,6 +30,7 @@ matrix:
   include:
   - rvm: 2.0.0
   - rvm: 2.1.5
+  - rvm: 2.2.0
   - rvm: 2.1.5
     gemfile: pedant.gemfile
     script: bundle exec rake pedant
@@ -40,9 +43,10 @@ matrix:
     before_script:
     - cd kitchen-tests
     script:
-    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen test; fi
+# FIXME: we should fix centos-6 against AWS and then enable it here
+    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen test ubuntu; fi
     after_script:
-    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy; fi
+    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy ubuntu; fi
     env:
     - KITCHEN_YAML=.kitchen.travis.yml
     - EC2_SSH_KEY_PATH=~/.ssh/id_aws.pem

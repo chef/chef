@@ -6,12 +6,16 @@ class ShellHelpers
   extend Chef::Mixin::ShellOut
 end
 
-def ruby_gte_20?
-  RUBY_VERSION.to_f >= 2.0
-end
-
 def ruby_lt_20?
   !ruby_gte_20?
+end
+
+def chef_gte_13?
+  Chef::VERSION.split('.').first.to_i >= 13
+end
+
+def chef_lt_13?
+  Chef::VERSION.split('.').first.to_i < 13
 end
 
 def ruby_gte_19?
@@ -20,14 +24,6 @@ end
 
 def ruby_20?
   !!(RUBY_VERSION =~ /^2.0/)
-end
-
-def ruby_19?
-  !!(RUBY_VERSION =~ /^1.9/)
-end
-
-def ruby_18?
-  !!(RUBY_VERSION =~ /^1.8/)
 end
 
 def windows?

@@ -39,33 +39,33 @@ describe Chef::Resource do
 
     it "adds an entry to a list of subclasses" do
       subclass = Class.new(Chef::Resource)
-      Chef::Resource.resource_classes.should include(subclass)
+      expect(Chef::Resource.resource_classes).to include(subclass)
     end
 
     it "keeps track of subclasses of subclasses" do
       subclass = Class.new(Chef::Resource)
       subclass_of_subclass = Class.new(subclass)
-      Chef::Resource.resource_classes.should include(subclass_of_subclass)
+      expect(Chef::Resource.resource_classes).to include(subclass_of_subclass)
     end
 
   end
 
   describe "when declaring the identity attribute" do
     it "has no identity attribute by default" do
-      Chef::Resource.identity_attr.should be_nil
+      expect(Chef::Resource.identity_attr).to be_nil
     end
 
     it "sets an identity attribute" do
       resource_class = Class.new(Chef::Resource)
       resource_class.identity_attr(:path)
-      resource_class.identity_attr.should == :path
+      expect(resource_class.identity_attr).to eq(:path)
     end
 
     it "inherits an identity attribute from a superclass" do
       resource_class = Class.new(Chef::Resource)
       resource_subclass = Class.new(resource_class)
       resource_class.identity_attr(:package_name)
-      resource_subclass.identity_attr.should == :package_name
+      expect(resource_subclass.identity_attr).to eq(:package_name)
     end
 
     it "overrides the identity attribute from a superclass when the identity attr is set" do
@@ -73,7 +73,7 @@ describe Chef::Resource do
       resource_subclass = Class.new(resource_class)
       resource_class.identity_attr(:package_name)
       resource_subclass.identity_attr(:something_else)
-      resource_subclass.identity_attr.should == :something_else
+      expect(resource_subclass.identity_attr).to eq(:something_else)
     end
   end
 
@@ -85,7 +85,7 @@ describe Chef::Resource do
     # Would rather force identity attributes to be set for everything,
     # but that's not plausible for back compat reasons.
     it "uses the name as the identity" do
-      @resource_sans_id.identity.should == "my-name"
+      expect(@resource_sans_id.identity).to eq("my-name")
     end
   end
 
@@ -101,26 +101,26 @@ describe Chef::Resource do
     end
 
     it "gives the value of its identity attribute" do
-      @file_resource.identity.should == "/tmp/foo.txt"
+      expect(@file_resource.identity).to eq("/tmp/foo.txt")
     end
   end
 
   describe "when declaring state attributes" do
     it "has no state_attrs by default" do
-      Chef::Resource.state_attrs.should be_empty
+      expect(Chef::Resource.state_attrs).to be_empty
     end
 
     it "sets a list of state attributes" do
       resource_class = Class.new(Chef::Resource)
       resource_class.state_attrs(:checksum, :owner, :group, :mode)
-      resource_class.state_attrs.should =~ [:checksum, :owner, :group, :mode]
+      expect(resource_class.state_attrs).to match_array([:checksum, :owner, :group, :mode])
     end
 
     it "inherits state attributes from the superclass" do
       resource_class = Class.new(Chef::Resource)
       resource_subclass = Class.new(resource_class)
       resource_class.state_attrs(:checksum, :owner, :group, :mode)
-      resource_subclass.state_attrs.should =~ [:checksum, :owner, :group, :mode]
+      expect(resource_subclass.state_attrs).to match_array([:checksum, :owner, :group, :mode])
     end
 
     it "combines inherited state attributes with non-inherited state attributes" do
@@ -128,7 +128,7 @@ describe Chef::Resource do
       resource_subclass = Class.new(resource_class)
       resource_class.state_attrs(:checksum, :owner)
       resource_subclass.state_attrs(:group, :mode)
-      resource_subclass.state_attrs.should =~ [:checksum, :owner, :group, :mode]
+      expect(resource_subclass.state_attrs).to match_array([:checksum, :owner, :group, :mode])
     end
 
   end
@@ -154,15 +154,15 @@ describe Chef::Resource do
 
     it "describes its state" do
       resource_state = @file_resource.state
-      resource_state.keys.should =~ [:checksum, :owner, :group, :mode]
-      resource_state[:checksum].should == "abc123"
-      resource_state[:owner].should == "root"
-      resource_state[:group].should == "wheel"
-      resource_state[:mode].should == "0644"
+      expect(resource_state.keys).to match_array([:checksum, :owner, :group, :mode])
+      expect(resource_state[:checksum]).to eq("abc123")
+      expect(resource_state[:owner]).to eq("root")
+      expect(resource_state[:group]).to eq("wheel")
+      expect(resource_state[:mode]).to eq("0644")
     end
   end
 
-  describe "load_prior_resource" do
+  describe "load_from" do
     before(:each) do
       @prior_resource = Chef::Resource.new("funk")
       @prior_resource.supports(:funky => true)
@@ -174,40 +174,40 @@ describe Chef::Resource do
     end
 
     it "should load the attributes of a prior resource" do
-      @resource.load_prior_resource(@resource.resource_name, @resource.name)
-      @resource.supports.should == { :funky => true }
+      @resource.load_from(@prior_resource)
+      expect(@resource.supports).to eq({ :funky => true })
     end
 
     it "should not inherit the action from the prior resource" do
-      @resource.load_prior_resource(@resource.resource_name, @resource.name)
-      @resource.action.should_not == @prior_resource.action
+      @resource.load_from(@prior_resource)
+      expect(@resource.action).not_to eq(@prior_resource.action)
     end
   end
 
   describe "name" do
     it "should have a name" do
-      @resource.name.should eql("funk")
+      expect(@resource.name).to eql("funk")
     end
 
     it "should let you set a new name" do
       @resource.name "monkey"
-      @resource.name.should eql("monkey")
+      expect(@resource.name).to eql("monkey")
     end
 
-    it "should not be valid without a name" do
-      lambda { @resource.name false }.should raise_error(ArgumentError)
+    it "coerces arrays to names" do
+      expect(@resource.name ['a', 'b']).to eql('a, b')
     end
 
-    it "should always have a string for name" do
-      lambda { @resource.name Hash.new }.should raise_error(ArgumentError)
+    it "should coerce objects to a string" do
+      expect(@resource.name Object.new).to be_a(String)
     end
   end
 
   describe "noop" do
     it "should accept true or false for noop" do
-      lambda { @resource.noop true }.should_not raise_error
-      lambda { @resource.noop false }.should_not raise_error
-      lambda { @resource.noop "eat it" }.should raise_error(ArgumentError)
+      expect { @resource.noop true }.not_to raise_error
+      expect { @resource.noop false }.not_to raise_error
+      expect { @resource.noop "eat it" }.to raise_error(ArgumentError)
     end
   end
 
@@ -215,48 +215,54 @@ describe Chef::Resource do
     it "should make notified resources appear in the actions hash" do
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee")
-      @resource.delayed_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
+      expect(@resource.delayed_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}).not_to be_nil
     end
 
     it "should make notified resources be capable of acting immediately" do
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee"), :immediate
-      @resource.immediate_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
+      expect(@resource.immediate_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}).not_to be_nil
     end
 
     it "should raise an exception if told to act in other than :delay or :immediate(ly)" do
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
-      lambda {
+      expect {
         @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee"), :someday
-      }.should raise_error(ArgumentError)
+      }.to raise_error(ArgumentError)
     end
 
     it "should allow multiple notified resources appear in the actions hash" do
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee")
-      @resource.delayed_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
+      expect(@resource.delayed_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}).not_to be_nil
 
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("beans")
       @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "beans")
-      @resource.delayed_notifications.detect{|e| e.resource.name == "beans" && e.action == :reload}.should_not be_nil
+      expect(@resource.delayed_notifications.detect{|e| e.resource.name == "beans" && e.action == :reload}).not_to be_nil
     end
 
     it "creates a notification for a resource that is not yet in the resource collection" do
       @resource.notifies(:restart, :service => 'apache')
       expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, @resource)
-      @resource.delayed_notifications.should include(expected_notification)
+      expect(@resource.delayed_notifications).to include(expected_notification)
     end
 
     it "notifies another resource immediately" do
       @resource.notifies_immediately(:restart, :service => 'apache')
       expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, @resource)
-      @resource.immediate_notifications.should include(expected_notification)
+      expect(@resource.immediate_notifications).to include(expected_notification)
     end
 
     it "notifies a resource to take action at the end of the chef run" do
       @resource.notifies_delayed(:restart, :service => "apache")
       expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, @resource)
-      @resource.delayed_notifications.should include(expected_notification)
+      expect(@resource.delayed_notifications).to include(expected_notification)
+    end
+
+    it "notifies a resource with an array for its name via its prettified string name" do
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new(["coffee", "tea"])
+      @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee, tea")
+      expect(@resource.delayed_notifications.detect{|e| e.resource.name == "coffee, tea" && e.action == :reload}).not_to be_nil
     end
   end
 
@@ -265,76 +271,76 @@ describe Chef::Resource do
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       zr = @run_context.resource_collection.find(:zen_master => "coffee")
       @resource.subscribes :reload, zr
-      zr.delayed_notifications.detect{|e| e.resource.name == "funk" && e.action == :reload}.should_not be_nil
+      expect(zr.delayed_notifications.detect{|e| e.resource.name == "funk" && e.action == :reload}).not_to be_nil
     end
 
     it "should make resources appear in the actions hash of subscribed nodes" do
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       zr = @run_context.resource_collection.find(:zen_master => "coffee")
       @resource.subscribes :reload, zr
-      zr.delayed_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
+      expect(zr.delayed_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}).not_to be_nil
 
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("bean")
       zrb = @run_context.resource_collection.find(:zen_master => "bean")
       zrb.subscribes :reload, zr
-      zr.delayed_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
+      expect(zr.delayed_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}).not_to be_nil
     end
 
     it "should make subscribed resources be capable of acting immediately" do
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       zr = @run_context.resource_collection.find(:zen_master => "coffee")
       @resource.subscribes :reload, zr, :immediately
-      zr.immediate_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
+      expect(zr.immediate_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}).not_to be_nil
     end
   end
 
   describe "defined_at" do
     it "should correctly parse source_line on unix-like operating systems" do
       @resource.source_line = "/some/path/to/file.rb:80:in `wombat_tears'"
-      @resource.defined_at.should == "/some/path/to/file.rb line 80"
+      expect(@resource.defined_at).to eq("/some/path/to/file.rb line 80")
     end
 
     it "should correctly parse source_line on Windows" do
       @resource.source_line = "C:/some/path/to/file.rb:80 in 1`wombat_tears'"
-      @resource.defined_at.should == "C:/some/path/to/file.rb line 80"
+      expect(@resource.defined_at).to eq("C:/some/path/to/file.rb line 80")
     end
 
     it "should include the cookbook and recipe when it knows it" do
       @resource.source_line = "/some/path/to/file.rb:80:in `wombat_tears'"
       @resource.recipe_name = "wombats"
       @resource.cookbook_name = "animals"
-      @resource.defined_at.should == "animals::wombats line 80"
+      expect(@resource.defined_at).to eq("animals::wombats line 80")
     end
 
     it "should recognize dynamically defined resources" do
-      @resource.defined_at.should == "dynamically defined"
+      expect(@resource.defined_at).to eq("dynamically defined")
     end
   end
 
   describe "to_s" do
     it "should become a string like resource_name[name]" do
       zm = Chef::Resource::ZenMaster.new("coffee")
-      zm.to_s.should eql("zen_master[coffee]")
+      expect(zm.to_s).to eql("zen_master[coffee]")
     end
   end
 
   describe "is" do
     it "should return the arguments passed with 'is'" do
       zm = Chef::Resource::ZenMaster.new("coffee")
-      zm.is("one", "two", "three").should == %w|one two three|
+      expect(zm.is("one", "two", "three")).to eq(%w|one two three|)
     end
 
-    it "should allow arguments preceeded by is to methods" do
+    it "should allow arguments preceded by is to methods" do
       @resource.noop(@resource.is(true))
-      @resource.noop.should eql(true)
+      expect(@resource.noop).to eql(true)
     end
   end
 
   describe "to_json" do
     it "should serialize to json" do
       json = @resource.to_json
-      json.should =~ /json_class/
-      json.should =~ /instance_vars/
+      expect(json).to match(/json_class/)
+      expect(json).to match(/instance_vars/)
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
@@ -350,9 +356,9 @@ describe Chef::Resource do
         :noop, :ignore_failure, :name, :source_line,
         :action, :retries, :retry_delay, :elapsed_time,
         :default_guard_interpreter, :guard_interpreter, :sensitive ]
-      (hash.keys - expected_keys).should == []
-      (expected_keys - hash.keys).should == []
-      hash[:name].should eql("funk")
+      expect(hash.keys - expected_keys).to eq([])
+      expect(expected_keys - hash.keys).to eq([])
+      expect(hash[:name]).to eql("funk")
     end
   end
 
@@ -360,8 +366,8 @@ describe Chef::Resource do
     it "should deserialize itself from json" do
       json = Chef::JSONCompat.to_json(@resource)
       serialized_node = Chef::JSONCompat.from_json(json)
-      serialized_node.should be_a_kind_of(Chef::Resource)
-      serialized_node.name.should eql(@resource.name)
+      expect(serialized_node).to be_a_kind_of(Chef::Resource)
+      expect(serialized_node.name).to eql(@resource.name)
     end
   end
 
@@ -369,27 +375,27 @@ describe Chef::Resource do
     it "should allow you to set what features this resource supports" do
       support_hash = { :one => :two }
       @resource.supports(support_hash)
-      @resource.supports.should eql(support_hash)
+      expect(@resource.supports).to eql(support_hash)
     end
 
     it "should return the current value of supports" do
-      @resource.supports.should == {}
+      expect(@resource.supports).to eq({})
     end
   end
 
   describe "ignore_failure" do
     it "should default to throwing an error if a provider fails for a resource" do
-      @resource.ignore_failure.should == false
+      expect(@resource.ignore_failure).to eq(false)
     end
 
     it "should allow you to set whether a provider should throw exceptions with ignore_failure" do
       @resource.ignore_failure(true)
-      @resource.ignore_failure.should == true
+      expect(@resource.ignore_failure).to eq(true)
     end
 
     it "should allow you to epic_fail" do
       @resource.epic_fail(true)
-      @resource.epic_fail.should == true
+      expect(@resource.epic_fail).to eq(true)
     end
   end
 
@@ -404,21 +410,21 @@ describe Chef::Resource do
     end
 
     it "should default to not retrying if a provider fails for a resource" do
-      @retriable_resource.retries.should == 0
+      expect(@retriable_resource.retries).to eq(0)
     end
 
     it "should allow you to set how many retries a provider should attempt after a failure" do
       @retriable_resource.retries(2)
-      @retriable_resource.retries.should == 2
+      expect(@retriable_resource.retries).to eq(2)
     end
 
     it "should default to a retry delay of 2 seconds" do
-      @retriable_resource.retry_delay.should == 2
+      expect(@retriable_resource.retry_delay).to eq(2)
     end
 
     it "should allow you to set the retry delay" do
       @retriable_resource.retry_delay(10)
-      @retriable_resource.retry_delay.should == 10
+      expect(@retriable_resource.retry_delay).to eq(10)
     end
 
     it "should keep given value of retries intact after the provider fails for a resource" do
@@ -426,29 +432,29 @@ describe Chef::Resource do
       @retriable_resource.retry_delay(0) # No need to wait.
 
       provider = Chef::Provider::SnakeOil.new(@retriable_resource, @run_context)
-      Chef::Provider::SnakeOil.stub(:new).and_return(provider)
-      provider.stub(:action_purr).and_raise
+      allow(Chef::Provider::SnakeOil).to receive(:new).and_return(provider)
+      allow(provider).to receive(:action_purr).and_raise
 
-      @retriable_resource.should_receive(:sleep).exactly(3).times
+      expect(@retriable_resource).to receive(:sleep).exactly(3).times
       expect { @retriable_resource.run_action(:purr) }.to raise_error
-      @retriable_resource.retries.should == 3
+      expect(@retriable_resource.retries).to eq(3)
     end
   end
 
   describe "setting the base provider class for the resource" do
 
     it "defaults to Chef::Provider for the base class" do
-      Chef::Resource.provider_base.should == Chef::Provider
+      expect(Chef::Resource.provider_base).to eq(Chef::Provider)
     end
 
     it "allows the base provider to be overriden by a " do
-      ResourceTestHarness.provider_base.should == Chef::Provider::Package
+      expect(ResourceTestHarness.provider_base).to eq(Chef::Provider::Package)
     end
 
   end
 
   it "runs an action by finding its provider, loading the current resource and then running the action" do
-    pending
+    skip
   end
 
   describe "when updated by a provider" do
@@ -457,11 +463,11 @@ describe Chef::Resource do
     end
 
     it "records that it was updated" do
-      @resource.should be_updated
+      expect(@resource).to be_updated
     end
 
     it "records that the last action updated the resource" do
-      @resource.should be_updated_by_last_action
+      expect(@resource).to be_updated_by_last_action
     end
 
     describe "and then run again without being updated" do
@@ -470,11 +476,11 @@ describe Chef::Resource do
       end
 
       it "reports that it is updated" do
-        @resource.should be_updated
+        expect(@resource).to be_updated
       end
 
       it "reports that it was not updated by the last action" do
-        @resource.should_not be_updated_by_last_action
+        expect(@resource).not_to be_updated_by_last_action
       end
 
     end
@@ -498,10 +504,10 @@ describe Chef::Resource do
     it "runs runs an only_if when one is given" do
       snitch_variable = nil
       @resource.only_if { snitch_variable = true }
-      @resource.only_if.first.positivity.should == :only_if
+      expect(@resource.only_if.first.positivity).to eq(:only_if)
       #Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
       @resource.run_action(:purr)
-      snitch_variable.should be_true
+      expect(snitch_variable).to be_truthy
     end
 
     it "runs multiple only_if conditionals" do
@@ -509,25 +515,25 @@ describe Chef::Resource do
       @resource.only_if { snitch_var1 = 1 }
       @resource.only_if { snitch_var2 = 2 }
       @resource.run_action(:purr)
-      snitch_var1.should == 1
-      snitch_var2.should == 2
+      expect(snitch_var1).to eq(1)
+      expect(snitch_var2).to eq(2)
     end
 
     it "accepts command options for only_if conditionals" do
-      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_command).at_least(1).times
+      expect_any_instance_of(Chef::Resource::Conditional).to receive(:evaluate_command).at_least(1).times
       @resource.only_if("true", :cwd => '/tmp')
-      @resource.only_if.first.command_opts.should == {:cwd => '/tmp'}
+      expect(@resource.only_if.first.command_opts).to eq({:cwd => '/tmp'})
       @resource.run_action(:purr)
     end
 
     it "runs not_if as a command when it is a string" do
-      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_command).at_least(1).times
+      expect_any_instance_of(Chef::Resource::Conditional).to receive(:evaluate_command).at_least(1).times
       @resource.not_if "pwd"
       @resource.run_action(:purr)
     end
 
     it "runs not_if as a block when it is a ruby block" do
-      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_block).at_least(1).times
+      expect_any_instance_of(Chef::Resource::Conditional).to receive(:evaluate_block).at_least(1).times
       @resource.not_if { puts 'foo' }
       @resource.run_action(:purr)
     end
@@ -540,7 +546,7 @@ describe Chef::Resource do
 
     it "accepts command options for not_if conditionals" do
       @resource.not_if("pwd" , :cwd => '/tmp')
-      @resource.not_if.first.command_opts.should == {:cwd => '/tmp'}
+      expect(@resource.not_if.first.command_opts).to eq({:cwd => '/tmp'})
     end
 
     it "accepts multiple not_if conditionals" do
@@ -548,27 +554,27 @@ describe Chef::Resource do
       @resource.not_if {snitch_var1 = nil}
       @resource.not_if {snitch_var2 = false}
       @resource.run_action(:purr)
-      snitch_var1.should be_nil
-      snitch_var2.should be_false
+      expect(snitch_var1).to be_nil
+      expect(snitch_var2).to be_falsey
     end
 
     it "reports 0 elapsed time if actual elapsed time is < 0" do
       expected = Time.now
-      Time.stub(:now).and_return(expected, expected - 1)
+      allow(Time).to receive(:now).and_return(expected, expected - 1)
       @resource.run_action(:purr)
-      @resource.elapsed_time.should == 0
+      expect(@resource.elapsed_time).to eq(0)
     end
 
     describe "guard_interpreter attribute" do
       let(:resource) { @resource }
 
       it "should be set to :default by default" do
-        resource.guard_interpreter.should == :default
+        expect(resource.guard_interpreter).to eq(:default)
       end
 
       it "if set to :default should return :default when read" do
         resource.guard_interpreter(:default)
-        resource.guard_interpreter.should == :default
+        expect(resource.guard_interpreter).to eq(:default)
       end
 
       it "should raise Chef::Exceptions::ValidationFailed on an attempt to set the guard_interpreter attribute to something other than a Symbol" do
@@ -576,7 +582,7 @@ describe Chef::Resource do
       end
 
       it "should not raise an exception when setting the guard interpreter attribute to a Symbol" do
-        Chef::GuardInterpreter::ResourceGuardInterpreter.stub(:new).and_return(nil)
+        allow(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:new).and_return(nil)
         expect { resource.guard_interpreter(:command_dot_com) }.not_to raise_error
       end
     end
@@ -588,63 +594,63 @@ describe Chef::Resource do
     end
 
     it "should return false by default" do
-      @resource.should_skip?(:purr).should be_false
+      expect(@resource.should_skip?(:purr)).to be_falsey
     end
 
     it "should return false when only_if is met" do
       @resource.only_if { true }
-      @resource.should_skip?(:purr).should be_false
+      expect(@resource.should_skip?(:purr)).to be_falsey
     end
 
     it "should return true when only_if is not met" do
       @resource.only_if { false }
-      @resource.should_skip?(:purr).should be_true
+      expect(@resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return true when not_if is met" do
       @resource.not_if { true }
-      @resource.should_skip?(:purr).should be_true
+      expect(@resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return false when not_if is not met" do
       @resource.not_if { false }
-      @resource.should_skip?(:purr).should be_false
+      expect(@resource.should_skip?(:purr)).to be_falsey
     end
 
     it "should return true when only_if is met but also not_if is met" do
       @resource.only_if { true }
       @resource.not_if { true }
-      @resource.should_skip?(:purr).should be_true
+      expect(@resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return true when one of multiple only_if's is not met" do
       @resource.only_if { true }
       @resource.only_if { false }
       @resource.only_if { true }
-      @resource.should_skip?(:purr).should be_true
+      expect(@resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return true when one of multiple not_if's is met" do
       @resource.not_if { false }
       @resource.not_if { true }
       @resource.not_if { false }
-      @resource.should_skip?(:purr).should be_true
+      expect(@resource.should_skip?(:purr)).to be_truthy
     end
 
     it "should return true when action is :nothing" do
-      @resource.should_skip?(:nothing).should be_true
+      expect(@resource.should_skip?(:nothing)).to be_truthy
     end
 
     it "should return true when action is :nothing ignoring only_if/not_if conditionals" do
       @resource.only_if { true }
       @resource.not_if { false }
-      @resource.should_skip?(:nothing).should be_true
+      expect(@resource.should_skip?(:nothing)).to be_truthy
     end
 
     it "should print \"skipped due to action :nothing\" message for doc formatter when action is :nothing" do
       fdoc = Chef::Formatters.new(:doc, STDOUT, STDERR)
-      @run_context.stub(:events).and_return(fdoc)
-      fdoc.should_receive(:puts).with(" (skipped due to action :nothing)", anything())
+      allow(@run_context).to receive(:events).and_return(fdoc)
+      expect(fdoc).to receive(:puts).with(" (skipped due to action :nothing)", anything())
       @resource.should_skip?(:nothing)
     end
 
@@ -664,7 +670,7 @@ describe Chef::Resource do
       @resource1.only_if { snitch_var1 = 1 }
       @resource1.not_if { snitch_var1 = 2 }
       @resource1.run_action(:nothing)
-      snitch_var1.should == 0
+      expect(snitch_var1).to eq(0)
     end
 
     it "should run only_if/not_if conditionals when notified to run another action (CHEF-972)" do
@@ -685,8 +691,8 @@ describe Chef::Resource do
       @run_context.resource_collection << @resource2
       @runner.converge
 
-      snitch_var1.should == 1
-      snitch_var2.should == 2
+      expect(snitch_var1).to eq(1)
+      expect(snitch_var2).to eq(2)
     end
   end
 
@@ -750,10 +756,10 @@ describe Chef::Resource do
 
     describe "resource_for_node" do
       it "returns a resource by short_name and node" do
-        Chef::Resource.resource_for_node(:dinobot, @node).should eql(Grimlock)
+        expect(Chef::Resource.resource_for_node(:dinobot, @node)).to eql(Grimlock)
       end
       it "returns a resource by short_name if nothing else matches" do
-        Chef::Resource.resource_for_node(:soundwave, @node).should eql(Soundwave)
+        expect(Chef::Resource.resource_for_node(:soundwave, @node)).to eql(Soundwave)
       end
     end
 
@@ -765,30 +771,30 @@ describe Chef::Resource do
 
       it "creates a delayed notification when timing is not specified" do
         @resource.notifies(:run, "execute[foo]")
-        @run_context.delayed_notification_collection.should have(1).notifications
+        expect(@run_context.delayed_notification_collection.size).to eq(1)
       end
 
       it "creates a delayed notification when :delayed is not specified" do
         @resource.notifies(:run, "execute[foo]", :delayed)
-        @run_context.delayed_notification_collection.should have(1).notifications
+        expect(@run_context.delayed_notification_collection.size).to eq(1)
       end
 
       it "creates an immediate notification when :immediate is specified" do
         @resource.notifies(:run, "execute[foo]", :immediate)
-        @run_context.immediate_notification_collection.should have(1).notifications
+        expect(@run_context.immediate_notification_collection.size).to eq(1)
       end
 
       it "creates an immediate notification when :immediately is specified" do
         @resource.notifies(:run, "execute[foo]", :immediately)
-        @run_context.immediate_notification_collection.should have(1).notifications
+        expect(@run_context.immediate_notification_collection.size).to eq(1)
       end
 
       describe "with a syntax error in the resource spec" do
 
         it "raises an exception immmediately" do
-          lambda do
+          expect do
             @resource.notifies(:run, "typo[missing-closing-bracket")
-          end.should raise_error(Chef::Exceptions::InvalidResourceSpecification)
+          end.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
         end
       end
     end
@@ -800,22 +806,22 @@ describe Chef::Resource do
 
       it "creates a delayed notification when timing is not specified" do
         @resource.notifies(:run, @notified_resource)
-        @run_context.delayed_notification_collection.should have(1).notifications
+        expect(@run_context.delayed_notification_collection.size).to eq(1)
       end
 
       it "creates a delayed notification when :delayed is not specified" do
         @resource.notifies(:run, @notified_resource, :delayed)
-        @run_context.delayed_notification_collection.should have(1).notifications
+        expect(@run_context.delayed_notification_collection.size).to eq(1)
       end
 
       it "creates an immediate notification when :immediate is specified" do
         @resource.notifies(:run, @notified_resource, :immediate)
-        @run_context.immediate_notification_collection.should have(1).notifications
+        expect(@run_context.immediate_notification_collection.size).to eq(1)
       end
 
       it "creates an immediate notification when :immediately is specified" do
         @resource.notifies(:run, @notified_resource, :immediately)
-        @run_context.immediate_notification_collection.should have(1).notifications
+        expect(@run_context.immediate_notification_collection.size).to eq(1)
       end
     end
 
@@ -837,19 +843,19 @@ describe Chef::Resource do
     end
 
     it "set to false by default" do
-      @resource.sensitive.should be_false
+      expect(@resource.sensitive).to be_falsey
     end
 
     it "when set to false should show compiled resource for failed resource" do
       expect { @resource_file.run_action(@action) }.to raise_error { |err|
-            compiled_resource_data(@resource_file, @action, err).should match 'path "/nonexistent/CHEF-5098/file"'
+            expect(compiled_resource_data(@resource_file, @action, err)).to match 'path "/nonexistent/CHEF-5098/file"'
           }
     end
 
     it "when set to true should show compiled resource for failed resource" do
       @resource_file.sensitive true
       expect { @resource_file.run_action(@action) }.to raise_error { |err|
-            compiled_resource_data(@resource_file, @action, err).should eql("suppressed sensitive resource output")
+            expect(compiled_resource_data(@resource_file, @action, err)).to eql("suppressed sensitive resource output")
           }
     end
 

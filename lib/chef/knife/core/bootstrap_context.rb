@@ -23,12 +23,14 @@ class Chef
   class Knife
     module Core
       # Instances of BootstrapContext are the context objects (i.e., +self+) for
-      # bootstrap templates. For backwards compatability, they +must+ set the
+      # bootstrap templates. For backwards compatibility, they +must+ set the
       # following instance variables:
       # * @config   - a hash of knife's config values
       # * @run_list - the run list for the node to boostrap
       #
       class BootstrapContext
+
+        attr_accessor :client_pem
 
         def initialize(config, run_list, chef_config, secret = nil)
           @config       = config
@@ -42,13 +44,19 @@ class Chef
         end
 
         def validation_key
-          IO.read(File.expand_path(@chef_config[:validation_key]))
+          if File.exist?(File.expand_path(@chef_config[:validation_key]))
+            IO.read(File.expand_path(@chef_config[:validation_key]))
+          else
+            false
+          end
         end
 
         def encrypted_data_bag_secret
           @secret
         end
 
+        # Contains commands and content, see trusted_certs_content
+        # TODO: Rename to trusted_certs_script
         def trusted_certs
           @trusted_certs ||= trusted_certs_content
         end
@@ -135,7 +143,7 @@ CONFIG
         def latest_current_chef_version_string
           installer_version_string = nil
           if @config[:prerelease]
-            installer_version_string = "-p"
+            installer_version_string = ["-p"]
           else
             chef_version_string = if knife_config[:bootstrap_version]
               knife_config[:bootstrap_version]
@@ -159,6 +167,9 @@ CONFIG
         end
 
         private
+       
+        # Returns a string for copying the trusted certificates on the workstation to the system being bootstrapped
+        # This string should contain both the commands necessary to both create the files, as well as their content
         def trusted_certs_content
           content = ""
           if @chef_config[:trusted_certs_dir]

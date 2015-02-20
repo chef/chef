@@ -18,12 +18,6 @@
 # If you need to add anything in here, don't.
 # Add it to one of the files in spec/support
 
-# Configure this first so it doesn't trigger annoying warning when we use it.
-# Main rspec configuration comes later
-RSpec.configure do |config|
-  config.treat_symbols_as_metadata_keys_with_true_values = true
-end
-
 # Abuse ruby's constant lookup to avoid undefined constant errors
 module Shell
   JUST_TESTING_MOVE_ALONG = true unless defined? JUST_TESTING_MOVE_ALONG
@@ -89,13 +83,26 @@ Dir["spec/support/**/*.rb"].
 
 OHAI_SYSTEM = Ohai::System.new
 OHAI_SYSTEM.all_plugins("platform")
-TEST_PLATFORM = OHAI_SYSTEM["platform"].dup.freeze
-TEST_PLATFORM_VERSION = OHAI_SYSTEM["platform_version"].dup.freeze
+
+TEST_PLATFORM =
+  (OHAI_SYSTEM['platform'] ||
+  'unknown_test_platform').dup.freeze
+TEST_PLATFORM_VERSION =
+  (OHAI_SYSTEM['platform_version'] ||
+  'unknown_platform_version').dup.freeze
 
 RSpec.configure do |config|
   config.include(Matchers)
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
+
+  # Explicitly disable :should syntax
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+  config.mock_with :rspec do |c|
+    c.syntax = :expect
+  end
 
   # Only run these tests on platforms that are also chef workstations
   config.filter_run_excluding :workstation if solaris? or aix?
@@ -122,19 +129,19 @@ RSpec.configure do |config|
   config.filter_run_excluding :aix_only => true unless aix?
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
-  config.filter_run_excluding :ruby_18_only => true unless ruby_18?
-  config.filter_run_excluding :ruby_19_only => true unless ruby_19?
-  config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
   config.filter_run_excluding :ruby_20_only => true unless ruby_20?
-  config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
+  # chef_gte_XX_only and chef_lt_XX_only pair up correctly with the same XX
+  # number.  please conserve this pattern & resist filling out all the operators
+  config.filter_run_excluding :chef_gte_13_only => true unless chef_gte_13?
+  config.filter_run_excluding :chef_lt_13_only => true unless chef_lt_13?
   config.filter_run_excluding :requires_root => true unless root?
   config.filter_run_excluding :requires_root_or_running_windows => true unless (root? || windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if root?
   config.filter_run_excluding :uses_diff => true unless has_diff?
-  config.filter_run_excluding :ruby_gte_20_and_openssl_gte_101 => true unless (ruby_gte_20? && openssl_gte_101?)
+  config.filter_run_excluding :openssl_gte_101 => true unless openssl_gte_101?
   config.filter_run_excluding :openssl_lt_101 => true unless openssl_lt_101?
-  config.filter_run_excluding :ruby_lt_20 => true unless ruby_lt_20?
   config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
+  config.filter_run_excluding :broken => true
 
   running_platform_arch = `uname -m`.strip
 
@@ -159,10 +166,15 @@ RSpec.configure do |config|
   }
 
   config.run_all_when_everything_filtered = true
-  config.treat_symbols_as_metadata_keys_with_true_values = true
 
   config.before(:each) do
     Chef::Config.reset
+
+    # By default, treat deprecation warnings as errors in tests.
+    Chef::Config.treat_deprecation_warnings_as_errors(true)
+
+    # Set environment variable so the setting persists in child processes
+    ENV['CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS'] = "1"
   end
 
   config.before(:suite) do

@@ -313,7 +313,7 @@ class Chef
         puts
         puts "To exit interactive mode, use 'quit!'"
         puts
-        while 1
+        loop do
           command = read_line
           case command
           when 'quit!'

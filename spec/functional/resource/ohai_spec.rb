@@ -42,7 +42,7 @@ describe Chef::Resource::Ohai do
       sleep 1
 
       ohai_resource.run_action(:reload)
-      node[:uptime].should_not == initial_uptime
+      expect(node[:uptime]).not_to eq(initial_uptime)
     end
   end
 

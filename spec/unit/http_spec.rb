@@ -31,17 +31,24 @@ describe Chef::HTTP do
 
     it 'should return a correctly formatted url 1/3 CHEF-5261' do
       http = Chef::HTTP.new('http://www.getchef.com')
-      http.create_url('api/endpoint').should eql(URI.parse('http://www.getchef.com/api/endpoint'))
+      expect(http.create_url('api/endpoint')).to eql(URI.parse('http://www.getchef.com/api/endpoint'))
     end
 
     it 'should return a correctly formatted url 2/3 CHEF-5261' do
       http = Chef::HTTP.new('http://www.getchef.com/')
-      http.create_url('/organization/org/api/endpoint/').should eql(URI.parse('http://www.getchef.com/organization/org/api/endpoint/'))
+      expect(http.create_url('/organization/org/api/endpoint/')).to eql(URI.parse('http://www.getchef.com/organization/org/api/endpoint/'))
     end
 
     it 'should return a correctly formatted url 3/3 CHEF-5261' do
       http = Chef::HTTP.new('http://www.getchef.com/organization/org///')
-      http.create_url('///api/endpoint?url=http://foo.bar').should eql(URI.parse('http://www.getchef.com/organization/org/api/endpoint?url=http://foo.bar'))
+      expect(http.create_url('///api/endpoint?url=http://foo.bar')).to eql(URI.parse('http://www.getchef.com/organization/org/api/endpoint?url=http://foo.bar'))
+    end
+
+    # As per: https://github.com/opscode/chef/issues/2500
+    it 'should treat scheme part of the URI in a case-insensitive manner' do
+      http = Chef::HTTP.allocate # Calling Chef::HTTP::new sets @url, don't want that.
+      expect { http.create_url('HTTP://www1.chef.io/') }.not_to raise_error
+      expect(http.create_url('HTTP://www2.chef.io/')).to eql(URI.parse('http://www2.chef.io/'))
     end
 
   end # create_url
@@ -50,20 +57,20 @@ describe Chef::HTTP do
 
     it 'should return nil for a "200 Success" response (CHEF-4762)' do
       resp = Net::HTTPOK.new("1.1", 200, "OK")
-      resp.should_receive(:read_body).and_return(nil)
+      expect(resp).to receive(:read_body).and_return(nil)
       http = Chef::HTTP.new("")
-      Chef::HTTP::BasicClient.any_instance.should_receive(:request).and_return(["request", resp])
+      expect_any_instance_of(Chef::HTTP::BasicClient).to receive(:request).and_return(["request", resp])
 
-      http.head("http://www.getchef.com/").should eql(nil)
+      expect(http.head("http://www.getchef.com/")).to eql(nil)
     end
 
     it 'should return false for a "304 Not Modified" response (CHEF-4762)' do
       resp = Net::HTTPNotModified.new("1.1", 304, "Not Modified")
-      resp.should_receive(:read_body).and_return(nil)
+      expect(resp).to receive(:read_body).and_return(nil)
       http = Chef::HTTP.new("")
-      Chef::HTTP::BasicClient.any_instance.should_receive(:request).and_return(["request", resp])
+      expect_any_instance_of(Chef::HTTP::BasicClient).to receive(:request).and_return(["request", resp])
 
-      http.head("http://www.getchef.com/").should eql(false)
+      expect(http.head("http://www.getchef.com/")).to eql(false)
     end
 
   end # head
