@@ -85,7 +85,7 @@ class Chef
 
       def nillable_set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
-        if arg == NULL_ARG
+        if NULL_ARG.equal?(arg)
           if self.instance_variable_defined?(iv_symbol) == true
             get_ivar(iv_symbol, symbol, validation)
           else
