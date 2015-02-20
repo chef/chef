@@ -24,7 +24,7 @@ self.instance_eval chef_project_contents
 
 name "angrychef"
 friendly_name "Angry Chef Client"
-maintainer "Chef Software, Inc."
+maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.getchef.com"
 
 if windows?
