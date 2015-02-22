@@ -33,6 +33,8 @@ matrix:
     sudo: true
   - rvm: 2.2
     sudo: true
+  - rvm: rbx
+    sudo: true
   - rvm: 2.2
     cache:
     env: "GEMFILE_MOD=\"gem 'chef-zero', github: 'chef/chef-zero'\""
@@ -142,6 +144,8 @@ matrix:
       - bundle exec sudo -E bash /tmp/proxy_tests/run_tests.sh chef_client \* \* /tmp/out.txt
     after_script: cat /tmp/out.txt
 
+  allow_failures:
+    - rvm: rbx
 notifications:
   on_change: true
   on_failure: true
