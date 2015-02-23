@@ -114,9 +114,10 @@ The specific components of Chef related to a given platform - including (but not
 
 ### Lieutenant
 
+* [Joshua Timberman](https://github.com/jtimberman)
+
 ### Maintainers
 
-* [Joshua Timberman](https://github.com/jtimberman)
 * [Tyler Ball](https://github.com/tyler-ball)
 
 ## FreeBSD
