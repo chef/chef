@@ -1,5 +1,9 @@
 ## Unreleased
 
+* make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
+* mixin the LWRP attribute DSL method into Chef::Resource directly
+* make all LWRP attributes nillable
+
 ## 12.1.0
 
 * [**Andre Elizondo**](https://github.com/andrewelizondo)
