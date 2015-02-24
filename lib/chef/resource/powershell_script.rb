@@ -44,8 +44,6 @@ class Chef
       def self.get_default_attributes(opts)
         {:convert_boolean_return => true}
       end
-
-      private_class_method :get_default_attributes
     end
   end
 end

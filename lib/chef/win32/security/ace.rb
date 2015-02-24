@@ -117,9 +117,6 @@ class Chef
           Chef::ReservedNames::Win32::Memory.memcpy(struct.pointer + struct.offset_of(:SidStart), sid.pointer, sid.size)
           ACE.new(struct.pointer)
         end
-
-        private_class_method :create_ace_with_mask_and_sid
-
       end
     end
   end
