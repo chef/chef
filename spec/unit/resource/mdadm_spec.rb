@@ -99,4 +99,25 @@ describe Chef::Resource::Mdadm do
     end
   end
 
+  describe "warning messages about upcoming changes to defaults" do
+    it "should display the warning message for metadata" do
+      resource.chunk(16)
+      expect(Chef::Log).to receive(:warn).with(/metadata/)
+      resource.after_created
+    end
+
+    it "should display the warning message for chunk size" do
+      resource.metadata("1.2")
+      expect(Chef::Log).to receive(:warn).with(/chunk/)
+      resource.after_created
+    end
+
+    it "should not display any warning messages" do
+      resource.chunk(16)
+      resource.metadata("1.2")
+      expect(Chef::Log).to_not receive(:warn)
+      resource.after_created
+    end
+  end
+
 end
