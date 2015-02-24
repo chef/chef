@@ -21,6 +21,8 @@ class Chef
     class Group
       class Dscl < Chef::Provider::Group
 
+        provides :group, os: "darwin"
+
         def dscl(*args)
           host = "."
           stdout_result = ""; stderr_result = ""; cmd = "dscl #{host} -#{args.join(' ')}"

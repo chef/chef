@@ -44,6 +44,8 @@ class Chef
       # This provider only supports Mac OSX versions 10.7 and above
       class Dscl < Chef::Provider::User
 
+        provides :user, os: "darwin"
+
         def define_resource_requirements
           super
 

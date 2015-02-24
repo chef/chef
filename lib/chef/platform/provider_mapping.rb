@@ -38,33 +38,16 @@ class Chef
           require 'chef/providers'
 
           {
-            :mac_os_x => {
-              :default => {
-                :package => Chef::Provider::Package::Homebrew,
-                :user => Chef::Provider::User::Dscl,
-                :group => Chef::Provider::Group::Dscl
-              }
-            },
-            :mac_os_x_server => {
-              :default => {
-                :package => Chef::Provider::Package::Homebrew,
-                :user => Chef::Provider::User::Dscl,
-                :group => Chef::Provider::Group::Dscl
-              }
-            },
             :freebsd => {
               :default => {
                 :group   => Chef::Provider::Group::Pw,
                 :user    => Chef::Provider::User::Pw,
-                :cron    => Chef::Provider::Cron
               }
             },
             :ubuntu   => {
               :default => {
                 :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
-                :cron => Chef::Provider::Cron,
-                :mdadm => Chef::Provider::Mdadm
               },
               ">= 11.10" => {
                 :ifconfig => Chef::Provider::Ifconfig::Debian
@@ -79,40 +62,30 @@ class Chef
               :default => {
                 :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
-                :cron => Chef::Provider::Cron,
-                :mdadm => Chef::Provider::Mdadm
               }
             },
             :linaro   => {
               :default => {
                 :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
-                :cron => Chef::Provider::Cron,
-                :mdadm => Chef::Provider::Mdadm
               }
             },
             :raspbian   => {
               :default => {
                 :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
-                :cron => Chef::Provider::Cron,
-                :mdadm => Chef::Provider::Mdadm
               }
             },
             :linuxmint   => {
               :default => {
                 :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Upstart,
-                :cron => Chef::Provider::Cron,
-                :mdadm => Chef::Provider::Mdadm
               }
             },
             :debian => {
               :default => {
                 :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
-                :cron => Chef::Provider::Cron,
-                :mdadm => Chef::Provider::Mdadm
               },
               ">= 6.0" => {
                 :service => Chef::Provider::Service::Insserv
@@ -124,25 +97,19 @@ class Chef
             :xenserver   => {
               :default => {
                 :service => Chef::Provider::Service::Redhat,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm
               }
             },
             :xcp   => {
               :default => {
                 :service => Chef::Provider::Service::Redhat,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm
               }
             },
             :centos   => {
               :default => {
                 :service => Chef::Provider::Service::Systemd,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm,
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
               },
               "< 7" => {
@@ -152,17 +119,13 @@ class Chef
             :amazon   => {
               :default => {
                 :service => Chef::Provider::Service::Redhat,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm
               }
             },
             :scientific => {
               :default => {
                 :service => Chef::Provider::Service::Systemd,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm
               },
               "< 7" => {
                 :service => Chef::Provider::Service::Redhat
@@ -171,9 +134,7 @@ class Chef
             :fedora   => {
               :default => {
                 :service => Chef::Provider::Service::Systemd,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm,
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
               },
               "< 15" => {
@@ -183,7 +144,6 @@ class Chef
             :opensuse     => {
               :default => {
                 :service => Chef::Provider::Service::Redhat,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Zypper,
                 :group => Chef::Provider::Group::Suse
               },
@@ -195,7 +155,6 @@ class Chef
             :suse     => {
               :default => {
                 :service => Chef::Provider::Service::Systemd,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Zypper,
                 :group => Chef::Provider::Group::Gpasswd
               },
@@ -207,9 +166,7 @@ class Chef
             :oracle  => {
               :default => {
                 :service => Chef::Provider::Service::Systemd,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm
               },
               "< 7" => {
                 :service => Chef::Provider::Service::Redhat
@@ -218,9 +175,7 @@ class Chef
             :redhat   => {
               :default => {
                 :service => Chef::Provider::Service::Systemd,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm,
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
               },
               "< 7" => {
@@ -230,27 +185,21 @@ class Chef
             :ibm_powerkvm   => {
               :default => {
                 :service => Chef::Provider::Service::Redhat,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm,
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
               }
             },
             :cloudlinux   => {
               :default => {
                 :service => Chef::Provider::Service::Redhat,
-                :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
-                :mdadm => Chef::Provider::Mdadm,
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
               }
             },
             :parallels   => {
                 :default => {
                     :service => Chef::Provider::Service::Redhat,
-                    :cron => Chef::Provider::Cron,
                     :package => Chef::Provider::Package::Yum,
-                    :mdadm => Chef::Provider::Mdadm,
                     :ifconfig => Chef::Provider::Ifconfig::Redhat
                 }
             },
@@ -258,46 +207,12 @@ class Chef
               :default => {
                 :package => Chef::Provider::Package::Portage,
                 :service => Chef::Provider::Service::Gentoo,
-                :cron => Chef::Provider::Cron,
-                :mdadm => Chef::Provider::Mdadm
               }
             },
             :arch   => {
               :default => {
                 :package => Chef::Provider::Package::Pacman,
                 :service => Chef::Provider::Service::Systemd,
-                :cron => Chef::Provider::Cron,
-                :mdadm => Chef::Provider::Mdadm
-              }
-            },
-            :mswin => {
-              :default => {
-                :env =>  Chef::Provider::Env::Windows,
-                :user => Chef::Provider::User::Windows,
-                :group => Chef::Provider::Group::Windows,
-                :mount => Chef::Provider::Mount::Windows,
-                :batch => Chef::Provider::Batch,
-                :powershell_script => Chef::Provider::PowershellScript
-              }
-            },
-            :mingw32 => {
-              :default => {
-                :env =>  Chef::Provider::Env::Windows,
-                :user => Chef::Provider::User::Windows,
-                :group => Chef::Provider::Group::Windows,
-                :mount => Chef::Provider::Mount::Windows,
-                :batch => Chef::Provider::Batch,
-                :powershell_script => Chef::Provider::PowershellScript
-              }
-            },
-            :windows => {
-              :default => {
-                :env =>  Chef::Provider::Env::Windows,
-                :user => Chef::Provider::User::Windows,
-                :group => Chef::Provider::Group::Windows,
-                :mount => Chef::Provider::Mount::Windows,
-                :batch => Chef::Provider::Batch,
-                :powershell_script => Chef::Provider::PowershellScript
               }
             },
             :solaris  => {},
@@ -305,7 +220,6 @@ class Chef
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
                 :package => Chef::Provider::Package::Ips,
-                :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod
               }
             },
@@ -313,7 +227,6 @@ class Chef
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
                 :package => Chef::Provider::Package::Ips,
-                :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod
               }
             },
@@ -321,7 +234,6 @@ class Chef
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
                 :package => Chef::Provider::Package::Solaris,
-                :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod
               }
             },
@@ -329,7 +241,6 @@ class Chef
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
                 :package => Chef::Provider::Package::Ips,
-                :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod,
                 :user => Chef::Provider::User::Solaris,
               }
@@ -338,14 +249,12 @@ class Chef
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
                 :package => Chef::Provider::Package::Ips,
-                :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod,
                 :user => Chef::Provider::User::Solaris,
               },
               "< 5.11" => {
                 :mount => Chef::Provider::Mount::Solaris,
                 :package => Chef::Provider::Package::Solaris,
-                :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod,
                 :user => Chef::Provider::User::Solaris,
               }
@@ -354,20 +263,7 @@ class Chef
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
                 :package => Chef::Provider::Package::SmartOS,
-                :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod
-              }
-            },
-            :netbsd => {
-              :default => {
-                :group => Chef::Provider::Group::Groupmod
-              }
-            },
-            :openbsd => {
-              :default => {
-                :group => Chef::Provider::Group::Usermod,
-                :package => Chef::Provider::Package::Openbsd,
-                :service => Chef::Provider::Service::Openbsd
               }
             },
             :hpux => {
@@ -380,7 +276,6 @@ class Chef
                 :group => Chef::Provider::Group::Aix,
                 :mount => Chef::Provider::Mount::Aix,
                 :ifconfig => Chef::Provider::Ifconfig::Aix,
-                :cron => Chef::Provider::Cron::Aix,
                 :package => Chef::Provider::Package::Aix,
                 :user => Chef::Provider::User::Aix,
                 :service => Chef::Provider::Service::Aix
@@ -390,8 +285,6 @@ class Chef
               :default => {
                 :package => Chef::Provider::Package::Paludis,
                 :service => Chef::Provider::Service::Systemd,
-                :cron => Chef::Provider::Cron,
-                :mdadm => Chef::Provider::Mdadm
               }
             },
             :default => {

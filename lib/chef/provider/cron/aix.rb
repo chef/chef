@@ -23,6 +23,8 @@ class Chef
     class Cron
       class Aix < Chef::Provider::Cron::Unix
 
+        provides :cron, os: "aix"
+
         private
 
         # For AIX we ignore env vars/[ :mailto, :path, :shell, :home ]

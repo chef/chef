@@ -24,6 +24,8 @@ class Chef
       class Windows < Chef::Provider::Env
         include Chef::Mixin::WindowsEnvHelper
 
+        provides :env, os: "windows"
+
         def create_env
           obj = env_obj(@new_resource.key_name)
           unless obj

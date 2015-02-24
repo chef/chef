@@ -452,6 +452,137 @@ describe Chef::ProviderResolver do
 
   end
 
+  describe "for the package provider" do
+    let(:resource_name) { :package }
+
+    before do
+      expect(provider_resolver).not_to receive(:maybe_chef_platform_lookup)
+    end
+
+    %w{mac_os_x mac_os_x_server}.each do |platform|
+      describe "on #{platform}" do
+        let(:os) { "darwin" }
+        let(:platform) { platform }
+        let(:platform_family) { "mac_os_x" }
+        let(:platform_version) { "10.9.2" }
+
+
+        it "returns a Chef::Provider::Package::Homebrew provider" do
+          expect(resolved_provider).to eql(Chef::Provider::Package::Homebrew)
+        end
+      end
+    end
+  end
+
+  hash = {
+    "mac_os_x" => {
+      :package => Chef::Provider::Package::Homebrew,
+      :user => Chef::Provider::User::Dscl,
+      :group => Chef::Provider::Group::Dscl,
+    },
+    "mac_os_x_server" => {
+      :package => Chef::Provider::Package::Homebrew,
+      :user => Chef::Provider::User::Dscl,
+      :group => Chef::Provider::Group::Dscl,
+    },
+    "mswin" => {
+      :env =>  Chef::Provider::Env::Windows,
+      :user => Chef::Provider::User::Windows,
+      :group => Chef::Provider::Group::Windows,
+      :mount => Chef::Provider::Mount::Windows,
+      :batch => Chef::Provider::Batch,
+      :powershell_script => Chef::Provider::PowershellScript,
+    },
+    "mingw32" => {
+      :env =>  Chef::Provider::Env::Windows,
+      :user => Chef::Provider::User::Windows,
+      :group => Chef::Provider::Group::Windows,
+      :mount => Chef::Provider::Mount::Windows,
+      :batch => Chef::Provider::Batch,
+      :powershell_script => Chef::Provider::PowershellScript,
+    },
+    "windows" => {
+      :env =>  Chef::Provider::Env::Windows,
+      :user => Chef::Provider::User::Windows,
+      :group => Chef::Provider::Group::Windows,
+      :mount => Chef::Provider::Mount::Windows,
+      :batch => Chef::Provider::Batch,
+      :powershell_script => Chef::Provider::PowershellScript,
+    },
+    "aix" => {
+      :cron => Chef::Provider::Cron::Aix,
+    },
+    "netbsd"=> {
+      :group => Chef::Provider::Group::Groupmod,
+    },
+    "openbsd" => {
+      :group => Chef::Provider::Group::Usermod,
+      :package => Chef::Provider::Package::Openbsd,
+    },
+  }
+
+  def self.do_platform(platform_hash)
+    platform_hash.each do |resource, provider|
+      describe "for #{resource}" do
+        let(:resource_name) { resource }
+
+        it "resolves to a #{provider}" do
+          expect(resolved_provider).to eql(provider)
+        end
+      end
+    end
+  end
+
+  describe "individual platform mappings" do
+    let(:resource_name) { :user }
+
+    before do
+      expect(provider_resolver).not_to receive(:maybe_chef_platform_lookup)
+    end
+
+    %w{mac_os_x mac_os_x_server}.each do |platform|
+      describe "on #{platform}" do
+        let(:os) { "darwin" }
+        let(:platform) { platform }
+        let(:platform_family) { "mac_os_x" }
+        let(:platform_version) { "10.9.2" }
+
+        do_platform(hash[platform])
+      end
+    end
+
+    %w{mswin mingw32 windows}.each do |platform|
+      describe "on #{platform}" do
+        let(:os) { "windows" }
+        let(:platform) { platform }
+        let(:platform_family) { "windows" }
+        let(:platform_version) { "10.9.2" }
+
+        do_platform(hash[platform])
+      end
+    end
+
+    describe "on AIX" do
+      let(:os) { "aix" }
+      let(:platform) { "aix" }
+      let(:platform_family) { "aix" }
+      let(:platform_version) { "6.2" }
+
+      do_platform(hash['aix'])
+    end
+
+    %w{netbsd openbsd}.each do |platform|
+      describe "on #{platform}" do
+        let(:os) { platform }
+        let(:platform) { platform }
+        let(:platform_family) { platform }
+        let(:platform_version) { "10.0-RELEASE" }
+
+        do_platform(hash[platform])
+      end
+    end
+  end
+
   describe "resolving static providers" do
     def resource_class(resource)
       Chef::Resource.const_get(convert_to_class_name(resource.to_s))
@@ -481,6 +612,7 @@ describe Chef::ProviderResolver do
         link:  Chef::Provider::Link,
         log:  Chef::Provider::Log::ChefLog,
         macports_package:  Chef::Provider::Package::Macports,
+        mdadm:  Chef::Provider::Mdadm,
         pacman_package: Chef::Provider::Package::Pacman,
         paludis_package: Chef::Provider::Package::Paludis,
         perl: Chef::Provider::Script,
