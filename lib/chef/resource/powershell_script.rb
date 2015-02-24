@@ -34,8 +34,6 @@ class Chef
         )
       end
 
-      protected
-
       # Allow callers evaluating guards to request default
       # attribute values. This is needed to allow
       # convert_boolean_return to be true in guard context by default,
