@@ -16,7 +16,7 @@
 
 name "chef-container"
 friendly_name "Chef Container"
-maintainer "Chef Software, Inc"
+maintainer "Chef Software, Inc <maintainers@chef.io>"
 homepage "https://www.getchef.com"
 
 build_iteration  1
