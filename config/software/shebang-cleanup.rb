@@ -38,19 +38,27 @@ build do
           if File.exists?("#{install_dir}/bin/#{bin}")
             File.open("#{install_dir}/bin/#{bin}.bat", "w") do |f|
               f.puts <<-EOF
-  @ECHO OFF
-  "%~dp0\\..\\embedded\\bin\\ruby.exe" "%~dpn0" %*
+@ECHO OFF
+"%~dp0\\..\\embedded\\bin\\ruby.exe" "%~dpn0" %*
               EOF
             end
           elsif File.exists?("#{install_dir}/embedded/bin/#{bin}")
             File.open("#{install_dir}/embedded/bin/#{bin}.bat", "w") do |f|
               f.puts <<-EOF
-  @ECHO OFF
-  "%~dp0\\\\ruby.exe" "%~dpn0" %*
+@ECHO OFF
+"%~dp0\\ruby.exe" "%~dpn0" %*
               EOF
             end
           end
         end
+      end
+
+      # Fix gem.bat
+      File.open("#{install_dir}/bin/gem.bat", "w") do |f|
+        f.puts <<-EOF
+@ECHO OFF
+"%~dp0\\ruby.exe" "%~dpn0" %*
+        EOF
       end
     end
   else
