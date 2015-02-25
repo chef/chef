@@ -380,8 +380,10 @@ class Chef
             # Opscode Omnibus - The ruby that ships inside omnibus is only used for Chef
             # Default to installing somewhere more functional
             if new_resource.options && new_resource.options.kind_of?(Hash)
-              msg = "options should be a string instead of a hash\n"
-              msg << "in #{new_resource} from #{new_resource.source_line}"
+              msg = "gem_package is for use by the system install of Ruby\n"
+              msg << "but the Chef Omnibus Ruby has been detected with an options\n"
+              msg << "hash. Use gem_binary attribute or pass a string of options\n"
+              msg << "at #{new_resource} from #{new_resource.source_line}"
               raise ArgumentError, msg
             end
             gem_location = find_gem_by_path
