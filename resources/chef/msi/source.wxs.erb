@@ -52,7 +52,9 @@
                                   Start="auto" Vital="yes" ErrorControl="ignore"
                                   Arguments="$(var.ProjectSourceDir)\bin\chef-windows-service"
                                   DisplayName="!(loc.ServiceDisplayName)"
-                                  Description="!(loc.ServiceDescription)" />
+                                  Description="!(loc.ServiceDescription)">
+                      <ServiceConfig DelayedAutoStart="yes" />
+                  </ServiceInstall>
                   <ServiceControl Id="ControlChefClientService" Name="chef-client"
                                   Remove="both" Stop="both" Wait="yes" />
                 </Component>
