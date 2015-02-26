@@ -20,6 +20,7 @@
 require 'chef/mixin/convert_to_class_name'
 require 'chef/exceptions'
 require 'chef/resource_builder'
+require 'chef/mixin/shell_out'
 
 class Chef
   module DSL
