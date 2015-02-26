@@ -54,7 +54,7 @@ build do
       end
 
       # Fix gem.bat
-      File.open("#{install_dir}/bin/gem.bat", "w") do |f|
+      File.open("#{install_dir}/embedded/bin/gem.bat", "w") do |f|
         f.puts <<-EOF
 @ECHO OFF
 "%~dp0\\ruby.exe" "%~dpn0" %*
