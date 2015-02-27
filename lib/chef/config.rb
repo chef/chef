@@ -644,6 +644,8 @@ class Chef
     default :override_attribute_whitelist, nil
 
     config_context :windows_service do
+      # Set `watchdog_timeout` to the number of seconds to wait for a chef-client run
+      # to finish
       default :watchdog_timeout, Mixlib::ShellOut::DEFAULT_READ_TIMEOUT
     end
 
