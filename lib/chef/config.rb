@@ -644,6 +644,7 @@ class Chef
     default :override_attribute_whitelist, nil
 
     config_context :windows_service do
+      default :watchdog_timeout, Mixlib::ShellOut::DEFAULT_READ_TIMEOUT
     end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
