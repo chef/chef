@@ -646,7 +646,7 @@ class Chef
     config_context :windows_service do
       # Set `watchdog_timeout` to the number of seconds to wait for a chef-client run
       # to finish
-      default :watchdog_timeout, Mixlib::ShellOut::DEFAULT_READ_TIMEOUT
+      default :watchdog_timeout, 20 * 60
     end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
