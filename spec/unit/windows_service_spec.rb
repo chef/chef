@@ -41,7 +41,7 @@ describe "Chef::Application::WindowsService", :windows_only do
   end
 
   context 'when running chef-client' do
-    it "passes config params to new process with a default timeout of 1200 seconds (20 minutes)" do
+    it "passes config params to new process with a default timeout of 2 hours (7200 seconds)" do
       Chef::Config.merge!({:log_location => tempfile.path, :config_file => "test_config_file", :log_level => :info})
       expect(instance).to receive(:configure_chef).twice
       instance.service_init
@@ -49,7 +49,7 @@ describe "Chef::Application::WindowsService", :windows_only do
       allow(instance.instance_variable_get(:@service_signal)).to receive(:wait)
       allow(instance).to receive(:state).and_return(4)
       expect(instance).to receive(:run_chef_client).and_call_original
-      expect(instance).to receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}", {:timeout => 1200}).and_return(shell_out_result)
+      expect(instance).to receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}", {:timeout => 7200}).and_return(shell_out_result)
       instance.service_main
       tempfile.unlink
     end
