@@ -96,7 +96,7 @@ class Chef
 
           if config[:dry_run]
             ui.info("Not uploading #{cookbook_name}.tgz due to --dry-run flag.")
-            result = shell_out!("tar -tzf #{cookbook_name}.tgz", :cwd => tmp_cookbook_dir)
+            result = shell_out!("#{tar_cmd} -tzf #{cookbook_name}.tgz", :cwd => tmp_cookbook_dir)
             ui.info(result.stdout)
             FileUtils.rm_rf tmp_cookbook_dir
             return
