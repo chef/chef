@@ -643,6 +643,12 @@ class Chef
     default :normal_attribute_whitelist, nil
     default :override_attribute_whitelist, nil
 
+    config_context :windows_service do
+      # Set `watchdog_timeout` to the number of seconds to wait for a chef-client run
+      # to finish
+      default :watchdog_timeout, 2 * (60 * 60) # 2 hours
+    end
+
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
     # to use the 'locale -a' command and search through a list of preferences until we
     # find one that we can use.  On Ubuntu systems we should find 'C.UTF-8' and be
