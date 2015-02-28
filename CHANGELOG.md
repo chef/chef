@@ -3,6 +3,7 @@
 * make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
 * mixin the LWRP attribute DSL method into Chef::Resource directly
 * make all LWRP attributes nillable
+* windows service now has a configurable timeout
 
 ## 12.1.0
 

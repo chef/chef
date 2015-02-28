@@ -78,3 +78,8 @@ validation key.
 
 The --bootstrap-vault-item, --bootstrap-vault-json, and --bootstrap-vault-file arguments have been added to knife bootstrap providing
 three alternative ways to set chef vault items when bootstrapping a host.
+
+## Windows service now has a configurable timeout
+
+You can now set the amount of time a chef-client run is allowed when running the provided windows service. This can be configured by
+setting `windows_service.watchdog_timeout` in your `client.rb` to the number of seconds desired. The default value is 2 hours.
