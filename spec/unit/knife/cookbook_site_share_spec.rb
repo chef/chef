@@ -144,8 +144,9 @@ describe Chef::Knife::CookbookSiteShare do
       end
 
       it "should list files in the tarball" do
-        expect(@knife).to receive(:shell_out!).with("tar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})
-        expect(@knife).to receive(:shell_out!).with("tar -tzf #{@cookbook.name}.tgz", {:cwd => "/var/tmp/dummy"})
+        allow(@knife).to receive(:tar_cmd).and_return("footar")
+        expect(@knife).to receive(:shell_out!).with("footar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})
+        expect(@knife).to receive(:shell_out!).with("footar -tzf #{@cookbook.name}.tgz", {:cwd => "/var/tmp/dummy"})
         @knife.run
       end
 
