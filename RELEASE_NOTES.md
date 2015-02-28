@@ -145,3 +145,9 @@ There is no support for validatorless bootstraps when the node object has been p
 of the process any old node or client will be deleted when doing validatorless bootstraps.  The old process with the validation
 key still works for this use case.  The setting of the run_list, environment and json attributes first via knife bootstrap
 should mitigate some of the need to precreate the node object by hand first.
+
+
+## Windows service now has a configurable timeout
+
+You can now set the amount of time a chef-client run is allowed when running the provided windows service. This can be configured by
+setting `windows_service.watchdog_timeout` in your `client.rb` to the number of seconds desired. The default value is 2 hours.
