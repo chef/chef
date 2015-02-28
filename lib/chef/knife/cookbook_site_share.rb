@@ -50,20 +50,6 @@ class Chef
         :default => false,
         :description => "Don't take action, only print what files will be upload to SuperMarket."
 
-      def tar_cmd
-        if !@tar_cmd
-          @tar_cmd = "tar"
-          begin
-            # Unix and Mac only - prefer gnutar
-            if shell_out("which gnutar").exitstatus.equal?(0)
-              @tar_cmd = "gnutar"
-            end
-          rescue Errno::ENOENT
-          end
-        end
-        @tar_cmd
-      end
-
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
@@ -163,6 +149,20 @@ class Chef
           end
         end
         res
+      end
+
+      def tar_cmd
+        if !@tar_cmd
+          @tar_cmd = "tar"
+          begin
+            # Unix and Mac only - prefer gnutar
+            if shell_out("which gnutar").exitstatus.equal?(0)
+              @tar_cmd = "gnutar"
+            end
+          rescue Errno::ENOENT
+          end
+        end
+        @tar_cmd
       end
     end
 
