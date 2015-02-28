@@ -189,9 +189,15 @@ class Chef
           config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
           config_params += " -L #{Chef::Config[:log_location]}" unless Chef::Config[:log_location] == STDOUT
           # Starts a new process and waits till the process exits
-          result = shell_out("chef-client #{config_params}")
+          result = shell_out("chef-client #{config_params}", :timeout => Chef::Config[:windows_service][:watchdog_timeout])
           Chef::Log.debug "#{result.stdout}"
           Chef::Log.debug "#{result.stderr}"
+        rescue Mixlib::ShellOut::CommandTimeout => e
+          Chef::Log.error "chef-client timed out\n(#{e})"
+          Chef::Log.error(<<-EOF) 
+            Your chef-client run timed out. You can increase the time chef-client is given 
+            to complete by configuring windows_service.watchdog_timeout in your client.rb.
+          EOF
         rescue Mixlib::ShellOut::ShellCommandFailed => e
           Chef::Log.warn "Not able to start chef-client in new process (#{e})"
         rescue => e
