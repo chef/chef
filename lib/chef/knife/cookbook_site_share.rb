@@ -50,6 +50,20 @@ class Chef
         :default => false,
         :description => "Don't take action, only print what files will be upload to SuperMarket."
 
+      def tar_cmd
+        if !@tar_cmd
+          @tar_cmd = "tar"
+          begin
+            # Unix and Mac only - prefer gnutar
+            if shell_out("which gnutar").exitstatus.equal?(0)
+              @tar_cmd = "gnutar"
+            end
+          rescue Errno::ENOENT
+          end
+        end
+        @tar_cmd
+      end
+
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
@@ -73,14 +87,6 @@ class Chef
           begin
             Chef::Log.debug("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
             ui.info("Making tarball #{cookbook_name}.tgz")
-            tar_cmd = "tar"
-            begin
-              # Unix and Mac only - prefer gnutar
-              if shell_out("which gnutar").exitstatus.equal?(0)
-                tar_cmd = "gnutar"
-              end
-            rescue Errno::ENOENT
-            end
             shell_out!("#{tar_cmd} -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
           rescue => e
             ui.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Increase log verbosity (-VV) for more information.")
