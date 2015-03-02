@@ -18,7 +18,6 @@
 
 require 'chef/config'
 require 'chef/provider/package'
-require 'chef/mixin/command' # handle_command_failures
 require 'chef/mixin/shell_out'
 require 'chef/resource/package'
 require 'singleton'
