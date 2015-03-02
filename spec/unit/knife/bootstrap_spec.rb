@@ -593,6 +593,20 @@ describe Chef::Knife::Bootstrap do
         knife.run
       end
     end
+
+    context "when the validation_key is nil" do
+      before do
+        # this tests runs the old code path where we have a validation key, so we need to pass that check for some plugins
+        Chef::Config[:validation_key] = nil
+      end
+
+      it "creates the client and does not run client_builder or the chef_vault_handler" do
+        expect(knife_ssh).to receive(:run)
+        expect(knife.client_builder).not_to receive(:run)
+        expect(knife.chef_vault_handler).not_to receive(:run)
+        knife.run
+      end
+    end
   end
 
   describe "specifying ssl verification" do

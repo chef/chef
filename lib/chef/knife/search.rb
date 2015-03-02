@@ -123,8 +123,8 @@ class Chef
         if ui.interchange?
           output({:results => result_count, :rows => result_items})
         else
-          ui.msg "#{result_count} items found"
-          ui.msg("\n")
+          ui.log "#{result_count} items found"
+          ui.log("\n")
           result_items.each do |item|
             output(item)
             unless config[:id_only]

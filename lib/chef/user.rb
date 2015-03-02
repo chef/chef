@@ -165,8 +165,6 @@ class Chef
       Chef::User.from_hash(response)
     end
 
-    private
-
     # Gross.  Transforms an API response in the form of:
     # [ { "user" => { "username" => USERNAME }}, ...]
     # into the form
@@ -179,5 +177,7 @@ class Chef
       end
       new_response
     end
+
+    private_class_method :transform_ohc_list_response
   end
 end

@@ -34,18 +34,18 @@ class Chef
       # http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
       # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
 
-      private
-
       def self.get_system_metrics(n_index)
         GetSystemMetrics(n_index)
       end
+
+      private_class_method :get_system_metrics
 
       def self.method_name_from_marketing_name(marketing_name)
         "#{marketing_name.gsub(/\s/, '_').gsub(/\./, '_').downcase}?"
         # "#{marketing_name.gsub(/\s/, '_').gsub(//, '_').downcase}?"
       end
 
-      public
+      private_class_method :method_name_from_marketing_name
 
       WIN_VERSIONS = {
         "Windows 10" => {:major => 6, :minor => 4, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
