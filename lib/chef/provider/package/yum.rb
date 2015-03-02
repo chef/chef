@@ -1008,7 +1008,8 @@ class Chef
           end
 
           if status.exitstatus > 0
-            status.error!
+            command_output = "STDOUT: #{status.stdout}\nSTDERR: #{status.stderr}"
+            raise Chef::Exceptions::Exec, "#{command} returned #{status.exitstatus}:\n#{command_output}"
           end
         end
 

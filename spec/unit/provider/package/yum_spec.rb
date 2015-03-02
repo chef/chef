@@ -696,9 +696,9 @@ describe Chef::Provider::Package::Yum do
 
   describe "when running yum" do
     it "should run yum once if it exits with a return code of 0" do
-      @status = double("Status", :exitstatus => 0)
-      allow(@provider).to receive(:output_of_command).and_return([@status, "", ""])
-      expect(@provider).to receive(:output_of_command).once.with(
+      @status = double("Status", :exitstatus => 0, :stdout => "", :stderr => "")
+      allow(@provider).to receive(:shell_out).and_return(@status)
+      expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
         {:timeout => Chef::Config[:yum_timeout]}
       )
@@ -706,9 +706,9 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum once if it exits with a return code > 0 and no scriptlet failures" do
-      @status = double("Status", :exitstatus => 2)
-      allow(@provider).to receive(:output_of_command).and_return([@status, "failure failure", "problem problem"])
-      expect(@provider).to receive(:output_of_command).once.with(
+      @status = double("Status", :exitstatus => 2, :stdout => "failure failure", :stderr => "problem problem")
+      allow(@provider).to receive(:shell_out).and_return(@status)
+      expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
         {:timeout => Chef::Config[:yum_timeout]}
       )
@@ -716,9 +716,10 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum once if it exits with a return code of 1 and %pre scriptlet failures" do
-      @status = double("Status", :exitstatus => 1)
-      allow(@provider).to receive(:output_of_command).and_return([@status, "error: %pre(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
-      expect(@provider).to receive(:output_of_command).once.with(
+      @status = double("Status", :exitstatus => 1, :stdout => "error: %pre(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2",
+                      :stderr => "")
+      allow(@provider).to receive(:shell_out).and_return(@status)
+      expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
         {:timeout => Chef::Config[:yum_timeout]}
       )
@@ -727,9 +728,10 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum twice if it exits with a return code of 1 and %post scriptlet failures" do
-      @status = double("Status", :exitstatus => 1)
-      allow(@provider).to receive(:output_of_command).and_return([@status, "error: %post(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
-      expect(@provider).to receive(:output_of_command).twice.with(
+      @status = double("Status", :exitstatus => 1, :stdout => "error: %post(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2",
+                      :stderr => "")
+      allow(@provider).to receive(:shell_out).and_return(@status)
+      expect(@provider).to receive(:shell_out).twice.with(
         "yum -d0 -e0 -y install emacs-1.0",
         {:timeout => Chef::Config[:yum_timeout]}
       )
