@@ -151,3 +151,16 @@ should mitigate some of the need to precreate the node object by hand first.
 
 You can now set the amount of time a chef-client run is allowed when running the provided windows service. This can be configured by
 setting `windows_service.watchdog_timeout` in your `client.rb` to the number of seconds desired. The default value is 2 hours.
+
+## Nillable deploy resource parameters
+
+The deploy resource parameters now support injecting nil arguments back into the resource.  Previously passing a parameter of nil
+resulted in the setter becoming an accessor and returning the old value.  Now passing an argument of nil will set the parameter
+to nil.  So `symlink_before_migrate nil` results in that parameter being nil.
+
+This has not been extended to the rest of the core chef resources yet.
+
+## Nillable LWRP arguments
+
+LWRP parameters now can also be set to be nil.
+
