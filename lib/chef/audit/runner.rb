@@ -45,6 +45,10 @@ class Chef
         RSpec.world.reporter.examples.size
       end
 
+      def exclusion_pattern
+        Regexp.new(".+[\\\/]lib[\\\/]chef[\\\/]")
+      end
+
       private
       # Prepare to run audits:
       #  - Require files
@@ -96,6 +100,7 @@ class Chef
         RSpec.configure do |c|
           c.color = Chef::Config[:color]
           c.expose_dsl_globally = false
+          c.backtrace_exclusion_patterns << exclusion_pattern
         end
       end
 
