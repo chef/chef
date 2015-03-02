@@ -600,7 +600,7 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:validation_key] = nil
       end
 
-      it "creates the client (and possibly adds chef-vault items)" do
+      it "creates the client and does not run client_builder or the chef_vault_handler" do
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).not_to receive(:run)
         expect(knife.chef_vault_handler).not_to receive(:run).with(node_name: knife.config[:chef_node_name])
