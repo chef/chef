@@ -1,10 +1,5 @@
 ## Unreleased
 
-* make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
-* mixin the LWRP attribute DSL method into Chef::Resource directly
-* make all LWRP attributes nillable
-* windows service now has a configurable timeout
-
 ## 12.1.0
 
 * [**Andre Elizondo**](https://github.com/andrewelizondo)
@@ -109,6 +104,11 @@
 * Add declare_resource/build_resource comments, fix faulty ||=
 * Knife bootstrap creates a client and ships it to the node to implement validatorless bootstraps
 * Knife bootstrap can use the client it creates to setup chef-vault items for the node
+* make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
+* mixin the LWRP attribute DSL method into Chef::Resource directly
+* make all LWRP attributes nillable
+* windows service now has a configurable timeout
+
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
