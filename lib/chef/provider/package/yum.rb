@@ -984,7 +984,7 @@ class Chef
         end
 
         def yum_command(command)
-          status, stdout, stderr = output_of_command(command, {:timeout => Chef::Config[:yum_timeout]})
+          status = shell_out(command, {:timeout => Chef::Config[:yum_timeout]})
 
           # This is fun: rpm can encounter errors in the %post/%postun scripts which aren't
           # considered fatal - meaning the rpm is still successfully installed. These issue
@@ -996,21 +996,19 @@ class Chef
           # A cleaner solution would have to be done in python and better hook into
           # yum/rpm to handle exceptions as we see fit.
           if status.exitstatus == 1
-            stdout.each_line do |l|
+            status.stdout.each_line do |l|
               # rpm-4.4.2.3 lib/psm.c line 2182
               if l =~ %r{^error: %(post|postun)\(.*\) scriptlet failed, exit status \d+$}
                 Chef::Log.warn("#{@new_resource} caught non-fatal scriptlet issue: \"#{l}\". Can't trust yum exit status " +
                                "so running install again to verify.")
-                status, stdout, stderr = output_of_command(command, {:timeout => Chef::Config[:yum_timeout]})
+                status = shell_out(command, {:timeout => Chef::Config[:yum_timeout]})
                 break
               end
             end
           end
 
           if status.exitstatus > 0
-            command_output = "STDOUT: #{stdout}"
-            command_output << "STDERR: #{stderr}"
-            Chef::Mixin::Command.handle_command_failures(status, command_output, {})
+            status.error!
           end
         end
 
