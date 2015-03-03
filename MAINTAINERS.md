@@ -34,6 +34,7 @@ another component.
 * [Bryan McLellan](http://github.com/btm)
 * [Ranjib Dey](http://github.com/ranjib)
 * [AJ Christensen](https://github.com/fujin)
+* [Thom May](https://github.com/thommay)
 
 ## Dev Tools
 
@@ -83,6 +84,7 @@ The specific components of Chef related to a given platform - including (but not
 
 * [Lamont Granquist](http://github.com/lamont-granquist)
 * [Ranjib Dey](http://github.com/ranjib)
+* [Thom May](https://github.com/thommay)
 
 ## Windows
 
