@@ -48,7 +48,7 @@ override :cacerts, version: '2014.08.20'
 
 override :berkshelf,      version: "v3.2.3"
 override :bundler,        version: "1.7.12"
-override :chef,           version: "12.0.3"
+override :chef,           version: "12.1.0"
 override :'chef-vault',   version: "v2.4.0"
 
 # TODO: Can we bump default versions in omnibus-software?
