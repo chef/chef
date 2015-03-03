@@ -37,7 +37,7 @@ describe Chef::Audit::Runner do
   end
 
   context "when we run in audit mode" do
-    paths = [ "/opt/chef/lib/chef/", 'C:\windows/here/lib/chef/' , "/opt/chef/extra/folders/lib/chef/"]
+    let(:paths) { [ "/opt/chef/lib/chef/", 'C:\windows/here/lib/chef/' , "/opt/chef/extra/folders/lib/chef/"] }
     it "excludes the current path from backtrace" do
       paths.each do |path|
         expect(runner.exclusion_pattern).to match(path)
