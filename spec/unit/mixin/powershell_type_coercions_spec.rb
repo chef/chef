@@ -42,5 +42,10 @@ describe Chef::Mixin::PowershellTypeCoercions do
     it 'should return $true when an instance of TrueClass is provided' do
       expect(test_class.translate_type(true)).to eq('$true')
     end
+
+    it 'should translate all members of a hash and wrap them in @{} separated by ;' do
+      expect(test_class.translate_type({"a" => 1, "b" => 1.2, "c" => false, "d" => true
+      })).to eq("@{a=1;b=1.2;c=$false;d=$true}")
+    end
   end
 end

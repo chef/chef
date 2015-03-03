@@ -25,8 +25,16 @@ class Chef
           Fixnum => { :type => lambda { |x| x.to_s }, :single_quoted => false },
           Float => { :type => lambda { |x| x.to_s }, :single_quoted => false },
           FalseClass => { :type => lambda { |x| '$false' }, :single_quoted => false },
-          TrueClass => { :type => lambda { |x| '$true' }, :single_quoted => false }
+          TrueClass => { :type => lambda { |x| '$true' }, :single_quoted => false },
+          Hash => {:type => Proc.new { |x| translate_hash(x)}, :single_quoted => false}
         }
+      end
+
+      def translate_hash(x)
+        translated = x.inject([]) do |memo, (k,v)|
+          memo << "#{k}=#{translate_type(v)}"
+        end
+        "@{#{translated.join(';')}}"
       end
 
       def translate_type(value)
