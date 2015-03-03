@@ -26,7 +26,7 @@ install:
   - bundler --version
 
 build_script:
-  - bundle install
+  - bundle install || bundle install || bundle install
 
 test_script:
   - SET SPEC_OPTS=--format progress
