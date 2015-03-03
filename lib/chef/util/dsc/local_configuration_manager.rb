@@ -43,6 +43,12 @@ class Chef::Util::DSC
       end
     end
 
+    def meta_configuration
+      cmdlet = Chef::Util::Powershell::Cmdlet.new(@node, "Get-DscLocalConfigurationManager", :object)
+      result = cmdlet.run!
+      result.return_value
+    end
+
     private
 
     def run_configuration_cmdlet(configuration_document, apply_configuration, shellout_flags)
