@@ -7,6 +7,8 @@
   fail-fast rather than moving on to the next machine.
 * migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution
 * migrate cron and mdadm resources to dynamic resolution
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  [Pull 3013](https://github.com/chef/chef/pull/3013) Allow people to pass in `source` to package
 
 ## 12.1.0
 
