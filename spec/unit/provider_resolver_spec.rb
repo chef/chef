@@ -474,7 +474,7 @@ describe Chef::ProviderResolver do
     end
   end
 
-  hash = {
+  provider_mapping = {
     "mac_os_x" => {
       :package => Chef::Provider::Package::Homebrew,
       :user => Chef::Provider::User::Dscl,
@@ -547,7 +547,7 @@ describe Chef::ProviderResolver do
         let(:platform_family) { "mac_os_x" }
         let(:platform_version) { "10.9.2" }
 
-        do_platform(hash[platform])
+        do_platform(provider_mapping[platform])
       end
     end
 
@@ -558,7 +558,7 @@ describe Chef::ProviderResolver do
         let(:platform_family) { "windows" }
         let(:platform_version) { "10.9.2" }
 
-        do_platform(hash[platform])
+        do_platform(provider_mapping[platform])
       end
     end
 
@@ -568,7 +568,7 @@ describe Chef::ProviderResolver do
       let(:platform_family) { "aix" }
       let(:platform_version) { "6.2" }
 
-      do_platform(hash['aix'])
+      do_platform(provider_mapping['aix'])
     end
 
     %w{netbsd openbsd}.each do |platform|
@@ -578,7 +578,7 @@ describe Chef::ProviderResolver do
         let(:platform_family) { platform }
         let(:platform_version) { "10.0-RELEASE" }
 
-        do_platform(hash[platform])
+        do_platform(provider_mapping[platform])
       end
     end
   end
