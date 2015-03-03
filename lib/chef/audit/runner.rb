@@ -88,6 +88,7 @@ class Chef
       #   - Explicitly disable :should syntax
       #   - Set :color option according to chef config
       #   - Disable exposure of global DSL
+      #   - Suppress parts of the stack trace that are from Chef itself
       def configure_rspec
         set_streams
         add_formatters
@@ -96,6 +97,8 @@ class Chef
         RSpec.configure do |c|
           c.color = Chef::Config[:color]
           c.expose_dsl_globally = false
+          separator = File::ALT_SEPARATOR ? File::ALT_SEPARATOR : File::SEPARATOR
+          c.backtrace_exclusion_patterns << Regexp.new(__FILE__.split(separator)[0..2].join(separator))
         end
       end
 
