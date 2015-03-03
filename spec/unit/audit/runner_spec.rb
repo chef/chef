@@ -36,6 +36,15 @@ describe Chef::Audit::Runner do
     RSpec::Core::Sandbox.sandboxed { ex.run }
   end
 
+  context "when we run in audit mode" do
+    paths = [ "/opt/chef/lib/chef/", 'C:\windows/here/lib/chef/' , "/opt/chef/extra/folders/lib/chef/"]
+    it "excludes the current path from backtrace" do
+      paths.each do |path|
+        expect(runner.exclusion_pattern).to match(path)
+      end
+    end
+  end
+
   describe "#initialize" do
     it "correctly sets the run_context during initialization" do
       expect(runner.instance_variable_get(:@run_context)).to eq(run_context)
@@ -72,6 +81,7 @@ describe Chef::Audit::Runner do
 
           expect(RSpec.configuration.color).to eq(color)
           expect(RSpec.configuration.expose_dsl_globally?).to eq(false)
+          expect(RSpec.configuration.backtrace_exclusion_patterns).to include(runner.exclusion_pattern)
 
           expect(Specinfra.configuration.backend).to eq(:exec)
         end
