@@ -21,6 +21,7 @@ infrastructure, and the Chef applications. Includes anything not covered by
 another component.
 
 ### Lieutenant
+* [Thom May](https://github.com/thommay)
 
 ### Maintainers
 
