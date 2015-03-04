@@ -106,8 +106,7 @@ class Chef
             formatted_item = Hash.new
             if item.is_a?(Hash)
               # doing a little magic here to set the correct name
-              formatted_item[item["data"]["__display_name"]] = item["data"]
-              formatted_item[item["data"]["__display_name"]].delete("__display_name")
+              formatted_item[item["__display_name"]] = item.reject{|k| k == "__display_name"}
             else
               formatted_item = format_for_display(item)
             end
