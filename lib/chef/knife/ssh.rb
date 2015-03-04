@@ -103,6 +103,13 @@ class Chef
         :boolean => true,
         :default => true
 
+      option :on_error,
+        :short => '-e',
+        :long => '--exit-on-error',
+        :description => "Immediately exit if an error is encountered",
+        :boolean => true,
+        :proc => Proc.new { :raise }
+
       def session
         config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|

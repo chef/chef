@@ -4,6 +4,8 @@
 * mixin the LWRP attribute DSL method into Chef::Resource directly
 * make all LWRP attributes nillable
 * windows service now has a configurable timeout
+* `knife ssh` now has an --exit-on-error option that allows users to
+  fail-fast rather than moving on to the next machine.
 
 ## 12.1.0
 
