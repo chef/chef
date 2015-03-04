@@ -6,6 +6,8 @@
 * windows service now has a configurable timeout
 * `knife ssh` now has an --exit-on-error option that allows users to
   fail-fast rather than moving on to the next machine.
+* migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution
+* migrate cron and mdadm resources to dynamic resolution
 
 ## 12.1.0
 
