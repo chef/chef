@@ -23,6 +23,8 @@ class Chef
   class Provider
     class Mdadm < Chef::Provider
 
+      provides :mdadm
+
       def popen4
         raise Exception, "deprecated"
       end

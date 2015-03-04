@@ -22,6 +22,8 @@ class Chef
   class Provider
     class PowershellScript < Chef::Provider::WindowsScript
 
+      provides :powershell_script, os: "windows"
+
       protected
       EXIT_STATUS_EXCEPTION_HANDLER = "\ntrap [Exception] {write-error -exception ($_.Exception.Message);exit 1}".freeze
       EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -ne $true) { if ( $LASTEXITCODE ) {exit $LASTEXITCODE} else { exit 1 }}".freeze

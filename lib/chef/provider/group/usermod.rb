@@ -23,6 +23,8 @@ class Chef
     class Group
       class Usermod < Chef::Provider::Group::Groupadd
 
+        provides :group, os: "openbsd"
+
         def load_current_resource
           super
         end

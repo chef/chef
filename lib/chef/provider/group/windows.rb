@@ -26,6 +26,8 @@ class Chef
     class Group
       class Windows < Chef::Provider::Group
 
+        provides :group, os: "windows"
+
         def initialize(new_resource,run_context)
           super
           @net_group = Chef::Util::Windows::NetGroup.new(@new_resource.group_name)
