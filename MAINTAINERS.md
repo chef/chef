@@ -76,7 +76,6 @@ The specific components of Chef related to a given platform - including (but not
 
 ### Maintainers
 
-* [Jon Cowie](http://github.com/jonlives)
 * [Lamont Granquist](http://github.com/lamont-granquist)
 
 ## Ubuntu
