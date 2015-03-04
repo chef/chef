@@ -84,6 +84,23 @@ describe Chef::Knife::NodeRunListRemove do
         expect(@node.run_list).not_to include('role[monkey]')
         expect(@node.run_list).not_to include('recipe[duck::type]')
       end
+
+      it "should warn when the thing to remove is not in the runlist" do
+        @node.run_list << 'role[blah]'
+        @node.run_list << 'recipe[duck::type]'
+        @knife.name_args = [ 'adam', 'role[blork]' ]
+        expect(@knife.ui).to receive(:warn).with("role[blork] is not in the run list")
+        @knife.run
+      end
+
+      it "should warn even more when the thing to remove is not in the runlist and unqualified" do
+        @node.run_list << 'role[blah]'
+        @node.run_list << 'recipe[duck::type]'
+        @knife.name_args = [ 'adam', 'blork' ]
+        expect(@knife.ui).to receive(:warn).with("blork is not in the run list")
+        expect(@knife.ui).to receive(:warn).with(/did you forget recipe\[\] or role\[\]/)
+        @knife.run
+      end
     end
   end
 end
