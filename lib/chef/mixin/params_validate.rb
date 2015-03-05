@@ -89,6 +89,7 @@ class Chef
           if self.instance_variable_defined?(iv_symbol) == true
             get_ivar(iv_symbol, symbol, validation)
           else
+            # on access we create the iv and set it to nil for back-compat
             set_ivar(iv_symbol, symbol, nil, validation)
           end
         else
@@ -98,12 +99,8 @@ class Chef
 
       def set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
-        if arg == nil
-          if self.instance_variable_defined?(iv_symbol) == true
-            get_ivar(iv_symbol, symbol, validation)
-          else
-            set_ivar(iv_symbol, symbol, nil, validation)
-          end
+        if arg == nil && self.instance_variable_defined?(iv_symbol) == true
+          get_ivar(iv_symbol, symbol, validation)
         else
           set_ivar(iv_symbol, symbol, arg, validation)
         end
@@ -136,133 +133,133 @@ class Chef
         self.instance_variable_set(iv_symbol, val)
       end
 
-      # Return the value of a parameter, or nil if it doesn't exist.
-      def _pv_opts_lookup(opts, key)
-        if opts.has_key?(key.to_s)
-          opts[key.to_s]
-        elsif opts.has_key?(key.to_sym)
-          opts[key.to_sym]
-        else
-          nil
-        end
-      end
-
-      # Raise an exception if the parameter is not found.
-      def _pv_required(opts, key, is_required=true)
-        if is_required
-          if (opts.has_key?(key.to_s) && !opts[key.to_s].nil?) ||
-              (opts.has_key?(key.to_sym) && !opts[key.to_sym].nil?)
-            true
+        # Return the value of a parameter, or nil if it doesn't exist.
+        def _pv_opts_lookup(opts, key)
+          if opts.has_key?(key.to_s)
+            opts[key.to_s]
+          elsif opts.has_key?(key.to_sym)
+            opts[key.to_sym]
           else
-            raise Exceptions::ValidationFailed, "Required argument #{key} is missing!"
+            nil
           end
         end
-      end
 
-      def _pv_equal_to(opts, key, to_be)
-        value = _pv_opts_lookup(opts, key)
-        unless value.nil?
-          passes = false
-          Array(to_be).each do |tb|
-            passes = true if value == tb
-          end
-          unless passes
-            raise Exceptions::ValidationFailed, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
-          end
-        end
-      end
-
-      # Raise an exception if the parameter is not a kind_of?(to_be)
-      def _pv_kind_of(opts, key, to_be)
-        value = _pv_opts_lookup(opts, key)
-        unless value.nil?
-          passes = false
-          Array(to_be).each do |tb|
-            passes = true if value.kind_of?(tb)
-          end
-          unless passes
-            raise Exceptions::ValidationFailed, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
-          end
-        end
-      end
-
-      # Raise an exception if the parameter does not respond to a given set of methods.
-      def _pv_respond_to(opts, key, method_name_list)
-        value = _pv_opts_lookup(opts, key)
-        unless value.nil?
-          Array(method_name_list).each do |method_name|
-            unless value.respond_to?(method_name)
-              raise Exceptions::ValidationFailed, "Option #{key} must have a #{method_name} method!"
+        # Raise an exception if the parameter is not found.
+        def _pv_required(opts, key, is_required=true)
+          if is_required
+            if (opts.has_key?(key.to_s) && !opts[key.to_s].nil?) ||
+                (opts.has_key?(key.to_sym) && !opts[key.to_sym].nil?)
+              true
+            else
+              raise Exceptions::ValidationFailed, "Required argument #{key} is missing!"
             end
           end
         end
-      end
 
-      # Assert that parameter returns false when passed a predicate method.
-      # For example, :cannot_be => :blank will raise a Exceptions::ValidationFailed
-      # error value.blank? returns a 'truthy' (not nil or false) value.
-      #
-      # Note, this will *PASS* if the object doesn't respond to the method.
-      # So, to make sure a value is not nil and not blank, you need to do
-      # both :cannot_be => :blank *and* :cannot_be => :nil (or :required => true)
-      def _pv_cannot_be(opts, key, predicate_method_base_name)
-        value = _pv_opts_lookup(opts, key)
-        predicate_method = (predicate_method_base_name.to_s + "?").to_sym
-
-        if value.respond_to?(predicate_method)
-          if value.send(predicate_method)
-            raise Exceptions::ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
+        def _pv_equal_to(opts, key, to_be)
+          value = _pv_opts_lookup(opts, key)
+          unless value.nil?
+            passes = false
+            Array(to_be).each do |tb|
+              passes = true if value == tb
+            end
+            unless passes
+              raise Exceptions::ValidationFailed, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+            end
           end
         end
-      end
 
-      # Assign a default value to a parameter.
-      def _pv_default(opts, key, default_value)
-        value = _pv_opts_lookup(opts, key)
-        if value == nil
-          opts[key] = default_value
+        # Raise an exception if the parameter is not a kind_of?(to_be)
+        def _pv_kind_of(opts, key, to_be)
+          value = _pv_opts_lookup(opts, key)
+          unless value.nil?
+            passes = false
+            Array(to_be).each do |tb|
+              passes = true if value.kind_of?(tb)
+            end
+            unless passes
+              raise Exceptions::ValidationFailed, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
+            end
+          end
         end
-      end
 
-      # Check a parameter against a regular expression.
-      def _pv_regex(opts, key, regex)
-        value = _pv_opts_lookup(opts, key)
-        if value != nil
-          passes = false
-          [ regex ].flatten.each do |r|
-            if value != nil
-              if r.match(value.to_s)
-                passes = true
+        # Raise an exception if the parameter does not respond to a given set of methods.
+        def _pv_respond_to(opts, key, method_name_list)
+          value = _pv_opts_lookup(opts, key)
+          unless value.nil?
+            Array(method_name_list).each do |method_name|
+              unless value.respond_to?(method_name)
+                raise Exceptions::ValidationFailed, "Option #{key} must have a #{method_name} method!"
               end
             end
           end
-          unless passes
-            raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}"
-          end
         end
-      end
 
-      # Check a parameter against a hash of proc's.
-      def _pv_callbacks(opts, key, callbacks)
-        raise ArgumentError, "Callback list must be a hash!" unless callbacks.kind_of?(Hash)
-        value = _pv_opts_lookup(opts, key)
-        if value != nil
-          callbacks.each do |message, zeproc|
-            if zeproc.call(value) != true
-              raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} #{message}!"
+        # Assert that parameter returns false when passed a predicate method.
+        # For example, :cannot_be => :blank will raise a Exceptions::ValidationFailed
+        # error value.blank? returns a 'truthy' (not nil or false) value.
+        #
+        # Note, this will *PASS* if the object doesn't respond to the method.
+        # So, to make sure a value is not nil and not blank, you need to do
+        # both :cannot_be => :blank *and* :cannot_be => :nil (or :required => true)
+        def _pv_cannot_be(opts, key, predicate_method_base_name)
+          value = _pv_opts_lookup(opts, key)
+          predicate_method = (predicate_method_base_name.to_s + "?").to_sym
+
+          if value.respond_to?(predicate_method)
+            if value.send(predicate_method)
+              raise Exceptions::ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
             end
           end
         end
-      end
 
-      # Allow a parameter to default to @name
-      def _pv_name_attribute(opts, key, is_name_attribute=true)
-        if is_name_attribute
-          if opts[key] == nil
-            opts[key] = self.instance_variable_get("@name")
+        # Assign a default value to a parameter.
+        def _pv_default(opts, key, default_value)
+          value = _pv_opts_lookup(opts, key)
+          if value == nil
+            opts[key] = default_value
           end
         end
-      end
+
+        # Check a parameter against a regular expression.
+        def _pv_regex(opts, key, regex)
+          value = _pv_opts_lookup(opts, key)
+          if value != nil
+            passes = false
+            [ regex ].flatten.each do |r|
+              if value != nil
+                if r.match(value.to_s)
+                  passes = true
+                end
+              end
+            end
+            unless passes
+              raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}"
+            end
+          end
+        end
+
+        # Check a parameter against a hash of proc's.
+        def _pv_callbacks(opts, key, callbacks)
+          raise ArgumentError, "Callback list must be a hash!" unless callbacks.kind_of?(Hash)
+          value = _pv_opts_lookup(opts, key)
+          if value != nil
+            callbacks.each do |message, zeproc|
+              if zeproc.call(value) != true
+                raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} #{message}!"
+              end
+            end
+          end
+        end
+
+        # Allow a parameter to default to @name
+        def _pv_name_attribute(opts, key, is_name_attribute=true)
+          if is_name_attribute
+            if opts[key] == nil
+              opts[key] = self.instance_variable_get("@name")
+            end
+          end
+        end
     end
   end
 end
