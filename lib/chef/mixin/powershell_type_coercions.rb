@@ -39,13 +39,16 @@ class Chef
 
       def translate_type(value)
         translation = type_coercions[value.class]
-        should_quote = true
         translated_value = nil
 
         if translation
           should_quote = translation[:single_quoted]
           translated_value = translation[:type].call(value)
+        elsif value.respond_to? :to_psobject
+          should_quote = false
+          translated_value = "(#{value.to_psobject})"
         else
+          should_quote = true
           translated_value = value.to_s
         end
 
