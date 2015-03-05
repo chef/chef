@@ -19,6 +19,7 @@
 require 'chef/win32/error'
 require 'chef/win32/api/memory'
 require 'chef/win32/api/crypto'
+require 'digest'
 
 class Chef
   module ReservedNames::Win32
@@ -35,7 +36,7 @@ class Chef
         if block
           block.call(bytes)
         else
-          bytes
+          Digest.hexencode(bytes)
         end
       ensure
         unless data_blob[:pbData].null?
