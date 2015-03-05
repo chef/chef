@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
+require 'chef/util/powershell/ps_credential'
 
 class Chef
   module DSL
