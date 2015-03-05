@@ -23,6 +23,7 @@ require 'chef/mixin/powershell_type_coercions'
 class Chef
   class Provider
     class DscResource < Chef::Provider
+      include Chef::Mixin::PowershellTypeCoercions
 
       provides :dsc_resource, os: "windows"
 
@@ -35,7 +36,7 @@ class Chef
       def action_run
         if ! @resource_converged
           converge_by(generate_description) do
-            set_configuration
+            result = set_resource
           end
         end
       end
@@ -59,7 +60,7 @@ class Chef
         end
         requirements.assert(:run) do |a|
           a.assertion {
-            local_configuration_manager.meta_configuration['RefreshMode'] == 'Disabled'
+            meta_configuration['RefreshMode'] == 'Disabled'
           }
           err = ["The LCM must have its RefreshMode set to Disabled. "]
           a.failure_message Chef::Exceptions::NoProviderAvailable, err.join(' ')
@@ -71,8 +72,8 @@ class Chef
       protected
 
       def local_configuration_manager
-        @local_configuration_manager ||= Chef::Util::DSC::LocalConfigurationManager(
-          @run_context.node,
+        @local_configuration_manager ||= Chef::Util::DSC::LocalConfigurationManager.new(
+          node,
           nil
         )
       end
@@ -87,7 +88,7 @@ class Chef
 
       def test_resource
         result = invoke_resource(:test)
-        result.return_value["IsDesiredState"]
+        result.return_value[0]["InDesiredState"]
       end
 
       def set_resource
@@ -95,20 +96,19 @@ class Chef
         result.return_value
       end
 
-      def invoke_resource(method)
+      def invoke_resource(method, output_format=:object)
         properties = translate_type(@new_resource.properties)
-        switches = "-Method #{method.to_s} -Name #{@new_resource.resource} -Property"
-            + "#{properties} -Verbose"
+        switches = "-Method #{method.to_s} -Name #{@new_resource.resource} -Property #{properties}"
         cmdlet = Chef::Util::Powershell::Cmdlet.new(
-          @node,
+          node,
           "Invoke-DscResource #{switches}",
-          :object
+          output_format
         )
         cmdlet.run!
       end
 
       def meta_configuration
-        cmdlet = Chef::Util::Powershell::Cmdlet.new(@node, "Get-DscLocalConfigurationManager", :object)
+        cmdlet = Chef::Util::Powershell::Cmdlet.new(node, "Get-DscLocalConfigurationManager", :object)
         result = cmdlet.run!
         result.return_value
       end

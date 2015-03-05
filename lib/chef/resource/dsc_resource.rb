@@ -19,15 +19,15 @@ class Chef
   class Resource
     class DscResource < Chef::Resource
 
-      provides :dsc_resource, platform: "windows"
+      provides :dsc_resource, os: "windows"
 
       def initialize(name, run_context)
         super
         @properties = {}
         @resource_name = :dsc_resource
         @resource = nil
-        @allowed_actions.push(:set)
-        @action = :set
+        @allowed_actions.push(:run)
+        @action = :run
       end
 
       def resource(value=nil)
