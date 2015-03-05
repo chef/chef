@@ -15,11 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'chef/dsl/powershell'
+
 class Chef
   class Resource
     class DscResource < Chef::Resource
 
       provides :dsc_resource, os: "windows"
+
+      include Chef::DSL::Powershell
 
       def initialize(name, run_context)
         super
