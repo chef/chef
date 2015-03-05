@@ -26,7 +26,8 @@ class Chef
           Float => { :type => lambda { |x| x.to_s }, :single_quoted => false },
           FalseClass => { :type => lambda { |x| '$false' }, :single_quoted => false },
           TrueClass => { :type => lambda { |x| '$true' }, :single_quoted => false },
-          Hash => {:type => Proc.new { |x| translate_hash(x)}, :single_quoted => false}
+          Hash => {:type => Proc.new { |x| translate_hash(x)}, :single_quoted => false},
+          Array => {:type => Proc.new { |x| translate_array(x)}, :single_quoted => false}
         }
       end
 
@@ -35,6 +36,13 @@ class Chef
           memo << "#{k}=#{translate_type(v)}"
         end
         "@{#{translated.join(';')}}"
+      end
+
+      def translate_array(x)
+        translated = x.map do |v|
+          translate_type(v)
+        end
+        "@(#{translated.join(',')})"
       end
 
       def translate_type(value)
