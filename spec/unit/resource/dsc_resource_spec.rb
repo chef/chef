@@ -34,12 +34,12 @@ describe Chef::Resource::DscResource do
       Chef::Resource::DscResource.new(dsc_test_resource_name, dsc_test_run_context) 
     }
 
-    it "has a default action of `:set`" do
-      expect(dsc_test_resource.action).to eq(:set)
+    it "has a default action of `:run`" do
+      expect(dsc_test_resource.action).to eq(:run)
     end
 
-    it "has an allowed_actions attribute with only the `:set` and `:nothing` attributes" do
-      expect(dsc_test_resource.allowed_actions.to_set).to eq([:set,:nothing].to_set)
+    it "has an allowed_actions attribute with only the `:run` and `:nothing` attributes" do
+      expect(dsc_test_resource.allowed_actions.to_set).to eq([:run,:nothing].to_set)
     end
 
     it "allows the resource attribute to be set" do
