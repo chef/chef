@@ -1,7 +1,7 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
+#
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
-# License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,14 +16,17 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
+require 'chef/win32/crypto'
 
-class Chef
-  module DSL
-    module Powershell
-      def ps_credential(username='placeholder', password)
-        Chef::Util::Powershell::PSCredential.new(username, password)
-      end
+class Chef::Util::Powershell
+  class PSCredential
+    def initialize(username, password)
+      @username = username
+      @encrypted_password = Chef::ReservedNames::Win32::Crypto.encrypt(password)
+    end
+
+    def to_psobject
+      "New-Object System.Management.Automation.PSCredential('#{@username}',\('#{@encrypted_password}' | ConvertTo-SecureString))"
     end
   end
 end
