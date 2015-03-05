@@ -63,6 +63,7 @@ class Chef
         @deploy_to = name
         @environment = nil
         @repository_cache = 'cached-copy'
+        # XXX: if copy_exclude is a kind_of String why is initialized to an array???
         @copy_exclude = []
         @purge_before_symlink = %w{log tmp/pids public/system}
         @create_dirs_before_symlink = %w{tmp public config}
@@ -78,7 +79,7 @@ class Chef
         @scm_provider = Chef::Provider::Git
         @svn_force_export = false
         @allowed_actions.push(:force_deploy, :deploy, :rollback)
-        @additional_remotes = Hash[]
+        @additional_remotes = {}
         @keep_releases = 5
         @enable_checkout = true
         @checkout_branch = "deploy"
