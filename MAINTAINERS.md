@@ -35,7 +35,6 @@ another component.
 * [Bryan McLellan](http://github.com/btm)
 * [Ranjib Dey](http://github.com/ranjib)
 * [AJ Christensen](https://github.com/fujin)
-* [Thom May](https://github.com/thommay)
 
 ## Dev Tools
 
