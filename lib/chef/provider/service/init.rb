@@ -28,7 +28,7 @@ class Chef
 
         provides :service, os: "!windows"
 
-        def self.supports?(resource, action)
+        def self.supports?(resource, _action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
         end
 

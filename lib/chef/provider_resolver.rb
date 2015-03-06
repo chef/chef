@@ -68,7 +68,7 @@ class Chef
     end
 
     # try dynamically finding a provider based on querying the providers to see what they support
-    def maybe_dynamic_provider_resolution(resource, action)
+    def maybe_dynamic_provider_resolution(resource, _action)
       # log this so we know what providers will work for the generic resource on the node (early cut)
       Chef::Log.debug "providers for generic #{resource.resource_name} resource enabled on node include: #{enabled_handlers}"
 

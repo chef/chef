@@ -30,7 +30,7 @@ class Chef
           parent.exists?
         end
 
-        def delete(recurse)
+        def delete(_recurse)
           raise Chef::ChefFS::FileSystem::OperationNotAllowedError.new(:delete, self)
         end
 

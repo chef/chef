@@ -73,14 +73,14 @@ class Chef
         #       other_value = entry.read if other_value.nil?
         #       are_same = (value == other_value)
         #     end
-        def compare_to(other)
+        def compare_to(_other)
           nil
         end
 
         # Override can_have_child? to report whether a given file *could* be added
         # to this directory.  (Some directories can't have subdirs, some can only have .json
         # files, etc.)
-        def can_have_child?(name, is_dir)
+        def can_have_child?(_name, _is_dir)
           false
         end
 
@@ -116,14 +116,14 @@ class Chef
         # NOTE: create_child_from is an optional method that can also be added to
         # your entry class, and will be called without actually reading the
         # file_contents.  This is used for knife upload /cookbooks/cookbookname.
-        def create_child(name, file_contents)
+        def create_child(_name, _file_contents)
           raise NotFoundError.new(self) if !exists?
           raise OperationNotAllowedError.new(:create_child, self)
         end
 
         # Delete this item, possibly recursively.  Entries MUST NOT delete a
         # directory unless recurse is true.
-        def delete(recurse)
+        def delete(_recurse)
           raise NotFoundError.new(self) if !exists?
           raise OperationNotAllowedError.new(:delete, self)
         end
@@ -164,7 +164,7 @@ class Chef
         end
 
         # Write the contents of this file entry.
-        def write(file_contents)
+        def write(_file_contents)
           raise NotFoundError.new(self) if !exists?
           raise OperationNotAllowedError.new(:write, self)
         end

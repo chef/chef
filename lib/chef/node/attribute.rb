@@ -443,7 +443,7 @@ class Chef
          end
        end
 
-       def []=(key, value)
+       def []=(_key, _value)
          raise Exceptions::ImmutableAttributeModification
        end
 

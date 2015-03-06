@@ -95,15 +95,15 @@ class Chef
           end
         end
 
-        def add_member(member)
+        def add_member(_member)
           raise Chef::Exceptions::Group, "you must override add_member in #{self.to_s}"
         end
 
-        def remove_member(member)
+        def remove_member(_member)
           raise Chef::Exceptions::Group, "you must override remove_member in #{self.to_s}"
         end
 
-        def set_members(members)
+        def set_members(_members)
           raise Chef::Exceptions::Group, "you must override set_members in #{self.to_s}"
         end
 

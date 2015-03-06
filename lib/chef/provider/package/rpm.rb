@@ -88,7 +88,7 @@ class Chef
           @current_resource
         end
 
-        def install_package(name, version)
+        def install_package(_name, _version)
           unless @current_resource.version
             shell_out!( "rpm #{@new_resource.options} -i #{@new_resource.source}" )
           else

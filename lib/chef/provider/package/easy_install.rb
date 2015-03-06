@@ -120,7 +120,7 @@ class Chef
           install_package(name, version)
         end
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           run_command(:command => "#{easy_install_binary_path }#{expand_options(@new_resource.options)} -m #{name}")
         end
 

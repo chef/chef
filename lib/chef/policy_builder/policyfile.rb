@@ -153,7 +153,7 @@ class Chef
         raise
       end
 
-      def setup_run_context(specific_recipes=nil)
+      def setup_run_context(_specific_recipes=nil)
         Chef::Cookbook::FileVendor.fetch_from_remote(http_api)
         sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbooks_to_sync)

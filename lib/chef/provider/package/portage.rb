@@ -119,7 +119,7 @@ class Chef
           install_package(name, version)
         end
 
-        def remove_package(name, version)
+        def remove_package(_name, version)
           if(version)
             pkg = "=#{@new_resource.package_name}-#{version}"
           else

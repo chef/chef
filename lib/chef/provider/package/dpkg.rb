@@ -99,21 +99,21 @@ class Chef
           @current_resource
         end
 
-        def install_package(name, version)
+        def install_package(_name, _version)
           Chef::Log.info("#{@new_resource} installing #{@new_resource.source}")
           run_noninteractive(
             "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}"
           )
         end
 
-        def remove_package(name, version)
+        def remove_package(_name, _version)
           Chef::Log.info("#{@new_resource} removing #{@new_resource.package_name}")
           run_noninteractive(
             "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}"
           )
         end
 
-        def purge_package(name, version)
+        def purge_package(_name, _version)
           Chef::Log.info("#{@new_resource} purging #{@new_resource.package_name}")
           run_noninteractive(
             "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}"
@@ -129,7 +129,7 @@ class Chef
           run_noninteractive("debconf-set-selections #{preseed_file}")
         end
 
-        def reconfig_package(name, version)
+        def reconfig_package(name, _version)
           Chef::Log.info("#{@new_resource} reconfiguring")
           run_noninteractive("dpkg-reconfigure #{name}")
         end

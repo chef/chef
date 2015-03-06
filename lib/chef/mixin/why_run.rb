@@ -34,7 +34,7 @@ class Chef
       class ConvergeActions
         attr_reader :actions
 
-        def initialize(resource, run_context, action)
+        def initialize(resource, run_context, _action)
           @resource, @run_context = resource, run_context
           @actions = []
         end

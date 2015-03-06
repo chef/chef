@@ -60,7 +60,7 @@ class Chef
           end
         end
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           if current_resource.version
             brew('uninstall', new_resource.options, name)
           end

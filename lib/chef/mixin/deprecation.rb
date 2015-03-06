@@ -60,7 +60,7 @@ class Chef
       end
 
       class DeprecatedInstanceVariable < DeprecatedObjectProxyBase
-        def initialize(target, ivar_name, level=nil)
+        def initialize(target, ivar_name, _level=nil)
           @target, @ivar_name = target, ivar_name
           @level ||= :warn
         end

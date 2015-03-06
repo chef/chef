@@ -22,7 +22,7 @@ class Chef
   class GuardInterpreter
     class ResourceGuardInterpreter < DefaultGuardInterpreter
 
-      def initialize(parent_resource, command, opts, &block)
+      def initialize(parent_resource, command, opts, &_block)
         super(command, opts)
         @parent_resource = parent_resource
         @resource = get_interpreter_resource(parent_resource)

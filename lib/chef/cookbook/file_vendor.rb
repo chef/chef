@@ -63,7 +63,7 @@ class Chef
       #
       # Subclasses are responsible for determining exactly how the
       # files are obtained and where they are stored.
-      def get_filename(filename)
+      def get_filename(_filename)
         raise NotImplemented, "Subclasses must implement this method"
       end
 

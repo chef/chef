@@ -65,7 +65,7 @@ class Chef
         end
       end
 
-      def readable_file_or_symlink?(path)
+      def readable_file_or_symlink?(_path)
         File.exist?(@ignore_file) && File.readable?(@ignore_file) &&
           (File.file?(@ignore_file) || File.symlink?(@ignore_file))
       end

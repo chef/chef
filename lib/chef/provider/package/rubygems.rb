@@ -158,7 +158,7 @@ class Chef
           # Gem::Version  a singular gem version object is returned if the gem
           #               is available
           # nil           returns nil if the gem could not be found
-          def candidate_version_from_remote(gem_dependency, *sources)
+          def candidate_version_from_remote(_gem_dependency, *_sources)
             raise NotImplementedError
           end
 

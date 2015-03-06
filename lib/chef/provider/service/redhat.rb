@@ -32,7 +32,7 @@ class Chef
           super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
         end
 
-        def self.supports?(resource, action)
+        def self.supports?(resource, _action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
         end
 

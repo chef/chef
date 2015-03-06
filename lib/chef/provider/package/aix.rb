@@ -106,7 +106,7 @@ class Chef
         # options of installp.
         # So far, the code has been tested only with standalone packages.
         #
-        def install_package(name, version)
+        def install_package(_name, _version)
           Chef::Log.debug("#{@new_resource} package install options: #{@new_resource.options}")
           if @new_resource.options.nil?
             shell_out!( "installp -aYF -d #{@new_resource.source} #{@new_resource.package_name}" )
@@ -119,7 +119,7 @@ class Chef
 
         alias_method :upgrade_package, :install_package
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           if @new_resource.options.nil?
             shell_out!( "installp -u #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")

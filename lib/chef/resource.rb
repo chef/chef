@@ -617,7 +617,7 @@ class Chef
     # as_json does most of the to_json heavy lifted. It exists here in case activesupport
     # is loaded. activesupport will call as_json and skip over to_json. This ensure
     # json is encoded as expected
-    def as_json(*a)
+    def as_json(*_a)
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       instance_vars = Hash.new
       safe_ivars.each do |iv|

@@ -31,7 +31,7 @@ class Chef
           "#{super}/_acl"
         end
 
-        def delete(recurse)
+        def delete(_recurse)
           raise Chef::ChefFS::FileSystem::OperationNotAllowedError.new(:delete, self), "ACLs cannot be deleted."
         end
 

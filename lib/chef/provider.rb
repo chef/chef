@@ -47,7 +47,7 @@ class Chef
       end
 
       # supports the given resource and action (late binding)
-      def supports?(resource, action)
+      def supports?(_resource, _action)
         true
       end
     end

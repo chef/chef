@@ -354,14 +354,14 @@ class Chef
       # Override if you need to keep state externally.
       # Note that YOU are responsible for implementing whyrun-friendly behavior
       # in any actions you take in this callback.
-      def release_created(release_path)
+      def release_created(_release_path)
       end
 
       # Note that YOU are responsible for using appropriate whyrun nomenclature
       # Override if you need to keep state externally.
       # Note that YOU are responsible for implementing whyrun-friendly behavior
       # in any actions you take in this callback.
-      def release_deleted(release_path)
+      def release_deleted(_release_path)
       end
 
       def release_slug

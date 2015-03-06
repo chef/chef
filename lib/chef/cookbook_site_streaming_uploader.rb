@@ -189,7 +189,7 @@ class Chef
       end
 
       # read the specified amount from the stream
-      def read(offset, how_much)
+      def read(_offset, how_much)
         @stream.read(how_much)
       end
     end

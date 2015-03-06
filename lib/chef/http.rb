@@ -158,7 +158,7 @@ class Chef
     #
     # If no block is given, the tempfile is returned, which means it's up to
     # you to unlink the tempfile when you're done with it.
-    def streaming_request(path, headers={}, &block)
+    def streaming_request(path, headers={}, &_block)
       url = create_url(path)
       response, rest_request, return_value = nil, nil, nil
       tempfile = nil
@@ -358,7 +358,7 @@ class Chef
       response['location']
     end
 
-    def build_headers(method, url, headers={}, json_body=false)
+    def build_headers(_method, _url, headers={}, json_body=false)
       headers                 = @default_headers.merge(headers)
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]

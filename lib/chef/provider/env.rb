@@ -47,7 +47,7 @@ class Chef
         @current_resource
       end
 
-      def env_value(key_name)
+      def env_value(_key_name)
         raise Chef::Exceptions::Env, "#{self.to_s} provider does not implement env_value!"
       end
 

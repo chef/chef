@@ -66,7 +66,7 @@ class Chef
           @exists
         end
 
-        def delete(recurse)
+        def delete(_recurse)
           begin
             rest.delete(api_path)
           rescue Timeout::Error => e

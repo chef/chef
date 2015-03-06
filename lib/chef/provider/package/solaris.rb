@@ -102,7 +102,7 @@ class Chef
           @candidate_version
         end
 
-        def install_package(name, version)
+        def install_package(_name, _version)
           Chef::Log.debug("#{@new_resource} package install options: #{@new_resource.options}")
           if @new_resource.options.nil?
             if ::File.directory?(@new_resource.source) # CHEF-4469
@@ -123,7 +123,7 @@ class Chef
           end
         end
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           if @new_resource.options.nil?
             shell_out!( "pkgrm -n #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")

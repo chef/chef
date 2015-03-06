@@ -145,7 +145,7 @@ class Chef
           Chef::Config.cookbook_path = old_cookbook_path
         end
 
-        def upload_cookbook!(uploader, options = {})
+        def upload_cookbook!(uploader, _options = {})
           if uploader.respond_to?(:upload_cookbook)
             uploader.upload_cookbook
           else

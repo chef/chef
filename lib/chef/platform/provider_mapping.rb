@@ -364,7 +364,7 @@ class Chef
         provider
       end
 
-      def provider_for_node(node, resource_type)
+      def provider_for_node(_node, _resource_type)
         raise NotImplementedError, "#{self.class.name} no longer supports #provider_for_node"
       end
 
@@ -450,7 +450,7 @@ class Chef
 
       private
 
-        def explicit_provider(platform, version, resource_type)
+        def explicit_provider(_platform, _version, resource_type)
           resource_type.kind_of?(Chef::Resource) ? resource_type.provider : nil
         end
 
@@ -460,7 +460,7 @@ class Chef
           pmap.has_key?(rtkey) ? pmap[rtkey] : nil
         end
 
-        def resource_matching_provider(platform, version, resource_type)
+        def resource_matching_provider(_platform, _version, resource_type)
           if resource_type.kind_of?(Chef::Resource)
             begin
               Chef::Provider.const_get(resource_type.class.to_s.split('::').last)

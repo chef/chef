@@ -481,7 +481,7 @@ class Chef
       cookbook_manifest.to_hash
     end
 
-    def to_json(*a)
+    def to_json(*_a)
       # TODO: this should become deprecated when the API for CookbookManifest becomes stable
       cookbook_manifest.to_json
     end

@@ -27,7 +27,7 @@ class Chef
     # it, so it's included with Chef::REST
     class CookieManager
 
-      def initialize(options={})
+      def initialize(_options={})
         @cookies = CookieJar.instance
       end
 
@@ -46,7 +46,7 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
-      def stream_response_handler(response)
+      def stream_response_handler(_response)
         nil
       end
 

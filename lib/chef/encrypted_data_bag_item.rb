@@ -80,7 +80,7 @@ class Chef::EncryptedDataBagItem
     end
   end
 
-  def []=(key, value)
+  def []=(_key, _value)
     raise ArgumentError, "assignment not supported for #{self.class}"
   end
 

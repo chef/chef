@@ -25,7 +25,7 @@ class Chef
   module ChefFS
     module FileSystem
       class DataBagDir < RestListDir
-        def initialize(name, parent, exists = nil)
+        def initialize(name, parent, _exists = nil)
           super(name, parent, nil, Chef::ChefFS::DataHandler::DataBagItemDataHandler.new)
           @exists = nil
         end
