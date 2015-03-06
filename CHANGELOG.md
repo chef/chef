@@ -7,10 +7,14 @@
   fail-fast rather than moving on to the next machine.
 * migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution
 * migrate cron and mdadm resources to dynamic resolution
+
+## 12.1.1
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   [Issue 3008](https://github.com/chef/chef/issues/3008) Allow people to pass in `source` to package
 * [Issue 3011](https://github.com/chef/chef/issues/3011) `package` provider base should include 
   `Chef::Mixin::Command` as there are still providers that use it.
+* [**Ranjib Dey**](https://github.com/ranjib):
+  [Issue 3019](https://github.com/chef/chef/issues/3019) Fix data fetching when explicit attributes are passed
 
 ## 12.1.0
 
