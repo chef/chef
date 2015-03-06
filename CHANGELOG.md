@@ -3,11 +3,14 @@
 * make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
 * mixin the LWRP attribute DSL method into Chef::Resource directly
 * make all LWRP attributes nillable
-* windows service now has a configurable timeout
 * `knife ssh` now has an --exit-on-error option that allows users to
   fail-fast rather than moving on to the next machine.
 * migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution
 * migrate cron and mdadm resources to dynamic resolution
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  [Issue 3008](https://github.com/chef/chef/issues/3008) Allow people to pass in `source` to package
+* [Issue 3011](https://github.com/chef/chef/issues/3011) `package` provider base should include 
+  `Chef::Mixin::Command` as there are still providers that use it.
 
 ## 12.1.0
 
@@ -113,6 +116,7 @@
 * Add declare_resource/build_resource comments, fix faulty ||=
 * Knife bootstrap creates a client and ships it to the node to implement validatorless bootstraps
 * Knife bootstrap can use the client it creates to setup chef-vault items for the node
+* windows service now has a configurable timeout
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
