@@ -25,6 +25,7 @@ require 'chef/platform'
 class Chef
   class Provider
     class Package < Chef::Provider
+      include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
 
       #
@@ -54,8 +55,11 @@ class Chef
           a.whyrun("Assuming a repository that offers #{forced_packages_missing_candidates.join(", ")} would have been configured")
         end
 
+        # XXX: Does it make sense to pass in a source with :upgrade? Probably
+        # not, but as with the above comment, we don't yet enforce such a thing,
+        # so we'll just leave things as-is for now.
         requirements.assert(:upgrade, :install) do |a|
-          a.assertion  { candidates_exist_for_all_uninstalled? }
+          a.assertion  { candidates_exist_for_all_uninstalled? || new_resource.source }
           a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
           a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
         end
