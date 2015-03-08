@@ -18,7 +18,9 @@
 
 require 'chef/json_compat'
 
-class Chef::Util::Powershell
+class Chef
+class Util
+class Powershell
   class CmdletResult
     attr_reader :output_format
 
@@ -50,4 +52,6 @@ class Chef::Util::Powershell
       @succeeded = @status.status.exitstatus == 0
     end
   end
+end
+end
 end

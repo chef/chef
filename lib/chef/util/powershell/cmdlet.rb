@@ -20,7 +20,9 @@ require 'mixlib/shellout'
 require 'chef/mixin/windows_architecture_helper'
 require 'chef/util/powershell/cmdlet_result'
 
-class Chef::Util::Powershell
+class Chef
+class Util
+class Powershell
   class Cmdlet
     def initialize(node, cmdlet, output_format=nil, output_format_options={})
       @output_format = output_format
@@ -160,4 +162,6 @@ class Chef::Util::Powershell
       end
     end
   end
+end
+end
 end
