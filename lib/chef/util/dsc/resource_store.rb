@@ -78,7 +78,7 @@ class DSC
 
     def find_resources(name, module_name, rs)
       found = rs.find_all do |r|
-        name_matches = r['FriendlyName'].casecmp(name) == 0
+        name_matches = r['Name'].casecmp(name) == 0
         if name_matches
           module_name == nil || (r['Module'] and r['Module']['Name'].casecmp(module_name) == 0)
         else

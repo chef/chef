@@ -19,6 +19,7 @@
 require 'chef/util/powershell/cmdlet'
 require 'chef/util/dsc/local_configuration_manager'
 require 'chef/mixin/powershell_type_coercions'
+require 'chef/util/dsc/resource_store'
 
 class Chef
   class Provider
@@ -78,12 +79,27 @@ class Chef
         )
       end
 
+      def resource_store
+        Chef::Util::DSC::ResourceStore.instance
+      end
+
       def supports_dsc_invoke_resource?
         run_context && Chef::Platform.supports_dsc_invoke_resource?(node)
       end
 
       def generate_description
         "Converge dsc resource"
+      end
+
+      def module_name
+        @module_name ||= begin
+          r = resource_store.resource(@new_resource.resource.to_s)
+          if r['Module']
+            r['Module']['Name']
+          else
+            :none
+          end
+        end
       end
 
       def test_resource
@@ -99,6 +115,11 @@ class Chef
       def invoke_resource(method, output_format=:object)
         properties = translate_type(@new_resource.properties)
         switches = "-Method #{method.to_s} -Name #{@new_resource.resource} -Property #{properties}"
+
+        if module_name != :none
+          switches += " -Module #{module_name}"
+        end
+
         cmdlet = Chef::Util::Powershell::Cmdlet.new(
           node,
           "Invoke-DscResource #{switches}",
