@@ -32,6 +32,7 @@ class Chef
         super
         @new_resource = new_resource
         @resource_converged = false
+        @module_name = new_resource.module_name
       end
 
       def action_run
