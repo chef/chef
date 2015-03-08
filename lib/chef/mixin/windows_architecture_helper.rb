@@ -43,6 +43,14 @@ class Chef
       end
 
       def with_os_architecture(node)
+        node ||= begin
+          os_arch = ENV['PROCESSOR_ARCHITEW6432'] ||
+                    ENV['PROCESSOR_ARCHITECTURE']
+          Hash.new.tap do |n|
+            n[:kernel] = Hash.new
+            n[:kernel][:machine] = os_arch == 'AMD64' ? :x86_64 : :i386
+          end
+        end
         wow64_redirection_state = nil
 
         if wow64_architecture_override_required?(node, node_windows_architecture(node))
