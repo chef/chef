@@ -42,6 +42,14 @@ class Chef
         end
       end
 
+      def module_name(value=nil)
+        if value
+          @module_name = value
+        else
+          @module_name
+        end
+      end
+
       def property(property_name, value=nil)
         if not property_name.is_a?(Symbol)
           raise TypeError, "A property name of type Symbol must be specified, '#{property_name.to_s}' of type #{property_name.class.to_s} was given"

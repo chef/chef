@@ -31,7 +31,7 @@ describe Chef::Resource::DscResource do
       Chef::RunContext.new(node, {}, empty_events)
     }
     let(:dsc_test_resource) {
-      Chef::Resource::DscResource.new(dsc_test_resource_name, dsc_test_run_context) 
+      Chef::Resource::DscResource.new(dsc_test_resource_name, dsc_test_run_context)
     }
 
     it "has a default action of `:run`" do
@@ -45,6 +45,11 @@ describe Chef::Resource::DscResource do
     it "allows the resource attribute to be set" do
       dsc_test_resource.resource(dsc_test_resource_name)
       expect(dsc_test_resource.resource).to eq(dsc_test_resource_name)
+    end
+
+    it "allows the module_name attribute to be set" do
+      dsc_test_resource.module_name(dsc_test_resource_name)
+      expect(dsc_test_resource.module_name).to eq(dsc_test_resource_name)
     end
 
     context "when setting a dsc property" do
