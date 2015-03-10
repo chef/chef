@@ -21,7 +21,6 @@ require 'chef/mixin/shell_out'
 metadata = {
   :unix_only => true,
   :requires_root => true,
-  :provider => {:user => Chef::Provider::User::Dscl},
   :not_supported_on_mac_osx_106 => true,
 }
 

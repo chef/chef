@@ -88,6 +88,20 @@ def mac_osx_106?
   false
 end
 
+def mac_osx?
+  if File.exists? "/usr/bin/sw_vers"
+    result = ShellHelpers.shell_out("/usr/bin/sw_vers")
+    result.stdout.each_line do |line|
+      if line =~ /^ProductName:\sMac OS X.*$/
+        return true
+      end
+    end
+  end
+
+  false
+end
+
+
 # detects if the hardware is 64-bit (evaluates to true in "WOW64" mode in a 32-bit app on a 64-bit system)
 def windows64?
   windows? && ( ENV['PROCESSOR_ARCHITECTURE'] == 'AMD64' || ENV['PROCESSOR_ARCHITEW6432'] == 'AMD64' )
