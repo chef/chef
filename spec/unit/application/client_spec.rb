@@ -293,7 +293,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
     allow(Chef::Client).to receive(:new).and_return(@client)
     allow(@client).to receive(:run) do
       @pipe[1].puts 'started'
-      sleep 6
+      sleep 1
       @pipe[1].puts 'finished'
     end
   end
@@ -305,7 +305,9 @@ describe Chef::Application::Client, "run_application", :unix_only do
         allow(Chef::Daemon).to receive(:daemonize).and_return(true)
       end
 
-      it "should exit hard with exitstatus 3" do
+      # In ChefDK builds this sometimes fails from `chef verify`
+      # https://github.com/chef/chef/pull/3039
+      it "should exit hard with exitstatus 3", :volatile_from_verify do
         pid = fork do
           @app.run_application
         end
