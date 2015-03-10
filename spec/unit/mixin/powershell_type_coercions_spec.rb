@@ -18,6 +18,7 @@
 
 require 'spec_helper'
 require 'chef/mixin/powershell_type_coercions'
+require 'base64'
 
 class Chef::PSTypeTester
   include Chef::Mixin::PowershellTypeCoercions
@@ -27,6 +28,16 @@ describe Chef::Mixin::PowershellTypeCoercions do
   let (:test_class) { Chef::PSTypeTester.new }
 
   describe '#translate_type' do
+    it 'should single quote a string' do
+      expect(test_class.translate_type('foo')).to eq("'foo'")
+    end
+
+    ["'", '"', '#', '`'].each do |c|
+      it "should base64 encode a string that contains #{c}" do
+        expect(test_class.translate_type("#{c}")).to match(Base64.strict_encode64(c))
+      end
+    end
+
     it 'should not quote an integer' do
       expect(test_class.translate_type(123)).to eq('123')
     end

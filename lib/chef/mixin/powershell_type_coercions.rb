@@ -45,23 +45,34 @@ class Chef
         "@(#{translated.join(',')})"
       end
 
+      def unsafe?(s)
+        ["'", '#', '`', '"'].any? do |x|
+          s.include? x
+        end
+      end
+
+      def safe_string(s)
+        # do we need to worry about binary data?
+        if unsafe?(s)
+          encoded_str = Base64.strict_encode64(s.encode("UTF-8"))
+          "([System.Text.Encoding]::UTF8.GetString("\
+               "[System.Convert]::FromBase64String('#{encoded_str}')"\
+          "))"
+        else
+          "'#{s}'"
+        end
+      end
+
       def translate_type(value)
         translation = type_coercions[value.class]
-        translated_value = nil
 
         if translation
-          should_quote = translation[:single_quoted]
-          translated_value = translation[:type].call(value)
+          translation[:type].call(value)
         elsif value.respond_to? :to_psobject
-          should_quote = false
-          translated_value = "(#{value.to_psobject})"
+          "(#{value.to_psobject})"
         else
-          should_quote = true
-          translated_value = value.to_s
+          safe_string(value.to_s)
         end
-
-        translated_value = "'#{translated_value}'" if should_quote
-        translated_value
       end
 
     end
