@@ -20,6 +20,7 @@
 class Chef
   module Mixin
     module PowershellTypeCoercions
+
       def type_coercions
         @type_coercions ||= {
           Fixnum => { :type => lambda { |x| x.to_s }},
@@ -30,6 +31,20 @@ class Chef
           Array => {:type => Proc.new { |x| translate_array(x)}}
         }
       end
+
+      def translate_type(value)
+        translation = type_coercions[value.class]
+
+        if translation
+          translation[:type].call(value)
+        elsif value.respond_to? :to_psobject
+          "(#{value.to_psobject})"
+        else
+          safe_string(value.to_s)
+        end
+      end
+
+      private
 
       def translate_hash(x)
         translated = x.inject([]) do |memo, (k,v)|
@@ -62,19 +77,6 @@ class Chef
           "'#{s}'"
         end
       end
-
-      def translate_type(value)
-        translation = type_coercions[value.class]
-
-        if translation
-          translation[:type].call(value)
-        elsif value.respond_to? :to_psobject
-          "(#{value.to_psobject})"
-        else
-          safe_string(value.to_s)
-        end
-      end
-
     end
   end
 end
