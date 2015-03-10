@@ -305,7 +305,8 @@ describe Chef::Application::Client, "run_application", :unix_only do
         allow(Chef::Daemon).to receive(:daemonize).and_return(true)
       end
 
-      # In ChefDK builds this sometimes fails from `chef verify`
+      # In ChefDK builds this sometimes fails from `chef verify`.  If the test
+      # begins to fail for normal chef builds, change it to :volatile completely
       # https://github.com/chef/chef/pull/3039
       it "should exit hard with exitstatus 3", :volatile_from_verify do
         pid = fork do
