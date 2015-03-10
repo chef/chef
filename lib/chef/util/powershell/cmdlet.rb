@@ -65,8 +65,6 @@ class Chef::Util::Powershell
       augmented_options = {:returns => [0], :live_stream => false}.merge(execution_options)
       command = Mixlib::ShellOut.new(command_string, augmented_options)
 
-      os_architecture = "#{ENV['PROCESSOR_ARCHITEW6432']}" == 'AMD64' ? :x86_64 : :i386
-
       status = nil
 
       with_os_architecture(@node) do
