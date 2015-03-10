@@ -1,3 +1,4 @@
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 # Author:: Igor Afonov <afonov@gmail.com>
 # Copyright:: Copyright (c) 2011 Igor Afonov
@@ -16,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'etc'
 require 'rexml/document'
 require 'chef/resource/service'
 require 'chef/provider/service/simple'
@@ -44,8 +46,25 @@ class Chef
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
           @plist_size = 0
-          @plist = find_service_plist
+          @plist = @new_resource.plist ? @new_resource.plist : find_service_plist
+          Chef::Log.debug("Plist: '#{@plist}'")
           @service_label = find_service_label
+          Chef::Log.debug("Service_Label: '#{@service_label}'")
+          # LauchAgents should be loaded as the console user.
+          @console_user = @plist.include?('LaunchAgents')
+          @session_type = @new_resource.session_type
+
+          if @console_user
+            @console_user = Etc.getlogin
+            Chef::Log.debug("Console User: '#{@console_user}'")
+            cmd = "su "
+            param = ''
+            param = "-l " if not node['platform_version'].include?('10.10')
+            @base_user_cmd = cmd + param + "#{@console_user} -c "
+            # Default LauchAgent session should be Aqua
+            @session_type = 'Aqua' if @session_type.nil?
+          end
+
           set_service_status
 
           @current_resource
@@ -86,7 +105,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              shell_out_with_systems_locale!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              load_service
             end
           end
         end
@@ -98,7 +117,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              shell_out_with_systems_locale!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              unload_service
             end
           end
         end
@@ -107,9 +126,9 @@ class Chef
           if @new_resource.restart_command
             super
           else
-            stop_service
+            unload_service
             sleep 1
-            start_service
+            load_service
           end
         end
 
@@ -122,10 +141,7 @@ class Chef
           if @current_resource.enabled
             Chef::Log.debug("#{@new_resource} already enabled, not enabling")
           else
-            shell_out!(
-              "launchctl load -w '#{@plist}'",
-              :user => @owner_uid, :group => @owner_gid
-            )
+            load_service
           end
         end
 
@@ -133,38 +149,50 @@ class Chef
           unless @current_resource.enabled
             Chef::Log.debug("#{@new_resource} not enabled, not disabling")
           else
-            shell_out!(
-              "launchctl unload -w '#{@plist}'",
-              :user => @owner_uid, :group => @owner_gid
-            )
+            unload_service
+          end
+        end
+
+       def load_service
+          session = @session_type ? "-S #{@session_type}" : ''
+          cmd = 'launchctl load -w ' + session + @plist
+          shell_out_with_su?(cmd)
+        end
+
+        def unload_service
+          session = @session_type ? "-S #{@session_type}" : ''
+          cmd = 'launchctl unload -w ' + session + @plist
+          shell_out_with_su?(cmd)
+        end
+
+        def shell_out_with_su?(cmd)
+          if @console_user
+            shell_out_with_systems_locale("#{@base_user_cmd} '#{cmd}'")
+          else
+            shell_out_with_systems_locale(cmd)
+
           end
         end
 
         def set_service_status
           return if @plist == nil or @service_label.to_s.empty?
 
-          cmd = shell_out(
-            "launchctl list #{@service_label}",
-            :user => @owner_uid, :group => @owner_gid
-          )
+          cmd = "launchctl list #{@service_label}"
+          res = shell_out_with_su?(cmd)
 
-          if cmd.exitstatus == 0
+          if res.exitstatus == 0
             @current_resource.enabled(true)
           else
             @current_resource.enabled(false)
           end
 
           if @current_resource.enabled
-            @owner_uid = ::File.stat(@plist).uid
-            @owner_gid = ::File.stat(@plist).gid
-
-            shell_out!(
-              "launchctl list", :user => @owner_uid, :group => @owner_gid
-            ).stdout.each_line do |line|
-              case line
-              when /(\d+|-)\s+(?:\d+|-)\s+(.*\.?)#{@service_label}/
+            res.stdout.each_line do |line|
+              case line.downcase
+              when /\s+\"pid\"\s+=\s+(\d+).*/
                 pid = $1
                 @current_resource.running(!pid.to_i.zero?)
+                Chef::Log.debug("Current PID for #{@service_label} is #{pid}")
               end
             end
           else
@@ -186,7 +214,9 @@ class Chef
 
           # plist files can come in XML or Binary formats. this command
           # will make sure we get XML every time.
-          plist_xml = shell_out!("plutil -convert xml1 -o - #{@plist}").stdout
+          plist_xml = shell_out_with_systems_locale!(
+            "plutil -convert xml1 -o - #{@plist}"
+          ).stdout
 
           plist_doc = REXML::Document.new(plist_xml)
           plist_doc.elements[
