@@ -57,7 +57,10 @@ class Chef::Util::Powershell
       end
 
       json_command = @json_format ? " | convertto-json -compress -depth #{json_depth}" : ""
-      command_string = "powershell.exe -executionpolicy bypass -noprofile -noninteractive -command \"trap [Exception] {write-error -exception ($_.Exception.Message);exit 1};#{@cmdlet} #{switches_string} #{arguments_string}#{json_command}\";if ( ! $? ) { exit 1 }"
+      command_string = "powershell.exe -executionpolicy bypass -noprofile -noninteractive "\
+                       "-command \"trap [Exception] {write-error -exception "\
+                       "($_.Exception.Message);exit 1};#{@cmdlet} #{switches_string} "\
+                       "#{arguments_string}#{json_command}\";if ( ! $? ) { exit 1 }"
 
       augmented_options = {:returns => [0], :live_stream => false}.merge(execution_options)
       command = Mixlib::ShellOut.new(command_string, augmented_options)
@@ -133,4 +136,3 @@ class Chef::Util::Powershell
     end
   end
 end
-
