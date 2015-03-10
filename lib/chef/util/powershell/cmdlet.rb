@@ -46,6 +46,8 @@ class Chef::Util::Powershell
     attr_reader :output_format
 
     def run(switches={}, execution_options={}, *arguments)
+      streams = { :json => CmdletStream.new('json') }
+
       arguments_string = arguments.join(' ')
 
       switches_string = command_switches_string(switches)
@@ -56,7 +58,9 @@ class Chef::Util::Powershell
         json_depth = @output_format_options[:depth]
       end
 
-      json_command = @json_format ? " | convertto-json -compress -depth #{json_depth}" : ""
+      json_command = @json_format ? " | convertto-json -compress -depth #{json_depth} "\
+                                    "> #{streams[:json].path}" : ""
+
       command_string = "powershell.exe -executionpolicy bypass -noprofile -noninteractive "\
                        "-command \"trap [Exception] {write-error -exception "\
                        "($_.Exception.Message);exit 1};#{@cmdlet} #{switches_string} "\
@@ -71,7 +75,7 @@ class Chef::Util::Powershell
         status = command.run_command
       end
 
-      CmdletResult.new(status, @output_format)
+      CmdletResult.new(status, streams, @output_format)
     end
 
     def run!(switches={}, execution_options={}, *arguments)
@@ -131,6 +135,29 @@ class Chef::Util::Powershell
       end
 
       command_switches.join(' ')
+    end
+
+    class CmdletStream
+      def initialize(name)
+        @filename = Dir::Tmpname.create(name) {}
+        ObjectSpace.define_finalizer(self, self.class.destroy(@filename))
+      end
+
+      def path
+        @filename
+      end
+
+      def read
+        if File.exist? @filename
+          File.open(@filename, 'rb:bom|UTF-16LE') do |f|
+            f.read.encode('UTF-8')
+          end
+        end
+      end
+
+      def self.destroy(name)
+        proc { File.delete(name) if File.exists? name }
+      end
     end
   end
 end
