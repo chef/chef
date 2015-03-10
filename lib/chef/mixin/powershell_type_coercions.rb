@@ -22,12 +22,12 @@ class Chef
     module PowershellTypeCoercions
       def type_coercions
         @type_coercions ||= {
-          Fixnum => { :type => lambda { |x| x.to_s }, :single_quoted => false },
-          Float => { :type => lambda { |x| x.to_s }, :single_quoted => false },
-          FalseClass => { :type => lambda { |x| '$false' }, :single_quoted => false },
-          TrueClass => { :type => lambda { |x| '$true' }, :single_quoted => false },
-          Hash => {:type => Proc.new { |x| translate_hash(x)}, :single_quoted => false},
-          Array => {:type => Proc.new { |x| translate_array(x)}, :single_quoted => false}
+          Fixnum => { :type => lambda { |x| x.to_s }},
+          Float => { :type => lambda { |x| x.to_s }},
+          FalseClass => { :type => lambda { |x| '$false' }},
+          TrueClass => { :type => lambda { |x| '$true' }},
+          Hash => {:type => Proc.new { |x| translate_hash(x)}},
+          Array => {:type => Proc.new { |x| translate_array(x)}}
         }
       end
 
