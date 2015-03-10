@@ -1,3 +1,4 @@
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@opscode.com>)
@@ -46,6 +47,8 @@ class Chef
         @action = "nothing"
         @supports = { :restart => false, :reload => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
+        @plist = nil
+        @session_type = nil
       end
 
       def service_name(arg=nil)
@@ -172,6 +175,24 @@ class Chef
           :parameters,
           arg,
           :kind_of => [ Hash ]
+        )
+      end
+
+      # This will enable user to pass a plist in the case that the filename
+      # and label for the service dont match
+      def plist(arg=nil)
+        set_or_return(
+          :plist,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def session_type(arg=nil)
+        set_or_return(
+          :session_type,
+          arg,
+          :kind_of => String
         )
       end
 
