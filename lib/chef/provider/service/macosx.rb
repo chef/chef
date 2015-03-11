@@ -58,8 +58,7 @@ class Chef
             @console_user = Etc.getlogin
             Chef::Log.debug("Console User: '#{@console_user}'")
             cmd = "su "
-            param = ''
-            param = "-l " if not node['platform_version'].include?('10.10')
+            param = !node['platform_version'].include?('10.10') ? '-l ' : ''
             @base_user_cmd = cmd + param + "#{@console_user} -c "
             # Default LauchAgent session should be Aqua
             @session_type = 'Aqua' if @session_type.nil?
