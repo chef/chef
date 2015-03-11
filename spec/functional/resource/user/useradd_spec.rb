@@ -77,9 +77,19 @@ describe Chef::Provider::User::Useradd, metadata do
     end
   end
 
+  def try_cleanup
+    ['/home/foo', '/home/bar'].each do |f|
+      shell_out("rm", "-r", f)
+    end
+    ['cf-test'].each do |u|
+      shell_out("userdel", "-r", username)
+    end
+  end
+
   before do
     # Silence shell_out live stream
     Chef::Log.level = :warn
+    try_cleanup
   end
 
   after do
