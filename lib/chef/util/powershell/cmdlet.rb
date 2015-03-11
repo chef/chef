@@ -48,7 +48,9 @@ class Powershell
     attr_reader :output_format
 
     def run(switches={}, execution_options={}, *arguments)
-      streams = { :json => CmdletStream.new('json') }
+      streams = { :json => CmdletStream.new('json'),
+                  :verbose => CmdletStream.new('verbose'),
+                }
 
       arguments_string = arguments.join(' ')
 
@@ -62,11 +64,12 @@ class Powershell
 
       json_command = @json_format ? " | convertto-json -compress -depth #{json_depth} "\
                                     "> #{streams[:json].path}" : ""
-
+      redirections = "4> '#{streams[:verbose].path}'"
       command_string = "powershell.exe -executionpolicy bypass -noprofile -noninteractive "\
                        "-command \"trap [Exception] {write-error -exception "\
                        "($_.Exception.Message);exit 1};#{@cmdlet} #{switches_string} "\
-                       "#{arguments_string}#{json_command}\";if ( ! $? ) { exit 1 }"
+                       "#{arguments_string} #{redirections}"\
+                       "#{json_command}\";if ( ! $? ) { exit 1 }"
 
       augmented_options = {:returns => [0], :live_stream => false}.merge(execution_options)
       command = Mixlib::ShellOut.new(command_string, augmented_options)
