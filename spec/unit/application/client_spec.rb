@@ -305,7 +305,10 @@ describe Chef::Application::Client, "run_application", :unix_only do
         allow(Chef::Daemon).to receive(:daemonize).and_return(true)
       end
 
-      it "should exit hard with exitstatus 3" do
+      # In ChefDK builds this sometimes fails from `chef verify`.  If the test
+      # begins to fail for normal chef builds, change it to :volatile completely
+      # https://github.com/chef/chef/pull/3039
+      it "should exit hard with exitstatus 3", :volatile_from_verify do
         pid = fork do
           @app.run_application
         end
@@ -320,9 +323,9 @@ describe Chef::Application::Client, "run_application", :unix_only do
         end
         expect(@pipe[0].gets).to eq("started\n")
         Process.kill("TERM", pid)
-        Process.wait
-        sleep 1 # Make sure we give the converging child process enough time to finish
-        expect(IO.select([@pipe[0]], nil, nil, 0)).not_to be_nil
+        Process.wait(pid)
+        # The timeout value needs to be large enough for the child process to finish
+        expect(IO.select([@pipe[0]], nil, nil, 15)).not_to be_nil
         expect(@pipe[0].gets).to eq("finished\n")
       end
     end
