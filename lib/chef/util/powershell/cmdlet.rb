@@ -46,6 +46,8 @@ class Chef::Util::Powershell
     attr_reader :output_format
 
     def run(switches={}, execution_options={}, *arguments)
+      streams = { :json => CmdletStream.new('json') }
+
       arguments_string = arguments.join(' ')
 
       switches_string = command_switches_string(switches)
@@ -56,13 +58,16 @@ class Chef::Util::Powershell
         json_depth = @output_format_options[:depth]
       end
 
-      json_command = @json_format ? " | convertto-json -compress -depth #{json_depth}" : ""
-      command_string = "powershell.exe -executionpolicy bypass -noprofile -noninteractive -command \"trap [Exception] {write-error -exception ($_.Exception.Message);exit 1};#{@cmdlet} #{switches_string} #{arguments_string}#{json_command}\";if ( ! $? ) { exit 1 }"
+      json_command = @json_format ? " | convertto-json -compress -depth #{json_depth} "\
+                                    "> #{streams[:json].path}" : ""
+
+      command_string = "powershell.exe -executionpolicy bypass -noprofile -noninteractive "\
+                       "-command \"trap [Exception] {write-error -exception "\
+                       "($_.Exception.Message);exit 1};#{@cmdlet} #{switches_string} "\
+                       "#{arguments_string}#{json_command}\";if ( ! $? ) { exit 1 }"
 
       augmented_options = {:returns => [0], :live_stream => false}.merge(execution_options)
       command = Mixlib::ShellOut.new(command_string, augmented_options)
-
-      os_architecture = "#{ENV['PROCESSOR_ARCHITEW6432']}" == 'AMD64' ? :x86_64 : :i386
 
       status = nil
 
@@ -70,7 +75,7 @@ class Chef::Util::Powershell
         status = command.run_command
       end
 
-      CmdletResult.new(status, @output_format)
+      CmdletResult.new(status, streams, @output_format)
     end
 
     def run!(switches={}, execution_options={}, *arguments)
@@ -131,6 +136,28 @@ class Chef::Util::Powershell
 
       command_switches.join(' ')
     end
+
+    class CmdletStream
+      def initialize(name)
+        @filename = Dir::Tmpname.create(name) {}
+        ObjectSpace.define_finalizer(self, self.class.destroy(@filename))
+      end
+
+      def path
+        @filename
+      end
+
+      def read
+        if File.exist? @filename
+          File.open(@filename, 'rb:bom|UTF-16LE') do |f|
+            f.read.encode('UTF-8')
+          end
+        end
+      end
+
+      def self.destroy(name)
+        proc { File.delete(name) if File.exists? name }
+      end
+    end
   end
 end
-
