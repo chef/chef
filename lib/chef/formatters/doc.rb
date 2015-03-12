@@ -47,7 +47,7 @@ class Chef
         else
           puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{elapsed_time} seconds"
           if total_audits > 0
-            puts_line "  #{successful_audits}/#{total_audits} Audits succeeded"
+            puts_line "  #{successful_audits}/#{total_audits} controls succeeded"
           end
         end
       end
@@ -59,7 +59,7 @@ class Chef
         else
           puts_line "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time} seconds"
           if total_audits > 0
-            puts_line "  #{successful_audits} Audits succeeded"
+            puts_line "  #{successful_audits} controls succeeded"
           end
         end
       end
