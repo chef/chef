@@ -15,7 +15,7 @@
 #
 
 name "chefdk"
-default_version "tball/nightlies"
+default_version "master"
 
 source git: "git://github.com/opscode/chef-dk"
 
