@@ -79,7 +79,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
   def try_cleanup
     ['/home/cheftestfoo', '/home/cheftestbar'].each do |f|
-      shell_out("rm", "-r", f)
+      FileUtils.rm_rf(f) if File.exists? f
     end
 
     ['cf-test'].each do |u|
