@@ -44,20 +44,31 @@ class Chef
         :long => "--hide-healthy",
         :description => "Hide nodes that have run chef in the last hour"
 
+      def append_to_query(term)
+        @query << " AND " unless @query.empty?
+        @query << term
+      end
+
       def run
         ui.use_presenter Knife::Core::StatusPresenter
-        all_nodes = []
-        q = Chef::Search::Query.new
-        query = @name_args[0] ? @name_args[0].dup : '*:*' 
+
+        @query = ""
+        append_to_query(@name_args[0]) if @name_args[0]
+        append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
+
         if config[:hide_healthy]
           time = Time.now.to_i
-          query_unhealthy = "NOT ohai_time:[" << (time - 60*60).to_s << " TO " << time.to_s << "]"
-          query << ' AND ' << query_unhealthy << @name_args[0] if @name_args[0]
-          query = query_unhealthy unless @name_args[0]
+          append_to_query("NOT ohai_time:[#{(time - 60*60).to_s} TO #{time.to_s}]")
         end
-        q.search(:node, query) do |node|
+
+        @query = @query.empty? ? "*:*" : @query
+
+        all_nodes = []
+        q = Chef::Search::Query.new
+        q.search(:node, @query) do |node|
           all_nodes << node
         end
+
         output(all_nodes.sort { |n1, n2|
           if (config[:sort_reverse] || Chef::Config[:knife][:sort_status_reverse])
             (n2["ohai_time"] or 0) <=> (n1["ohai_time"] or 0)
