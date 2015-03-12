@@ -24,17 +24,14 @@ describe Chef::Util::Powershell::PSCredential do
     @node = Chef::Node.new
   end
 
-  before (:example) do
-    allow(Chef::ReservedNames::Win32::Crypto).to receive(:encrypt).and_return("encrypted")
-  end
-
   let (:username) { 'foo' }
   let (:password) { 'password' }
-  
+
   context 'when username and password are provided' do
     let(:ps_credential) { Chef::Util::Powershell::PSCredential.new(username, password)}
     context 'when calling to_psobject' do
       it 'should create the script to create a PSCredential when calling' do
+        allow(ps_credential).to receive(:encrypt).with(password).and_return('encrypted')
         expect(ps_credential.to_psobject).to eq(
         "New-Object System.Management.Automation.PSCredential('#{username}',('encrypted' | ConvertTo-SecureString))")
       end

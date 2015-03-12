@@ -22,11 +22,17 @@ class Chef::Util::Powershell
   class PSCredential
     def initialize(username, password)
       @username = username
-      @encrypted_password = Chef::ReservedNames::Win32::Crypto.encrypt(password)
+      @password = password
     end
 
     def to_psobject
-      "New-Object System.Management.Automation.PSCredential('#{@username}',\('#{@encrypted_password}' | ConvertTo-SecureString))"
+      "New-Object System.Management.Automation.PSCredential('#{@username}',('#{encrypt(@password)}' | ConvertTo-SecureString))"
+    end
+
+    private
+
+    def encrypt(str)
+      Chef::ReservedNames::Win32::Crypto.encrypt(str)
     end
   end
 end
