@@ -718,7 +718,6 @@ class Chef
                 one_line = true
 
                 line.chomp!
-
                 if line =~ %r{\[option (.*)\] (.*)}
                   if $1 == "installonlypkgs"
                     @allow_multi_install = $2.split
@@ -1068,6 +1067,8 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
+          installed_version = []
+          @candidate_version = []
           if @new_resource.source
             unless ::File.exists?(@new_resource.source)
               raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
@@ -1081,22 +1082,24 @@ class Chef
                 @new_resource.version($2)
               end
             end
-          end
-
-          if @new_resource.version
-            new_resource = "#{@new_resource.package_name}-#{@new_resource.version}#{yum_arch}"
+            @candidate_version << @new_resource.version
+            installed_version << @yum.installed_version(@current_resource.package_name, arch)
           else
-            new_resource = "#{@new_resource.package_name}#{yum_arch}"
+            if @new_resource.version
+              new_resource = "#{@new_resource.package_name}-#{@new_resource.version}#{yum_arch}"
+            else
+              new_resource = "#{@new_resource.package_name}#{yum_arch}"
+            end
+
+            Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}")
+
+            package_name_array.each do |pkg|
+              installed_version << @yum.installed_version(pkg, arch)
+              @candidate_version << @yum.candidate_version(pkg, arch)
+            end
+
           end
 
-          Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}")
-
-          installed_version = []
-          @candidate_version = []
-          package_name_array.each do |pkg|
-            installed_version << @yum.installed_version(pkg, arch)
-            @candidate_version << @yum.candidate_version(pkg, arch)
-          end
           if installed_version.size == 1
             @current_resource.version(installed_version[0])
             @candidate_version = @candidate_version[0]
