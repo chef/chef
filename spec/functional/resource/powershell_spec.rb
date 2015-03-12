@@ -56,7 +56,8 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.run_action(:run)
     end
 
-    it "returns the -27 for a powershell script that exits with -27" do
+    it "returns the -27 for a powershell script that exits with -27", :windows_powershell_dsc_only do
+      # This is broken on Powershell < 4.0
       file = Tempfile.new(['foo', '.ps1'])
       begin
         file.write "exit -27"
