@@ -63,12 +63,22 @@ class Chef
             raise Chef::Exceptions::WindowsNotAdmin, "can not get the security information for '#{dst}' due to missing Administrator privileges."
           end
 
-          if dst_sd.dacl_present?
-            apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
+          dacl_present = dst_sd.dacl_present?
+          if dacl_present
+            if dst_sd.dacl.nil?
+              apply_dacl = nil
+            else
+              apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
+            end
           end
 
-          if dst_sd.sacl_present?
-            apply_sacl = ACL.create(dst_sd.sacl.select { |ace| !ace.inherited? })
+          sacl_present = dst_sd.sacl_present?
+          if sacl_present
+            if dst_sd.sacl.nil?
+              apply_sacl = nil
+            else
+              apply_sacl = ACL.create(dst_sd.sacl.select { |ace| !ace.inherited? })
+            end
           end
 
           #
@@ -84,8 +94,8 @@ class Chef
           dst_so = Security::SecurableObject.new(dst)
           dst_so.group = dst_sd.group
           dst_so.owner = dst_sd.owner
-          dst_so.set_dacl(apply_dacl, dst_sd.dacl_inherits?) if dst_sd.dacl_present?
-          dst_so.set_sacl(apply_sacl, dst_sd.sacl_inherits?) if dst_sd.sacl_present?
+          dst_so.set_dacl(apply_dacl, dst_sd.dacl_inherits?) if dacl_present
+          dst_so.set_sacl(apply_sacl, dst_sd.sacl_inherits?) if sacl_present
 
         end
       end
