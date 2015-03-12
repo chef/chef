@@ -81,12 +81,11 @@ describe Chef::Provider::User::Useradd, metadata do
     ['/home/foo', '/home/bar'].each do |f|
       shell_out("rm", "-r", f)
     end
+
     ['cf-test'].each do |u|
-      if RUBY_PLATFORM =~ /freebsd/
-        shell_out("pw", "userdel", "-r", username)
-      else
-        shell_out("userdel", "-r", username)
-      end
+      r = Chef::Resource::User.new("DELETE USER", run_context)
+      r.username('cf-test')
+      r.run_action(:remove)
     end
   end
 
