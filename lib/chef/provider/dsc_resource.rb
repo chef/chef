@@ -89,7 +89,7 @@ class Chef
       end
 
       def generate_description
-        "Converge dsc resource"
+        @converge_description
       end
 
       def module_name
@@ -105,6 +105,10 @@ class Chef
 
       def test_resource
         result = invoke_resource(:test)
+        # We really want this information from the verbose stream,
+        # however Invoke-DscResource is not correctly writing to that
+        # stream and instead just dumping to stdout
+        @converge_description = result.stdout
         result.return_value[0]["InDesiredState"]
       end
 
@@ -115,7 +119,8 @@ class Chef
 
       def invoke_resource(method, output_format=:object)
         properties = translate_type(@new_resource.properties)
-        switches = "-Method #{method.to_s} -Name #{@new_resource.resource} -Property #{properties}"
+        switches = "-Method #{method.to_s} -Name #{@new_resource.resource}"\
+                   " -Property #{properties} -Verbose"
 
         if module_name != :none
           switches += " -Module #{module_name}"

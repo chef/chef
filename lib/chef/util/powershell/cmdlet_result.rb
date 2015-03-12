@@ -30,6 +30,10 @@ class Powershell
       @streams = streams
     end
 
+    def stdout
+      @status.stdout
+    end
+    
     def stderr
       @status.stderr
     end
