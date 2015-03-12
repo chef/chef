@@ -73,6 +73,20 @@ describe Chef::Provider::Package::Yum do
       expect(@provider.load_current_resource).to eql(@provider.current_resource)
     end
 
+    describe "when source is provided" do
+      it "should set the candidate version" do
+        @new_resource = Chef::Resource::YumPackage.new('testing.source')
+        @new_resource.source "chef-server-core-12.0.5-1.rpm"
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        allow(File).to receive(:exists?).with(@new_resource.source).and_return(true)
+        allow(@yum_cache).to receive(:installed_version).and_return(nil)
+        shellout_double = double(:stdout => 'chef-server-core 12.0.5-1')
+        allow(@provider).to receive(:shell_out!).and_return(shellout_double)
+        @provider.load_current_resource
+        expect(@provider.candidate_version).to eql('12.0.5-1')
+      end
+    end
+
     describe "when arch in package_name" do
       it "should set the arch if no existing package_name is found and new_package_name+new_arch is available" do
         @new_resource = Chef::Resource::YumPackage.new('testing.noarch')
