@@ -26,8 +26,13 @@ class Chef
       provides :service, os: "darwin"
       provides :macosx_service, os: "darwin"
 
+      identity_attr :service_name
+
+      state_attrs :enabled, :running
+
       def initialize(name, run_context=nil)
         super
+        @resource_name = :macosx_service
         @plist = nil
         @session_type = nil
       end

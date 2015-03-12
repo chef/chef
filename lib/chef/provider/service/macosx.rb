@@ -20,6 +20,7 @@
 require 'etc'
 require 'rexml/document'
 require 'chef/resource/service'
+require 'chef/resource/macosx_service'
 require 'chef/provider/service/simple'
 require 'chef/util/path_helper'
 
@@ -29,6 +30,7 @@ class Chef
       class Macosx < Chef::Provider::Service::Simple
 
         provides :service, os: "darwin"
+        provides :macosx_service, os: "darwin"
 
         def self.gather_plist_dirs
           locations = %w{/Library/LaunchAgents
@@ -43,7 +45,7 @@ class Chef
         PLIST_DIRS = gather_plist_dirs
 
         def load_current_resource
-          @current_resource = Chef::Resource::Service.new(@new_resource.name)
+          @current_resource = Chef::Resource::MacosxService.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
           @plist_size = 0
           @plist = @new_resource.plist ? @new_resource.plist : find_service_plist
@@ -51,7 +53,7 @@ class Chef
           @service_label = find_service_label
           Chef::Log.debug("Service_Label: '#{@service_label}'")
           # LauchAgents should be loaded as the console user.
-          @console_user = @plist.include?('LaunchAgents')
+          @console_user = @plist ? @plist.include?('LaunchAgents') : false
           @session_type = @new_resource.session_type
 
           if @console_user
@@ -59,7 +61,7 @@ class Chef
             Chef::Log.debug("Console User: '#{@console_user}'")
             cmd = "su "
             param = !node['platform_version'].include?('10.10') ? '-l ' : ''
-            @base_user_cmd = cmd + param + "#{@console_user} -c "
+            @base_user_cmd = cmd + param + "#{@console_user} -c"
             # Default LauchAgent session should be Aqua
             @session_type = 'Aqua' if @session_type.nil?
           end
@@ -153,14 +155,13 @@ class Chef
         end
 
        def load_service
-          session = @session_type ? "-S #{@session_type}" : ''
+          session = @session_type ? "-S #{@session_type} " : ''
           cmd = 'launchctl load -w ' + session + @plist
           shell_out_with_su?(cmd)
         end
 
         def unload_service
-          session = @session_type ? "-S #{@session_type}" : ''
-          cmd = 'launchctl unload -w ' + session + @plist
+          cmd = 'launchctl unload -w ' + @plist
           shell_out_with_su?(cmd)
         end
 

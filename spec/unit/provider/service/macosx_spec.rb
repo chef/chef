@@ -60,16 +60,14 @@ XML
 
     ["redis-server", "io.redis.redis-server"].each do |service_name|
       before do
+        allow(node).to receive(:[]).with("platform_version").and_return('10.10')
+        allow(Etc).to receive(:getlogin).and_return('igor')
         allow(Dir).to receive(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
-        allow(provider).to receive(:shell_out!).
-                 with("launchctl list", {:group => 1001, :user => 101}).
-                 and_return(double("Status", :stdout => launchctl_stdout))
-        allow(provider).to receive(:shell_out).
-                 with(/launchctl list /,
-                      {:group => nil, :user => nil}).
+        allow(provider).to receive(:shell_out_with_systems_locale).
+                 with("su igor -c 'launchctl list #{service_name}'").
                  and_return(double("Status",
                                  :stdout => launchctl_stdout, :exitstatus => 0))
-        allow(provider).to receive(:shell_out!).
+        allow(provider).to receive(:shell_out_with_systems_locale!).
                  with(/plutil -convert xml1 -o/).
                  and_return(double("Status", :stdout => plutil_stdout))
 
@@ -77,8 +75,8 @@ XML
       end
 
       context "#{service_name}" do
-        let(:new_resource) { Chef::Resource::Service.new(service_name) }
-        let!(:current_resource) { Chef::Resource::Service.new(service_name) }
+        let(:new_resource) { Chef::Resource::MacosxService.new(service_name) }
+        let!(:current_resource) { Chef::Resource::MacosxService.new(service_name) }
 
         describe "#load_current_resource" do
 
@@ -120,10 +118,20 @@ XML
 
           context "when launchctl returns pid in service list" do
             let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-  12761 - 0x100114220.old.machinit.thing
-  7777  - io.redis.redis-server
-  - - com.lol.stopped-thing
-  SVC_LIST
+{
+  "LimitLoadToSessionType" = "System";
+  "Label" = "io.redis.redis-server";
+  "TimeOut" = 30;
+  "OnDemand" = false;
+  "LastExitStatus" = 0;
+  "PID" = 62803;
+  "Program" = "do_some.sh";
+  "ProgramArguments" = (
+    "path/to/do_something.sh";
+    "-f";
+  );
+};
+SVC_LIST
 
             before do
               provider.load_current_resource
@@ -140,9 +148,19 @@ XML
 
           describe "running unsupported actions" do
             let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-12761 - 0x100114220.old.machinit.thing
-7777  - io.redis.redis-server
-- - com.lol.stopped-thing
+{
+  "LimitLoadToSessionType" = "System";
+  "Label" = "io.redis.redis-server";
+  "TimeOut" = 30;
+  "OnDemand" = false;
+  "LastExitStatus" = 0;
+  "PID" = 62803;
+  "Program" = "do_some.sh";
+  "ProgramArguments" = (
+    "path/to/do_something.sh";
+    "-f";
+  );
+};
 SVC_LIST
 
             before do
@@ -154,10 +172,19 @@ SVC_LIST
           end
           context "when launchctl returns empty service pid" do
             let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-  12761 - 0x100114220.old.machinit.thing
-  - - io.redis.redis-server
-  - - com.lol.stopped-thing
-  SVC_LIST
+{
+  "LimitLoadToSessionType" = "System";
+  "Label" = "io.redis.redis-server";
+  "TimeOut" = 30;
+  "OnDemand" = false;
+  "LastExitStatus" = 0;
+  "Program" = "do_some.sh";
+  "ProgramArguments" = (
+    "path/to/do_something.sh";
+    "-f";
+  );
+};
+SVC_LIST
 
             before do
               provider.load_current_resource
@@ -232,15 +259,14 @@ SVC_LIST
 
           it "shows warning message if service is already running" do
             allow(current_resource).to receive(:running).and_return(true)
-            expect(Chef::Log).to receive(:debug).with("service[#{service_name}] already running, not starting")
+            expect(Chef::Log).to receive(:debug).with("macosx_service[#{service_name}] already running, not starting")
 
             provider.start_service
           end
 
           it "starts service via launchctl if service found" do
-            expect(provider).to receive(:shell_out_with_systems_locale!).
-                     with("launchctl load -w '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
-                           :group => 1001, :user => 101).
+            expect(provider).to receive(:shell_out_with_systems_locale).
+                     with("su igor -c 'launchctl load -w -S Aqua /Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'").
                      and_return(0)
 
             provider.start_service
@@ -264,15 +290,14 @@ SVC_LIST
 
           it "shows warning message if service is not running" do
             allow(current_resource).to receive(:running).and_return(false)
-            expect(Chef::Log).to receive(:debug).with("service[#{service_name}] not running, not stopping")
+            expect(Chef::Log).to receive(:debug).with("macosx_service[#{service_name}] not running, not stopping")
 
             provider.stop_service
           end
 
           it "stops the service via launchctl if service found" do
-            expect(provider).to receive(:shell_out_with_systems_locale!).
-                     with("launchctl unload '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
-                          :group => 1001, :user => 101).
+            expect(provider).to receive(:shell_out_with_systems_locale).
+                     with("su igor -c 'launchctl unload -w /Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'").
                      and_return(0)
 
             provider.stop_service
@@ -296,8 +321,8 @@ SVC_LIST
           end
 
           it "stops and then starts service" do
-            expect(provider).to receive(:stop_service)
-            expect(provider).to receive(:start_service);
+            expect(provider).to receive(:unload_service)
+            expect(provider).to receive(:load_service);
 
             provider.restart_service
           end
