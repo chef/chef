@@ -82,7 +82,11 @@ describe Chef::Provider::User::Useradd, metadata do
       shell_out("rm", "-r", f)
     end
     ['cf-test'].each do |u|
-      shell_out("userdel", "-r", username)
+      if RUBY_PLATFORM =~ /freebsd/
+        shell_out("pw", "userdel", "-r", username)
+      else
+        shell_out("userdel", "-r", username)
+      end
     end
   end
 
