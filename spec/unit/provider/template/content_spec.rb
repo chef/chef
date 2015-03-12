@@ -97,7 +97,7 @@ describe Chef::Provider::Template::Content do
     end
 
     it "creates the template with the rendered content" do
-      IO.read(content.tempfile.path).should == <<EOF
+      expect(IO.read(content.tempfile.path)).to eql <<EOF
 openldap
 default
 #{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb:2:in `from_file'
