@@ -1,3 +1,4 @@
 source "https://supermarket.getchef.com"
 
 cookbook "webapp", :path => "cookbooks/webapp"
+cookbook "installthings", :path => "cookbooks/installthings"
