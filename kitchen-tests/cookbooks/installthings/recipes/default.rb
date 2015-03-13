@@ -15,4 +15,5 @@ end
 
 package 'push jobs client install' do
   source pushy_package_location
+  provider Chef::Provider::Package::Dpkg if node['platform_family'] == 'debian'
 end
