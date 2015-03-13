@@ -44,7 +44,7 @@ matrix:
     - cd kitchen-tests
     script:
 # FIXME: we should fix centos-6 against AWS and then enable it here
-    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen test; fi
+    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen test --concurrency 4; fi
     after_script:
     - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy; fi
     env:
