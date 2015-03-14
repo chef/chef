@@ -94,12 +94,20 @@ class Chef
 
       def module_name
         @module_name ||= begin
-          r = resource_store.resource(@new_resource.resource.to_s)
-          if r['Module']
-            r['Module']['Name']
-          else
-            :none
-          end
+          found = resource_store.find(new_resource.resource.to_s)
+
+          r = case found.length
+              when 0
+                nil
+              when 1
+                if found[0]['Module'].nil?
+                  :none
+                else
+                  found[0]['Module']
+                end
+              else
+                raise Chef::Exceptions::MultipleDscResourcesFound, found
+              end
         end
       end
 

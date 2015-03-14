@@ -18,6 +18,7 @@
 
 require 'chef/util/powershell/cmdlet'
 require 'chef/util/powershell/cmdlet_result'
+require 'chef/exceptions'
 
 class Chef
 class Util
@@ -34,7 +35,7 @@ class DSC
       @resources ||= []
     end
 
-    def resource(name, module_name=nil)
+    def find(name, module_name=nil)
       found = find_resources(name, module_name, resources)
 
       # We don't have it, query for the resource...it might
@@ -45,14 +46,7 @@ class DSC
         found = find_resources(name, module_name, rs)
       end
 
-      case found.length
-      when 0
-        nil
-      when 1
-        found[0]
-      else
-        raise 'Multiple matching resources'
-      end
+      found
     end
 
     private
