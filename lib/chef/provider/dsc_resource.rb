@@ -31,12 +31,11 @@ class Chef
       def initialize(new_resource, run_context)
         super
         @new_resource = new_resource
-        @resource_converged = false
         @module_name = new_resource.module_name
       end
 
       def action_run
-        if ! @resource_converged
+        if ! test_resource
           converge_by(generate_description) do
             result = set_resource
           end
@@ -44,9 +43,8 @@ class Chef
       end
 
       def load_current_resource
-        @resource_converged = test_resource
       end
-
+      
       def whyrun_supported?
         true
       end
