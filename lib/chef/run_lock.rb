@@ -23,6 +23,7 @@ end
 require 'chef/config'
 require 'chef/exceptions'
 require 'timeout'
+require 'pathname'
 
 class Chef
 
@@ -87,6 +88,9 @@ class Chef
     # Either acquire() or test() methods should be called in order to
     # get the ownership of run_lock.
     def test
+      if Pathname.new(runlock_file).relative?
+        @runlock_file = File.absolute_path(runlock_file, working_directory)
+      end
       # ensure the runlock_file path exists
       create_path(File.dirname(runlock_file))
       @runlock = File.open(runlock_file,'a+')
@@ -183,6 +187,20 @@ class Chef
       rp = runpid
       release # Just to be on the safe side...
       raise Chef::Exceptions::RunLockTimeout.new(time_to_wait, rp)
+    end
+
+    def env
+      ENV
+    end
+
+    def working_directory
+      a = if Chef::Platform.windows?
+            env['CD']
+          else
+            env['PWD']
+          end || Dir.pwd
+
+      a
     end
   end
 end
