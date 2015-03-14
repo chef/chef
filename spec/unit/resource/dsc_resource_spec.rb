@@ -26,7 +26,7 @@ describe Chef::Resource::DscResource do
   context 'when Powershell supports Dsc' do
     let(:dsc_test_run_context) {
       node = Chef::Node.new
-      node.automatic[:languages][:powershell][:version] = '4.0'
+      node.automatic[:languages][:powershell][:version] = '5.0.10018.0'
       empty_events = Chef::EventDispatch::Dispatcher.new
       Chef::RunContext.new(node, {}, empty_events)
     }
