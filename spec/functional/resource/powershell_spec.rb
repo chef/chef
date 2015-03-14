@@ -102,6 +102,12 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.run_action(:run)
     end
 
+    it "returns 1 if the script provided to the code attribute is not syntactically correct" do
+      resource.code('if({)')
+      resource.returns(1)
+      resource.run_action(:run)
+    end
+
     # This somewhat ambiguous case, two failures of different types,
     # seems to violate the principle of returning the status of the
     # last line executed -- in this case, we return the status of the
