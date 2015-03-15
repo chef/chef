@@ -39,6 +39,14 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
   }
 
   context 'when Powershell does not support Invoke-DscResource'
-  context 'when Powershell supports Invoke-DscResource'
-  
+  context 'when Powershell supports Invoke-DscResource' do
+    context 'with an invalid dsc resource' do
+      it 'raises an exception if the resource is not found' do
+        new_resource.resource 'thisdoesnotexist'
+        expect { new_resource.run_action(:run) }.to raise_error(
+                                            Chef::Exceptions::ResourceNotFound)
+      end
+    end
+
+  end
 end

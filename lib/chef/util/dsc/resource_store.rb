@@ -96,7 +96,9 @@ class DSC
           :object)
       result = cmdlet.run
       ret_val = result.return_value
-      if ret_val.is_a? Array
+      if ret_val.nil?
+        []
+      elsif ret_val.is_a? Array
         ret_val
       else
         [ret_val]

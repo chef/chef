@@ -44,7 +44,7 @@ class Chef
 
       def load_current_resource
       end
-      
+
       def whyrun_supported?
         true
       end
@@ -90,13 +90,19 @@ class Chef
         @converge_description
       end
 
+      def dsc_resource_name
+        new_resource.resource.to_s
+      end
+
       def module_name
         @module_name ||= begin
-          found = resource_store.find(new_resource.resource.to_s)
+          found = resource_store.find(dsc_resource_name)
 
           r = case found.length
               when 0
-                nil
+                raise Chef::Exceptions::ResourceNotFound,
+                  "Could not find #{dsc_resource_name}. Check to make "\
+                  "sure that it shows up when running Get-DscResource"
               when 1
                 if found[0]['Module'].nil?
                   :none
