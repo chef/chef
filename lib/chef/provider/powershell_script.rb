@@ -24,8 +24,6 @@ class Chef
 
       provides :powershell_script, os: "windows"
 
-      public
-
       def initialize (new_resource, run_context)
         super(new_resource, run_context, '.ps1')
         normalize_script_exit_status
@@ -53,7 +51,50 @@ class Chef
 
       protected
 
-      # Process exit codes are strange with PowerShell. Unless you
+      # Process exit codes are strange with PowerShell and require
+      # special handling to cover common use cases.
+      def normalize_script_exit_status
+        self.code = wrapper_script
+        Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
+        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
+      end
+
+      def validate_script_syntax!
+        interpreter_arguments = default_interpreter_flags.join(' ')
+        Tempfile.open(['chef_powershell_script-user-code', '.ps1']) do | user_script_file |
+          user_script_file.puts("{#{@new_resource.code}}")
+          user_script_file.close
+
+          validation_command = "\"#{interpreter}\" #{interpreter_arguments} -Command #{user_script_file.path}"
+
+          # For consistency with other script resources, allow even syntax errors
+          # to be suppressed if the returns attribute would have suppressed it
+          # at converge.
+          valid_returns = [0]
+          specified_returns = @new_resource.returns.is_a?(Integer) ?
+            [@new_resource.returns] :
+            @new_resource.returns
+          valid_returns.concat([1]) if specified_returns.include?(1)
+
+          result = shell_out!(validation_command, {returns: valid_returns})
+          result.exitstatus == 0
+        end
+      end
+
+      def default_interpreter_flags
+        [
+          "-NoLogo",
+          "-NonInteractive",
+          "-NoProfile",
+          "-ExecutionPolicy Unrestricted",
+          # Powershell will hang if STDIN is redirected
+          # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
+          "-InputFormat None"
+        ]
+      end
+
+      # A wrapper script is used to launch user-supplied script while
+      # still obtaining useful process exit codes. Unless you
       # explicitly call exit in Powershell, the powershell.exe
       # interpreter returns only 0 for success or 1 for failure. Since
       # we'd like to get specific exit codes from executable tools run
@@ -62,8 +103,8 @@ class Chef
       # last process run in the script if it is the last command
       # executed, otherwise 0 or 1 based on whether $? is set to true
       # (success, where we return 0) or false (where we return 1).
-      def normalize_script_exit_status
-        self.code = <<-EOH
+      def wrapper_script
+<<-EOH
 # Chef Client wrapper for powershell_script resources
 
 # LASTEXITCODE can be uninitialized -- make it explictly 0
@@ -122,39 +163,6 @@ elseif ( $LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0 )
 # 1 (i.e. failed) otherwise.
 exit $exitstatus
 EOH
-        Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
-        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
-      end
-
-      def validate_script_syntax!
-        interpreter_arguments = default_interpreter_flags.join(' ')
-        Tempfile.open(['chef_powershell_script-user-code', '.ps1']) do | user_script_file |
-          user_script_file.puts("{#{@new_resource.code}}")
-          user_script_file.close
-
-          validation_command = "\"#{interpreter}\" #{interpreter_arguments} -Command #{user_script_file.path}"
-
-          valid_returns = [0]
-          specified_returns = @new_resource.returns.is_a?(Integer) ?
-            [@new_resource.returns] :
-            @new_resource.returns
-          valid_returns.concat([1]) if specified_returns.include?(1)
-
-          result = shell_out!(validation_command, {returns: valid_returns})
-          result.exitstatus == 0
-        end
-      end
-
-      def default_interpreter_flags
-        [
-          "-NoLogo",
-          "-NonInteractive",
-          "-NoProfile",
-          "-ExecutionPolicy Unrestricted",
-          # Powershell will hang if STDIN is redirected
-          # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-          "-InputFormat None"
-        ]
       end
 
     end
