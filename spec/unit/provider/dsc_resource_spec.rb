@@ -48,6 +48,18 @@ describe Chef::Provider::DscResource do
       node.automatic[:languages][:powershell][:version] = '5.0.10018.0'
       node
     }
+
+    context 'when RefreshMode is not set to Disabled' do
+      let (:meta_configuration) { {'RefreshMode' => 'AnythingElse'}}
+
+      it 'raises an exception' do
+        expect(provider).to receive(:meta_configuration).and_return(
+                                                             meta_configuration)
+        expect { provider.run_action(:run) }.to raise_error(
+          Chef::Exceptions::NoProviderAvailable, /Disabled/)
+      end
+    end
+
     context 'when RefreshMode is set to Disabled' do
       let (:meta_configuration) { {'RefreshMode' => 'Disabled'}}
 
