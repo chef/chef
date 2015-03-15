@@ -17,6 +17,7 @@
 #
 
 require 'chef/provider/windows_script'
+require 'pry'
 
 class Chef
   class Provider
@@ -25,9 +26,6 @@ class Chef
       provides :powershell_script, os: "windows"
 
       protected
-      EXIT_STATUS_EXCEPTION_HANDLER = "\ntrap [Exception] {write-error -exception ($_.Exception.Message);exit 1}".freeze
-      EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -ne $true) { if ( $LASTEXITCODE ) {exit $LASTEXITCODE} else { exit 1 }}".freeze
-      EXIT_STATUS_RESET_SCRIPT = "\n$global:LASTEXITCODE=$null".freeze
 
       # Process exit codes are strange with PowerShell. Unless you
       # explicitly call exit in Powershell, the powershell.exe
@@ -39,29 +37,65 @@ class Chef
       # executed, otherwise 0 or 1 based on whether $? is set to true
       # (success, where we return 0) or false (where we return 1).
       def normalize_script_exit_status( code )
-        target_code = ( EXIT_STATUS_EXCEPTION_HANDLER +
-                        EXIT_STATUS_RESET_SCRIPT +
-                        "\n" +
-                        code.to_s +
-                        EXIT_STATUS_NORMALIZATION_SCRIPT )
-        convert_boolean_return = @new_resource.convert_boolean_return
-        self.code = <<EOH
-new-variable -name interpolatedexitcode -visibility private -value $#{convert_boolean_return}
-new-variable -name chefscriptresult -visibility private
-$chefscriptresult = {
-#{target_code}
-}.invokereturnasis()
-if ($interpolatedexitcode -and $chefscriptresult.gettype().name -eq 'boolean') { exit [int32](!$chefscriptresult) } else { exit 0 }
-EOH
-        Chef::Log.debug("powershell_script provider called with script code:\n\n#{code}\n")
-        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
       end
 
       public
 
       def initialize (new_resource, run_context)
         super(new_resource, run_context, '.ps1')
-        normalize_script_exit_status(new_resource.code)
+      end
+
+      def action_run
+        Tempfile.open(['powershell_script-user-code', '.ps1']) do | user_script_file |
+          convert_boolean_return = @new_resource.convert_boolean_return
+          new_code = <<-EOH
+ $global:LASTEXITCODE = 0
+ trap [Exception] {write-error ($_.Exception.Message);exit 1}
+
+ new-variable -name interpolatedexitcode -visibility private -value $#{convert_boolean_return}
+ new-variable -name chefscriptresult -visibility private
+
+$global:lastcmdlet = $null
+ $chefscriptresult =
+ {
+  #{@new_resource.code}
+  $global:lastcmdlet = $?
+ }.invokereturnasis()
+
+ $status = 0
+
+ if ($interpolatedexitcode -and $chefscriptresult -ne $null -and $chefscriptresult.gettype().name -eq 'boolean')
+ {
+   $status = [int32](!$chefscriptresult)
+ }
+ elseif ($lastcmdlet)
+ {
+   $status = 0
+ }
+ elseif ( $LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0 )
+ {
+   $status = $LASTEXITCODE
+ }
+ else
+ {
+   status = 1
+ }
+
+ exit $status
+EOH
+          self.code = new_code
+          Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
+          Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
+          user_script_file.puts("{#{@new_resource.code}}")
+          user_script_file.close
+          valid_syntax = true
+          begin
+            result = shell_out!("powershell.exe -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -Command #{user_script_file.path}")
+          rescue Mixlib::ShellOut::ShellCommandFailed
+            valid_syntax = false
+          end
+          super if valid_syntax
+        end
       end
 
       def flags
