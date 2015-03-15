@@ -20,10 +20,6 @@ require 'chef'
 require 'chef/util/powershell/ps_credential'
 
 describe Chef::Util::Powershell::PSCredential do
-  before (:all) do
-    @node = Chef::Node.new
-  end
-
   let (:username) { 'foo' }
   let (:password) { 'password' }
 
