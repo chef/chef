@@ -91,7 +91,9 @@ $chefscriptresult =
  $global:lastcmdlet = $?
 }.invokereturnasis()
 
-$exitstatus = 0
+# Assume failure status of 1 -- success cases
+# will have to override this
+$exitstatus = 1
 
 # If convert_boolean_return is enabled, the block's return value
 # gets precedence in determining our exit status
@@ -112,11 +114,6 @@ elseif ( $LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0 )
   # will be set to $false whenever a Win32 process returns a non-zero
   # status.
   $exitstatus = $LASTEXITCODE
-}
-else
-{
-  # We just have a failed cmdlet, we should return 1
-  $exitstatus = 1
 }
 
 # If this script is launched with -File, the process exit
