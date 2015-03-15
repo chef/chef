@@ -28,4 +28,17 @@ describe Chef::Provider::DscResource do
     Chef::Provider::DscResource.new(resource, run_context)
   end
 
+  context 'when Powershell does not support Invoke-DscResource' do
+    let (:node) {
+      node = Chef::Node.new
+      node.automatic[:languages][:powershell][:version] = '4.0'
+      node
+    }
+
+    it 'raises a NoProviderAvailable exception' do
+      expect(provider).not_to receive(:meta_configuration)
+      expect{provider.run_action(:run)}.to raise_error(
+              Chef::Exceptions::NoProviderAvailable, /5\.0\.10018\.0/)
+    end
+  end
 end
