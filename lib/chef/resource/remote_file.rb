@@ -125,6 +125,14 @@ class Chef
         )
       end
 
+      def show_progress(args=nil)
+        set_or_return(
+          :show_progress,
+          args,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
       def after_created
         validate_source(@source)
       end
