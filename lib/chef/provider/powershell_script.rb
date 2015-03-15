@@ -64,39 +64,66 @@ class Chef
       # (success, where we return 0) or false (where we return 1).
       def normalize_script_exit_status
         self.code = <<-EOH
+# Chef Client wrapper for powershell_script resources
+
+# LASTEXITCODE can be uninitialized -- make it explictly 0
+# to avoid incorrect detection of failure (non-zero) codes
 $global:LASTEXITCODE = 0
+
+# Catch any exceptions -- without this, exceptions will result
+# In a zero return code instead of the desired non-zero code
+# that indicates a failure
 trap [Exception] {write-error ($_.Exception.Message);exit 1}
 
+# Variable state that should not be accessible to the user code
 new-variable -name interpolatedexitcode -visibility private -value $#{@new_resource.convert_boolean_return}
 new-variable -name chefscriptresult -visibility private
 
+# Initialize a variable we use to capture $? inside a block
 $global:lastcmdlet = $null
+
+# Execute the user's code in a script block --
 $chefscriptresult =
 {
  #{@new_resource.code}
+
+ # This assignment doesn't affect the block's return value
  $global:lastcmdlet = $?
 }.invokereturnasis()
 
-$status = 0
+$exitstatus = 0
 
+# If convert_boolean_return is enabled, the block's return value
+# gets precedence in determining our exit status
 if ($interpolatedexitcode -and $chefscriptresult -ne $null -and $chefscriptresult.gettype().name -eq 'boolean')
 {
-  $status = [int32](!$chefscriptresult)
+  $exitstatus = [int32](!$chefscriptresult)
 }
 elseif ($lastcmdlet)
 {
-  $status = 0
+  # Otherwise, a successful cmdlet execution defines the status
+  $exitstatus = 0
 }
 elseif ( $LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0 )
 {
-  $status = $LASTEXITCODE
+  # If the cmdlet status is failed, allow the Win32 status
+  # in $LASTEXITCODE to define exit status. This handles the case
+  # where no cmdlets, only Win32 processes have run since $?
+  # will be set to $false whenever a Win32 process returns a non-zero
+  # status.
+  $exitstatus = $LASTEXITCODE
 }
 else
 {
-  status = 1
+  # We just have a failed cmdlet, we should return 1
+  $exitstatus = 1
 }
 
-exit $status
+# If this script is launched with -File, the process exit
+# status of PowerShell.exe will be $exitstatus. If it was
+# launched with -Command, it will be 0 if $exitstatus was 0,
+# 1 (i.e. failed) otherwise.
+exit $exitstatus
 EOH
         Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
         Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
