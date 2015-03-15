@@ -393,11 +393,9 @@ describe Chef::Client do
 
     describe "when converge fails" do
       include_context "a client run" do
-        let(:e) { Exception.new }
         def stub_for_converge
           expect(Chef::Runner).to receive(:new).and_return(runner)
           expect(runner).to receive(:converge).and_raise(e)
-          expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
         end
 
         def stub_for_node_save
@@ -416,19 +414,68 @@ describe Chef::Client do
           expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
           expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
         end
-      end
 
-      it "runs the audits and raises the error" do
-        expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-          expect(error.wrapped_errors.size).to eq(1)
-          expect(error.wrapped_errors[0]).to eq(e)
+        context "with a SystemExit error" do
+          let(:e) { SystemExit.new(101) }
+
+          def stub_for_audit
+            # audit mode is not ran if converge fails with a SystemExit
+          end
+
+          it "runs the audits and re-raises the error" do
+            expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(SystemExit)
+            expect{ client.run }.to raise_error(SystemExit) do |error|
+              expect(error.status).to eq(101)
+            end
+          end
+        end
+
+        context "with a non-SystemExit error" do
+          let(:e) { Exception.new }
+
+          it "runs the audits and raises the error" do
+            expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
+            expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+              expect(error.wrapped_errors.size).to eq(1)
+              expect(error.wrapped_errors[0]).to eq(e)
+            end
+          end
         end
       end
     end
 
     describe "when the audit phase fails" do
-      context "with an exception" do
-        include_context "a client run" do
+      include_context "a client run" do
+
+        def stub_for_run
+          expect_any_instance_of(Chef::RunLock).to receive(:acquire)
+          expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
+          expect_any_instance_of(Chef::RunLock).to receive(:release)
+
+          # Post conditions: check that node has been filled in correctly
+          expect(client).to receive(:run_started)
+          expect(client).to receive(:run_failed)
+
+          expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+          expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+        end
+
+        context "with a SystemExit error" do
+          let(:e) { SystemExit.new(101) }
+          def stub_for_audit
+            expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+            expect(audit_runner).to receive(:run).and_raise(e)
+            expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(SystemExit)
+          end
+
+          it "should save the node after converge and raise exception" do
+            expect{ client.run }.to raise_error(SystemExit) do |error|
+              expect(error.status).to eq(101)
+            end
+          end
+        end
+
+        context "with a non-SystemExit error" do
           let(:e) { Exception.new }
           def stub_for_audit
             expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
@@ -436,30 +483,15 @@ describe Chef::Client do
             expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
           end
 
-          def stub_for_run
-            expect_any_instance_of(Chef::RunLock).to receive(:acquire)
-            expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
-            expect_any_instance_of(Chef::RunLock).to receive(:release)
-
-            # Post conditions: check that node has been filled in correctly
-            expect(client).to receive(:run_started)
-            expect(client).to receive(:run_failed)
-
-            expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
-            expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+          it "should save the node after converge and raise exception" do
+            expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+              expect(error.wrapped_errors.size).to eq(1)
+              expect(error.wrapped_errors[0]).to eq(e)
+            end
           end
         end
 
-        it "should save the node after converge and raise exception" do
-          expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-            expect(error.wrapped_errors.size).to eq(1)
-            expect(error.wrapped_errors[0]).to eq(e)
-          end
-        end
-      end
-
-      context "with failed audits" do
-        include_context "a client run" do
+        context "with failed audits" do
           let(:audit_runner) do
             instance_double("Chef::Audit::Runner", :run => true, :failed? => true, :num_failed => 1, :num_total => 1)
           end
@@ -469,24 +501,11 @@ describe Chef::Client do
             expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
           end
 
-          def stub_for_run
-            expect_any_instance_of(Chef::RunLock).to receive(:acquire)
-            expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
-            expect_any_instance_of(Chef::RunLock).to receive(:release)
-
-            # Post conditions: check that node has been filled in correctly
-            expect(client).to receive(:run_started)
-            expect(client).to receive(:run_failed)
-
-            expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
-            expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
-          end
-        end
-
-        it "should save the node after converge and raise exception" do
-          expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-            expect(error.wrapped_errors.size).to eq(1)
-            expect(error.wrapped_errors[0]).to be_instance_of(Chef::Exceptions::AuditsFailed)
+          it "should save the node after converge and raise exception" do
+            expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+              expect(error.wrapped_errors.size).to eq(1)
+              expect(error.wrapped_errors[0]).to be_instance_of(Chef::Exceptions::AuditsFailed)
+            end
           end
         end
       end
