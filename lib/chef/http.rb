@@ -73,7 +73,7 @@ class Chef
     attr_reader :url
     attr_reader :sign_on_redirect
     attr_reader :redirect_limit
-
+    attr_reader :show_progress
     attr_reader :middlewares
 
     # Create a HTTP client object. The supplied +url+ is used as the base for
@@ -86,6 +86,7 @@ class Chef
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
+      @show_progress = options[:show_progress] || false
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
@@ -366,6 +367,7 @@ class Chef
     end
 
     def stream_to_tempfile(url, response)
+      total = response['Content-Length']
       tf = Tempfile.open("chef-rest")
       if Chef::Platform.windows?
         tf.binmode # required for binary files on Windows platforms
@@ -378,6 +380,7 @@ class Chef
 
       response.read_body do |chunk|
         tf.write(stream_handler.handle_chunk(chunk))
+        Chef::Log.info("#{tf.size} / #{total}") if show_progress
       end
       tf.close
       tf
