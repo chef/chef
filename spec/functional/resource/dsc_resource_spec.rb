@@ -48,5 +48,41 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
       end
     end
 
+    context 'with a valid dsc resource' do
+      let(:tmp_file_name) { Dir::Tmpname.create('tmpfile') {} }
+      let(:test_text) { "'\"!@#$%^&*)(}{][\u2713~n"}
+
+      before do
+        new_resource.resource :File
+        new_resource.property :Contents, test_text
+        new_resource.property :DestinationPath, tmp_file_name
+      end
+
+      after do
+        File.delete(tmp_file_name) if File.exists? tmp_file_name
+      end
+
+      it 'converges the resource if it is not converged' do
+        new_resource.run_action(:run)
+        contents = File.open(tmp_file_name, 'rb:bom|UTF-16LE') do |f|
+          f.read.encode('UTF-8')
+        end
+        expect(contents).to eq(test_text)
+        expect(new_resource).to be_updated
+      end
+
+      it 'does not converge the resource if it is already converged' do
+        new_resource.run_action(:run)
+        expect(new_resource).to be_updated
+        reresource =
+           Chef::Resource::DscResource.new("dsc_resource_retest", run_context)
+        reresource.resource :File
+        reresource.property :Contents, test_text
+        reresource.property :DestinationPath, tmp_file_name
+        reresource.run_action(:run)
+        expect(reresource).not_to be_updated
+      end
+    end
+
   end
 end
