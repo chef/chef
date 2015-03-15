@@ -99,7 +99,13 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "returns 1 if the last command was a cmdlet that failed and was preceded by a successfully executed non-cmdlet Windows binary" do
       resource.code([windows_process_exit_code_success_content, cmdlet_exit_code_not_found_content].join(';'))
       resource.returns(1)
-      resource.run_action(:run)
+      expect { resource.run_action(:run) }.not_to raise_error
+    end
+
+    it "raises an error if the script is not syntactically correct and returns is not set to 1" do
+      resource.code('if({)')
+      resource.returns(0)
+      expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
 
     it "returns 1 if the script provided to the code attribute is not syntactically correct" do
