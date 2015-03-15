@@ -17,13 +17,39 @@
 #
 
 require 'chef/provider/windows_script'
-require 'pry'
 
 class Chef
   class Provider
     class PowershellScript < Chef::Provider::WindowsScript
 
       provides :powershell_script, os: "windows"
+
+      public
+
+      def initialize (new_resource, run_context)
+        super(new_resource, run_context, '.ps1')
+        normalize_script_exit_status
+      end
+
+      def action_run
+        valid_syntax = validate_script_syntax!
+        super if valid_syntax
+      end
+
+      def flags
+        # Must use -File rather than -Command to launch the script
+        # file created by the base class that contains the script
+        # code -- otherwise, powershell.exe does not propagate the
+        # error status of a failed Windows process that ran at the
+        # end of the script, it gets changed to '1'.
+        interpreter_flags = [default_interpreter_flags, '-File'].join(' ')
+
+        if ! (@new_resource.flags.nil?)
+          interpreter_flags = [@new_resource.flags, interpreter_flags].join(' ')
+        end
+
+        interpreter_flags
+      end
 
       protected
 
@@ -36,93 +62,77 @@ class Chef
       # last process run in the script if it is the last command
       # executed, otherwise 0 or 1 based on whether $? is set to true
       # (success, where we return 0) or false (where we return 1).
-      def normalize_script_exit_status( code )
-      end
+      def normalize_script_exit_status
+        self.code = <<-EOH
+$global:LASTEXITCODE = 0
+trap [Exception] {write-error ($_.Exception.Message);exit 1}
 
-      public
-
-      def initialize (new_resource, run_context)
-        super(new_resource, run_context, '.ps1')
-      end
-
-      def action_run
-        Tempfile.open(['powershell_script-user-code', '.ps1']) do | user_script_file |
-          convert_boolean_return = @new_resource.convert_boolean_return
-          new_code = <<-EOH
- $global:LASTEXITCODE = 0
- trap [Exception] {write-error ($_.Exception.Message);exit 1}
-
- new-variable -name interpolatedexitcode -visibility private -value $#{convert_boolean_return}
- new-variable -name chefscriptresult -visibility private
+new-variable -name interpolatedexitcode -visibility private -value $#{@new_resource.convert_boolean_return}
+new-variable -name chefscriptresult -visibility private
 
 $global:lastcmdlet = $null
- $chefscriptresult =
- {
-  #{@new_resource.code}
-  $global:lastcmdlet = $?
- }.invokereturnasis()
+$chefscriptresult =
+{
+ #{@new_resource.code}
+ $global:lastcmdlet = $?
+}.invokereturnasis()
 
- $status = 0
+$status = 0
 
- if ($interpolatedexitcode -and $chefscriptresult -ne $null -and $chefscriptresult.gettype().name -eq 'boolean')
- {
-   $status = [int32](!$chefscriptresult)
- }
- elseif ($lastcmdlet)
- {
-   $status = 0
- }
- elseif ( $LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0 )
- {
-   $status = $LASTEXITCODE
- }
- else
- {
-   status = 1
- }
+if ($interpolatedexitcode -and $chefscriptresult -ne $null -and $chefscriptresult.gettype().name -eq 'boolean')
+{
+  $status = [int32](!$chefscriptresult)
+}
+elseif ($lastcmdlet)
+{
+  $status = 0
+}
+elseif ( $LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0 )
+{
+  $status = $LASTEXITCODE
+}
+else
+{
+  status = 1
+}
 
- exit $status
+exit $status
 EOH
-          self.code = new_code
-          Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
-          Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
+        Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
+        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
+      end
+
+      def validate_script_syntax!
+        interpreter_arguments = default_interpreter_flags.join(' ')
+        Tempfile.open(['chef_powershell_script-user-code', '.ps1']) do | user_script_file |
           user_script_file.puts("{#{@new_resource.code}}")
           user_script_file.close
-          valid_syntax = true
-          begin
-            result = shell_out!("powershell.exe -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -Command #{user_script_file.path}")
-          rescue Mixlib::ShellOut::ShellCommandFailed
-            valid_syntax = false
-          end
-          super if valid_syntax
+
+          validation_command = "\"#{interpreter}\" #{interpreter_arguments} -Command #{user_script_file.path}"
+
+          valid_returns = [0]
+          specified_returns = @new_resource.returns.is_a?(Integer) ?
+            [@new_resource.returns] :
+            @new_resource.returns
+          valid_returns.concat([1]) if specified_returns.include?(1)
+
+          result = shell_out!(validation_command, {returns: valid_returns})
+          result.exitstatus == 0
         end
       end
 
-      def flags
-        default_flags = [
+      def default_interpreter_flags
+        [
           "-NoLogo",
           "-NonInteractive",
           "-NoProfile",
           "-ExecutionPolicy Unrestricted",
           # Powershell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-          "-InputFormat None",
-          # Must use -File rather than -Command to launch the script
-          # file created by the base class that contains the script
-          # code -- otherwise, powershell.exe does not propagate the
-          # error status of a failed Windows process that ran at the
-          # end of the script, it gets changed to '1'.
-          "-File"
+          "-InputFormat None"
         ]
-
-        interpreter_flags = default_flags.join(' ')
-
-        if ! (@new_resource.flags.nil?)
-          interpreter_flags = [@new_resource.flags, interpreter_flags].join(' ')
-        end
-
-        interpreter_flags
       end
+
     end
   end
 end
