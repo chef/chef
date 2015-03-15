@@ -78,6 +78,10 @@ class Chef
           @cache_control_data ||= CacheControlData.load_and_validate(uri, current_resource.checksum)
         end
 
+        def want_progress?
+          new_resource.show_progress
+        end
+
         def want_mtime_cache_control?
           new_resource.use_last_modified
         end
@@ -107,6 +111,10 @@ class Chef
           if uri.to_s =~ /gz$/
             Chef::Log.debug("turning gzip compression off due to filename ending in gz")
             opts[:disable_gzip] = true
+          end
+          if want_progress?
+            Chef::Log.debug("enabling progress output for streaming requests")
+            opts[:show_progress] = true
           end
           opts
         end
