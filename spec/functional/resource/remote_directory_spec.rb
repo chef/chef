@@ -22,7 +22,7 @@ describe Chef::Resource::RemoteDirectory do
   include_context Chef::Resource::Directory
 
   let(:directory_base) { "directory_spec" }
-  let(:default_mode) { ((0100777 - File.umask) & 07777).to_s(8) }
+  let(:default_mode) { (0777 & ~File.umask).to_s(8) }
 
   def create_resource
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
