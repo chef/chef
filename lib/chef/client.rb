@@ -350,6 +350,7 @@ class Chef
           converge_exception = e
         end
       end
+      raise converge_exception if converge_exception.kind_of?(SystemExit)
       converge_exception
     end
 
@@ -367,6 +368,7 @@ class Chef
       rescue Exception => e
         Chef::Log.error("Audit phase failed with error message: #{e.message}")
         @events.audit_phase_failed(e)
+        raise e if e.kind_of?(SystemExit)
         audit_exception = e
       end
       audit_exception
