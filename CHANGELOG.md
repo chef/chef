@@ -8,6 +8,11 @@
 * migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution
 * migrate cron and mdadm resources to dynamic resolution
 
+## 12.1.2
+* [Issue 3022](https://github.com/chef/chef/issues/3022): Homebrew Cask install fails
+  FIXME (remove on 12.2.0 release): 3022 was only merged to 12-stable and #3077 or its descendant should fix this 
+* [Issue 3059](https://github.com/chef/chef/issues/3059): Chef 12.1.1 yum_package silently fails
+
 ## 12.1.1
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   [Issue 3008](https://github.com/chef/chef/issues/3008) Allow people to pass in `source` to package
