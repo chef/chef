@@ -52,13 +52,15 @@ class Chef
       def run
         ui.use_presenter Knife::Core::StatusPresenter
 
-        @query = ""
+        @query ||= ""
         append_to_query(@name_args[0]) if @name_args[0]
         append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
 
         if config[:hide_healthy]
           time = Time.now.to_i
-          append_to_query("NOT ohai_time:[#{(time - 60*60).to_s} TO #{time.to_s}]")
+          # AND NOT is not valid lucene syntax, so don't use append_to_query
+          @query << " " unless @query.empty?
+          @query << "NOT ohai_time:[#{(time - 60*60).to_s} TO #{time.to_s}]"
         end
 
         @query = @query.empty? ? "*:*" : @query

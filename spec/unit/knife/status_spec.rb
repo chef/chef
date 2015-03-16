@@ -54,7 +54,7 @@ describe Chef::Knife::Status do
     it "should filter by environment and health" do
       @knife.config[:environment] = "production"
       @knife.config[:hide_healthy] = true
-      expect(@query).to receive(:search).with(:node, "chef_environment:production AND NOT ohai_time:[119856 TO 123456]")
+      expect(@query).to receive(:search).with(:node, "chef_environment:production NOT ohai_time:[119856 TO 123456]")
       @knife.run
     end
 
@@ -70,7 +70,7 @@ describe Chef::Knife::Status do
 
       it "should filter healthy nodes" do
         @knife.config[:hide_healthy] = true
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND NOT ohai_time:[119856 TO 123456]")
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name NOT ohai_time:[119856 TO 123456]")
         @knife.run
       end
 
@@ -83,7 +83,7 @@ describe Chef::Knife::Status do
       it "should filter by environment and health" do
         @knife.config[:environment] = "production"
         @knife.config[:hide_healthy] = true
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production AND NOT ohai_time:[119856 TO 123456]")
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production NOT ohai_time:[119856 TO 123456]")
         @knife.run
       end
     end
