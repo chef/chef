@@ -28,8 +28,8 @@ class Chef
       attr_reader :chef_config_dir
       attr_reader :env
 
-      def initialize(chef_config_dir, env=ENV)
-        @chef_config_dir, @env = chef_config_dir, env
+      def initialize(chef_config_dir)
+        @chef_config_dir = chef_config_dir
         @forced_activate = {}
       end
 

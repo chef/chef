@@ -56,7 +56,7 @@ describe Shell do
   describe "configuring IRB" do
     it "configures irb history" do
       Shell.configure_irb
-      expect(Shell.irb_conf[:HISTORY_FILE]).to eq("~/.chef/chef_shell_history")
+      expect(Shell.irb_conf[:HISTORY_FILE]).to eq("#{ENV['HOME']}/.chef/chef_shell_history")
       expect(Shell.irb_conf[:SAVE_HISTORY]).to eq(1000)
     end
 
