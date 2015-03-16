@@ -115,6 +115,7 @@ class Chef
           if want_progress?
             Chef::Log.debug("enabling progress output for streaming requests")
             opts[:show_progress] = true
+            opts[:progress_interval] = new_resource.progress_interval
           end
           opts
         end

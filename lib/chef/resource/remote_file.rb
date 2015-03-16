@@ -133,6 +133,15 @@ class Chef
         )
       end
 
+      def progress_interval(args=nil)
+        set_or_return(
+          :progress_interval,
+          args,
+          :default => 10,
+          :equal_to => [1, 5, 10, 20, 25]
+        )
+      end
+
       def after_created
         validate_source(@source)
       end

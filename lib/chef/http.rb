@@ -35,6 +35,65 @@ class Chef
   # == Chef::HTTP
   # Basic HTTP client, with support for adding features via middleware
   class HTTP
+    class ProgressBar
+
+      attr_reader :display
+      attr_reader :interval
+
+      def initialize(size, opts = {})
+        @total = size
+        @status = 0
+        @display = opts[:display] || false
+        @interval = opts[:interval] || 10
+        progress_indicator if @display
+      end
+
+      def update(progress)
+        @progress = progress
+        display_progress
+      end
+
+      def display_progress
+        return unless display
+        progress_indicator if next_interval_met?
+      end
+
+      def next_interval_met?
+        return false unless percent_complete % interval == 0
+        if percent_complete > @status
+          @status = percent_complete
+          return true
+        end
+        return false
+      end
+
+      def percent_complete
+        (@progress.to_f / @total.to_f * 100).to_i
+      end
+
+      def display_status
+        length = @status / 2
+        progress_text = '=' * length
+        progress_text
+      end
+
+      def display_remainder
+        length = 100 / 2 - @status / 2
+        progress_text = ' ' * length
+        progress_text
+      end
+
+      def display_percentage
+        length = 4 - @status.to_s.length
+        progress_text = ' ' * length + "#{@status}/100 %"
+        progress_text
+      end
+
+      def progress_indicator
+        Chef::Log.info '[' + display_status + display_remainder + ']' + display_percentage
+      end
+    end
+
 
     # Class for applying middleware behaviors to streaming
     # responses. Collects stream handlers (if any) from each
@@ -74,6 +133,7 @@ class Chef
     attr_reader :sign_on_redirect
     attr_reader :redirect_limit
     attr_reader :show_progress
+    attr_reader :progress_interval
     attr_reader :middlewares
 
     # Create a HTTP client object. The supplied +url+ is used as the base for
@@ -87,6 +147,7 @@ class Chef
       @redirects_followed = 0
       @redirect_limit = 10
       @show_progress = options[:show_progress] || false
+      @progress_interval = options[:progress_interval] || 1
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
@@ -367,7 +428,7 @@ class Chef
     end
 
     def stream_to_tempfile(url, response)
-      total = response['Content-Length']
+      progress = ProgressBar.new(response['Content-Length'], display: show_progress, interval: progress_interval)
       tf = Tempfile.open("chef-rest")
       if Chef::Platform.windows?
         tf.binmode # required for binary files on Windows platforms
@@ -380,7 +441,7 @@ class Chef
 
       response.read_body do |chunk|
         tf.write(stream_handler.handle_chunk(chunk))
-        Chef::Log.info("#{tf.size} / #{total}") if show_progress
+        progress.update tf.size
       end
       tf.close
       tf
@@ -405,3 +466,4 @@ class Chef
 
   end
 end
+
