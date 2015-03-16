@@ -333,6 +333,7 @@ class Chef
         rescue Exception => e
           Chef::Log.error("Converge failed with error message #{e.message}")
           @events.converge_failed(e)
+          raise e if Chef::Config[:audit_mode] == :disabled
           converge_exception = e
         end
       end
@@ -347,6 +348,7 @@ class Chef
         begin
           save_updated_node
         rescue Exception => e
+          raise e if Chef::Config[:audit_mode] == :disabled
           converge_exception = e
         end
       end
