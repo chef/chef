@@ -1,4 +1,4 @@
-## Unreleased
+## Unreleased (12.2.0)
 
 * make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
 * mixin the LWRP attribute DSL method into Chef::Resource directly
@@ -7,6 +7,10 @@
   fail-fast rather than moving on to the next machine.
 * migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution
 * migrate cron and mdadm resources to dynamic resolution
+
+## 12.1.2
+* [Issue 3022](https://github.com/chef/chef/issues/3022): Homebrew Cask install fails
+* [Issue 3059](https://github.com/chef/chef/issues/3059): Chef 12.1.1 yum_package silently fails
 
 ## 12.1.1
 * [**Phil Dibowitz**](https://github.com/jaymzh):
