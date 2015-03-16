@@ -24,6 +24,9 @@ require 'chef/run_context'
 require 'chef/rest'
 require 'rbconfig'
 
+class FooError < RuntimeError
+end
+
 describe Chef::Client do
 
   let(:hostname) { "hostname" }
@@ -428,34 +431,80 @@ describe Chef::Client do
 
     describe "when the audit phase fails" do
       context "with an exception" do
-        include_context "a client run" do
-          let(:e) { Exception.new }
-          def stub_for_audit
-            expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
-            expect(audit_runner).to receive(:run).and_raise(e)
-            expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
+        context "when audit mode is enabled" do
+          include_context "a client run" do
+            let(:e) { Exception.new }
+            def stub_for_audit
+              expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+              expect(audit_runner).to receive(:run).and_raise(e)
+              expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
+            end
+
+            def stub_for_run
+              expect_any_instance_of(Chef::RunLock).to receive(:acquire)
+              expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
+              expect_any_instance_of(Chef::RunLock).to receive(:release)
+
+              # Post conditions: check that node has been filled in correctly
+              expect(client).to receive(:run_started)
+              expect(client).to receive(:run_failed)
+
+              expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+              expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+            end
           end
 
-          def stub_for_run
-            expect_any_instance_of(Chef::RunLock).to receive(:acquire)
-            expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
-            expect_any_instance_of(Chef::RunLock).to receive(:release)
-
-            # Post conditions: check that node has been filled in correctly
-            expect(client).to receive(:run_started)
-            expect(client).to receive(:run_failed)
-
-            expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
-            expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+          it "should save the node after converge and raise exception" do
+            expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+              expect(error.wrapped_errors.size).to eq(1)
+              expect(error.wrapped_errors[0]).to eq(e)
+            end
           end
         end
 
-        it "should save the node after converge and raise exception" do
-          expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-            expect(error.wrapped_errors.size).to eq(1)
-            expect(error.wrapped_errors[0]).to eq(e)
+        context "when audit mode is disabled" do
+          include_context "a client run" do
+            before do
+              Chef::Config[:audit_mode] = :disabled
+            end
+
+            let(:e) { FooError.new }
+
+            def stub_for_audit
+              expect(Chef::Audit::Runner).to_not receive(:new)
+            end
+
+            def stub_for_converge
+              expect(Chef::Runner).to receive(:new).and_return(runner)
+              expect(runner).to receive(:converge).and_raise(e)
+              expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(FooError)
+            end
+
+            def stub_for_node_save
+              expect(client).to_not receive(:save_updated_node)
+            end
+
+            def stub_for_run
+              expect_any_instance_of(Chef::RunLock).to receive(:acquire)
+              expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
+              expect_any_instance_of(Chef::RunLock).to receive(:release)
+
+
+              # Post conditions: check that node has been filled in correctly
+              expect(client).to receive(:run_started)
+              expect(client).to receive(:run_failed)
+
+              expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+
+            end
+
+            it "re-raises an unwrapped exception" do
+              expect { client.run }.to raise_error(FooError)
+            end
           end
         end
+
+
       end
 
       context "with failed audits" do
