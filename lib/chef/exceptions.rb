@@ -399,18 +399,18 @@ class Chef
 
     class AuditControlGroupDuplicate < RuntimeError
       def initialize(name)
-        super "Audit control group with name '#{name}' has already been defined"
+        super "Control group with name '#{name}' has already been defined"
       end
     end
     class AuditNameMissing < RuntimeError; end
     class NoAuditsProvided < RuntimeError
       def initialize
-        super "You must provide a block with audits"
+        super "You must provide a block with controls"
       end
     end
     class AuditsFailed < RuntimeError
       def initialize(num_failed, num_total)
-        super "Audit phase found failures - #{num_failed}/#{num_total} audits failed"
+        super "Audit phase found failures - #{num_failed}/#{num_total} controls failed"
       end
     end
 

@@ -203,7 +203,7 @@ describe Chef::Audit::AuditReporter do
       it "doesn't send reports" do
         expect(reporter).to receive(:auditing_enabled?).and_return(true)
         expect(reporter).to receive(:run_status).and_return(nil)
-        expect(Chef::Log).to receive(:debug).with("Run failed before audits were initialized, not sending audit report to server")
+        expect(Chef::Log).to receive(:debug).with("Run failed before audit mode was initialized, not sending audit report to server")
         reporter.run_completed(node)
       end
 

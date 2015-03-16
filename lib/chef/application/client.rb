@@ -451,9 +451,9 @@ class Chef::Application::Client < Chef::Application
 
   def audit_mode_experimental_message
     msg = if Chef::Config[:audit_mode] == :audit_only
-      "Chef-client has been configured to skip converge and run only audits."
+      "Chef-client has been configured to skip converge and only audit."
     else
-      "Chef-client has been configured to run audits after it converges."
+      "Chef-client has been configured to audit after it converges."
     end
     msg += " Audit mode is an experimental feature currently under development. API changes may occur. Use at your own risk."
     msg += audit_mode_settings_explaination

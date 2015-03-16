@@ -105,7 +105,7 @@ class Chef
         end
 
         unless run_status
-          Chef::Log.debug("Run failed before audits were initialized, not sending audit report to server")
+          Chef::Log.debug("Run failed before audit mode was initialized, not sending audit report to server")
           return
         end
 
