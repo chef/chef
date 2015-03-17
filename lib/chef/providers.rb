@@ -98,6 +98,7 @@ require 'chef/provider/user/pw'
 require 'chef/provider/user/useradd'
 require 'chef/provider/user/windows'
 require 'chef/provider/user/solaris'
+require 'chef/provider/user/smartos'
 require 'chef/provider/user/aix'
 
 require 'chef/provider/group/aix'
