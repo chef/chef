@@ -497,7 +497,8 @@ class Chef
     default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    default(:cache_options) { { :path => PathHelper.join(file_cache_path, "checksums") } }
+    # Move this to the default value of syntax_cache_path when this is removed.
+    default(:cache_options) { { :path => PathHelper.join(config_dir, "syntaxcache") } }
 
     # Whether errors should be raised for deprecation warnings. When set to
     # `false` (the default setting), a warning is emitted but code using
