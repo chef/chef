@@ -323,7 +323,7 @@ class Chef
         if attrs.key?("recipes") || attrs.key?("run_list")
           raise Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
         end
-        Chef::Log.info("Setting the run_list to #{new_run_list.inspect} from CLI options")
+        Chef::Log.info("Setting the run_list to #{new_run_list.to_s} from CLI options")
         run_list(new_run_list)
       end
       attrs
