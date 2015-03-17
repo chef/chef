@@ -19,6 +19,7 @@
 require 'chef/config_fetcher'
 require 'chef/config'
 require 'chef/null_logger'
+require 'chef/util/path_helper'
 
 class Chef
 
@@ -112,9 +113,9 @@ class Chef
         candidate_configs << File.join(chef_config_dir, 'knife.rb')
       end
       # Look for $HOME/.chef/knife.rb
-      if env['HOME']
-        candidate_configs << File.join(env['HOME'], '.chef', 'config.rb')
-        candidate_configs << File.join(env['HOME'], '.chef', 'knife.rb')
+      Chef::Util::PathHelper.home('.chef') do |dot_chef_dir|
+        candidate_configs << File.join(dot_chef_dir, 'config.rb')
+        candidate_configs << File.join(dot_chef_dir, 'knife.rb')
       end
 
       candidate_configs.find do | candidate_config |

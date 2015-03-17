@@ -49,7 +49,9 @@ class Chef
         end
 
         # finally search ~/.chef/plugins/knife/*.rb
-        user_specific_files.concat Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(env['HOME'], '.chef', 'plugins', 'knife'), '*.rb')) if env['HOME']
+        Chef::Util::PathHelper.home('.chef', 'plugins', 'knife') do |p|
+          user_specific_files.concat Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(p), '*.rb'))
+        end
 
         user_specific_files
       end
@@ -140,7 +142,7 @@ class Chef
       end
 
       def have_plugin_manifest?
-        ENV["HOME"] && File.exist?(plugin_manifest_path)
+        plugin_manifest_path && File.exist?(plugin_manifest_path)
       end
 
       def plugin_manifest
@@ -148,7 +150,7 @@ class Chef
       end
 
       def plugin_manifest_path
-        File.join(ENV['HOME'], '.chef', 'plugin_manifest.json')
+        Chef::Util::PathHelper.home('.chef', 'plugin_manifest.json')
       end
 
       private

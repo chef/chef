@@ -29,6 +29,7 @@ require 'chef/config_fetcher'
 require 'chef/shell/shell_session'
 require 'chef/shell/ext'
 require 'chef/json_compat'
+require 'chef/util/path_helper'
 
 # = Shell
 # Shell is Chef in an IRB session. Shell can interact with a Chef server via the
@@ -101,7 +102,7 @@ module Shell
   end
 
   def self.configure_irb
-    irb_conf[:HISTORY_FILE] = "~/.chef/chef_shell_history"
+    irb_conf[:HISTORY_FILE] = Chef::Util::PathHelper.home(".chef", "chef_shell_history")
     irb_conf[:SAVE_HISTORY] = 1000
 
     irb_conf[:IRB_RC] = lambda do |conf|
@@ -295,18 +296,19 @@ FOOTER
     private
 
     def config_file_for_shell_mode(environment)
+      dot_chef_dir = Chef::Util::PathHelper.home('.chef')
       if config[:config_file]
         config[:config_file]
-      elsif environment && ENV['HOME']
+      elsif environment
         Shell.env = environment
-        config_file_to_try = ::File.join(ENV['HOME'], '.chef', environment, 'chef_shell.rb')
+        config_file_to_try = ::File.join(dot_chef_dir, environment, 'chef_shell.rb')
         unless ::File.exist?(config_file_to_try)
           puts "could not find chef-shell config for environment #{environment} at #{config_file_to_try}"
           exit 1
         end
         config_file_to_try
-      elsif ENV['HOME'] && ::File.exist?(File.join(ENV['HOME'], '.chef', 'chef_shell.rb'))
-        File.join(ENV['HOME'], '.chef', 'chef_shell.rb')
+      elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, 'chef_shell.rb'))
+        File.join(dot_chef_dir, 'chef_shell.rb')
       elsif config[:solo]
         Chef::Config.platform_specific_path("/etc/chef/solo.rb")
       elsif config[:client]
