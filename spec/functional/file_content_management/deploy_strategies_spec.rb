@@ -43,7 +43,7 @@ shared_examples_for "a content deploy strategy" do
 
     ##
     # UNIX Context
-    let(:default_mode) { normalize_mode(0100666 - File.umask) }
+    let(:default_mode) { normalize_mode(0666 & ~File.umask) }
 
     it "touches the file to create it (UNIX)", :unix_only do
       content_deployer.create(target_file_path)

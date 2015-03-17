@@ -35,7 +35,7 @@ shared_examples_for "a securable resource with reporting" do
   # Default mode varies based on implementation. Providers that use a tempfile
   # will default to 0600. Providers that use File.open will default to 0666 -
   # umask
-  # let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
+  # let(:default_mode) { (0666 & ~File.umask).to_s(8) }
 
   describe "reading file security metadata for reporting on unix", :unix_only => true do
     # According to POSIX standard created files get either the
@@ -185,7 +185,7 @@ shared_examples_for "a securable resource with reporting" do
           # TODO: most stable way to specify?
           expect(current_resource.owner).to eq(Etc.getpwuid(Process.uid).name)
           expect(current_resource.group).to eq(@expected_group_name)
-          expect(current_resource.mode).to eq("0#{((0100666 - File.umask) & 07777).to_s(8)}")
+          expect(current_resource.mode).to eq("0#{(0666 & ~File.umask).to_s(8)}")
         end
       end
 
@@ -239,8 +239,8 @@ shared_examples_for "a securable resource with reporting" do
       end
 
       context "and mode is specified as a String" do
-        let(:default_create_mode) { (0100666 - File.umask) }
-        let(:expected_mode) { "0#{(default_create_mode & 07777).to_s(8)}" }
+        let(:default_create_mode) { 0666 & ~File.umask }
+        let(:expected_mode) { "0#{default_create_mode.to_s(8)}" }
 
         before do
           resource.mode(expected_mode)
@@ -252,7 +252,7 @@ shared_examples_for "a securable resource with reporting" do
       end
 
       context "and mode is specified as an Integer" do
-        let(:set_mode) { (0100666 - File.umask) & 07777 }
+        let(:set_mode) { 0666 & ~File.umask }
         let(:expected_mode) { "0#{set_mode.to_s(8)}" }
 
         before do
