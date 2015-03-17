@@ -56,14 +56,13 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.run_action(:run)
     end
 
-    it "returns the -27 for a powershell script that exits with -27", :windows_powershell_dsc_only do
-      # This is broken on Powershell < 4.0
+    it "returns the exit status 27 for a powershell script that exits with 27" do
       file = Tempfile.new(['foo', '.ps1'])
       begin
-        file.write "exit -27"
+        file.write "exit 27"
         file.close
         resource.code(". \"#{file.path}\"")
-        resource.returns(-27)
+        resource.returns(27)
         resource.run_action(:run)
       ensure
         file.close
@@ -71,6 +70,30 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
     end
 
+    let (:negative_exit_status) { -27 }
+    let (:unsigned_exit_status) { (-negative_exit_status ^ 65535) + 1 }
+    it "returns the exit status -27 as a signed integer or an unsigned 16-bit 2's complement value of 65509 for a powershell script that exits with -27" do
+      # Versions of PowerShell prior to 4.0 return a 16-bit unsigned value --
+      # PowerShell 4.0 and later versions return a 32-bit signed value.
+      file = Tempfile.new(['foo', '.ps1'])
+      begin
+        file.write "exit #{negative_exit_status.to_s}"
+        file.close
+        resource.code(". \"#{file.path}\"")
+
+        # PowerShell earlier than 4.0 takes negative exit codes
+        # and returns them as the underlying unsigned 16-bit
+        # 2's complement representation. We cover multiple versions
+        # of PowerShell in this example by including both the signed
+        # exit code and its converted counterpart as permitted return values.
+        # See http://support.microsoft.com/en-us/kb/2646183/zh-cn
+        resource.returns([negative_exit_status, unsigned_exit_status])
+        expect { resource.run_action(:run) }.not_to raise_error
+      ensure
+        file.close
+        file.unlink
+      end
+    end
 
     it "returns the process exit code" do
       resource.code(arbitrary_nonzero_process_exit_code_content)
