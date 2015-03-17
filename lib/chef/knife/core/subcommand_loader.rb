@@ -28,9 +28,15 @@ class Chef
       attr_reader :chef_config_dir
       attr_reader :env
 
-      def initialize(chef_config_dir)
+      def initialize(chef_config_dir, env=nil)
         @chef_config_dir = chef_config_dir
         @forced_activate = {}
+
+        # Deprecated and un-used instance variable.
+        @env = env
+        unless env.nil?
+          Chef::Log.deprecation("The env argument to Chef::Knife::SubcommandLoader is deprecated. If you are using env to inject/mock HOME, consider mocking Chef::Util::PathHelper.home instead.")
+        end
       end
 
       # Load all the sub-commands
