@@ -11,6 +11,7 @@
 ## 12.1.2
 * [Issue 3022](https://github.com/chef/chef/issues/3022): Homebrew Cask install fails
 * [Issue 3059](https://github.com/chef/chef/issues/3059): Chef 12.1.1 yum_package silently fails
+* [Issue 3078](https://github.com/chef/chef/issues/3078): Compat break in audit-mode changes
 
 ## 12.1.1
 * [**Phil Dibowitz**](https://github.com/jaymzh):
