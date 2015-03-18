@@ -41,7 +41,7 @@ class Chef
       end
 
       def get_cookbook_list(items=10, start=0, cookbook_collection={})
-        cookbooks_url = "https://supermarket.getchef.com/api/v1/cookbooks?items=#{items}&start=#{start}"
+        cookbooks_url = "https://supermarket.chef.io/api/v1/cookbooks?items=#{items}&start=#{start}"
         cr = noauth_rest.get_rest(cookbooks_url)
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook

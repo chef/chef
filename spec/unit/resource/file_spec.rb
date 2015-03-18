@@ -66,6 +66,20 @@ describe Chef::Resource::File do
     expect { @resource.action :blues }.to raise_error(ArgumentError)
   end
 
+  it "should accept a block, symbol, or string for verify" do
+    expect {@resource.verify {}}.not_to raise_error
+    expect {@resource.verify ""}.not_to raise_error
+    expect {@resource.verify :json}.not_to raise_error
+    expect {@resource.verify true}.to raise_error
+    expect {@resource.verify false}.to raise_error
+  end
+
+  it "should accept multiple verify statements" do
+    @resource.verify "foo"
+    @resource.verify "bar"
+    @resource.verify.length == 2
+  end
+
   it "should use the object name as the path by default" do
     expect(@resource.path).to eql("fakey_fakerton")
   end

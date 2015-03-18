@@ -46,9 +46,9 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
     USE_INFO_2.collect { |field| field[1].class == Fixnum ? 'i' : 'L' }.join
 
   SIZEOF_USE_INFO_2 = #sizeof(USE_INFO_2)
-    USE_INFO_2.inject(0){|sum,item|
-    sum + (item[1].class == Fixnum ? 4 : PTR_SIZE)
-  }
+    USE_INFO_2.inject(0) do |sum, item|
+      sum + (item[1].class == Fixnum ? 4 : PTR_SIZE)
+    end
 
   def use_info_2(args)
     USE_INFO_2.collect { |field|

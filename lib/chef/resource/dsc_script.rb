@@ -29,6 +29,7 @@ class Chef
         @allowed_actions.push(:run)
         @action = :run
         @resource_name = :dsc_script
+        @imports = {}
       end
 
       def code(arg=nil)
@@ -87,6 +88,19 @@ class Chef
           arg,
           :kind_of => [ String ]
         )
+      end
+
+      def imports(module_name=nil, *args)
+        if module_name
+          @imports[module_name] ||= []
+          if args.length == 0
+            @imports[module_name] << '*'
+          else
+            @imports[module_name].push(*args)
+          end
+        else
+          @imports
+        end
       end
 
       def flags(arg=nil)

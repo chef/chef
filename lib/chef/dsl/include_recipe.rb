@@ -23,11 +23,11 @@ class Chef
     module IncludeRecipe
 
       def include_recipe(*recipe_names)
-        run_context.include_recipe(*recipe_names)
+        run_context.include_recipe(*recipe_names, current_cookbook: cookbook_name)
       end
 
       def load_recipe(recipe_name)
-        run_context.load_recipe(recipe_name)
+        run_context.load_recipe(recipe_name, current_cookbook: cookbook_name)
       end
 
       def require_recipe(*args)
@@ -42,4 +42,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language_include_recipe. Load the file to activate the deprecation code.
 require 'chef/mixin/language_include_recipe'
-

@@ -130,11 +130,11 @@ XML
             end
 
             it "sets resource running state to true" do
-              expect(provider.current_resource.running).to be_true
+              expect(provider.current_resource.running).to be_truthy
             end
 
             it "sets resouce enabled state to true" do
-              expect(provider.current_resource.enabled).to be_true
+              expect(provider.current_resource.enabled).to be_truthy
             end
           end
 
@@ -164,11 +164,11 @@ SVC_LIST
             end
 
             it "sets resource running state to false" do
-              expect(provider.current_resource.running).to be_false
+              expect(provider.current_resource.running).to be_falsey
             end
 
             it "sets resouce enabled state to true" do
-              expect(provider.current_resource.enabled).to be_true
+              expect(provider.current_resource.enabled).to be_truthy
             end
           end
 
@@ -180,7 +180,7 @@ SVC_LIST
 
             it "sets service running state to false" do
               provider.load_current_resource
-              expect(provider.current_resource.running).to be_false
+              expect(provider.current_resource.running).to be_falsey
             end
 
             context "and plist for service is not available" do
@@ -190,7 +190,7 @@ SVC_LIST
               end
 
               it "sets resouce enabled state to false" do
-                expect(provider.current_resource.enabled).to be_false
+                expect(provider.current_resource.enabled).to be_falsey
               end
             end
 
@@ -201,7 +201,7 @@ SVC_LIST
               end
 
               it "sets resouce enabled state to true" do
-                expect(provider.current_resource.enabled).to be_true
+                expect(provider.current_resource.enabled).to be_truthy
               end
             end
 

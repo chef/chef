@@ -8,6 +8,7 @@ require 'chef/chef_fs/config'
 require 'tmpdir'
 require 'fileutils'
 require 'chef/version'
+require 'chef/mixin/shell_out'
 
 def start_server(chef_repo_path)
   Dir.mkdir(chef_repo_path) if !File.exists?(chef_repo_path)
@@ -37,28 +38,26 @@ begin
 
   # Capture setup data into master_chef_repo_path
   server = start_server(chef_repo_path)
+  so = nil
 
-  require 'pedant'
-  require 'pedant/opensource'
+  include Chef::Mixin::ShellOut
 
-  #Pedant::Config.rerun = true
+  Bundler.with_clean_env do
 
-  Pedant.config.suite = 'api'
-  Pedant.config[:config_file] = 'spec/support/pedant/pedant_config.rb'
-  Pedant.config.chef_server = server.url
-  Pedant.setup([
-    '--skip-knife',
-    '--skip-validation',
-    '--skip-authentication',
-    '--skip-authorization',
-    '--skip-omnibus'
-  ])
+    shell_out("bundle install --gemfile spec/support/pedant/Gemfile", :live_stream => STDOUT)
 
-  result = RSpec::Core::Runner.run(Pedant.config.rspec_args)
+    pedant_cmd = "chef-pedant " +
+        " --config spec/support/pedant/pedant_config.rb" +
+        " --server '#{server.url}'" +
+        " --skip-knife --skip-validation --skip-authentication" +
+        " --skip-authorization --skip-omnibus"
+    so = shell_out("bundle exec #{pedant_cmd}", :live_stream => STDOUT, :env => {'BUNDLE_GEMFILE' => 'spec/support/pedant/Gemfile'})
 
-  server.stop if server.running?
+  end
+
 ensure
+  server.stop if server && server.running?
   FileUtils.remove_entry_secure(tmpdir) if tmpdir
 end
 
-exit(result)
+exit(so.exitstatus)

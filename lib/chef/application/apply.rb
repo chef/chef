@@ -43,6 +43,12 @@ class Chef::Application::Apply < Chef::Application
     :description  => "Execute resources read from STDIN",
     :boolean      => true
 
+  option :json_attribs,
+    :short => "-j JSON_ATTRIBS",
+    :long => "--json-attributes JSON_ATTRIBS",
+    :description => "Load attributes from a JSON file or URL",
+    :proc => nil
+
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
@@ -79,6 +85,8 @@ class Chef::Application::Apply < Chef::Application
     :default      => !Chef::Platform.windows?,
     :description  => "Use colored output, defaults to enabled"
 
+  attr_reader :json_attribs
+
   def initialize
     super
   end
@@ -88,6 +96,14 @@ class Chef::Application::Apply < Chef::Application
     Chef::Config.merge!(config)
     configure_logging
     configure_proxy_environment_variables
+    parse_json
+  end
+
+  def parse_json
+    if Chef::Config[:json_attribs]
+      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
+      @json_attribs = config_fetcher.fetch_json
+    end
   end
 
   def read_recipe_file(file_name)
@@ -106,7 +122,7 @@ class Chef::Application::Apply < Chef::Application
 
   def get_recipe_and_run_context
     Chef::Config[:solo] = true
-    @chef_client = Chef::Client.new
+    @chef_client = Chef::Client.new(@json_attribs)
     @chef_client.run_ohai
     @chef_client.load_node
     @chef_client.build_node

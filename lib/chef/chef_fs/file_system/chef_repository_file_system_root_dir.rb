@@ -21,6 +21,7 @@ require 'chef/chef_fs/file_system/chef_repository_file_system_entry'
 require 'chef/chef_fs/file_system/chef_repository_file_system_acls_dir'
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbooks_dir'
 require 'chef/chef_fs/file_system/chef_repository_file_system_data_bags_dir'
+require 'chef/chef_fs/file_system/chef_repository_file_system_policies_dir'
 require 'chef/chef_fs/file_system/multiplexed_dir'
 require 'chef/chef_fs/data_handler/client_data_handler'
 require 'chef/chef_fs/data_handler/environment_data_handler'
@@ -33,6 +34,7 @@ require 'chef/chef_fs/data_handler/container_data_handler'
 class Chef
   module ChefFS
     module FileSystem
+
       #
       # Represents the root of a local Chef repository, with directories for
       # nodes, cookbooks, roles, etc. under it.
@@ -157,6 +159,8 @@ class Chef
             dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
           elsif name == 'data_bags'
             dirs = paths.map { |path| ChefRepositoryFileSystemDataBagsDir.new(name, self, path) }
+          elsif name == 'policies'
+            dirs = paths.map { |path| ChefRepositoryFileSystemPoliciesDir.new(name, self, path) }
           elsif name == 'acls'
             dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
           else

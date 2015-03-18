@@ -110,22 +110,22 @@ describe Chef::Resource::Scm do
 
   it "takes a boolean for #enable_submodules" do
     @resource.enable_submodules true
-    expect(@resource.enable_submodules).to be_true
+    expect(@resource.enable_submodules).to be_truthy
     expect {@resource.enable_submodules "lolz"}.to raise_error(ArgumentError)
   end
 
   it "defaults to not enabling submodules" do
-    expect(@resource.enable_submodules).to be_false
+    expect(@resource.enable_submodules).to be_falsey
   end
 
   it "takes a boolean for #enable_checkout" do
     @resource.enable_checkout true
-    expect(@resource.enable_checkout).to be_true
+    expect(@resource.enable_checkout).to be_truthy
     expect {@resource.enable_checkout "lolz"}.to raise_error(ArgumentError)
   end
 
   it "defaults to enabling checkout" do
-    expect(@resource.enable_checkout).to be_true
+    expect(@resource.enable_checkout).to be_truthy
   end
 
   it "takes a string for the remote" do

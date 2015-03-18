@@ -41,7 +41,7 @@ describe Chef::Provider::Service::Insserv do
 
       it "sets the current enabled status to true" do
         @provider.load_current_resource
-        expect(@provider.current_resource.enabled).to be_true
+        expect(@provider.current_resource.enabled).to be_truthy
       end
     end
 
@@ -52,7 +52,7 @@ describe Chef::Provider::Service::Insserv do
 
       it "sets the current enabled status to false" do
         @provider.load_current_resource
-        expect(@provider.current_resource.enabled).to be_false
+        expect(@provider.current_resource.enabled).to be_falsey
       end
     end
 

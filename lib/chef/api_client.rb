@@ -96,7 +96,7 @@ class Chef
       set_or_return(
         :private_key,
         arg,
-        :kind_of => String
+        :kind_of => [String, FalseClass]
       )
     end
 
@@ -124,7 +124,7 @@ class Chef
       Chef::JSONCompat.to_json(to_hash, *a)
     end
 
-    def self.json_create(o)
+    def self.from_hash(o)
       client = Chef::ApiClient.new
       client.name(o["name"] || o["clientname"])
       client.private_key(o["private_key"]) if o.key?("private_key")
@@ -132,6 +132,14 @@ class Chef
       client.admin(o["admin"])
       client.validator(o["validator"])
       client
+    end
+
+    def self.json_create(data)
+      from_hash(data)
+    end
+
+    def self.from_json(j)
+      from_hash(Chef::JSONCompat.parse(j))
     end
 
     def self.http_api

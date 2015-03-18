@@ -18,6 +18,7 @@
 #
 
 require 'chef/win32/security'
+require 'chef/win32/file'
 
 class Chef
   class FileAccessControl
@@ -28,6 +29,19 @@ class Chef
       ACL = Security::ACL
       ACE = Security::ACE
       SID = Security::SID
+
+      module ClassMethods
+        # We want to mix these in as class methods
+        def writable?(path)
+          ::File.exists?(path) && Chef::ReservedNames::Win32::File.file_access_check(
+            path, Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE)
+        end
+      end
+
+      def self.included(base)
+        # When this file is mixed in, make sure we also add the class methods
+        base.send :extend, ClassMethods
+      end
 
       def set_all!
         set_owner!

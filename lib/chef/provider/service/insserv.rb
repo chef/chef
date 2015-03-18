@@ -26,8 +26,12 @@ class Chef
 
         provides :service, os: "linux"
 
+        def self.provides?(node, resource)
+          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
+        end
+
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
+          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
         end
 
         def load_current_resource

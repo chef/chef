@@ -1,14 +1,21 @@
 require 'fcntl'
 require 'chef/mixin/shell_out'
 
-include Chef::Mixin::ShellOut
 
-def ruby_gte_20?
-  RUBY_VERSION.to_f >= 2.0
+class ShellHelpers
+  extend Chef::Mixin::ShellOut
 end
 
 def ruby_lt_20?
   !ruby_gte_20?
+end
+
+def chef_gte_13?
+  Chef::VERSION.split('.').first.to_i >= 13
+end
+
+def chef_lt_13?
+  Chef::VERSION.split('.').first.to_i < 13
 end
 
 def ruby_gte_19?
@@ -17,14 +24,6 @@ end
 
 def ruby_20?
   !!(RUBY_VERSION =~ /^2.0/)
-end
-
-def ruby_19?
-  !!(RUBY_VERSION =~ /^1.9/)
-end
-
-def ruby_18?
-  !!(RUBY_VERSION =~ /^1.8/)
 end
 
 def windows?
@@ -78,7 +77,7 @@ end
 
 def mac_osx_106?
   if File.exists? "/usr/bin/sw_vers"
-    result = shell_out("/usr/bin/sw_vers")
+    result = ShellHelpers.shell_out("/usr/bin/sw_vers")
     result.stdout.each_line do |line|
       if line =~ /^ProductVersion:\s10.6.*$/
         return true
@@ -88,6 +87,20 @@ def mac_osx_106?
 
   false
 end
+
+def mac_osx?
+  if File.exists? "/usr/bin/sw_vers"
+    result = ShellHelpers.shell_out("/usr/bin/sw_vers")
+    result.stdout.each_line do |line|
+      if line =~ /^ProductName:\sMac OS X.*$/
+        return true
+      end
+    end
+  end
+
+  false
+end
+
 
 # detects if the hardware is 64-bit (evaluates to true in "WOW64" mode in a 32-bit app on a 64-bit system)
 def windows64?

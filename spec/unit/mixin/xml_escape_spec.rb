@@ -28,27 +28,27 @@ describe Chef::Mixin::XMLEscape do
   end
 
   it "escapes ampersands to '&amp;'" do
-    @escaper.xml_escape("&").should == "&amp;"
+    expect(@escaper.xml_escape("&")).to eq("&amp;")
   end
 
   it "escapes angle brackets to &lt; or &gt;" do
-    @escaper.xml_escape("<").should == "&lt;"
-    @escaper.xml_escape(">").should == "&gt;"
+    expect(@escaper.xml_escape("<")).to eq("&lt;")
+    expect(@escaper.xml_escape(">")).to eq("&gt;")
   end
 
   it "does not modify ASCII strings" do
-    @escaper.xml_escape('foobarbaz!@#$%^*()').should == 'foobarbaz!@#$%^*()'
+    expect(@escaper.xml_escape('foobarbaz!@#$%^*()')).to eq('foobarbaz!@#$%^*()')
   end
 
   it "converts invalid bytes to asterisks" do
-    @escaper.xml_escape("\x00").should == "*"
+    expect(@escaper.xml_escape("\x00")).to eq("*")
   end
 
   it "converts UTF-8 correctly" do
-    @escaper.xml_escape("\xC2\xA9").should == '&#169;'
+    expect(@escaper.xml_escape("\xC2\xA9")).to eq('&#169;')
   end
 
   it "converts win 1252 characters correctly" do
-    @escaper.xml_escape("\x80").should == '&#8364;'
+    expect(@escaper.xml_escape("\x80")).to eq('&#8364;')
   end
 end

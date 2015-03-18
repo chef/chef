@@ -54,7 +54,7 @@ class Chef
     end
 
     # When we do the resource definition, we're really just setting new values for
-    # the paramaters we prototyped at the top.  This method missing is as simple as
+    # the parameters we prototyped at the top.  This method missing is as simple as
     # it gets.
     def method_missing(symbol, *args)
       @params[symbol] = args.length == 1 ? args[0] : args

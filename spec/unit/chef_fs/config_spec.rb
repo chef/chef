@@ -55,4 +55,56 @@ describe Chef::ChefFS::Config do
       Chef::ChefFS::Config.new(base_config, Dir.pwd, {}, ui)
     end
   end
+
+  describe "local FS configuration" do
+
+    let(:chef_config) do
+      Mash.new({
+        client_path: "/base_path/clients",
+        cookbook_path: "/base_path/cookbooks",
+        data_bag_path: "/base_path/data_bags",
+        environment_path: "/base_path/environments",
+        node_path: "/base_path/nodes",
+        role_path: "/base_path/roles",
+        user_path: "/base_path/users",
+        policy_path: "/base_path/policies"
+      })
+    end
+
+    let(:chef_fs_config)  { Chef::ChefFS::Config.new(chef_config, Dir.pwd) }
+
+    subject(:local_fs) { chef_fs_config.local_fs }
+
+    def platform_path(*args)
+      File.expand_path(*args)
+    end
+
+    it "sets the correct nodes path on the local FS object" do
+      expect(local_fs.child_paths["nodes"]).to eq([platform_path("/base_path/nodes")])
+    end
+
+    it "sets the correct cookbook path on the local FS object" do
+      expect(local_fs.child_paths["cookbooks"]).to eq([platform_path("/base_path/cookbooks")])
+    end
+
+    it "sets the correct data bag path on the local FS object" do
+      expect(local_fs.child_paths["data_bags"]).to eq([platform_path("/base_path/data_bags")])
+    end
+
+    it "sets the correct environment path on the local FS object" do
+      expect(local_fs.child_paths["environments"]).to eq([platform_path("/base_path/environments")])
+    end
+
+    it "sets the correct role path on the local FS object" do
+      expect(local_fs.child_paths["roles"]).to eq([platform_path("/base_path/roles")])
+    end
+
+    it "sets the correct user path on the local FS object" do
+      expect(local_fs.child_paths["users"]).to eq([platform_path("/base_path/users")])
+    end
+
+    it "sets the correct policy path on the local FS object" do
+      expect(local_fs.child_paths["policies"]).to eq([platform_path("/base_path/policies")])
+    end
+  end
 end

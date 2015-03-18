@@ -48,10 +48,10 @@ class Chef
             # Otherwise look up the path to the ports directory using 'whereis'
             else
               whereis = shell_out!("whereis -s #{port}", :env => nil)
-              unless _path = whereis.stdout[/^#{Regexp.escape(port)}:\s+(.+)$/, 1]
+              unless path = whereis.stdout[/^#{Regexp.escape(port)}:\s+(.+)$/, 1]
                 raise Chef::Exceptions::Package, "Could not find port with the name #{port}"
               end
-              _path
+              path
             end
           end
 

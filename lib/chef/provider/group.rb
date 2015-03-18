@@ -17,12 +17,14 @@
 #
 
 require 'chef/provider'
+require 'chef/mixin/shell_out'
 require 'chef/mixin/command'
 require 'etc'
 
 class Chef
   class Provider
     class Group < Chef::Provider
+      include Chef::Mixin::ShellOut
       include Chef::Mixin::Command
       attr_accessor :group_exists
       attr_accessor :change_desc

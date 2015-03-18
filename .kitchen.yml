@@ -1,0 +1,82 @@
+driver:
+  name: vagrant
+  forward_agent: yes
+  customize:
+    cpus: 4
+    memory: 4096
+  synced_folders:
+    - ['.', '/home/vagrant/chef']
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 12.0.0.rc.1
+
+platforms:
+  - name: centos-5.10
+    run_list:
+  - name: centos-6.5
+    run_list:
+  - name: debian-7.2.0
+    run_list:
+  - name: debian-7.4
+    run_list:
+  - name: debian-6.0.8
+    run_list:
+  - name: freebsd-9.2
+    run_list:
+  - name: freebsd-10.0
+    run_list:
+  - name: ubuntu-10.04
+    run_list:
+  - name: ubuntu-12.04
+    run_list:
+  - name: ubuntu-12.10
+    run_list:
+  - name: ubuntu-13.04
+    run_list:
+  - name: ubuntu-13.10
+    run_list:
+  - name: ubuntu-14.04
+    run_list:
+  # The following boxes are shared via VagrantCloud. Until kitchen-vagrant
+  # is updated you'll need to add the box manually:
+  #
+  #   vagrant box add chef/windows-8.1-professional
+  #
+  # Please note this may require a `vagrant login` if the box is private.
+  #
+  # The following boxes are VMware only also. You can enable VMware Fusion
+  # as the default provider by copying `.kitchen.local.yml.vmware.example`
+  # over to `.kitchen.local.yml`.
+  #
+  - name: macosx-10.8
+    driver:
+      box: chef/macosx-10.8 # private
+  - name: macosx-10.9
+    driver:
+      box: chef/macosx-10.9 # private
+  - name: macosx-10.10
+    driver:
+      box: chef/macosx-10.10 # private
+  # - name: windows-7-professional
+  #   provisioner:
+  #     name: windows_chef_zero
+  #     require_chef_omnibus: 11.12.4
+  #   driver:
+  #     box: chef/windows-7-professional # private
+  # - name: windows-8.1-professional
+  #   provisioner:
+  #     name: windows_chef_zero
+  #     require_chef_omnibus: 11.12.4
+  #   driver:
+  #     box: chef/windows-8.1-professional # private
+  # - name: windows-2008r2-standard
+  #   provisioner:
+  #     name: windows_chef_zero
+  #     require_chef_omnibus: 11.12.4
+  #   driver:
+  #     box: chef/windows-server-2008r2-standard # private
+
+suites:
+  - name: chef
+    run_list:

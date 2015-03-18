@@ -18,11 +18,7 @@
 # limitations under the License.
 #
 
-if RUBY_VERSION =~ /^1\.8/
-  require 'win32/open3'
-else
-  require 'open3'
-end
+require 'open3'
 
 class Chef
   module Mixin

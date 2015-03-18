@@ -4,6 +4,9 @@ require 'chef/local_mode'
 class Chef
   class Knife
     class Serve < Knife
+      
+      banner 'knife serve (options)'
+
       option :repo_mode,
         :long => '--repo-mode MODE',
         :description => "Specifies the local repository layout.  Values: static (only environments/roles/data_bags/cookbooks), everything (includes nodes/clients/users), hosted_everything (includes acls/groups/etc. for Enterprise/Hosted Chef).  Default: everything/hosted_everything"

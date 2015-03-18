@@ -42,7 +42,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     @outputter = Chef::Formatters::IndentableOutputStream.new(@stdout, STDERR)
     #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
 
-    Chef::Config.stub(:cookbook_path).and_return([ "/var/chef/cache" ])
+    allow(Chef::Config).to receive(:cookbook_path).and_return([ "/var/chef/cache" ])
   end
 
   describe "when explaining an error converging a resource" do
@@ -74,7 +74,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'",
       ]
 
-      @inspector.filtered_bt.should == @expected_filtered_trace
+      expect(@inspector.filtered_bt).to eq(@expected_filtered_trace)
     end
 
     it "prints a pretty message" do
@@ -105,7 +105,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
       it "includes contextual info from the template error in the output" do
         @description.display(@outputter)
-        @stdout.string.should include(@error.source_listing)
+        expect(@stdout.string).to include(@error.source_listing)
       end
 
 
@@ -114,41 +114,41 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     describe "recipe_snippet" do
       before do
         # fake code to run through #recipe_snippet
-        source_file = [ "if true", "var = non_existant", "end" ]
-        IO.stub(:readlines).and_return(source_file)
-        File.stub(:exists?).and_return(true)
+        source_file = [ "if true", "var = non_existent", "end" ]
+        allow(IO).to receive(:readlines).and_return(source_file)
+        allow(File).to receive(:exists?).and_return(true)
       end
 
       it "parses a Windows path" do
-        source_line = "C:/Users/btm/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existant' for main:Object (NameError)"
+        source_line = "C:/Users/btm/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existent' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
-        @inspector.recipe_snippet.should match(/^# In C:\/Users\/btm/)
+        expect(@inspector.recipe_snippet).to match(/^# In C:\/Users\/btm/)
       end
 
       it "parses a unix path" do
-        source_line = "/home/btm/src/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existant' for main:Object (NameError)"
+        source_line = "/home/btm/src/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existent' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
-        @inspector.recipe_snippet.should match(/^# In \/home\/btm/)
+        expect(@inspector.recipe_snippet).to match(/^# In \/home\/btm/)
       end
 
       context "when the recipe file does not exist" do
         before do
-          File.stub(:exists?).and_return(false)
-          IO.stub(:readlines).and_raise(Errno::ENOENT)
+          allow(File).to receive(:exists?).and_return(false)
+          allow(IO).to receive(:readlines).and_raise(Errno::ENOENT)
         end
 
         it "does not try to parse a recipe in chef-shell/irb (CHEF-3411)" do
           @resource.source_line = "(irb#1):1:in `irb_binding'"
           @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
-          @inspector.recipe_snippet.should be_nil
+          expect(@inspector.recipe_snippet).to be_nil
         end
 
-        it "does not raise an exception trying to load a non-existant file (CHEF-3411)" do
+        it "does not raise an exception trying to load a non-existent file (CHEF-3411)" do
           @resource.source_line = "/somewhere/in/space"
           @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
-          lambda { @inspector.recipe_snippet }.should_not raise_error
+          expect { @inspector.recipe_snippet }.not_to raise_error
         end
       end
     end
@@ -175,7 +175,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
       end
 
       it "does not generate an error" do
-        lambda { @inspector.add_explanation(@description) }.should_not raise_error
+        expect { @inspector.add_explanation(@description) }.not_to raise_error
         @description.display(@outputter)
       end
     end

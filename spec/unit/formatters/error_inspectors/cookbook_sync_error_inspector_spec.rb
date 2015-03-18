@@ -29,7 +29,7 @@ describe Chef::Formatters::ErrorInspectors::CookbookSyncErrorInspector do
     before do
       @response_body = "sad trombone orchestra"
       @response = Net::HTTPBadGateway.new("1.1", "502", "(response) bad gateway")
-      @response.stub(:body).and_return(@response_body)
+      allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPFatalError.new("(exception) bad gateway", @response)
       @inspector = described_class.new({}, @exception)
       @inspector.add_explanation(@description)

@@ -82,13 +82,13 @@ NOMOCKINGSTRINGSPLZ
       @status = double("Status", :exitstatus => 0, :stdout => @stdout)
       allow(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_true
+      expect(@current_resource.running).to be_truthy
     end
 
     it "should set running to false if the regex doesn't match" do
       allow(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_false
+      expect(@current_resource.running).to be_falsey
     end
 
     it "should raise an exception if ps fails" do

@@ -27,33 +27,33 @@ describe Chef::Knife::NodeRunListRemove do
     @node = Chef::Node.new()
     @node.name("knifetest-node")
     @node.run_list << "role[monkey]"
-    @node.stub(:save).and_return(true)
+    allow(@node).to receive(:save).and_return(true)
 
-    @knife.ui.stub(:output).and_return(true)
-    @knife.ui.stub(:confirm).and_return(true)
+    allow(@knife.ui).to receive(:output).and_return(true)
+    allow(@knife.ui).to receive(:confirm).and_return(true)
 
-    Chef::Node.stub(:load).and_return(@node)
+    allow(Chef::Node).to receive(:load).and_return(@node)
   end
 
   describe "run" do
     it "should load the node" do
-      Chef::Node.should_receive(:load).with("adam").and_return(@node)
+      expect(Chef::Node).to receive(:load).with("adam").and_return(@node)
       @knife.run
     end
 
     it "should remove the item from the run list" do
       @knife.run
-      @node.run_list[0].should_not == 'role[monkey]'
+      expect(@node.run_list[0]).not_to eq('role[monkey]')
     end
 
     it "should save the node" do
-      @node.should_receive(:save).and_return(true)
+      expect(@node).to receive(:save).and_return(true)
       @knife.run
     end
 
     it "should print the run list" do
       @knife.config[:print_after] = true
-      @knife.ui.should_receive(:output).with({ "knifetest-node" => { 'run_list' => [] } })
+      expect(@knife.ui).to receive(:output).with({ "knifetest-node" => { 'run_list' => [] } })
       @knife.run
     end
 
@@ -63,12 +63,27 @@ describe Chef::Knife::NodeRunListRemove do
         @node.run_list << 'recipe[duck::type]'
         @knife.name_args = [ 'adam', 'role[monkey],recipe[duck::type]' ]
         @knife.run
-        @node.run_list.should_not include('role[monkey]')
-        @node.run_list.should_not include('recipe[duck::type]')
+        expect(@node.run_list).not_to include('role[monkey]')
+        expect(@node.run_list).not_to include('recipe[duck::type]')
+      end
+
+      it "should remove the items from the run list when name args contains whitespace" do
+        @node.run_list << 'role[monkey]'
+        @node.run_list << 'recipe[duck::type]'
+        @knife.name_args = [ 'adam', 'role[monkey], recipe[duck::type]' ]
+        @knife.run
+        expect(@node.run_list).not_to include('role[monkey]')
+        expect(@node.run_list).not_to include('recipe[duck::type]')
+      end
+
+      it "should remove the items from the run list when name args contains multiple run lists" do
+        @node.run_list << 'role[blah]'
+        @node.run_list << 'recipe[duck::type]'
+        @knife.name_args = [ 'adam', 'role[monkey], recipe[duck::type]', 'role[blah]' ]
+        @knife.run
+        expect(@node.run_list).not_to include('role[monkey]')
+        expect(@node.run_list).not_to include('recipe[duck::type]')
       end
     end
   end
 end
-
-
-

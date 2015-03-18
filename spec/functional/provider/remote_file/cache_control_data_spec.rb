@@ -64,9 +64,9 @@ describe Chef::Provider::RemoteFile::CacheControlData do
     it "writes the data to the cache and the same data can be read back" do
       cache_control_data.save
       saved_cache_control_data = Chef::Provider::RemoteFile::CacheControlData.load_and_validate(uri, file_checksum)
-      saved_cache_control_data.etag.should == cache_control_data.etag
-      saved_cache_control_data.mtime.should == cache_control_data.mtime
-      saved_cache_control_data.checksum.should == cache_control_data.checksum  
+      expect(saved_cache_control_data.etag).to eq(cache_control_data.etag)
+      expect(saved_cache_control_data.mtime).to eq(cache_control_data.mtime)
+      expect(saved_cache_control_data.checksum).to eq(cache_control_data.checksum)  
     end
 
     # Cover the very long remote file path case -- see CHEF-4422 where
@@ -81,17 +81,17 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       let(:uri) { uri_exceeds_file_system_limit }
 
       it "writes data to the cache" do
-        lambda do
+        expect do
           cache_control_data.save
-        end.should_not raise_error
+        end.not_to raise_error
       end
 
       it "writes the data to the cache and the same data can be read back" do
         cache_control_data.save
         saved_cache_control_data = Chef::Provider::RemoteFile::CacheControlData.load_and_validate(uri, file_checksum)
-        saved_cache_control_data.etag.should == cache_control_data.etag
-        saved_cache_control_data.mtime.should == cache_control_data.mtime
-        saved_cache_control_data.checksum.should == cache_control_data.checksum  
+        expect(saved_cache_control_data.etag).to eq(cache_control_data.etag)
+        expect(saved_cache_control_data.mtime).to eq(cache_control_data.mtime)
+        expect(saved_cache_control_data.checksum).to eq(cache_control_data.checksum)  
       end
 
     end

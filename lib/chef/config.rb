@@ -203,6 +203,10 @@ class Chef
     # Does not apply to Enterprise Chef commands.
     default(:user_path) { derive_path_from_chef_repo_path('users') }
 
+    # Location of policies on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/policies.
+    default(:policy_path) { derive_path_from_chef_repo_path('policies') }
+
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
     default :enforce_path_sanity, true
 
@@ -271,7 +275,7 @@ class Chef
     # * :fatal
     # These work as you'd expect. There is also a special `:auto` setting.
     # When set to :auto, Chef will auto adjust the log verbosity based on
-    # context. When a tty is available (usually becase the user is running chef
+    # context. When a tty is available (usually because the user is running chef
     # in a console), the log level is set to :warn, and output formatters are
     # used as the primary mode of output. When a tty is not available, the
     # logger is the primary mode of output, and the log level is set to :info
@@ -317,8 +321,17 @@ class Chef
     default :why_run, false
     default :color, false
     default :client_fork, true
+    default :ez, false
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
+    # Possible values for :audit_mode
+    # :enabled, :disabled, :audit_only,
+    #
+    # TODO: 11 Dec 2014: Currently audit-mode is an experimental feature
+    # and is disabled by default. When users choose to enable audit-mode,
+    # a warning is issued in application/client#reconfigure.
+    # This can be removed when audit-mode is enabled by default.
+    default :audit_mode, :disabled
 
     # Policyfile is an experimental feature where a node gets its run list and
     # cookbook version set from a single document on the server instead of
@@ -395,6 +408,12 @@ class Chef
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
     default(:client_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/client.pem") }
+
+    # When registering the client, should we allow the client key location to
+    # be a symlink?  eg: /etc/chef/client.pem -> /etc/chef/prod-client.pem
+    # If the path of the key goes through a directory like /tmp this should
+    # never be set to true or its possibly an easily exploitable security hole.
+    default :follow_client_key_symlink, false
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
@@ -478,10 +497,23 @@ class Chef
     default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    default(:cache_options) { { :path => PathHelper.join(file_cache_path, "checksums") } }
+    # Move this to the default value of syntax_cache_path when this is removed.
+    default(:cache_options) { { :path => PathHelper.join(config_dir, "syntaxcache") } }
 
-    # Set to false to silence Chef 11 deprecation warnings:
-    default :chef11_deprecation_warnings, true
+    # Whether errors should be raised for deprecation warnings. When set to
+    # `false` (the default setting), a warning is emitted but code using
+    # deprecated methods/features/etc. should work normally otherwise. When set
+    # to `true`, usage of deprecated methods/features will raise a
+    # `DeprecatedFeatureError`. This is used by Chef's tests to ensure that
+    # deprecated functionality is not used internally by Chef.  End users
+    # should generally leave this at the default setting (especially in
+    # production), but it may be useful when testing cookbooks or other code if
+    # the user wishes to aggressively address deprecations.
+    default(:treat_deprecation_warnings_as_errors) do
+      # Using an environment variable allows this setting to be inherited in
+      # tests that spawn new processes.
+      ENV.key?("CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS")
+    end
 
     # knife configuration data
     config_context :knife do
@@ -491,7 +523,7 @@ class Chef
       default :ssh_gateway, nil
       default :bootstrap_version, nil
       default :bootstrap_proxy, nil
-      default :bootstrap_template, "chef-full"
+      default :bootstrap_template, nil
       default :secret, nil
       default :secret_file, nil
       default :identity_file, nil
@@ -554,10 +586,12 @@ class Chef
     # used to update files.
     default :file_atomic_update, true
 
-    # If false file staging is will be done via tempfiles that are
-    # created under ENV['TMP'] otherwise tempfiles will be created in
-    # the directory that files are going to reside.
-    default :file_staging_uses_destdir, true
+    # There are 3 possible values for this configuration setting.
+    # true => file staging is done in the destination directory
+    # false => file staging is done via tempfiles under ENV['TMP']
+    # :auto => file staging will try using destination directory if possible and
+    #   will fall back to ENV['TMP'] if destination directory is not usable.
+    default :file_staging_uses_destdir, :auto
 
     # Exit if another run is in progress and the chef-client is unable to
     # get the lock before time expires. If nil, no timeout is enforced. (Exits
@@ -594,6 +628,13 @@ class Chef
     #
     default :no_lazy_load, true
 
+    # Default for the chef_gem compile_time attribute.  Nil is the same as true but will emit
+    # warnings on every use of chef_gem prompting the user to be explicit.  If the user sets this to
+    # true then the user will get backcompat behavior but with a single nag warning that cookbooks
+    # may break with this setting in the future.  The false setting is the recommended setting and
+    # will become the default.
+    default :chef_gem_compile_time, nil
+
     # A whitelisted array of attributes you want sent over the wire when node
     # data is saved.
     # The default setting is nil, which collects all data. Setting to [] will not
@@ -602,6 +643,12 @@ class Chef
     default :default_attribute_whitelist, nil
     default :normal_attribute_whitelist, nil
     default :override_attribute_whitelist, nil
+
+    config_context :windows_service do
+      # Set `watchdog_timeout` to the number of seconds to wait for a chef-client run
+      # to finish
+      default :watchdog_timeout, 2 * (60 * 60) # 2 hours
+    end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
     # to use the 'locale -a' command and search through a list of preferences until we
@@ -617,43 +664,43 @@ class Chef
     #
     # If there is no 'locale -a' then we return 'en_US.UTF-8' since that is the most commonly
     # available English UTF-8 locale.  However, all modern POSIXen should support 'locale -a'.
-    default :internal_locale do
-      begin
-        # https://github.com/opscode/chef/issues/2181
-        # Some systems have the `locale -a` command, but the result has
-        # invalid characters for the default encoding.
-        #
-        # For example, on CentOS 6 with ENV['LANG'] = "en_US.UTF-8",
-        # `locale -a`.split fails with ArgumentError invalid UTF-8 encoding.
-        locales = shell_out_with_systems_locale("locale -a").stdout.split
-        case
-        when locales.include?('C.UTF-8')
-          'C.UTF-8'
-        when locales.include?('en_US.UTF-8'), locales.include?('en_US.utf8')
-          'en_US.UTF-8'
-        when locales.include?('en.UTF-8')
-          'en.UTF-8'
-        else
-          # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
-          guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
-          unless guesses.empty?
-            guessed_locale = guesses.first
-            # Transform into the form en_ZZ.UTF-8
-            guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
-          else
-            Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
-            'C'
-          end
-        end
-      rescue
-        if Chef::Platform.windows?
-          Chef::Log.debug "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
-        else
-          Chef::Log.debug "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
-        end
+    def self.guess_internal_locale
+      # https://github.com/opscode/chef/issues/2181
+      # Some systems have the `locale -a` command, but the result has
+      # invalid characters for the default encoding.
+      #
+      # For example, on CentOS 6 with ENV['LANG'] = "en_US.UTF-8",
+      # `locale -a`.split fails with ArgumentError invalid UTF-8 encoding.
+      locales = shell_out_with_systems_locale!("locale -a").stdout.split
+      case
+      when locales.include?('C.UTF-8')
+        'C.UTF-8'
+      when locales.include?('en_US.UTF-8'), locales.include?('en_US.utf8')
         'en_US.UTF-8'
+      when locales.include?('en.UTF-8')
+        'en.UTF-8'
+      else
+        # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
+        guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
+        unless guesses.empty?
+          guessed_locale = guesses.first
+          # Transform into the form en_ZZ.UTF-8
+          guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
+        else
+          Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
+          'C'
+        end
       end
+    rescue
+      if Chef::Platform.windows?
+        Chef::Log.debug "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
+      else
+        Chef::Log.debug "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
+      end
+      'en_US.UTF-8'
     end
+
+    default :internal_locale, guess_internal_locale
 
     # Force UTF-8 Encoding, for when we fire up in the 'C' locale or other strange locales (e.g.
     # japanese windows encodings).  If we do not do this, then knife upload will fail when a cookbook's

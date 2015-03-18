@@ -24,27 +24,27 @@ describe Mash do
     data = {:x=>"one", :y=>"two", :z=>"three"}
     @orig = Mash.new(data)
     @copy = @orig.dup
-    @copy.to_hash.should == Mash.new(data).to_hash
+    expect(@copy.to_hash).to eq(Mash.new(data).to_hash)
     @copy[:x] = "four"
-    @orig[:x].should == "one"
+    expect(@orig[:x]).to eq("one")
   end
 
   it "should duplicate a mash with an array to a new mash" do
     data = {:x=>"one", :y=>"two", :z=>[1,2,3]}
     @orig = Mash.new(data)
     @copy = @orig.dup
-    @copy.to_hash.should == Mash.new(data).to_hash
+    expect(@copy.to_hash).to eq(Mash.new(data).to_hash)
     @copy[:z] << 4
-    @orig[:z].should == [1,2,3]
+    expect(@orig[:z]).to eq([1,2,3])
   end
 
   it "should duplicate a nested mash to a new mash" do
     data = {:x=>"one", :y=>"two", :z=>Mash.new({:a=>[1,2,3]})}
     @orig = Mash.new(data)
     @copy = @orig.dup
-    @copy.to_hash.should == Mash.new(data).to_hash
+    expect(@copy.to_hash).to eq(Mash.new(data).to_hash)
     @copy[:z][:a] << 4
-    @orig[:z][:a].should == [1,2,3]
+    expect(@orig[:z][:a]).to eq([1,2,3])
   end
 
   # add more!

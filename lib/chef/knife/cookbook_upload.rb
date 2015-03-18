@@ -104,18 +104,23 @@ class Chef
         justify_width = @server_side_cookbooks.map {|name| name.size}.max.to_i + 2
         if config[:all]
           cookbook_repo.load_cookbooks
-          cbs = []
+          cookbooks_for_upload = []
           cookbook_repo.each do |cookbook_name, cookbook|
-            cbs << cookbook
+            cookbooks_for_upload << cookbook
             cookbook.freeze_version if config[:freeze]
             version_constraints_to_update[cookbook_name] = cookbook.version
           end
-          begin
-            upload(cbs, justify_width)
-          rescue Exceptions::CookbookFrozen
-            ui.warn("Not updating version constraints for some cookbooks in the environment as the cookbook is frozen.")
+          if cookbooks_for_upload.any?
+            begin
+              upload(cookbooks_for_upload, justify_width)
+            rescue Exceptions::CookbookFrozen
+              ui.warn("Not updating version constraints for some cookbooks in the environment as the cookbook is frozen.")
+            end
+            ui.info("Uploaded all cookbooks.")
+          else
+            cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(', ') : config[:cookbook_path]
+            ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
           end
-          ui.info("Uploaded all cookbooks.")
         else
           if @name_args.empty?
             show_usage
@@ -204,7 +209,7 @@ class Chef
         # because cookbooks are lazy-loaded, we have to force the loader
         # to load the cookbooks the user intends to upload here:
         cookbooks_to_upload
-        
+
         unless cookbook_repo.merged_cookbooks.empty?
           ui.warn "* " * 40
           ui.warn(<<-WARNING)

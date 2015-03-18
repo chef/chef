@@ -54,10 +54,11 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should accecpt device_type :uuid", :not_supported_on_solaris do
+      @status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
-      expect(@provider).to receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
+      expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(@status)
       @provider.load_current_resource()
       @provider.mountable?
     end
@@ -67,14 +68,14 @@ describe Chef::Provider::Mount::Mount do
         "cifs" => "//cifsserver/share" }.each do |type, fs_spec|
         it "should detect network fs_spec (#{type})" do
           @new_resource.device fs_spec
-          expect(@provider.network_device?).to be_true
+          expect(@provider.network_device?).to be_truthy
         end
 
         it "should ignore trailing slash and set mounted to true for network mount (#{type})" do
           @new_resource.device fs_spec
           allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "#{fs_spec}/ on /tmp/foo type #{type} (rw)\n"))
           @provider.load_current_resource
-          expect(@provider.current_resource.mounted).to be_true
+          expect(@provider.current_resource.mounted).to be_truthy
         end
       end
     end
@@ -93,11 +94,10 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should raise an error if the mount device (uuid) does not exist", :not_supported_on_solaris do
+      status = double(:stdout => "", :exitstatus => 1)
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-      status_findfs = double("Status", :exitstatus => 1)
-      stdout_findfs = double("STDOUT", :first => nil)
-      expect(@provider).to receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,stdout_findfs,@stderr).and_return(status_findfs)
+      expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
       expect(::File).to receive(:exists?).with("").and_return(false)
       expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
@@ -123,13 +123,13 @@ describe Chef::Provider::Mount::Mount do
     it "should set mounted true if the mount point is found in the mounts list" do
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdz1 on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
-      expect(@provider.current_resource.mounted).to be_true
+      expect(@provider.current_resource.mounted).to be_truthy
     end
 
     it "should set mounted false if another mount point beginning with the same path is found in the mounts list" do
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdz1 on /tmp/foobar type ext3 (rw)\n"))
       @provider.load_current_resource()
-      expect(@provider.current_resource.mounted).to be_false
+      expect(@provider.current_resource.mounted).to be_falsey
     end
 
     it "should set mounted true if the symlink target of the device is found in the mounts list" do
@@ -141,7 +141,7 @@ describe Chef::Provider::Mount::Mount do
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "#{target} on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
-      expect(@provider.current_resource.mounted).to be_true
+      expect(@provider.current_resource.mounted).to be_truthy
     end
 
     it "should set mounted true if the symlink target of the device is relative and is found in the mounts list - CHEF-4957" do
@@ -155,7 +155,7 @@ describe Chef::Provider::Mount::Mount do
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "#{absolute_target} on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
-      expect(@provider.current_resource.mounted).to be_true
+      expect(@provider.current_resource.mounted).to be_truthy
     end
 
     it "should set mounted true if the mount point is found last in the mounts list" do
@@ -164,7 +164,7 @@ describe Chef::Provider::Mount::Mount do
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => mount))
       @provider.load_current_resource()
-      expect(@provider.current_resource.mounted).to be_true
+      expect(@provider.current_resource.mounted).to be_truthy
     end
 
     it "should set mounted false if the mount point is not last in the mounts list" do
@@ -173,13 +173,13 @@ describe Chef::Provider::Mount::Mount do
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => mount))
       @provider.load_current_resource()
-      expect(@provider.current_resource.mounted).to be_false
+      expect(@provider.current_resource.mounted).to be_falsey
     end
 
     it "mounted should be false if the mount point is not found in the mounts list" do
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdy1 on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
-      expect(@provider.current_resource.mounted).to be_false
+      expect(@provider.current_resource.mounted).to be_falsey
     end
 
     it "should set enabled to true if the mount point is last in fstab" do
@@ -189,7 +189,7 @@ describe Chef::Provider::Mount::Mount do
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
 
       @provider.load_current_resource
-      expect(@provider.current_resource.enabled).to be_true
+      expect(@provider.current_resource.enabled).to be_truthy
     end
 
     it "should set enabled to true if the mount point is not last in fstab and mount_point is a substring of another mount" do
@@ -199,7 +199,7 @@ describe Chef::Provider::Mount::Mount do
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
 
       @provider.load_current_resource
-      expect(@provider.current_resource.enabled).to be_true
+      expect(@provider.current_resource.enabled).to be_truthy
     end
 
     it "should set enabled to true if the symlink target is in fstab" do
@@ -213,7 +213,7 @@ describe Chef::Provider::Mount::Mount do
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
 
       @provider.load_current_resource
-      expect(@provider.current_resource.enabled).to be_true
+      expect(@provider.current_resource.enabled).to be_truthy
     end
 
     it "should set enabled to true if the symlink target is relative and is in fstab - CHEF-4957" do
@@ -227,7 +227,7 @@ describe Chef::Provider::Mount::Mount do
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
 
       @provider.load_current_resource
-      expect(@provider.current_resource.enabled).to be_true
+      expect(@provider.current_resource.enabled).to be_truthy
     end
 
     it "should set enabled to false if the mount point is not in fstab" do
@@ -235,7 +235,7 @@ describe Chef::Provider::Mount::Mount do
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
 
       @provider.load_current_resource
-      expect(@provider.current_resource.enabled).to be_false
+      expect(@provider.current_resource.enabled).to be_falsey
     end
 
     it "should ignore commented lines in fstab " do
@@ -243,7 +243,7 @@ describe Chef::Provider::Mount::Mount do
        allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
 
        @provider.load_current_resource
-       expect(@provider.current_resource.enabled).to be_false
+       expect(@provider.current_resource.enabled).to be_falsey
      end
 
     it "should set enabled to false if the mount point is not last in fstab" do
@@ -252,7 +252,7 @@ describe Chef::Provider::Mount::Mount do
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield(line_1).and_yield(line_2)
 
       @provider.load_current_resource
-      expect(@provider.current_resource.enabled).to be_false
+      expect(@provider.current_resource.enabled).to be_falsey
     end
 
     it "should not mangle the mount options if the device in fstab is a symlink" do
@@ -307,10 +307,10 @@ describe Chef::Provider::Mount::Mount do
       end
 
       it "should mount the filesystem specified by uuid", :not_supported_on_solaris do
+        status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
         @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         @new_resource.device_type :uuid
-        @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
-        allow(@provider).to receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
+        allow(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
         @stdout_mock = double('stdout mock')
         allow(@stdout_mock).to receive(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
         expect(@provider).to receive(:shell_out!).with("mount -t #{@new_resource.fstype} -o defaults -U #{@new_resource.device} #{@new_resource.mount_point}").and_return(@stdout_mock)

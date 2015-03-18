@@ -25,22 +25,22 @@ describe Chef::Version do
   end
 
   it "should turn itself into a string" do
-    @v0.to_s.should == "0.0.0"
-    @v123.to_s.should == "1.2.3"
+    expect(@v0.to_s).to eq("0.0.0")
+    expect(@v123.to_s).to eq("1.2.3")
   end
 
   it "should make a round trip with its string representation" do
     a = Chef::Version.new(@v123.to_s)
-    a.should == @v123
+    expect(a).to eq(@v123)
   end
 
   it "should transform 1.2 to 1.2.0" do
-    Chef::Version.new("1.2").to_s.should == "1.2.0"
+    expect(Chef::Version.new("1.2").to_s).to eq("1.2.0")
   end
 
   it "should transform 01.002.0003 to 1.2.3" do
     a = Chef::Version.new "01.002.0003"
-    a.should == @v123
+    expect(a).to eq(@v123)
   end
 
   describe "when creating valid Versions" do
@@ -58,7 +58,7 @@ describe Chef::Version do
     the_error = Chef::Exceptions::InvalidCookbookVersion
     bad_versions.each do |v|
       it "should raise #{the_error} when given '#{v}'" do
-        lambda { Chef::Version.new v }.should raise_error(the_error)
+        expect { Chef::Version.new v }.to raise_error(the_error)
       end
     end
   end
@@ -66,15 +66,15 @@ describe Chef::Version do
   describe "<=>" do
 
     it "should equate versions 1.2 and 1.2.0" do
-      Chef::Version.new("1.2").should == Chef::Version.new("1.2.0")
+      expect(Chef::Version.new("1.2")).to eq(Chef::Version.new("1.2.0"))
     end
 
     it "should equate version 1.04 and 1.4" do
-      Chef::Version.new("1.04").should == Chef::Version.new("1.4")
+      expect(Chef::Version.new("1.04")).to eq(Chef::Version.new("1.4"))
     end
 
     it "should treat versions as numbers in the right way" do
-      Chef::Version.new("2.0").should be < Chef::Version.new("11.0")
+      expect(Chef::Version.new("2.0")).to be < Chef::Version.new("11.0")
     end
 
     it "should sort based on the version number" do
@@ -95,9 +95,9 @@ describe Chef::Version do
       examples.each do |smaller, larger|
         sm = Chef::Version.new(smaller)
         lg = Chef::Version.new(larger)
-        sm.should be < lg
-        lg.should be > sm
-        sm.should_not == lg
+        expect(sm).to be < lg
+        expect(lg).to be > sm
+        expect(sm).not_to eq(lg)
       end
     end
 
@@ -106,7 +106,7 @@ describe Chef::Version do
         Chef::Version.new(s)
       end
       got = a.sort.map {|v| v.to_s }
-      got.should == %w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1}
+      expect(got).to eq(%w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1})
     end
 
     it "should sort an array of versions, part 2" do
@@ -114,7 +114,7 @@ describe Chef::Version do
         Chef::Version.new(s)
       end
       got = a.sort.map { |v| v.to_s }
-      got.should == %w{0.8.6 1.0.0 1.2.3 3.5.7 4.4.6 4.5.5 4.5.6 5.9.8 9.8.7}
+      expect(got).to eq(%w{0.8.6 1.0.0 1.2.3 3.5.7 4.4.6 4.5.5 4.5.6 5.9.8 9.8.7})
     end
 
     describe "comparison examples" do
@@ -163,7 +163,7 @@ describe Chef::Version do
         it "(#{spec.first(3).join(' ')}) should be #{spec[3]}" do
           got = Chef::Version.new(spec[0]).send(spec[1],
                                                 Chef::Version.new(spec[2]))
-          got.should == spec[3]
+          expect(got).to eq(spec[3])
         end
       end
     end

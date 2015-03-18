@@ -32,17 +32,15 @@ class Chef
 
       new_data = {}
       whitelist.each do |item|
-        self.add_data(data, new_data, item)
+        add_data(data, new_data, item)
       end
       new_data
     end
 
-    private
-
     # Walk the data has according to the keys provided by the whitelisted item
     # and add the data to the whitelisting result.
     def self.add_data(data, new_data, item)
-      parts = self.to_array(item)
+      parts = to_array(item)
 
       all_data = data
       filtered_data = new_data
@@ -57,7 +55,9 @@ class Chef
         all_data = all_data[part]
       end
 
-      unless all_data[parts[-1]]
+      # Note: You can't do all_data[parts[-1]] here because the value
+      # may be false-y
+      unless all_data.key?(parts[-1])
         Chef::Log.warn("Could not find whitelist attribute #{item}.")
         return nil
       end
@@ -65,6 +65,8 @@ class Chef
       filtered_data[parts[-1]] = all_data[parts[-1]]
       new_data
     end
+
+    private_class_method :add_data
 
     # Accepts a String or an Array, and returns an Array of String keys that
     # are used to traverse the data hash. Strings are split on "/", Arrays are
@@ -77,6 +79,8 @@ class Chef
       parts.shift if !parts.empty? && parts[0].empty?
       parts
     end
+
+    private_class_method :to_array
 
   end
 end

@@ -77,29 +77,29 @@ describe Chef::Provider::Ifconfig::Debian do
       context "when the interface_dot_d directory does not exist" do
         before do
           FileUtils.rmdir tempdir_path
-          expect(File.exists?(tempdir_path)).to be_false
+          expect(File.exists?(tempdir_path)).to be_falsey
         end
 
         it "should create the /etc/network/interfaces.d directory" do
           provider.run_action(:add)
-          expect(File.exists?(tempdir_path)).to be_true
-          expect(File.directory?(tempdir_path)).to be_true
+          expect(File.exists?(tempdir_path)).to be_truthy
+          expect(File.directory?(tempdir_path)).to be_truthy
         end
 
         it "should mark the resource as updated" do
           provider.run_action(:add)
-          expect(new_resource.updated_by_last_action?).to be_true
+          expect(new_resource.updated_by_last_action?).to be_truthy
         end
       end
 
       context "when the interface_dot_d directory exists" do
         before do
-          expect(File.exists?(tempdir_path)).to be_true
+          expect(File.exists?(tempdir_path)).to be_truthy
         end
 
         it "should still mark the resource as updated (we still write a file to it)" do
           provider.run_action(:add)
-          expect(new_resource.updated_by_last_action?).to be_true
+          expect(new_resource.updated_by_last_action?).to be_truthy
         end
       end
     end
@@ -120,7 +120,7 @@ iface eth0 inet static
   netmask 255.255.254.0
 EOF
         )
-        expect(File.exists?(tempdir_path)).to be_true  # since the file exists, the enclosing dir must also exist
+        expect(File.exists?(tempdir_path)).to be_truthy  # since the file exists, the enclosing dir must also exist
       end
 
       context "when the /etc/network/interfaces file has the source line" do
@@ -147,7 +147,7 @@ EOF
         it "should not mark the resource as updated" do
           provider.run_action(:add)
           pending "superclass ifconfig provider is not idempotent"
-          expect(new_resource.updated_by_last_action?).to be_false
+          expect(new_resource.updated_by_last_action?).to be_falsey
         end
       end
 
@@ -175,7 +175,7 @@ EOF
 
         it "should mark the resource as updated" do
           provider.run_action(:add)
-          expect(new_resource.updated_by_last_action?).to be_true
+          expect(new_resource.updated_by_last_action?).to be_truthy
         end
       end
     end
@@ -215,28 +215,28 @@ EOF
         context "when the interface_dot_d directory does not exist" do
           before do
             FileUtils.rmdir tempdir_path
-            expect(File.exists?(tempdir_path)).to be_false
+            expect(File.exists?(tempdir_path)).to be_falsey
           end
 
           it "should not create the /etc/network/interfaces.d directory" do
             provider.run_action(:add)
-            expect(File.exists?(tempdir_path)).not_to be_true
+            expect(File.exists?(tempdir_path)).not_to be_truthy
           end
 
           it "should mark the resource as updated" do
             provider.run_action(:add)
-            expect(new_resource.updated_by_last_action?).to be_true
+            expect(new_resource.updated_by_last_action?).to be_truthy
           end
         end
 
         context "when the interface_dot_d directory exists" do
           before do
-            expect(File.exists?(tempdir_path)).to be_true
+            expect(File.exists?(tempdir_path)).to be_truthy
           end
 
           it "should still mark the resource as updated (we still write a file to it)" do
             provider.run_action(:add)
-            expect(new_resource.updated_by_last_action?).to be_true
+            expect(new_resource.updated_by_last_action?).to be_truthy
           end
         end
       end
@@ -258,7 +258,7 @@ iface eth0 inet static
                                            EOF
                                           )
           expect(File).not_to receive(:new).with(config_filename_ifcfg, "w")
-          expect(File.exists?(tempdir_path)).to be_true  # since the file exists, the enclosing dir must also exist
+          expect(File.exists?(tempdir_path)).to be_truthy  # since the file exists, the enclosing dir must also exist
         end
 
         context "when the /etc/network/interfaces file has the source line" do
@@ -283,7 +283,7 @@ another line
           it "should not mark the resource as updated" do
             provider.run_action(:add)
             pending "superclass ifconfig provider is not idempotent"
-            expect(new_resource.updated_by_last_action?).to be_false
+            expect(new_resource.updated_by_last_action?).to be_falsey
           end
         end
 
@@ -308,7 +308,7 @@ source #{tempdir_path}/*
 
           it "should mark the resource as updated" do
             provider.run_action(:add)
-            expect(new_resource.updated_by_last_action?).to be_true
+            expect(new_resource.updated_by_last_action?).to be_truthy
           end
         end
       end
@@ -345,9 +345,9 @@ source #{tempdir_path}/*
       # internal implementation detail of Ifconfig.
       expect_any_instance_of(Chef::Provider::File).to receive(:action_delete).and_call_original
 
-      expect(File.exist?(config_filename_ifcfg)).to be_true
+      expect(File.exist?(config_filename_ifcfg)).to be_truthy
       provider.run_action(:delete)
-      expect(File.exist?(config_filename_ifcfg)).to be_false
+      expect(File.exist?(config_filename_ifcfg)).to be_falsey
     end
   end
 

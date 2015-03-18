@@ -198,7 +198,7 @@ describe Chef::Provider::Subversion do
   it "runs an export with the --force option" do
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    expect(@provider).to receive(:shell_out!).with(command: expected_cmd)
+    expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:force_export)
     expect(@resource).to be_updated
   end
@@ -206,7 +206,7 @@ describe Chef::Provider::Subversion do
   it "runs the checkout command for action_checkout" do
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    expect(@provider).to receive(:shell_out!).with(command: expected_cmd)
+    expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:checkout)
     expect(@resource).to be_updated
   end
@@ -230,7 +230,7 @@ describe Chef::Provider::Subversion do
     @resource.user "whois"
     @resource.group "thisis"
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    expect(@provider).to receive(:shell_out!).with(command: expected_cmd, user: "whois", group: "thisis")
+    expect(@provider).to receive(:shell_out!).with(expected_cmd, {user: "whois", group: "thisis"})
     @provider.run_action(:checkout)
     expect(@resource).to be_updated
   end
@@ -255,7 +255,7 @@ describe Chef::Provider::Subversion do
     allow(@provider).to receive(:find_current_revision).and_return("11410")
     allow(@provider).to receive(:current_revision_matches_target_revision?).and_return(false)
     expected_cmd = "svn update -q  -r12345 /my/deploy/dir"
-    expect(@provider).to receive(:shell_out!).with(command: expected_cmd)
+    expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:sync)
     expect(@resource).to be_updated
   end
@@ -272,7 +272,7 @@ describe Chef::Provider::Subversion do
   it "runs the export_command on action_export" do
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    expect(@provider).to receive(:shell_out!).with(command: expected_cmd)
+    expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:export)
     expect(@resource).to be_updated
   end

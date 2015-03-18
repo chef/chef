@@ -103,6 +103,13 @@ class Chef
         :boolean => true,
         :default => true
 
+      option :on_error,
+        :short => '-e',
+        :long => '--exit-on-error',
+        :description => "Immediately exit if an error is encountered",
+        :boolean => true,
+        :proc => Proc.new { :raise }
+
       def session
         config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|
@@ -313,7 +320,7 @@ class Chef
         puts
         puts "To exit interactive mode, use 'quit!'"
         puts
-        while 1
+        loop do
           command = read_line
           case command
           when 'quit!'

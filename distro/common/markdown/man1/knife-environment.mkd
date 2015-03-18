@@ -73,7 +73,7 @@ represented as a single JSON object, like this:
 
     {"apache2": ">= 1.5.0"}
 
-In the Ruby format, the cookbook version contraints for an environment
+In the Ruby format, the cookbook version constraints for an environment
 are represented as a Ruby Hash, like this:
 
     {"apache2" => ">= 1.5.0"}

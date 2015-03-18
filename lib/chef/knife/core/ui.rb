@@ -163,9 +163,17 @@ class Chef
         end
       end
 
+
+      # Hash -> Hash
+      # Works the same as edit_data but
+      # returns a hash rather than a JSON string/Fully infated object
+      def edit_hash(hash)
+        raw = edit_data(hash, false)
+        Chef::JSONCompat.parse(raw)
+      end
+
       def edit_data(data, parse_output=true)
         output = Chef::JSONCompat.to_json_pretty(data)
-
         if (!config[:disable_editing])
           Tempfile.open([ 'knife-edit-', '.json' ]) do |tf|
             tf.sync = true

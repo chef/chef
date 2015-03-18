@@ -91,7 +91,7 @@ describe 'diff', :uses_diff => true do
       Chef::ChefFS::CommandLine.diff_print(pattern('/'), a, b, nil, nil) do |diff|
         results << remove_os_differences(diff)
       end
-      results.should =~ [
+      expect(results).to match_array([
         'diff --knife a/both_dirs/sub_both_files_different b/both_dirs/sub_both_files_different
 --- a/both_dirs/sub_both_files_different DATE
 +++ b/both_dirs/sub_both_files_different DATE
@@ -160,14 +160,14 @@ new file
 +++ b/b_only_file DATE
 CONTEXT_LINE_NUMBERS
 +b_only_file
-' ]
+' ])
     end
     it 'Chef::ChefFS::CommandLine.diff_print(/both_dirs)' do
       results = []
       Chef::ChefFS::CommandLine.diff_print(pattern('/both_dirs'), a, b, nil, nil) do |diff|
         results << remove_os_differences(diff)
       end
-      results.should =~ [
+      expect(results).to match_array([
         'diff --knife a/both_dirs/sub_both_files_different b/both_dirs/sub_both_files_different
 --- a/both_dirs/sub_both_files_different DATE
 +++ b/both_dirs/sub_both_files_different DATE
@@ -202,14 +202,14 @@ new file
 +++ b/both_dirs/sub_b_only_file DATE
 CONTEXT_LINE_NUMBERS
 +sub_b_only_file
-' ]
+' ])
     end
     it 'Chef::ChefFS::CommandLine.diff_print(/) with depth 1' do
       results = []
       Chef::ChefFS::CommandLine.diff_print(pattern('/'), a, b, 1, nil) do |diff|
         results << remove_os_differences(diff)
       end
-      results.should =~ [
+      expect(results).to match_array([
 'Common subdirectories: b/both_dirs
 ','diff --knife a/both_files_different b/both_files_different
 --- a/both_files_different DATE
@@ -236,14 +236,14 @@ new file
 +++ b/b_only_file DATE
 CONTEXT_LINE_NUMBERS
 +b_only_file
-' ]
+' ])
     end
     it 'Chef::ChefFS::CommandLine.diff_print(/*_*) with depth 0' do
       results = []
       Chef::ChefFS::CommandLine.diff_print(pattern('/*_*'), a, b, 0, nil) do |diff|
         results << remove_os_differences(diff)
       end
-      results.should =~ [
+      expect(results).to match_array([
 'Common subdirectories: b/both_dirs
 ','diff --knife a/both_files_different b/both_files_different
 --- a/both_files_different DATE
@@ -270,14 +270,14 @@ new file
 +++ b/b_only_file DATE
 CONTEXT_LINE_NUMBERS
 +b_only_file
-' ]
+' ])
     end
     it 'Chef::ChefFS::CommandLine.diff_print(/) in name-only mode' do
       results = []
       Chef::ChefFS::CommandLine.diff_print(pattern('/'), a, b, nil, :name_only) do |diff|
         results << remove_os_differences(diff)
       end
-      results.should =~ [
+      expect(results).to match_array([
           "b/both_dirs/sub_both_files_different\n",
           "b/both_dirs/sub_dirs_empty_in_b_filled_in_a/subsub\n",
           "b/both_dirs/sub_dirs_empty_in_a_filled_in_b/subsub\n",
@@ -296,14 +296,14 @@ CONTEXT_LINE_NUMBERS
           "b/b_only_file\n",
           "b/dir_in_a_file_in_b\n",
           "b/file_in_a_dir_in_b\n"
-      ]
+      ])
     end
     it 'Chef::ChefFS::CommandLine.diff_print(/) in name-status mode' do
       results = []
       Chef::ChefFS::CommandLine.diff_print(pattern('/'), a, b, nil, :name_status) do |diff|
         results << remove_os_differences(diff)
       end
-      results.should =~ [
+      expect(results).to match_array([
           "M\tb/both_dirs/sub_both_files_different\n",
           "D\tb/both_dirs/sub_dirs_empty_in_b_filled_in_a/subsub\n",
           "A\tb/both_dirs/sub_dirs_empty_in_a_filled_in_b/subsub\n",
@@ -322,7 +322,7 @@ CONTEXT_LINE_NUMBERS
           "A\tb/b_only_file\n",
           "T\tb/dir_in_a_file_in_b\n",
           "T\tb/file_in_a_dir_in_b\n"
-      ]
+      ])
     end
   end
 end

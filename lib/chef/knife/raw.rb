@@ -32,6 +32,12 @@ class Chef
         :short => '-i FILE',
         :description => "Name of file to use for PUT or POST"
 
+      option :proxy_auth,
+        :long => '--proxy-auth',
+        :boolean => true,
+        :default => false,
+        :description => "Use webui proxy authentication.  Client key must be the webui key."
+
       class RawInputServerAPI < Chef::HTTP
         def initialize(options = {})
           options[:client_name] ||= Chef::Config[:node_name]
@@ -64,15 +70,21 @@ class Chef
         begin
           method = config[:method].to_sym
 
+          headers = {'Content-Type' => 'application/json'}
+
+          if config[:proxy_auth]
+            headers['x-ops-request-source'] = 'web'
+          end
+
           if config[:pretty]
             chef_rest = RawInputServerAPI.new
-            result = chef_rest.request(method, name_args[0], {'Content-Type' => 'application/json'}, data)
+            result = chef_rest.request(method, name_args[0], headers, data)
             unless result.is_a?(String)
               result = Chef::JSONCompat.to_json_pretty(result)
             end
           else
             chef_rest = RawInputServerAPI.new(:raw_output => true)
-            result = chef_rest.request(method, name_args[0], {'Content-Type' => 'application/json'}, data)
+            result = chef_rest.request(method, name_args[0], headers, data)
           end
           output result
         rescue Timeout::Error => e
@@ -88,4 +100,3 @@ class Chef
     end # class Raw
   end
 end
-

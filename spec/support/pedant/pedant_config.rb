@@ -26,7 +26,7 @@
 
 # If you are doing development testing, you can specify the address of
 # the Solr server.  The presence of this parameter will enable tests
-# to force commits to Solr, greatly decreasing the amout of time
+# to force commits to Solr, greatly decreasing the amount of time
 # needed for testing the search endpoint.  This is only an
 # optimization for development!  If you are testing a "live" Chef
 # Server, or otherwise do not have access to the Solr server from your
@@ -36,7 +36,7 @@
 #search_server "http://localhost:8983"
 
 # Related to the 'search_server' parameter, this specifies the maximum
-# amout of time (in seconds) that search endpoint requests should be
+# amount of time (in seconds) that search endpoint requests should be
 # retried before giving up.  If not explicitly set, it will default to
 # 65 seconds; only set it if you know that your Solr commit interval
 # differs significantly from this.
@@ -71,6 +71,13 @@ key = 'spec/support/pedant/stickywicket.pem'
 superuser_name 'admin'
 superuser_key key
 webui_key key
+
+# When we updated Chef to RSpec 3 there were gem conflicts with chef-pedant.
+# We removed chef as a chef-pedant gem dependency in pedant.gemfile, but this
+# caused chef-pedant to fail because it could not query for the chef version
+# on the box pedant is running on. X-Chef-Version isn't needed in server
+# requests for these tests, so we've disabled it.
+ingore_x_chef_version true
 
 # Set the platform_class
 platform_class Pedant::OpenSourcePlatform

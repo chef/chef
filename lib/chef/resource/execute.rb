@@ -26,6 +26,12 @@ class Chef
 
       identity_attr :command
 
+      # The ResourceGuardInterpreter wraps a resource's guards in another resource.  That inner resource
+      # needs to behave differently during (for example) why_run mode, so we flag it here. For why_run mode
+      # we still want to execute the guard resource even if we are not executing the wrapping resource.
+      # Only execute resources (and subclasses) can be guard interpreters.
+      attr_accessor :is_guard_interpreter
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :execute
@@ -36,12 +42,14 @@ class Chef
         @cwd = nil
         @environment = nil
         @group = nil
+        @path = nil
         @returns = 0
         @timeout = nil
         @user = nil
         @allowed_actions.push(:run)
         @umask = nil
         @default_guard_interpreter = :execute
+        @is_guard_interpreter = false
       end
 
       def umask(arg=nil)
@@ -94,6 +102,16 @@ class Chef
         )
       end
 
+      def path(arg=nil)
+        Chef::Log.warn "'path' attribute of 'execute' is not used by any provider in Chef 11 and Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
+
+        set_or_return(
+          :path,
+          arg,
+          :kind_of => [ Array ]
+        )
+      end
+
       def returns(arg=nil)
         set_or_return(
           :returns,
@@ -106,7 +124,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [ Integer, Float ]
         )
       end
 
@@ -135,12 +153,12 @@ class Chef
       end
 
       set_guard_inherited_attributes(
-       :cwd,
-       :environment,
-       :group,
-       :user,
-       :umask
-       )
+        :cwd,
+        :environment,
+        :group,
+        :user,
+        :umask
+      )
 
     end
   end

@@ -26,7 +26,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
   describe "creating the file" do
 
     it "touches the file to create it" do
-      FileUtils.should_receive(:touch).with(target_file_path)
+      expect(FileUtils).to receive(:touch).with(target_file_path)
       content_deployer.create(target_file_path)
     end
   end
@@ -44,9 +44,9 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
     end
 
     before do
-      File.should_receive(:stat).with(target_file_path).and_return(target_file_stat)
-      File.should_receive(:chmod).with(target_file_mode, staging_file_path).and_return(1)
-      FileUtils.should_receive(:mv).with(staging_file_path, target_file_path)
+      expect(File).to receive(:stat).with(target_file_path).and_return(target_file_stat)
+      expect(File).to receive(:chmod).with(target_file_mode, staging_file_path).and_return(1)
+      expect(FileUtils).to receive(:mv).with(staging_file_path, target_file_path)
     end
 
     # This context represents the case where:
@@ -63,8 +63,8 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
       let(:target_file_gid) { 1001 }
 
       before do
-        File.should_receive(:chown).with(target_file_uid, nil, staging_file_path).and_return(1)
-        File.should_receive(:chown).with(nil, target_file_gid, staging_file_path).and_return(1)
+        expect(File).to receive(:chown).with(target_file_uid, nil, staging_file_path).and_return(1)
+        expect(File).to receive(:chown).with(nil, target_file_gid, staging_file_path).and_return(1)
       end
 
       it "fixes up permissions and moves the file into place" do
@@ -85,11 +85,11 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
       let(:target_file_gid) { 20 }
 
       before do
-        File.should_receive(:chown).with(target_file_uid, nil, staging_file_path).and_raise(Errno::EPERM)
-        File.should_receive(:chown).with(nil, target_file_gid, staging_file_path).and_raise(Errno::EPERM)
+        expect(File).to receive(:chown).with(target_file_uid, nil, staging_file_path).and_raise(Errno::EPERM)
+        expect(File).to receive(:chown).with(nil, target_file_gid, staging_file_path).and_raise(Errno::EPERM)
 
-        Chef::Log.should_receive(:warn).with(/^Could not set uid/)
-        Chef::Log.should_receive(:warn).with(/^Could not set gid/)
+        expect(Chef::Log).to receive(:warn).with(/^Could not set uid/)
+        expect(Chef::Log).to receive(:warn).with(/^Could not set gid/)
       end
 
       it "fixes up permissions and moves the file into place" do

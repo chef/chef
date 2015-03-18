@@ -24,17 +24,17 @@ describe Chef::Knife::Core::ObjectLoader do
   before(:each) do
     @knife = Chef::Knife.new
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
     Dir.chdir(File.join(CHEF_SPEC_DATA, 'object_loader'))
   end
 
   shared_examples_for "Chef object" do |chef_class|
     it "should create a #{chef_class} object" do
-      @object.should be_a_kind_of(chef_class)
+      expect(@object).to be_a_kind_of(chef_class)
     end
 
     it "should has a attribute 'name'" do
-      @object.name.should eql('test')
+      expect(@object.name).to eql('test')
     end
   end
 

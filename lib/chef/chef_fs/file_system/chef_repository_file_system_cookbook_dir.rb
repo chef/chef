@@ -36,11 +36,11 @@ class Chef
             # We need the canonical cookbook name if we are using versioned cookbooks, but we don't
             # want to spend a lot of time adding code to the main Chef libraries
             if root.versioned_cookbooks
-              _canonical_name = canonical_cookbook_name(File.basename(file_path))
-              fail "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z"  unless _canonical_name
+              canonical_name = canonical_cookbook_name(File.basename(file_path))
+              fail "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z"  unless canonical_name
 
               # KLUDGE: We shouldn't have to use instance_variable_set
-              loader.instance_variable_set(:@cookbook_name, _canonical_name)
+              loader.instance_variable_set(:@cookbook_name, canonical_name)
             end
 
             loader.load_cookbooks

@@ -18,6 +18,7 @@
 
 require 'chef/log'
 require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/provider'
 require 'chef/resource/file'
 require 'chef/exceptions'
@@ -38,6 +39,7 @@ require 'erb'
 class Chef
   class Provider
     class Ifconfig < Chef::Provider
+      include Chef::Mixin::ShellOut
       include Chef::Mixin::Command
 
       attr_accessor :config_template
@@ -59,32 +61,30 @@ class Chef
         @ifconfig_success = true
         @interfaces = {}
 
-        @status = popen4("ifconfig") do |pid, stdin, stdout, stderr|
-          stdout.each do |line|
+        @status = shell_out("ifconfig")
+        @status.stdout.each_line do |line|
+          if !line[0..9].strip.empty?
+            @int_name = line[0..9].strip
+            @interfaces[@int_name] = {"hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
+          else
+            @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? ($1) : "nil") if line =~ /inet addr:/
+            @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? ($1) : "nil") if line =~ /Bcast:/
+            @interfaces[@int_name]["mask"] = (line =~ /Mask:(\S+)/ ? ($1) : "nil") if line =~ /Mask:/
+            @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? ($1) : "nil") if line =~ /MTU:/
+            @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? ($1) : "nil") if line =~ /Metric:/
+          end
 
-            if !line[0..9].strip.empty?
-              @int_name = line[0..9].strip
-              @interfaces[@int_name] = {"hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
-            else
-              @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? ($1) : "nil") if line =~ /inet addr:/
-              @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? ($1) : "nil") if line =~ /Bcast:/
-              @interfaces[@int_name]["mask"] = (line =~ /Mask:(\S+)/ ? ($1) : "nil") if line =~ /Mask:/
-              @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? ($1) : "nil") if line =~ /MTU:/
-              @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? ($1) : "nil") if line =~ /Metric:/
-            end
+          if @interfaces.has_key?(@new_resource.device)
+            @interface = @interfaces.fetch(@new_resource.device)
 
-            if @interfaces.has_key?(@new_resource.device)
-              @interface = @interfaces.fetch(@new_resource.device)
-
-              @current_resource.target(@new_resource.target)
-              @current_resource.device(@new_resource.device)
-              @current_resource.inet_addr(@interface["inet_addr"])
-              @current_resource.hwaddr(@interface["hwaddr"])
-              @current_resource.bcast(@interface["bcast"])
-              @current_resource.mask(@interface["mask"])
-              @current_resource.mtu(@interface["mtu"])
-              @current_resource.metric(@interface["metric"])
-            end
+            @current_resource.target(@new_resource.target)
+            @current_resource.device(@new_resource.device)
+            @current_resource.inet_addr(@interface["inet_addr"])
+            @current_resource.hwaddr(@interface["hwaddr"])
+            @current_resource.bcast(@interface["bcast"])
+            @current_resource.mask(@interface["mask"])
+            @current_resource.mtu(@interface["mtu"])
+            @current_resource.metric(@interface["metric"])
           end
         end
         @current_resource

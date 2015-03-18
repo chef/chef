@@ -25,23 +25,23 @@ describe Chef::Knife::UserEdit do
 
     Chef::Knife::UserEdit.load_deps
     @knife = Chef::Knife::UserEdit.new
-    @knife.ui.stub(:stderr).and_return(@stderr)
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stderr).and_return(@stderr)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
     @knife.name_args = [ 'my_user' ]
     @knife.config[:disable_editing] = true
   end
 
   it 'loads and edits the user' do
     data = { :name => "my_user" }
-    Chef::User.stub(:load).with("my_user").and_return(data)
-    @knife.should_receive(:edit_data).with(data).and_return(data)
+    allow(Chef::User).to receive(:load).with("my_user").and_return(data)
+    expect(@knife).to receive(:edit_data).with(data).and_return(data)
     @knife.run
   end
 
   it 'prints usage and exits when a user name is not provided' do
     @knife.name_args = []
-    @knife.should_receive(:show_usage)
-    @knife.ui.should_receive(:fatal)
-    lambda { @knife.run }.should raise_error(SystemExit)
+    expect(@knife).to receive(:show_usage)
+    expect(@knife.ui).to receive(:fatal)
+    expect { @knife.run }.to raise_error(SystemExit)
   end
 end

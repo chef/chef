@@ -26,11 +26,11 @@ module Matchers
       @variance = opts[:variance] || 5000
     end
 
-    def failure_message_for_should
+    def failure_message
       "expected final measure [#{@final_measure}] to be greater than or within +/- #{@variance} delta of initial measure [#{@initial_measure}]"
     end
 
-    def failure_message_for_should_not
+    def failure_message_when_negated
       "expected final measure [#{@final_measure}] to be less than or within +/- #{@variance} delta of initial measure [#{@initial_measure}]"
     end
 

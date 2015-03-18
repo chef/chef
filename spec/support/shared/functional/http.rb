@@ -131,7 +131,7 @@ module ChefHTTPShared
     }
 
     #
-    # in the presense of a transfer-encoding header, we must ignore the content-length (this bad content-length should work)
+    # in the presence of a transfer-encoding header, we must ignore the content-length (this bad content-length should work)
     #
 
     # (expected_content should be uncompressed)

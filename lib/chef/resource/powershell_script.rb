@@ -21,6 +21,8 @@ class Chef
   class Resource
     class PowershellScript < Chef::Resource::WindowsScript
 
+      provides :powershell_script, os: "windows"
+
       def initialize(name, run_context=nil)
         super(name, run_context, :powershell_script, "powershell.exe")
         @convert_boolean_return = false
@@ -33,8 +35,6 @@ class Chef
           :kind_of => [ FalseClass, TrueClass ]
         )
       end
-
-      protected
 
       # Allow callers evaluating guards to request default
       # attribute values. This is needed to allow

@@ -21,32 +21,32 @@ require 'spec_helper'
 describe Chef::Knife::EnvironmentShow do
   before(:each) do
     @knife = Chef::Knife::EnvironmentShow.new
-    @knife.stub(:msg).and_return true
-    @knife.stub(:output).and_return true
-    @knife.stub(:show_usage).and_return true
+    allow(@knife).to receive(:msg).and_return true
+    allow(@knife).to receive(:output).and_return true
+    allow(@knife).to receive(:show_usage).and_return true
     @knife.name_args = [ "production" ]
 
     @environment = Chef::Environment.new
     @environment.name("production")
     @environment.description("Look at me!")
-    Chef::Environment.stub(:load).and_return @environment
+    allow(Chef::Environment).to receive(:load).and_return @environment
   end
 
   it "should load the environment" do
-    Chef::Environment.should_receive(:load).with("production")
+    expect(Chef::Environment).to receive(:load).with("production")
     @knife.run
   end
 
   it "should pretty print the environment, formatted for display" do
-    @knife.should_receive(:format_for_display).with(@environment)
-    @knife.should_receive(:output)
+    expect(@knife).to receive(:format_for_display).with(@environment)
+    expect(@knife).to receive(:output)
     @knife.run
   end
 
   it "should show usage and exit when no environment name is provided" do
     @knife.name_args = []
-    @knife.ui.should_receive(:fatal)
-    @knife.should_receive(:show_usage)
-    lambda { @knife.run }.should raise_error(SystemExit)
+    expect(@knife.ui).to receive(:fatal)
+    expect(@knife).to receive(:show_usage)
+    expect { @knife.run }.to raise_error(SystemExit)
   end
 end

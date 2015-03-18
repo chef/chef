@@ -44,9 +44,6 @@ class Chef::EncryptedDataBagItem
     end
 
     def assert_aead_requirements_met!(algorithm)
-      unless OpenSSL::Cipher.method_defined?(:auth_data=)
-        raise EncryptedDataBagRequirementsFailure, "The used Encrypted Data Bags version requires Ruby >= 2.0"
-      end
       unless OpenSSL::Cipher.ciphers.include?(algorithm)
         raise EncryptedDataBagRequirementsFailure, "The used Encrypted Data Bags version requires an OpenSSL version with \"#{algorithm}\" algorithm support"
       end

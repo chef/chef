@@ -29,16 +29,19 @@ class Chef
 
         provides :service, os: "linux"
 
+        def self.provides?(node, resource)
+          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
+        end
+
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart) &&
-            Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
+          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
         end
 
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.
         # In chef, when we ask a service to start, we expect it to have started before performing the next step
         # since we have top down dependencies. Which is to say we may follow witha resource next that requires
         # that service to be running. According to [2] we can trust that sending a 'goal' such as start will not
-        # return until that 'goal' is reached, or some error has occured.
+        # return until that 'goal' is reached, or some error has occurred.
         #
         # [1] http://upstart.ubuntu.com/wiki/JobStates
         # [2] http://www.netsplit.com/2008/04/27/upstart-05-events/

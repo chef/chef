@@ -65,7 +65,7 @@ EOH
         let(:lcm_cmdlet_success) { true }
 
         it 'should successfully return resource information for normally formatted output when cmdlet the cmdlet succeeds' do
-          test_configuration_result = lcm.test_configuration('config')
+          test_configuration_result = lcm.test_configuration('config', {})
           expect(test_configuration_result.class).to be(Array)
           expect(test_configuration_result.length).to be > 0
           expect(Chef::Log).not_to receive(:warn)
@@ -78,14 +78,14 @@ EOH
         let(:lcm_cmdlet_success) { false }
 
         it 'returns true when passed to #whatif_not_supported?' do
-          expect(lcm.send(:whatif_not_supported?, no_whatif_lcm_output)).to be_true
+          expect(lcm.send(:whatif_not_supported?, no_whatif_lcm_output)).to be_truthy
         end
 
         it 'should should return a (possibly empty) array of ResourceInfo instances' do
-          expect(Chef::Log).to receive(:warn)
+          expect(Chef::Log).to receive(:warn).at_least(:once)
           expect(lcm).to receive(:whatif_not_supported?).and_call_original
           test_configuration_result = nil
-          expect {test_configuration_result = lcm.test_configuration('config')}.not_to raise_error
+          expect {test_configuration_result = lcm.test_configuration('config', {})}.not_to raise_error
           expect(test_configuration_result.class).to be(Array)
         end
       end
@@ -96,16 +96,16 @@ EOH
         let(:lcm_cmdlet_success) { false }
 
         it 'should log a warning if the message is formatted as expected when a resource import failure occurs' do
-          expect(Chef::Log).to receive(:warn)
+          expect(Chef::Log).to receive(:warn).at_least(:once)
           expect(lcm).to receive(:dsc_module_import_failure?).and_call_original
           test_configuration_result = nil
-          expect {test_configuration_result = lcm.test_configuration('config')}.not_to raise_error
+          expect {test_configuration_result = lcm.test_configuration('config', {})}.not_to raise_error
         end
 
         it 'should return a (possibly empty) array of ResourceInfo instances' do
-          expect(Chef::Log).to receive(:warn)
+          expect(Chef::Log).to receive(:warn).at_least(:once)
           test_configuration_result = nil
-          expect {test_configuration_result = lcm.test_configuration('config')}.not_to raise_error
+          expect {test_configuration_result = lcm.test_configuration('config', {})}.not_to raise_error
           expect(test_configuration_result.class).to be(Array)
         end
       end
@@ -116,9 +116,9 @@ EOH
         let(:lcm_cmdlet_success) { false }
 
         it 'should log a warning' do
-          expect(Chef::Log).to receive(:warn)
+          expect(Chef::Log).to receive(:warn).at_least(:once)
           expect(lcm).to receive(:dsc_module_import_failure?).and_call_original
-          expect {lcm.test_configuration('config')}.not_to raise_error
+          expect {lcm.test_configuration('config', {})}.not_to raise_error
         end
       end
     end

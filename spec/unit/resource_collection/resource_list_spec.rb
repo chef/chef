@@ -60,7 +60,7 @@ describe Chef::ResourceCollection::ResourceList do
     end
 
     it "should be empty by default" do
-      expect(resource_list.empty?).to be_true
+      expect(resource_list.empty?).to be_truthy
     end
 
     describe "when resources are inserted" do
@@ -100,7 +100,7 @@ describe Chef::ResourceCollection::ResourceList do
       end
 
       it "should be able to check if the list is empty" do
-        expect(resource_list.empty?).to be_false
+        expect(resource_list.empty?).to be_falsey
       end
     end
   end

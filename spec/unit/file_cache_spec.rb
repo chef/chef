@@ -32,11 +32,11 @@ describe Chef::FileCache do
   describe "when the relative path to the cache file doesn't exist" do
     it "creates intermediate directories as needed" do
       Chef::FileCache.store("whiz/bang", "I found a poop")
-      File.should exist(File.join(@file_cache_path, 'whiz'))
+      expect(File).to exist(File.join(@file_cache_path, 'whiz'))
     end
 
     it "creates the cached file at the correct relative path" do
-      File.should_receive(:open).with(File.join(@file_cache_path, 'whiz', 'bang'), "w",416).and_yield(@io)
+      expect(File).to receive(:open).with(File.join(@file_cache_path, 'whiz', 'bang'), "w",416).and_yield(@io)
       Chef::FileCache.store("whiz/bang", "borkborkbork")
     end
 
@@ -44,12 +44,12 @@ describe Chef::FileCache do
 
   describe "when storing a file" do
     before do
-      File.stub(:open).and_yield(@io)
+      allow(File).to receive(:open).and_yield(@io)
     end
 
     it "should print the contents to the file" do
       Chef::FileCache.store("whiz/bang", "borkborkbork")
-      @io.string.should == "borkborkbork"
+      expect(@io.string).to eq("borkborkbork")
     end
 
   end
@@ -58,11 +58,11 @@ describe Chef::FileCache do
     it "finds and reads the cached file" do
       FileUtils.mkdir_p(File.join(@file_cache_path, 'whiz'))
       File.open(File.join(@file_cache_path, 'whiz', 'bang'), 'w') { |f| f.print("borkborkbork") }
-      Chef::FileCache.load('whiz/bang').should == 'borkborkbork'
+      expect(Chef::FileCache.load('whiz/bang')).to eq('borkborkbork')
     end
 
     it "should raise a Chef::Exceptions::FileNotFound if the file doesn't exist" do
-      lambda { Chef::FileCache.load('whiz/bang') }.should raise_error(Chef::Exceptions::FileNotFound)
+      expect { Chef::FileCache.load('whiz/bang') }.to raise_error(Chef::Exceptions::FileNotFound)
     end
   end
 
@@ -74,7 +74,7 @@ describe Chef::FileCache do
 
     it "unlinks the file" do
       Chef::FileCache.delete("whiz/bang")
-      File.should_not exist(File.join(@file_cache_path, 'whiz', 'bang'))
+      expect(File).not_to exist(File.join(@file_cache_path, 'whiz', 'bang'))
     end
 
   end
@@ -88,11 +88,11 @@ describe Chef::FileCache do
     end
 
     it "should return the relative paths" do
-      Chef::FileCache.list.sort.should == %w{snappy/patter whiz/bang}
+      expect(Chef::FileCache.list.sort).to eq(%w{snappy/patter whiz/bang})
     end
 
     it "searches for cached files by globbing" do
-      Chef::FileCache.find('snappy/**/*').should == %w{snappy/patter}
+      expect(Chef::FileCache.find('snappy/**/*')).to eq(%w{snappy/patter})
     end
 
   end
@@ -104,11 +104,11 @@ describe Chef::FileCache do
 
     it "has a key if the corresponding cache file exists" do
       FileUtils.touch(File.join(@file_cache_path, 'whiz', 'bang'))
-      Chef::FileCache.should have_key("whiz/bang")
+      expect(Chef::FileCache).to have_key("whiz/bang")
     end
 
     it "doesn't have a key if the corresponding cache file doesn't exist" do
-      Chef::FileCache.should_not have_key("whiz/bang")
+      expect(Chef::FileCache).not_to have_key("whiz/bang")
     end
   end
 end

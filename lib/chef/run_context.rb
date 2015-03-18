@@ -18,7 +18,6 @@
 # limitations under the License.
 
 require 'chef/resource_collection'
-require 'chef/provider_resolver'
 require 'chef/cookbook_version'
 require 'chef/node'
 require 'chef/role'
@@ -51,8 +50,8 @@ class Chef
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
 
-    # Chef::ProviderResolver for this run
-    attr_accessor :provider_resolver
+    # The list of control groups to execute during the audit phase
+    attr_accessor :audits
 
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
@@ -77,6 +76,7 @@ class Chef
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
+      @audits = {}
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
       @definitions = Hash.new
@@ -87,7 +87,6 @@ class Chef
 
       @node.run_context = self
       @cookbook_compiler = nil
-      @provider_resolver = Chef::ProviderResolver.new(@node)
     end
 
     # Triggers the compile phase of the chef run. Implemented by
@@ -105,7 +104,7 @@ class Chef
       if nr.instance_of?(Chef::Resource)
         @immediate_notification_collection[nr.name] << notification
       else
-        @immediate_notification_collection[nr.to_s] << notification
+        @immediate_notification_collection[nr.declared_key] << notification
       end
     end
 
@@ -116,7 +115,7 @@ class Chef
       if nr.instance_of?(Chef::Resource)
         @delayed_notification_collection[nr.name] << notification
       else
-        @delayed_notification_collection[nr.to_s] << notification
+        @delayed_notification_collection[nr.declared_key] << notification
       end
     end
 
@@ -124,7 +123,7 @@ class Chef
       if resource.instance_of?(Chef::Resource)
         return @immediate_notification_collection[resource.name]
       else
-        return @immediate_notification_collection[resource.to_s]
+        return @immediate_notification_collection[resource.declared_key]
       end
     end
 
@@ -132,15 +131,15 @@ class Chef
       if resource.instance_of?(Chef::Resource)
         return @delayed_notification_collection[resource.name]
       else
-        return @delayed_notification_collection[resource.to_s]
+        return @delayed_notification_collection[resource.declared_key]
       end
     end
 
     # Evaluates the recipes +recipe_names+. Used by DSL::IncludeRecipe
-    def include_recipe(*recipe_names)
+    def include_recipe(*recipe_names, current_cookbook: nil)
       result_recipes = Array.new
       recipe_names.flatten.each do |recipe_name|
-        if result = load_recipe(recipe_name)
+        if result = load_recipe(recipe_name, current_cookbook: current_cookbook)
           result_recipes << result
         end
       end
@@ -148,10 +147,10 @@ class Chef
     end
 
     # Evaluates the recipe +recipe_name+. Used by DSL::IncludeRecipe
-    def load_recipe(recipe_name)
+    def load_recipe(recipe_name, current_cookbook: nil)
       Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
 
-      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name, current_cookbook: current_cookbook)
 
       if unreachable_cookbook?(cookbook_name) # CHEF-4367
         Chef::Log.warn(<<-ERROR_MESSAGE)
@@ -199,7 +198,7 @@ ERROR_MESSAGE
     end
 
     # An Array of all recipes that have been loaded. This is stored internally
-    # as a Hash, so ordering is not preserved when using ruby 1.8.
+    # as a Hash, so ordering is predictable.
     #
     # Recipe names are given in fully qualified form, e.g., the recipe "nginx"
     # will be given as "nginx::default"
@@ -210,7 +209,7 @@ ERROR_MESSAGE
     end
 
     # An Array of all attributes files that have been loaded. Stored internally
-    # using a Hash, so order is not preserved on ruby 1.8.
+    # using a Hash, so order is predictable.
     #
     # Attribute file names are given in fully qualified form, e.g.,
     # "nginx::default" instead of "nginx".

@@ -53,7 +53,7 @@ class Chef
         :short => "-R INT",
         :long => "--rows INT",
         :description => "The number of rows to return",
-        :default => 1000,
+        :default => nil,
         :proc => lambda { |i| i.to_i }
 
       option :run_list,
@@ -92,9 +92,9 @@ class Chef
         result_count = 0
 
         search_args = Hash.new
-        search_args[:sort] = config[:sort]
-        search_args[:start] = config[:start]
-        search_args[:rows] = config[:rows]
+        search_args[:sort] = config[:sort] if config[:sort]
+        search_args[:start] = config[:start] if config[:start]
+        search_args[:rows] = config[:rows] if config[:rows]
         if config[:filter_result]
           search_args[:filter_result] = create_result_filter(config[:filter_result])
         elsif (not ui.config[:attribute].nil?) && (not ui.config[:attribute].empty?)
@@ -106,8 +106,7 @@ class Chef
             formatted_item = Hash.new
             if item.is_a?(Hash)
               # doing a little magic here to set the correct name
-              formatted_item[item["data"]["__display_name"]] = item["data"]
-              formatted_item[item["data"]["__display_name"]].delete("__display_name")
+              formatted_item[item["__display_name"]] = item.reject{|k| k == "__display_name"}
             else
               formatted_item = format_for_display(item)
             end
@@ -123,8 +122,8 @@ class Chef
         if ui.interchange?
           output({:results => result_count, :rows => result_items})
         else
-          ui.msg "#{result_count} items found"
-          ui.msg("\n")
+          ui.log "#{result_count} items found"
+          ui.log("\n")
           result_items.each do |item|
             output(item)
             unless config[:id_only]

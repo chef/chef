@@ -18,67 +18,86 @@
 
 require 'chef/log'
 require 'chef/provider'
+require 'forwardable'
 
 class Chef
   class Provider
     class Execute < Chef::Provider
+      extend Forwardable
 
       provides :execute
 
+      def_delegators :@new_resource, :command, :returns, :environment, :user, :group, :cwd, :umask, :creates
+
       def load_current_resource
-        true
+        current_resource = Chef::Resource::Execute.new(new_resource.name)
+        current_resource
       end
 
       def whyrun_supported?
         true
       end
 
-      def action_run
-        opts = {}
+      def define_resource_requirements
+         # @todo: this should change to raise in some appropriate major version bump.
+         if creates && creates_relative? && !cwd
+           Chef::Log.warn "Providing a relative path for the creates attribute without the cwd is deprecated and will be changed to fail (CHEF-3819)"
+         end
+      end
 
-        if sentinel_file = sentinel_file_if_exists
-          Chef::Log.debug("#{@new_resource} sentinel file #{sentinel_file} exists - nothing to do")
+      def timeout
+        # original implementation did not specify a timeout, but ShellOut
+        # *always* times out. So, set a very long default timeout
+        new_resource.timeout || 3600
+      end
+
+      def action_run
+        if creates && sentinel_file.exist?
+          Chef::Log.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false
         end
 
-        # original implementation did not specify a timeout, but ShellOut
-        # *always* times out. So, set a very long default timeout
-        opts[:timeout] = @new_resource.timeout || 3600
-        opts[:returns] = @new_resource.returns if @new_resource.returns
-        opts[:environment] = @new_resource.environment if @new_resource.environment
-        opts[:user] = @new_resource.user if @new_resource.user
-        opts[:group] = @new_resource.group if @new_resource.group
-        opts[:cwd] = @new_resource.cwd if @new_resource.cwd
-        opts[:umask] = @new_resource.umask if @new_resource.umask
-        opts[:log_level] = :info
-        opts[:log_tag] = @new_resource.to_s
-        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !@new_resource.sensitive
-          opts[:live_stream] = STDOUT
-        end
-        description = @new_resource.sensitive ? "sensitive resource" : @new_resource.command
         converge_by("execute #{description}") do
-          result = shell_out!(@new_resource.command, opts)
-          Chef::Log.info("#{@new_resource} ran successfully")
+          result = shell_out!(command, opts)
+          Chef::Log.info("#{new_resource} ran successfully")
         end
       end
 
       private
 
-      def sentinel_file_if_exists
-        if sentinel_file = @new_resource.creates
-          relative = Pathname(sentinel_file).relative?
-          cwd = @new_resource.cwd
-          if relative && !cwd
-            Chef::Log.warn "You have provided relative path for execute#creates (#{sentinel_file}) without execute#cwd (see CHEF-3819)"
-          end
+      def sensitive?
+        !!new_resource.sensitive
+      end
 
-          if ::File.exists?(sentinel_file)
-            sentinel_file
-          elsif cwd && relative
-            sentinel_file = ::File.join(cwd, sentinel_file)
-            sentinel_file if ::File.exists?(sentinel_file)
-          end
+      def opts
+        opts = {}
+        opts[:timeout]     = timeout
+        opts[:returns]     = returns if returns
+        opts[:environment] = environment if environment
+        opts[:user]        = user if user
+        opts[:group]       = group if group
+        opts[:cwd]         = cwd if cwd
+        opts[:umask]       = umask if umask
+        opts[:log_level]   = :info
+        opts[:log_tag]     = new_resource.to_s
+        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !sensitive?
+          opts[:live_stream] = STDOUT
         end
+        opts
+      end
+
+      def description
+        sensitive? ? "sensitive resource" : command
+      end
+
+      def creates_relative?
+        Pathname(creates).relative?
+      end
+
+      def sentinel_file
+        Pathname.new(Chef::Util::PathHelper.cleanpath(
+           ( cwd && creates_relative? ) ? ::File.join(cwd, creates) : creates
+        ))
       end
     end
   end

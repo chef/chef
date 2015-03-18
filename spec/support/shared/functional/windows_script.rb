@@ -83,29 +83,29 @@ shared_context Chef::Resource::WindowsScript do
 
       it "should create a process with the expected architecture" do
         resource.run_action(:run)
-        get_process_architecture.should == expected_architecture_output.downcase
+        expect(get_process_architecture).to eq(expected_architecture_output.downcase)
       end
 
       it "should execute guards with the same architecture as the resource" do
         resource.only_if resource_guard_command
         resource.run_action(:run)
-        get_process_architecture.should == expected_architecture_output.downcase
-        get_guard_process_architecture.should == expected_architecture_output.downcase
-        get_guard_process_architecture.should == get_process_architecture
+        expect(get_process_architecture).to eq(expected_architecture_output.downcase)
+        expect(get_guard_process_architecture).to eq(expected_architecture_output.downcase)
+        expect(get_guard_process_architecture).to eq(get_process_architecture)
       end
 
       let (:architecture) { :x86_64 }
       it "should execute a 64-bit guard if the guard's architecture is specified as 64-bit", :windows64_only do
         resource.only_if resource_guard_command, :architecture => :x86_64
         resource.run_action(:run)
-        get_guard_process_architecture.should == 'amd64'
+        expect(get_guard_process_architecture).to eq('amd64')
       end
 
       let (:architecture) { :i386 }
       it "should execute a 32-bit guard if the guard's architecture is specified as 32-bit" do
         resource.only_if resource_guard_command, :architecture => :i386
         resource.run_action(:run)
-        get_guard_process_architecture.should == 'x86'
+        expect(get_guard_process_architecture).to eq('x86')
       end
     end
   end
@@ -122,11 +122,11 @@ shared_context Chef::Resource::WindowsScript do
 
     context "when evaluating guards" do
       it "has a guard_interpreter attribute set to the short name of the resource" do
-        resource.guard_interpreter.should == resource.resource_name
+        expect(resource.guard_interpreter).to eq(resource.resource_name)
         resource.not_if "findstr.exe /thiscommandhasnonzeroexitstatus"
         expect(Chef::Resource).to receive(:resource_for_node).and_call_original
         expect(resource.class).to receive(:new).and_call_original
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
     end
 

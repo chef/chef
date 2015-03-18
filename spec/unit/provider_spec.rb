@@ -74,23 +74,23 @@ describe Chef::Provider do
   end
 
   it "should store the resource passed to new as new_resource" do
-    @provider.new_resource.should eql(@resource)
+    expect(@provider.new_resource).to eql(@resource)
   end
 
   it "should store the node passed to new as node" do
-    @provider.node.should eql(@node)
+    expect(@provider.node).to eql(@node)
   end
 
   it "should have nil for current_resource by default" do
-    @provider.current_resource.should eql(nil)
+    expect(@provider.current_resource).to eql(nil)
   end
 
   it "should not support whyrun by default" do
-    @provider.send(:whyrun_supported?).should eql(false)
+    expect(@provider.send(:whyrun_supported?)).to eql(false)
   end
 
   it "should return true for action_nothing" do
-    @provider.action_nothing.should eql(true)
+    expect(@provider.action_nothing).to eql(true)
   end
 
   it "evals embedded recipes with a pristine resource collection" do
@@ -98,27 +98,27 @@ describe Chef::Provider do
     temporary_collection = nil
     snitch = Proc.new {temporary_collection = @run_context.resource_collection}
     @provider.send(:recipe_eval, &snitch)
-    temporary_collection.should be_an_instance_of(Chef::ResourceCollection)
-    @provider.run_context.instance_variable_get(:@resource_collection).should == "doesn't matter what this is"
+    expect(temporary_collection).to be_an_instance_of(Chef::ResourceCollection)
+    expect(@provider.run_context.instance_variable_get(:@resource_collection)).to eq("doesn't matter what this is")
   end
 
   it "does not re-load recipes when creating the temporary run context" do
     # we actually want to test that RunContext#load is never called, but we
     # can't stub all instances of an object with rspec's mocks. :/
-    Chef::RunContext.stub(:new).and_raise("not supposed to happen")
+    allow(Chef::RunContext).to receive(:new).and_raise("not supposed to happen")
     snitch = Proc.new {temporary_collection = @run_context.resource_collection}
     @provider.send(:recipe_eval, &snitch)
   end
 
   context "when no converge actions are queued" do
     before do
-      @provider.stub(:whyrun_supported?).and_return(true)
-      @provider.stub(:load_current_resource)
+      allow(@provider).to receive(:whyrun_supported?).and_return(true)
+      allow(@provider).to receive(:load_current_resource)
     end
 
     it "does not mark the new resource as updated" do
-      @resource.should_not be_updated
-      @resource.should_not be_updated_by_last_action
+      expect(@resource).not_to be_updated
+      expect(@resource).not_to be_updated_by_last_action
     end
   end
 
@@ -129,23 +129,23 @@ describe Chef::Provider do
       end
 
       it "should tell us that it does support whyrun" do
-        @provider.should be_whyrun_supported
+        expect(@provider).to be_whyrun_supported
       end
 
       it "queues up converge actions" do
         @provider.action_foo
-        @provider.send(:converge_actions).should have(1).actions
+        expect(@provider.send(:converge_actions).actions.size).to eq(1)
       end
 
       it "executes pending converge actions to converge the system" do
         @provider.run_action(:foo)
-        @provider.instance_variable_get(:@system_state_altered).should be_true
+        expect(@provider.instance_variable_get(:@system_state_altered)).to be_truthy
       end
 
       it "marks the resource as updated" do
         @provider.run_action(:foo)
-        @resource.should be_updated
-        @resource.should be_updated_by_last_action
+        expect(@resource).to be_updated
+        expect(@resource).to be_updated_by_last_action
       end
     end
 
@@ -160,20 +160,20 @@ describe Chef::Provider do
       end
 
       it "should tell us that it doesn't support whyrun" do
-        @provider.should_not be_whyrun_supported
+        expect(@provider).not_to be_whyrun_supported
       end
 
       it "should automatically generate a converge_by block on the provider's behalf" do
         @provider.run_action(:foo)
-        @provider.send(:converge_actions).should have(0).actions
-        @provider.system_state_altered.should be_false
+        expect(@provider.send(:converge_actions).actions.size).to eq(0)
+        expect(@provider.system_state_altered).to be_falsey
       end
 
       it "should automatically execute the generated converge_by block" do
         @provider.run_action(:foo)
-        @provider.system_state_altered.should be_false
-        @resource.should_not be_updated
-        @resource.should_not be_updated_by_last_action
+        expect(@provider.system_state_altered).to be_falsey
+        expect(@resource).not_to be_updated
+        expect(@resource).not_to be_updated_by_last_action
       end
     end
   end

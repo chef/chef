@@ -20,7 +20,7 @@ require 'spec_helper'
 
 describe Chef::Cookbook::CookbookVersionLoader do
   before do
-    Chef::Platform.stub(:windows?) { false }
+    allow(Chef::Platform).to receive(:windows?) { false }
   end
 
   describe "loading a cookbook" do
@@ -74,8 +74,8 @@ describe Chef::Cookbook::CookbookVersionLoader do
     end
 
     it "should load the metadata for the cookbook" do
-      loaded_cookbook.metadata.name.to_s.should == "openldap"
-      loaded_cookbook.metadata.should be_a_kind_of(Chef::Cookbook::Metadata)
+      expect(loaded_cookbook.metadata.name.to_s).to eq("openldap")
+      expect(loaded_cookbook.metadata).to be_a_kind_of(Chef::Cookbook::Metadata)
     end
 
     context "when a cookbook has ignored files" do

@@ -42,8 +42,8 @@ describe Chef::Provider::Ifconfig do
  end
   describe Chef::Provider::Ifconfig, "load_current_resource" do
     before do
-      status = double("Status", :exitstatus => 1)
-      expect(@provider).to receive(:popen4).and_return status
+      @status = double(:stdout => "", :exitstatus => 1)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       @provider.load_current_resource
     end
     it "should track state of ifconfig failure." do

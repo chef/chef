@@ -55,25 +55,22 @@ class Chef
             @package_source_found = ::File.exists?(@new_resource.source)
             if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
-              status = popen4("pkginfo -l -d #{@new_resource.source} #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-                stdout.each do |line|
-                  case line
-                  when /VERSION:\s+(.+)/
-                    @new_resource.version($1)
-                  end
+              shell_out("pkginfo -l -d #{@new_resource.source} #{@new_resource.package_name}").stdout.each_line do |line|
+                case line
+                when /VERSION:\s+(.+)/
+                  @new_resource.version($1)
                 end
               end
             end
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          status = popen4("pkginfo -l #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /VERSION:\s+(.+)/
-                Chef::Log.debug("#{@new_resource} version #{$1} is already installed")
-                @current_resource.version($1)
-              end
+          status = shell_out("pkginfo -l #{@current_resource.package_name}")
+          status.stdout.each_line do |line|
+            case line
+            when /VERSION:\s+(.+)/
+              Chef::Log.debug("#{@new_resource} version #{$1} is already installed")
+              @current_resource.version($1)
             end
           end
 
@@ -90,14 +87,13 @@ class Chef
 
         def candidate_version
           return @candidate_version if @candidate_version
-          status = popen4("pkginfo -l -d #{@new_resource.source} #{new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each_line do |line|
-              case line
-              when /VERSION:\s+(.+)/
-                @candidate_version = $1
-                @new_resource.version($1)
-                Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
-              end
+          status = shell_out("pkginfo -l -d #{@new_resource.source} #{new_resource.package_name}")
+          status.stdout.each_line do |line|
+            case line
+            when /VERSION:\s+(.+)/
+              @candidate_version = $1
+              @new_resource.version($1)
+              Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
             end
           end
           unless status.exitstatus == 0

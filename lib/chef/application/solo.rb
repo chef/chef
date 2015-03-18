@@ -99,6 +99,11 @@ class Chef::Application::Solo < Chef::Application
       :proc => lambda { |p| true }
   end
 
+  option :lockfile,
+    :long         => "--lockfile LOCKFILE",
+    :description  => "Set the lockfile location. Prevents multiple processes from converging at the same time",
+    :proc         => nil
+
   option :interval,
     :short => "-i SECONDS",
     :long => "--interval SECONDS",
@@ -160,6 +165,11 @@ class Chef::Application::Solo < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :ez,
+    :long         => '--ez',
+    :description  => 'A memorial for Ezra Zygmuntowicz',
+    :boolean      => true
+
   option :environment,
     :short        => '-E ENVIRONMENT',
     :long         => '--environment ENVIRONMENT',
@@ -179,6 +189,8 @@ class Chef::Application::Solo < Chef::Application
   def reconfigure
     super
 
+    set_specific_recipes
+
     Chef::Config[:solo] = true
 
     if Chef::Config[:daemonize]
@@ -191,6 +203,8 @@ class Chef::Application::Solo < Chef::Application
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
 
+      Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+      FileUtils.rm_rf(recipes_path, :secure => true)
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p(recipes_path)
       tarball_path = File.join(recipes_path, 'recipes.tgz')
@@ -204,6 +218,9 @@ class Chef::Application::Solo < Chef::Application
       config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
       @chef_client_json = config_fetcher.fetch_json
     end
+
+    # Disable auditing for solo
+    Chef::Config[:audit_mode] = :disabled
   end
 
   def setup_application
@@ -211,6 +228,7 @@ class Chef::Application::Solo < Chef::Application
   end
 
   def run_application
+    for_ezra if Chef::Config[:ez]
     if !Chef::Config[:client_fork] || Chef::Config[:once]
       # Run immediately without interval sleep or splay
       begin
@@ -225,7 +243,19 @@ class Chef::Application::Solo < Chef::Application
     end
   end
 
+
   private
+
+  def for_ezra
+    puts <<-EOH
+For Ezra Zygmuntowicz:
+  The man who brought you Chef Solo
+  Early contributor to Chef
+  Kind hearted open source advocate
+  Rest in peace, Ezra.
+EOH
+  end
+
   def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")

@@ -44,8 +44,8 @@ describe Chef::Resource::WhyrunSafeRubyBlock do
 
     it "updates the evil laugh, even in why-run mode" do
       new_resource.run_action(new_resource.action)
-      $evil_global_evil_laugh.should == :mwahahaha
-      new_resource.should be_updated
+      expect($evil_global_evil_laugh).to eq(:mwahahaha)
+      expect(new_resource).to be_updated
     end
   end
 end

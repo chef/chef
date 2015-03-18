@@ -65,7 +65,7 @@ describe Chef::Provider::Route do
         provider = Chef::Provider::Route.new(resource, @run_context)
 
         provider.load_current_resource
-        expect(provider.is_running).to be_false
+        expect(provider.is_running).to be_falsey
       end
 
       it "should detect existing routes and set is_running attribute correctly" do
@@ -75,7 +75,7 @@ describe Chef::Provider::Route do
         provider = Chef::Provider::Route.new(resource, @run_context)
 
         provider.load_current_resource
-        expect(provider.is_running).to be_true
+        expect(provider.is_running).to be_truthy
       end
 
       it "should use gateway value when matching routes" do
@@ -85,7 +85,7 @@ describe Chef::Provider::Route do
         provider = Chef::Provider::Route.new(resource, @run_context)
 
         provider.load_current_resource
-        expect(provider.is_running).to be_false
+        expect(provider.is_running).to be_falsey
       end
     end
   end

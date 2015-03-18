@@ -69,9 +69,9 @@ describe "Chef::Provider::Service::Redhat" do
         expect(@provider).to receive(:shell_out).with("/sbin/service chef status").and_return(status)
         chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:on  6:off", :stderr => "")
         expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
-        expect(@provider.instance_variable_get("@service_missing")).to be_false
+        expect(@provider.instance_variable_get("@service_missing")).to be_falsey
         @provider.load_current_resource
-        expect(@current_resource.enabled).to be_true
+        expect(@current_resource.enabled).to be_truthy
       end
 
       it "sets the current enabled status to false if the regex does not match" do
@@ -79,9 +79,9 @@ describe "Chef::Provider::Service::Redhat" do
         expect(@provider).to receive(:shell_out).with("/sbin/service chef status").and_return(status)
         chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:off   6:off", :stderr => "")
         expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
-        expect(@provider.instance_variable_get("@service_missing")).to be_false
+        expect(@provider.instance_variable_get("@service_missing")).to be_falsey
         expect(@provider.load_current_resource).to eql(@current_resource)
-        expect(@current_resource.enabled).to be_false
+        expect(@current_resource.enabled).to be_falsey
       end
     end
 

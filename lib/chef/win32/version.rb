@@ -34,18 +34,18 @@ class Chef
       # http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
       # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
 
-      private
-
       def self.get_system_metrics(n_index)
         GetSystemMetrics(n_index)
       end
+
+      private_class_method :get_system_metrics
 
       def self.method_name_from_marketing_name(marketing_name)
         "#{marketing_name.gsub(/\s/, '_').gsub(/\./, '_').downcase}?"
         # "#{marketing_name.gsub(/\s/, '_').gsub(//, '_').downcase}?"
       end
 
-      public
+      private_class_method :method_name_from_marketing_name
 
       WIN_VERSIONS = {
         "Windows 10" => {:major => 6, :minor => 4, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
@@ -126,13 +126,9 @@ class Chef
         # https://github.com/ruby/ruby/commit/588504b20f5cc880ad51827b93e571e32446e5db
         # https://github.com/ruby/ruby/commit/27ed294c7134c0de582007af3c915a635a6506cd
 
-        WIN32OLE.ole_initialize
-
         wmi = WmiLite::Wmi.new
         os_info = wmi.first_of('Win32_OperatingSystem')
         os_version = os_info['version']
-
-        WIN32OLE.ole_uninitialize
 
         # The operating system version is a string in the following form
         # that can be split into components based on the '.' delimiter:

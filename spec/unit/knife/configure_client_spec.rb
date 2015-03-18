@@ -26,16 +26,16 @@ describe Chef::Knife::ConfigureClient do
     Chef::Config[:validation_key] = '/etc/chef/validation.pem'
 
     @stderr = StringIO.new
-    @knife.ui.stub(:stderr).and_return(@stderr)
+    allow(@knife.ui).to receive(:stderr).and_return(@stderr)
   end
 
   describe 'run' do
     it 'should print usage and exit when a directory is not provided' do
-      @knife.should_receive(:show_usage)
-      @knife.ui.should_receive(:fatal).with(/must provide the directory/)
-      lambda {
+      expect(@knife).to receive(:show_usage)
+      expect(@knife.ui).to receive(:fatal).with(/must provide the directory/)
+      expect {
         @knife.run
-      }.should raise_error SystemExit
+      }.to raise_error SystemExit
     end
 
     describe 'when specifing a directory' do
@@ -43,39 +43,39 @@ describe Chef::Knife::ConfigureClient do
         @knife.name_args = ['/home/bob/.chef']
         @client_file = StringIO.new
         @validation_file = StringIO.new
-        File.should_receive(:open).with('/home/bob/.chef/client.rb', 'w').
+        expect(File).to receive(:open).with('/home/bob/.chef/client.rb', 'w').
                                    and_yield(@client_file)
-        File.should_receive(:open).with('/home/bob/.chef/validation.pem', 'w').
+        expect(File).to receive(:open).with('/home/bob/.chef/validation.pem', 'w').
                                    and_yield(@validation_file)
-        IO.should_receive(:read).and_return('foo_bar_baz')
+        expect(IO).to receive(:read).and_return('foo_bar_baz')
       end
 
       it 'should recursively create the directory' do
-        FileUtils.should_receive(:mkdir_p).with('/home/bob/.chef')
+        expect(FileUtils).to receive(:mkdir_p).with('/home/bob/.chef')
         @knife.run
       end
 
       it 'should write out the config file' do
-        FileUtils.stub(:mkdir_p)
+        allow(FileUtils).to receive(:mkdir_p)
         @knife.run
-        @client_file.string.should match /log_level\s+\:info/
-        @client_file.string.should match /log_location\s+STDOUT/
-        @client_file.string.should match /chef_server_url\s+'https\:\/\/chef\.example\.com'/
-        @client_file.string.should match /validation_client_name\s+'chef-validator'/
+        expect(@client_file.string).to match /log_level\s+\:info/
+        expect(@client_file.string).to match /log_location\s+STDOUT/
+        expect(@client_file.string).to match /chef_server_url\s+'https\:\/\/chef\.example\.com'/
+        expect(@client_file.string).to match /validation_client_name\s+'chef-validator'/
       end
 
       it 'should write out the validation.pem file' do
-        FileUtils.stub(:mkdir_p)
+        allow(FileUtils).to receive(:mkdir_p)
         @knife.run
-        @validation_file.string.should match /foo_bar_baz/
+        expect(@validation_file.string).to match /foo_bar_baz/
       end
 
       it 'should print information on what is being configured' do
-        FileUtils.stub(:mkdir_p)
+        allow(FileUtils).to receive(:mkdir_p)
         @knife.run
-        @stderr.string.should match /creating client configuration/i
-        @stderr.string.should match /writing client\.rb/i
-        @stderr.string.should match /writing validation\.pem/i
+        expect(@stderr.string).to match /creating client configuration/i
+        expect(@stderr.string).to match /writing client\.rb/i
+        expect(@stderr.string).to match /writing validation\.pem/i
       end
     end
   end

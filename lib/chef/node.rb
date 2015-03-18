@@ -42,8 +42,12 @@ class Chef
     extend Forwardable
 
     def_delegators :attributes, :keys, :each_key, :each_value, :key?, :has_key?
+    def_delegators :attributes, :rm, :rm_default, :rm_normal, :rm_override
+    def_delegators :attributes, :default!, :normal!, :override!, :force_default!, :force_override!
 
     attr_accessor :recipe_list, :run_state, :override_runlist
+
+    attr_accessor :chef_server_rest
 
     # RunContext will set itself as run_context via this setter when
     # initialized. This is needed so DSL::IncludeAttribute (in particular,
@@ -60,7 +64,8 @@ class Chef
     include Chef::Mixin::ParamsValidate
 
     # Create a new Chef::Node object.
-    def initialize
+    def initialize(chef_server_rest: nil)
+      @chef_server_rest = chef_server_rest
       @name = nil
 
       @chef_environment = '_default'
@@ -78,7 +83,7 @@ class Chef
     end
 
     def chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     # Set the name of this Node, or return the current name.
@@ -125,6 +130,7 @@ class Chef
     # Set a normal attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def normal
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = false
       attributes.normal
     end
@@ -134,28 +140,25 @@ class Chef
     # Set a normal attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def normal_unless
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = true
       attributes.normal
     end
+
     alias_method :set_unless, :normal_unless
 
     # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = false
       attributes.default
-    end
-
-    # Set a force default attribute. Intermediate mashes will be created by
-    # auto-vivify if necessary.
-    def default!
-      attributes.set_unless_value_present = false
-      attributes.default!
     end
 
     # Set a default attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def default_unless
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = true
       attributes.default
     end
@@ -163,42 +166,29 @@ class Chef
     # Set an override attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def override
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = false
       attributes.override
-    end
-
-    # Set a force override attribute. Intermediate mashes will be created by
-    # auto-vivify if needed.
-    def override!
-      attributes.set_unless_value_present = false
-      attributes.override!
     end
 
     # Set an override attribute of this node, auto-vivifying any mashes that
     # are missing, but if the final value already exists, don't set it
     def override_unless
+      attributes.top_level_breadcrumb = nil
       attributes.set_unless_value_present = true
       attributes.override
     end
 
-    def override_attrs
-     attributes.override
-    end
+    alias :override_attrs :override
+    alias :default_attrs :default
+    alias :normal_attrs :normal
 
     def override_attrs=(new_values)
       attributes.override = new_values
     end
 
-    def default_attrs
-      attributes.default
-    end
-
     def default_attrs=(new_values)
       attributes.default = new_values
-    end
-
-    def normal_attrs
-      attributes.normal
     end
 
     def normal_attrs=(new_values)
@@ -206,6 +196,8 @@ class Chef
     end
 
     def automatic_attrs
+      attributes.top_level_breadcrumb = nil
+      attributes.set_unless_value_present = false
       attributes.automatic
     end
 
@@ -331,7 +323,7 @@ class Chef
         if attrs.key?("recipes") || attrs.key?("run_list")
           raise Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
         end
-        Chef::Log.info("Setting the run_list to #{new_run_list.inspect} from CLI options")
+        Chef::Log.info("Setting the run_list to #{new_run_list.to_s} from CLI options")
         run_list(new_run_list)
       end
       attrs

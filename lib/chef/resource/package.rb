@@ -46,7 +46,7 @@ class Chef
         set_or_return(
           :package_name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, Array ]
         )
       end
 
@@ -54,7 +54,7 @@ class Chef
         set_or_return(
           :version,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, Array ]
         )
       end
 

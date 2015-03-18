@@ -16,10 +16,10 @@ describe Chef::ConfigFetcher do
     let(:config_content) { "# The client.rb content" }
 
     it "reads the file from disk" do
-      ::File.should_receive(:read).
+      expect(::File).to receive(:read).
         with(config_location).
         and_return(config_content)
-      fetcher.read_config.should == config_content
+      expect(fetcher.read_config).to eq(config_content)
     end
 
     context "and consuming JSON" do
@@ -28,11 +28,11 @@ describe Chef::ConfigFetcher do
 
 
       it "returns the parsed JSON" do
-        ::File.should_receive(:read).
+        expect(::File).to receive(:read).
           with(config_location).
           and_return(valid_json)
 
-        fetcher.fetch_json.should == {"a" => "b"}
+        expect(fetcher.fetch_json).to eq({"a" => "b"})
       end
 
       context "and the JSON is invalid" do
@@ -40,11 +40,11 @@ describe Chef::ConfigFetcher do
         it "reports the JSON error" do
 
 
-          ::File.should_receive(:read).
+          expect(::File).to receive(:read).
             with(config_location).
             and_return(invalid_json)
 
-          Chef::Application.should_receive(:fatal!).
+          expect(Chef::Application).to receive(:fatal!).
             with(invalid_json_error_regex, 2)
           fetcher.fetch_json
         end
@@ -59,32 +59,32 @@ describe Chef::ConfigFetcher do
     let(:config_content) { "# The client.rb content" }
 
     before do
-      Chef::HTTP::Simple.should_receive(:new).
+      expect(Chef::HTTP::Simple).to receive(:new).
         with(config_location).
         and_return(http)
     end
 
     it "reads the file over HTTP" do
-        http.should_receive(:get).
+        expect(http).to receive(:get).
           with("").and_return(config_content)
-      fetcher.read_config.should == config_content
+      expect(fetcher.read_config).to eq(config_content)
     end
 
     context "and consuming JSON" do
       let(:config_location) { "https://example.com/foo.json" }
 
       it "fetches the file and parses it" do
-        http.should_receive(:get).
+        expect(http).to receive(:get).
           with("").and_return(valid_json)
-        fetcher.fetch_json.should == {"a" => "b"}
+        expect(fetcher.fetch_json).to eq({"a" => "b"})
       end
 
       context "and the JSON is invalid" do
         it "reports the JSON error" do
-          http.should_receive(:get).
+          expect(http).to receive(:get).
             with("").and_return(invalid_json)
 
-          Chef::Application.should_receive(:fatal!).
+          expect(Chef::Application).to receive(:fatal!).
             with(invalid_json_error_regex, 2)
           fetcher.fetch_json
         end

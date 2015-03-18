@@ -18,14 +18,14 @@
 #
 
 require 'chef/log'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/provider'
 
 class Chef
   class Provider
     class Mount < Chef::Provider
 
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
 
       attr_accessor :unmount_retries
 

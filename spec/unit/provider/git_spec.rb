@@ -22,6 +22,7 @@ describe Chef::Provider::Git do
 
   before(:each) do
     allow(STDOUT).to receive(:tty?).and_return(true)
+    @original_log_level = Chef::Log.level
     Chef::Log.level = :info
 
     @current_resource = Chef::Resource::Git.new("web2.0 app")
@@ -36,6 +37,10 @@ describe Chef::Provider::Git do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @provider = Chef::Provider::Git.new(@resource, @run_context)
     @provider.current_resource = @current_resource
+  end
+
+  after(:each) do
+    Chef::Log.level = @original_log_level
   end
 
   context "determining the revision of the currently deployed checkout" do
@@ -621,21 +626,21 @@ SHAS
     describe "when check remote command returns with status 2" do
       it "returns true" do
         allow(@command_response).to receive(:exitstatus) { 2 }
-        expect(@provider.multiple_remotes?(@command_response)).to be_true
+        expect(@provider.multiple_remotes?(@command_response)).to be_truthy
       end
     end
 
     describe "when check remote command returns with status 0" do
       it "returns false" do
         allow(@command_response).to receive(:exitstatus) { 0 }
-        expect(@provider.multiple_remotes?(@command_response)).to be_false
+        expect(@provider.multiple_remotes?(@command_response)).to be_falsey
       end
     end
 
     describe "when check remote command returns with status 0" do
       it "returns false" do
         allow(@command_response).to receive(:exitstatus) { 1 }
-        expect(@provider.multiple_remotes?(@command_response)).to be_false
+        expect(@provider.multiple_remotes?(@command_response)).to be_falsey
       end
     end
   end
@@ -649,7 +654,7 @@ SHAS
       it "returns true" do
         allow(@command_response).to receive(:exitstatus) { 0 }
         allow(@command_response).to receive(:stdout) { @resource.repository }
-        expect(@provider.remote_matches?(@resource.repository, @command_response)).to be_true
+        expect(@provider.remote_matches?(@resource.repository, @command_response)).to be_truthy
       end
     end
 
@@ -657,7 +662,7 @@ SHAS
       it "returns false" do
         allow(@command_response).to receive(:exitstatus) { 0 }
         allow(@command_response).to receive(:stdout) { @resource.repository + "test" }
-        expect(@provider.remote_matches?(@resource.repository, @command_response)).to be_false
+        expect(@provider.remote_matches?(@resource.repository, @command_response)).to be_falsey
       end
     end
   end

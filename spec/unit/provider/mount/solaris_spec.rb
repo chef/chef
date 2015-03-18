@@ -180,11 +180,11 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should set the mounted status on the current_resource" do
-        expect(provider.current_resource.mounted).to be_true
+        expect(provider.current_resource.mounted).to be_truthy
       end
 
       it "should set the enabled status on the current_resource" do
-        expect(provider.current_resource.enabled).to be_true
+        expect(provider.current_resource.enabled).to be_truthy
       end
 
       it "should set the fstype field on the current_resource" do
@@ -258,7 +258,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       let(:fsck_device) { "-" }
 
       it "should work at some point in the future" do
-        pending "SMBFS mounts on solaris look like they will need some future code work and more investigation"
+        skip "SMBFS mounts on solaris look like they will need some future code work and more investigation"
       end
     end
 
@@ -304,11 +304,11 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should set the mounted status on the current_resource" do
-        expect(provider.current_resource.mounted).to be_true
+        expect(provider.current_resource.mounted).to be_truthy
       end
 
       it "should set the enabled status on the current_resource" do
-        expect(provider.current_resource.enabled).to be_true
+        expect(provider.current_resource.enabled).to be_truthy
       end
 
       it "should set the fstype field on the current_resource" do
@@ -322,7 +322,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       it "should set the pass field on the current_resource" do
         # is this correct or should it be nil?
         #
-        # vfstab man page says. 
+        # vfstab man page says.
         # "A -  is used to indicate no entry in a field."
         # 0 and - could mean different things for some file systems
         expect(provider.current_resource.pass).to eql(0)
@@ -354,11 +354,11 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should set mounted true if the symlink target of the device is found in the mounts list" do
-        expect(provider.current_resource.mounted).to be_true
+        expect(provider.current_resource.mounted).to be_truthy
       end
 
       it "should set enabled true if the symlink target of the device is found in the vfstab" do
-        expect(provider.current_resource.enabled).to be_true
+        expect(provider.current_resource.enabled).to be_truthy
       end
 
       it "should have the correct mount options" do
@@ -391,11 +391,11 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should set mounted true if the symlink target of the device is found in the mounts list" do
-        expect(provider.current_resource.mounted).to be_true
+        expect(provider.current_resource.mounted).to be_truthy
       end
 
       it "should set enabled true if the symlink target of the device is found in the vfstab" do
-        expect(provider.current_resource.enabled).to be_true
+        expect(provider.current_resource.enabled).to be_truthy
       end
 
       it "should have the correct mount options" do
@@ -412,7 +412,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
       it "should set mounted true" do
         provider.load_current_resource()
-        expect(provider.current_resource.mounted).to be_true
+        expect(provider.current_resource.mounted).to be_truthy
       end
     end
 
@@ -425,7 +425,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
       it "should set mounted false" do
         provider.load_current_resource()
-        expect(provider.current_resource.mounted).to be_false
+        expect(provider.current_resource.mounted).to be_falsey
       end
     end
 
@@ -437,7 +437,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
       it "should set mounted false" do
         provider.load_current_resource()
-        expect(provider.current_resource.mounted).to be_false
+        expect(provider.current_resource.mounted).to be_falsey
       end
     end
 
@@ -449,7 +449,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
       it "should set mounted false" do
         provider.load_current_resource()
-        expect(provider.current_resource.mounted).to be_false
+        expect(provider.current_resource.mounted).to be_falsey
       end
     end
 
@@ -463,7 +463,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to true" do
         provider.load_current_resource
-        expect(provider.current_resource.enabled).to be_true
+        expect(provider.current_resource.enabled).to be_truthy
       end
     end
 
@@ -477,7 +477,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to true" do
         provider.load_current_resource
-        expect(provider.current_resource.enabled).to be_true
+        expect(provider.current_resource.enabled).to be_truthy
       end
     end
 
@@ -491,7 +491,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to false" do
         provider.load_current_resource
-        expect(provider.current_resource.enabled).to be_false
+        expect(provider.current_resource.enabled).to be_falsey
       end
     end
 
@@ -504,7 +504,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to false" do
         provider.load_current_resource
-        expect(provider.current_resource.enabled).to be_false
+        expect(provider.current_resource.enabled).to be_falsey
       end
     end
 
@@ -517,7 +517,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to false" do
         provider.load_current_resource
-        expect(provider.current_resource.enabled).to be_false
+        expect(provider.current_resource.enabled).to be_falsey
       end
     end
 
@@ -530,7 +530,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to false" do
         provider.load_current_resource
-        expect(provider.current_resource.enabled).to be_false
+        expect(provider.current_resource.enabled).to be_falsey
       end
     end
   end

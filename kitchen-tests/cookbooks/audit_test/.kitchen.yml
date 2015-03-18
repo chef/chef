@@ -1,0 +1,16 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: ubuntu-12.04
+  - name: centos-6.5
+
+suites:
+  - name: default
+    run_list:
+      - recipe[audit_test::default]
+    attributes:

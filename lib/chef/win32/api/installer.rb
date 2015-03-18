@@ -108,7 +108,7 @@ UINT MsiCloseHandle(
           end
 
           msi_close_handle(pkg_ptr.read_pointer)
-          return buffer
+          return buffer.chomp(0.chr)
         end
 
         # Opens a Microsoft Installer (MSI) file from an absolute path and returns a pointer to a handle

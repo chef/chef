@@ -128,6 +128,9 @@ If you are familiar with Chef and know the component that is causing you a probl
   Github project. All of our Open Source Software can be found in our
   [Github organization](https://github.com/opscode/).
 
+There is also a listing of the various Chef products and where to file issues that can be
+  found in the Chef docs in the [community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
+
 Otherwise you can file your issue in the [Chef project](https://github.com/opscode/chef/issues)
   and we will make sure it gets filed against the appropriate project.
 
@@ -173,7 +176,7 @@ Contributions go through a review process to improve code quality and avoid regr
 Our primary shipping vehicle is operating system specific packages that includes
   all the requirements of Chef. We call these [Omnibus packages](https://github.com/opscode/omnibus-ruby)
 
-We also release our software as gems to [Rubygems](http://rubygems.org/) but we strongly
+We also release our software as gems to [Rubygems](https://rubygems.org/) but we strongly
   recommend using Chef packages since they are the only combination of native libraries &
   gems required by Chef that we test throughly.
 

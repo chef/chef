@@ -25,31 +25,31 @@ describe Chef::HTTP::HTTPRequest do
     it "should not include port 80 in Host header" do
       request = Chef::HTTP::HTTPRequest.new(:GET, URI('http://dummy.com'), '')
 
-      request.headers['Host'].should eql('dummy.com')
+      expect(request.headers['Host']).to eql('dummy.com')
     end
 
     it "should not include explicit port 80 in Host header" do
       request = Chef::HTTP::HTTPRequest.new(:GET, URI('http://dummy.com:80'), '')
 
-      request.headers['Host'].should eql('dummy.com')
+      expect(request.headers['Host']).to eql('dummy.com')
     end
 
     it "should include explicit port 8000 in Host header" do
       request = Chef::HTTP::HTTPRequest.new(:GET, URI('http://dummy.com:8000'), '')
 
-      request.headers['Host'].should eql('dummy.com:8000')
+      expect(request.headers['Host']).to eql('dummy.com:8000')
     end
 
     it "should include explicit 443 port in Host header" do
       request = Chef::HTTP::HTTPRequest.new(:GET, URI('http://dummy.com:443'), '')
 
-      request.headers['Host'].should eql('dummy.com:443')
+      expect(request.headers['Host']).to eql('dummy.com:443')
     end
 
     it "should pass on explicit Host header unchanged" do
       request = Chef::HTTP::HTTPRequest.new(:GET, URI('http://dummy.com:8000'), '', { 'Host' => 'yourhost.com:8888' })
 
-      request.headers['Host'].should eql('yourhost.com:8888')
+      expect(request.headers['Host']).to eql('yourhost.com:8888')
     end
 
   end
@@ -59,25 +59,25 @@ describe Chef::HTTP::HTTPRequest do
     it "should not include port 443 in Host header" do
       request = Chef::HTTP::HTTPRequest.new(:GET, URI('https://dummy.com'), '')
 
-      request.headers['Host'].should eql('dummy.com')
+      expect(request.headers['Host']).to eql('dummy.com')
     end
 
     it "should include explicit port 80 in Host header" do
       request = Chef::HTTP::HTTPRequest.new(:GET, URI('https://dummy.com:80'), '')
 
-      request.headers['Host'].should eql('dummy.com:80')
+      expect(request.headers['Host']).to eql('dummy.com:80')
     end
 
     it "should include explicit port 8000 in Host header" do
       request = Chef::HTTP::HTTPRequest.new(:GET, URI('https://dummy.com:8000'), '')
 
-      request.headers['Host'].should eql('dummy.com:8000')
+      expect(request.headers['Host']).to eql('dummy.com:8000')
     end
 
     it "should not include explicit port 443 in Host header" do
       request = Chef::HTTP::HTTPRequest.new(:GET, URI('https://dummy.com:443'), '')
 
-      request.headers['Host'].should eql('dummy.com')
+      expect(request.headers['Host']).to eql('dummy.com')
     end
 
   end
@@ -85,7 +85,7 @@ describe Chef::HTTP::HTTPRequest do
   it "should pass on explicit Host header unchanged" do
     request = Chef::HTTP::HTTPRequest.new(:GET, URI('http://dummy.com:8000'), '', { 'Host' => 'myhost.com:80' })
 
-    request.headers['Host'].should eql('myhost.com:80')
+    expect(request.headers['Host']).to eql('myhost.com:80')
   end
 
 end

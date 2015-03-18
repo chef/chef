@@ -30,35 +30,33 @@ class Chef
           found_interface = false
           interface = {}
 
-          @status = popen4("ifconfig -a") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-
-              if !found_interface
-                if line =~ /^(\S+):\sflags=(\S+)/
-                  # We have interface name, if this is the interface for @current_resource, load info else skip till next interface is found.
-                  if $1 == @new_resource.device
-                    # Found interface
-                    found_interface = true
-                    @interface_exists = true
-                    @current_resource.target(@new_resource.target)
-                    @current_resource.device($1)
-                    interface[:flags] = $2
-                    @current_resource.metric($1) if line =~ /metric\s(\S+)/
-                  end
+          @status = shell_out("ifconfig -a")
+          @status.stdout.each_line do |line|
+            if !found_interface
+              if line =~ /^(\S+):\sflags=(\S+)/
+                # We have interface name, if this is the interface for @current_resource, load info else skip till next interface is found.
+                if $1 == @new_resource.device
+                  # Found interface
+                  found_interface = true
+                  @interface_exists = true
+                  @current_resource.target(@new_resource.target)
+                  @current_resource.device($1)
+                  interface[:flags] = $2
+                  @current_resource.metric($1) if line =~ /metric\s(\S+)/
                 end
+              end
+            else
+              # parse interface related information, stop when next interface is found.
+              if line =~ /^(\S+):\sflags=(\S+)/
+                # we are done parsing interface info and hit another one, so stop.
+                found_interface = false
+                break
               else
-                # parse interface related information, stop when next interface is found.
-                if line =~ /^(\S+):\sflags=(\S+)/
-                  # we are done parsing interface info and hit another one, so stop.
-                  found_interface = false
-                  break
-                else
-                  if found_interface
-                    # read up interface info
-                    @current_resource.inet_addr($1) if line =~ /inet\s(\S+)\s/
-                    @current_resource.bcast($1) if line =~ /broadcast\s(\S+)/
-                    @current_resource.mask(hex_to_dec_netmask($1)) if line =~ /netmask\s(\S+)\s/
-                  end
+                if found_interface
+                  # read up interface info
+                  @current_resource.inet_addr($1) if line =~ /inet\s(\S+)\s/
+                  @current_resource.bcast($1) if line =~ /broadcast\s(\S+)/
+                  @current_resource.mask(hex_to_dec_netmask($1)) if line =~ /netmask\s(\S+)\s/
                 end
               end
             end

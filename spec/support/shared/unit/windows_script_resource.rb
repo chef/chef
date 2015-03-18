@@ -35,30 +35,30 @@ shared_examples_for "a Windows script resource" do
   end
 
   it "should be a kind of Chef::Resource::WindowsScript" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::WindowsScript)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::WindowsScript)
   end
 
   context "when evaluating guards" do
     it "should have a default_guard_interpreter attribute that is the same as the resource" do
-      @resource.default_guard_interpreter.should == @resource.resource_name
+      expect(@resource.default_guard_interpreter).to eq(@resource.resource_name)
     end
 
     it "should default to using guard_interpreter attribute that is the same as the resource" do
-      @resource.guard_interpreter.should == @resource.resource_name
+      expect(@resource.guard_interpreter).to eq(@resource.resource_name)
     end
 
     it "should use a resource to evaluate the guard when guard_interpreter is not specified" do
-      Chef::GuardInterpreter::ResourceGuardInterpreter.any_instance.should_receive(:evaluate_action).and_return(true)
-      Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.should_not_receive(:evaluate)
+      expect_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:evaluate_action).and_return(true)
+      expect_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).not_to receive(:evaluate)
       @resource.only_if 'echo hi'
-      @resource.should_skip?(:run).should == nil
+      expect(@resource.should_skip?(:run)).to eq(nil)
     end
 
     describe "when the guard is given a ruby block" do
       it "should evaluate the guard if the guard_interpreter is set to its default value" do
         @resource.only_if { true }
-        @resource.should_skip?(:run).should == nil
+        expect(@resource.should_skip?(:run)).to eq(nil)
       end
 
       it "should raise an exception if the guard_interpreter is overridden from its default value" do

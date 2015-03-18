@@ -20,6 +20,7 @@
 
 require 'chef/provider/service/simple'
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+  require 'chef/win32/error'
   require 'win32/service'
 end
 
@@ -29,6 +30,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   provides :windows_service, os: "windows"
 
   include Chef::Mixin::ShellOut
+  include Chef::ReservedNames::Win32::API::Error rescue LoadError
 
   #Win32::Service.get_start_type
   AUTO_START = 'auto start'
@@ -67,6 +69,22 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def start_service
     if Win32::Service.exists?(@new_resource.service_name)
+      # reconfiguration is idempotent, so just do it.
+      new_config = {
+        service_name: @new_resource.service_name,
+        service_start_name: @new_resource.run_as_user,
+        password: @new_resource.run_as_password,
+      }.reject { |k,v| v.nil? || v.length == 0 }
+
+      Win32::Service.configure(new_config)
+      Chef::Log.info "#{@new_resource} configured with #{new_config.inspect}"
+
+      # it would be nice to check if the user already has the logon privilege, but that turns out to be
+      # nontrivial.
+      if new_config.has_key?(:service_start_name)
+        grant_service_logon(new_config[:service_start_name])
+      end
+
       state = current_state
       if state == RUNNING
         Chef::Log.debug "#{@new_resource} already started - nothing to do"
@@ -79,7 +97,17 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
           shell_out!(@new_resource.start_command)
         else
           spawn_command_thread do
-            Win32::Service.start(@new_resource.service_name)
+            begin
+              Win32::Service.start(@new_resource.service_name)
+            rescue SystemCallError => ex
+              if ex.errno == ERROR_SERVICE_LOGON_FAILED
+                Chef::Log.error ex.message
+                raise Chef::Exceptions::Service,
+                "Service #{@new_resource} did not start due to a logon failure (error #{ERROR_SERVICE_LOGON_FAILED}): possibly the specified user '#{@new_resource.run_as_user}' does not have the 'log on as a service' privilege, or the password is incorrect."
+              else
+                raise ex
+              end
+            end
           end
           wait_for_state(RUNNING)
         end
@@ -209,6 +237,76 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   private
+  def make_policy_text(username)
+    text = <<-EOS
+[Unicode]
+Unicode=yes
+[Privilege Rights]
+SeServiceLogonRight = \\\\#{canonicalize_username(username)},*S-1-5-80-0
+[Version]
+signature="$CHICAGO$"
+Revision=1
+EOS
+  end
+
+  def grant_logfile_name(username)
+    Chef::Util::PathHelper.canonical_path("#{Dir.tmpdir}/logon_grant-#{clean_username_for_path(username)}-#{$$}.log", prefix=false)
+  end
+
+  def grant_policyfile_name(username)
+    Chef::Util::PathHelper.canonical_path("#{Dir.tmpdir}/service_logon_policy-#{clean_username_for_path(username)}-#{$$}.inf", prefix=false)
+  end
+
+  def grant_dbfile_name(username)
+    "#{ENV['TEMP']}\\secedit.sdb"
+  end
+
+  def grant_service_logon(username)
+    logfile = grant_logfile_name(username)
+    policy_file = ::File.new(grant_policyfile_name(username), 'w')
+    policy_text = make_policy_text(username)
+    dbfile = grant_dbfile_name(username)        # this is just an audit file.
+
+    begin
+      Chef::Log.debug "Policy file text:\n#{policy_text}"
+      policy_file.puts(policy_text)
+      policy_file.close   # need to flush the buffer.
+
+      # it would be nice to do this with APIs instead, but the LSA_* APIs are
+      # particularly onerous and life is short.
+      cmd = %Q{secedit.exe /configure /db "#{dbfile}" /cfg "#{policy_file.path}" /areas USER_RIGHTS SECURITYPOLICY SERVICES /log "#{logfile}"}
+      Chef::Log.debug "Granting logon-as-service privilege with: #{cmd}"
+      runner = shell_out(cmd)
+
+      if runner.exitstatus != 0
+        Chef::Log.fatal "Logon-as-service grant failed with output: #{runner.stdout}"
+        raise Chef::Exceptions::Service, <<-EOS
+Logon-as-service grant failed with policy file #{policy_file.path}.
+You can look at #{logfile} for details, or do `secedit /analyze #{dbfile}`.
+The failed command was `#{cmd}`.
+EOS
+      end
+
+      Chef::Log.info "Grant logon-as-service to user '#{username}' successful."
+
+      ::File.delete(dbfile) rescue nil
+      ::File.delete(policy_file)
+      ::File.delete(logfile) rescue nil     # logfile is not always present at end.
+    end
+    true
+  end
+
+  # remove characters that make for broken or wonky filenames.
+  def clean_username_for_path(username)
+    username.gsub(/[\/\\. ]+/, '_')
+  end
+
+  # the security policy file only seems to accept \\username, so fix .\username or .\\username.
+  # TODO: this probably has to be fixed to handle various valid Windows names correctly.
+  def canonicalize_username(username)
+    username.sub(/^\.?\\+/, '')
+  end
+
   def current_state
     Win32::Service.status(@new_resource.service_name).current_state
   end

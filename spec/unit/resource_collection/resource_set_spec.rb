@@ -166,15 +166,15 @@ describe Chef::ResourceCollection::ResourceSet do
 
   describe "validate_lookup_spec!" do
     it "accepts a string of the form 'resource_type[resource_name]'" do
-      expect(collection.validate_lookup_spec!("resource_type[resource_name]")).to be_true
+      expect(collection.validate_lookup_spec!("resource_type[resource_name]")).to be_truthy
     end
 
     it "accepts a single-element :resource_type => 'resource_name' Hash" do
-      expect(collection.validate_lookup_spec!(:service => "apache2")).to be_true
+      expect(collection.validate_lookup_spec!(:service => "apache2")).to be_truthy
     end
 
     it "accepts a chef resource object" do
-      expect(collection.validate_lookup_spec!(zen_master)).to be_true
+      expect(collection.validate_lookup_spec!(zen_master)).to be_truthy
     end
 
     it "rejects a malformed query string" do

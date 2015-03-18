@@ -28,33 +28,33 @@ describe Chef::Util::Backup do
 
   before(:each) do
     @new_resource = double("new_resource")
-    @new_resource.should_receive(:path).at_least(:once).and_return(tempfile.path)
+    expect(@new_resource).to receive(:path).at_least(:once).and_return(tempfile.path)
     @backup = Chef::Util::Backup.new(@new_resource)
   end
 
   it "should store the resource passed to new as new_resource" do
-    @backup.new_resource.should eql(@new_resource)
+    expect(@backup.new_resource).to eql(@new_resource)
   end
 
   describe "for cases when we don't want to back anything up" do
 
     before(:each) do
-      @backup.should_not_receive(:do_backup)
+      expect(@backup).not_to receive(:do_backup)
     end
 
     it "should not attempt to backup a file if :backup is false" do
-      @new_resource.should_receive(:backup).at_least(:once).and_return(false)
+      expect(@new_resource).to receive(:backup).at_least(:once).and_return(false)
       @backup.backup!
     end
 
     it "should not attempt to backup a file if :backup == 0" do
-      @new_resource.should_receive(:backup).at_least(:once).and_return(0)
+      expect(@new_resource).to receive(:backup).at_least(:once).and_return(0)
       @backup.backup!
     end
 
     it "should not attempt to backup a file if it does not exist" do
-      @new_resource.should_receive(:backup).at_least(:once).and_return(1)
-      File.should_receive(:exist?).with(tempfile.path).at_least(:once).and_return(false)
+      expect(@new_resource).to receive(:backup).at_least(:once).and_return(1)
+      expect(File).to receive(:exist?).with(tempfile.path).at_least(:once).and_return(false)
       @backup.backup!
     end
 
@@ -62,43 +62,43 @@ describe Chef::Util::Backup do
 
   describe "for cases when we want to back things up" do
     before(:each) do
-      @backup.should_receive(:do_backup)
+      expect(@backup).to receive(:do_backup)
     end
 
     describe "when the number of backups is specified as 1" do
       before(:each) do
-        @new_resource.should_receive(:backup).at_least(:once).and_return(1)
+        expect(@new_resource).to receive(:backup).at_least(:once).and_return(1)
       end
 
       it "should not delete anything if this is the only backup" do
-        @backup.should_receive(:sorted_backup_files).and_return(['a'])
-        @backup.should_not_receive(:delete_backup)
+        expect(@backup).to receive(:sorted_backup_files).and_return(['a'])
+        expect(@backup).not_to receive(:delete_backup)
         @backup.backup!
       end
 
       it "should keep only 1 backup copy" do
-        @backup.should_receive(:sorted_backup_files).and_return(['a', 'b', 'c'])
-        @backup.should_receive(:delete_backup).with('b')
-        @backup.should_receive(:delete_backup).with('c')
+        expect(@backup).to receive(:sorted_backup_files).and_return(['a', 'b', 'c'])
+        expect(@backup).to receive(:delete_backup).with('b')
+        expect(@backup).to receive(:delete_backup).with('c')
         @backup.backup!
       end
     end
 
     describe "when the number of backups is specified as 2" do
       before(:each) do
-        @new_resource.should_receive(:backup).at_least(:once).and_return(2)
+        expect(@new_resource).to receive(:backup).at_least(:once).and_return(2)
       end
 
       it "should not delete anything if we only have one other backup" do
-        @backup.should_receive(:sorted_backup_files).and_return(['a', 'b'])
-        @backup.should_not_receive(:delete_backup)
+        expect(@backup).to receive(:sorted_backup_files).and_return(['a', 'b'])
+        expect(@backup).not_to receive(:delete_backup)
         @backup.backup!
       end
 
       it "should keep only 2 backup copies" do
-        @backup.should_receive(:sorted_backup_files).and_return(['a', 'b', 'c', 'd'])
-        @backup.should_receive(:delete_backup).with('c')
-        @backup.should_receive(:delete_backup).with('d')
+        expect(@backup).to receive(:sorted_backup_files).and_return(['a', 'b', 'c', 'd'])
+        expect(@backup).to receive(:delete_backup).with('c')
+        expect(@backup).to receive(:delete_backup).with('d')
         @backup.backup!
       end
     end
@@ -106,36 +106,36 @@ describe Chef::Util::Backup do
 
   describe "backup_filename" do
     it "should return a timestamped path" do
-      @backup.should_receive(:path).and_return('/a/b/c.txt')
-      @backup.send(:backup_filename).should =~ %r|^/a/b/c.txt.chef-\d{14}.\d{6}$|
+      expect(@backup).to receive(:path).and_return('/a/b/c.txt')
+      expect(@backup.send(:backup_filename)).to match(%r|^/a/b/c.txt.chef-\d{14}.\d{6}$|)
     end
     it "should strip the drive letter off for windows" do
-      @backup.should_receive(:path).and_return('c:\a\b\c.txt')
-      @backup.send(:backup_filename).should =~ %r|^\\a\\b\\c.txt.chef-\d{14}.\d{6}$|
+      expect(@backup).to receive(:path).and_return('c:\a\b\c.txt')
+      expect(@backup.send(:backup_filename)).to match(%r|^\\a\\b\\c.txt.chef-\d{14}.\d{6}$|)
     end
     it "should strip the drive letter off for windows (with forwardslashes)" do
-      @backup.should_receive(:path).and_return('c:/a/b/c.txt')
-      @backup.send(:backup_filename).should =~ %r|^/a/b/c.txt.chef-\d{14}.\d{6}$|
+      expect(@backup).to receive(:path).and_return('c:/a/b/c.txt')
+      expect(@backup.send(:backup_filename)).to match(%r|^/a/b/c.txt.chef-\d{14}.\d{6}$|)
     end
   end
 
   describe "backup_path" do
     it "uses the file's directory when Chef::Config[:file_backup_path] is nil" do
-      @backup.should_receive(:path).and_return('/a/b/c.txt')
+      expect(@backup).to receive(:path).and_return('/a/b/c.txt')
       Chef::Config[:file_backup_path] = nil
-      @backup.send(:backup_path).should =~ %r|^/a/b/c.txt.chef-\d{14}.\d{6}$|
+      expect(@backup.send(:backup_path)).to match(%r|^/a/b/c.txt.chef-\d{14}.\d{6}$|)
     end
 
     it "uses the configured Chef::Config[:file_backup_path]" do
-      @backup.should_receive(:path).and_return('/a/b/c.txt')
+      expect(@backup).to receive(:path).and_return('/a/b/c.txt')
       Chef::Config[:file_backup_path] = '/backupdir'
-      @backup.send(:backup_path).should =~ %r|^/backupdir[\\/]+a/b/c.txt.chef-\d{14}.\d{6}$|
+      expect(@backup.send(:backup_path)).to match(%r|^/backupdir[\\/]+a/b/c.txt.chef-\d{14}.\d{6}$|)
     end
 
     it "uses the configured Chef::Config[:file_backup_path] and strips the drive on windows" do
-      @backup.should_receive(:path).and_return('c:\\a\\b\\c.txt')
+      expect(@backup).to receive(:path).and_return('c:\\a\\b\\c.txt')
       Chef::Config[:file_backup_path] = 'c:\backupdir'
-      @backup.send(:backup_path).should =~ %r|^c:\\backupdir[\\/]+a\\b\\c.txt.chef-\d{14}.\d{6}$|
+      expect(@backup.send(:backup_path)).to match(%r|^c:\\backupdir[\\/]+a\\b\\c.txt.chef-\d{14}.\d{6}$|)
     end
   end
 

@@ -24,9 +24,11 @@ class Chef
         method_names.each do |name|
           m = instance_method(name)
           define_method(name) do |*args|
-            Chef::Log.warn "Method '#{name}' of '#{self.class}' is deprecated. It will be removed in Chef 12."
-            Chef::Log.warn "Please update your cookbooks accordingly. Accessed from:"
-            caller[0..3].each {|l| Chef::Log.warn l}
+            message = []
+            message << "Method '#{name}' of '#{self.class}' is deprecated. It will be removed in Chef 12."
+            message << "Please update your cookbooks accordingly. Accessed from:"
+            caller[0..3].each {|l| message << l}
+            Chef::Log.deprecation message
             super(*args)
           end
         end
@@ -35,4 +37,3 @@ class Chef
     end
   end
 end
-

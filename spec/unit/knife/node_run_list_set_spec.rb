@@ -24,30 +24,30 @@ describe Chef::Knife::NodeRunListSet do
     @knife = Chef::Knife::NodeRunListSet.new
     @knife.config = {}
     @knife.name_args = [ "adam", "role[monkey]" ]
-    @knife.stub(:output).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
     @node = Chef::Node.new()
-    @node.stub(:save).and_return(true)
-    Chef::Node.stub(:load).and_return(@node)
+    allow(@node).to receive(:save).and_return(true)
+    allow(Chef::Node).to receive(:load).and_return(@node)
   end
 
   describe "run" do
     it "should load the node" do
-      Chef::Node.should_receive(:load).with("adam")
+      expect(Chef::Node).to receive(:load).with("adam")
       @knife.run
     end
 
     it "should set the run list" do
       @knife.run
-      @node.run_list[0].should == 'role[monkey]'
+      expect(@node.run_list[0]).to eq('role[monkey]')
     end
 
     it "should save the node" do
-      @node.should_receive(:save)
+      expect(@node).to receive(:save)
       @knife.run
     end
 
     it "should print the run list" do
-      @knife.should_receive(:output).and_return(true)
+      expect(@knife).to receive(:output).and_return(true)
       @knife.run
     end
 
@@ -55,8 +55,8 @@ describe Chef::Knife::NodeRunListSet do
       it "should set the run list to all the entries" do
         @knife.name_args = [ "adam", "role[monkey],role[duck]" ]
         @knife.run
-        @node.run_list[0].should == "role[monkey]"
-        @node.run_list[1].should == "role[duck]"
+        expect(@node.run_list[0]).to eq("role[monkey]")
+        expect(@node.run_list[1]).to eq("role[duck]")
       end
     end
 
@@ -64,8 +64,8 @@ describe Chef::Knife::NodeRunListSet do
       it "should set the run list to all the entries" do
         @knife.name_args = [ "adam", "role[monkey], role[duck]" ]
         @knife.run
-        @node.run_list[0].should == "role[monkey]"
-        @node.run_list[1].should == "role[duck]"
+        expect(@node.run_list[0]).to eq("role[monkey]")
+        expect(@node.run_list[1]).to eq("role[duck]")
       end
     end
 
@@ -73,8 +73,8 @@ describe Chef::Knife::NodeRunListSet do
       it "should set the run list to all the entries" do
         @knife.name_args = [ "adam", "role[monkey]", "role[duck]" ]
         @knife.run
-        @node.run_list[0].should == "role[monkey]"
-        @node.run_list[1].should == "role[duck]"
+        expect(@node.run_list[0]).to eq("role[monkey]")
+        expect(@node.run_list[1]).to eq("role[duck]")
       end
     end
 
@@ -82,8 +82,8 @@ describe Chef::Knife::NodeRunListSet do
       it "should add to the run list all the entries" do
         @knife.name_args = [ "adam", "role[monkey]", "role[duck],recipe[bird::fly]" ]
         @knife.run
-        @node.run_list[0].should == "role[monkey]"
-        @node.run_list[1].should == "role[duck]"
+        expect(@node.run_list[0]).to eq("role[monkey]")
+        expect(@node.run_list[1]).to eq("role[duck]")
       end
     end
 
@@ -91,7 +91,7 @@ describe Chef::Knife::NodeRunListSet do
       it "should add to the run list one item" do
         @knife.name_args = [ "adam", "role[monkey]," ]
         @knife.run
-        @node.run_list[0].should == "role[monkey]"
+        expect(@node.run_list[0]).to eq("role[monkey]")
       end
     end
 
@@ -99,15 +99,15 @@ describe Chef::Knife::NodeRunListSet do
       it "should overwrite any existing run list items" do
         @node.run_list << "role[acorns]"
         @node.run_list << "role[zebras]"
-        @node.run_list[0].should == "role[acorns]"
-        @node.run_list[1].should == "role[zebras]"
-        @node.run_list.run_list_items.size.should == 2
+        expect(@node.run_list[0]).to eq("role[acorns]")
+        expect(@node.run_list[1]).to eq("role[zebras]")
+        expect(@node.run_list.run_list_items.size).to eq(2)
 
         @knife.name_args = [ "adam", "role[monkey]", "role[duck]" ]
         @knife.run
-        @node.run_list[0].should == "role[monkey]"
-        @node.run_list[1].should == "role[duck]"
-        @node.run_list.run_list_items.size.should == 2
+        expect(@node.run_list[0]).to eq("role[monkey]")
+        expect(@node.run_list[1]).to eq("role[duck]")
+        expect(@node.run_list.run_list_items.size).to eq(2)
       end
     end
 
@@ -117,13 +117,13 @@ describe Chef::Knife::NodeRunListSet do
         @stdout = StringIO.new
         @stderr = StringIO.new
 
-        @knife.ui.stub(:stdout).and_return(@stdout)
-        @knife.ui.stub(:stderr).and_return(@stderr)
+        allow(@knife.ui).to receive(:stdout).and_return(@stdout)
+        allow(@knife.ui).to receive(:stderr).and_return(@stderr)
       end
 
       it "should exit" do
         @knife.name_args = [ "adam" ]
-        lambda { @knife.run }.should raise_error SystemExit
+        expect { @knife.run }.to raise_error SystemExit
       end
 
       it "should show the user" do
@@ -131,8 +131,8 @@ describe Chef::Knife::NodeRunListSet do
 
         begin ; @knife.run ; rescue SystemExit ; end
 
-        @stdout.string.should eq "USAGE: knife node run_list set NODE ENTRIES (options)\n"
-        @stderr.string.should eq "FATAL: You must supply both a node name and a run list.\n"
+        expect(@stdout.string).to eq "USAGE: knife node run_list set NODE ENTRIES (options)\n"
+        expect(@stderr.string).to eq "FATAL: You must supply both a node name and a run list.\n"
       end
     end
 

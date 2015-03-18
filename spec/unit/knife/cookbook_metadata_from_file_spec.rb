@@ -27,10 +27,10 @@ describe Chef::Knife::CookbookMetadataFromFile do
     @tgt = File.expand_path(File.join(CHEF_SPEC_DATA, "metadata", "quick_start", "metadata.json"))
     @knife = Chef::Knife::CookbookMetadataFromFile.new
     @knife.name_args = [ @src ]
-    @knife.stub(:to_json_pretty).and_return(true)
+    allow(@knife).to receive(:to_json_pretty).and_return(true)
     @md = Chef::Cookbook::Metadata.new
-    Chef::Cookbook::Metadata.stub(:new).and_return(@md)
-    $stdout.stub(:write)
+    allow(Chef::Cookbook::Metadata).to receive(:new).and_return(@md)
+    allow($stdout).to receive(:write)
   end
 
   after do
@@ -41,23 +41,23 @@ describe Chef::Knife::CookbookMetadataFromFile do
 
   describe "run" do
     it "should determine cookbook name from path" do
-      @md.should_receive(:name).with()
-      @md.should_receive(:name).with("quick_start")
+      expect(@md).to receive(:name).with(no_args)
+      expect(@md).to receive(:name).with("quick_start")
       @knife.run
     end
 
     it "should load the metadata source" do
-      @md.should_receive(:from_file).with(@src)
+      expect(@md).to receive(:from_file).with(@src)
       @knife.run
     end
 
     it "should write out the metadata to the correct location" do
-      File.should_receive(:open).with(@tgt, "w")
+      expect(File).to receive(:open).with(@tgt, "w")
       @knife.run
     end
 
     it "should generate json from the metadata" do
-      Chef::JSONCompat.should_receive(:to_json_pretty).with(@md)
+      expect(Chef::JSONCompat).to receive(:to_json_pretty).with(@md)
       @knife.run
     end
 

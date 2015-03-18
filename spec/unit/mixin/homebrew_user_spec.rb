@@ -41,7 +41,7 @@ describe Chef::Mixin::HomebrewUser do
 
     it 'returns the homebrew user without looking at the file when name is provided' do
       expect(File).to receive(:exist?).exactly(0).times
-      Etc.stub_chain(:getpwnam, :uid).and_return(uid)
+      allow(Etc).to receive_message_chain(:getpwnam, :uid).and_return(uid)
       expect(homebrew_user.find_homebrew_uid(user)).to eq(uid)
     end
 
@@ -71,7 +71,7 @@ describe Chef::Mixin::HomebrewUser do
 
       it 'returns the owner of the brew executable when it is not at a default location' do
         expect(File).to receive(:exist?).with(default_brew_path).and_return(false)
-        homebrew_user.stub_chain(:shell_out, :stdout, :strip).and_return("/foo")
+        allow(homebrew_user).to receive_message_chain(:shell_out, :stdout, :strip).and_return("/foo")
         expect(File).to receive(:stat).with("/foo").and_return(stat_double)
         expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
       end
@@ -83,7 +83,7 @@ describe Chef::Mixin::HomebrewUser do
 
     it 'raises an error if no executable is found' do
       expect(File).to receive(:exist?).with(default_brew_path).and_return(false)
-      homebrew_user.stub_chain(:shell_out, :stdout, :strip).and_return("")
+      allow(homebrew_user).to receive_message_chain(:shell_out, :stdout, :strip).and_return("")
       expect { homebrew_user.find_homebrew_uid(user) }.to raise_error(Chef::Exceptions::CannotDetermineHomebrewOwner)
     end
 

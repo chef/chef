@@ -27,53 +27,53 @@ describe Chef::Knife::RoleBulkDelete do
     }
     @knife.name_args = ["."]
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
-    @knife.ui.stub(:confirm).and_return(true)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:confirm).and_return(true)
     @roles = Hash.new
     %w{dev staging production}.each do |role_name|
       role = Chef::Role.new()
       role.name(role_name)
-      role.stub(:destroy).and_return(true)
+      allow(role).to receive(:destroy).and_return(true)
       @roles[role_name] = role
     end
-    Chef::Role.stub(:list).and_return(@roles)
+    allow(Chef::Role).to receive(:list).and_return(@roles)
   end
 
   describe "run" do
 
     it "should get the list of the roles" do
-      Chef::Role.should_receive(:list).and_return(@roles)
+      expect(Chef::Role).to receive(:list).and_return(@roles)
       @knife.run
     end
 
     it "should print the roles you are about to delete" do
       @knife.run
-      @stdout.string.should match(/#{@knife.ui.list(@roles.keys.sort, :columns_down)}/)
+      expect(@stdout.string).to match(/#{@knife.ui.list(@roles.keys.sort, :columns_down)}/)
     end
 
     it "should confirm you really want to delete them" do
-      @knife.ui.should_receive(:confirm)
+      expect(@knife.ui).to receive(:confirm)
       @knife.run
     end
 
     it "should delete each role" do
       @roles.each_value do |r|
-        r.should_receive(:destroy)
+        expect(r).to receive(:destroy)
       end
       @knife.run
     end
 
     it "should only delete roles that match the regex" do
       @knife.name_args = ["dev"]
-      @roles["dev"].should_receive(:destroy)
-      @roles["staging"].should_not_receive(:destroy)
-      @roles["production"].should_not_receive(:destroy)
+      expect(@roles["dev"]).to receive(:destroy)
+      expect(@roles["staging"]).not_to receive(:destroy)
+      expect(@roles["production"]).not_to receive(:destroy)
       @knife.run
     end
 
     it "should exit if the regex is not provided" do
       @knife.name_args = []
-      lambda { @knife.run }.should raise_error(SystemExit)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
   end

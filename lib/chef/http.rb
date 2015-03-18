@@ -25,7 +25,6 @@ require 'tempfile'
 require 'net/https'
 require 'uri'
 require 'chef/http/basic_client'
-require 'chef/monkey_patches/string'
 require 'chef/monkey_patches/net_http'
 require 'chef/config'
 require 'chef/platform/query_helpers'
@@ -204,7 +203,7 @@ class Chef
 
     def create_url(path)
       return path if path.is_a?(URI)
-      if path =~ /^(http|https):\/\//
+      if path =~ /^(http|https):\/\//i
         URI.parse(path)
       elsif path.nil? or path.empty?
         URI.parse(@url)

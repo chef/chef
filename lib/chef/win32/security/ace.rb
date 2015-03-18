@@ -106,8 +106,6 @@ class Chef
           struct[:AceType]
         end
 
-        private
-
         def self.create_ace_with_mask_and_sid(type, flags, mask, sid)
           size_needed = size_with_sid(sid)
           pointer = FFI::MemoryPointer.new size_needed

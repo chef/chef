@@ -21,7 +21,7 @@ describe Chef::ResourceCollection::StepableIterator do
   CRSI = Chef::ResourceCollection::StepableIterator
 
   it "has an empty array for its collection by default" do
-    CRSI.new.collection.should == []
+    expect(CRSI.new.collection).to eq([])
   end
 
   describe "doing basic iteration" do
@@ -31,8 +31,8 @@ describe Chef::ResourceCollection::StepableIterator do
     end
 
     it "re-initializes the instance with a collection" do
-      @iterator.collection.should equal(@simple_collection)
-      @iterator.size.should == 4
+      expect(@iterator.collection).to equal(@simple_collection)
+      expect(@iterator.size).to eq(4)
     end
 
     it "iterates over the collection" do
@@ -40,7 +40,7 @@ describe Chef::ResourceCollection::StepableIterator do
       @iterator.each do |int|
         sum += int
       end
-      sum.should == 10
+      expect(sum).to eq(10)
     end
 
     it "iterates over the collection with each_index" do
@@ -48,8 +48,8 @@ describe Chef::ResourceCollection::StepableIterator do
       @iterator.each_index do |idx|
         collected_by_index << @simple_collection[idx]
       end
-      collected_by_index.should == @simple_collection
-      collected_by_index.should_not equal(@simple_collection)
+      expect(collected_by_index).to eq(@simple_collection)
+      expect(collected_by_index).not_to equal(@simple_collection)
     end
 
     it "iterates over the collection with index and element" do
@@ -57,7 +57,7 @@ describe Chef::ResourceCollection::StepableIterator do
       @iterator.each_with_index do |element, index|
         collected[index] = element
       end
-      collected.should == {0=>1, 1=>2, 2=>3, 3=>4}
+      expect(collected).to eq({0=>1, 1=>2, 2=>3, 3=>4})
     end
 
   end
@@ -76,49 +76,49 @@ describe Chef::ResourceCollection::StepableIterator do
     end
 
     it "allows the iteration to be paused" do
-      @snitch_var.should == 23
+      expect(@snitch_var).to eq(23)
     end
 
     it "allows the iteration to be resumed" do
-      @snitch_var.should == 23
+      expect(@snitch_var).to eq(23)
       @iterator.resume
-      @snitch_var.should == 42
+      expect(@snitch_var).to eq(42)
     end
 
     it "allows iteration to be rewound" do
       @iterator.skip_back(2)
       @iterator.resume
-      @snitch_var.should == 23
+      expect(@snitch_var).to eq(23)
       @iterator.resume
-      @snitch_var.should == 42
+      expect(@snitch_var).to eq(42)
     end
 
     it "allows iteration to be fast forwarded" do
       @iterator.skip_forward
       @iterator.resume
-      @snitch_var.should == 23
+      expect(@snitch_var).to eq(23)
     end
 
     it "allows iteration to be rewound" do
       @snitch_var = nil
       @iterator.rewind
-      @iterator.position.should == 0
+      expect(@iterator.position).to eq(0)
       @iterator.resume
-      @snitch_var.should == 23
+      expect(@snitch_var).to eq(23)
     end
 
     it "allows iteration to be stepped" do
       @snitch_var = nil
       @iterator.rewind
       @iterator.step
-      @iterator.position.should == 1
-      @snitch_var.should == 23
+      expect(@iterator.position).to eq(1)
+      expect(@snitch_var).to eq(23)
     end
 
     it "doesn't step if there are no more steps" do
-      @iterator.step.should == 3
-      lambda {@iterator.step}.should_not raise_error
-      @iterator.step.should be_nil
+      expect(@iterator.step).to eq(3)
+      expect {@iterator.step}.not_to raise_error
+      expect(@iterator.step).to be_nil
     end
 
     it "allows the iteration to start by being stepped" do
@@ -126,17 +126,17 @@ describe Chef::ResourceCollection::StepableIterator do
       @iterator = CRSI.for_collection(@collection)
       @iterator.iterate_on(:element) { |proc| proc.call }
       @iterator.step
-      @iterator.position.should == 1
-      @snitch_var.should == 23
+      expect(@iterator.position).to eq(1)
+      expect(@snitch_var).to eq(23)
     end
 
     it "should work correctly when elements are added to the collection during iteration" do
       @collection.insert(2, lambda { @snitch_var = 815})
       @collection.insert(3, lambda { @iterator.pause })
       @iterator.resume
-      @snitch_var.should == 815
+      expect(@snitch_var).to eq(815)
       @iterator.resume
-      @snitch_var.should == 42
+      expect(@snitch_var).to eq(42)
     end
 
   end

@@ -21,6 +21,7 @@
 # limitations under the License.
 
 require 'chef/mixin/shell_out'
+require 'chef/mixin/which'
 
 class Chef
   class Util
@@ -32,6 +33,7 @@ class Chef
     module Selinux
 
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::Which
 
       # We want to initialize below variables once during a
       # chef-client run therefore they are class variables.
@@ -67,15 +69,6 @@ class Chef
         @@selinuxenabled_path
       end
 
-      def which(cmd)
-        paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
-        paths.each do |path|
-          filename = File.join(path, cmd)
-          return filename if File.executable?(filename)
-        end
-        false
-      end
-
       def check_selinux_enabled?
         if selinuxenabled_path
           cmd = shell_out!(selinuxenabled_path, :returns => [0,1])
@@ -97,4 +90,3 @@ class Chef
     end
   end
 end
-

@@ -43,12 +43,7 @@ def static_provider_resolution(opts={})
       node
     }
     let(:events) { Chef::EventDispatch::Dispatcher.new }
-    let(:provider_resolver) { Chef::ProviderResolver.new(node) }
-    let(:run_context) {
-      run_context = Chef::RunContext.new(node, {}, events)
-      run_context.provider_resolver = provider_resolver
-      run_context
-    }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
     let(:resource) { resource_class.new("foo", run_context) }
 
     it "should return a #{resource_class}" do

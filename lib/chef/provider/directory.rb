@@ -61,7 +61,7 @@ class Chef
               is_parent_writable = lambda do |base_dir|
                 base_dir = ::File.dirname(base_dir)
                 if ::File.exists?(base_dir)
-                  ::File.writable?(base_dir)
+                  Chef::FileAccessControl.writable?(base_dir)
                 else
                   is_parent_writable.call(base_dir)
                 end
@@ -71,7 +71,7 @@ class Chef
               # in why run mode & parent directory does not exist no permissions check is required
               # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
               if !whyrun_mode? || ::File.exists?(parent_directory)
-                ::File.writable?(parent_directory)
+                Chef::FileAccessControl.writable?(parent_directory)
               else
                 true
               end
@@ -84,7 +84,7 @@ class Chef
         requirements.assert(:delete) do |a|
           a.assertion do
             if ::File.exists?(@new_resource.path)
-              ::File.directory?(@new_resource.path) && ::File.writable?(@new_resource.path)
+              ::File.directory?(@new_resource.path) && Chef::FileAccessControl.writable?(@new_resource.path)
             else
               true
             end

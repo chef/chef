@@ -34,13 +34,12 @@ class Chef
           @current_resource.version(nil)
 
           Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
-          status = popen4("pacman -Qi #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^Version(\s?)*: (.+)$/
-                Chef::Log.debug("#{@new_resource} current version is #{$2}")
-                @current_resource.version($2)
-              end
+          status = shell_out("pacman -Qi #{@new_resource.package_name}")
+          status.stdout.each_line do |line|
+            case line
+            when /^Version(\s?)*: (.+)$/
+              Chef::Log.debug("#{@new_resource} current version is #{$2}")
+              @current_resource.version($2)
             end
           end
 
@@ -63,14 +62,13 @@ class Chef
 
           package_repos = repos.map {|r| Regexp.escape(r) }.join('|')
 
-          status = popen4("pacman -Sl") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-                when /^(#{package_repos}) #{Regexp.escape(@new_resource.package_name)} (.+)$/
-                  # $2 contains a string like "4.4.0-1" or "3.10-4 [installed]"
-                  # simply split by space and use first token
-                  @candidate_version = $2.split(" ").first
-              end
+          status = shell_out("pacman -Sl")
+          status.stdout.each_line do |line|
+            case line
+              when /^(#{package_repos}) #{Regexp.escape(@new_resource.package_name)} (.+)$/
+                # $2 contains a string like "4.4.0-1" or "3.10-4 [installed]"
+                # simply split by space and use first token
+                @candidate_version = $2.split(" ").first
             end
           end
 

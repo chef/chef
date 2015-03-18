@@ -26,8 +26,8 @@ describe Chef::Knife::NodeBulkDelete do
     @knife = Chef::Knife::NodeBulkDelete.new
     @knife.name_args = ["."]
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
-    @knife.ui.stub(:confirm).and_return(true)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:confirm).and_return(true)
     @nodes = Hash.new
     %w{adam brent jacob}.each do |node_name|
       @nodes[node_name] = "http://localhost:4000/nodes/#{node_name}"
@@ -40,11 +40,11 @@ describe Chef::Knife::NodeBulkDelete do
         inflatedish[name] = Chef::Node.new.tap {|n| n.name(name)}
         inflatedish
       end
-      Chef::Node.should_receive(:list).and_return(@nodes)
+      expect(Chef::Node).to receive(:list).and_return(@nodes)
       # I hate not having == defined for anything :(
       actual = @knife.all_nodes
-      actual.keys.should =~ expected.keys
-      actual.values.map {|n| n.name }.should =~ %w[adam brent jacob]
+      expect(actual.keys).to match_array(expected.keys)
+      expect(actual.values.map {|n| n.name }).to match_array(%w[adam brent jacob])
     end
   end
 
@@ -53,41 +53,41 @@ describe Chef::Knife::NodeBulkDelete do
       @inflatedish_list = @nodes.keys.inject({}) do |nodes_by_name, name|
         node = Chef::Node.new()
         node.name(name)
-        node.stub(:destroy).and_return(true)
+        allow(node).to receive(:destroy).and_return(true)
         nodes_by_name[name] = node
         nodes_by_name
       end
-      @knife.stub(:all_nodes).and_return(@inflatedish_list)
+      allow(@knife).to receive(:all_nodes).and_return(@inflatedish_list)
     end
 
     it "should print the nodes you are about to delete" do
       @knife.run
-      @stdout.string.should match(/#{@knife.ui.list(@nodes.keys.sort, :columns_down)}/)
+      expect(@stdout.string).to match(/#{@knife.ui.list(@nodes.keys.sort, :columns_down)}/)
     end
 
     it "should confirm you really want to delete them" do
-      @knife.ui.should_receive(:confirm)
+      expect(@knife.ui).to receive(:confirm)
       @knife.run
     end
 
     it "should delete each node" do
       @inflatedish_list.each_value do |n|
-        n.should_receive(:destroy)
+        expect(n).to receive(:destroy)
       end
       @knife.run
     end
 
     it "should only delete nodes that match the regex" do
       @knife.name_args = ['adam']
-      @inflatedish_list['adam'].should_receive(:destroy)
-      @inflatedish_list['brent'].should_not_receive(:destroy)
-      @inflatedish_list['jacob'].should_not_receive(:destroy)
+      expect(@inflatedish_list['adam']).to receive(:destroy)
+      expect(@inflatedish_list['brent']).not_to receive(:destroy)
+      expect(@inflatedish_list['jacob']).not_to receive(:destroy)
       @knife.run
     end
 
     it "should exit if the regex is not provided" do
       @knife.name_args = []
-      lambda { @knife.run }.should raise_error(SystemExit)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
   end

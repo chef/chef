@@ -27,8 +27,12 @@ class Chef
 
         provides :service, platform_family: "debian"
 
+        def self.provides?(node, resource)
+          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)
+        end
+
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)
+          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
         end
 
         def load_current_resource

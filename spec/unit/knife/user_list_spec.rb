@@ -25,8 +25,8 @@ describe Chef::Knife::UserList do
   end
 
   it 'lists the users' do
-    Chef::User.should_receive(:list)
-    @knife.should_receive(:format_list_for_display)
+    expect(Chef::User).to receive(:list)
+    expect(@knife).to receive(:format_list_for_display)
     @knife.run
   end
 end

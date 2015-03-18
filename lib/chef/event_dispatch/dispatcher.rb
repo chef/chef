@@ -25,11 +25,9 @@ class Chef
 
       # Define a method that will be forwarded to all
       def self.def_forwarding_method(method_name)
-        class_eval(<<-END_OF_METHOD, __FILE__, __LINE__)
-          def #{method_name}(*args)
-            @subscribers.each {|s| s.#{method_name}(*args)}
-          end
-        END_OF_METHOD
+        define_method(method_name) do |*args|
+          @subscribers.each { |s| s.send(method_name, *args) }
+        end
       end
 
       (Base.instance_methods - Object.instance_methods).each do |method_name|

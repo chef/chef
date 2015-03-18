@@ -90,11 +90,13 @@ class Chef
         def to_s
           "[#{self.collect { |ace| ace.to_s }.join(", ")}]"
         end
-        private
 
         def self.align_dword(size)
           (size + 4 - 1) & 0xfffffffc
         end
+
+        private_class_method :align_dword
+
       end
     end
   end

@@ -99,13 +99,15 @@ describe Chef::Runner do
   end
 
   context "when we fall through to old Chef::Platform resolution" do
+    let(:provider_resolver) { Chef::ProviderResolver.new(node, first_resource, nil) }
     before do
       # set up old Chef::Platform resolution instead of provider_resolver
       Chef::Platform.set(
         :resource => :cat,
         :provider => Chef::Provider::SnakeOil
       )
-      allow(run_context.provider_resolver).to receive(:maybe_dynamic_provider_resolution).with(first_resource, anything()).and_return(nil)
+      allow(Chef::ProviderResolver).to receive(:new).and_return(provider_resolver)
+      allow(provider_resolver).to receive(:maybe_dynamic_provider_resolution).with(first_resource, anything()).and_return(nil)
     end
 
     it "should use the platform provider if it has one" do

@@ -28,12 +28,12 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
   # Platform specific validation routines.
   def service_should_be_started(file_name)
-    # The existance of this file indicates that the service was started.
-    expect(File.exists?("/tmp/#{file_name}")).to be_true
+    # The existence of this file indicates that the service was started.
+    expect(File.exists?("/tmp/#{file_name}")).to be_truthy
   end
 
   def service_should_be_stopped(file_name)
-    expect(File.exists?("/tmp/#{file_name}")).to be_false
+    expect(File.exists?("/tmp/#{file_name}")).to be_falsey
   end
 
   def valide_symlinks(expected_output, run_level = nil, status = nil, priority = nil)

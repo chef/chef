@@ -18,6 +18,7 @@
 
 # XXX: mixing shellout into a mixin into classes has to be code smell
 require 'chef/mixin/shell_out'
+require 'chef/mixin/which'
 
 class Chef
   class Platform
@@ -25,12 +26,21 @@ class Chef
       class << self
 
         include Chef::Mixin::ShellOut
+        include Chef::Mixin::Which
 
         # This helper is mostly used to sort out the mess of different
         # linux mechanisms that can be used to start services.  It does
         # not necessarily need to linux-specific, but currently all our
         # other service providers are narrowly platform-specific with no
         # alternatives.
+        #
+        # NOTE: if a system has (for example) chkconfig installed then we
+        # should report that chkconfig is installed.  The fact that a system
+        # may also have systemd installed does not mean that we do not
+        # report that systemd is also installed.  This module is purely for
+        # discovery of all the alternatives, handling the priority of the
+        # different services is NOT a design concern of this module.
+        #
         def service_resource_providers
           service_resource_providers = []
 
@@ -55,8 +65,7 @@ class Chef
             service_resource_providers << :redhat
           end
 
-          if ::File.exist?("/bin/systemctl")
-            # FIXME: look for systemd as init provider
+          if systemd_sanity_check?
             service_resource_providers << :systemd
           end
 
@@ -86,7 +95,7 @@ class Chef
             configs << :usr_local_etc_rcd
           end
 
-          if ::File.exist?("/bin/systemctl") && platform_has_systemd_unit?(service_name)
+          if systemd_sanity_check? && platform_has_systemd_unit?(service_name)
             configs << :systemd
           end
 
@@ -95,17 +104,37 @@ class Chef
 
         private
 
-        def extract_systemd_services(output)
+        def systemctl_path
+          if @systemctl_path.nil?
+            @systemctl_path = which("systemctl")
+          end
+          @systemctl_path
+        end
+
+        def systemd_sanity_check?
+          systemctl_path && File.exist?("/proc/1/comm") && File.open("/proc/1/comm").gets.chomp == "systemd"
+        end
+
+        def extract_systemd_services(command)
+          output = shell_out!(command).stdout
           # first line finds e.g. "sshd.service"
-          services = output.lines.split.map { |l| l.split[0] }
+          services = []
+          output.each_line do |line|
+            fields = line.split
+            services << fields[0] if fields[1] == "loaded" || fields[1] == "not-found"
+          end
           # this splits off the suffix after the last dot to return "sshd"
-          services += services.map { |s| s.sub(/(.*)\..*/, '\1') }
+          services += services.select {|s| s.match(/\.service$/) }.map { |s| s.sub(/(.*)\.service$/, '\1') }
+        rescue Mixlib::ShellOut::ShellCommandFailed
+          false
         end
 
         def platform_has_systemd_unit?(service_name)
-          services = extract_systemd_services(shell_out!("systemctl --all").stdout) +
-            extract_systemd_services(shell_out!("systemctl --list-unit-files").stdout)
+          services = extract_systemd_services("#{systemctl_path} --all") +
+            extract_systemd_services("#{systemctl_path} list-unit-files")
           services.include?(service_name)
+        rescue Mixlib::ShellOut::ShellCommandFailed
+          false
         end
       end
     end

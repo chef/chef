@@ -33,9 +33,10 @@ class Chef
       attr_reader :destination
       attr_reader :name
 
-      def initialize(name, destination)
-        @name = name
-        @destination = destination
+      def initialize(name, destination, http_api: nil)
+        @name                         = name
+        @destination                  = destination
+        @http_api                     = http_api
         @server_generated_private_key = nil
       end
 
@@ -120,11 +121,10 @@ class Chef
         post_data
       end
 
-
       def http_api
-        @http_api_as_validator ||= Chef::REST.new(Chef::Config[:chef_server_url],
-                                                  Chef::Config[:validation_client_name],
-                                                  Chef::Config[:validation_key])
+        @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url],
+                                     Chef::Config[:validation_client_name],
+                                     Chef::Config[:validation_key])
       end
 
       # Whether or not to generate keys locally and post the public key to the
@@ -153,11 +153,11 @@ class Chef
       def file_flags
         base_flags = File::CREAT|File::TRUNC|File::RDWR
         # Windows doesn't have symlinks, so it doesn't have NOFOLLOW
-        base_flags |= File::NOFOLLOW if defined?(File::NOFOLLOW)
+        if defined?(File::NOFOLLOW) && !Chef::Config[:follow_client_key_symlink]
+          base_flags |= File::NOFOLLOW
+        end
         base_flags
       end
     end
   end
 end
-
-

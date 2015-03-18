@@ -3,6 +3,7 @@ require 'set'
 require 'chef/exceptions'
 require 'chef/knife/cookbook_metadata'
 require 'chef/digester'
+require 'chef/cookbook_manifest'
 require 'chef/cookbook_version'
 require 'chef/cookbook/syntax_check'
 require 'chef/cookbook/file_system_file_vendor'
@@ -40,6 +41,7 @@ class Chef
       @cookbooks = Array(cookbooks)
       @rest = opts[:rest] || Chef::REST.new(Chef::Config[:chef_server_url])
       @concurrency = opts[:concurrency] || 10
+      @policy_mode = opts[:policy_mode] || false
     end
 
     def upload_cookbooks
@@ -92,9 +94,12 @@ class Chef
 
       # files are uploaded, so save the manifest
       cookbooks.each do |cb|
-        save_url = opts[:force] ? cb.force_save_url : cb.save_url
+
+        manifest = Chef::CookbookManifest.new(cb, policy_mode: policy_mode?)
+
+        save_url = opts[:force] ? manifest.force_save_url : manifest.save_url
         begin
-          rest.put(save_url, cb)
+          rest.put(save_url, manifest)
         rescue Net::HTTPServerException => e
           case e.response.code
           when "409"
@@ -141,6 +146,10 @@ class Chef
         Chef::Log.info("Syntax OK")
         true
       end
+    end
+
+    def policy_mode?
+      @policy_mode
     end
 
   end

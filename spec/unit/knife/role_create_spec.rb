@@ -26,45 +26,45 @@ describe Chef::Knife::RoleCreate do
       :description => nil
     }
     @knife.name_args = [ "adam" ]
-    @knife.stub(:output).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
     @role = Chef::Role.new()
-    @role.stub(:save)
-    Chef::Role.stub(:new).and_return(@role)
-    @knife.stub(:edit_data).and_return(@role)
+    allow(@role).to receive(:save)
+    allow(Chef::Role).to receive(:new).and_return(@role)
+    allow(@knife).to receive(:edit_data).and_return(@role)
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
 
   describe "run" do
     it "should create a new role" do
-      Chef::Role.should_receive(:new).and_return(@role)
+      expect(Chef::Role).to receive(:new).and_return(@role)
       @knife.run
     end
 
     it "should set the role name" do
-      @role.should_receive(:name).with("adam")
+      expect(@role).to receive(:name).with("adam")
       @knife.run
     end
 
     it "should not print the role" do
-      @knife.should_not_receive(:output)
+      expect(@knife).not_to receive(:output)
       @knife.run
     end
 
     it "should allow you to edit the data" do
-      @knife.should_receive(:edit_data).with(@role)
+      expect(@knife).to receive(:edit_data).with(@role)
       @knife.run
     end
 
     it "should save the role" do
-      @role.should_receive(:save)
+      expect(@role).to receive(:save)
       @knife.run
     end
 
     describe "with -d or --description" do
       it "should set the description" do
         @knife.config[:description] = "All is bob"
-        @role.should_receive(:description).with("All is bob")
+        expect(@role).to receive(:description).with("All is bob")
         @knife.run
       end
     end
@@ -72,7 +72,7 @@ describe Chef::Knife::RoleCreate do
     describe "with -p or --print-after" do
       it "should pretty print the node, formatted for display" do
         @knife.config[:print_after] = true
-        @knife.should_receive(:output).with(@role)
+        expect(@knife).to receive(:output).with(@role)
         @knife.run
       end
     end

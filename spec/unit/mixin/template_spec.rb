@@ -30,7 +30,7 @@ describe Chef::Mixin::Template, "render_template" do
   it "should render the template evaluated in the given context" do
     @context[:foo] = "bar"
     output = @context.render_template_from_string("<%= @foo %>")
-    output.should == "bar"
+    expect(output).to eq("bar")
   end
 
   template_contents = [ "Fancy\r\nTemplate\r\n\r\n",
@@ -39,14 +39,14 @@ describe Chef::Mixin::Template, "render_template" do
 
   describe "when running on windows" do
     before do
-      Chef::Platform.stub(:windows?).and_return(true)
+      allow(Chef::Platform).to receive(:windows?).and_return(true)
     end
 
     it "should render the templates with windows line endings" do
       template_contents.each do |template_content|
         output = @context.render_template_from_string(template_content)
         output.each_line do |line|
-          line.should end_with("\r\n")
+          expect(line).to end_with("\r\n")
         end
       end
     end
@@ -54,14 +54,14 @@ describe Chef::Mixin::Template, "render_template" do
 
   describe "when running on unix" do
     before do
-      Chef::Platform.stub(:windows?).and_return(false)
+      allow(Chef::Platform).to receive(:windows?).and_return(false)
     end
 
     it "should render the templates with unix line endings" do
       template_contents.each do |template_content|
         output = @context.render_template_from_string(template_content)
         output.each_line do |line|
-          line.should end_with("\n")
+          expect(line).to end_with("\n")
         end
       end
     end
@@ -70,7 +70,7 @@ describe Chef::Mixin::Template, "render_template" do
   it "should provide a node method to access @node" do
     @context[:node] = "tehShizzle"
     output = @context.render_template_from_string("<%= @node %>")
-    output.should == "tehShizzle"
+    expect(output).to eq("tehShizzle")
   end
 
   describe "with a template resource" do
@@ -100,7 +100,7 @@ describe Chef::Mixin::Template, "render_template" do
 
     it "should provide a render method" do
       output = @template_context.render_template_from_string("before {<%= render('test.erb').strip -%>} after")
-      output.should == "before {We could be diving for pearls!} after"
+      expect(output).to eq("before {We could be diving for pearls!} after")
     end
 
     it "should render local files" do
@@ -110,7 +110,7 @@ describe Chef::Mixin::Template, "render_template" do
         tf.rewind
 
         output = @template_context.render_template_from_string("before {<%= render '#{tf.path}', :local => true %>} after")
-        output.should == "before {test} after"
+        expect(output).to eq("before {test} after")
       ensure
         tf.close
       end
@@ -120,7 +120,7 @@ describe Chef::Mixin::Template, "render_template" do
       @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, 'apache2', @node)
 
       output = @template_context.render_template_from_string("before {<%= render('test.erb', :cookbook => 'openldap').strip %>} after")
-      output.should == "before {We could be diving for pearls!} after"
+      expect(output).to eq("before {We could be diving for pearls!} after")
     end
 
     it "should render using the source argument if provided" do
@@ -130,7 +130,7 @@ describe Chef::Mixin::Template, "render_template" do
         tf.rewind
 
         output = @template_context.render_template_from_string("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after")
-        output.should == "before {test} after"
+        expect(output).to eq("before {test} after")
       ensure
         tf.close
       end
@@ -140,7 +140,7 @@ describe Chef::Mixin::Template, "render_template" do
       @node.normal[:slappiness] = "happiness"
 
       output = @template_context.render_template_from_string("before {<%= render 'openldap_stuff.conf.erb' %>} after")
-      output.should == "before {slappiness is happiness} after"
+      expect(output).to eq("before {slappiness is happiness} after")
     end
 
     it "should pass the original variables to partials" do
@@ -152,29 +152,29 @@ describe Chef::Mixin::Template, "render_template" do
 
     it "should pass variables to partials" do
       output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'whatever' } %>} after")
-      output.should == "before {super secret is whatever} after"
+      expect(output).to eq("before {super secret is whatever} after")
     end
 
     it "should pass variables to partials even if they are named the same" do
       @template_context[:secret] = 'one'
 
       output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'two' } %>} after <%= @secret %>")
-      output.should == "before {super secret is two} after one"
+      expect(output).to eq("before {super secret is two} after one")
     end
 
     it "should pass nil for missing variables in partials" do
       output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {} %>} after")
-      output.should == "before {super secret is } after"
+      expect(output).to eq("before {super secret is } after")
 
       output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after")
-    output.should == "before {super secret is } after"
+    expect(output).to eq("before {super secret is } after")
     end
 
     it "should render nested partials" do
       path = File.expand_path(File.join(CHEF_SPEC_DATA, "partial_one.erb"))
 
       output = @template_context.render_template_from_string("before {<%= render('#{path}', :local => true).strip %>} after")
-      output.should == "before {partial one We could be diving for pearls! calling home} after"
+      expect(output).to eq("before {partial one We could be diving for pearls! calling home} after")
     end
 
     describe "when customizing the template context" do
@@ -187,7 +187,7 @@ describe Chef::Mixin::Template, "render_template" do
         end
         @template_context._extend_modules([mod])
         output = @template_context.render_template_from_string("<%=hello%>")
-        output.should == "ohai"
+        expect(output).to eq("ohai")
       end
 
       it "emits a warning when overriding 'core' methods" do
@@ -202,7 +202,7 @@ describe Chef::Mixin::Template, "render_template" do
           end
         end
         ['node', 'render', 'render_template', 'render_template_from_string'].each do |method_name|
-          Chef::Log.should_receive(:warn).with(/^Core template method `#{method_name}' overridden by extension module/)
+          expect(Chef::Log).to receive(:warn).with(/^Core template method `#{method_name}' overridden by extension module/)
         end
         @template_context._extend_modules([mod])
       end
@@ -216,11 +216,11 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should catch and re-raise the exception as a TemplateError" do
-      lambda { do_raise }.should raise_error(Chef::Mixin::Template::TemplateError)
+      expect { do_raise }.to raise_error(Chef::Mixin::Template::TemplateError)
     end
 
     it "should raise an error if an attempt is made to access node but it is nil" do
-      lambda {@context.render_template_from_string("<%= node %>") {|r| r}}.should raise_error(Chef::Mixin::Template::TemplateError)
+      expect {@context.render_template_from_string("<%= node %>") {|r| r}}.to raise_error(Chef::Mixin::Template::TemplateError)
     end
 
     describe "the raised TemplateError" do
@@ -233,35 +233,35 @@ describe Chef::Mixin::Template, "render_template" do
       end
 
       it "should have the original exception" do
-        @exception.original_exception.should be
-        @exception.original_exception.message.should =~ /undefined local variable or method `this_is_not_defined'/
+        expect(@exception.original_exception).to be
+        expect(@exception.original_exception.message).to match(/undefined local variable or method `this_is_not_defined'/)
       end
 
       it "should determine the line number of the exception" do
-        @exception.line_number.should == 4
+        expect(@exception.line_number).to eq(4)
       end
 
       it "should provide a source listing of the template around the exception" do
-        @exception.source_listing.should == "  2: bar\n  3: baz\n  4: <%= this_is_not_defined %>\n  5: quin\n  6: qunx"
+        expect(@exception.source_listing).to eq("  2: bar\n  3: baz\n  4: <%= this_is_not_defined %>\n  5: quin\n  6: qunx")
       end
 
       it "should provide the evaluation context of the template" do
-        @exception.context.should == @context
+        expect(@exception.context).to eq(@context)
       end
 
       it "should defer the message to the original exception" do
-        @exception.message.should =~ /undefined local variable or method `this_is_not_defined'/
+        expect(@exception.message).to match(/undefined local variable or method `this_is_not_defined'/)
       end
 
       it "should provide a nice source location" do
-        @exception.source_location.should == "on line #4"
+        expect(@exception.source_location).to eq("on line #4")
       end
 
       it "should create a pretty output for the terminal" do
-        @exception.to_s.should =~ /Chef::Mixin::Template::TemplateError/
-        @exception.to_s.should =~ /undefined local variable or method `this_is_not_defined'/
-        @exception.to_s.should include("  2: bar\n  3: baz\n  4: <%= this_is_not_defined %>\n  5: quin\n  6: qunx")
-        @exception.to_s.should include(@exception.original_exception.backtrace.first)
+        expect(@exception.to_s).to match(/Chef::Mixin::Template::TemplateError/)
+        expect(@exception.to_s).to match(/undefined local variable or method `this_is_not_defined'/)
+        expect(@exception.to_s).to include("  2: bar\n  3: baz\n  4: <%= this_is_not_defined %>\n  5: quin\n  6: qunx")
+        expect(@exception.to_s).to include(@exception.original_exception.backtrace.first)
       end
     end
   end

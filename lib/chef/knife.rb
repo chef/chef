@@ -53,6 +53,7 @@ class Chef
     def_delegator :@ui, :format_for_display
     def_delegator :@ui, :format_cookbook_list_for_display
     def_delegator :@ui, :edit_data
+    def_delegator :@ui, :edit_hash
     def_delegator :@ui, :edit_object
     def_delegator :@ui, :confirm
 
@@ -70,6 +71,11 @@ class Chef
 
     def self.msg(msg="")
       ui.msg(msg)
+    end
+
+    def self.reset_config_loader!
+      @@chef_config_dir = nil
+      @config_loader = nil
     end
 
     def self.reset_subcommands!
@@ -162,12 +168,15 @@ class Chef
     # Shared with subclasses
     @@chef_config_dir = nil
 
+    def self.config_loader
+      @config_loader ||= WorkstationConfigLoader.new(nil, Chef::Log)
+    end
+
     def self.load_config(explicit_config_file)
-      config_loader = WorkstationConfigLoader.new(explicit_config_file, Chef::Log)
+      config_loader.explicit_config_file = explicit_config_file
       config_loader.load
 
       ui.warn("No knife configuration file found") if config_loader.no_config_found?
-      @@chef_config_dir = config_loader.chef_config_dir
 
       config_loader
     rescue Exceptions::ConfigurationError => e
@@ -176,7 +185,7 @@ class Chef
     end
 
     def self.chef_config_dir
-      @@chef_config_dir
+      @@chef_config_dir ||= config_loader.chef_config_dir
     end
 
     # Run knife for the given +args+ (ARGV), adding +options+ to the list of
@@ -252,7 +261,7 @@ class Chef
     OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
 
     # :nodoc:
-    # Error out and print usage. probably becuase the arguments given by the
+    # Error out and print usage. probably because the arguments given by the
     # user could not be resolved to a subcommand.
     def self.subcommand_not_found!(args)
       ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
@@ -261,7 +270,8 @@ class Chef
         list_commands(category_commands)
       elsif missing_plugin = ( OFFICIAL_PLUGINS.find {|plugin| plugin == args[0]} )
         ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
-        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}")
+        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}`")
+        ui.info("Use `chef gem install knife-#{missing_plugin}` instead if using ChefDK")
       else
         list_commands
       end
@@ -300,7 +310,7 @@ class Chef
         exit 1
       end
 
-      # copy Mixlib::CLI over so that it cab be configured in knife.rb
+      # copy Mixlib::CLI over so that it can be configured in knife.rb
       # config file
       Chef::Config[:verbosity] = config[:verbosity]
     end
@@ -420,6 +430,13 @@ class Chef
         raise # make sure exit passes through.
       when Net::HTTPServerException, Net::HTTPFatalError
         humanize_http_exception(e)
+      when OpenSSL::SSL::SSLError
+        ui.error "Could not establish a secure connection to the server."
+        ui.info "Use `knife ssl check` to troubleshoot your SSL configuration."
+        ui.info "If your Chef Server uses a self-signed certificate, you can use"
+        ui.info "`knife ssl fetch` to make knife trust the server's certificates."
+        ui.info ""
+        ui.info  "Original Exception: #{e.class.name}: #{e.message}"
       when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
         ui.error "Network Error: #{e.message}"
         ui.info "Check your knife configuration and network settings"

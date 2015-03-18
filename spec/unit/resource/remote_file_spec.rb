@@ -113,40 +113,40 @@ describe Chef::Resource::RemoteFile do
   describe "ftp_active_mode" do
     it "should accept a boolean for the ftp_active_mode object" do
       @resource.ftp_active_mode true
-      expect(@resource.ftp_active_mode).to be_true
+      expect(@resource.ftp_active_mode).to be_truthy
     end
 
     it "should default to false" do
-      expect(@resource.ftp_active_mode).to be_false
+      expect(@resource.ftp_active_mode).to be_falsey
     end
   end
 
   describe "conditional get options" do
     it "defaults to using etags and last modified" do
-      expect(@resource.use_etags).to be_true
-      expect(@resource.use_last_modified).to be_true
+      expect(@resource.use_etags).to be_truthy
+      expect(@resource.use_last_modified).to be_truthy
     end
 
     it "enable or disables etag and last modified options as a group" do
       @resource.use_conditional_get(false)
-      expect(@resource.use_etags).to be_false
-      expect(@resource.use_last_modified).to be_false
+      expect(@resource.use_etags).to be_falsey
+      expect(@resource.use_last_modified).to be_falsey
 
       @resource.use_conditional_get(true)
-      expect(@resource.use_etags).to be_true
-      expect(@resource.use_last_modified).to be_true
+      expect(@resource.use_etags).to be_truthy
+      expect(@resource.use_last_modified).to be_truthy
     end
 
     it "disables etags indivdually" do
       @resource.use_etags(false)
-      expect(@resource.use_etags).to be_false
-      expect(@resource.use_last_modified).to be_true
+      expect(@resource.use_etags).to be_falsey
+      expect(@resource.use_last_modified).to be_truthy
     end
 
     it "disables last modified individually" do
       @resource.use_last_modified(false)
-      expect(@resource.use_last_modified).to be_false
-      expect(@resource.use_etags).to be_true
+      expect(@resource.use_last_modified).to be_falsey
+      expect(@resource.use_etags).to be_truthy
     end
 
   end

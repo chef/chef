@@ -84,7 +84,7 @@ When this is complete, the bootstrapped node will have:
 
   - Latest Chef version installed from RubyGems or APT Packages from Opscode. This may be a later version than the local system.
   - Be validated with the configured Chef Server.
-  - Have run Chef with its default run list if one is specfied.
+  - Have run Chef with its default run list if one is specified.
 
 Additional custom bootstrap templates can be created and stored in
 `.chef/bootstrap/DISTRO.erb`, replacing __DISTRO__ with the value passed

@@ -72,7 +72,7 @@ describe Chef::Exceptions do
 
   exception_to_super_class.each do |exception, expected_super_class|
     it "should have an exception class of #{exception} which inherits from #{expected_super_class}" do
-      lambda{ raise exception }.should raise_error(expected_super_class)
+      expect{ raise exception }.to raise_error(expected_super_class)
     end
 
     if exception.methods.include?(:to_json)
@@ -80,5 +80,51 @@ describe Chef::Exceptions do
         let(:jsonable) { exception }
       end
     end
+  end
+
+  describe Chef::Exceptions::RunFailedWrappingError do
+    shared_examples "RunFailedWrappingError expectations" do
+      it "should initialize with a default message" do
+        expect(e.message).to eq("Found #{num_errors} errors, they are stored in the backtrace")
+      end
+
+      it "should provide a modified backtrace when requested" do
+        e.fill_backtrace
+        expect(e.backtrace).to eq(backtrace)
+      end
+    end
+
+    context "initialized with nothing" do
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new  }
+      let(:num_errors) { 0 }
+      let(:backtrace) { [] }
+
+      include_examples "RunFailedWrappingError expectations"
+    end
+
+    context "initialized with nil" do
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(nil, nil)  }
+      let(:num_errors) { 0 }
+      let(:backtrace) { [] }
+
+      include_examples "RunFailedWrappingError expectations"
+    end
+
+    context "initialized with 1 error and nil" do
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), nil)  }
+      let(:num_errors) { 1 }
+      let(:backtrace) { ["1) RuntimeError -  foo", ""] }
+
+      include_examples "RunFailedWrappingError expectations"
+    end
+
+    context "initialized with 2 errors" do
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), RuntimeError.new("bar"))  }
+      let(:num_errors) { 2 }
+      let(:backtrace) { ["1) RuntimeError -  foo", "", "2) RuntimeError -  bar", ""] }
+
+      include_examples "RunFailedWrappingError expectations"
+    end
+
   end
 end

@@ -19,6 +19,7 @@
 
 require 'logger'
 require 'chef/monologger'
+require 'chef/exceptions'
 require 'mixlib/log'
 
 class Chef
@@ -34,6 +35,14 @@ class Chef
       end
     end
 
+    def self.deprecation(msg=nil, &block)
+      if Chef::Config[:treat_deprecation_warnings_as_errors]
+        error(msg, &block)
+        raise Chef::Exceptions::DeprecatedFeatureError.new(msg)
+      else
+        warn(msg, &block)
+      end
+    end
+
   end
 end
-

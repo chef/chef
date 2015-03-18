@@ -20,35 +20,14 @@ require 'spec_helper'
 
 describe Chef::Resource::TimestampedDeploy, "initialize" do
 
-  let(:node) {
-    node = Chef::Node.new
-    node.automatic_attrs[:os] = 'linux'
-    node.automatic_attrs[:platform_family] = 'rhel'
-    node
-  }
-  let(:events) { Chef::EventDispatch::Dispatcher.new }
-  let(:provider_resolver) { Chef::ProviderResolver.new(node) }
-  let(:run_context) {
-    run_context = Chef::RunContext.new(node, {}, events)
-    run_context.provider_resolver = provider_resolver
-    run_context
-  }
-  let(:resource) { Chef::Resource::TimestampedDeploy.new("stuff", run_context) }
+  static_provider_resolution(
+    resource: Chef::Resource::TimestampedDeploy,
+    provider: Chef::Provider::Deploy::Timestamped,
+    name: :deploy,
+    action: :deploy,
+    os: 'linux',
+    platform_family: 'rhel',
+  )
 
-  it "should return a Chef::Resource::TimestampedDeploy" do
-    expect(resource).to be_a_kind_of(Chef::Resource::TimestampedDeploy)
-  end
-
-  it "should set the resource_name to :timestamped_deploy" do
-    expect(resource.resource_name).to eql(:deploy)
-  end
-
-  it "should leave the provider nil" do
-    expect(resource.provider).to eql(nil)
-  end
-
-  it "should resolve to a Chef::Provider::Deploy::Timestamped" do
-    expect(resource.provider_for_action(:install)).to be_a(Chef::Provider::Deploy::Timestamped)
-  end
 end
 

@@ -177,7 +177,7 @@ describe Chef::WorkstationConfigLoader do
           env["CD"] = "/home/someuser/prod/chef-repo" # windows
           env["PWD"] = "/home/someuser/prod/chef-repo" # unix
 
-          Dir.stub(:pwd).and_return("/home/someuser/codes/chef-repo")
+          allow(Dir).to receive(:pwd).and_return("/home/someuser/codes/chef-repo")
         end
 
         it "loads the config from the non-dereferenced directory path" do
@@ -219,7 +219,7 @@ describe Chef::WorkstationConfigLoader do
 
     end
 
-    context "when an explict config is given but it doesn't exist" do
+    context "when an explicit config is given but it doesn't exist" do
 
       let(:explicit_config_location) { "/nope/nope/nope/frab/jab/nab" }
 

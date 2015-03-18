@@ -172,14 +172,14 @@ PS_SAMPLE
         it "should set running to true" do
           allow(provider).to receive(:shell_out!).and_return(status)
           provider.determine_current_status!
-          expect(current_resource.running).to be_true
+          expect(current_resource.running).to be_truthy
         end
       end
 
       it "should set running to false if the regex doesn't match" do
         allow(provider).to receive(:shell_out!).and_return(status)
         provider.determine_current_status!
-        expect(current_resource.running).to be_false
+        expect(current_resource.running).to be_falsey
       end
 
       it "should set running to nil if ps fails" do
@@ -580,6 +580,13 @@ EOF
       expect(provider).not_to receive(:write_rc_conf)
       provider.enable_service
     end
+
+    it "should remove commented out versions of it being enabled" do
+      allow(current_resource).to receive(:enabled).and_return(false)
+      expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "\# #{new_resource.service_name}_enable=\"YES\"", "\# #{new_resource.service_name}_enable=\"NO\""])
+      expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
+      provider.enable_service()
+    end
   end
 
   describe Chef::Provider::Service::Freebsd, "disable_service" do
@@ -605,6 +612,13 @@ EOF
     it "should not disable the service if it is already disabled" do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).not_to receive(:write_rc_conf)
+      provider.disable_service()
+    end
+
+    it "should remove commented out versions of it being disabled or enabled" do
+      allow(current_resource).to receive(:enabled).and_return(true)
+      expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "\# #{new_resource.service_name}_enable=\"YES\"", "\# #{new_resource.service_name}_enable=\"NO\""])
+      expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"NO\""])
       provider.disable_service()
     end
   end

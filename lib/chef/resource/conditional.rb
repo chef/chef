@@ -17,7 +17,7 @@
 #
 
 require 'chef/mixin/shell_out'
-require 'chef/guard_interpreter/resource_guard_interpreter'
+require 'chef/guard_interpreter'
 
 class Chef
   class Resource
@@ -55,8 +55,8 @@ class Chef
 
       def configure
         case @command
-        when String
-          @guard_interpreter = new_guard_interpreter(@parent_resource, @command, @command_opts, &@block)
+        when String,Array
+          @guard_interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, @command, @command_opts)
           @block = nil
         when nil
           # We should have a block if we get here
@@ -122,17 +122,6 @@ class Chef
           "#{@positivity} { #code block }"
         end
       end
-
-      private
-
-      def new_guard_interpreter(parent_resource, command, opts)
-        if parent_resource.guard_interpreter == :default
-          guard_interpreter = Chef::GuardInterpreter::DefaultGuardInterpreter.new(command, opts)
-        else
-          guard_interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, command, opts)
-        end
-      end
-
     end
   end
 end

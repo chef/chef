@@ -85,7 +85,7 @@ describe Chef::HTTP::Simple do
     before do
       Chef::Log.level = :debug
       @debug_log = ''
-      Chef::Log.stub(:debug) { |str| @debug_log << str }
+      allow(Chef::Log).to receive(:debug) { |str| @debug_log << str }
     end
 
     let(:source) { 'http://localhost:9000' }

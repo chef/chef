@@ -32,12 +32,12 @@ describe Shell::ModelWrapper do
     end
 
     it "uses the explicit model symbol" do
-      @wrapper.model_symbol.should == :client
+      expect(@wrapper.model_symbol).to eq(:client)
     end
   end
 
   it "determines the model symbol from the class name" do
-    @wrapper.model_symbol.should == :node
+    expect(@wrapper.model_symbol).to eq(:node)
   end
 
   describe "when listing objects" do
@@ -48,16 +48,16 @@ describe Shell::ModelWrapper do
       @node_2.name("yummy")
       @server_response = {:node_1 => @node_1, :node_2 => @node_2}
       @wrapper = Shell::ModelWrapper.new(Chef::Node)
-      Chef::Node.stub(:list).and_return(@server_response)
+      allow(Chef::Node).to receive(:list).and_return(@server_response)
     end
 
     it "lists fully inflated objects without the resource IDs" do
-      @wrapper.all.should have(2).nodes
-      @wrapper.all.should include(@node_1, @node_2)
+      expect(@wrapper.all.size).to eq(2)
+      expect(@wrapper.all).to include(@node_1, @node_2)
     end
 
     it "maps the listed nodes when given a block" do
-      @wrapper.all {|n| n.name }.sort.reverse.should == %w{yummy sammich}
+      expect(@wrapper.all {|n| n.name }.sort.reverse).to eq(%w{yummy sammich})
     end
   end
 
@@ -72,23 +72,23 @@ describe Shell::ModelWrapper do
 
       # Creating a Chef::Search::Query object tries to read the private key...
       @searcher = double("Chef::Search::Query #{__FILE__}:#{__LINE__}")
-      Chef::Search::Query.stub(:new).and_return(@searcher)
+      allow(Chef::Search::Query).to receive(:new).and_return(@searcher)
     end
 
     it "falls back to listing the objects when the 'query' is :all" do
-      Chef::Node.stub(:list).and_return(@server_response)
-      @wrapper.find(:all).should include(@node_1, @node_2)
+      allow(Chef::Node).to receive(:list).and_return(@server_response)
+      expect(@wrapper.find(:all)).to include(@node_1, @node_2)
     end
 
     it "searches for objects using the given query string" do
-      @searcher.should_receive(:search).with(:node, 'name:app*').and_yield(@node_1).and_yield(@node_2)
-      @wrapper.find("name:app*").should include(@node_1, @node_2)
+      expect(@searcher).to receive(:search).with(:node, 'name:app*').and_yield(@node_1).and_yield(@node_2)
+      expect(@wrapper.find("name:app*")).to include(@node_1, @node_2)
     end
 
     it "creates a 'AND'-joined query string from a HASH" do
       # Hash order woes
-      @searcher.should_receive(:search).with(:node, 'name:app* AND name:app*').and_yield(@node_1).and_yield(@node_2)
-      @wrapper.find(:name=>"app*",'name'=>"app*").should include(@node_1, @node_2)
+      expect(@searcher).to receive(:search).with(:node, 'name:app* AND name:app*').and_yield(@node_1).and_yield(@node_2)
+      expect(@wrapper.find(:name=>"app*",'name'=>"app*")).to include(@node_1, @node_2)
     end
 
   end

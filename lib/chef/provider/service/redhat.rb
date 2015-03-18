@@ -28,8 +28,12 @@ class Chef
 
         provides :service, platform_family: [ "rhel", "fedora", "suse" ]
 
+        def self.provides?(node, resource)
+          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
+        end
+
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
+          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
         end
 
         def initialize(new_resource, run_context)

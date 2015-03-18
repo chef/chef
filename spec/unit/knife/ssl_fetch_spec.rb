@@ -36,8 +36,8 @@ describe Chef::Knife::SslFetch do
   subject(:ssl_fetch) do
     s = Chef::Knife::SslFetch.new
     s.name_args = name_args
-    s.ui.stub(:stdout).and_return(stdout_io)
-    s.ui.stub(:stderr).and_return(stderr_io)
+    allow(s.ui).to receive(:stdout).and_return(stdout_io)
+    allow(s.ui).to receive(:stderr).and_return(stderr_io)
     s
   end
 
@@ -130,22 +130,55 @@ E
 
     before do
       Chef::Config.trusted_certs_dir = trusted_certs_dir
-
-      TCPSocket.should_receive(:new).with("foo.example.com", 8443).and_return(tcp_socket)
-      OpenSSL::SSL::SSLSocket.should_receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
-      ssl_socket.should_receive(:connect)
-      ssl_socket.should_receive(:peer_cert_chain).and_return([self_signed_crt])
     end
 
     after do
       FileUtils.rm_rf(trusted_certs_dir)
     end
 
-    it "fetches the cert chain and writes the certs to the trusted_certs_dir" do
-      run
-      stored_cert_path = File.join(trusted_certs_dir, "example_local.crt")
-      expect(File).to exist(stored_cert_path)
-      expect(File.read(stored_cert_path)).to eq(File.read(self_signed_crt_path))
+    context "when the TLS connection is successful" do
+
+      before do
+        expect(TCPSocket).to receive(:new).with("foo.example.com", 8443).and_return(tcp_socket)
+        expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
+        expect(ssl_socket).to receive(:connect)
+        expect(ssl_socket).to receive(:peer_cert_chain).and_return([self_signed_crt])
+      end
+
+      it "fetches the cert chain and writes the certs to the trusted_certs_dir" do
+        run
+        stored_cert_path = File.join(trusted_certs_dir, "example_local.crt")
+        expect(File).to exist(stored_cert_path)
+        expect(File.read(stored_cert_path)).to eq(File.read(self_signed_crt_path))
+      end
+
     end
+
+    context "when connecting to a non-SSL service (like HTTP)" do
+
+      let(:name_args) { %w{http://foo.example.com} }
+
+      let(:unknown_protocol_error) { OpenSSL::SSL::SSLError.new("SSL_connect returned=1 errno=0 state=SSLv2/v3 read server hello A: unknown protocol") }
+
+      before do
+        expect(TCPSocket).to receive(:new).with("foo.example.com", 80).and_return(tcp_socket)
+        expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
+        expect(ssl_socket).to receive(:connect).and_raise(unknown_protocol_error)
+
+        expect(ssl_fetch).to receive(:exit).with(1)
+      end
+
+      it "tells the user their URL is for a non-ssl service" do
+        expected_error_text = <<-ERROR_TEXT
+ERROR: The service at the given URI (http://foo.example.com) does not accept SSL connections
+ERROR: Perhaps you meant to connect to 'https://foo.example.com'?
+ERROR_TEXT
+
+        run
+        expect(stderr).to include(expected_error_text)
+      end
+
+    end
+
   end
 end

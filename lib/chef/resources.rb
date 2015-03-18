@@ -48,6 +48,7 @@ require 'chef/resource/macports_package'
 require 'chef/resource/mdadm'
 require 'chef/resource/mount'
 require 'chef/resource/ohai'
+require 'chef/resource/openbsd_package'
 require 'chef/resource/package'
 require 'chef/resource/pacman_package'
 require 'chef/resource/paludis_package'
@@ -78,3 +79,10 @@ require 'chef/resource/windows_package'
 require 'chef/resource/yum_package'
 require 'chef/resource/lwrp_base'
 require 'chef/resource/bff_package'
+
+begin
+  # Optional resources chef_node, chef_client, machine, machine_image, etc.
+  require 'cheffish'
+  require 'chef/provisioning'
+rescue LoadError
+end

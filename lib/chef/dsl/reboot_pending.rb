@@ -47,7 +47,7 @@ class Chef
           # Vista + Server 2008 and newer may have reboots pending from CBS
           registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired') ||
 
-          # The mere existance of the UpdateExeVolatile key should indicate a pending restart for certain updates
+          # The mere existence of the UpdateExeVolatile key should indicate a pending restart for certain updates
           # http://support.microsoft.com/kb/832475
           (registry_key_exists?('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile') &&
                 !registry_get_values('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').select { |v| v[:name] == "Flags" }[0].nil? &&

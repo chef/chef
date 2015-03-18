@@ -47,24 +47,45 @@ describe Chef::Resource::Conditional do
   end
 
   describe "when created as an `only_if`" do
-    describe "after running a successful command" do
+    describe "after running a successful command given as a string" do
       before do
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "true")
       end
 
       it "indicates that resource convergence should continue" do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
       end
     end
 
-    describe "after running a negative/false command" do
+    describe "after running a negative/false command given as a string" do
       before do
         @status.send("success?=", false)
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
       end
 
       it "indicates that resource convergence should not continue" do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
+      end
+    end
+
+    describe "after running a successful command given as an array" do
+      before do
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, ["true"])
+      end
+
+      it "indicates that resource convergence should continue" do
+        expect(@conditional.continue?).to be true
+      end
+    end
+
+    describe "after running a negative/false command given as an array" do
+      before do
+        @status.send("success?=", false)
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, ["false"])
+      end
+
+      it "indicates that resource convergence should not continue" do
+        expect(@conditional.continue?).to be false
       end
     end
 
@@ -75,7 +96,7 @@ describe Chef::Resource::Conditional do
       end
 
       it 'indicates that resource convergence should not continue' do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
       end
 
       it 'should log a warning' do
@@ -90,7 +111,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should continue" do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
       end
     end
 
@@ -100,30 +121,51 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should not continue" do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
       end
     end
   end
 
   describe "when created as a `not_if`" do
-    describe "after running a successful/true command" do
+    describe "after running a successful/true command given as a string" do
       before do
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "true")
       end
 
       it "indicates that resource convergence should not continue" do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
       end
     end
 
-    describe "after running a failed/false command" do
+    describe "after running a failed/false command given as a string" do
       before do
         @status.send("success?=", false)
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "false")
       end
 
       it "indicates that resource convergence should continue" do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
+      end
+    end
+
+    describe "after running a successful/true command given as an array" do
+      before do
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, ["true"])
+      end
+
+      it "indicates that resource convergence should not continue" do
+        expect(@conditional.continue?).to be false
+      end
+    end
+
+    describe "after running a failed/false command given as an array" do
+      before do
+        @status.send("success?=", false)
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, ["false"])
+      end
+
+      it "indicates that resource convergence should continue" do
+        expect(@conditional.continue?).to be true
       end
     end
 
@@ -134,7 +176,7 @@ describe Chef::Resource::Conditional do
       end
 
       it 'indicates that resource convergence should continue' do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
       end
 
       it 'should log a warning' do
@@ -149,7 +191,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should not continue" do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
       end
     end
 
@@ -159,9 +201,8 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should continue" do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
       end
     end
   end
-
 end

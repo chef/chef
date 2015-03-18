@@ -24,12 +24,12 @@ describe Chef::Handler::JsonFile do
   end
 
   it "accepts arbitrary config options" do
-    @handler.config[:the_sun].should == "will rise"
+    expect(@handler.config[:the_sun]).to eq("will rise")
   end
 
   it "creates the directory where the reports will be saved" do
-    FileUtils.should_receive(:mkdir_p).with('/tmp/foobarbazqux')
-    File.should_receive(:chmod).with(00700, '/tmp/foobarbazqux')
+    expect(FileUtils).to receive(:mkdir_p).with('/tmp/foobarbazqux')
+    expect(File).to receive(:chmod).with(00700, '/tmp/foobarbazqux')
     @handler.build_report_dir
   end
 
@@ -39,25 +39,25 @@ describe Chef::Handler::JsonFile do
       @events = Chef::EventDispatch::Dispatcher.new
       @run_status = Chef::RunStatus.new(@node, @events)
       @expected_time = Time.now
-      Time.stub(:now).and_return(@expected_time, @expected_time + 5)
+      allow(Time).to receive(:now).and_return(@expected_time, @expected_time + 5)
       @run_status.start_clock
       @run_status.stop_clock
       @run_context = Chef::RunContext.new(@node, {}, @events)
       @run_status.run_context = @run_context
       @run_status.exception = Exception.new("Boy howdy!")
       @file_mock = StringIO.new
-      File.stub(:open).and_yield(@file_mock)
+      allow(File).to receive(:open).and_yield(@file_mock)
     end
 
 
     it "saves run status data to a file as JSON" do
-      @handler.should_receive(:build_report_dir)
+      expect(@handler).to receive(:build_report_dir)
       @handler.run_report_unsafe(@run_status)
       reported_data = Chef::JSONCompat.from_json(@file_mock.string)
-      reported_data['exception'].should == "Exception: Boy howdy!"
-      reported_data['start_time'].should == @expected_time.to_s
-      reported_data['end_time'].should == (@expected_time + 5).to_s
-      reported_data['elapsed_time'].should == 5
+      expect(reported_data['exception']).to eq("Exception: Boy howdy!")
+      expect(reported_data['start_time']).to eq(@expected_time.to_s)
+      expect(reported_data['end_time']).to eq((@expected_time + 5).to_s)
+      expect(reported_data['elapsed_time']).to eq(5)
     end
 
   end

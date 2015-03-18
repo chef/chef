@@ -26,7 +26,7 @@ describe Chef::FileContentManagement::Deploy::Cp do
   describe "creating the file" do
 
     it "touches the file to create it" do
-      FileUtils.should_receive(:touch).with(target_file_path)
+      expect(FileUtils).to receive(:touch).with(target_file_path)
       content_deployer.create(target_file_path)
     end
   end
@@ -36,7 +36,7 @@ describe Chef::FileContentManagement::Deploy::Cp do
     let(:staging_file_path) { "/tmp/random-dir/staging-file.tmp" }
 
     it "copies the staging file's content" do
-      FileUtils.should_receive(:cp).with(staging_file_path, target_file_path)
+      expect(FileUtils).to receive(:cp).with(staging_file_path, target_file_path)
       content_deployer.deploy(staging_file_path, target_file_path)
     end
 

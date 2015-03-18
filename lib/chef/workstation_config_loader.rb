@@ -25,7 +25,7 @@ class Chef
   class WorkstationConfigLoader
 
     # Path to a config file requested by user, (e.g., via command line option). Can be nil
-    attr_reader :explicit_config_file
+    attr_accessor :explicit_config_file
 
     # TODO: initialize this with a logger for Chef and Knife
     def initialize(explicit_config_file, logger=nil)

@@ -23,32 +23,32 @@ describe Chef::Knife::NodeEnvironmentSet do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::NodeEnvironmentSet.new
     @knife.name_args = [ "adam", "bar" ]
-    @knife.stub(:output).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
     @node = Chef::Node.new()
     @node.name("knifetest-node")
     @node.chef_environment << "foo"
-    @node.stub(:save).and_return(true)
-    Chef::Node.stub(:load).and_return(@node)
+    allow(@node).to receive(:save).and_return(true)
+    allow(Chef::Node).to receive(:load).and_return(@node)
   end
 
   describe "run" do
     it "should load the node" do
-      Chef::Node.should_receive(:load).with("adam")
+      expect(Chef::Node).to receive(:load).with("adam")
       @knife.run
     end
 
     it "should update the environment" do
       @knife.run
-      @node.chef_environment.should == 'bar'
+      expect(@node.chef_environment).to eq('bar')
     end
 
     it "should save the node" do
-      @node.should_receive(:save)
+      expect(@node).to receive(:save)
       @knife.run
     end
 
     it "should print the environment" do
-      @knife.should_receive(:output).and_return(true)
+      expect(@knife).to receive(:output).and_return(true)
       @knife.run
     end
 
@@ -58,13 +58,13 @@ describe Chef::Knife::NodeEnvironmentSet do
         @stdout = StringIO.new
         @stderr = StringIO.new
 
-        @knife.ui.stub(:stdout).and_return(@stdout)
-        @knife.ui.stub(:stderr).and_return(@stderr)
+        allow(@knife.ui).to receive(:stdout).and_return(@stdout)
+        allow(@knife.ui).to receive(:stderr).and_return(@stderr)
       end
 
       it "should exit" do
         @knife.name_args = [ "adam" ]
-        lambda { @knife.run }.should raise_error SystemExit
+        expect { @knife.run }.to raise_error SystemExit
       end
 
       it "should show the user the usage and an error" do
@@ -72,8 +72,8 @@ describe Chef::Knife::NodeEnvironmentSet do
 
         begin ; @knife.run ; rescue SystemExit ; end
 
-        @stdout.string.should eq "USAGE: knife node environment set NODE ENVIRONMENT\n"
-        @stderr.string.should eq "FATAL: You must specify a node name and an environment.\n"
+        expect(@stdout.string).to eq "USAGE: knife node environment set NODE ENVIRONMENT\n"
+        expect(@stderr.string).to eq "FATAL: You must specify a node name and an environment.\n"
       end
     end
   end

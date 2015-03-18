@@ -42,16 +42,16 @@ describe Chef::CookbookSiteStreamingUploader do
       @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, 'cookbooks'))
       @loader = Chef::CookbookLoader.new(@cookbook_repo)
       @loader.load_cookbooks
-      File.stub(:unlink).and_return()
+      allow(File).to receive(:unlink)
     end
 
     it "should create the cookbook tmp dir" do
       cookbook = @loader[:openldap]
       files_count = Dir.glob(File.join(@cookbook_repo, cookbook.name.to_s, '**', '*'), File::FNM_DOTMATCH).count { |file| File.file?(file) }
 
-      Tempfile.should_receive(:new).with("chef-#{cookbook.name}-build").and_return(FakeTempfile.new("chef-#{cookbook.name}-build"))
-      FileUtils.should_receive(:mkdir_p).exactly(files_count + 1).times
-      FileUtils.should_receive(:cp).exactly(files_count).times
+      expect(Tempfile).to receive(:new).with("chef-#{cookbook.name}-build").and_return(FakeTempfile.new("chef-#{cookbook.name}-build"))
+      expect(FileUtils).to receive(:mkdir_p).exactly(files_count + 1).times
+      expect(FileUtils).to receive(:cp).exactly(files_count).times
       Chef::CookbookSiteStreamingUploader.create_build_dir(cookbook)
     end
 
@@ -64,39 +64,39 @@ describe Chef::CookbookSiteStreamingUploader do
       @secret_filename = File.join(CHEF_SPEC_DATA, 'ssl/private_key.pem')
       @rsa_key = File.read(@secret_filename)
       response = Net::HTTPResponse.new('1.0', '200', 'OK')
-      Net::HTTP.any_instance.stub(:request).and_return(response)
+      allow_any_instance_of(Net::HTTP).to receive(:request).and_return(response)
     end
 
     it "should send an http request" do
-      Net::HTTP.any_instance.should_receive(:request)
+      expect_any_instance_of(Net::HTTP).to receive(:request)
       Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
     end
 
     it "should read the private key file" do
-      File.should_receive(:read).with(@secret_filename).and_return(@rsa_key)
+      expect(File).to receive(:read).with(@secret_filename).and_return(@rsa_key)
       Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
     end
 
     it "should add the authentication signed header" do
-      Mixlib::Authentication::SigningObject.any_instance.should_receive(:sign).and_return({})
+      expect_any_instance_of(Mixlib::Authentication::SigningObject).to receive(:sign).and_return({})
       Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
     end
 
     it "should be able to send post requests" do
       post = Net::HTTP::Post.new(@uri, {})
 
-      Net::HTTP::Post.should_receive(:new).once.and_return(post)
-      Net::HTTP::Put.should_not_receive(:new)
-      Net::HTTP::Get.should_not_receive(:new)
+      expect(Net::HTTP::Post).to receive(:new).once.and_return(post)
+      expect(Net::HTTP::Put).not_to receive(:new)
+      expect(Net::HTTP::Get).not_to receive(:new)
       Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
     end
 
     it "should be able to send put requests" do
       put = Net::HTTP::Put.new(@uri, {})
 
-      Net::HTTP::Post.should_not_receive(:new)
-      Net::HTTP::Put.should_receive(:new).once.and_return(put)
-      Net::HTTP::Get.should_not_receive(:new)
+      expect(Net::HTTP::Post).not_to receive(:new)
+      expect(Net::HTTP::Put).to receive(:new).once.and_return(put)
+      expect(Net::HTTP::Get).not_to receive(:new)
       Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename)
     end
 
@@ -126,19 +126,19 @@ describe Chef::CookbookSiteStreamingUploader do
         @uri = "https://cookbooks.dummy.com/api/v1/cookbooks"
         uri_info = URI.parse(@uri)
         @http = Net::HTTP.new(uri_info.host, uri_info.port)
-        Net::HTTP.should_receive(:new).with(uri_info.host, uri_info.port).and_return(@http)
+        expect(Net::HTTP).to receive(:new).with(uri_info.host, uri_info.port).and_return(@http)
       end
 
       it "should be VERIFY_NONE when ssl_verify_mode is :verify_none" do
         Chef::Config[:ssl_verify_mode] = :verify_none
         Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
-        @http.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
+        expect(@http.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
       end
 
       it "should be VERIFY_PEER when ssl_verify_mode is :verify_peer" do
         Chef::Config[:ssl_verify_mode] = :verify_peer
         Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
-        @http.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+        expect(@http.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
       end
     end
 
@@ -151,17 +151,17 @@ describe Chef::CookbookSiteStreamingUploader do
     end
 
     it "should create a StreamPart" do
-      @stream_part.should be_instance_of(Chef::CookbookSiteStreamingUploader::StreamPart)
+      expect(@stream_part).to be_instance_of(Chef::CookbookSiteStreamingUploader::StreamPart)
     end
 
     it "should expose its size" do
-      @stream_part.size.should eql(File.size(@file))
+      expect(@stream_part.size).to eql(File.size(@file))
     end
 
     it "should read with offset and how_much" do
       content = @file.read(4)
       @file.rewind
-      @stream_part.read(0, 4).should eql(content)
+      expect(@stream_part.read(0, 4)).to eql(content)
     end
 
   end # StreamPart
@@ -173,15 +173,15 @@ describe Chef::CookbookSiteStreamingUploader do
     end
 
     it "should create a StringPart" do
-      @string_part.should be_instance_of(Chef::CookbookSiteStreamingUploader::StringPart)
+      expect(@string_part).to be_instance_of(Chef::CookbookSiteStreamingUploader::StringPart)
     end
 
     it "should expose its size" do
-      @string_part.size.should eql(@str.size)
+      expect(@string_part.size).to eql(@str.size)
     end
 
     it "should read with offset and how_much" do
-      @string_part.read(2, 4).should eql(@str[2, 4])
+      expect(@string_part.read(2, 4)).to eql(@str[2, 4])
     end
 
   end # StringPart
@@ -198,21 +198,21 @@ describe Chef::CookbookSiteStreamingUploader do
     end
 
     it "should create a MultipartStream" do
-      @multipart_stream.should be_instance_of(Chef::CookbookSiteStreamingUploader::MultipartStream)
+      expect(@multipart_stream).to be_instance_of(Chef::CookbookSiteStreamingUploader::MultipartStream)
     end
 
     it "should expose its size" do
-      @multipart_stream.size.should eql(@stream1.size + @stream2.size)
+      expect(@multipart_stream.size).to eql(@stream1.size + @stream2.size)
     end
 
     it "should read with how_much" do
-      @multipart_stream.read(10).should eql("#{@string1}#{@string2}"[0, 10])
+      expect(@multipart_stream.read(10)).to eql("#{@string1}#{@string2}"[0, 10])
     end
 
     it "should read receiving destination buffer as second argument (CHEF-4456: Ruby 2 compat)" do
       dst_buf = ''
       @multipart_stream.read(10, dst_buf)
-      dst_buf.should eql("#{@string1}#{@string2}"[0, 10])
+      expect(dst_buf).to eql("#{@string1}#{@string2}"[0, 10])
     end
 
   end # MultipartStream

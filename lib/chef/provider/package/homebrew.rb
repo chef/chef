@@ -26,7 +26,8 @@ class Chef
     class Package
       class Homebrew < Chef::Provider::Package
 
-        provides :homebrew_package, os: "mac_os_x"
+        provides :homebrew_package
+        provides :package, os: "darwin"
 
         include Chef::Mixin::HomebrewUser
 
@@ -94,7 +95,15 @@ class Chef
         # that brew thinks is linked as the current version.
         #
         def current_installed_version
-          brew_info['keg_only'] ? brew_info['installed'].last['version'] : brew_info['linked_keg']
+          if brew_info['keg_only']
+            if brew_info['installed'].empty?
+              nil
+            else
+              brew_info['installed'].last['version']
+            end
+          else
+            brew_info['linked_keg']
+          end
         end
 
         # Packages (formula) available to install should have a

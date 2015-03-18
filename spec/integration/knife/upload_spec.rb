@@ -262,7 +262,7 @@ Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed <<EOM
 EOM
-          Chef::JSONCompat.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.sort.should == [ 'foo', 'id' ]
+          expect(Chef::JSONCompat.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.sort).to eq([ 'foo', 'id' ])
         end
 
         it 'knife upload /data_bags/x /data_bags/x/y.json uploads x once' do
@@ -286,9 +286,9 @@ Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed ''
           result = Chef::JSONCompat.parse(knife('raw /data/x/y').stdout, :create_additions => false)
-          result.keys.sort.should == [ 'chef_type', 'data_bag', 'id' ]
-          result['chef_type'].should == 'aaa'
-          result['data_bag'].should == 'bbb'
+          expect(result.keys.sort).to eq([ 'chef_type', 'data_bag', 'id' ])
+          expect(result['chef_type']).to eq('aaa')
+          expect(result['data_bag']).to eq('bbb')
         end
       end
 
@@ -1268,8 +1268,8 @@ Created /nodes/x.json
 Updated /org.json
 Created /roles/x.json
 EOM
-          api.get('association_requests').map { |a| a['username'] }.should == [ 'foo' ]
-          api.get('users').map { |a| a['user']['username'] }.should == [ 'bar' ]
+          expect(api.get('association_requests').map { |a| a['username'] }).to eq([ 'foo' ])
+          expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar' ])
         end
       end
 
@@ -1280,7 +1280,7 @@ EOM
 
         it 'knife upload / emits a warning for bar and adds foo and foobar' do
           knife('upload /').should_succeed ''
-          api.get('/')['full_name'].should == 'Something'
+          expect(api.get('/')['full_name']).to eq('Something')
         end
       end
 
@@ -1291,7 +1291,7 @@ EOM
 
         it 'knife upload / emits a warning for bar and adds foo and foobar' do
           knife('upload /').should_succeed "Updated /org.json\n"
-          api.get('/')['full_name'].should == 'Something Else'
+          expect(api.get('/')['full_name']).to eq('Something Else')
         end
       end
 
@@ -1306,8 +1306,8 @@ EOM
 
           it 'knife upload / emits a warning for bar and invites foobar' do
             knife('upload /').should_succeed "Updated /invitations.json\n", :stderr => "WARN: Could not invite bar to organization foo: User bar is already in organization foo\n"
-            api.get('association_requests').map { |a| a['username'] }.should == [ 'foo', 'foobar' ]
-            api.get('users').map { |a| a['user']['username'] }.should == [ 'bar' ]
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ 'foo', 'foobar' ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar' ])
           end
         end
 
@@ -1318,8 +1318,8 @@ EOM
 
           it 'knife upload / emits a warning for bar and adds foo and foobar' do
             knife('upload /').should_succeed "Updated /members.json\n"
-            api.get('association_requests').map { |a| a['username'] }.should == [ ]
-            api.get('users').map { |a| a['user']['username'] }.should == [ 'bar', 'foo', 'foobar' ]
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar', 'foo', 'foobar' ])
           end
         end
 
@@ -1331,8 +1331,8 @@ EOM
 
           it 'knife upload / does nothing' do
             knife('upload /').should_succeed ''
-            api.get('association_requests').map { |a| a['username'] }.should == [ 'foo' ]
-            api.get('users').map { |a| a['user']['username'] }.should == [ 'bar' ]
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ 'foo' ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar' ])
           end
         end
       end
@@ -1347,8 +1347,8 @@ EOM
 
           it 'knife upload / does nothing' do
             knife('upload /').should_succeed ''
-            api.get('association_requests').map { |a| a['username'] }.should == [ 'bar', 'foo' ]
-            api.get('users').map { |a| a['user']['username'] }.should == [ ]
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ 'bar', 'foo' ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ ])
           end
         end
       end
@@ -1363,8 +1363,8 @@ EOM
 
           it 'knife upload / does nothing' do
             knife('upload /').should_succeed ''
-            api.get('association_requests').map { |a| a['username'] }.should == [ ]
-            api.get('users').map { |a| a['user']['username'] }.should == [ 'bar', 'foo' ]
+            expect(api.get('association_requests').map { |a| a['username'] }).to eq([ ])
+            expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar', 'foo' ])
           end
         end
       end

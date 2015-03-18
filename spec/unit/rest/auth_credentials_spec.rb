@@ -62,18 +62,18 @@ describe Chef::REST::AuthCredentials do
   end
 
   it "has a client name" do
-    @auth_credentials.client_name.should == "client-name"
+    expect(@auth_credentials.client_name).to eq("client-name")
   end
 
   it "loads the private key when initialized with the path to the key" do
-    @auth_credentials.key.should respond_to(:private_encrypt)
-    @auth_credentials.key.to_s.should == KEY_DOT_PEM
+    expect(@auth_credentials.key).to respond_to(:private_encrypt)
+    expect(@auth_credentials.key.to_s).to eq(KEY_DOT_PEM)
   end
 
   describe "when loading the private key" do
     it "strips extra whitespace before checking the key" do
       key_file_fixture = CHEF_SPEC_DATA + '/ssl/private_key_with_whitespace.pem'
-      lambda {Chef::REST::AuthCredentials.new("client-name", @key_file_fixture)}.should_not raise_error
+      expect {Chef::REST::AuthCredentials.new("client-name", @key_file_fixture)}.not_to raise_error
     end
   end
 
@@ -84,19 +84,19 @@ describe Chef::REST::AuthCredentials do
     end
 
     it "generates signature headers for the request" do
-      Time.stub(:now).and_return(@request_time)
+      allow(Time).to receive(:now).and_return(@request_time)
       actual = @auth_credentials.signature_headers(@request_params)
-      actual["HOST"].should                    == "localhost"
-      actual["X-OPS-AUTHORIZATION-1"].should == "kBssX1ENEwKtNYFrHElN9vYGWS7OeowepN9EsYc9csWfh8oUovryPKDxytQ/"
-      actual["X-OPS-AUTHORIZATION-2"].should == "Wc2/nSSyxdWJjjfHzrE+YrqNQTaArOA7JkAf5p75eTUonCWcvNPjFrZVgKGS"
-      actual["X-OPS-AUTHORIZATION-3"].should == "yhzHJQh+lcVA9wwARg5Hu9q+ddS8xBOdm3Vp5atl5NGHiP0loiigMYvAvzPO"
-      actual["X-OPS-AUTHORIZATION-4"].should == "r9853eIxwYMhn5hLGhAGFQznJbE8+7F/lLU5Zmk2t2MlPY8q3o1Q61YD8QiJ"
-      actual["X-OPS-AUTHORIZATION-5"].should ==  "M8lIt53ckMyUmSU0DDURoiXLVkE9mag/6Yq2tPNzWq2AdFvBqku9h2w+DY5k"
-      actual["X-OPS-AUTHORIZATION-6"].should == "qA5Rnzw5rPpp3nrWA9jKkPw4Wq3+4ufO2Xs6w7GCjA=="
-      actual["X-OPS-CONTENT-HASH"].should == "1tuzs5XKztM1ANrkGNPah6rW9GY="
-      actual["X-OPS-SIGN"].should         =~ %r{(version=1\.0)|(algorithm=sha1;version=1.0;)}
-      actual["X-OPS-TIMESTAMP"].should    == "2010-04-10T17:34:20Z"
-      actual["X-OPS-USERID"].should       == "client-name"
+      expect(actual["HOST"]).to                    eq("localhost")
+      expect(actual["X-OPS-AUTHORIZATION-1"]).to eq("kBssX1ENEwKtNYFrHElN9vYGWS7OeowepN9EsYc9csWfh8oUovryPKDxytQ/")
+      expect(actual["X-OPS-AUTHORIZATION-2"]).to eq("Wc2/nSSyxdWJjjfHzrE+YrqNQTaArOA7JkAf5p75eTUonCWcvNPjFrZVgKGS")
+      expect(actual["X-OPS-AUTHORIZATION-3"]).to eq("yhzHJQh+lcVA9wwARg5Hu9q+ddS8xBOdm3Vp5atl5NGHiP0loiigMYvAvzPO")
+      expect(actual["X-OPS-AUTHORIZATION-4"]).to eq("r9853eIxwYMhn5hLGhAGFQznJbE8+7F/lLU5Zmk2t2MlPY8q3o1Q61YD8QiJ")
+      expect(actual["X-OPS-AUTHORIZATION-5"]).to eq("M8lIt53ckMyUmSU0DDURoiXLVkE9mag/6Yq2tPNzWq2AdFvBqku9h2w+DY5k")
+      expect(actual["X-OPS-AUTHORIZATION-6"]).to eq("qA5Rnzw5rPpp3nrWA9jKkPw4Wq3+4ufO2Xs6w7GCjA==")
+      expect(actual["X-OPS-CONTENT-HASH"]).to eq("1tuzs5XKztM1ANrkGNPah6rW9GY=")
+      expect(actual["X-OPS-SIGN"]).to         match(%r{(version=1\.0)|(algorithm=sha1;version=1.0;)})
+      expect(actual["X-OPS-TIMESTAMP"]).to    eq("2010-04-10T17:34:20Z")
+      expect(actual["X-OPS-USERID"]).to       eq("client-name")
 
     end
 
@@ -110,13 +110,13 @@ describe Chef::REST::AuthCredentials do
       end
 
       it "generates the correct signature for version 1.1" do
-        Time.stub(:now).and_return(@request_time)
+        allow(Time).to receive(:now).and_return(@request_time)
         actual = @auth_credentials.signature_headers(@request_params)
-        actual["HOST"].should                    == "localhost"
-        actual["X-OPS-CONTENT-HASH"].should == "1tuzs5XKztM1ANrkGNPah6rW9GY="
-        actual["X-OPS-SIGN"].should         == "algorithm=sha1;version=1.1;"
-        actual["X-OPS-TIMESTAMP"].should    == "2010-04-10T17:34:20Z"
-        actual["X-OPS-USERID"].should       == "client-name"
+        expect(actual["HOST"]).to                    eq("localhost")
+        expect(actual["X-OPS-CONTENT-HASH"]).to eq("1tuzs5XKztM1ANrkGNPah6rW9GY=")
+        expect(actual["X-OPS-SIGN"]).to         eq("algorithm=sha1;version=1.1;")
+        expect(actual["X-OPS-TIMESTAMP"]).to    eq("2010-04-10T17:34:20Z")
+        expect(actual["X-OPS-USERID"]).to       eq("client-name")
 
         # mixlib-authN will test the actual signature stuff for each version of
         # the protocol so we won't test it again here.
@@ -143,63 +143,63 @@ describe Chef::REST::RESTRequest do
   end
 
   it "stores the url it was created with" do
-    @request.url.should == @url
+    expect(@request.url).to eq(@url)
   end
 
   it "stores the HTTP method" do
-    @request.method.should == :POST
+    expect(@request.method).to eq(:POST)
   end
 
   it "adds the chef version header" do
-    @request.headers.should == @headers.merge("X-Chef-Version" => ::Chef::VERSION)
+    expect(@request.headers).to eq(@headers.merge("X-Chef-Version" => ::Chef::VERSION))
   end
 
   describe "configuring the HTTP request" do
     it "configures GET requests" do
       @req_body = nil
       rest_req = new_request(:GET)
-      rest_req.http_request.should be_a_kind_of(Net::HTTP::Get)
-      rest_req.http_request.path.should == "/?q=chef_is_awesome"
-      rest_req.http_request.body.should be_nil
+      expect(rest_req.http_request).to be_a_kind_of(Net::HTTP::Get)
+      expect(rest_req.http_request.path).to eq("/?q=chef_is_awesome")
+      expect(rest_req.http_request.body).to be_nil
     end
 
     it "configures POST requests, including the body" do
-      @request.http_request.should be_a_kind_of(Net::HTTP::Post)
-      @request.http_request.path.should == "/?q=chef_is_awesome"
-      @request.http_request.body.should == @req_body
+      expect(@request.http_request).to be_a_kind_of(Net::HTTP::Post)
+      expect(@request.http_request.path).to eq("/?q=chef_is_awesome")
+      expect(@request.http_request.body).to eq(@req_body)
     end
 
     it "configures PUT requests, including the body" do
       rest_req = new_request(:PUT)
-      rest_req.http_request.should be_a_kind_of(Net::HTTP::Put)
-      rest_req.http_request.path.should == "/?q=chef_is_awesome"
-      rest_req.http_request.body.should == @req_body
+      expect(rest_req.http_request).to be_a_kind_of(Net::HTTP::Put)
+      expect(rest_req.http_request.path).to eq("/?q=chef_is_awesome")
+      expect(rest_req.http_request.body).to eq(@req_body)
     end
 
     it "configures DELETE requests" do
       rest_req = new_request(:DELETE)
-      rest_req.http_request.should be_a_kind_of(Net::HTTP::Delete)
-      rest_req.http_request.path.should == "/?q=chef_is_awesome"
-      rest_req.http_request.body.should be_nil
+      expect(rest_req.http_request).to be_a_kind_of(Net::HTTP::Delete)
+      expect(rest_req.http_request.path).to eq("/?q=chef_is_awesome")
+      expect(rest_req.http_request.body).to be_nil
     end
 
     it "configures HTTP basic auth" do
       @url = URI.parse("http://homie:theclown@chef.example.com:4000/?q=chef_is_awesome")
       rest_req = new_request(:GET)
-      rest_req.http_request.to_hash["authorization"].should == ["Basic aG9taWU6dGhlY2xvd24="]
+      expect(rest_req.http_request.to_hash["authorization"]).to eq(["Basic aG9taWU6dGhlY2xvd24="])
     end
   end
 
   describe "configuring the HTTP client" do
     it "configures the HTTP client for the host and port" do
       http_client = new_request.http_client
-      http_client.address.should == "chef.example.com"
-      http_client.port.should == 4000
+      expect(http_client.address).to eq("chef.example.com")
+      expect(http_client.port).to eq(4000)
     end
 
     it "configures the HTTP client with the read timeout set in the config file" do
       Chef::Config[:rest_timeout] = 9001
-      new_request.http_client.read_timeout.should == 9001
+      expect(new_request.http_client.read_timeout).to eq(9001)
     end
 
     describe "for proxy" do
@@ -226,21 +226,21 @@ describe Chef::REST::RESTRequest do
       describe "with :no_proxy nil" do
         it "configures the proxy address and port when using http scheme" do
           http_client = new_request.http_client
-          http_client.proxy?.should == true
-          http_client.proxy_address.should == "proxy.example.com"
-          http_client.proxy_port.should == 3128
-          http_client.proxy_user.should be_nil
-          http_client.proxy_pass.should be_nil
+          expect(http_client.proxy?).to eq(true)
+          expect(http_client.proxy_address).to eq("proxy.example.com")
+          expect(http_client.proxy_port).to eq(3128)
+          expect(http_client.proxy_user).to be_nil
+          expect(http_client.proxy_pass).to be_nil
         end
 
         it "configures the proxy address and port when using https scheme" do
           @url.scheme = "https"
           http_client = new_request.http_client
-          http_client.proxy?.should == true
-          http_client.proxy_address.should == "sproxy.example.com"
-          http_client.proxy_port.should == 3129
-          http_client.proxy_user.should be_nil
-          http_client.proxy_pass.should be_nil
+          expect(http_client.proxy?).to eq(true)
+          expect(http_client.proxy_address).to eq("sproxy.example.com")
+          expect(http_client.proxy_port).to eq(3129)
+          expect(http_client.proxy_user).to be_nil
+          expect(http_client.proxy_pass).to be_nil
         end
       end
 
@@ -251,21 +251,21 @@ describe Chef::REST::RESTRequest do
 
         it "does not configure the proxy address and port when using http scheme" do
           http_client = new_request.http_client
-          http_client.proxy?.should == false
-          http_client.proxy_address.should be_nil
-          http_client.proxy_port.should be_nil
-          http_client.proxy_user.should be_nil
-          http_client.proxy_pass.should be_nil
+          expect(http_client.proxy?).to eq(false)
+          expect(http_client.proxy_address).to be_nil
+          expect(http_client.proxy_port).to be_nil
+          expect(http_client.proxy_user).to be_nil
+          expect(http_client.proxy_pass).to be_nil
         end
 
         it "does not configure the proxy address and port when using https scheme" do
           @url.scheme = "https"
           http_client = new_request.http_client
-          http_client.proxy?.should == false
-          http_client.proxy_address.should be_nil
-          http_client.proxy_port.should be_nil
-          http_client.proxy_user.should be_nil
-          http_client.proxy_pass.should be_nil
+          expect(http_client.proxy?).to eq(false)
+          expect(http_client.proxy_address).to be_nil
+          expect(http_client.proxy_port).to be_nil
+          expect(http_client.proxy_user).to be_nil
+          expect(http_client.proxy_pass).to be_nil
         end
       end
 
@@ -282,17 +282,17 @@ describe Chef::REST::RESTRequest do
 
         it "configures the proxy user and pass when using http scheme" do
           http_client = new_request.http_client
-          http_client.proxy?.should == true
-          http_client.proxy_user.should == "homie"
-          http_client.proxy_pass.should == "theclown"
+          expect(http_client.proxy?).to eq(true)
+          expect(http_client.proxy_user).to eq("homie")
+          expect(http_client.proxy_pass).to eq("theclown")
         end
 
         it "does not configure the proxy user and pass when using https scheme" do
           @url.scheme = "https"
           http_client = new_request.http_client
-          http_client.proxy?.should == true
-          http_client.proxy_user.should be_nil
-          http_client.proxy_pass.should be_nil
+          expect(http_client.proxy?).to eq(true)
+          expect(http_client.proxy_user).to be_nil
+          expect(http_client.proxy_pass).to be_nil
         end
       end
 
@@ -309,17 +309,17 @@ describe Chef::REST::RESTRequest do
 
         it "does not configure the proxy user and pass when using http scheme" do
           http_client = new_request.http_client
-          http_client.proxy?.should == true
-          http_client.proxy_user.should be_nil
-          http_client.proxy_pass.should be_nil
+          expect(http_client.proxy?).to eq(true)
+          expect(http_client.proxy_user).to be_nil
+          expect(http_client.proxy_pass).to be_nil
         end
 
         it "configures the proxy user and pass when using https scheme" do
           @url.scheme = "https"
           http_client = new_request.http_client
-          http_client.proxy?.should == true
-          http_client.proxy_user.should == "homie"
-          http_client.proxy_pass.should == "theclown"
+          expect(http_client.proxy?).to eq(true)
+          expect(http_client.proxy_user).to eq("homie")
+          expect(http_client.proxy_pass).to eq("theclown")
         end
       end
     end

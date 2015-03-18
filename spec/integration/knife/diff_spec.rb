@@ -247,7 +247,7 @@ EOM
         end
         when_the_chef_server 'has an environment with a different value' do
           before { environment 'x', { 'description' => 'hi' } }
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          it 'knife diff reports the difference', :skip => (RUBY_VERSION < "1.9") do
             knife('diff /environments/x.json').should_succeed(/
  {
 -  "name": "x",
@@ -277,7 +277,7 @@ EOM
             environment 'x', {}
           end
 
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          it 'knife diff reports the difference', :skip => (RUBY_VERSION < "1.9") do
             knife('diff /environments/x.json').should_succeed(/
  {
 -  "name": "x"
@@ -291,7 +291,7 @@ EOM
           before do
             environment 'x', { 'description' => 'lo' }
           end
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          it 'knife diff reports the difference', :skip => (RUBY_VERSION < "1.9") do
             knife('diff /environments/x.json').should_succeed(/
  {
    "name": "x",
@@ -533,7 +533,7 @@ EOM
         end
         when_the_chef_server 'has an environment with a different value' do
           before { environment 'x', { 'description' => 'hi' } }
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          it 'knife diff reports the difference', :skip => (RUBY_VERSION < "1.9") do
             knife('diff /environments/x.json').should_succeed(/
  {
 -  "name": "x",
@@ -560,7 +560,7 @@ EOM
         end
         when_the_chef_server 'has an environment with no value' do
           before { environment 'x', {} }
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          it 'knife diff reports the difference', :skip => (RUBY_VERSION < "1.9") do
             knife('diff /environments/x.json').should_succeed(/
  {
 -  "name": "x"
@@ -574,7 +574,7 @@ EOM
           before do
             environment 'x', { 'description' => 'lo' }
           end
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          it 'knife diff reports the difference', :skip => (RUBY_VERSION < "1.9") do
             knife('diff /environments/x.json').should_succeed(/
  {
    "name": "x",

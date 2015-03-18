@@ -29,14 +29,15 @@ describe Chef::Resource::Env, :windows_only do
     let(:env_value_expandable) { '%SystemRoot%' }
     let(:test_run_context) {
       node = Chef::Node.new
+      node.default['os'] = 'windows'
       node.default['platform'] = 'windows'
       node.default['platform_version'] = '6.1'
       empty_events = Chef::EventDispatch::Dispatcher.new
       Chef::RunContext.new(node, {}, empty_events)
     }
-    let(:test_resource) { 
-      Chef::Resource::Env.new('unknown', test_run_context) 
-    } 
+    let(:test_resource) {
+      Chef::Resource::Env.new('unknown', test_run_context)
+    }
 
     before(:each) do
       resource_lower = Chef::Resource::Env.new(chef_env_test_lower_case, test_run_context)
@@ -131,12 +132,12 @@ describe Chef::Resource::Env, :windows_only do
         let!(:env_path_before) { ENV['PATH'] }
 
         it 'should expand PATH' do
-          path_before.should_not include(env_val)
+          expect(path_before).not_to include(env_val)
           test_resource.key_name('PATH')
           test_resource.value("#{path_before};#{env_val}")
           test_resource.run_action(:create)
-          ENV['PATH'].should_not include(env_val)
-          ENV['PATH'].should include("#{random_name}")
+          expect(ENV['PATH']).not_to include(env_val)
+          expect(ENV['PATH']).to include("#{random_name}")
         end
 
         after(:each) do

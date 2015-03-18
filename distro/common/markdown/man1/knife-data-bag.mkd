@@ -90,7 +90,7 @@ formatted according to the --format option.
 
 ## ENCRYPTION SUPPORT
 Data Bag Items may be encrypted to keep their contents secret. This may
-be desireable when storing sensitive information such as database
+be desirable when storing sensitive information such as database
 passwords, API keys, etc.
 
 Data Bag Item encryption uses the AES-256 CBC symmetric key algorithm.

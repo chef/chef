@@ -29,18 +29,16 @@ describe Chef::Resource::Script do
     expect(script_resource.interpreter).to eql("naaaaNaNaNaaNaaNaaNaa")
   end
 
-  describe "when it has interpreter and flags" do
+  context "when it has interpreter and flags" do
     before do
-      script_resource.command("grep")
       script_resource.interpreter("gcc")
       script_resource.flags("-al")
     end
 
-   it "returns the command as its identity" do
-      expect(script_resource.identity).to eq("grep")
+    it "returns the name as its identity" do
+      expect(script_resource.identity).to eq(resource_instance_name)
     end
   end
 
   it_behaves_like "a script resource"
 end
-

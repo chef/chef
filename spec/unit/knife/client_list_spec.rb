@@ -26,8 +26,8 @@ describe Chef::Knife::ClientList do
 
   describe 'run' do
     it 'should list the clients' do
-      Chef::ApiClient.should_receive(:list)
-      @knife.should_receive(:format_list_for_display)
+      expect(Chef::ApiClient).to receive(:list)
+      expect(@knife).to receive(:format_list_for_display)
       @knife.run
     end
   end

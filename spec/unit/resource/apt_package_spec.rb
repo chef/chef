@@ -29,12 +29,10 @@ describe Chef::Resource::AptPackage, "initialize" do
     os: "linux",
   )
 
-  before(:each) do
-    @resource = Chef::Resource::AptPackage.new("foo")
-  end
+  let(:resource) { Chef::Resource::AptPackage.new("foo") }
 
   it "should support default_release" do
-    @resource.default_release("lenny-backports")
-    expect(@resource.default_release).to eql("lenny-backports")
+    resource.default_release("lenny-backports")
+    expect(resource.default_release).to eql("lenny-backports")
   end
 end

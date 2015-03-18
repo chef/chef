@@ -25,81 +25,81 @@ describe Chef::Util::PathHelper do
   [ false, true ].each do |is_windows|
     context "on #{is_windows ? "windows" : "unix"}" do
       before(:each) do
-        Chef::Platform.stub(:windows?).and_return(is_windows)
+        allow(Chef::Platform).to receive(:windows?).and_return(is_windows)
       end
 
       describe "join" do
         it "joins components when some end with separators" do
           expected = PathHelper.cleanpath("/foo/bar/baz")
           expected = "C:#{expected}" if is_windows
-          PathHelper.join(is_windows ? 'C:\\foo\\' : "/foo/", "bar", "baz").should == expected
+          expect(PathHelper.join(is_windows ? 'C:\\foo\\' : "/foo/", "bar", "baz")).to eq(expected)
         end
 
         it "joins components when some end and start with separators" do
           expected = PathHelper.cleanpath("/foo/bar/baz")
           expected = "C:#{expected}" if is_windows
-          PathHelper.join(is_windows ? 'C:\\foo\\' : "/foo/", "bar/", "/baz").should == expected
+          expect(PathHelper.join(is_windows ? 'C:\\foo\\' : "/foo/", "bar/", "/baz")).to eq(expected)
         end
 
         it "joins components that don't end in separators" do
           expected = PathHelper.cleanpath("/foo/bar/baz")
           expected = "C:#{expected}" if is_windows
-          PathHelper.join(is_windows ? 'C:\\foo' : "/foo", "bar", "baz").should == expected
+          expect(PathHelper.join(is_windows ? 'C:\\foo' : "/foo", "bar", "baz")).to eq(expected)
         end
 
         it "joins starting with '' resolve to absolute paths" do
-          PathHelper.join('', 'a', 'b').should == "#{PathHelper.path_separator}a#{PathHelper.path_separator}b"
+          expect(PathHelper.join('', 'a', 'b')).to eq("#{PathHelper.path_separator}a#{PathHelper.path_separator}b")
         end
 
         it "joins ending with '' add a / to the end" do
-          PathHelper.join('a', 'b', '').should == "a#{PathHelper.path_separator}b#{PathHelper.path_separator}"
+          expect(PathHelper.join('a', 'b', '')).to eq("a#{PathHelper.path_separator}b#{PathHelper.path_separator}")
         end
 
         if is_windows
           it "joins components on Windows when some end with unix separators" do
-            PathHelper.join('C:\\foo/', "bar", "baz").should == 'C:\\foo\\bar\\baz'
+            expect(PathHelper.join('C:\\foo/', "bar", "baz")).to eq('C:\\foo\\bar\\baz')
           end
         end
       end
 
       if is_windows
         it "path_separator is \\" do
-          PathHelper.path_separator.should == '\\'
+          expect(PathHelper.path_separator).to eq('\\')
         end
       else
         it "path_separator is /" do
-          PathHelper.path_separator.should == '/'
+          expect(PathHelper.path_separator).to eq('/')
         end
       end
 
       if is_windows
         it "cleanpath changes slashes into backslashes and leaves backslashes alone" do
-          PathHelper.cleanpath('/a/b\\c/d/').should == '\\a\\b\\c\\d'
+          expect(PathHelper.cleanpath('/a/b\\c/d/')).to eq('\\a\\b\\c\\d')
         end
         it "cleanpath does not remove leading double backslash" do
-          PathHelper.cleanpath('\\\\a/b\\c/d/').should == '\\\\a\\b\\c\\d'
+          expect(PathHelper.cleanpath('\\\\a/b\\c/d/')).to eq('\\\\a\\b\\c\\d')
         end
       else
         it "cleanpath removes extra slashes alone" do
-          PathHelper.cleanpath('/a///b/c/d/').should == '/a/b/c/d'
+          expect(PathHelper.cleanpath('/a///b/c/d/')).to eq('/a/b/c/d')
         end
       end
 
       describe "dirname" do
         it "dirname('abc') is '.'" do
-          PathHelper.dirname('abc').should == '.'
+          expect(PathHelper.dirname('abc')).to eq('.')
         end
         it "dirname('/') is '/'" do
-          PathHelper.dirname(PathHelper.path_separator).should == PathHelper.path_separator
+          expect(PathHelper.dirname(PathHelper.path_separator)).to eq(PathHelper.path_separator)
         end
         it "dirname('a/b/c') is 'a/b'" do
-          PathHelper.dirname(PathHelper.join('a', 'b', 'c')).should == PathHelper.join('a', 'b')
+          expect(PathHelper.dirname(PathHelper.join('a', 'b', 'c'))).to eq(PathHelper.join('a', 'b'))
         end
         it "dirname('a/b/c/') is 'a/b'" do
-          PathHelper.dirname(PathHelper.join('a', 'b', 'c', '')).should == PathHelper.join('a', 'b')
+          expect(PathHelper.dirname(PathHelper.join('a', 'b', 'c', ''))).to eq(PathHelper.join('a', 'b'))
         end
         it "dirname('/a/b/c') is '/a/b'" do
-          PathHelper.dirname(PathHelper.join('', 'a', 'b', 'c')).should == PathHelper.join('', 'a', 'b')
+          expect(PathHelper.dirname(PathHelper.join('', 'a', 'b', 'c'))).to eq(PathHelper.join('', 'a', 'b'))
         end
       end
     end
@@ -109,9 +109,9 @@ describe Chef::Util::PathHelper do
     context "on windows" do
       before(:each) do
         # pass by default
-        Chef::Platform.stub(:windows?).and_return(true)
-        PathHelper.stub(:printable?).and_return(true)
-        PathHelper.stub(:windows_max_length_exceeded?).and_return(false)
+        allow(Chef::Platform).to receive(:windows?).and_return(true)
+        allow(PathHelper).to receive(:printable?).and_return(true)
+        allow(PathHelper).to receive(:windows_max_length_exceeded?).and_return(false)
       end
 
       it "returns the path if the path passes the tests" do
@@ -123,14 +123,14 @@ describe Chef::Util::PathHelper do
       end
 
       it "raises an error if the path has invalid characters" do
-        PathHelper.stub(:printable?).and_return(false)
+        allow(PathHelper).to receive(:printable?).and_return(false)
         expect { PathHelper.validate_path("Newline!\n") }.to raise_error(Chef::Exceptions::ValidationFailed)
       end
 
       it "Adds the \\\\?\\ prefix if the path exceeds MAX_LENGTH and does not have it" do
         long_path = "C:\\" + "a" * 250 + "\\" + "b" * 250
         prefixed_long_path = "\\\\?\\" + long_path
-        PathHelper.stub(:windows_max_length_exceeded?).and_return(true)
+        allow(PathHelper).to receive(:windows_max_length_exceeded?).and_return(true)
         expect(PathHelper.validate_path(long_path)).to eql(prefixed_long_path)
       end
     end
@@ -138,38 +138,38 @@ describe Chef::Util::PathHelper do
 
   describe "windows_max_length_exceeded?" do
     it "returns true if the path is too long (259 + NUL) for the API" do
-      expect(PathHelper.windows_max_length_exceeded?("C:\\" + "a" * 250 + "\\" + "b" * 6)).to be_true
+      expect(PathHelper.windows_max_length_exceeded?("C:\\" + "a" * 250 + "\\" + "b" * 6)).to be_truthy
     end
 
     it "returns false if the path is not too long (259 + NUL) for the standard API" do
-      expect(PathHelper.windows_max_length_exceeded?("C:\\" + "a" * 250 + "\\" + "b" * 5)).to be_false
+      expect(PathHelper.windows_max_length_exceeded?("C:\\" + "a" * 250 + "\\" + "b" * 5)).to be_falsey
     end
 
     it "returns false if the path is over 259 characters but uses the \\\\?\\ prefix" do
-      expect(PathHelper.windows_max_length_exceeded?("\\\\?\\C:\\" + "a" * 250 + "\\" + "b" * 250)).to be_false
+      expect(PathHelper.windows_max_length_exceeded?("\\\\?\\C:\\" + "a" * 250 + "\\" + "b" * 250)).to be_falsey
     end
   end
 
   describe "printable?" do
     it "returns true if the string contains no non-printable characters" do
-      expect(PathHelper.printable?("C:\\Program Files (x86)\\Microsoft Office\\Files.lst")).to be_true
+      expect(PathHelper.printable?("C:\\Program Files (x86)\\Microsoft Office\\Files.lst")).to be_truthy
     end
 
     it "returns true when given 'abc' in unicode" do
-      expect(PathHelper.printable?("\u0061\u0062\u0063")).to be_true
+      expect(PathHelper.printable?("\u0061\u0062\u0063")).to be_truthy
     end
 
     it "returns true when given japanese unicode" do
-      expect(PathHelper.printable?("\uff86\uff87\uff88")).to be_true
+      expect(PathHelper.printable?("\uff86\uff87\uff88")).to be_truthy
     end
 
     it "returns false if the string contains a non-printable character" do
-      expect(PathHelper.printable?("\my files\work\notes.txt")).to be_false
+      expect(PathHelper.printable?("\my files\work\notes.txt")).to be_falsey
     end
 
     # This isn't necessarily a requirement, but here to be explicit about functionality.
     it "returns false if the string contains a newline or tab" do
-      expect(PathHelper.printable?("\tThere's no way,\n\t *no* way,\n\t that you came from my loins.\n")).to be_false
+      expect(PathHelper.printable?("\tThere's no way,\n\t *no* way,\n\t that you came from my loins.\n")).to be_falsey
     end
   end
 
@@ -189,31 +189,23 @@ describe Chef::Util::PathHelper do
     end
 
     context "not on windows", :unix_only  do
-      context "ruby is at least 1.9", :ruby_gte_19_only do
-        it "returns a canonical path" do
-          expect(PathHelper.canonical_path("/etc//apache.d/sites-enabled/../sites-available/default")).to eq("/etc/apache.d/sites-available/default")
-        end
-      end
-
-      context "ruby is less than 1.9", :ruby_18_only do
-        it "returns a canonical path" do
-          expect { PathHelper.canonical_path("/etc//apache.d/sites-enabled/../sites-available/default") }.to raise_error(NotImplementedError)
-        end
+      it "returns a canonical path" do
+        expect(PathHelper.canonical_path("/etc//apache.d/sites-enabled/../sites-available/default")).to eq("/etc/apache.d/sites-available/default")
       end
     end
   end
 
   describe "paths_eql?" do
     it "returns true if the paths are the same" do
-      PathHelper.stub(:canonical_path).with("bandit").and_return("c:/bandit/bandit")
-      PathHelper.stub(:canonical_path).with("../bandit/bandit").and_return("c:/bandit/bandit")
-      expect(PathHelper.paths_eql?("bandit", "../bandit/bandit")).to be_true
+      allow(PathHelper).to receive(:canonical_path).with("bandit").and_return("c:/bandit/bandit")
+      allow(PathHelper).to receive(:canonical_path).with("../bandit/bandit").and_return("c:/bandit/bandit")
+      expect(PathHelper.paths_eql?("bandit", "../bandit/bandit")).to be_truthy
     end
 
     it "returns false if the paths are different" do
-      PathHelper.stub(:canonical_path).with("bandit").and_return("c:/Bo/Bandit")
-      PathHelper.stub(:canonical_path).with("../bandit/bandit").and_return("c:/bandit/bandit")
-      expect(PathHelper.paths_eql?("bandit", "../bandit/bandit")).to be_false
+      allow(PathHelper).to receive(:canonical_path).with("bandit").and_return("c:/Bo/Bandit")
+      allow(PathHelper).to receive(:canonical_path).with("../bandit/bandit").and_return("c:/bandit/bandit")
+      expect(PathHelper.paths_eql?("bandit", "../bandit/bandit")).to be_falsey
     end
   end
 

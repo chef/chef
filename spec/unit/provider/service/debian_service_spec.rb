@@ -67,13 +67,13 @@ describe Chef::Provider::Service::Debian do
       end
 
       it "says the service is enabled" do
-        expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_true
+        expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_truthy
       end
 
       it "stores the 'enabled' state" do
         allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
         expect(@provider.load_current_resource).to equal(@current_resource)
-        expect(@current_resource.enabled).to be_true
+        expect(@current_resource.enabled).to be_truthy
       end
     end
 
@@ -90,13 +90,13 @@ describe Chef::Provider::Service::Debian do
       end
 
       it "says the service is disabled" do
-        expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_false
+        expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_falsey
       end
 
       it "stores the 'disabled' state" do
         allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
         expect(@provider.load_current_resource).to equal(@current_resource)
-        expect(@current_resource.enabled).to be_false
+        expect(@current_resource.enabled).to be_falsey
       end
     end
 
@@ -206,13 +206,13 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
           end
 
           it "says the service is enabled" do
-            expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_true
+            expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_truthy
           end
 
           it "stores the 'enabled' state" do
             allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
             expect(@provider.load_current_resource).to equal(@current_resource)
-            expect(@current_resource.enabled).to be_true
+            expect(@current_resource.enabled).to be_truthy
           end
 
           it "stores the start/stop priorities of the service" do
@@ -232,13 +232,13 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
           end
 
           it "says the service is disabled" do
-            expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_false
+            expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_falsey
           end
 
           it "stores the 'disabled' state" do
             allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
             expect(@provider.load_current_resource).to equal(@current_resource)
-            expect(@current_resource.enabled).to be_false
+            expect(@current_resource.enabled).to be_falsey
           end
         end
       end

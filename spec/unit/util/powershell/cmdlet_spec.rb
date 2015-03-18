@@ -51,18 +51,18 @@ describe Chef::Util::Powershell::Cmdlet do
     # Is this list really complete?
     %w{` " # '}.each do |c|
       it "escapse #{c}" do
-        @cmdlet.send(:escape_parameter_value, "stuff #{c}").should eql("stuff `#{c}")
+        expect(@cmdlet.send(:escape_parameter_value, "stuff #{c}")).to eql("stuff `#{c}")
       end
     end
 
     it 'does not do anything to a string without special characters' do
-      @cmdlet.send(:escape_parameter_value, 'stuff').should eql('stuff')
+      expect(@cmdlet.send(:escape_parameter_value, 'stuff')).to eql('stuff')
     end
   end
 
   describe '#escape_string_parameter_value' do
     it "surrounds a string with ''" do
-      @cmdlet.send(:escape_string_parameter_value, 'stuff').should eql("'stuff'")
+      expect(@cmdlet.send(:escape_string_parameter_value, 'stuff')).to eql("'stuff'")
     end
   end
 
@@ -80,27 +80,27 @@ describe Chef::Util::Powershell::Cmdlet do
     end
 
     it 'ignores switches with a false value' do
-      @cmdlet.send(:command_switches_string, {foo: false}).should eql('')
+      expect(@cmdlet.send(:command_switches_string, {foo: false})).to eql('')
     end
 
     it 'should correctly handle a value type of string' do
-      @cmdlet.send(:command_switches_string, {foo: 'bar'}).should eql("-foo 'bar'")
+      expect(@cmdlet.send(:command_switches_string, {foo: 'bar'})).to eql("-foo 'bar'")
     end
 
     it 'should correctly handle a value type of string even when it is 0 length' do
-      @cmdlet.send(:command_switches_string, {foo: ''}).should eql("-foo ''")
+      expect(@cmdlet.send(:command_switches_string, {foo: ''})).to eql("-foo ''")
     end
 
     it 'should not quote integers' do
-      @cmdlet.send(:command_switches_string, {foo: 1}).should eql("-foo 1")
+      expect(@cmdlet.send(:command_switches_string, {foo: 1})).to eql("-foo 1")
     end
 
     it 'should not quote floats' do
-      @cmdlet.send(:command_switches_string, {foo: 1.0}).should eql("-foo 1.0")
+      expect(@cmdlet.send(:command_switches_string, {foo: 1.0})).to eql("-foo 1.0")
     end
 
     it 'has just the switch when the value is true' do
-      @cmdlet.send(:command_switches_string, {foo: true}).should eql("-foo")
+      expect(@cmdlet.send(:command_switches_string, {foo: true})).to eql("-foo")
     end
   end
 end

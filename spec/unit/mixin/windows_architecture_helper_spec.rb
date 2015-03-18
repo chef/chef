@@ -35,13 +35,13 @@ describe Chef::Mixin::WindowsArchitectureHelper do
 
   it "returns true when valid architectures are passed to valid_windows_architecture?" do
     @valid_architectures.each do | architecture |
-      valid_windows_architecture?(architecture).should == true
+      expect(valid_windows_architecture?(architecture)).to eq(true)
     end
   end
 
   it "returns false when invalid architectures are passed to valid_windows_architecture?" do
     @invalid_architectures.each do | architecture |
-      valid_windows_architecture?(architecture).should == false
+      expect(valid_windows_architecture?(architecture)).to eq(false)
     end
   end
 
@@ -54,7 +54,7 @@ describe Chef::Mixin::WindowsArchitectureHelper do
   it "raises an error if an invalid architecture is passed to assert_valid_windows_architecture!" do
     @invalid_architectures.each do | architecture |
       begin
-        assert_valid_windows_architecture!(architecture).should raise_error Chef::Exceptions::Win32ArchitectureIncorrect
+        expect(assert_valid_windows_architecture!(architecture)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
       rescue Chef::Exceptions::Win32ArchitectureIncorrect
       end
     end
@@ -75,8 +75,8 @@ describe Chef::Mixin::WindowsArchitectureHelper do
       new_node.default["kernel"][:machine] = node_architecture.to_s
 
       @valid_architectures.each do | supported_architecture |
-        node_supports_windows_architecture?(new_node, supported_architecture).should == true if only_valid_combinations && (supported_architecture != :x86_64 && node_architecture != :i386 )
-        node_supports_windows_architecture?(new_node, supported_architecture).should == false if ! only_valid_combinations && (supported_architecture == :x86_64 && node_architecture == :i386 )
+        expect(node_supports_windows_architecture?(new_node, supported_architecture)).to eq(true) if only_valid_combinations && (supported_architecture != :x86_64 && node_architecture != :i386 )
+        expect(node_supports_windows_architecture?(new_node, supported_architecture)).to eq(false) if ! only_valid_combinations && (supported_architecture == :x86_64 && node_architecture == :i386 )
       end
     end
   end

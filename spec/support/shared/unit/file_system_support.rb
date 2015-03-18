@@ -56,7 +56,7 @@ module FileSystemSupport
   def no_blocking_calls_allowed
     [ Chef::ChefFS::FileSystem::MemoryFile, Chef::ChefFS::FileSystem::MemoryDir ].each do |c|
       [ :children, :exists?, :read ].each do |m|
-        c.any_instance.stub(m).and_raise("#{m.to_s} should not be called")
+        allow_any_instance_of(c).to receive(m).and_raise("#{m.to_s} should not be called")
       end
     end
   end
@@ -64,7 +64,7 @@ module FileSystemSupport
   def list_should_yield_paths(fs, pattern_str, *expected_paths)
     result_paths = []
     Chef::ChefFS::FileSystem.list(fs, pattern(pattern_str)).each { |result| result_paths << result.path }
-    result_paths.should =~ expected_paths
+    expect(result_paths).to match_array(expected_paths)
   end
 end
 

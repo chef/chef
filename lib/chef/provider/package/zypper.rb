@@ -38,24 +38,23 @@ class Chef
           version=''
           oud_version=''
           Chef::Log.debug("#{@new_resource} checking zypper")
-          status = popen4("zypper --non-interactive info #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^Version: (.+)$/
-                version = $1
-                Chef::Log.debug("#{@new_resource} version #{$1}")
-              when /^Installed: Yes$/
-                is_installed=true
-                Chef::Log.debug("#{@new_resource} is installed")
+          status = shell_out("zypper --non-interactive info #{@new_resource.package_name}")
+          status.stdout.each_line do |line|
+            case line
+            when /^Version: (.+)$/
+              version = $1
+              Chef::Log.debug("#{@new_resource} version #{$1}")
+            when /^Installed: Yes$/
+              is_installed=true
+              Chef::Log.debug("#{@new_resource} is installed")
 
-              when /^Installed: No$/
-                is_installed=false
-                Chef::Log.debug("#{@new_resource} is not installed")
-              when /^Status: out-of-date \(version (.+) installed\)$/
-                is_out_of_date=true
-                oud_version=$1
-                Chef::Log.debug("#{@new_resource} out of date version #{$1}")
-              end
+            when /^Installed: No$/
+              is_installed=false
+              Chef::Log.debug("#{@new_resource} is not installed")
+            when /^Status: out-of-date \(version (.+) installed\)$/
+              is_out_of_date=true
+              oud_version=$1
+              Chef::Log.debug("#{@new_resource} out of date version #{$1}")
             end
           end
 

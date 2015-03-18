@@ -6,7 +6,7 @@
 # testing code that mixes in platform specific modules like +Chef::Mixin::Securable+
 # or +Chef::FileAccessControl+
 def platform_mock(platform = :unix, &block)
-  Chef::Platform.stub(:windows?).and_return(platform == :windows ? true : false)
+  allow(Chef::Platform).to receive(:windows?).and_return(platform == :windows ? true : false)
   ENV['SYSTEMDRIVE'] = (platform == :windows ? 'C:' : nil)
 
   if platform == :windows

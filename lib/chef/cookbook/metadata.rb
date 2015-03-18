@@ -227,11 +227,11 @@ class Chef
         )
       end
 
-      # Sets the current cookbook version, or returns it.  Can be two or three digits, seperated
+      # Sets the current cookbook version, or returns it.  Can be two or three digits, separated
       # by dots.  ie: '2.1', '1.5.4' or '0.9'.
       #
       # === Parameters
-      # version<String>:: The curent version, as a string
+      # version<String>:: The current version, as a string
       #
       # === Returns
       # version<String>:: Returns the current version
@@ -246,7 +246,7 @@ class Chef
       # Sets the name of the cookbook, or returns it.
       #
       # === Parameters
-      # name<String>:: The curent cookbook name.
+      # name<String>:: The current cookbook name.
       #
       # === Returns
       # name<String>:: Returns the current cookbook name.

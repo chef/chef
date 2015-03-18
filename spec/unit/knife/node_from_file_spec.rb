@@ -28,30 +28,30 @@ describe Chef::Knife::NodeFromFile do
       :print_after => nil
     }
     @knife.name_args = [ "adam.rb" ]
-    @knife.stub(:output).and_return(true)
-    @knife.stub(:confirm).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
+    allow(@knife).to receive(:confirm).and_return(true)
     @node = Chef::Node.new()
-    @node.stub(:save)
-    @knife.loader.stub(:load_from).and_return(@node)
+    allow(@node).to receive(:save)
+    allow(@knife.loader).to receive(:load_from).and_return(@node)
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
 
   describe "run" do
     it "should load from a file" do
-      @knife.loader.should_receive(:load_from).with('nodes', 'adam.rb').and_return(@node)
+      expect(@knife.loader).to receive(:load_from).with('nodes', 'adam.rb').and_return(@node)
       @knife.run
     end
 
     it "should not print the Node" do
-      @knife.should_not_receive(:output)
+      expect(@knife).not_to receive(:output)
       @knife.run
     end
 
     describe "with -p or --print-after" do
       it "should print the Node" do
         @knife.config[:print_after] = true
-        @knife.should_receive(:output)
+        expect(@knife).to receive(:output)
         @knife.run
       end
     end

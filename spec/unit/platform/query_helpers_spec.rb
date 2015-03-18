@@ -20,9 +20,9 @@ require 'spec_helper'
 
 describe "Chef::Platform#windows_server_2003?" do
   it "returns false early when not on windows" do
-    Chef::Platform.stub(:windows?).and_return(false)
+    allow(Chef::Platform).to receive(:windows?).and_return(false)
     expect(Chef::Platform).not_to receive(:require) 
-    expect(Chef::Platform.windows_server_2003?).to be_false
+    expect(Chef::Platform.windows_server_2003?).to be_falsey
   end
 
   # CHEF-4888: Need to call WIN32OLE.ole_initialize in new threads
@@ -34,14 +34,14 @@ end
 describe 'Chef::Platform#supports_dsc?' do 
   it 'returns false if powershell is not present' do
     node = Chef::Node.new
-    Chef::Platform.supports_dsc?(node).should be_false
+    expect(Chef::Platform.supports_dsc?(node)).to be_falsey
   end
 
   ['1.0', '2.0', '3.0'].each do |version|
     it "returns false for Powershell #{version}" do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = version
-      Chef::Platform.supports_dsc?(node).should be_false
+      expect(Chef::Platform.supports_dsc?(node)).to be_falsey
     end
   end
 
@@ -49,7 +49,7 @@ describe 'Chef::Platform#supports_dsc?' do
     it "returns true for Powershell #{version}" do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = version
-      Chef::Platform.supports_dsc?(node).should be_true
+      expect(Chef::Platform.supports_dsc?(node)).to be_truthy
     end
   end
 end

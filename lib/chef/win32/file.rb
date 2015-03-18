@@ -155,6 +155,27 @@ class Chef
         end
       end
 
+      def self.file_access_check(path, desired_access)
+        security_descriptor = Chef::ReservedNames::Win32::Security.get_file_security(path)
+        token_rights = Chef::ReservedNames::Win32::Security::TOKEN_IMPERSONATE | 
+                       Chef::ReservedNames::Win32::Security::TOKEN_QUERY |
+                       Chef::ReservedNames::Win32::Security::TOKEN_DUPLICATE | 
+                       Chef::ReservedNames::Win32::Security::STANDARD_RIGHTS_READ
+        token = Chef::ReservedNames::Win32::Security.open_process_token(
+          Chef::ReservedNames::Win32::Process.get_current_process,
+          token_rights)
+        duplicate_token = token.duplicate_token(:SecurityImpersonation)
+
+        mapping = Chef::ReservedNames::Win32::Security::GENERIC_MAPPING.new
+        mapping[:GenericRead] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_READ
+        mapping[:GenericWrite] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_WRITE
+        mapping[:GenericExecute] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_EXECUTE
+        mapping[:GenericAll] = Chef::ReservedNames::Win32::Security::FILE_ALL_ACCESS
+
+        Chef::ReservedNames::Win32::Security.access_check(security_descriptor, duplicate_token, 
+                                                          desired_access, mapping)
+      end
+
       # ::File compat
       class << self
         alias :stat :info

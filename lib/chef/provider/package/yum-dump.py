@@ -23,7 +23,7 @@
 # and dump the results to stdout.
 #
 # yum-dump invokes yum similarly to the command line interface which makes it
-# subject to most of the configuration paramaters in yum.conf. yum-dump will
+# subject to most of the configuration parameters in yum.conf. yum-dump will
 # also load yum plugins in the same manor as yum - these can affect the output.
 #
 # Can be run as non root, but that won't update the cache.
@@ -70,7 +70,7 @@ def setup(yb, options):
       else:
         yb.doConfigSetup(errorlevel=0, debuglevel=0)
     except yum.Errors.ConfigError, e:
-      # supresses an ignored exception at exit
+      # suppresses an ignored exception at exit
       yb.preconf = None
       print >> sys.stderr, "yum-dump Config Error: %s" % e
       return 1

@@ -21,33 +21,33 @@ require 'spec_helper'
 describe Chef::Knife::EnvironmentList do
   before(:each) do
     @knife = Chef::Knife::EnvironmentList.new
-    @knife.stub(:msg).and_return true
-    @knife.stub(:output).and_return true
-    @knife.stub(:show_usage).and_return true
+    allow(@knife).to receive(:msg).and_return true
+    allow(@knife).to receive(:output).and_return true
+    allow(@knife).to receive(:show_usage).and_return true
 
     @environments = {
       "production" => "http://localhost:4000/environments/production",
       "development" => "http://localhost:4000/environments/development",
       "testing" => "http://localhost:4000/environments/testing"
     }
-    Chef::Environment.stub(:list).and_return @environments
+    allow(Chef::Environment).to receive(:list).and_return @environments
   end
 
   it "should make an api call to list the environments" do
-    Chef::Environment.should_receive(:list)
+    expect(Chef::Environment).to receive(:list)
     @knife.run
   end
 
   it "should print the environment names in a sorted list" do
     names = @environments.keys.sort { |a,b| a <=> b }
-    @knife.should_receive(:output).with(names)
+    expect(@knife).to receive(:output).with(names)
     @knife.run
   end
 
   describe "with --with-uri" do
     it "should print and unsorted list of the environments and their URIs" do
       @knife.config[:with_uri] = true
-      @knife.should_receive(:output).with(@environments)
+      expect(@knife).to receive(:output).with(@environments)
       @knife.run
     end
   end

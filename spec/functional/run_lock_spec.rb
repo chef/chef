@@ -163,13 +163,13 @@ describe Chef::RunLock do
     let!(:run_lock) { Chef::RunLock.new(lockfile) }
 
     it "creates the full path to the lockfile" do
-      lambda { run_lock.acquire }.should_not raise_error
-      File.should exist(lockfile)
+      expect { run_lock.acquire }.not_to raise_error
+      expect(File).to exist(lockfile)
     end
 
     it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
       run_lock.acquire
-      (run_lock.runlock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).should == Fcntl::FD_CLOEXEC
+      expect(run_lock.runlock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).to eq(Fcntl::FD_CLOEXEC)
     end
 
     it "allows only one chef client run per lockfile" do
@@ -208,7 +208,7 @@ p1 has lock
 p1 releasing lock
 p2 has lock
 E
-      results.should == expected
+      expect(results).to eq(expected)
     end
 
     it "clears the lock if the process dies unexpectedly" do
@@ -233,12 +233,12 @@ E
 
       Process.waitpid2(p2)
 
-      results.should =~ /p2 has lock\Z/
+      expect(results).to match(/p2 has lock\Z/)
     end
 
     it "test returns true and acquires the lock" do
       p1 = fork do
-        run_lock.test.should == true
+        expect(run_lock.test).to eq(true)
         sleep 2
         exit! 1
       end
@@ -246,7 +246,7 @@ E
       wait_on_lock
 
       p2 = fork do
-        run_lock.test.should == false
+        expect(run_lock.test).to eq(false)
         exit! 0
       end
 
@@ -263,7 +263,7 @@ E
 
       wait_on_lock
 
-      run_lock.test.should == false
+      expect(run_lock.test).to eq(false)
       Process.waitpid2(p1)
     end
 
@@ -277,7 +277,7 @@ E
 
       wait_on_lock
       sleep 0.5 # Possible race condition on Solaris which pid is observed as 0
-      File.read(lockfile).should == p1.to_s
+      expect(File.read(lockfile)).to eq(p1.to_s)
 
       Process.waitpid2(p1)
     end

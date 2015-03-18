@@ -174,7 +174,7 @@ recommended though, and git fits with a lot of the workflow paradigms.
 ## ENVIRONMENT
   * `EDITOR`:
     The text editor to use for editing data. The --editor option takes
-    precedence over this value, and the --disable-editing option supresses
+    precedence over this value, and the --disable-editing option suppresses
     data editing entirely.
 
 ## SEE ALSO

@@ -86,16 +86,14 @@ class Chef
 
         class_name = convert_to_class_name(provider_name)
 
-        if Chef::Provider.const_defined?(class_name)
+        if Chef::Provider.const_defined?(class_name, false)
           Chef::Log.info("#{class_name} light-weight provider is already initialized -- Skipping loading #{filename}!")
           Chef::Log.debug("Overriding already defined LWRPs is not supported anymore starting with Chef 12.")
           provider_class = Chef::Provider.const_get(class_name)
         else
           provider_class = Class.new(self)
-          provider_class.class_from_file(filename)
-
-          class_name = convert_to_class_name(provider_name)
           Chef::Provider.const_set(class_name, provider_class)
+          provider_class.class_from_file(filename)
           Chef::Log.debug("Loaded contents of #{filename} into a provider named #{provider_name} defined in Chef::Provider::#{class_name}")
         end
 

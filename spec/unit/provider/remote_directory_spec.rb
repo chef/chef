@@ -84,7 +84,7 @@ describe Chef::Provider::RemoteDirectory do
       expect(directory_resource.mode).to  eq("0750")
       expect(directory_resource.group).to eq("wheel")
       expect(directory_resource.owner).to eq("root")
-      expect(directory_resource.recursive).to be_true
+      expect(directory_resource.recursive).to be_truthy
     end
 
     it "configures access control on files in the directory" do
@@ -116,17 +116,17 @@ describe Chef::Provider::RemoteDirectory do
     it "creates the toplevel directory without error " do
       @resource.recursive(false)
       @provider.run_action(:create)
-      expect(::File.exist?(@destination_dir)).to be_true
+      expect(::File.exist?(@destination_dir)).to be_truthy
     end
 
     it "transfers the directory with all contents" do
       @provider.run_action(:create)
-      expect(::File.exist?(@destination_dir + '/remote_dir_file1.txt')).to be_true
-      expect(::File.exist?(@destination_dir + '/remote_dir_file2.txt')).to be_true
-      expect(::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt')).to be_true
-      expect(::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file2.txt')).to be_true
-      expect(::File.exist?(@destination_dir + '/remotesubdir/.a_dotfile')).to be_true
-      expect(::File.exist?(@destination_dir + '/.a_dotdir/.a_dotfile_in_a_dotdir')).to be_true
+      expect(::File.exist?(@destination_dir + '/remote_dir_file1.txt')).to be_truthy
+      expect(::File.exist?(@destination_dir + '/remote_dir_file2.txt')).to be_truthy
+      expect(::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt')).to be_truthy
+      expect(::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file2.txt')).to be_truthy
+      expect(::File.exist?(@destination_dir + '/remotesubdir/.a_dotfile')).to be_truthy
+      expect(::File.exist?(@destination_dir + '/.a_dotdir/.a_dotfile_in_a_dotdir')).to be_truthy
     end
 
     describe "only if it is missing" do
@@ -141,8 +141,8 @@ describe Chef::Provider::RemoteDirectory do
 
         @provider.run_action(:create_if_missing)
 
-        expect(file1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt')))).to be_true
-        expect(subdirfile1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt')))).to be_true
+        expect(file1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt')))).to be_truthy
+        expect(subdirfile1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt')))).to be_truthy
       end
     end
 
@@ -155,13 +155,13 @@ describe Chef::Provider::RemoteDirectory do
         FileUtils.touch(@destination_dir + '/remotesubdir/marked_for_death_again.txt')
         @provider.run_action(:create)
 
-        expect(::File.exist?(@destination_dir + '/remote_dir_file1.txt')).to be_true
-        expect(::File.exist?(@destination_dir + '/remote_dir_file2.txt')).to be_true
-        expect(::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt')).to be_true
-        expect(::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file2.txt')).to be_true
+        expect(::File.exist?(@destination_dir + '/remote_dir_file1.txt')).to be_truthy
+        expect(::File.exist?(@destination_dir + '/remote_dir_file2.txt')).to be_truthy
+        expect(::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt')).to be_truthy
+        expect(::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file2.txt')).to be_truthy
 
-        expect(::File.exist?(@destination_dir + '/marked_for_death.txt')).to be_false
-        expect(::File.exist?(@destination_dir + '/remotesubdir/marked_for_death_again.txt')).to be_false
+        expect(::File.exist?(@destination_dir + '/marked_for_death.txt')).to be_falsey
+        expect(::File.exist?(@destination_dir + '/remotesubdir/marked_for_death_again.txt')).to be_falsey
       end
 
       it "removes files in subdirectories before files above" do
@@ -172,10 +172,10 @@ describe Chef::Provider::RemoteDirectory do
         FileUtils.touch(@destination_dir + '/a/multiply/nested/baz.txt')
         FileUtils.touch(@destination_dir + '/a/multiply/nested/directory/qux.txt')
         @provider.run_action(:create)
-        expect(::File.exist?(@destination_dir + '/a/foo.txt')).to be_false
-        expect(::File.exist?(@destination_dir + '/a/multiply/bar.txt')).to be_false
-        expect(::File.exist?(@destination_dir + '/a/multiply/nested/baz.txt')).to be_false
-        expect(::File.exist?(@destination_dir + '/a/multiply/nested/directory/qux.txt')).to be_false
+        expect(::File.exist?(@destination_dir + '/a/foo.txt')).to be_falsey
+        expect(::File.exist?(@destination_dir + '/a/multiply/bar.txt')).to be_falsey
+        expect(::File.exist?(@destination_dir + '/a/multiply/nested/baz.txt')).to be_falsey
+        expect(::File.exist?(@destination_dir + '/a/multiply/nested/directory/qux.txt')).to be_falsey
       end
 
       it "removes directory symlinks properly", :not_supported_on_win2k3 do
@@ -188,12 +188,12 @@ describe Chef::Provider::RemoteDirectory do
         Dir.mktmpdir do |tmp_dir|
           begin
             @fclass.file_class.symlink(tmp_dir.dup, symlinked_dir_path)
-            expect(::File.exist?(symlinked_dir_path)).to be_true
+            expect(::File.exist?(symlinked_dir_path)).to be_truthy
 
             @provider.run_action
 
-            expect(::File.exist?(symlinked_dir_path)).to be_false
-            expect(::File.exist?(tmp_dir)).to be_true
+            expect(::File.exist?(symlinked_dir_path)).to be_falsey
+            expect(::File.exist?(tmp_dir)).to be_truthy
           rescue Chef::Exceptions::Win32APIError => e
             pending "This must be run as an Administrator to create symlinks"
           end
@@ -212,8 +212,8 @@ describe Chef::Provider::RemoteDirectory do
         file1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt'))
         subdirfile1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
         @provider.run_action(:create)
-        expect(file1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt')))).to be_true
-        expect(subdirfile1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt')))).to be_true
+        expect(file1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt')))).to be_truthy
+        expect(subdirfile1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt')))).to be_truthy
       end
     end
 

@@ -40,15 +40,15 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
   end
 
   it "should call set_all on the file access control object" do
-    Chef::FileAccessControl.any_instance.should_receive(:set_all)
+    expect_any_instance_of(Chef::FileAccessControl).to receive(:set_all)
     @provider.enforce_ownership_and_permissions
   end
 
   context "when nothing was updated" do
     before do
-      Chef::FileAccessControl.any_instance.stub(:uid_from_resource).and_return(0)
-      Chef::FileAccessControl.any_instance.stub(:requires_changes?).and_return(false)
-      Chef::FileAccessControl.any_instance.stub(:define_resource_requirements)
+      allow_any_instance_of(Chef::FileAccessControl).to receive(:uid_from_resource).and_return(0)
+      allow_any_instance_of(Chef::FileAccessControl).to receive(:requires_changes?).and_return(false)
+      allow_any_instance_of(Chef::FileAccessControl).to receive(:define_resource_requirements)
 
       passwd_struct = if windows?
                         Struct::Passwd.new("root", "x", 0, 0, "/root", "/bin/bash")
@@ -56,14 +56,14 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
                         Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
                       end
       group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
-      Etc.stub(:getpwuid).and_return(passwd_struct)
-      Etc.stub(:getgrgid).and_return(group_struct)
+      allow(Etc).to receive(:getpwuid).and_return(passwd_struct)
+      allow(Etc).to receive(:getgrgid).and_return(group_struct)
     end
 
     it "does not set updated_by_last_action on the new resource" do
-      @provider.new_resource.should_not_receive(:updated_by_last_action)
+      expect(@provider.new_resource).not_to receive(:updated_by_last_action)
 
-      Chef::FileAccessControl.any_instance.stub(:set_all)
+      allow_any_instance_of(Chef::FileAccessControl).to receive(:set_all)
       @provider.run_action(:create)
     end
 
@@ -71,8 +71,8 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
 
   context "when something was modified" do
     before do
-      Chef::FileAccessControl.any_instance.stub(:requires_changes?).and_return(true)
-      Chef::FileAccessControl.any_instance.stub(:uid_from_resource).and_return(0)
+      allow_any_instance_of(Chef::FileAccessControl).to receive(:requires_changes?).and_return(true)
+      allow_any_instance_of(Chef::FileAccessControl).to receive(:uid_from_resource).and_return(0)
 
       passwd_struct = if windows?
                         Struct::Passwd.new("root", "x", 0, 0, "/root", "/bin/bash")
@@ -80,15 +80,15 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
                         Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
                       end
       group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
-      Etc.stub(:getpwuid).and_return(passwd_struct)
-      Etc.stub(:getgrgid).and_return(group_struct)
+      allow(Etc).to receive(:getpwuid).and_return(passwd_struct)
+      allow(Etc).to receive(:getgrgid).and_return(group_struct)
     end
 
     it "sets updated_by_last_action on the new resource" do
       @provider.new_resource.owner(0) # CHEF-3557 hack - Set these because we don't for windows
       @provider.new_resource.group(0) # CHEF-3557 hack - Set these because we don't for windows
-      @provider.new_resource.should_receive(:updated_by_last_action)
-      Chef::FileAccessControl.any_instance.stub(:set_all)
+      expect(@provider.new_resource).to receive(:updated_by_last_action)
+      allow_any_instance_of(Chef::FileAccessControl).to receive(:set_all)
       @provider.run_action(:create)
     end
   end

@@ -19,6 +19,7 @@
 # TODO: Allow @new_resource.source to be a Product Code as a GUID for uninstall / network install
 
 require 'chef/win32/api/installer' if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
@@ -26,6 +27,7 @@ class Chef
       class Windows
         class MSI
           include Chef::ReservedNames::Win32::API::Installer if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+          include Chef::Mixin::ShellOut
 
           def initialize(resource)
             @new_resource = resource
@@ -40,7 +42,7 @@ class Chef
           def installed_version
             Chef::Log.debug("#{@new_resource} getting product code for package at #{@new_resource.source}")
             product_code = get_product_property(@new_resource.source, "ProductCode")
-            Chef::Log.debug("#{@new_resource} checking package status and verion for #{product_code}")
+            Chef::Log.debug("#{@new_resource} checking package status and version for #{product_code}")
             get_installed_version(product_code)
           end
 

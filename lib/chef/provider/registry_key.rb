@@ -60,9 +60,9 @@ class Chef
         @registry ||= Chef::Win32::Registry.new(@run_context, @new_resource.architecture)
       end
 
-     def values_to_hash(values)
+      def values_to_hash(values)
         if values
-         @name_hash = Hash[values.map { |val| [val[:name], val] }]
+          @name_hash = Hash[values.map { |val| [val[:name], val] }]
         else
           @name_hash = {}
         end

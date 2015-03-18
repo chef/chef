@@ -48,13 +48,13 @@ describe Chef::Provider::Service::Gentoo do
 
     it "should track when service file is not found in /etc/runlevels" do
       @provider.load_current_resource
-      expect(@provider.instance_variable_get("@found_script")).to be_false
+      expect(@provider.instance_variable_get("@found_script")).to be_falsey
     end
 
     it "should track when service file is found in /etc/runlevels/**/" do
       allow(Dir).to receive(:glob).with("/etc/runlevels/**/chef").and_return(["/etc/runlevels/default/chef"])
       @provider.load_current_resource
-      expect(@provider.instance_variable_get("@found_script")).to be_true
+      expect(@provider.instance_variable_get("@found_script")).to be_truthy
     end
 
     describe "when detecting the service enable state" do
@@ -70,7 +70,7 @@ describe Chef::Provider::Service::Gentoo do
           end
           it "should set enabled to true" do
             @provider.load_current_resource
-            expect(@current_resource.enabled).to be_true
+            expect(@current_resource.enabled).to be_truthy
           end
         end
 
@@ -82,7 +82,7 @@ describe Chef::Provider::Service::Gentoo do
 
           it "should set enabled to false" do
             @provider.load_current_resource
-            expect(@current_resource.enabled).to be_false
+            expect(@current_resource.enabled).to be_falsey
           end
         end
 
@@ -94,7 +94,7 @@ describe Chef::Provider::Service::Gentoo do
 
           it "should set enabled to false" do
             @provider.load_current_resource
-            expect(@current_resource.enabled).to be_false
+            expect(@current_resource.enabled).to be_falsey
           end
 
         end
@@ -108,17 +108,17 @@ describe Chef::Provider::Service::Gentoo do
 
     it "should support the status command automatically" do
       @provider.load_current_resource
-      expect(@new_resource.supports[:status]).to be_true
+      expect(@new_resource.supports[:status]).to be_truthy
     end
 
     it "should support the restart command automatically" do
       @provider.load_current_resource
-      expect(@new_resource.supports[:restart]).to be_true
+      expect(@new_resource.supports[:restart]).to be_truthy
     end
 
     it "should not support the reload command automatically" do
       @provider.load_current_resource
-      expect(@new_resource.supports[:reload]).not_to be_true
+      expect(@new_resource.supports[:reload]).not_to be_truthy
     end
 
   end

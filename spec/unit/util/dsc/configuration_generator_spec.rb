@@ -51,9 +51,9 @@ describe Chef::Util::DSC::ConfigurationGenerator do
     context 'when strings are used as switches' do
       it 'should merge the hash if there are no restricted switches' do
         merged = conf_man.send(:get_merged_configuration_flags!, {'flag' => 'a'}, 'hello')
-        merged.should include(:flag)
-        merged[:flag].should eql('a')
-        merged.should include(:outputpath)
+        expect(merged).to include(:flag)
+        expect(merged[:flag]).to eql('a')
+        expect(merged).to include(:outputpath)
       end
 
       it 'should raise an ArgumentError if you try to override outputpath' do
@@ -70,16 +70,16 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
       it 'should be case insensitive to switches that are allowed' do
         merged = conf_man.send(:get_merged_configuration_flags!, {'FLAG' => 'a'}, 'hello')
-        merged.should include(:flag)
+        expect(merged).to include(:flag)
       end
     end
 
     context 'when symbols are used as switches' do
       it 'should merge the hash if there are no restricted switches' do
         merged = conf_man.send(:get_merged_configuration_flags!, {:flag => 'a'}, 'hello')
-        merged.should include(:flag)
-        merged[:flag].should eql('a')
-        merged.should include(:outputpath)
+        expect(merged).to include(:flag)
+        expect(merged[:flag]).to eql('a')
+        expect(merged).to include(:outputpath)
       end
 
       it 'should raise an ArgumentError if you try to override outputpath' do
@@ -96,21 +96,21 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
       it 'should be case insensitive to switches that are allowed' do
         merged = conf_man.send(:get_merged_configuration_flags!, {:FLAG => 'a'}, 'hello')
-        merged.should include(:flag)
+        expect(merged).to include(:flag)
       end
     end
 
     context 'when there are no flags' do
       it 'should supply an output path if configuration_flags is an empty hash' do
         merged = conf_man.send(:get_merged_configuration_flags!, {}, 'hello')
-        merged.should include(:outputpath)
-        merged.length.should eql(1)
+        expect(merged).to include(:outputpath)
+        expect(merged.length).to eql(1)
       end
 
       it 'should supply an output path if configuration_flags is an empty hash' do
         merged = conf_man.send(:get_merged_configuration_flags!, nil, 'hello')
-        merged.should include(:outputpath)
-        merged.length.should eql(1)
+        expect(merged).to include(:outputpath)
+        expect(merged.length).to eql(1)
       end
     end
 
@@ -130,14 +130,14 @@ describe Chef::Util::DSC::ConfigurationGenerator do
         [a,b].join("++")
       end
       allow(file_like_object).to receive(:write)
-      conf_man.send(:write_document_generation_script, 'file', 'hello')
+      conf_man.send(:write_document_generation_script, 'file', 'hello', {})
       expect(file_like_object).to have_received(:write)
     end
   end
 
   describe "#find_configuration_document" do
     it "should find the mof file" do
-      # These tests seem way too implementation specific. Unfortunatly, File and Dir
+      # These tests seem way too implementation specific. Unfortunately, File and Dir
       # need to be mocked because they are OS specific
       allow(File).to receive(:join) do |a, b|
         [a,b].join("++")
@@ -158,14 +158,36 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
   describe "#configuration_code" do
     it "should build dsc" do
-      dsc = conf_man.send(:configuration_code, 'archive{}', 'hello')
+      dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {})
       found_configuration = false
       dsc.split(';').each do |command|
         if command.downcase =~ /\s*configuration\s+'hello'\s*\{\s*node\s+'localhost'\s*\{\s*archive\s*\{\s*\}\s*\}\s*\}\s*/
           found_configuration = true
         end
       end
-      expect(found_configuration).to be_true
+      expect(found_configuration).to be_truthy
+    end
+    context "with imports" do
+      it "should import all resources when a module has an empty list" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => []})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule\s*\n/)
+      end
+
+      it "should import all resources when a module has a list with *" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', '*', 'BarResource']})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule\s*\n/)
+      end
+
+      it "should import specific resources when a module has list without * that is not empty" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', 'BarResource']})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule -Name FooResource,BarResource/)
+      end
+
+      it "should import multiple modules with multiple import statements" do
+        dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {'FooModule' => ['FooResource', 'BarResource'], 'BazModule' => []})
+        expect(dsc).to match(/Import-DscResource -ModuleName FooModule -Name FooResource,BarResource/)
+        expect(dsc).to match(/Import-DscResource -ModuleName BazModule\s*\n/)
+      end 
     end
   end
 end

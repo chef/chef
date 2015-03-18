@@ -44,7 +44,7 @@ class Chef
         is_chef_resource!(resource)
         resource_type ||= resource.resource_name
         instance_name ||= resource.name
-        key = ResourceSet.create_key(resource_type, instance_name)
+        key = create_key(resource_type, instance_name)
         @resources_by_key[key] = resource
       end
 
@@ -53,7 +53,7 @@ class Chef
           when key.kind_of?(String)
             lookup_by = key
           when key.kind_of?(Chef::Resource)
-            lookup_by = ResourceSet.create_key(key.resource_name, key.name)
+            lookup_by = create_key(key.resource_name, key.name)
           else
             raise ArgumentError, "Must pass a Chef::Resource or String to lookup"
         end
@@ -128,18 +128,18 @@ class Chef
         end
       end
 
-      def self.create_key(resource_type, instance_name)
+      private
+
+      def create_key(resource_type, instance_name)
         "#{resource_type}[#{instance_name}]"
       end
-
-      private
 
       def find_resource_by_hash(arg)
         results = Array.new
         arg.each do |resource_type, name_list|
           instance_names = name_list.kind_of?(Array) ? name_list : [ name_list ]
           instance_names.each do |instance_name|
-            results << lookup(ResourceSet.create_key(resource_type, instance_name))
+            results << lookup(create_key(resource_type, instance_name))
           end
         end
         return results
@@ -153,12 +153,12 @@ class Chef
             arg =~ /^.+\[(.+)\]$/
             resource_list = $1
             resource_list.split(",").each do |instance_name|
-              results << lookup(ResourceSet.create_key(resource_type, instance_name))
+              results << lookup(create_key(resource_type, instance_name))
             end
           when SINGLE_RESOURCE_MATCH
             resource_type = $1
             name = $2
-            results << lookup(ResourceSet.create_key(resource_type, name))
+            results << lookup(create_key(resource_type, name))
           else
             raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
         end

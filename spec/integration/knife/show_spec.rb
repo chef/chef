@@ -76,7 +76,7 @@ EOM
 }
 EOM
       end
-      it 'knife show /environments/x.json shows the remote version', :pending => (RUBY_VERSION < "1.9") do
+      it 'knife show /environments/x.json shows the remote version', :skip => (RUBY_VERSION < "1.9") do
         knife('show /environments/x.json').should_succeed <<EOM
 /environments/x.json:
 {
@@ -92,7 +92,7 @@ EOM
 }
 EOM
       end
-      it 'knife show /roles/x.json shows the remote version', :pending => (RUBY_VERSION < "1.9") do
+      it 'knife show /roles/x.json shows the remote version', :skip => (RUBY_VERSION < "1.9") do
         knife('show /roles/x.json').should_succeed <<EOM
 /roles/x.json:
 {
@@ -135,7 +135,7 @@ EOM
         'name' => 'x'
       }
     end
-    it 'knife show shows the attributes in a predetermined order', :pending => (RUBY_VERSION < "1.9") do
+    it 'knife show shows the attributes in a predetermined order', :skip => (RUBY_VERSION < "1.9") do
       knife('show /environments/x.json').should_succeed <<EOM
 /environments/x.json:
 {

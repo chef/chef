@@ -20,24 +20,19 @@ require 'chef/util/dsc/lcm_output_parser'
 
 describe Chef::Util::DSC::LocalConfigurationManager::Parser do
   context 'empty input parameter' do
-    it 'returns an empty array for a 0 length string' do
-      Chef::Util::DSC::LocalConfigurationManager::Parser::parse('').should be_empty
+    it 'raises an exception when there are no valid lines' do
+      str = <<-EOF
+                
+      EOF
+      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)}.to raise_error(Chef::Exceptions::LCMParser)
     end
 
-    it 'returns an empty array for a nil input' do
-      Chef::Util::DSC::LocalConfigurationManager::Parser::parse('').should be_empty
+    it 'raises an exception for a nil input' do
+      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(nil)}.to raise_error(Chef::Exceptions::LCMParser)
     end
   end
 
   context 'correctly formatted output from lcm' do
-    it 'returns an empty array for a log with no resources' do
-      str = <<EOF
-logtype: [machinename]: LCM:  [ Start  Set      ]
-logtype: [machinename]: LCM:  [ End    Set      ]
-EOF
-      Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str).should be_empty
-    end
-
     it 'returns a single resource when only 1 logged with the correct name' do
       str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
@@ -46,8 +41,8 @@ logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-      resources.length.should eq(1)
-      resources[0].name.should eq('[name]')
+      expect(resources.length).to eq(1)
+      expect(resources[0].name).to eq('[name]')
     end
 
     it 'identifies when a resource changes the state of the system' do
@@ -60,7 +55,7 @@ logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-      resources[0].changes_state?.should be_true
+      expect(resources[0].changes_state?).to be_truthy
     end
 
     it 'preserves the log provided for how the system changed the state' do
@@ -74,7 +69,7 @@ logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-      resources[0].change_log.should match_array(["[name]","[message]","[name]"])
+      expect(resources[0].change_log).to match_array(["[name]","[message]","[name]"])
     end
 
     it 'should return false for changes_state?' do
@@ -86,7 +81,7 @@ logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-      resources[0].changes_state?.should be_false
+      expect(resources[0].changes_state?).to be_falsey
     end
 
     it 'should return an empty array for change_log if changes_state? is false' do
@@ -98,7 +93,7 @@ logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-      resources[0].change_log.should be_empty
+      expect(resources[0].change_log).to be_empty
     end
   end
 
@@ -120,8 +115,8 @@ logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
 
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-      resources[0].changes_state?.should be_false
-      resources[1].changes_state?.should be_true
+      expect(resources[0].changes_state?).to be_falsey
+      expect(resources[1].changes_state?).to be_truthy
     end
 
     it 'should allow missing a [End Resource] when its the first one and still find all the resource' do
@@ -141,8 +136,8 @@ logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
 
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-      resources[0].changes_state?.should be_false
-      resources[1].changes_state?.should be_true
+      expect(resources[0].changes_state?).to be_falsey
+      expect(resources[1].changes_state?).to be_truthy
     end
 
     it 'should allow missing set and end resource and assume an unconverged resource in this case' do
@@ -160,10 +155,10 @@ logtype: [machinename]: LCM:  [ End    Resource ]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-      resources[0].changes_state?.should be_true
-      resources[0].name.should eql('[name]')
-      resources[1].changes_state?.should be_true
-      resources[1].name.should eql('[name2]')
+      expect(resources[0].changes_state?).to be_truthy
+      expect(resources[0].name).to eql('[name]')
+      expect(resources[1].changes_state?).to be_truthy
+      expect(resources[1].name).to eql('[name2]')
     end
   end
 end

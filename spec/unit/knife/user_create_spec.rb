@@ -26,8 +26,8 @@ describe Chef::Knife::UserCreate do
 
     @stdout = StringIO.new
     @stderr = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
-    @knife.ui.stub(:stderr).and_return(@stderr)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stderr).and_return(@stderr)
 
     @knife.name_args = [ 'a_user' ]
     @knife.config[:user_password] = "foobar"
@@ -36,53 +36,53 @@ describe Chef::Knife::UserCreate do
     @user_with_private_key = Chef::User.new
     @user_with_private_key.name "a_user"
     @user_with_private_key.private_key 'private_key'
-    @user.stub(:create).and_return(@user_with_private_key)
-    Chef::User.stub(:new).and_return(@user)
-    Chef::User.stub(:from_hash).and_return(@user)
-    @knife.stub(:edit_data).and_return(@user.to_hash)
+    allow(@user).to receive(:create).and_return(@user_with_private_key)
+    allow(Chef::User).to receive(:new).and_return(@user)
+    allow(Chef::User).to receive(:from_hash).and_return(@user)
+    allow(@knife).to receive(:edit_data).and_return(@user.to_hash)
   end
 
   it "creates a new user" do
-    Chef::User.should_receive(:new).and_return(@user)
-    @user.should_receive(:create)
+    expect(Chef::User).to receive(:new).and_return(@user)
+    expect(@user).to receive(:create)
     @knife.run
-    @stderr.string.should match /created user.+a_user/i
+    expect(@stderr.string).to match /created user.+a_user/i
   end
 
   it "sets the password" do
     @knife.config[:user_password] = "a_password"
-    @user.should_receive(:password).with("a_password")
+    expect(@user).to receive(:password).with("a_password")
     @knife.run
   end
 
   it "exits with an error if password is blank" do
     @knife.config[:user_password] = ''
-    lambda { @knife.run }.should raise_error SystemExit
-    @stderr.string.should match /You must specify a non-blank password/
+    expect { @knife.run }.to raise_error SystemExit
+    expect(@stderr.string).to match /You must specify a non-blank password/
   end
 
   it "sets the user name" do
-    @user.should_receive(:name).with("a_user")
+    expect(@user).to receive(:name).with("a_user")
     @knife.run
   end
 
   it "sets the public key if given" do
     @knife.config[:user_key] = "/a/filename"
-    File.stub(:read).with(File.expand_path("/a/filename")).and_return("a_key")
-    @user.should_receive(:public_key).with("a_key")
+    allow(File).to receive(:read).with(File.expand_path("/a/filename")).and_return("a_key")
+    expect(@user).to receive(:public_key).with("a_key")
     @knife.run
   end
 
   it "allows you to edit the data" do
-    @knife.should_receive(:edit_data).with(@user)
+    expect(@knife).to receive(:edit_data).with(@user)
     @knife.run
   end
 
   it "writes the private key to a file when --file is specified" do
     @knife.config[:file] = "/tmp/a_file"
     filehandle = double("filehandle")
-    filehandle.should_receive(:print).with('private_key')
-    File.should_receive(:open).with("/tmp/a_file", "w").and_yield(filehandle)
+    expect(filehandle).to receive(:print).with('private_key')
+    expect(File).to receive(:open).with("/tmp/a_file", "w").and_yield(filehandle)
     @knife.run
   end
 end

@@ -40,24 +40,24 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
   context "tests registry dsl" do
     it "returns true if registry_key_exists" do
-      @resource.registry_key_exists?("HKCU\\Software\\Root").should == true
+      expect(@resource.registry_key_exists?("HKCU\\Software\\Root")).to eq(true)
     end
     it "returns true if registry has specified value" do
       values = @resource.registry_get_values("HKCU\\Software\\Root")
-      values.include?({:name=>"RootType1",:type=>:string,:data=>"fibrous"}).should == true
+      expect(values.include?({:name=>"RootType1",:type=>:string,:data=>"fibrous"})).to eq(true)
     end
     it "returns true if specified registry_has_subkey" do
-      @resource.registry_has_subkeys?("HKCU\\Software\\Root").should == true
+      expect(@resource.registry_has_subkeys?("HKCU\\Software\\Root")).to eq(true)
     end
     it "returns true if specified key has specified subkey" do
       subkeys = @resource.registry_get_subkeys("HKCU\\Software\\Root")
-      subkeys.include?("Branch").should == true
+      expect(subkeys.include?("Branch")).to eq(true)
     end
     it "returns true if registry_value_exists" do
-      @resource.registry_value_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"}).should == true
+      expect(@resource.registry_value_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"})).to eq(true)
     end
     it "returns true if data_value_exists" do
-      @resource.registry_data_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"}).should == true
+      expect(@resource.registry_data_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"})).to eq(true)
     end
   end
 end

@@ -1,3 +1,162 @@
+## Unreleased
+
+* make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
+* mixin the LWRP attribute DSL method into Chef::Resource directly
+* make all LWRP attributes nillable
+* `knife ssh` now has an --exit-on-error option that allows users to
+  fail-fast rather than moving on to the next machine.
+* migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution
+* migrate cron and mdadm resources to dynamic resolution
+
+## 12.1.2
+* [Issue 3022](https://github.com/chef/chef/issues/3022): Homebrew Cask install fails
+  FIXME (remove on 12.2.0 release): 3022 was only merged to 12-stable and #3077 or its descendant should fix this 
+* [Issue 3059](https://github.com/chef/chef/issues/3059): Chef 12.1.1 yum_package silently fails
+* [Issue 3078](https://github.com/chef/chef/issues/3078): Compat break in audit-mode changes
+
+## 12.1.1
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  [Issue 3008](https://github.com/chef/chef/issues/3008) Allow people to pass in `source` to package
+* [Issue 3011](https://github.com/chef/chef/issues/3011) `package` provider base should include 
+  `Chef::Mixin::Command` as there are still providers that use it.
+* [**Ranjib Dey**](https://github.com/ranjib):
+  [Issue 3019](https://github.com/chef/chef/issues/3019) Fix data fetching when explicit attributes are passed
+
+## 12.1.0
+
+* [**Andre Elizondo**](https://github.com/andrewelizondo)
+  Typo fixes
+* [**Vasiliy Tolstov**](https://github.com/vtolstov):
+  cleanup cookbook path from stale files (when using chef-solo with a tarball url)
+* [**Nathan Cerny**](https://github.com/ncerny):
+  Fix rubygems provider to use https instead of http.
+* [**Anshul Sharma**](https://github.com/justanshulsharma)
+  removed securerandom patch
+* [**Scott Bonds**](https://github.com/bonds)
+  add package support for OpenBSD
+* [**Lucy Wyman**](https://github.com/lucywyman)
+  Added support for handling empty version strings to rubygems provider.
+* [**Yulian Kuncheff**](https://github.com/Daegalus)
+  Correctly set the pre-release identifier during knife bootstrap.
+* [**Anshul Sharma**](https://github.com/justanshulsharma)
+  `knife node run_list remove` now accepts run_list options in the same form as add
+* [**Veres Lajos**](https://github.com/vlajos)
+  Typo fixes
+* [**Tim Smith**](https://github.com/tas50)
+  Typo fixes
+* [Pull 2505](https://github.com/opscode/chef/pull/2505) Make Chef handle URIs in a case-insensitive manner
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Drop SSL warnings now that we have a safe default
+* [Pull 2684](https://github.com/chef/chef/pull/2684) Remove ole_initialize/uninitialize which cause problems with Ruby >= 2
+* [**BinaryBabel**](https://github.com/binarybabel)
+  Make knife cookbook site share prefer gnutar when packaging
+* [**Dave Eddy**](https://github.com/bahamas10)
+  Support arrays for not_if and only_if
+* [**Scott Bonds**](https://github.com/bonds)
+  Add service provider for OpenBSD
+* [**Alex Slynko**](https://github.com/alex-slynko-wonga)
+  Change env provider to preserve ordering
+* [**Rob Redpath**](https://github.com/robredpath)
+  Add --lockfile opt for chef-client and chef-solo
+* [**Josh Murphy**](https://github.com/jdmurphy)
+  Check cookbooks exist in path(s) before attempting to upload them with --all
+* [**Vasiliy Tolstov**](https://github.com/vtolstov)
+  add ability to fetch recipes like in chef-solo when using local-mode
+* [**Jan**](https://github.com/habermann24)
+  FIX data_bag_item.rb:161: warning: circular argument reference - data_bag
+* [**David Radcliffe**](https://github.com/dwradcliffe)
+  add banner for knife serve command
+* [**Yukihiko Sawanobori**](https://github.com/sawanoboly)
+  use Chef::JSONCompat.parse for file_contents
+* [**Xabier de Zuazo**] (https://github.com/zuazo)
+  Remove some simple Ruby 1.8 and 1.9 code
+* [**Xabier de Zuazo**] (https://github.com/zuazo)
+  Remove all RSpec test filters related to Ruby 1.8 and 1.9
+* [**Xabier de Zuazo**] (https://github.com/zuazo)
+  Fix knife cookbook upload messages
+* [**David Crowder**] (https://github.com/david-crowder)
+  refactor to use shell_out in rpm provider
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Multi-package support
+* [**Naotoshi Seo**](https://github.com/sonots):
+  Support HTTP/FTP source on rpm_package
+  add json_attribs option for chef-apply command
+  allow_downgrade in rpm_package
+* [**AJ Christensen**](https://github.com/fujin):
+  Isolate/fix the no-fork fault. [Issue 2709](https://github.com/chef/chef/issues/2709)
+* [**Cory Stephenson**](https://github.com/Aevin1387):
+  Remove comments of a service being enabled/disabled in FreeBSD. [Fixes #1791](https://github.com/chef/chef/issues/1791)
+* [**Will Albenzi**](https://github.com/walbenzi):
+  CHEF-4591: Knife commands to manipulate env_run_list on nodes
+* [**Jon Cowie**](https://github.com/jonlives):
+  CHEF-2911: Fix yum_package provider to respect version requirements in package name and version attribute
+* [**Anshul Sharma**](https://github.com/justanshulsharma):
+  * Node::Attribute to_s should print merged attributes [Issue 1526](https://github.com/chef/chef/issues/1562)
+  * Access keys attribute in `knife show` list incorrect information [Issue 1974](https://github.com/chef/chef/issues/1974)
+  * Guard interpreter loading incorrect resource [Issue 2683](https://github.com/chef/chef/issues/2683)
+
+### Chef Contributions
+* ruby 1.9.3 support is dropped
+* Update Chef to use RSpec 3.2
+* Cleaned up script and execute provider + specs
+* Added deprecation warnings around the use of command attribute in script resources
+* Audit mode feature added - see the RELEASE_NOTES for details
+* shell_out now sets `LANGUAGE` and `LANG` to the `Chef::Config[:internal_locale]` in addition to `LC_ALL` forcing
+* chef_gem supports a compile_time flag and will warn if it is not set (behavior will change in the future)
+* suppress CHEF-3694 warnings on the most trivial resource cloning
+* fixed bugs in the deep_merge_cache logic introduced in 12.0.0 around `node['foo']` vs `node[:foo]` vs. `node.foo`
+* add `include_recipe "::recipe"` sugar to reference a recipe in the current cookbook
+* Add --proxy-auth option to `knife raw`
+* added Chef::Org model class for Chef Organizations in Chef 12 Server
+* `powershell_script` should now correctly get the exit code for scripts that it runs. See [Issue 2348](https://github.com/chef/chef/issues/2348)
+* Useradd functional tests fail randomly
+* Add comments to trusted_certs_content
+* fixes a bug where providers would not get defined if a top-level ruby constant with the same name was already defined (ark cookbook, chrome cookbook)
+* Fix a bug in `reboot`, `ips_package`, `paludis_package`, `windows_package` resources where `action :nothing` was not permitted
+* Use Chef::ApiClient#from_hash in `knife client create` to avoid json_class requirement. [Issue 2542](https://github.com/chef/chef/issues/2542)
+* Add support for policyfile native API (preview). These APIs are unstable, and you may be forced to delete data uploaded to them in a
+  future release, so only use them for demonstration purposes.
+* Deprecation warning for 'knife cookbook test'
+* dsc_script should now correctly honor timeout. See [Issue 2831](https://github.com/chef/chef/issues/2831)
+* Added an `imports` attribute to dsc_script. This attribute allows you to specify DSC resources that need to be imported for your script.
+* Fixed error where guard resources (using :guard_interpreter) were not ran in `why_run` mode [Issue 2694](https://github.com/chef/chef/issues/2694)
+* Add `verify` method to File resource per RFC027
+* Move supermarket.getchef.com to supermarket.chef.io
+* Check with AccessCheck for permission to write to directory on Windows
+* Add declare_resource/build_resource comments, fix faulty ||=
+* Knife bootstrap creates a client and ships it to the node to implement validatorless bootstraps
+* Knife bootstrap can use the client it creates to setup chef-vault items for the node
+* windows service now has a configurable timeout
+
+## 12.0.3
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+[Issue 2594](https://github.com/opscode/chef/issues/2594) Restore missing require in `digester`.
+
+## 12.0.2
+* [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider
+* [Issue 2609](https://github.com/opscode/chef/issues/2609) Resolve the circular dependency between ProviderResolver and Resource.
+* [Issue 2596](https://github.com/opscode/chef/issues/2596) Fix nodes not writing to disk
+* [Issue 2580](https://github.com/opscode/chef/issues/2580) Make sure the relative paths are preserved when using link resource.
+* [Pull 2630](https://github.com/opscode/chef/pull/2630) Improve knife's SSL error messaging
+* [Issue 2606](https://github.com/opscode/chef/issues/2606) chef 12 ignores default_release for apt_package
+* [Issue 2602](https://github.com/opscode/chef/issues/2602) Fix `subscribes` resource notifications.
+* [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider.
+* [**gh2k**](https://github.com/gh2k):
+  [Issue 2625](https://github.com/opscode/chef/issues/2625) Fix missing `shell_out!` for `windows_package` resource
+* [**BackSlasher**](https://github.com/BackSlasher):
+  [Issue 2634](https://github.com/opscode/chef/issues/2634) Fix `option ':command' is not a valid option` error in subversion provider.
+* [**Seth Vargo**](https://github.com/sethvargo):
+  [Issue 2345](https://github.com/opscode/chef/issues/2345) Allow knife to install cookbooks with metadata.json.
+
+## 12.0.1
+
+* [Issue 2552](https://github.com/opscode/chef/issues/2552) Create constant for LWRP before calling `provides`
+* [Issue 2545](https://github.com/opscode/chef/issues/2545) `path` attribute of `execute` resource is restored to provide backwards compatibility with Chef 11.
+* [Issue 2565](https://github.com/opscode/chef/issues/2565) Fix `Chef::Knife::Core::BootstrapContext` constructor for knife-windows compat.
+* [Issue 2566](https://github.com/opscode/chef/issues/2566) Make sure Client doesn't raise error when interval is set on Windows.
+* [Issue 2560](https://github.com/opscode/chef/issues/2560) Fix `uninitialized constant Windows::Constants` in `windows_eventlog`.
+* [Issue 2563](https://github.com/opscode/chef/issues/2563) Make sure the Chef Client rpm packages are signed with GPG keys correctly.
+
 ## 12.0.0
 
 * [**Jesse Hu**](https://github.com/jessehu):
@@ -146,6 +305,8 @@
 
 ### Chef Contributions
 
+* ruby 1.9.3 support is dropped
+* Added RFC-023 Chef 12 Attribute Changes (https://github.com/opscode/chef-rfc/blob/master/rfc023-chef-12-attributes-changes.md)
 * Added os/platform_family options to provides syntax on the Chef::Resource DSL
 * Added provides methods to the Chef::Provider DSL
 * Added supported?(resource, action) class method to all Providers for late-evaluation if a provider can handle a
@@ -236,6 +397,7 @@
 * The Windows env provider will delete elements even if they are only in ENV (and not in the registry)
 * Allow events to be logged to Windows Event Log
 * Fixed bug in env resource where a value containing the delimiter could never correctly match the existing values
+* More intelligent service check for systemd on Ubuntu 14.10.
 
 ## 11.16.4
 
@@ -293,7 +455,7 @@
 * [**Nikhil Benesch**](https://github.com/benesch):
   Implemented a threaded download queue for synchronizing cookbooks. (CHEF-4423)
 * [**Chulki Lee**](https://github.com/chulkilee):
-  Raise an error when source is accidently passed to apt_package (CHEF-5113)
+  Raise an error when source is accidentally passed to apt_package (CHEF-5113)
 * [**Cam Cope**](https://github.com/ccope):
   Add an open_timeout when opening an http connection (CHEF-5152)
 * [**Sander van Harmelen**](https://github.com/svanharmelen):
