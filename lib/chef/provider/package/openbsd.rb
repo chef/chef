@@ -24,6 +24,7 @@ require 'chef/resource/package'
 require 'chef/provider/package'
 require 'chef/mixin/shell_out'
 require 'chef/mixin/get_source_from_package'
+require 'chef/exceptions'
 
 class Chef
   class Provider
@@ -38,7 +39,6 @@ class Chef
         def initialize(*args)
           super
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
-          @new_resource.source(pkg_path) if !@new_resource.source
         end
 
         def load_current_resource
@@ -47,15 +47,21 @@ class Chef
           @current_resource
         end
 
+        def define_resource_requirements
+          super
+          requirements.assert(:all_actions) do |a|
+            a.assertion { !@new_resource.source }
+            a.failure_message(Chef::Exceptions::Package, 'The openbsd package provider does not support the source attribute')
+          end
+        end
+
         def install_package(name, version)
           unless @current_resource.version
-            version_string  = ''
-            version_string += "-#{version}" if version
             if parts = name.match(/^(.+?)--(.+)/) # use double-dash for stems with flavors, see man page for pkg_add
               name = parts[1]
             end
-            shell_out!("pkg_add -r #{name}#{version_string}", :env => {"PKG_PATH" => @new_resource.source}).status
-            Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
+            shell_out!("pkg_add -r #{name}#{version_string}", :env => {"PKG_PATH" => pkg_path}).status
+            Chef::Log.debug("#{@new_resource.package_name} installed")
           end
         end
 
@@ -84,17 +90,26 @@ class Chef
 
         def candidate_version
           @candidate_version ||= begin
-            version_string  = ''
-            version_string += "-#{version}" if @new_resource.version
-            pkg_info = shell_out!("pkg_info -I \"#{@new_resource.package_name}#{version_string}\"", :env => nil, :returns => [0,1])
-            if parts = @new_resource.package_name.match(/^(.+?)--(.+)/)
-              result = pkg_info.stdout[/^#{Regexp.escape(parts[1])}-(.+?)\s/, 1]
-            else
-              result = pkg_info.stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+?)\s/, 1]
+            results = []
+            shell_out!("pkg_info -I \"#{@new_resource.package_name}#{version_string}\"", :env => nil, :returns => [0,1]).stdout.each_line do |line|
+              results << line[/^#{Regexp.escape(@new_resource.package_name)}-(.+?)\s/, 1]
             end
-            Chef::Log.debug("candidate_version of '#{@new_resource.package_name}' is '#{result}'")
-            result
+            results = results.reject(&:nil?)
+            Chef::Log.debug("candidate versions of '#{@new_resource.package_name}' are '#{results}'")
+            case results.length
+            when 0
+              []
+            when 1
+              results[0]
+            else
+              raise Chef::Exceptions::Package, "#{new_resource.name} has multiple matching candidates. You must specify a version" if results.length > 1
+            end
           end
+        end
+
+        def version_string
+          ver  = ''
+          ver += "-#{new_resource.version}" if new_resource.version
         end
 
         def pkg_path
