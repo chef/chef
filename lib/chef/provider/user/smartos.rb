@@ -25,14 +25,14 @@ class Chef
         provides :user, os: 'solaris2', platform_family: 'smartos'
 
         def check_lock
-          so = shell_out('getent', 'shadow', new_resource.username)
+          shadow_line = shell_out!('getent', 'shadow', new_resource.username).stdout.strip rescue nil
 
-          # if the command fails (for example the user doesn't exist)
-          # we just return `nil`
-          return nil unless so.exitstatus == 0
+          # if the command fails we return nil, this can happen if the user
+          # in question doesn't exist
+          return nil if shadow_line.nil?
 
           # convert "dave:NP:16507::::::\n" to "NP"
-          fields = so.stdout.strip.split(':')
+          fields = shadow_line.split(':')
 
           # '*LK*...' and 'LK' are both considered locked,
           # so look for LK at the beginning of the shadow entry
