@@ -115,6 +115,20 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
 
       end
 
+      context "and the target file has dacl_present and sacl_present but no dacl or sacl" do
+
+        before do
+          allow(target_file_security_descriptor).to receive(:dacl_present?).and_return(true)
+          allow(target_file_security_descriptor).to receive(:dacl).and_return(nil)
+          allow(target_file_security_descriptor).to receive(:sacl_present?).and_return(true)
+          allow(target_file_security_descriptor).to receive(:sacl).and_return(nil)
+        end
+
+        it "fixes up permissions and moves the file into place" do
+          content_deployer.deploy(staging_file_path, target_file_path)
+        end
+      end
+
       context "and the target has a dacl and sacl" do
         let(:inherited_dacl_ace) { double("Windows dacl ace (inherited)", :inherited? => true) }
         let(:not_inherited_dacl_ace) { double("Windows dacl ace (not inherited)", :inherited? => false) }
