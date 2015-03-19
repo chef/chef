@@ -104,7 +104,11 @@ class Chef
           @candidate_version ||= begin
             results = []
             shell_out!("pkg_info -I \"#{@new_resource.package_name}#{version_string}\"", :env => nil, :returns => [0,1]).stdout.each_line do |line|
-              results << line[/^#{Regexp.escape(@new_resource.package_name)}-(.+?)\s/, 1]
+              if parts = @new_resource.package_name.match(/^(.+?)--(.+)/)
+                results << line[/^#{Regexp.escape(parts[1])}-(.+?)\s/, 1]
+              else
+                results << line[/^#{Regexp.escape(@new_resource.package_name)}-(.+?)\s/, 1]
+              end
             end
             results = results.reject(&:nil?)
             Chef::Log.debug("candidate versions of '#{@new_resource.package_name}' are '#{results}'")
