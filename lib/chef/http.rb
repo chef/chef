@@ -39,12 +39,14 @@ class Chef
 
       attr_reader :display
       attr_reader :interval
+      attr_reader :resource
 
-      def initialize(size, opts = {})
+      def initialize(size, resource)
         @total = size
         @status = 0
-        @display = opts[:display] || false
-        @interval = opts[:interval] || 10
+        @resource = resource
+        @display = resource.show_progress
+        @interval = resource.progress_interval
         progress_indicator if @display
       end
 
@@ -64,7 +66,7 @@ class Chef
           @status = percent_complete
           return true
         end
-        return false
+        false
       end
 
       def percent_complete
@@ -90,7 +92,16 @@ class Chef
       end
 
       def progress_indicator
-        Chef::Log.info '[' + display_status + display_remainder + ']' + display_percentage
+        Chef::Log.debug '[' + display_status + display_remainder + ']' + display_percentage
+        send_event 'download progress:' + display_percentage
+      end
+
+      def send_event(message)
+        events.resource_update_applied(resource.name, resource.action, message)
+      end
+
+      def events
+        resource.events
       end
     end
 
@@ -146,8 +157,9 @@ class Chef
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
-      @show_progress = options[:show_progress] || false
-      @progress_interval = options[:progress_interval] || 1
+      @resource = options[:resource]
+      @show_progress = options[:resource].show_progress
+      @progress_interval = options[:resource].progress_interval
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
@@ -428,7 +440,7 @@ class Chef
     end
 
     def stream_to_tempfile(url, response)
-      progress = ProgressBar.new(response['Content-Length'], display: show_progress, interval: progress_interval)
+      progress = ProgressBar.new(response['Content-Length'], @resource)
       tf = Tempfile.open("chef-rest")
       if Chef::Platform.windows?
         tf.binmode # required for binary files on Windows platforms
