@@ -49,9 +49,21 @@ class Chef
 
         def define_resource_requirements
           super
+
+          # Below are incomplete/missing features for this package provider
           requirements.assert(:all_actions) do |a|
             a.assertion { !@new_resource.source }
             a.failure_message(Chef::Exceptions::Package, 'The openbsd package provider does not support the source attribute')
+          end
+          requirements.assert(:all_actions) do |a|
+            a.assertion do
+              if new_resource.package_name =~ /^(.+?)--(.+)/
+                !new_resource.version
+              else
+                true
+              end
+            end
+            a.failure_message(Chef::Exceptions::Package, 'The openbsd package provider does not support providing a version and flavor')
           end
         end
 
