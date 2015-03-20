@@ -115,7 +115,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       def configure_env_home
-        ENV['HOME'] = "/env/home"
+        allow(Chef::Util::PathHelper).to receive(:home).with(".chef", "bootstrap", "example.erb").and_yield(env_home_template_path)
       end
 
       def configure_gem_files
@@ -123,13 +123,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       before(:each) do
-        @original_home = ENV['HOME']
-        ENV['HOME'] = nil
         expect(File).to receive(:exists?).with(bootstrap_template).and_return(false)
-      end
-
-      after(:each) do
-        ENV['HOME'] = @original_home
       end
 
       context "when file is available everywhere" do
@@ -161,7 +155,7 @@ describe Chef::Knife::Bootstrap do
         end
       end
 
-      context "when file is available in ENV['HOME']" do
+      context "when file is available in home directory" do
         before do
           configure_chef_config_dir
           configure_env_home
@@ -180,7 +174,25 @@ describe Chef::Knife::Bootstrap do
       context "when file is available in Gem files" do
         before do
           configure_chef_config_dir
+          configure_env_home
           configure_gem_files
+
+          expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
+          expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(false)
+          expect(File).to receive(:exists?).with(env_home_template_path).and_return(false)
+          expect(File).to receive(:exists?).with(gem_files_template_path).and_return(true)
+        end
+
+        it "should load the template from Gem files" do
+          expect(knife.find_template).to eq(gem_files_template_path)
+        end
+      end
+
+      context "when file is available in Gem files and home dir doesn't exist" do
+        before do
+          configure_chef_config_dir
+          configure_gem_files
+          allow(Chef::Util::PathHelper).to receive(:home).with(".chef", "bootstrap", "example.erb").and_return(nil)
 
           expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
           expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(false)

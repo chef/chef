@@ -19,23 +19,29 @@
 require 'spec_helper'
 
 describe Chef::Knife::SubcommandLoader do
+  let(:loader) { Chef::Knife::SubcommandLoader.new(File.join(CHEF_SPEC_DATA, 'knife-site-subcommands')) }
+  let(:home) { File.join(CHEF_SPEC_DATA, 'knife-home') }
+  let(:plugin_dir) { File.join(home, '.chef', 'plugins', 'knife') }
+  
   before do
     allow(Chef::Platform).to receive(:windows?) { false }
-    @home = File.join(CHEF_SPEC_DATA, 'knife-home')
-    @env = {'HOME' => @home}
-    @loader = Chef::Knife::SubcommandLoader.new(File.join(CHEF_SPEC_DATA, 'knife-site-subcommands'), @env)
+    Chef::Util::PathHelper.class_variable_set(:@@home_dir, home) 
+  end
+
+  after do
+    Chef::Util::PathHelper.class_variable_set(:@@home_dir, nil) 
   end
 
   it "builds a list of the core subcommand file require paths" do
-    expect(@loader.subcommand_files).not_to be_empty
-    @loader.subcommand_files.each do |require_path|
+    expect(loader.subcommand_files).not_to be_empty
+    loader.subcommand_files.each do |require_path|
       expect(require_path).to match(/chef\/knife\/.*|plugins\/knife\/.*/)
     end
   end
 
   it "finds files installed via rubygems" do
-    expect(@loader.find_subcommands_via_rubygems).to include('chef/knife/node_create')
-    @loader.find_subcommands_via_rubygems.each {|rel_path, abs_path| expect(abs_path).to match(%r[chef/knife/.+])}
+    expect(loader.find_subcommands_via_rubygems).to include('chef/knife/node_create')
+    loader.find_subcommands_via_rubygems.each {|rel_path, abs_path| expect(abs_path).to match(%r[chef/knife/.+])}
   end
 
   it "finds files from latest version of installed gems" do
@@ -54,23 +60,23 @@ describe Chef::Knife::SubcommandLoader do
       expect(gems[0]).to receive(:full_gem_path).and_return('/usr/lib/ruby/gems/knife-ec2-0.5.12')
       expect(Dir).to receive(:[]).with('/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/*.rb').and_return(gem_files)
     end
-    expect(@loader).to receive(:find_subcommands_via_dirglob).and_return({})
-    expect(@loader.find_subcommands_via_rubygems.values.select { |file| file =~ /knife-ec2/ }.sort).to eq(gem_files)
+    expect(loader).to receive(:find_subcommands_via_dirglob).and_return({})
+    expect(loader.find_subcommands_via_rubygems.values.select { |file| file =~ /knife-ec2/ }.sort).to eq(gem_files)
   end
 
   it "finds files using a dirglob when rubygems is not available" do
-    expect(@loader.find_subcommands_via_dirglob).to include('chef/knife/node_create')
-    @loader.find_subcommands_via_dirglob.each {|rel_path, abs_path| expect(abs_path).to match(%r[chef/knife/.+])}
+    expect(loader.find_subcommands_via_dirglob).to include('chef/knife/node_create')
+    loader.find_subcommands_via_dirglob.each {|rel_path, abs_path| expect(abs_path).to match(%r[chef/knife/.+])}
   end
 
   it "finds user-specific subcommands in the user's ~/.chef directory" do
-    expected_command = File.join(@home, '.chef', 'plugins', 'knife', 'example_home_subcommand.rb')
-    expect(@loader.site_subcommands).to include(expected_command)
+    expected_command = File.join(home, '.chef', 'plugins', 'knife', 'example_home_subcommand.rb')
+    expect(loader.site_subcommands).to include(expected_command)
   end
 
   it "finds repo specific subcommands by searching for a .chef directory" do
     expected_command = File.join(CHEF_SPEC_DATA, 'knife-site-subcommands', 'plugins', 'knife', 'example_subcommand.rb')
-    expect(@loader.site_subcommands).to include(expected_command)
+    expect(loader.site_subcommands).to include(expected_command)
   end
 
   # https://github.com/opscode/chef-dk/issues/227
@@ -137,25 +143,19 @@ describe Chef::Knife::SubcommandLoader do
     end
 
     before do
-      expect(@loader).to receive(:find_files_latest_gems).with("chef/knife/*.rb").and_return(all_found_commands)
-      expect(@loader).to receive(:find_subcommands_via_dirglob).and_return({})
+      expect(loader).to receive(:find_files_latest_gems).with("chef/knife/*.rb").and_return(all_found_commands)
+      expect(loader).to receive(:find_subcommands_via_dirglob).and_return({})
     end
 
     it "ignores commands from the non-matching gem install" do
-      expect(@loader.find_subcommands_via_rubygems.values).to eq(expected_valid_commands)
+      expect(loader.find_subcommands_via_rubygems.values).to eq(expected_valid_commands)
     end
 
   end
 
   describe "finding 3rd party plugins" do
-    let(:env_home) { "/home/alice" }
-    let(:manifest_path) { env_home + "/.chef/plugin_manifest.json" }
-
-    before do
-      env_dup = ENV.to_hash
-      allow(ENV).to receive(:[]) { |key| env_dup[key] }
-      allow(ENV).to receive(:[]).with("HOME").and_return(env_home)
-    end
+    let(:home) { "/home/alice" }
+    let(:manifest_path) { home + "/.chef/plugin_manifest.json" }
 
     context "when there is not a ~/.chef/plugin_manifest.json file" do
       before do
@@ -168,14 +168,14 @@ describe Chef::Knife::SubcommandLoader do
         else
           expect(Gem.source_index).to receive(:latest_specs).and_call_original
         end
-        @loader.subcommand_files.each do |require_path|
+        loader.subcommand_files.each do |require_path|
           expect(require_path).to match(/chef\/knife\/.*|plugins\/knife\/.*/)
         end
       end
 
       context "and HOME environment variable is not set" do
         before do
-          allow(ENV).to receive(:[]).with("HOME").and_return(nil)
+          allow(Chef::Util::PathHelper).to receive(:home).and_return(nil)
         end
 
         it "searches rubygems for plugins" do
@@ -184,7 +184,7 @@ describe Chef::Knife::SubcommandLoader do
           else
             expect(Gem.source_index).to receive(:latest_specs).and_call_original
           end
-          @loader.subcommand_files.each do |require_path|
+          loader.subcommand_files.each do |require_path|
             expect(require_path).to match(/chef\/knife\/.*|plugins\/knife\/.*/)
           end
         end
@@ -215,7 +215,7 @@ describe Chef::Knife::SubcommandLoader do
 
       it "uses paths from the manifest instead of searching gems" do
         expect(Gem::Specification).not_to receive(:latest_specs).and_call_original
-        expect(@loader.subcommand_files).to include(ec2_server_create_plugin)
+        expect(loader.subcommand_files).to include(ec2_server_create_plugin)
       end
 
     end

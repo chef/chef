@@ -571,11 +571,12 @@ class Chef
     end
 
     def self.windows_home_path
-      env['SYSTEMDRIVE'] + env['HOMEPATH'] if env['SYSTEMDRIVE'] && env['HOMEPATH']
+      Chef::Log.deprecation("Chef::Config.windows_home_path is now deprecated.  Consider using Chef::Util::PathHelper.home instead.")
+      PathHelper.home
     end
 
     # returns a platform specific path to the user home dir if set, otherwise default to current directory.
-    default( :user_home ) { env['HOME'] || windows_home_path || env['USERPROFILE'] || Dir.pwd }
+    default( :user_home ) { PathHelper.home || Dir.pwd }
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.

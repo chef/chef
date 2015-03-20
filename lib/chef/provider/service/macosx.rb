@@ -33,8 +33,7 @@ class Chef
                          /Library/LaunchDaemons
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
-
-          locations << "#{ENV['HOME']}/Library/LaunchAgents" if ENV['HOME']
+          Chef::Util::PathHelper.home('Library', 'LaunchAgents') { |p| locations << p }
           locations
         end
 
