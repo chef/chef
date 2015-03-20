@@ -90,7 +90,7 @@ class Chef
       end
 
       def define_resource_requirements
-        requirements.assert(:all_actions) do |a|
+        requirements.assert(:create, :modify, :manage, :lock, :unlock) do |a|
           a.assertion { @group_name_resolved }
           a.failure_message Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
           a.whyrun "group name #{@new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
