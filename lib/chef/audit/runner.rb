@@ -79,11 +79,15 @@ class Chef
         require 'rspec'
         require 'rspec/its'
         require 'specinfra'
+        require 'specinfra/helper'
+        require 'specinfra/helper/set'
         require 'serverspec/helper'
         require 'serverspec/matcher'
         require 'serverspec/subject'
         require 'chef/audit/audit_event_proxy'
         require 'chef/audit/rspec_formatter'
+
+        Specinfra::Backend::Cmd.send(:include, Specinfra::Helper::Set)
       end
 
       # Configure RSpec just the way we like it:
@@ -136,9 +140,13 @@ class Chef
         end
       end
 
-      # Set up the backend for Specinfra/Serverspec.  :exec is the local system.
+      # Set up the backend for Specinfra/Serverspec.  :exec is the local system; on Windows, it is :cmd
       def configure_specinfra
-        Specinfra.configuration.backend = :exec
+        if Chef::Platform.windows?
+          Specinfra.configuration.backend = :cmd
+        else
+          Specinfra.configuration.backend = :exec
+        end
       end
 
       # Iterates through the control groups registered to this run_context, builds an
