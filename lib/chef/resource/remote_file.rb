@@ -129,6 +129,7 @@ class Chef
         set_or_return(
           :show_progress,
           args,
+          :default => false,
           :kind_of => [ TrueClass, FalseClass ]
         )
       end

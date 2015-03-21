@@ -268,6 +268,15 @@ class Chef
       def resource_action_start(resource, action, notification_type=nil, notifier=nil)
       end
 
+      ##
+      # https://github.com/chef/chef/issues/2812
+      #
+      # Called when a progress notification should be sent to the user to
+      # indicate the overall progress of a long running operation, such as
+      # a large file download.
+      def resource_action_progress(resource, current, total, interval)
+      end
+
       # Called when a resource fails, but will retry.
       def resource_failed_retriable(resource, action, retry_count, exception)
       end

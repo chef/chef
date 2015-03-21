@@ -35,76 +35,6 @@ class Chef
   # == Chef::HTTP
   # Basic HTTP client, with support for adding features via middleware
   class HTTP
-    class ProgressBar
-
-      attr_reader :display
-      attr_reader :interval
-      attr_reader :resource
-
-      def initialize(size, resource)
-        @total = size
-        @status = 0
-        @resource = resource
-        @display = resource.show_progress
-        @interval = resource.progress_interval
-        progress_indicator if @display
-      end
-
-      def update(progress)
-        @progress = progress
-        display_progress
-      end
-
-      def display_progress
-        return unless display
-        progress_indicator if next_interval_met?
-      end
-
-      def next_interval_met?
-        return false unless percent_complete % interval == 0
-        if percent_complete > @status
-          @status = percent_complete
-          return true
-        end
-        false
-      end
-
-      def percent_complete
-        (@progress.to_f / @total.to_f * 100).to_i
-      end
-
-      def display_status
-        length = @status / 2
-        progress_text = '=' * length
-        progress_text
-      end
-
-      def display_remainder
-        length = 100 / 2 - @status / 2
-        progress_text = ' ' * length
-        progress_text
-      end
-
-      def display_percentage
-        length = 4 - @status.to_s.length
-        progress_text = ' ' * length + "#{@status}/100 %"
-        progress_text
-      end
-
-      def progress_indicator
-        Chef::Log.debug '[' + display_status + display_remainder + ']' + display_percentage
-        send_event 'download progress:' + display_percentage
-      end
-
-      def send_event(message)
-        events.resource_update_applied(resource.name, resource.action, message)
-      end
-
-      def events
-        resource.events
-      end
-    end
-
 
     # Class for applying middleware behaviors to streaming
     # responses. Collects stream handlers (if any) from each
@@ -157,9 +87,6 @@ class Chef
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
-      @resource = options[:resource]
-      @show_progress = options[:resource].show_progress
-      @progress_interval = options[:resource].progress_interval
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
@@ -226,6 +153,34 @@ class Chef
       raise
     end
 
+
+    def streaming_request_with_progress(path, headers={}, &progress_block)
+      url = create_url(path)
+      response, rest_request, return_value = nil, nil, nil
+      tempfile = nil
+
+      method = :GET
+      method, url, headers, data = apply_request_middleware(method, url, headers, data)
+
+      response, rest_request, return_value = send_http_request(method, url, headers, data) do |http_response|
+        if http_response.kind_of?(Net::HTTPSuccess)
+          tempfile = stream_to_tempfile(url, http_response, &progress_block)
+        end
+        apply_stream_complete_middleware(http_response, rest_request, return_value)
+      end
+      return nil if response.kind_of?(Net::HTTPRedirection)
+      unless response.kind_of?(Net::HTTPSuccess)
+        response.error!
+      end
+      tempfile
+    rescue Exception => e
+      log_failed_request(response, return_value) unless response.nil?
+      if e.respond_to?(:chef_rest_request=)
+        e.chef_rest_request = rest_request
+      end
+      raise
+    end
+
     # Makes a streaming download request, streaming the response body to a
     # tempfile. If a block is given, the tempfile is passed to the block and
     # the tempfile will automatically be unlinked after the block is executed.
@@ -242,7 +197,7 @@ class Chef
 
       response, rest_request, return_value = send_http_request(method, url, headers, data) do |http_response|
         if http_response.kind_of?(Net::HTTPSuccess)
-          tempfile = stream_to_tempfile(url, http_response)
+          tempfile = stream_to_tempfile(url, http_response, &block)
         end
         apply_stream_complete_middleware(http_response, rest_request, return_value)
       end
@@ -439,8 +394,8 @@ class Chef
       headers
     end
 
-    def stream_to_tempfile(url, response)
-      progress = ProgressBar.new(response['Content-Length'], @resource)
+    def stream_to_tempfile(url, response, &progress_block)
+      content_length = response['Content-Length']
       tf = Tempfile.open("chef-rest")
       if Chef::Platform.windows?
         tf.binmode # required for binary files on Windows platforms
@@ -453,7 +408,7 @@ class Chef
 
       response.read_body do |chunk|
         tf.write(stream_handler.handle_chunk(chunk))
-        progress.update tf.size
+        yield tf.size, content_length if block_given?
       end
       tf.close
       tf
