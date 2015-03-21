@@ -197,7 +197,7 @@ class Chef
 
       response, rest_request, return_value = send_http_request(method, url, headers, data) do |http_response|
         if http_response.kind_of?(Net::HTTPSuccess)
-          tempfile = stream_to_tempfile(url, http_response, &block)
+          tempfile = stream_to_tempfile(url, http_response)
         end
         apply_stream_complete_middleware(http_response, rest_request, return_value)
       end
