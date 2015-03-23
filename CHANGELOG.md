@@ -7,6 +7,7 @@
   fail-fast rather than moving on to the next machine.
 * migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution
 * migrate cron and mdadm resources to dynamic resolution
+* [Issue 3096](https://github.com/chef/chef/issues/3096) Fix OpenBSD package provider installation issues
 
 ## 12.1.2
 * [Issue 3022](https://github.com/chef/chef/issues/3022): Homebrew Cask install fails
