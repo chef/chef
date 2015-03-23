@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Nelson-Smith (<sns@opscode.com>)
 # Author:: Jon Ramsey (<jonathon.ramsey@gmail.com>)
+# Author:: Dave Eddy (<dave@daveeddy.com>)
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
 # Copyright:: Copyright 2015, Dave Eddy
 # License:: Apache License, Version 2.0
@@ -17,7 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/provider/user/useradd'
 require 'chef/provider/user/useradd'
 
 class Chef
