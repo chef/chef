@@ -47,6 +47,13 @@ class Chef
         node[:languages] && node[:languages][:powershell] &&
           node[:languages][:powershell][:version].to_i >= 4
       end
+
+      def supports_dsc_invoke_resource?(node)
+        require 'rubygems'
+        supports_dsc?(node) &&
+          Gem::Version.new(node[:languages][:powershell][:version]) >=
+            Gem::Version.new("5.0.10018.0")
+      end
     end
   end
 end

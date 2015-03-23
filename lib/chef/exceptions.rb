@@ -442,5 +442,20 @@ class Chef
         super "PID file and lockfile are not permitted to match. Specify a different location with --pid or --lockfile"
       end
     end
+
+    class MultipleDscResourcesFound < RuntimeError
+      attr_reader :resources_found
+      def initialize(resources_found)
+        @resources_found = resources_found
+        matches_info = @resources_found.each do |r|
+          if r['Module'].nil?
+            "Resource #{r['Name']} was found in #{r['Module']['Name']}"
+          else
+            "Resource #{r['Name']} is a binary resource"
+          end
+        end
+        super "Found multiple matching resources. #{matches_info.join("\n")}"
+      end
+    end
   end
 end
