@@ -1,25 +1,6 @@
-## Unreleased (12.2.0)
+## Unreleased
 
-* make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
-* mixin the LWRP attribute DSL method into Chef::Resource directly
-* make all LWRP attributes nillable
-* `knife ssh` now has an --exit-on-error option that allows users to
-  fail-fast rather than moving on to the next machine.
-* migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution
-* migrate cron and mdadm resources to dynamic resolution
-
-## 12.1.2
-* [Issue 3022](https://github.com/chef/chef/issues/3022): Homebrew Cask install fails
-* [Issue 3059](https://github.com/chef/chef/issues/3059): Chef 12.1.1 yum_package silently fails
-* [Issue 3078](https://github.com/chef/chef/issues/3078): Compat break in audit-mode changes
-
-## 12.1.1
-* [**Phil Dibowitz**](https://github.com/jaymzh):
-  [Issue 3008](https://github.com/chef/chef/issues/3008) Allow people to pass in `source` to package
-* [Issue 3011](https://github.com/chef/chef/issues/3011) `package` provider base should include 
-  `Chef::Mixin::Command` as there are still providers that use it.
-* [**Ranjib Dey**](https://github.com/ranjib):
-  [Issue 3019](https://github.com/chef/chef/issues/3019) Fix data fetching when explicit attributes are passed
+## 12.2.0
 
 * make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
 * mixin the LWRP attribute DSL method into Chef::Resource directly
