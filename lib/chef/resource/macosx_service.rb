@@ -1,4 +1,3 @@
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 # Author:: Mike Dodge (<mikedodge04@gmail.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
