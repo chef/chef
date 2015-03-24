@@ -26,7 +26,7 @@ class Chef
     class HomebrewPackage < Chef::Resource::Package
 
       provides :homebrew_package
-      provides :package, os: ["mac_os_x", "darwin"]
+      provides :package, os: "darwin"
 
       def initialize(name, run_context=nil)
         super

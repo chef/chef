@@ -22,17 +22,17 @@ describe Chef::Provider::Service::Macosx do
   describe ".gather_plist_dirs" do
     context "when HOME directory is set" do
       before do
-        allow(ENV).to receive(:[]).with('HOME').and_return("/User/someuser")
+        allow(Chef::Util::PathHelper).to receive(:home).with('Library', 'LaunchAgents').and_yield('/Users/someuser/Library/LaunchAgents')
       end
 
       it "includes users's LaunchAgents folder" do
-        expect(described_class.gather_plist_dirs).to include("#{ENV['HOME']}/Library/LaunchAgents")
+        expect(described_class.gather_plist_dirs).to include("/Users/someuser/Library/LaunchAgents")
       end
     end
 
     context "when HOME directory is not set" do
       before do
-        allow(ENV).to receive(:[]).with('HOME').and_return(nil)
+        allow(Chef::Util::PathHelper).to receive(:home).with('Library', 'LaunchAgents').and_return(nil)
       end
 
       it "doesn't include user's LaunchAgents folder" do

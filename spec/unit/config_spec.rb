@@ -360,18 +360,12 @@ describe Chef::Config do
       describe "Chef::Config[:user_home]" do
         it "should set when HOME is provided" do
           expected = to_platform("/home/kitten")
-          allow(Chef::Config).to receive(:env).and_return({ 'HOME' => expected })
-          expect(Chef::Config[:user_home]).to eq(expected)
-        end
-
-        it "should be set when only USERPROFILE is provided" do
-          expected = to_platform("/users/kitten")
-          allow(Chef::Config).to receive(:env).and_return({ 'USERPROFILE' => expected })
+          allow(Chef::Util::PathHelper).to receive(:home).and_return(expected)
           expect(Chef::Config[:user_home]).to eq(expected)
         end
 
         it "falls back to the current working directory when HOME and USERPROFILE is not set" do
-          allow(Chef::Config).to receive(:env).and_return({})
+          allow(Chef::Util::PathHelper).to receive(:home).and_return(nil)
           expect(Chef::Config[:user_home]).to eq(Dir.pwd)
         end
       end

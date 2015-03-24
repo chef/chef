@@ -53,3 +53,25 @@ describe 'Chef::Platform#supports_dsc?' do
     end
   end
 end
+
+describe 'Chef::Platform#supports_dsc_invoke_resource?' do 
+  it 'returns false if powershell is not present' do
+    node = Chef::Node.new
+    expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey
+  end
+
+  ['1.0', '2.0', '3.0', '4.0', '5.0.10017.9'].each do |version|
+    it "returns false for Powershell #{version}" do
+      node = Chef::Node.new
+      node.automatic[:languages][:powershell][:version] = version
+      expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey
+    end
+  end
+
+  it "returns true for Powershell 5.0.10018.0" do
+    node = Chef::Node.new
+    node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
+    expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_truthy
+  end
+end
+

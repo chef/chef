@@ -44,6 +44,8 @@ class Chef
       # This provider only supports Mac OSX versions 10.7 and above
       class Dscl < Chef::Provider::User
 
+        provides :user, os: "darwin"
+
         def define_resource_requirements
           super
 
@@ -650,7 +652,11 @@ user password using shadow hash.")
         def run_plutil(*args)
           result = shell_out("plutil -#{args.join(' ')}")
           raise(Chef::Exceptions::PlistUtilCommandFailed,"plutil error: #{result.inspect}") unless result.exitstatus == 0
-          result.stdout
+          if result.stdout.encoding == Encoding::ASCII_8BIT
+            result.stdout.encode("utf-8", "binary",  :undef => :replace, :invalid => :replace, :replace => '?')
+          else
+            result.stdout
+          end
         end
 
         def convert_binary_plist_to_xml(binary_plist_string)

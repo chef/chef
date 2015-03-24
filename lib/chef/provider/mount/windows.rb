@@ -27,6 +27,8 @@ class Chef
     class Mount
       class Windows < Chef::Provider::Mount
 
+        provides :mount, os: "windows"
+
         def is_volume(name)
           name =~ /^\\\\\?\\Volume\{[\w-]+\}\\$/ ? true : false
         end

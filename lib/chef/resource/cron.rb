@@ -27,6 +27,8 @@ class Chef
 
       state_attrs :minute, :hour, :day, :month, :weekday, :user
 
+      provides :cron
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :cron
@@ -138,7 +140,7 @@ class Chef
           :kind_of => [String, Symbol]
         )
       end
-      
+
       def time(arg=nil)
         set_or_return(
           :time,
@@ -214,5 +216,3 @@ class Chef
     end
   end
 end
-
-

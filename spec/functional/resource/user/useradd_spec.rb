@@ -32,6 +32,7 @@ end
 
 metadata = { :unix_only => true,
   :requires_root => true,
+  :not_supported_on_mac_osx => true,
   :provider => {:user => user_provider_for_platform}
 }
 
@@ -76,9 +77,22 @@ describe Chef::Provider::User::Useradd, metadata do
     end
   end
 
+  def try_cleanup
+    ['/home/cheftestfoo', '/home/cheftestbar'].each do |f|
+      FileUtils.rm_rf(f) if File.exists? f
+    end
+
+    ['cf-test'].each do |u|
+      r = Chef::Resource::User.new("DELETE USER", run_context)
+      r.username('cf-test')
+      r.run_action(:remove)
+    end
+  end
+
   before do
     # Silence shell_out live stream
     Chef::Log.level = :warn
+    try_cleanup
   end
 
   after do
@@ -386,18 +400,18 @@ describe Chef::Provider::User::Useradd, metadata do
       end
 
       context "and home directory is updated" do
-        let(:existing_home) { "/home/foo" }
-        let(:home) { "/home/bar" }
+        let(:existing_home) { "/home/cheftestfoo" }
+        let(:home) { "/home/cheftestbar" }
         it "ensures the home directory is set to the desired value" do
-          expect(pw_entry.home).to eq("/home/bar")
+          expect(pw_entry.home).to eq("/home/cheftestbar")
         end
 
         context "and manage_home is enabled" do
           let(:existing_manage_home) { true }
           let(:manage_home) { true }
           it "moves the home directory to the new location" do
-            expect(File).not_to exist("/home/foo")
-            expect(File).to exist("/home/bar")
+            expect(File).not_to exist("/home/cheftestfoo")
+            expect(File).to exist("/home/cheftestbar")
           end
         end
 
@@ -409,19 +423,19 @@ describe Chef::Provider::User::Useradd, metadata do
             # Inconsistent behavior. See: CHEF-2205
             it "created the home dir b/c of CHEF-2205 so it still exists" do
               # This behavior seems contrary to expectation and non-convergent.
-              expect(File).not_to exist("/home/foo")
-              expect(File).to exist("/home/bar")
+              expect(File).not_to exist("/home/cheftestfoo")
+              expect(File).to exist("/home/cheftestbar")
             end
           elsif ohai[:platform] == "aix"
             it "creates the home dir in the desired location" do
-              expect(File).not_to exist("/home/foo")
-              expect(File).to exist("/home/bar")
+              expect(File).not_to exist("/home/cheftestfoo")
+              expect(File).to exist("/home/cheftestbar")
             end
           else
             it "does not create the home dir in the desired location (XXX)" do
               # This behavior seems contrary to expectation and non-convergent.
-              expect(File).not_to exist("/home/foo")
-              expect(File).not_to exist("/home/bar")
+              expect(File).not_to exist("/home/cheftestfoo")
+              expect(File).not_to exist("/home/cheftestbar")
             end
           end
         end
@@ -432,8 +446,8 @@ describe Chef::Provider::User::Useradd, metadata do
 
           it "leaves the old home directory around (XXX)" do
             # Would it be better to remove the old home?
-            expect(File).to exist("/home/foo")
-            expect(File).not_to exist("/home/bar")
+            expect(File).to exist("/home/cheftestfoo")
+            expect(File).not_to exist("/home/cheftestbar")
           end
         end
       end

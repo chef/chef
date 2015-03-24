@@ -21,6 +21,7 @@ require 'chef/knife/data_bag_secret_options'
 require 'erubis'
 require 'chef/knife/bootstrap/chef_vault_handler'
 require 'chef/knife/bootstrap/client_builder'
+require 'chef/util/path_helper'
 
 class Chef
   class Knife
@@ -268,7 +269,7 @@ class Chef
         bootstrap_files = []
         bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap/templates', "#{template}.erb")
         bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
-        bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{template}.erb") if ENV['HOME']
+        Chef::Util::PathHelper.home('.chef', 'bootstrap', "#{template}.erb") {|p| bootstrap_files << p}
         bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{template}.erb"))
         bootstrap_files.flatten!
 

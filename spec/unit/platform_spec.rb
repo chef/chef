@@ -20,8 +20,6 @@ require 'spec_helper'
 
 describe "Chef::Platform supports" do
   [
-    :mac_os_x,
-    :mac_os_x_server,
     :freebsd,
     :ubuntu,
     :debian,
@@ -34,9 +32,6 @@ describe "Chef::Platform supports" do
     :gentoo,
     :arch,
     :solaris,
-    :mswin,
-    :mingw32,
-    :windows,
     :gcel,
     :ibm_powerkvm
   ].each do |platform|

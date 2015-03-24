@@ -18,22 +18,35 @@
 
 require 'chef/json_compat'
 
-class Chef::Util::Powershell
+class Chef
+class Util
+class Powershell
   class CmdletResult
     attr_reader :output_format
 
-    def initialize(status, output_format)
+    def initialize(status, streams, output_format)
       @status = status
       @output_format = output_format
+      @streams = streams
     end
 
+    def stdout
+      @status.stdout
+    end
+    
     def stderr
       @status.stderr
     end
 
+    def stream(name)
+      @streams[name].read
+    end
+
     def return_value
       if output_format == :object
-        Chef::JSONCompat.parse(@status.stdout)
+        Chef::JSONCompat.parse(stream(:json))
+      elsif output_format == :json
+        stream(:json)
       else
         @status.stdout
       end
@@ -43,4 +56,6 @@ class Chef::Util::Powershell
       @succeeded = @status.status.exitstatus == 0
     end
   end
+end
+end
 end
