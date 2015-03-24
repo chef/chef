@@ -538,10 +538,10 @@ class Chef
         def install_via_gem_command(name, version)
           if @new_resource.source =~ /\.gem$/i
             name = @new_resource.source
-          elsif source_is_remote?
-            src = @new_resource.source && "  --source=#{@new_resource.source}"
+#          elsif source_is_remote?
+#            src = @new_resource.source && "  --source=#{@new_resource.source}"
           else
-            src = @new_resource.source && "  --source=#{@new_resource.source} --source=https://rubygems.org"
+            src = @new_resource.source && " --source=#{@new_resource.source} --source=https://rubygems.org"
           end
           if !version.nil? && version.length > 0
             shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
