@@ -381,7 +381,7 @@ class Chef
             # Default to installing somewhere more functional
             if new_resource.options && new_resource.options.kind_of?(Hash)
               msg = [
-                "Gem options should be passed to gem_package as a string instead of a hash when",
+                "Gem options must be passed to gem_package as a string instead of a hash when",
                 "using this installation of Chef because it runs with its own packaged Ruby. A hash",
                 "may only be used when installing a gem to the same Ruby installation that Chef is",
                 "running under.  See https://docs.chef.io/resource_gem_package.html for more information.",
