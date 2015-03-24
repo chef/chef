@@ -21,6 +21,7 @@ infrastructure, and the Chef applications. Includes anything not covered by
 another component.
 
 ### Lieutenant
+* [Thom May](https://github.com/thommay)
 
 ### Maintainers
 
@@ -34,6 +35,7 @@ another component.
 * [Bryan McLellan](http://github.com/btm)
 * [Ranjib Dey](http://github.com/ranjib)
 * [AJ Christensen](https://github.com/fujin)
+* [Steven Murawski](https://github.com/smurawski)
 
 ## Dev Tools
 
@@ -70,10 +72,12 @@ The specific components of Chef related to a given platform - including (but not
 
 ### Lieutenant
 
+* [Jon Cowie](http://github.com/jonlives)
+
 ### Maintainers
 
-* [Jon Cowie](http://github.com/jonlives)
 * [Lamont Granquist](http://github.com/lamont-granquist)
+* [Phil Dibowitz](https://github.com/jaymzh)
 
 ## Ubuntu
 
@@ -83,6 +87,7 @@ The specific components of Chef related to a given platform - including (but not
 
 * [Lamont Granquist](http://github.com/lamont-granquist)
 * [Ranjib Dey](http://github.com/ranjib)
+* [Thom May](https://github.com/thommay)
 
 ## Windows
 

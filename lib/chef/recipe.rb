@@ -25,6 +25,7 @@ require 'chef/dsl/include_recipe'
 require 'chef/dsl/registry_helper'
 require 'chef/dsl/reboot_pending'
 require 'chef/dsl/audit'
+require 'chef/dsl/powershell'
 
 require 'chef/mixin/from_file'
 
@@ -42,6 +43,7 @@ class Chef
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
     include Chef::DSL::Audit
+    include Chef::DSL::Powershell
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::Deprecation

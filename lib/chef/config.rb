@@ -497,7 +497,8 @@ class Chef
     default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    default(:cache_options) { { :path => PathHelper.join(file_cache_path, "checksums") } }
+    # Move this to the default value of syntax_cache_path when this is removed.
+    default(:cache_options) { { :path => PathHelper.join(config_dir, "syntaxcache") } }
 
     # Whether errors should be raised for deprecation warnings. When set to
     # `false` (the default setting), a warning is emitted but code using
@@ -570,11 +571,12 @@ class Chef
     end
 
     def self.windows_home_path
-      env['SYSTEMDRIVE'] + env['HOMEPATH'] if env['SYSTEMDRIVE'] && env['HOMEPATH']
+      Chef::Log.deprecation("Chef::Config.windows_home_path is now deprecated.  Consider using Chef::Util::PathHelper.home instead.")
+      PathHelper.home
     end
 
     # returns a platform specific path to the user home dir if set, otherwise default to current directory.
-    default( :user_home ) { env['HOME'] || windows_home_path || env['USERPROFILE'] || Dir.pwd }
+    default( :user_home ) { PathHelper.home || Dir.pwd }
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.
@@ -627,7 +629,7 @@ class Chef
     #
     default :no_lazy_load, true
 
-    # Default for the chef_gem compile_time attribute.  Nil is the same as false but will emit
+    # Default for the chef_gem compile_time attribute.  Nil is the same as true but will emit
     # warnings on every use of chef_gem prompting the user to be explicit.  If the user sets this to
     # true then the user will get backcompat behavior but with a single nag warning that cookbooks
     # may break with this setting in the future.  The false setting is the recommended setting and

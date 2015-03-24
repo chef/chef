@@ -52,7 +52,7 @@ describe Chef::Resource::RemoteFile do
     create_resource
   end
 
-  let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
+  let(:default_mode) { (0666 & ~File.umask).to_s(8) }
 
   context "when fetching files over HTTP" do
     before(:all) do

@@ -399,18 +399,18 @@ class Chef
 
     class AuditControlGroupDuplicate < RuntimeError
       def initialize(name)
-        super "Audit control group with name '#{name}' has already been defined"
+        super "Control group with name '#{name}' has already been defined"
       end
     end
     class AuditNameMissing < RuntimeError; end
     class NoAuditsProvided < RuntimeError
       def initialize
-        super "You must provide a block with audits"
+        super "You must provide a block with controls"
       end
     end
     class AuditsFailed < RuntimeError
       def initialize(num_failed, num_total)
-        super "Audit phase found failures - #{num_failed}/#{num_total} audits failed"
+        super "Audit phase found failures - #{num_failed}/#{num_total} controls failed"
       end
     end
 
@@ -440,6 +440,21 @@ class Chef
     class PIDFileLockfileMatch < RuntimeError
       def initialize
         super "PID file and lockfile are not permitted to match. Specify a different location with --pid or --lockfile"
+      end
+    end
+
+    class MultipleDscResourcesFound < RuntimeError
+      attr_reader :resources_found
+      def initialize(resources_found)
+        @resources_found = resources_found
+        matches_info = @resources_found.each do |r|
+          if r['Module'].nil?
+            "Resource #{r['Name']} was found in #{r['Module']['Name']}"
+          else
+            "Resource #{r['Name']} is a binary resource"
+          end
+        end
+        super "Found multiple matching resources. #{matches_info.join("\n")}"
       end
     end
   end

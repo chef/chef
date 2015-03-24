@@ -65,7 +65,7 @@ describe Chef::WorkstationConfigLoader do
         let(:home) { "/Users/example.user" }
 
         before do
-          env["HOME"] = home
+          allow(Chef::Util::PathHelper).to receive(:home).with('.chef').and_yield(File.join(home, '.chef'))
           allow(config_loader).to receive(:path_exists?).with("#{home}/.chef/knife.rb").and_return(true)
         end
 

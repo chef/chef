@@ -28,9 +28,15 @@ class Chef
       attr_reader :chef_config_dir
       attr_reader :env
 
-      def initialize(chef_config_dir, env=ENV)
-        @chef_config_dir, @env = chef_config_dir, env
+      def initialize(chef_config_dir, env=nil)
+        @chef_config_dir = chef_config_dir
         @forced_activate = {}
+
+        # Deprecated and un-used instance variable.
+        @env = env
+        unless env.nil?
+          Chef::Log.deprecation("The env argument to Chef::Knife::SubcommandLoader is deprecated. If you are using env to inject/mock HOME, consider mocking Chef::Util::PathHelper.home instead.")
+        end
       end
 
       # Load all the sub-commands
@@ -49,7 +55,9 @@ class Chef
         end
 
         # finally search ~/.chef/plugins/knife/*.rb
-        user_specific_files.concat Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(env['HOME'], '.chef', 'plugins', 'knife'), '*.rb')) if env['HOME']
+        Chef::Util::PathHelper.home('.chef', 'plugins', 'knife') do |p|
+          user_specific_files.concat Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(p), '*.rb'))
+        end
 
         user_specific_files
       end
@@ -140,7 +148,7 @@ class Chef
       end
 
       def have_plugin_manifest?
-        ENV["HOME"] && File.exist?(plugin_manifest_path)
+        plugin_manifest_path && File.exist?(plugin_manifest_path)
       end
 
       def plugin_manifest
@@ -148,7 +156,7 @@ class Chef
       end
 
       def plugin_manifest_path
-        File.join(ENV['HOME'], '.chef', 'plugin_manifest.json')
+        Chef::Util::PathHelper.home('.chef', 'plugin_manifest.json')
       end
 
       private

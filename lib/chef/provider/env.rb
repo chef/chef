@@ -26,6 +26,8 @@ class Chef
       include Chef::Mixin::Command
       attr_accessor :key_exists
 
+      provides :env, os: "!windows"
+
       def initialize(new_resource, run_context)
         super
         @key_exists = true
