@@ -339,83 +339,69 @@ describe Chef::Mixin::ParamsValidate do
     end.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
-  def self.test_set_or_return_method(method)
-    # caller is responsible for passing in the right arg to get 'return' behavior
-    return_arg = method == :nillable_set_or_return ? TinyClass::NULL_ARG : nil
-
-    it "#{method} should set and return a value, then return the same value" do
-      value = "meow"
-      expect(@vo.send(method,:test, value, {}).object_id).to eq(value.object_id)
-      expect(@vo.send(method,:test, return_arg, {}).object_id).to eq(value.object_id)
-    end
-
-    it "#{method} should set and return a default value when the argument is nil, then return the same value" do
-      value = "meow"
-      expect(@vo.send(method,:test, return_arg, { :default => value }).object_id).to eq(value.object_id)
-      expect(@vo.send(method,:test, return_arg, {}).object_id).to eq(value.object_id)
-    end
-
-    it "#{method} should raise an ArgumentError when argument is nil and required is true" do
-      expect {
-        @vo.send(method,:test, return_arg, { :required => true })
-      }.to raise_error(ArgumentError)
-    end
-
-    it "#{method} should not raise an error when argument is nil and required is false" do
-      expect {
-        @vo.send(method,:test, return_arg, { :required => false })
-      }.not_to raise_error
-    end
-
-    it "#{method} should set and return @name, then return @name for foo when argument is nil" do
-      value = "meow"
-      expect(@vo.send(method,:name, value, { }).object_id).to eq(value.object_id)
-      expect(@vo.send(method,:foo, return_arg, { :name_attribute => true }).object_id).to eq(value.object_id)
-    end
-
-    it "#{method} should allow DelayedEvaluator instance to be set for value regardless of restriction" do
-      value = Chef::DelayedEvaluator.new{ 'test' }
-      @vo.send(method,:test, value, {:kind_of => Numeric})
-    end
-
-    it "#{method} should raise an error when delayed evaluated attribute is not valid" do
-      value = Chef::DelayedEvaluator.new{ 'test' }
-      @vo.send(method,:test, value, {:kind_of => Numeric})
-      expect do
-        @vo.send(method,:test, return_arg, {:kind_of => Numeric})
-      end.to raise_error(Chef::Exceptions::ValidationFailed)
-    end
-
-    it "#{method} should create DelayedEvaluator instance when #lazy is used" do
-      @vo.send(method,:delayed, @vo.lazy{ 'test' }, {})
-      expect(@vo.instance_variable_get(:@delayed)).to be_a(Chef::DelayedEvaluator)
-    end
-
-    it "#{method} should execute block on each call when DelayedEvaluator" do
-      value = 'fubar'
-      @vo.send(method,:test, @vo.lazy{ value }, {})
-      expect(@vo.send(method,:test, return_arg, {})).to eq('fubar')
-      value = 'foobar'
-      expect(@vo.send(method,:test, return_arg, {})).to eq('foobar')
-      value = 'fauxbar'
-      expect(@vo.send(method,:test, return_arg, {})).to eq('fauxbar')
-    end
-
-    it "#{method} should not evaluate non DelayedEvaluator instances" do
-      value = lambda{ 'test' }
-      @vo.send(method,:test, value, {})
-      expect(@vo.send(method,:test, return_arg, {}).object_id).to eq(value.object_id)
-      expect(@vo.send(method,:test, return_arg, {})).to be_a(Proc)
-    end
+  it "should set and return a value, then return the same value" do
+    value = "meow"
+    expect(@vo.set_or_return(:test, value, {}).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
   end
 
-  test_set_or_return_method(:set_or_return)
-  test_set_or_return_method(:nillable_set_or_return)
-
-  it "nillable_set_or_return supports nilling values" do
-    expect(@vo.nillable_set_or_return(:test, "meow", {})).to eq("meow")
-    expect(@vo.nillable_set_or_return(:test, TinyClass::NULL_ARG, {})).to eq("meow")
-    expect(@vo.nillable_set_or_return(:test, nil, {})).to be_nil
-    expect(@vo.nillable_set_or_return(:test, TinyClass::NULL_ARG, {})).to be_nil
+  it "should set and return a default value when the argument is nil, then return the same value" do
+    value = "meow"
+    expect(@vo.set_or_return(:test, nil, { :default => value }).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
   end
+
+  it "should raise an ArgumentError when argument is nil and required is true" do
+    expect {
+      @vo.set_or_return(:test, nil, { :required => true })
+    }.to raise_error(ArgumentError)
+  end
+
+  it "should not raise an error when argument is nil and required is false" do
+    expect {
+      @vo.set_or_return(:test, nil, { :required => false })
+    }.not_to raise_error
+  end
+
+  it "should set and return @name, then return @name for foo when argument is nil" do
+    value = "meow"
+    expect(@vo.set_or_return(:name, value, { }).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:foo, nil, { :name_attribute => true }).object_id).to eq(value.object_id)
+  end
+
+  it "should allow DelayedEvaluator instance to be set for value regardless of restriction" do
+    value = Chef::DelayedEvaluator.new{ 'test' }
+    @vo.set_or_return(:test, value, {:kind_of => Numeric})
+  end
+
+  it "should raise an error when delayed evaluated attribute is not valid" do
+    value = Chef::DelayedEvaluator.new{ 'test' }
+    @vo.set_or_return(:test, value, {:kind_of => Numeric})
+    expect do
+      @vo.set_or_return(:test, nil, {:kind_of => Numeric})
+    end.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "should create DelayedEvaluator instance when #lazy is used" do
+    @vo.set_or_return(:delayed, @vo.lazy{ 'test' }, {})
+    expect(@vo.instance_variable_get(:@delayed)).to be_a(Chef::DelayedEvaluator)
+  end
+
+  it "should execute block on each call when DelayedEvaluator" do
+    value = 'fubar'
+    @vo.set_or_return(:test, @vo.lazy{ value }, {})
+    expect(@vo.set_or_return(:test, nil, {})).to eq('fubar')
+    value = 'foobar'
+    expect(@vo.set_or_return(:test, nil, {})).to eq('foobar')
+    value = 'fauxbar'
+    expect(@vo.set_or_return(:test, nil, {})).to eq('fauxbar')
+  end
+
+  it "should not evaluate non DelayedEvaluator instances" do
+    value = lambda{ 'test' }
+    @vo.set_or_return(:test, value, {})
+    expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:test, nil, {})).to be_a(Proc)
+  end
+
 end

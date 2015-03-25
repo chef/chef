@@ -201,41 +201,6 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       end
     end
 
-    describe "setting default parameters to nil" do
-      before do
-        FileUtils.mkdir_p(rel_path("releases"))
-        FileUtils.mkdir_p(rel_path("shared"))
-      end
-
-      it "supports setting symlink_before_migrate to nil" do
-        deploy_to_latest_rev.symlink_before_migrate(nil)
-        expect(deploy_to_latest_rev.symlink_before_migrate).to eql(nil)
-        deploy_to_latest_rev.run_action(:deploy)
-        expect(deploy_to_latest_rev).to be_updated_by_last_action
-      end
-
-      it "supports setting symlinks to nil" do
-        deploy_to_latest_rev.symlinks(nil)
-        expect(deploy_to_latest_rev.symlinks).to eql(nil)
-        deploy_to_latest_rev.run_action(:deploy)
-        expect(deploy_to_latest_rev).to be_updated_by_last_action
-      end
-
-      it "supports setting purge_before_symlink to nil" do
-        deploy_to_latest_rev.purge_before_symlink(nil)
-        expect(deploy_to_latest_rev.purge_before_symlink).to eql(nil)
-        deploy_to_latest_rev.run_action(:deploy)
-        expect(deploy_to_latest_rev).to be_updated_by_last_action
-      end
-
-      it "supports setting create_dirs_before_symlink to nil" do
-        deploy_to_latest_rev.create_dirs_before_symlink(nil)
-        expect(deploy_to_latest_rev.create_dirs_before_symlink).to eql(nil)
-        deploy_to_latest_rev.run_action(:deploy)
-        expect(deploy_to_latest_rev).to be_updated_by_last_action
-      end
-    end
-
     describe "back to a previously deployed revision, with the directory structure precreated" do
       before do
         FileUtils.mkdir_p(rel_path("releases"))
