@@ -239,7 +239,7 @@ class Chef
       def policyfile_location
         if Chef::Config[:policy_document_native_api]
           validate_policy_config!
-          "policies/#{policy_group}/#{policy_name}"
+          "policy_groups/#{policy_group}/policies/#{policy_name}"
         else
           "data/policyfiles/#{deployment_group}"
         end
@@ -368,11 +368,11 @@ class Chef
       end
 
       def artifact_manifest_for(cookbook_name, lock_data)
-        xyz_version = lock_data["dotted_decimal_identifier"]
-        rel_url = "cookbook_artifacts/#{cookbook_name}/#{xyz_version}"
+        identifier = lock_data["identifier"]
+        rel_url = "cookbook_artifacts/#{cookbook_name}/#{identifier}"
         http_api.get(rel_url)
       rescue Exception => e
-        message = "Error loading cookbook #{cookbook_name} at version #{xyz_version} from #{rel_url}: #{e.class} - #{e.message}"
+        message = "Error loading cookbook #{cookbook_name} with identifier #{identifier} from #{rel_url}: #{e.class} - #{e.message}"
         err = Chef::Exceptions::CookbookNotFound.new(message)
         err.set_backtrace(e.backtrace)
         raise err

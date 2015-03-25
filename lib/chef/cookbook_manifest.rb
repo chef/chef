@@ -36,6 +36,7 @@ class Chef
     def_delegator :@cookbook_version, :root_paths
     def_delegator :@cookbook_version, :segment_filenames
     def_delegator :@cookbook_version, :name
+    def_delegator :@cookbook_version, :identifier
     def_delegator :@cookbook_version, :metadata
     def_delegator :@cookbook_version, :full_name
     def_delegator :@cookbook_version, :version
@@ -141,9 +142,16 @@ class Chef
     # REST api. If there is an existing document on the server and it
     # is marked frozen, a PUT will result in a 409 Conflict.
     def save_url
-      "#{cookbook_url_path}/#{name}/#{version}"
+      if policy_mode?
+        "#{named_cookbook_url}/#{identifier}"
+      else
+        "#{named_cookbook_url}/#{version}"
+      end
     end
 
+    def named_cookbook_url
+      "#{cookbook_url_path}/#{name}"
+    end
     # Adds the `force=true` parameter to the upload URL. This allows
     # the user to overwrite a frozen cookbook (a PUT against the
     # normal #save_url raises a 409 Conflict in this case).
@@ -214,10 +222,16 @@ class Chef
         end
       end
 
-      manifest[:cookbook_name] = name.to_s
       manifest[:metadata] = metadata
       manifest[:version] = metadata.version
-      manifest[:name] = full_name
+
+      if policy_mode?
+        manifest[:name] = name.to_s
+        manifest[:identifier] = identifier
+      else
+        manifest[:name] = full_name
+        manifest[:cookbook_name] = name.to_s
+      end
 
       @manifest_records_by_path = extract_manifest_records_by_path(manifest)
       @manifest = manifest
