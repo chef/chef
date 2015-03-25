@@ -1,5 +1,6 @@
 ## Unreleased
 
+* Update policyfile API usage to match forthcoming Chef Server release
 * make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
 * mixin the LWRP attribute DSL method into Chef::Resource directly
 * make all LWRP attributes nillable

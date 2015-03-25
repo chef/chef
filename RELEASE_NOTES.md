@@ -1,5 +1,15 @@
 # Chef Client Release Notes 12.2.0:
 
+## Policyfile Chef Server 12.0.7 Compatibility
+
+Chef Server 12.0.7 will contain the minimum necessary funtioning
+implementation of Policyfiles to converge a node. Policyfile "native
+mode" is updated to work with the APIs in Chef Server 12.0.7. Note that
+Chef Server 12.0.7 will likely not ship with the necessary code to
+upgrade existing organizations, so you will need to set some special
+configuration to opt-in to enabling the Policyfile APIs in Chef Server.
+That process will be described in the release notes for Chef Server.
+
 ## Desired State Configuration (DSC) Resource
 
 If you are using `Windows Management Framework(WMF) 5`, you can now take advantage of the new `dsc_resource`. 
