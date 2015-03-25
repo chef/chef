@@ -997,15 +997,6 @@ class Chef
     end
 
     #
-    # DSL method used to define attribute on a resource wrapping params_validate
-    #
-    def self.attribute(attr_name, validation_opts={})
-      define_method(attr_name) do |arg=NULL_ARG|
-        nillable_set_or_return(attr_name.to_sym, arg, validation_opts)
-      end
-    end
-
-    #
     # The cookbook in which this Resource was defined (if any).
     #
     # @return Chef::CookbookVersion The cookbook in which this Resource was defined.

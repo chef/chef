@@ -70,6 +70,14 @@ class Chef
         alias_method :resource_name=, :resource_name
       end
 
+      # Define an attribute on this resource, including optional validation
+      # parameters.
+      def self.attribute(attr_name, validation_opts={})
+        define_method(attr_name) do |arg=nil|
+          set_or_return(attr_name.to_sym, arg, validation_opts)
+        end
+      end
+
       # Sets the default action
       def self.default_action(action_name=NULL_ARG)
         unless action_name.equal?(NULL_ARG)
