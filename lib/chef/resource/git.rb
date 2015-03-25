@@ -27,7 +27,7 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :git
-        @additional_remotes = {}
+        @additional_remotes = Hash[]
       end
 
       def additional_remotes(arg=nil)
