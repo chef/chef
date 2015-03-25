@@ -27,6 +27,8 @@ class Chef
       class Unix < Chef::Provider::Cron
         include Chef::Mixin::ShellOut
 
+        provides :cron, os: 'solaris2'
+
         private
 
         def read_crontab

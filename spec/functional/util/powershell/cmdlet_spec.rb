@@ -19,7 +19,7 @@
 require 'chef/json_compat'
 require File.expand_path('../../../../spec_helper', __FILE__)
 
-describe Chef::Util::Powershell::Cmdlet, :windows_only do
+describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only  do
   before(:all) do
     ohai = Ohai::System.new
     ohai.load_plugins
@@ -88,7 +88,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_only do
 
   context "when returning json" do
     let(:cmd_output_format) { :json }
-    it "returns json format data", :windows_powershell_dsc_only do
+    it "returns json format data" do
       result = cmdlet_alias_requires_switch_or_argument.run({},{},'ls')
       expect(result.succeeded?).to eq(true)
       expect(lambda{Chef::JSONCompat.parse(result.return_value)}).not_to raise_error
@@ -97,7 +97,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_only do
 
   context "when returning Ruby objects" do
     let(:cmd_output_format) { :object }
-    it "returns object format data", :windows_powershell_dsc_only do
+    it "returns object format data" do
       result = simple_cmdlet.run({},{:cwd => etc_directory}, 'hosts')
       expect(result.succeeded?).to eq(true)
       data = result.return_value
