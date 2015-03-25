@@ -48,16 +48,16 @@ class Chef
           @current_resource.service_name(@new_resource.service_name)
           @plist_size = 0
           @plist = @new_resource.plist ? @new_resource.plist : find_service_plist
-          Chef::Log.debug("Plist: '#{@plist}'")
+          Chef::Log.debug("#{new_resource} Plist: '#{@plist}'")
           @service_label = find_service_label
-          Chef::Log.debug("Service_Label: '#{@service_label}'")
+          Chef::Log.debug("#{new_resource} service_label: '#{@service_label}'")
           # LauchAgents should be loaded as the console user.
           @console_user = @plist ? @plist.include?('LaunchAgents') : false
           @session_type = @new_resource.session_type
 
           if @console_user
             @console_user = Etc.getlogin
-            Chef::Log.debug("Console User: '#{@console_user}'")
+            Chef::Log.debug("#{new_resource} console_user: '#{@console_user}'")
             cmd = "su "
             param = !node['platform_version'].include?('10.10') ? '-l ' : ''
             @base_user_cmd = cmd + param + "#{@console_user} -c"

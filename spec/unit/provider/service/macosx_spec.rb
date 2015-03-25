@@ -159,22 +159,6 @@ SVC_LIST
               end
 
               describe "running unsupported actions" do
-                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-{
-  "LimitLoadToSessionType" = "System";
-  "Label" = "io.redis.redis-server";
-  "TimeOut" = 30;
-  "OnDemand" = false;
-  "LastExitStatus" = 0;
-  "PID" = 62803;
-  "Program" = "do_some.sh";
-  "ProgramArguments" = (
-    "path/to/do_something.sh";
-    "-f";
-  );
-};
-SVC_LIST
-
                 before do
                   allow(Dir).to receive(:glob).and_return(["#{plist}"], [])
                 end

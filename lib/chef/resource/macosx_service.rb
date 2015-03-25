@@ -1,6 +1,6 @@
 #
 # Author:: Mike Dodge (<mikedodge04@gmail.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2015 Facebook, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +39,7 @@ class Chef
       # This will enable user to pass a plist in the case
       # that the filename and label for the service dont match
       def plist(arg=nil)
+        assert_path_exists(arg) unless arg.nil?
         set_or_return(
           :plist,
           arg,
