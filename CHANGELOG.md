@@ -1,5 +1,6 @@
 ## Unreleased
 
+## 12.2.0
 * Update policyfile API usage to match forthcoming Chef Server release
 * `knife ssh` now has an --exit-on-error option that allows users to
   fail-fast rather than moving on to the next machine.
