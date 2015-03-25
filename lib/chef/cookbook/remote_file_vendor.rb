@@ -30,7 +30,7 @@ class Chef
 
       def initialize(manifest, rest)
         @manifest = manifest
-        @cookbook_name = @manifest[:cookbook_name]
+        @cookbook_name = @manifest[:cookbook_name] || @manifest[:name]
         @rest = rest
       end
 
