@@ -370,12 +370,16 @@ class Chef
       def artifact_manifest_for(cookbook_name, lock_data)
         identifier = lock_data["identifier"]
         rel_url = "cookbook_artifacts/#{cookbook_name}/#{identifier}"
-        http_api.get(rel_url)
+        inflate_cbv_object(http_api.get(rel_url))
       rescue Exception => e
         message = "Error loading cookbook #{cookbook_name} with identifier #{identifier} from #{rel_url}: #{e.class} - #{e.message}"
         err = Chef::Exceptions::CookbookNotFound.new(message)
         err.set_backtrace(e.backtrace)
         raise err
+      end
+
+      def inflate_cbv_object(raw_manifest)
+        Chef::CookbookVersion.from_cb_artifact_data(raw_manifest)
       end
 
     end
