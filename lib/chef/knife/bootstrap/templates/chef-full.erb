@@ -11,24 +11,6 @@ fi
 tmp_dir="$tmp/install.sh.$$"
 (umask 077 && mkdir $tmp_dir) || exit 1
 
-# @param $1 the omnibus root directory
-# @param $2 the requested version of omnibus package
-# @return 0 if omnibus needs to be installed, non-zero otherwise
-should_update_chef() {
-  if test ! -d "$1" ; then return 0
-  elif test ! -f "$1/bin/chef-client" ; then return 0
-  elif test "$2" = "true" ; then return 1
-  elif test "$2" = "latest" ; then return 0
-  fi
-
-  local version="`$1/bin/chef-client -v | cut -d " " -f 2`"
-  if echo "$version" | grep "^$2" 2>&1 >/dev/null; then
-    return 1
-  else
-    return 0
-  fi
-}
-
 exists() {
   if command -v $1 &>/dev/null
   then
