@@ -48,9 +48,7 @@ class Chef
           @current_resource.service_name(@new_resource.service_name)
           @plist_size = 0
           @plist = @new_resource.plist ? @new_resource.plist : find_service_plist
-          Chef::Log.debug("#{new_resource} Plist: '#{@plist}'")
           @service_label = find_service_label
-          Chef::Log.debug("#{new_resource} service_label: '#{@service_label}'")
           # LauchAgents should be loaded as the console user.
           @console_user = @plist ? @plist.include?('LaunchAgents') : false
           @session_type = @new_resource.session_type
@@ -65,6 +63,7 @@ class Chef
             @session_type = 'Aqua' if @session_type.nil?
           end
 
+          Chef::Log.debug("#{new_resource} Plist: '#{@plist}' service_label: '#{@service_label}'")
           set_service_status
 
           @current_resource
