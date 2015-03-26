@@ -39,7 +39,6 @@ class Chef
       # This will enable user to pass a plist in the case
       # that the filename and label for the service dont match
       def plist(arg=nil)
-        assert_path_exists(arg) unless arg.nil?
         set_or_return(
           :plist,
           arg,

@@ -96,6 +96,11 @@ class Chef
               @current_resource.running(false)
             end
           end
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { @plist.nil? ? true : ::File.exists?(@plist) }
+            a.failure_message Chef::Exceptions::Service, "#{@plist} does not exist"
+          end
         end
 
         def start_service
@@ -156,15 +161,15 @@ class Chef
        def load_service
           session = @session_type ? "-S #{@session_type} " : ''
           cmd = 'launchctl load -w ' + session + @plist
-          shell_out_with_su?(cmd)
+          shell_out_as_user(cmd)
         end
 
         def unload_service
           cmd = 'launchctl unload -w ' + @plist
-          shell_out_with_su?(cmd)
+          shell_out_as_user(cmd)
         end
 
-        def shell_out_with_su?(cmd)
+        def shell_out_as_user(cmd)
           if @console_user
             shell_out_with_systems_locale("#{@base_user_cmd} '#{cmd}'")
           else
@@ -177,7 +182,7 @@ class Chef
           return if @plist == nil or @service_label.to_s.empty?
 
           cmd = "launchctl list #{@service_label}"
-          res = shell_out_with_su?(cmd)
+          res = shell_out_as_user(cmd)
 
           if res.exitstatus == 0
             @current_resource.enabled(true)

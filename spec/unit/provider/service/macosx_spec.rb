@@ -161,6 +161,7 @@ SVC_LIST
               describe "running unsupported actions" do
                 before do
                   allow(Dir).to receive(:glob).and_return(["#{plist}"], [])
+                  allow(File).to receive(:exists?).and_return([true], [])
                 end
                 it "should throw an exception when reload action is attempted" do
                   expect {provider.run_action(:reload)}.to raise_error(Chef::Exceptions::UnsupportedAction)
