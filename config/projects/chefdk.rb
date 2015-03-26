@@ -48,7 +48,7 @@ override :cacerts, version: '2014.08.20'
 
 override :berkshelf,      version: "v3.2.3"
 override :bundler,        version: "1.7.12"
-override :chef,           version: "master"
+override :chef,           version: "12.2.1"
 override :'chef-vault',   version: "v2.4.0"
 
 # TODO: Can we bump default versions in omnibus-software?
@@ -57,14 +57,14 @@ override :libtool,        version: "2.4.2"
 override :libxml2,        version: "2.9.1"
 override :libxslt,        version: "1.1.28"
 
-override :ruby,           version: "2.1.4"
+override :ruby,           version: "2.1.5"
 ######
-# Ruby 2.1.3 is currently not working on windows due to:
-# https://github.com/ffi/ffi/issues/375
-# Enable below once above issue is fixed.
-# override :'ruby-windows', version: "2.1.3"
-# override :'ruby-windows-devkit', version: "4.7.2-20130224-1151"
-override :'ruby-windows', version: "2.0.0-p451"
+# Ruby 2.1/2.2 has an error on Windows - HTTPS gem downloads aren't working
+# https://bugs.ruby-lang.org/issues/11033
+# Going to leave 2.1.5 for now since there is a workaround
+override :'ruby-windows', version: "2.1.5"
+override :'ruby-windows-devkit', version: "4.7.2-20130224-1151"
+#override :'ruby-windows', version: "2.0.0-p451"
 ######
 
 ######
@@ -74,15 +74,16 @@ override :'ruby-windows', version: "2.0.0-p451"
 override :rubygems,       version: "2.4.4"
 ######
 
-override :'test-kitchen', version: "v1.3.1"
+override :'test-kitchen', version: "v1.4.0.rc.1"
+override :'kitchen-vagrant', version: "v0.17.0.rc.1"
 override :yajl,           version: "1.2.1"
 override :zlib,           version: "1.2.8"
 
-override :'chef-provisioning', version: "v0.18"
-override :'chef-provisioning-fog', version: "v0.12"
-override :'chef-provisioning-vagrant', version: "v0.8.1"
-override :'chef-provisioning-azure', version: "v0.1"
-override :'chef-provisioning-aws', version: "v0.2.2"
+override :'chef-provisioning', version: "v1.1.0"
+override :'chef-provisioning-fog', version: "v0.13.2"
+override :'chef-provisioning-vagrant', version: "v0.8.3"
+override :'chef-provisioning-azure', version: "v0.3.2"
+override :'chef-provisioning-aws', version: "v1.1.0"
 
 dependency "preparation"
 dependency "chefdk"

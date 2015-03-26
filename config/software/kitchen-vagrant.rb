@@ -1,5 +1,5 @@
 #
-# Copyright 2014 Chef Software, Inc.
+# Copyright 2015 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-name "chef-provisioning"
+name "kitchen-vagrant"
 default_version "master"
 
-source git: "git://github.com/chef/chef-provisioning.git"
+source git: "git://github.com/test-kitchen/kitchen-vagrant.git"
 
 if windows?
   dependency "ruby-windows"
@@ -28,14 +28,14 @@ else
 end
 
 dependency "bundler"
-dependency "chef"
+dependency "test-kitchen"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
 
-  bundle "install --without development", env: env
+  bundle "install --without development guard test", env: env
 
-  gem "build chef-provisioning.gemspec", env: env
-  gem "install chef-provisioning-*.gem" \
+  gem "build kitchen-vagrant.gemspec", env: env
+  gem "install kitchen-vagrant-*.gem" \
       " --no-ri --no-rdoc", env: env
 end

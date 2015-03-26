@@ -15,9 +15,9 @@
 #
 
 name "chefdk"
-default_version "0.4.0"
+default_version "master"
 
-source git: "git://github.com/opscode/chef-dk"
+source git: "git://github.com/chef/chef-dk.git"
 
 relative_path "chef-dk"
 
@@ -30,6 +30,7 @@ dependency "chef-vault"
 dependency "foodcritic"
 dependency "ohai"
 dependency "test-kitchen"
+dependency "kitchen-vagrant"
 dependency "chef"
 dependency "openssl-customization"
 
@@ -60,7 +61,7 @@ build do
     'fauxhai'           => '2.2.0',
     'rubocop'           => '0.28.0',
     'knife-spork'       => '1.5.0',
-    'kitchen-vagrant'   => '0.15.0',
+    'winrm-transport'   => '1.0.0',
     'knife-windows'     => '0.8.4',
     # Strainer build is hosed on windows
     # 'strainer'        => '0.15.0',

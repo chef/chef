@@ -17,7 +17,7 @@
 name "chef-provisioning-vagrant"
 default_version "master"
 
-source git: "git://github.com/opscode/chef-provisioning-vagrant.git"
+source git: "git://github.com/chef/chef-provisioning-vagrant.git"
 
 if windows?
   dependency "ruby-windows"
