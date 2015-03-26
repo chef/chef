@@ -39,6 +39,10 @@ class Chef
           @current_resource = current_resource
         end
 
+        def events
+          new_resource.events
+        end
+
         def headers
           conditional_get_headers.merge(new_resource.headers)
         end
@@ -57,7 +61,13 @@ class Chef
 
         def fetch
           http = Chef::HTTP::Simple.new(uri, http_client_opts)
-          tempfile = http.streaming_request(uri, headers)
+          if want_progress?
+            tempfile = http.streaming_request_with_progress(uri, headers) do |size, total|
+              events.resource_action_progress(new_resource, size, total, new_resource.progress_interval)
+            end
+          else
+            tempfile = http.streaming_request(uri, headers)
+          end
           if tempfile
             update_cache_control_data(tempfile, http.last_response)
             tempfile.close
@@ -76,6 +86,10 @@ class Chef
 
         def cache_control_data
           @cache_control_data ||= CacheControlData.load_and_validate(uri, current_resource.checksum)
+        end
+
+        def want_progress?
+          new_resource.show_progress
         end
 
         def want_mtime_cache_control?
