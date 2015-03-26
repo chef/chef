@@ -1370,7 +1370,7 @@ class Chef
             new_package_name = packages.first.name
             new_package_version = packages.first.version.to_s
             debug_msg = "#{name}: Unable to match package '#{name}' but matched #{packages.size} "
-            debug_msg << packages.size == 1 ? "package" : "packages"
+            debug_msg << (packages.size == 1 ? "package" : "packages")
             debug_msg << ", selected '#{new_package_name}' version '#{new_package_version}'"
             Chef::Log.debug(debug_msg)
 
