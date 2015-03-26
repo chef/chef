@@ -1,14 +1,22 @@
-bash -c '
+sh -c '
 <%= "export https_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
-distro=`uname -s`
-
-if test "x$distro" = "xSunOS"; then
-  if test -d "/usr/sfw/bin"; then
-    PATH=/usr/sfw/bin:$PATH
-    export PATH
+# @param $1 the omnibus root directory
+# @param $2 the requested version of omnibus package
+# @return 0 if omnibus needs to be installed, non-zero otherwise
+should_update_chef() {
+  if test ! -d "$1" ; then return 0
+  elif test "$2" = "true" ; then return 1
+  elif test "$2" = "latest" ; then return 0
   fi
-fi
+
+  local version="`$1/bin/chef-client -v | cut -d " " -f 2`"
+  if echo "$version" | grep "^$2" 2>&1 >/dev/null; then
+    return 1
+  else
+    return 0
+  fi
+}
 
 exists() {
   if command -v $1 &>/dev/null
@@ -19,41 +27,137 @@ exists() {
   fi
 }
 
+# do_wget URL FILENAME
+do_wget() {
+  echo "trying wget..."
+  wget -O "$2" "$1" 2>/tmp/stderr
+  # check for bad return status
+  test $? -ne 0 && return 1
+  # check for 404 or empty file
+  grep "ERROR 404" /tmp/stderr 2>&1 >/dev/null
+  if test $? -eq 0 || test ! -s "$2"; then
+    return 1
+  fi
+  return 0
+}
+
+# do_curl URL FILENAME
+do_curl() {
+  echo "trying curl..."
+  curl -L "$1" > "$2"
+  # check for bad return status
+  [ $? -ne 0 ] && return 1
+  # check for bad output or empty file
+  grep "The specified key does not exist." "$2" 2>&1 >/dev/null
+  if test $? -eq 0 || test ! -s "$2"; then
+    return 1
+  fi
+  return 0
+}
+
+# do_fetch URL FILENAME
+do_fetch() {
+  echo "trying fetch..."
+  fetch -o "$2" "$1" 2>/tmp/stderr
+  # check for bad return status
+  test $? -ne 0 && return 1
+  return 0
+}
+
+# do_perl URL FILENAME
+do_perl() {
+  echo "trying perl..."
+  perl -e "use LWP::Simple; getprint($ARGV[0]);" "$1" > "$2"
+  # check for bad return status
+  test $? -ne 0 && return 1
+  # check for bad output or empty file
+  # grep "The specified key does not exist." "$2" 2>&1 >/dev/null
+  # if test $? -eq 0 || test ! -s "$2"; then
+  #   unable_to_retrieve_package
+  # fi
+  return 0
+}
+
+# do_python URL FILENAME
+do_python() {
+  echo "trying python..."
+  python -c "import sys,urllib2 ; sys.stdout.write(urllib2.urlopen(sys.argv[1]).read())" "$1" > "$2"
+  # check for bad return status
+  test $? -ne 0 && return 1
+  # check for bad output or empty file
+  #grep "The specified key does not exist." "$2" 2>&1 >/dev/null
+  #if test $? -eq 0 || test ! -s "$2"; then
+  #  unable_to_retrieve_package
+  #fi
+  return 0
+}
+
+# do_download URL FILENAME
+do_download() {
+  PATH=/opt/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sfw/bin:/sbin:/bin:/usr/sbin:/usr/bin
+  export PATH
+
+  echo "downloading $1"
+  echo "  to file $2"
+
+  # we try all of these until we get success.
+  # perl, in particular may be present but LWP::Simple may not be installed
+
+  if exists wget; then
+    do_wget $1 $2 && return 0
+  fi
+
+  if exists curl; then
+    do_curl $1 $2 && return 0
+  fi
+
+  if exists fetch; then
+    do_fetch $1 $2 && return 0
+  fi
+
+  if exists perl; then
+    do_perl $1 $2 && return 0
+  fi
+
+  if exists python; then
+    do_python $1 $2 && return 0
+  fi
+
+  echo ">>>>>> wget, curl, fetch, perl or python not found on this instance."
+  return 16
+}
+
 <% if knife_config[:bootstrap_install_command] %>
   <%= knife_config[:bootstrap_install_command] %>
 <% else %>
   install_sh="<%= knife_config[:bootstrap_url] ? knife_config[:bootstrap_url] : "https://www.opscode.com/chef/install.sh" %>"
   if ! exists /usr/bin/chef-client; then
-    echo "Installing Chef Client..."
-    if exists wget; then
-      bash <(wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_wget_options] %> ${install_sh} -O -) <%= latest_current_chef_version_string %>
-    elif exists curl; then
-      bash <(curl -L <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_curl_options] %> ${install_sh}) <%= latest_current_chef_version_string %>
-    else
-      echo "Neither wget nor curl found. Please install one and try again." >&2
-      exit 1
-    fi
+    echo "-----> Installing Chef Omnibus (<%= latest_current_chef_version_string %>)"
+    do_download ${install_sh} /tmp/install.sh
+    sh /tmp/install.sh -P chef <%= latest_current_chef_version_string %>
+  else
+    echo "-----> Chef Omnibus installation detected (<%= latest_current_chef_version_string %>)"
   fi
 <% end %>
 
 mkdir -p /etc/chef
 
 <% if client_pem -%>
-cat > /etc/chef/client.pem <<'EOP'
+cat > /etc/chef/client.pem <<EOP
 <%= ::File.read(::File.expand_path(client_pem)) %>
 EOP
 chmod 0600 /etc/chef/client.pem
 <% end -%>
 
 <% if validation_key -%>
-cat > /etc/chef/validation.pem <<'EOP'
+cat > /etc/chef/validation.pem <<EOP
 <%= validation_key %>
 EOP
 chmod 0600 /etc/chef/validation.pem
 <% end -%>
 
 <% if encrypted_data_bag_secret -%>
-cat > /etc/chef/encrypted_data_bag_secret <<'EOP'
+cat > /etc/chef/encrypted_data_bag_secret <<EOP
 <%= encrypted_data_bag_secret %>
 EOP
 chmod 0600 /etc/chef/encrypted_data_bag_secret
@@ -69,17 +173,17 @@ mkdir -p /etc/chef/trusted_certs
 mkdir -p /etc/chef/ohai/hints
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
-cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
+cat > /etc/chef/ohai/hints/<%= name %>.json <<EOP
 <%= Chef::JSONCompat.to_json(hash) %>
 EOP
 <% end -%>
 <% end -%>
 
-cat > /etc/chef/client.rb <<'EOP'
+cat > /etc/chef/client.rb <<EOP
 <%= config_content %>
 EOP
 
-cat > /etc/chef/first-boot.json <<'EOP'
+cat > /etc/chef/first-boot.json <<EOP
 <%= Chef::JSONCompat.to_json(first_boot) %>
 EOP
 
