@@ -5,6 +5,7 @@
 * [**Tim Sogard**](https://github.com/drags):
   Reset $HOME to user running chef-client when running via sudo
 
+## 12.2.1
 * [Issue 3153](https://github.com/chef/chef/issues/3153): Fix bug where unset HOME would cause chef to crash
 
 ## 12.2.0
