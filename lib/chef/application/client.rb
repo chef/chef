@@ -253,6 +253,11 @@ class Chef::Application::Client < Chef::Application
     :description    => "Enable audit-mode with `enabled`. Disable audit-mode with `disabled`. Skip converge and only perform audits with `audit-only`",
     :proc           => lambda { |mo| mo.gsub("-", "_").to_sym }
 
+  option :minimal_ohai,
+    :long           => "--minimal-ohai",
+    :description    => "Only run the bare minimum ohai plugins chef needs to function",
+    :boolean        => true
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
   attr_reader :chef_client_json

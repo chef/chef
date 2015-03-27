@@ -85,6 +85,11 @@ class Chef::Application::Apply < Chef::Application
     :default      => !Chef::Platform.windows?,
     :description  => "Use colored output, defaults to enabled"
 
+  option :minimal_ohai,
+    :long           => "--minimal-ohai",
+    :description    => "Only run the bare minimum ohai plugins chef needs to function",
+    :boolean        => true
+
   attr_reader :json_attribs
 
   def initialize
