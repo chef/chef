@@ -123,6 +123,26 @@ describe Chef::Provider::Package::Yum do
         expect(@provider.arch).to eq("noarch")
       end
 
+      describe "when version constraint in package_name" do
+        it "should set package_version if no existing package_name is found and new_package_name is available" do
+          @new_resource = Chef::Resource::Package.new('cups = 1.2.4-11.18.el5_2.3')
+          @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+          allow(@yum_cache).to receive(:package_available?) { |pkg| pkg == 'cups' ? true : false }
+          allow(@yum_cache).to receive(:packages_from_require) do |pkg|
+            [Chef::Provider::Package::Yum::RPMDbPackage.new("cups", "1.2.4-11.18.el5_2.3", "noarch", [], false, true, "base"),
+            Chef::Provider::Package::Yum::RPMDbPackage.new("cups", "1.2.4-11.18.el5_2.2", "noarch", [], false, true, "base"),]
+          end
+          expect(Chef::Log).to receive(:debug).exactly(1).times.with(%r{checking yum info})
+          expect(Chef::Log).to receive(:debug).exactly(1).times.with(%r{installed version})
+          expect(Chef::Log).to receive(:debug).exactly(1).times.with(%r{matched 2 packages,})
+          @provider.load_current_resource
+          expect(@provider.new_resource.package_name).to eq("cups")
+          expect(@provider.new_resource.version).to eq("1.2.4-11.18.el5_2.3")
+          expect(@provider.send(:new_version_array)).to eq(["1.2.4-11.18.el5_2.3"])
+          expect(@provider.send(:package_name_array)).to eq(["cups"])
+        end
+      end
+
       it "should not set the arch when an existing package_name is found" do
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3')
         @yum_cache = double(
@@ -2074,6 +2094,36 @@ describe "Chef::Provider::Package::Yum - Multi" do
 
     it "should return the current resouce" do
       expect(@provider.load_current_resource).to eql(@provider.current_resource)
+    end
+
+    describe "when version constraint in package_name" do
+      it "should set package_version if no existing package_name is found and new_package_name is available" do
+        @new_resource = Chef::Resource::Package.new(['cups = 1.2.4-11.18.el5_2.3', 'emacs = 24.4'])
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        allow(@yum_cache).to receive(:package_available?) { |pkg| %w(cups emacs).include?(pkg) ? true : false }
+        allow(@yum_cache).to receive(:candidate_version) do |pkg|
+          if pkg == 'cups'
+            "1.2.4-11.18.el5_2.3"
+          elsif pkg == 'emacs'
+            "24.4"
+          end
+        end
+        allow(@yum_cache).to receive(:packages_from_require) do |pkg|
+          if pkg.name == 'cups'
+            [Chef::Provider::Package::Yum::RPMDbPackage.new("cups", "1.2.4-11.18.el5_2.3", "noarch", [], false, true, "base")]
+          elsif pkg.name == 'emacs'
+            [Chef::Provider::Package::Yum::RPMDbPackage.new("emacs", "24.4", "noarch", [], false, true, "base")]
+          end
+        end
+        expect(Chef::Log).to receive(:debug).exactly(2).times.with(%r{matched 1 package,})
+        expect(Chef::Log).to receive(:debug).exactly(1).times.with(%r{candidate version: \["1.2.4-11.18.el5_2.3", "24.4"\]})
+        expect(Chef::Log).to receive(:debug).at_least(2).times.with(%r{checking yum info})
+        @provider.load_current_resource
+        expect(@provider.new_resource.package_name).to eq(["cups", "emacs"])
+        expect(@provider.new_resource.version).to eq(["1.2.4-11.18.el5_2.3", "24.4"])
+        expect(@provider.send(:package_name_array)).to eq(["cups", "emacs"])
+        expect(@provider.send(:new_version_array)).to eq(["1.2.4-11.18.el5_2.3", "24.4"])
+      end
     end
   end
 
