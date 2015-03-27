@@ -70,7 +70,6 @@ class Chef
         end
 
         def define_resource_requirements
-          #super
           requirements.assert(:reload) do |a|
             a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
           end
@@ -88,7 +87,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @plist_size > 0 }
-            # No failrue here in original code - so we also will not
+            # No failure here in original code - so we also will not
             # fail. Instead warn that the service is potentially missing
             a.whyrun "Assuming that the service would have been previously installed and is currently disabled." do
               @current_resource.enabled(false)
