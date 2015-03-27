@@ -464,10 +464,7 @@ class Chef
 
       # @return [Array] new_version(s) as an array
       def new_version_array
-        @new_version_array ||=
-            [ new_resource.version ].flatten.map do |v|
-              ( v.nil? || v.empty? ) ? nil : v
-            end
+        [ new_resource.version ].flatten.map { |v| v.to_s.empty? ? nil : v }
       end
 
       # @todo: extract apt/dpkg specific preseeding to a helper class
