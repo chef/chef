@@ -196,14 +196,18 @@ class Chef
 
     def http_client(base_url=nil)
       base_url ||= url
-      BasicClient.new(base_url)
+      if chef_zero_uri?(base_url)
+        SocketlessChefZeroClient.new(base_url)
+      else
+        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+      end
     end
 
     protected
 
     def create_url(path)
       return path if path.is_a?(URI)
-      if path =~ /^(http|https):\/\//i
+      if path =~ /^(http|https|chefzero):\/\//i
         URI.parse(path)
       elsif path.nil? or path.empty?
         URI.parse(@url)
@@ -350,6 +354,11 @@ class Chef
     end
 
     private
+
+    def chef_zero_uri?(uri)
+      uri = URI.parse(uri) unless uri.respond_to?(:scheme)
+      uri.scheme == "chefzero"
+    end
 
     def redirected_to(response)
       return nil  unless response.kind_of?(Net::HTTPRedirection)

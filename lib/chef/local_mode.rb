@@ -62,6 +62,8 @@ class Chef
         server_options = {}
         server_options[:data_store] = data_store
         server_options[:log_level] = Chef::Log.level
+
+        # TODO: there needs to be an option to force Chef Zero to operate in socket-ful mode
         # server_options[:host] = Chef::Config.chef_zero.host
         # server_options[:port] = parse_port(Chef::Config.chef_zero.port)
         # @chef_zero_server = ChefZero::Server.new(server_options)

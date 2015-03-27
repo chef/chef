@@ -165,15 +165,10 @@ class Chef
       r["SERVER_PORT"] = ""
       r["rack.url_scheme"] = "chefzero"
       r["rack.input"] = StringIO.new(body_str)
-      pp rack_req: r
 
       res = ChefZero::Socketless.instance.request(r)
 
-      pp raw_rack_response: res
-
       net_http_response = to_net_http(res[0], res[1], res[2])
-
-      #pp net_http_response: net_http_response
 
       yield net_http_response if block_given?
 
@@ -231,13 +226,7 @@ class Chef
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
 
-      url_as_uri = url.respond_to?(:scheme) ? url : URI.parse(url)
-
-      # TODO: NEW STUFF ADD TESTS
-      scheme = url_as_uri.scheme
-      @socketless = (scheme == "chefzero")
-      signing_key_filename = nil if @socketless
-
+      signing_key_filename = nil if chef_zero_uri?(url)
 
       options = options.dup
       options[:client_name] = client_name
@@ -369,27 +358,6 @@ class Chef
     end
 
     public :create_url
-
-    def create_url(path)
-      return path if path.is_a?(URI)
-      if path =~ /^(chefzero):\/\//i
-        URI.parse(path)
-      else
-        super
-      end
-    end
-
-    def http_client(base_url=nil)
-      base_url ||= url
-      pp url_class: base_url.class, value: base_url
-      base_url = URI.parse(base_url) if base_url.kind_of?(String)
-      if base_url.scheme == "chefzero"
-        pp using_zero_client: base_url
-        SocketlessChefZeroClient.new(base_url)
-      else
-        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
-      end
-    end
 
     ############################################################################
     # DEPRECATED
