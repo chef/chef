@@ -30,7 +30,6 @@ another component.
 * [Lamont Granquist](http://github.com/lamont-granquist)
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
-* [Claire McQuin](https://github.com/mcquin)
 * [Jay Mundrawala](http://github.com/jdmundrawala)
 * [Bryan McLellan](http://github.com/btm)
 * [Ranjib Dey](http://github.com/ranjib)
@@ -132,4 +131,3 @@ The specific components of Chef related to a given platform - including (but not
 * [Aaron Kalin](https://github.com/martinisoft)
 
 ### Maintainers
-
