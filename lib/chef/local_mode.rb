@@ -18,6 +18,9 @@ require 'chef/config'
 
 class Chef
   module LocalMode
+
+    LOCAL_MODE_URL = "chefzero://localhost"
+
     # Create a chef local server (if the configuration requires one) for the
     # duration of the given block.
     #
@@ -59,12 +62,15 @@ class Chef
         server_options = {}
         server_options[:data_store] = data_store
         server_options[:log_level] = Chef::Log.level
-        server_options[:host] = Chef::Config.chef_zero.host
-        server_options[:port] = parse_port(Chef::Config.chef_zero.port)
-        @chef_zero_server = ChefZero::Server.new(server_options)
-        @chef_zero_server.start_background
-        Chef::Log.info("Started chef-zero at #{@chef_zero_server.url} with #{@chef_fs.fs_description}")
-        Chef::Config.chef_server_url = @chef_zero_server.url
+        # server_options[:host] = Chef::Config.chef_zero.host
+        # server_options[:port] = parse_port(Chef::Config.chef_zero.port)
+        # @chef_zero_server = ChefZero::Server.new(server_options)
+        # @chef_zero_server.start_background
+
+        ChefZero::Socketless.instance.reset!(server_options)
+
+        Chef::Log.info("Started chef-zero at #{LOCAL_MODE_URL} with #{@chef_fs.fs_description}")
+        Chef::Config.chef_server_url = LOCAL_MODE_URL
       end
     end
 
@@ -80,10 +86,11 @@ class Chef
 
     # If chef_zero_server is non-nil, stop it and remove references to it.
     def self.destroy_server_connectivity
-      if @chef_zero_server
-        @chef_zero_server.stop
-        @chef_zero_server = nil
-      end
+      return nil
+      # if @chef_zero_server
+      #   @chef_zero_server.stop
+      #   @chef_zero_server = nil
+      # end
     end
 
     def self.parse_port(port)

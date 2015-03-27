@@ -38,7 +38,180 @@ require 'chef/exceptions'
 require 'chef/platform/query_helpers'
 require 'chef/http/remote_request_id'
 
+module ChefZero
+  # TODO: this needs to wrap all the things in a mutex
+  class Socketless
+
+    include Singleton
+
+    def initialize()
+      reset!
+    end
+
+    def reset!(options={})
+      @server = ChefZero::Server.new(options)
+      # TODO: make this public or whatever we need to do so we don't need #send
+      @app = @server.send(:app)
+    end
+
+    def request(rack_env)
+      @app.call(rack_env)
+    end
+
+  end
+end
+
 class Chef
+
+  class SocketlessChefZeroClient
+
+    module Response
+
+      def read_body(dest = nil, &block)
+        if dest
+          raise "responses from socketless chef zero can't be written to specific destination"
+        end
+
+        if block_given?
+          block.call(@body)
+        else
+          super
+        end
+      end
+
+    end
+
+    # copied verbatim from webrick
+    #
+    # HTTP status codes and descriptions
+    STATUS_MESSAGE = { # :nodoc:
+      100 => 'Continue',
+      101 => 'Switching Protocols',
+      200 => 'OK',
+      201 => 'Created',
+      202 => 'Accepted',
+      203 => 'Non-Authoritative Information',
+      204 => 'No Content',
+      205 => 'Reset Content',
+      206 => 'Partial Content',
+      207 => 'Multi-Status',
+      300 => 'Multiple Choices',
+      301 => 'Moved Permanently',
+      302 => 'Found',
+      303 => 'See Other',
+      304 => 'Not Modified',
+      305 => 'Use Proxy',
+      307 => 'Temporary Redirect',
+      400 => 'Bad Request',
+      401 => 'Unauthorized',
+      402 => 'Payment Required',
+      403 => 'Forbidden',
+      404 => 'Not Found',
+      405 => 'Method Not Allowed',
+      406 => 'Not Acceptable',
+      407 => 'Proxy Authentication Required',
+      408 => 'Request Timeout',
+      409 => 'Conflict',
+      410 => 'Gone',
+      411 => 'Length Required',
+      412 => 'Precondition Failed',
+      413 => 'Request Entity Too Large',
+      414 => 'Request-URI Too Large',
+      415 => 'Unsupported Media Type',
+      416 => 'Request Range Not Satisfiable',
+      417 => 'Expectation Failed',
+      422 => 'Unprocessable Entity',
+      423 => 'Locked',
+      424 => 'Failed Dependency',
+      426 => 'Upgrade Required',
+      428 => 'Precondition Required',
+      429 => 'Too Many Requests',
+      431 => 'Request Header Fields Too Large',
+      500 => 'Internal Server Error',
+      501 => 'Not Implemented',
+      502 => 'Bad Gateway',
+      503 => 'Service Unavailable',
+      504 => 'Gateway Timeout',
+      505 => 'HTTP Version Not Supported',
+      507 => 'Insufficient Storage',
+      511 => 'Network Authentication Required',
+    }
+
+    STATUS_MESSAGE.values.each {|v| v.freeze }
+    STATUS_MESSAGE.freeze
+
+    def initialize(base_url)
+      @url = base_url
+    end
+
+    def host
+      @url.hostname
+    end
+
+    def port
+      "no port"
+    end
+
+    # request, response = client.request(method, url, body, headers) {|r| r.read_body }
+    def request(method, url, body, headers, &handler_block)
+      #pp req: [method, url, body, headers]
+      body_str = body || ""
+      r = {}
+      r["REQUEST_METHOD"] = method.to_s.upcase
+      r["SCRIPT_NAME"] = ""
+      r["PATH_INFO"] = url.path
+      r["QUERY_STRING"] = url.query
+      r["SERVER_NAME"] = "localhost"
+      r["SERVER_PORT"] = ""
+      r["rack.url_scheme"] = "chefzero"
+      r["rack.input"] = StringIO.new(body_str)
+      pp rack_req: r
+
+      res = ChefZero::Socketless.instance.request(r)
+
+      pp raw_rack_response: res
+
+      net_http_response = to_net_http(res[0], res[1], res[2])
+
+      #pp net_http_response: net_http_response
+
+      yield net_http_response if block_given?
+
+      [self, net_http_response]
+    end
+
+    # TODO: this is copied verbatim from the fakeweb project, MIT licensed
+    # Add credits where appropriate
+
+    def to_net_http(code, headers, chunked_body)
+      body = chunked_body.join('')
+      msg = STATUS_MESSAGE[code] or raise "Cannot determine HTTP status message for code #{code}"
+      response = Net::HTTPResponse.send(:response_class, code.to_s).new("1.0", code.to_s, msg)
+      response.instance_variable_set(:@body, body)
+      headers.each do |name, value|
+        if value.respond_to?(:each)
+          value.each { |v| response.add_field(name, v) }
+        else
+          response[name] = value
+        end
+      end
+
+      response.instance_variable_set(:@read, true)
+      response.extend(Response)
+      response
+    end
+
+    private
+
+    def headers_extracted_from_options
+      options.reject {|name, _| KNOWN_OPTIONS.include?(name) }.map { |name, value|
+        [name.to_s.split("_").map { |segment| segment.capitalize }.join("-"), value]
+      }
+    end
+
+
+  end
+
   # == Chef::REST
   # Chef's custom REST client with built-in JSON support and RSA signed header
   # authentication.
@@ -57,6 +230,15 @@ class Chef
     # http://localhost:4000, a call to +get_rest+ with 'nodes' will make an
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
+
+      url_as_uri = url.respond_to?(:scheme) ? url : URI.parse(url)
+
+      # TODO: NEW STUFF ADD TESTS
+      scheme = url_as_uri.scheme
+      @socketless = (scheme == "chefzero")
+      signing_key_filename = nil if @socketless
+
+
       options = options.dup
       options[:client_name] = client_name
       options[:signing_key_filename] = signing_key_filename
@@ -188,9 +370,25 @@ class Chef
 
     public :create_url
 
+    def create_url(path)
+      return path if path.is_a?(URI)
+      if path =~ /^(chefzero):\/\//i
+        URI.parse(path)
+      else
+        super
+      end
+    end
+
     def http_client(base_url=nil)
       base_url ||= url
-      BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+      pp url_class: base_url.class, value: base_url
+      base_url = URI.parse(base_url) if base_url.kind_of?(String)
+      if base_url.scheme == "chefzero"
+        pp using_zero_client: base_url
+        SocketlessChefZeroClient.new(base_url)
+      else
+        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+      end
     end
 
     ############################################################################
