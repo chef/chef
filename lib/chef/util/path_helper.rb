@@ -196,7 +196,7 @@ class Chef
           paths << ENV['HOMESHARE'] + ENV['HOMEPATH'] if ENV['HOMESHARE'] && ENV['HOMEPATH']
           paths << ENV['USERPROFILE']
         end
-        paths << Dir.home
+        paths << Dir.home if ENV['HOME']
 
         # Depending on what environment variables we're using, the slashes can go in any which way.
         # Just change them all to / to keep things consistent.
@@ -204,11 +204,11 @@ class Chef
         # the particular brand of kool-aid you consume.  This code assumes that \ and / are both
         # path separators on any system being used.
         paths = paths.map { |home_path| home_path.gsub(path_separator, ::File::SEPARATOR) if home_path }
-        
+
         # Filter out duplicate paths and paths that don't exist.
         valid_paths = paths.select { |home_path| home_path && Dir.exists?(home_path) }
         valid_paths = valid_paths.uniq
-        
+
         # Join all optional path elements at the end.
         # If a block is provided, invoke it - otherwise just return what we've got.
         joined_paths = valid_paths.map { |home_path| File.join(home_path, *args) }
