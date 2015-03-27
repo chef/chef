@@ -131,7 +131,7 @@ describe "LWRP" do
     end
 
     it "should set the specified action as the default action" do
-      expect(Chef::Resource::LwrpFoo.new("blah").action).to eq(:pass_buck)
+      expect(Chef::Resource::LwrpFoo.new("blah").action).to eq([:pass_buck])
     end
 
     it "should create a method for each attribute" do
@@ -235,7 +235,7 @@ describe "LWRP" do
         end
 
         it "delegates #default_action to the parent" do
-          expect(child.default_action).to eq(:eat)
+          expect(child.default_action).to eq([:eat])
         end
       end
 
@@ -252,7 +252,7 @@ describe "LWRP" do
         end
 
         it "does not delegate #default_action to the parent" do
-          expect(child.default_action).to eq(:dont_eat)
+          expect(child.default_action).to eq([:dont_eat])
         end
       end
 

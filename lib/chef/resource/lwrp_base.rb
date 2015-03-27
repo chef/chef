@@ -89,7 +89,7 @@ class Chef
           else
             action = action_name.to_sym
             @actions.push(action) unless @actions.include?(action)
-            @default_action = action
+            @default_action = [action]
           end
         end
 
