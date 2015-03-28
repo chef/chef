@@ -38,29 +38,6 @@ require 'chef/exceptions'
 require 'chef/platform/query_helpers'
 require 'chef/http/remote_request_id'
 
-module ChefZero
-  # TODO: this needs to wrap all the things in a mutex
-  class Socketless
-
-    include Singleton
-
-    def initialize()
-      reset!
-    end
-
-    def reset!(options={})
-      @server = ChefZero::Server.new(options)
-      # TODO: make this public or whatever we need to do so we don't need #send
-      @app = @server.send(:app)
-    end
-
-    def request(rack_env)
-      @app.call(rack_env)
-    end
-
-  end
-end
-
 class Chef
 
   class SocketlessChefZeroClient
@@ -149,7 +126,7 @@ class Chef
     end
 
     def port
-      "no port"
+      @url.port
     end
 
     # request, response = client.request(method, url, body, headers) {|r| r.read_body }
@@ -162,11 +139,12 @@ class Chef
       r["PATH_INFO"] = url.path
       r["QUERY_STRING"] = url.query
       r["SERVER_NAME"] = "localhost"
-      r["SERVER_PORT"] = ""
+      r["SERVER_PORT"] = url.port
+      r["HTTP_HOST"] = "localhost:#{url.port}"
       r["rack.url_scheme"] = "chefzero"
       r["rack.input"] = StringIO.new(body_str)
 
-      res = ChefZero::Socketless.instance.request(r)
+      res = ChefZero::SocketlessServerMap.request(port, r)
 
       net_http_response = to_net_http(res[0], res[1], res[2])
 

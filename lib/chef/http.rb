@@ -296,7 +296,7 @@ class Chef
           http_attempts += 1
           response, request, return_value = yield
           # handle HTTP 50X Error
-          if response.kind_of?(Net::HTTPServerError)
+          if response.kind_of?(Net::HTTPServerError) && !Chef::Config.local_mode
             if http_retry_count - http_attempts + 1 > 0
               sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
               Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
