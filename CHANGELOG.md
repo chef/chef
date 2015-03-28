@@ -4,6 +4,9 @@
   Removed after_created and added test to recipe_spec
 * [**Tim Sogard**](https://github.com/drags):
   Reset $HOME to user running chef-client when running via sudo
+* [pr#3162](https://github.com/chef/chef/pull/3162): Add
+  `--minimal-ohai` flag to client/solo/apply; restricts ohai to only the
+  bare minimum of plugins.
 
 ## 12.2.1
 * [Issue 3153](https://github.com/chef/chef/issues/3153): Fix bug where unset HOME would cause chef to crash
