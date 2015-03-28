@@ -63,14 +63,22 @@ class Chef
             raise Chef::Exceptions::WindowsNotAdmin, "can not get the security information for '#{dst}' due to missing Administrator privileges."
           end
 
-          dacl_present = dst_sd.dacl_present? && !dst_sd.dacl.nil?
+          dacl_present = dst_sd.dacl_present?
           if dacl_present
+            if dst_sd.dacl.nil?
+              apply_dacl = nil
+            else
               apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
+            end
           end
 
-          sacl_present = dst_sd.sacl_present? && !dst_sd.sacl.nil?
+          sacl_present = dst_sd.sacl_present?
           if sacl_present
+            if dst_sd.sacl.nil?
+              apply_sacl = nil
+            else
               apply_sacl = ACL.create(dst_sd.sacl.select { |ace| !ace.inherited? })
+            end
           end
 
           #
