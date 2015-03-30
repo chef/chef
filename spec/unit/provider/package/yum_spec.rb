@@ -17,6 +17,7 @@
 #
 
 require 'spec_helper'
+require 'securerandom'
 
 describe Chef::Provider::Package::Yum do
   before(:each) do
@@ -1659,6 +1660,14 @@ describe Chef::Provider::Package::Yum::YumCache do
     end
   end
 
+  let(:yum_exe) {
+    StringIO.new("#!/usr/bin/python\n\naldsjfa\ldsajflkdsjf\lajsdfj")
+  }
+
+  let(:bin_exe) {
+    StringIO.new(SecureRandom.random_bytes)
+  }
+
   before(:each) do
     @stdin = double("STDIN", :nil_object => true)
     @stdout = double("STDOUT", :nil_object => true)
@@ -1704,12 +1713,19 @@ file: file://///etc/yum.repos.d/CentOS-Base.repo, line: 12
 'qeqwewe\n'
 EOF
     @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_good, :stderr => @stderr)
-
     # new singleton each time
     Chef::Provider::Package::Yum::YumCache.reset_instance
     @yc = Chef::Provider::Package::Yum::YumCache.instance
     # load valid data
     allow(@yc).to receive(:shell_out!).and_return(@status)
+    allow_any_instance_of(described_class).to receive(:which).with("yum").and_return("/usr/bin/yum")
+    allow(::File).to receive(:open).with("/usr/bin/yum", "r") do |&block|
+      res = block.call(yum_exe)
+      # a bit of a hack. rewind this since it seem that no matter what
+      # I do, we get the same StringIO objects on multiple calls to
+      # ::File.open
+      yum_exe.rewind; res
+    end
   end
 
   describe "initialize" do
@@ -1723,6 +1739,24 @@ EOF
         expect(b).not_to be_nil
       end
       @yc = Chef::Provider::Package::Yum::YumCache.instance
+    end
+  end
+
+  describe "python_bin" do
+    it "should return the default python if an error occurs" do
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r").and_raise(StandardError)
+      expect(@yc.python_bin).to eq("/usr/bin/python")
+    end
+
+    it "should return the default python if the yum-executable doesn't start with #!" do
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(bin_exe); bin_exe.rewind; r}
+      expect(@yc.python_bin).to eq("/usr/bin/python")
+    end
+
+    it "should return the interpreter for yum" do
+      other = StringIO.new("#!/usr/bin/super_python\n\nlasjdfdsaljf\nlasdjfs")
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(other); other.rewind; r}
+      expect(@yc.python_bin).to eq("/usr/bin/super_python")
     end
   end
 
