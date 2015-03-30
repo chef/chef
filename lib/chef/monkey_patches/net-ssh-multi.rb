@@ -54,6 +54,39 @@ if Net::SSH::Multi::Version::STRING == "1.1.0" || Net::SSH::Multi::Version::STRI
         end
 
         class Session
+          # ===== PATCH START
+          # This is used in :retry_times :on_error strategy in next_session() below
+          # and defines how many times connection will be retried before deemed as failed
+          #
+          # Helps with an unknown issue on OSX (at least Yosemite, but observed on earlier versions
+          # where sockets can't be open from the first attempt to hosts which are alive and well.
+          # E.g. the socket(2) call in Net::SSH returns bogus error like "No route to host"
+          #
+          # Since @retries_max needs to be passed for :retry_times, new behavior of :on_error
+          # attr_accessor is needed and initializer need to be monkey-patched to include
+          # two instance vars into it
+          attr_accessor :retries_max
+
+          def initialize(options={})
+            @server_list = ServerList.new
+            @groups = Hash.new { |h,k| h[k] = ServerList.new }
+            @gateway = nil
+            @open_groups = []
+            @connect_threads = []
+            @on_error = :fail
+            @default_user = ENV['USER'] || ENV['USERNAME'] || "unknown"
+
+            @open_connections = 0
+            @pending_sessions = []
+            @session_mutex = Mutex.new
+
+            @retries = {}
+            @retries_max = 0
+
+            options.each { |opt, value| send("#{opt}=", value) }
+          end
+          # ===== PATCH END
+
           def next_session(server, force=false) #:nodoc:
             # don't retry a failed attempt
             return nil if server.failed?
@@ -90,14 +123,42 @@ if Net::SSH::Multi::Version::STRING == "1.1.0" || Net::SSH::Multi::Version::STRI
               when :ignore then
                 # do nothing
               when :warn then
-                warn("error connecting to #{server}: #{e.class} (#{e.message})")
+                # ===== PATCH START
+                #
+                # Avoid race conditions on warning/error output
+                @session_mutex.synchronize { warn("error connecting to #{server}: #{e.class} (#{e.message})") }
+                # ===== PATCH END
               when Proc then
                 go = catch(:go) { on_error.call(server); nil }
                 case go
                 when nil, :ignore then # nothing
                 when :retry then retry
                 when :raise then raise
-                else warn "unknown 'go' command: #{go.inspect}"
+                # ===== PATCH START
+                #
+                # More sophisticated :retry strategy, with limited # of retries per server
+                # and warning output about the fact that a retry occured. Unless @retries_max
+                # is passed to initializer, it default to 0 and hence only warning will be printed -
+                # no retries will occur
+                #
+                # This strategy is used by upstread Knife::SSH if --ssh_retries option is passed
+                # and is greater than 0
+                #
+                # Avoid race conditions on warning/error output
+                when :retry_times
+                  if @retries_max > 0
+                    @session_mutex.synchronize do
+                      @retries[server.inspect.to_s] ||= @retries_max
+                      @retries[server.inspect.to_s] -= 1
+                      retries_message = @retries[server.inspect.to_s] > 0 ? "#{@retries[server.inspect.to_s]+1} more times" : "one last time"
+                      warn "error connecting to #{server}: #{e.class} (#{e.message}). RETRYING #{retries_message}"
+                    end
+                    retry if @retries[server.inspect.to_s] > 0
+                  else
+                    @session_mutex.synchronize { warn "error connecting to #{server}: #{e.class} (#{e.message})." }
+                  end
+                else @session_mutex.synchronize { warn "unknown 'go' command: #{go.inspect}" }
+                # ===== PATCH END
                 end
               else
                 raise
