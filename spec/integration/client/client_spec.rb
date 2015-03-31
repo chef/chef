@@ -60,6 +60,17 @@ EOM
       result.error!
     end
 
+    it "should complete successfully with --no-listen" do
+      file 'config/client.rb', <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+
+      result = shell_out("#{chef_client} --no-listen -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result.error!
+    end
+
+
     context 'and no config file' do
       it 'should complete with success when cwd is just above cookbooks and paths are not specified' do
         result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => path_to(''))

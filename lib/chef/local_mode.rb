@@ -65,7 +65,11 @@ class Chef
         server_options[:port] = parse_port(Chef::Config.chef_zero.port)
         @chef_zero_server = ChefZero::Server.new(server_options)
 
-        @chef_zero_server.start_background
+        if Chef::Config[:listen]
+          @chef_zero_server.start_background
+        else
+          @chef_zero_server.start_socketless
+        end
 
         local_mode_url = @chef_zero_server.local_mode_url
 

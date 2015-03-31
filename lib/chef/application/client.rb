@@ -258,6 +258,11 @@ class Chef::Application::Client < Chef::Application
     :description    => "Only run the bare minimum ohai plugins chef needs to function",
     :boolean        => true
 
+  option :listen,
+    :long           => "--[no-]listen",
+    :description    => "Whether a local mode (-z) server binds to a port",
+    :boolean        => true
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
   attr_reader :chef_client_json
