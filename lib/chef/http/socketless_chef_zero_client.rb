@@ -75,6 +75,8 @@ class Chef
 
       end
 
+      attr_reader :url
+
       # copied verbatim from webrick (2-clause BSD License)
       #
       # HTTP status codes and descriptions
