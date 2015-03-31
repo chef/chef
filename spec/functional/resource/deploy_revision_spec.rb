@@ -819,7 +819,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       end
 
       before do
-        expect { deploy_that_fails.run_action(:deploy) }.to raise_error(Chef::Exceptions::Exec)
+        expect { deploy_that_fails.run_action(:deploy) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
         deploy_to_latest_with_callback_tracking.run_action(:deploy)
       end
 

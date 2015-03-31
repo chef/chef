@@ -362,7 +362,7 @@ describe Chef::Provider::Deploy do
 
   it "skips the migration when resource.migrate => false but runs symlinks before migration" do
     @resource.migrate false
-    expect(@provider).not_to receive :run_command
+    expect(@provider).not_to receive :shell_out!
     expect(@provider).to receive :run_symlinks_before_migrate
     @provider.migrate
   end
@@ -378,7 +378,7 @@ describe Chef::Provider::Deploy do
 
     allow(STDOUT).to receive(:tty?).and_return(true)
     allow(Chef::Log).to receive(:info?).and_return(true)
-    expect(@provider).to receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
+    expect(@provider).to receive(:shell_out!).with("migration_foo",:cwd => @expected_release_dir,
                                                 :user => "deployNinja", :group => "deployNinjas",
                                                 :log_level => :info, :live_stream => STDOUT,
                                                 :log_tag => "deploy[/my/deploy/dir]",
@@ -445,13 +445,13 @@ describe Chef::Provider::Deploy do
   end
 
   it "does nothing for restart if restart_command is empty" do
-    expect(@provider).not_to receive(:run_command)
+    expect(@provider).not_to receive(:shell_out!)
     @provider.restart
   end
 
   it "runs the restart command in the current application dir when the resource has a restart_command" do
     @resource.restart_command "restartcmd"
-    expect(@provider).to receive(:run_command).with(:command => "restartcmd", :cwd => "/my/deploy/dir/current", :log_tag => "deploy[/my/deploy/dir]", :log_level => :debug)
+    expect(@provider).to receive(:shell_out!).with("restartcmd", :cwd => "/my/deploy/dir/current", :log_tag => "deploy[/my/deploy/dir]", :log_level => :debug)
     @provider.restart
   end
 
@@ -509,7 +509,7 @@ describe Chef::Provider::Deploy do
   it "shouldn't give a no method error on migrate if the environment is nil" do
     allow(@provider).to receive(:enforce_ownership)
     allow(@provider).to receive(:run_symlinks_before_migrate)
-    allow(@provider).to receive(:run_command)
+    allow(@provider).to receive(:shell_out!)
     @provider.migrate
 
   end
