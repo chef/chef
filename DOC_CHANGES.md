@@ -6,6 +6,13 @@ Example Doc Change:
 Description of the required change.
 -->
 
+### Chef Client and Knife `--no-listen` Flag and `listen` Config Option
+
+Chef Client and Knife have a `--no-listen` CLI option. It is only
+relevant when using local mode (`-z`). When this flag is given, Chef
+Zero does not bind to a port on localhost. The same behavior can be
+activated by setting `listen false` in the relevant config file.
+
 ### Chef Client, Solo, and Apply `--minimal-ohai` Flag
 
 Chef Client, Solo, and Apply all implement a `--minimal-ohai` flag. When

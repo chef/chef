@@ -1,5 +1,8 @@
 ## Unreleased
 
+* [pr#3160](https://github.com/chef/chef/pull/3160): Use Chef Zero in
+  socketless mode for local mode, add `--no-listen` flag to disable port
+  binding
 * [**Nolan Davidson**](https://github.com/nsdavidson):
   Removed after_created and added test to recipe_spec
 * [**Tim Sogard**](https://github.com/drags):

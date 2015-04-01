@@ -1,5 +1,12 @@
 # Chef Client Release Notes 12.3.0:
 
+## Socketless Chef Zero Local Mode
+All requests to the Chef Zero server in local mode use Chef Zero's new
+socketless request mechanism. By default, Chef Zero will still bind to a
+port and accept HTTP requests on localhost; this can be disabled with
+the `--no-listen` CLI flag or by adding `listen false` to the relevant
+configuration file.
+
 ## Minimal Ohai Flag
 
 Chef Client, Solo, and Apply all now support a `--minimal-ohai` flag.
