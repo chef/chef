@@ -39,7 +39,7 @@ describe 'knife common options', :workstation do
 
         it 'knife raw /nodes/x should retrieve the node' do
           knife('raw /nodes/x').should_succeed( /"name": "x"/ )
-          expect(Chef::Config.chef_server_url).to eq('http://localhost:9999')
+          expect(Chef::Config.chef_server_url).to eq('chefzero://localhost:9999')
         end
       end
 
@@ -101,7 +101,7 @@ EOM
 
     it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
       knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
-      expect(Chef::Config.chef_server_url).to eq('http://localhost:9999')
+      expect(Chef::Config.chef_server_url).to eq('chefzero://localhost:9999')
     end
 
     context 'when the default port (8889) is already bound' do
@@ -149,7 +149,7 @@ EOM
 
     it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
       knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
-      expect(Chef::Config.chef_server_url).to eq('http://localhost:9999')
+      expect(Chef::Config.chef_server_url).to eq('chefzero://localhost:9999')
     end
   end
 end
