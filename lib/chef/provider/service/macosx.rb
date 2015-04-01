@@ -79,6 +79,12 @@ class Chef
             a.failure_message Chef::Exceptions::Service, "Several plist files match service name. Please use full service name."
           end
 
+          requirements.assert(:all_actions) do |a|
+            a.assertion {::File.exists?(@plist.to_s) }
+            a.failure_message Chef::Exceptions::Service,
+              "Could not find plist for #{@new_resource}"
+          end
+
           requirements.assert(:enable, :disable) do |a|
             a.assertion { !@service_label.to_s.empty? }
             a.failure_message Chef::Exceptions::Service,
@@ -93,11 +99,6 @@ class Chef
               @current_resource.enabled(false)
               @current_resource.running(false)
             end
-          end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { @plist.nil? ? true : ::File.exists?(@plist) }
-            a.failure_message Chef::Exceptions::Service, "#{@plist} does not exist"
           end
         end
 
@@ -208,6 +209,9 @@ class Chef
           # CHEF-5223 "you can't glob for a file that hasn't been converged
           # onto the node yet."
           return nil if @plist.nil?
+
+          # Plist must exist by this point
+          raise Chef::Exceptions::FileNotFound, "Cannot find #{@plist}!" unless ::File.exists?(@plist)
 
           # Most services have the same internal label as the name of the
           # plist file. However, there is no rule saying that *has* to be

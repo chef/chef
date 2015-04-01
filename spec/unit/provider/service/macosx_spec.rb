@@ -81,6 +81,7 @@ XML
                     with(/(#{su_cmd} '#{cmd}'|#{cmd})/).
                     and_return(double("Status",
                                     :stdout => launchctl_stdout, :exitstatus => 0))
+            allow(File).to receive(:exists?).and_return([true], [])
             allow(provider).to receive(:shell_out_with_systems_locale!).
                     with(/plutil -convert xml1 -o/).
                     and_return(double("Status", :stdout => plutil_stdout))
@@ -106,6 +107,7 @@ XML
 
                 before do
                   allow(Dir).to receive(:glob).and_return([])
+                  allow(File).to receive(:exists?).and_return([true], [])
                   allow(provider).to receive(:shell_out!).
                           with(/plutil -convert xml1 -o/).
                           and_raise(Mixlib::ShellOut::ShellCommandFailed)
