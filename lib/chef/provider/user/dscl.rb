@@ -43,69 +43,15 @@ class Chef
       #
       # This provider only supports Mac OSX versions 10.7 and above
       class Dscl < Chef::Provider::User
-
         provides :user, os: "darwin"
 
         def define_resource_requirements
           super
 
-          requirements.assert(:all_actions) do |a|
-            a.assertion { mac_osx_version_less_than_10_7? == false }
-            a.failure_message(Chef::Exceptions::User, "Chef::Provider::User::Dscl only supports Mac OS X versions 10.7 and above.")
-          end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/bin/dscl") }
-            a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/dscl' on the system for #{@new_resource}!")
-          end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/bin/plutil") }
-            a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/plutil' on the system for #{@new_resource}!")
-          end
-
-          requirements.assert(:create, :modify, :manage) do |a|
-            a.assertion do
-              if @new_resource.password && mac_osx_version_greater_than_10_7?
-                # SALTED-SHA512 password shadow hashes are not supported on 10.8 and above.
-                !salted_sha512?(@new_resource.password)
-              else
-                true
-              end
-            end
-            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512 passwords are not supported on Mac 10.8 and above. \
-If you want to set the user password using shadow info make sure you specify a SALTED-SHA512-PBKDF2 shadow hash \
-in 'password', with the associated 'salt' and 'iterations'.")
-          end
-
-          requirements.assert(:create, :modify, :manage) do |a|
-            a.assertion do
-              if @new_resource.password && mac_osx_version_greater_than_10_7? && salted_sha512_pbkdf2?(@new_resource.password)
-                # salt and iterations should be specified when
-                # SALTED-SHA512-PBKDF2 password shadow hash is given
-                !@new_resource.salt.nil? && !@new_resource.iterations.nil?
-              else
-                true
-              end
-            end
-            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512-PBKDF2 shadow hash is given without associated \
-'salt' and 'iterations'. Please specify 'salt' and 'iterations' in order to set the user password using shadow hash.")
-          end
-
-          requirements.assert(:create, :modify, :manage) do |a|
-            a.assertion do
-              if @new_resource.password && !mac_osx_version_greater_than_10_7?
-                # On 10.7 SALTED-SHA512-PBKDF2 is not supported
-                !salted_sha512_pbkdf2?(@new_resource.password)
-              else
-                true
-              end
-            end
-            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512-PBKDF2 shadow hashes are not supported on \
-Mac OS X version 10.7. Please specify a SALTED-SHA512 shadow hash in 'password' attribute to set the \
-user password using shadow hash.")
-          end
-
+          require_mac_osx_version_greater_than_10_7
+          require_binary('/usr/bin/dscl')
+          require_binary('/usr/bin/plutil')
+          potentially_require_key_stretching
         end
 
         def load_current_resource
@@ -114,38 +60,7 @@ user password using shadow hash.")
 
           @user_info = read_user_info
           if @user_info
-            @current_resource.uid(dscl_get(@user_info, :uid))
-            @current_resource.gid(dscl_get(@user_info, :gid))
-            @current_resource.home(dscl_get(@user_info, :home))
-            @current_resource.shell(dscl_get(@user_info, :shell))
-            @current_resource.comment(dscl_get(@user_info, :comment))
-            @authentication_authority = dscl_get(@user_info, :auth_authority)
-
-            if @new_resource.password && dscl_get(@user_info, :password) == "********"
-              # A password is set. Let's get the password information from shadow file
-              shadow_hash_binary = dscl_get(@user_info, :shadow_hash)
-
-              # Calling shell_out directly since we want to give an input stream
-              shadow_hash_xml = convert_binary_plist_to_xml(shadow_hash_binary.string)
-              shadow_hash = Plist::parse_xml(shadow_hash_xml)
-
-              if shadow_hash["SALTED-SHA512"]
-                # Convert the shadow value from Base64 encoding to hex before consuming them
-                @password_shadow_conversion_algorithm = "SALTED-SHA512"
-                @current_resource.password(shadow_hash["SALTED-SHA512"].string.unpack('H*').first)
-              elsif shadow_hash["SALTED-SHA512-PBKDF2"]
-                @password_shadow_conversion_algorithm = "SALTED-SHA512-PBKDF2"
-                # Convert the entropy from Base64 encoding to hex before consuming them
-                @current_resource.password(shadow_hash["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first)
-                @current_resource.iterations(shadow_hash["SALTED-SHA512-PBKDF2"]["iterations"])
-                # Convert the salt from Base64 encoding to hex before consuming them
-                @current_resource.salt(shadow_hash["SALTED-SHA512-PBKDF2"]["salt"].string.unpack('H*').first)
-              else
-                raise(Chef::Exceptions::User,"Unknown shadow_hash format: #{shadow_hash.keys.join(' ')}")
-              end
-            end
-
-            convert_group_name if @new_resource.gid
+            load_user_info
           else
             @user_exists = false
             Chef::Log.debug("#{@new_resource} user does not exist")
@@ -260,15 +175,8 @@ user password using shadow hash.")
         # exist on the system with given group id.
         #
         def dscl_set_gid
-          unless @new_resource.gid && @new_resource.gid.to_s.match(/^\d+$/)
-            begin
-              possible_gid = run_dscl("read /Groups/#{@new_resource.gid} PrimaryGroupID").split(" ").last
-            rescue Chef::Exceptions::DsclCommandFailed => e
-              raise Chef::Exceptions::GroupIDNotFound.new("Group not found for #{@new_resource.gid} when creating user #{@new_resource.username}")
-            end
-            @new_resource.gid(possible_gid) if possible_gid && possible_gid.match(/^\d+$/)
-          end
-          run_dscl("create /Users/#{@new_resource.username} PrimaryGroupID '#{@new_resource.gid}'")
+          read_gid
+          write_gid
         end
 
         #
@@ -277,22 +185,37 @@ user password using shadow hash.")
         #
         def dscl_set_home
           if @new_resource.home.nil? || @new_resource.home.empty?
-            run_dscl("delete /Users/#{@new_resource.username} NFSHomeDirectory")
-            return
+            delete_home
+          else
+            create_home
           end
+        end
 
-          if @new_resource.supports[:manage_home]
-            validate_home_dir_specification!
+        def delete_home
+          command = "delete /Users/#{@new_resource.username} NFSHomeDirectory"
 
-            if (@current_resource.home == @new_resource.home) && !new_home_exists?
-              ditto_home
-            elsif !current_home_exists? && !new_home_exists?
-              ditto_home
-            elsif current_home_exists?
-              move_home
-            end
+          run_dscl(command)
+        end
+
+        def create_home
+          command = "create /Users/#{@new_resource.username} NFSHomeDirectory" \
+                      " '#{@new_resource.home}'"
+
+          manage_home
+          run_dscl(command)
+        end
+
+        def manage_home
+          return unless @new_resource.supports[:manage_home]
+
+          homes_match = @current_resource.home == @new_resource.home
+
+          validate_home_dir_specification!
+          if (homes_match || !current_home_exists?) && !new_home_exists?
+            ditto_home
+          elsif current_home_exists?
+            move_home
           end
-          run_dscl("create /Users/#{@new_resource.username} NFSHomeDirectory '#{@new_resource.home}'")
         end
 
         def validate_home_dir_specification!
@@ -373,53 +296,11 @@ user password using shadow hash.")
         # Prepares the password shadow info based on the platform version.
         #
         def prepare_password_shadow_info
-          shadow_info = { }
-          entropy = nil
-          salt = nil
-          iterations = nil
-
           if mac_osx_version_10_7?
-            hash_value = if salted_sha512?(@new_resource.password)
-              @new_resource.password
-            else
-              # Create a random 4 byte salt
-              salt = OpenSSL::Random.random_bytes(4)
-              encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + @new_resource.password)
-              hash_value = salt.unpack('H*').first + encoded_password
-            end
-
-            shadow_info["SALTED-SHA512"] = StringIO.new
-            shadow_info["SALTED-SHA512"].string = convert_to_binary(hash_value)
-            shadow_info
+            salted_sha512_shadow_info
           else
-            if salted_sha512_pbkdf2?(@new_resource.password)
-              entropy = convert_to_binary(@new_resource.password)
-              salt = convert_to_binary(@new_resource.salt)
-              iterations = @new_resource.iterations
-            else
-              salt = OpenSSL::Random.random_bytes(32)
-              iterations = @new_resource.iterations # Use the default if not specified by the user
-
-              entropy = OpenSSL::PKCS5::pbkdf2_hmac(
-                @new_resource.password,
-                salt,
-                iterations,
-                128,
-                OpenSSL::Digest::SHA512.new
-              )
-            end
-
-            pbkdf_info = { }
-            pbkdf_info["entropy"] = StringIO.new
-            pbkdf_info["entropy"].string = entropy
-            pbkdf_info["salt"] = StringIO.new
-            pbkdf_info["salt"].string = salt
-            pbkdf_info["iterations"] = iterations
-
-            shadow_info["SALTED-SHA512-PBKDF2"] = pbkdf_info
+            salted_sha512_pbkdf2_shadow_info
           end
-
-          shadow_info
         end
 
         #
@@ -480,6 +361,110 @@ user password using shadow hash.")
         # Helper functions
         #
 
+        def require_mac_osx_version_greater_than_10_7
+          requirement = proc { !mac_osx_version_less_than_10_7? }
+          message = 'Chef::Provider::User::Dscl only supports Mac OS X ' \
+                      'versions 10.7 and above.'
+
+          define_requirement(requirement, message)
+        end
+
+        def require_binary(binary_path)
+          requirement = proc { ::File.exists?(binary_path) }
+          message = "Cannot find binary '#{binary_path}' on the system for " \
+                      "#{@new_resource}!"
+
+          define_requirement(requirement, message)
+        end
+
+        def potentially_require_key_stretching
+          return unless @new_resource.password
+
+          if mac_osx_version_greater_than_10_7?
+            require_pbkdf2_for_salted_sha512
+            require_salt_and_iterations_for_pbkdf2
+          else
+            require_no_pbkdf2_for_salted_sha512
+          end
+        end
+
+        def require_pbkdf2_for_salted_sha512
+          requirement = proc { !salted_sha512?(@new_resource.password) }
+          message = 'SALTED-SHA512 passwords are not supported on Mac 10.8 ' \
+                      'and above. If you want to set the user password using ' \
+                      'shadow info make sure you specify a ' \
+                      "SALTED-SHA512-PBKDF2 shadow hash in 'password', with " \
+                      "the associated 'salt' and 'iterations'."
+
+          define_scoped_requirement(requirement, message)
+        end
+
+        def require_salt_and_iterations_for_pbkdf2
+          return unless salted_sha512_pbkdf2?(@new_resource.password)
+
+          requirement = proc do
+            !@new_resource.salt.nil? && !@new_resource.iterations.nil?
+          end
+          message = 'SALTED-SHA512-PBKDF2 shadow hash is given without ' \
+                      "associated 'salt' and 'iterations'. Please specify " \
+                      "'salt' and 'iterations' in order to set the user " \
+                      'password using shadow hash.'
+
+          define_scoped_requirement(requirement, message)
+        end
+
+        def require_no_pbkdf2_for_salted_sha512
+          requirement = proc { !salted_sha512_pbkdf2?(@new_resource.password) }
+          message = 'SALTED-SHA512-PBKDF2 shadow hashes are not supported on ' \
+                      'Mac OS X version 10.7. Please specify a SALTED-SHA512 ' \
+                      "shadow hash in 'password' attribute to set the user " \
+                      'password using shadow hash.'
+
+          define_scoped_requirement(requirement, message)
+        end
+
+        def define_requirement(requirement, message, actions = [:all_actions])
+          requirements.assert(*actions) do |with|
+            with.assertion(&requirement)
+            with.failure_message(Chef::Exceptions::User, message)
+          end
+        end
+
+        def define_scoped_requirement(assertion, message)
+          actions = %i(create modify manage)
+
+          define_requirement(assertion, message, actions)
+        end
+
+        def read_gid
+          return if valid_gid?(@new_resource.gid)
+
+          possible_gid = primary_group_id
+
+          @new_resource.gid(possible_gid) if valid_gid?(possible_gid)
+        rescue Chef::Exceptions::DsclCommandFailed
+          raise(Chef::Exceptions::GroupIDNotFound,
+                "Group not found for #{@new_resource.gid} when creating user " \
+                  "#{@new_resource.username}")
+        end
+
+        def write_gid
+          command = "create /Users/#{@new_resource.username} PrimaryGroupID " \
+                      "'#{@new_resource.gid}'"
+
+          run_dscl(command)
+        end
+
+        def primary_group_id
+          command = "read /Groups/#{@new_resource.gid} PrimaryGroupID"
+
+          run_dscl(command).split(' ').last
+        end
+
+        def valid_gid?(gid)
+          gid.to_s.match(/^\d+$/) unless gid.nil?
+        end
+
         #
         # Returns true if the system state and desired state is different for
         # given attribute.
@@ -493,7 +478,7 @@ user password using shadow hash.")
         end
 
         #
-        # We need a special check function for password since we support both
+        # We need a special check function for password since DSCL supports both
         # plain text and shadow hash data.
         #
         # Checks if password needs update based on platform version and the
@@ -502,31 +487,170 @@ user password using shadow hash.")
         def diverged_password?
           return false if @new_resource.password.nil?
 
-          # Dscl provider supports both plain text passwords and shadow hashes.
-          if mac_osx_version_10_7?
-            if salted_sha512?(@new_resource.password)
-              diverged?(:password)
-            else
-              !salted_sha512_password_match?
-            end
+          if mac_osx_version_greater_than_10_7?
+            diverged_10_8_password?
           else
-            # When a system is upgraded to a version 10.7+ shadow hashes of the users
-            # will be updated when the user logs in. So it's possible that we will have
-            # SALTED-SHA512 password in the current_resource. In that case we will force
-            # password to be updated.
-            return true if salted_sha512?(@current_resource.password)
-
-            # Some system users don't have salts; this can happen if the system is
-            # upgraded and the user hasn't logged in yet. In this case, we will force
-            # the password to be updated.
-            return true if @current_resource.salt.nil?
-
-            if salted_sha512_pbkdf2?(@new_resource.password)
-              diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
-            else
-              !salted_sha512_pbkdf2_password_match?
-            end
+            diverged_10_7_password?
           end
+        end
+
+        def diverged_10_7_password?
+          if salted_sha512?(@new_resource.password)
+            diverged?(:password)
+          else
+            !salted_sha512_password_match?
+          end
+        end
+
+        def diverged_10_8_password?
+          # When a system is upgraded to a version >= 10.8, shadow hashes of the
+          # users will not be updated until login, so it's possible that
+          # we will have a SALTED-SHA512 password or no salt in the
+          # current_resource.
+          return true if salted_sha512?(@current_resource.password) ||
+                         @current_resource.salt.nil?
+
+          if salted_sha512_pbkdf2?(@new_resource.password)
+            diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
+          else
+            !salted_sha512_pbkdf2_password_match?
+          end
+        end
+
+        def salted_sha512_shadow_info
+          binary_value = convert_to_binary(hash_value)
+
+          { 'SALTED-SHA512' => StringIO.new(binary_value) }
+        end
+
+        def salted_sha512_pbkdf2_shadow_info
+          salt, entropy = pbkdf2_salt_and_entropy
+
+          {
+            'SALTED-SHA512-PBKDF2' => {
+              'salt' => StringIO.new(salt),
+              'iterations' => @new_resource.iterations,
+              'entropy' => StringIO.new(entropy)
+            }
+          }
+        end
+
+        def hash_value
+          password = @new_resource.password
+          # Create a random 4 byte salt
+          salt = OpenSSL::Random.random_bytes(4)
+
+          salted_sha512?(password) ? password : new_hash_value(salt)
+        end
+
+        def new_hash_value(salt)
+          encoded_password = encoded_password(salt)
+          salt_hex = salt.unpack('H*').first
+
+          "#{salt_hex}#{encoded_password}"
+        end
+
+        def encoded_password(salt)
+          salted_password = "#{salt}#{@new_resource.password}"
+
+          OpenSSL::Digest::SHA512.hexdigest(salted_password)
+        end
+
+        def pbkdf2_salt_and_entropy
+          if salted_sha512_pbkdf2?(@new_resource.password)
+            provided_salt_and_entropy
+          else
+            new_salt_and_entropy
+          end
+        end
+
+        def provided_salt_and_entropy
+          %i(salt password).map do |attribute|
+            value = @new_resource.send(attribute)
+
+            convert_to_binary(value)
+          end
+        end
+
+        def new_salt_and_entropy
+          salt = OpenSSL::Random.random_bytes(32)
+
+          [salt, new_entropy(salt)]
+        end
+
+        def new_entropy(salt)
+          OpenSSL::PKCS5.pbkdf2_hmac(
+            @new_resource.password, salt, @new_resource.iterations, 128,
+            OpenSSL::Digest::SHA512.new
+          )
+        end
+
+        def load_user_info
+          load_attributes
+          @authentication_authority = dscl_get(@user_info, :auth_authority)
+          convert_group_name if @new_resource.gid
+        end
+
+        def load_attributes
+          encrypted_password = dscl_get(@user_info, :password) == "********"
+
+          %i(uid gid home shell comment).each do |attribute|
+            load_attribute(attribute)
+          end
+          load_password if @new_resource.password && encrypted_password
+        end
+
+        def load_attribute(attribute)
+          value = dscl_get(@user_info, attribute)
+
+          @current_resource.send(attribute, value)
+        end
+
+        def load_password
+          salted_sha512 = shadow_hash['SALTED-SHA512']
+          salted_sha512_pbkdf2 = shadow_hash['SALTED-SHA512-PBKDF2']
+
+          if salted_sha512
+            load_salted_sha512_password(salted_sha512)
+          elsif salted_sha512_pbkdf2
+            load_salted_sha512_pbkdf2_password(salted_sha512_pbkdf2)
+          else
+            invalid_shadow_hash_format!
+          end
+        end
+
+        def load_salted_sha512_password(salted_sha512)
+          password = salted_sha512.string.unpack('H*').first
+
+          @password_shadow_conversion_algorithm = 'SALTED-SHA512'
+          @current_resource.password(password)
+        end
+
+        def load_salted_sha512_pbkdf2_password(salted_sha512_pbkdf2)
+          password = salted_sha512_pbkdf2['entropy'].string.unpack('H*').first
+          iterations = salted_sha512_pbkdf2['iterations']
+          salt = salted_sha512_pbkdf2['salt'].string.unpack('H*').first
+
+          @password_shadow_conversion_algorithm = 'SALTED-SHA512-PBKDF2'
+          @current_resource.password(password)
+          @current_resource.iterations(iterations)
+          @current_resource.salt(salt)
+        end
+
+        def invalid_shadow_hash_format!
+          format = shadow_hash.keys.join(' ')
+
+          fail(Chef::Exceptions::User, "Unknown shadow_hash format: #{format}")
+        end
+
+        def shadow_hash
+          @shadow_hash ||= Plist.parse_xml(shadow_hash_xml)
+        end
+
+        def shadow_hash_xml
+          shadow_hash_string = dscl_get(@user_info, :shadow_hash).string
+
+          convert_binary_plist_to_xml(shadow_hash_string)
         end
 
         #
@@ -630,15 +754,19 @@ user password using shadow hash.")
         end
 
         def mac_osx_version_less_than_10_7?
-          versions = mac_osx_version.split(".")
-          # Make integer comparison in order not to report 10.10 less than 10.7
-          (versions[0].to_i <= 10 && versions[1].to_i < 7)
+          major, minor = mac_osx_major_and_minor_versions
+
+          major <= 10 && minor < 7
         end
 
         def mac_osx_version_greater_than_10_7?
-          versions = mac_osx_version.split(".")
-          # Make integer comparison in order not to report 10.10 less than 10.7
-          (versions[0].to_i >= 10 && versions[1].to_i > 7)
+          major, minor = mac_osx_major_and_minor_versions
+
+          major >= 10 && minor > 7
+        end
+
+        def mac_osx_major_and_minor_versions
+          mac_osx_version.split('.').first(2).map(&:to_i)
         end
 
         def run_dscl(*args)
@@ -660,6 +788,7 @@ user password using shadow hash.")
         end
 
         def convert_binary_plist_to_xml(binary_plist_string)
+          # Calling shell_out directly since we want to give an input stream
           Mixlib::ShellOut.new("plutil -convert xml1 -o - -", :input => binary_plist_string).run_command.stdout
         end
 
