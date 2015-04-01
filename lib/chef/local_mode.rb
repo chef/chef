@@ -18,6 +18,7 @@ require 'chef/config'
 
 class Chef
   module LocalMode
+
     # Create a chef local server (if the configuration requires one) for the
     # duration of the given block.
     #
@@ -59,12 +60,21 @@ class Chef
         server_options = {}
         server_options[:data_store] = data_store
         server_options[:log_level] = Chef::Log.level
+
         server_options[:host] = Chef::Config.chef_zero.host
         server_options[:port] = parse_port(Chef::Config.chef_zero.port)
         @chef_zero_server = ChefZero::Server.new(server_options)
-        @chef_zero_server.start_background
-        Chef::Log.info("Started chef-zero at #{@chef_zero_server.url} with #{@chef_fs.fs_description}")
-        Chef::Config.chef_server_url = @chef_zero_server.url
+
+        if Chef::Config[:listen]
+          @chef_zero_server.start_background
+        else
+          @chef_zero_server.start_socketless
+        end
+
+        local_mode_url = @chef_zero_server.local_mode_url
+
+        Chef::Log.info("Started chef-zero at #{local_mode_url} with #{@chef_fs.fs_description}")
+        Chef::Config.chef_server_url = local_mode_url
       end
     end
 
