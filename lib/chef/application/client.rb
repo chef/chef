@@ -280,14 +280,11 @@ class Chef::Application::Client < Chef::Application
     fetch_local_mode_recipes!
     update_chef_zero
     update_interval_and_splay
+    verify_forked_interval!
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
       Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
-    end
-
-    if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
-      Chef::Application.fatal!(unforked_interval_error_message)
     end
 
     if Chef::Config[:json_attribs]
@@ -364,6 +361,12 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  def verify_forked_interval!
+    Chef::Application.fatal!(unforked_interval_error_message) if
+      !Chef::Config[:client_fork] && Chef::Config[:interval] &&
+      !Chef::Platform.windows?
+  end
 
   def update_interval_and_splay
     interval_key = :interval
