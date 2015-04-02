@@ -282,23 +282,11 @@ class Chef::Application::Client < Chef::Application
     update_interval_and_splay
     verify_forked_interval!
     update_chef_client_json
+    verify_audit_mode!
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
       Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
-    end
-
-    if mode = config[:audit_mode] || Chef::Config[:audit_mode]
-      expected_modes = [:enabled, :disabled, :audit_only]
-      unless expected_modes.include?(mode)
-        Chef::Application.fatal!(unrecognized_audit_mode(mode))
-      end
-
-      unless mode == :disabled
-        # This should be removed when audit-mode is enabled by default/no longer
-        # an experimental feature.
-        Chef::Log.warn(audit_mode_experimental_message)
-      end
     end
   end
 
@@ -357,6 +345,24 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  def verify_audit_mode!
+    mode = config[:audit_mode] || Chef::Config[:audit_mode]
+
+    return unless mode
+
+    assert_valid_audit_mode!(mode)
+    # This should be removed when audit-mode is enabled by default/no longer
+    # an experimental feature.
+    Chef::Log.warn(audit_mode_experimental_message) unless mode == :disabled
+  end
+
+  def assert_valid_audit_mode!(mode)
+    error_message = unrecognized_audit_mode(mode)
+    valid_mode = %i(enabled disabled audit_only).include?(mode)
+
+    Chef::Application.fatal!(error_message) unless valid_mode
+  end
 
   def update_chef_client_json
     json = Chef::Config[:json_attribs]
