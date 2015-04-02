@@ -277,22 +277,13 @@ class Chef::Application::Client < Chef::Application
     update_chef_server_url
     update_local_mode
     update_chef_repo_path
+    fetch_local_mode_recipes!
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
       Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
     end
 
-    if !Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
-      Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
-    elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
-      Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
-      FileUtils.mkdir_p(Chef::Config.chef_repo_path)
-      tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
-      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
-      Chef::Log.debug "#{result.stdout}"
-    end
 
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
@@ -384,6 +375,39 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  def fetch_local_mode_recipes!
+    return unless Chef::Config.has_key?(:recipe_url)
+
+    exit_status = 1
+
+    Chef::Application.fatal!(
+      'chef-client recipe-url can be used only in local-mode', exit_status
+    ) unless Chef::Config.local_mode
+    extract_recipe_tarball
+  end
+
+  def extract_recipe_tarball
+    recipe_url = Chef::Config[:recipe_url]
+    log_result = ->(result) { Chef::Log.debug(result.stdout) }
+
+    create_recipe_path
+    fetch_recipe_tarball(recipe_url, recipe_tarball_path)
+    shell_out!(
+      "tar zxvf #{recipe_tarball_path} -C #{Chef::Config.chef_repo_path}"
+    ).tap(&log_result)
+  end
+
+  def create_recipe_path
+    recipe_path = Chef::Config.chef_repo_path
+
+    Chef::Log.debug("Creating path #{recipe_path} to extract recipes into")
+    FileUtils.mkdir_p(recipe_path)
+  end
+
+  def recipe_tarball_path
+    File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
+  end
 
   def update_chef_repo_path
     return unless Chef::Config.local_mode &&
