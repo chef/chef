@@ -275,8 +275,7 @@ class Chef::Application::Client < Chef::Application
     verify_no_pid_file_lockfile_match!
     set_specific_recipes
     update_chef_server_url
-
-    Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+    update_local_mode
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
@@ -388,6 +387,12 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  def update_local_mode
+    mode_key = :local_mode
+
+    Chef::Config.local_mode = config[mode_key] if config.has_key?(mode_key)
+  end
 
   def update_chef_server_url
     url_key = :chef_server_url
