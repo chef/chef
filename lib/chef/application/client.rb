@@ -281,15 +281,11 @@ class Chef::Application::Client < Chef::Application
     update_chef_zero
     update_interval_and_splay
     verify_forked_interval!
+    update_chef_client_json
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
       Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
-    end
-
-    if Chef::Config[:json_attribs]
-      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
-      @chef_client_json = config_fetcher.fetch_json
     end
 
     if mode = config[:audit_mode] || Chef::Config[:audit_mode]
@@ -361,6 +357,14 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  def update_chef_client_json
+    json = Chef::Config[:json_attribs]
+
+    return unless json
+
+    @chef_client_json = Chef::ConfigFetcher.new(json).fetch_json
+  end
 
   def verify_forked_interval!
     Chef::Application.fatal!(unforked_interval_error_message) if
