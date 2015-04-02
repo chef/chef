@@ -279,19 +279,11 @@ class Chef::Application::Client < Chef::Application
     update_chef_repo_path
     fetch_local_mode_recipes!
     update_chef_zero
-    update_daemon_interval
+    update_interval_and_splay
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
       Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
-    end
-
-
-
-
-    if Chef::Config[:once]
-      Chef::Config[:interval] = nil
-      Chef::Config[:splay] = nil
     end
 
     if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
@@ -373,8 +365,15 @@ class Chef::Application::Client < Chef::Application
 
   private
 
-  def update_daemon_interval
-    Chef::Config[:interval] ||= 1800 if Chef::Config[:daemonize]
+  def update_interval_and_splay
+    interval_key = :interval
+
+    if Chef::Config[:daemonize]
+      Chef::Config[interval_key] ||= 1800
+    elsif Chef::Config[:once]
+      Chef::Config[interval_key] = nil
+      Chef::Config[:splay] = nil
+    end
   end
 
   def update_chef_zero
