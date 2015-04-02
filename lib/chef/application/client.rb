@@ -272,8 +272,7 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
-    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
-
+    verify_no_pid_file_lockfile_match!
     set_specific_recipes
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
@@ -390,6 +389,15 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  def verify_no_pid_file_lockfile_match!
+    pid_file = Chef::Config[:pid_file] || ''
+    lockfile = Chef::Config[:lockfile] || ''
+
+    fail(Chef::Exceptions::PIDFileLockfileMatch) if
+      Chef::Util::PathHelper.paths_eql?(pid_file, lockfile)
+  end
+
   def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
