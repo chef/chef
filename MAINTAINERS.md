@@ -131,3 +131,5 @@ The specific components of Chef related to a given platform - including (but not
 * [Aaron Kalin](https://github.com/martinisoft)
 
 ### Maintainers
+
+* [Cory Stephenson](https://github.com/Aevin1387)
