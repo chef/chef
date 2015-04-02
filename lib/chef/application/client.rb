@@ -279,6 +279,7 @@ class Chef::Application::Client < Chef::Application
     update_chef_repo_path
     fetch_local_mode_recipes!
     update_chef_zero
+    update_daemon_interval
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
@@ -287,9 +288,6 @@ class Chef::Application::Client < Chef::Application
 
 
 
-    if Chef::Config[:daemonize]
-      Chef::Config[:interval] ||= 1800
-    end
 
     if Chef::Config[:once]
       Chef::Config[:interval] = nil
@@ -374,6 +372,10 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  def update_daemon_interval
+    Chef::Config[:interval] ||= 1800 if Chef::Config[:daemonize]
+  end
 
   def update_chef_zero
     host_key = :chef_zero_host
