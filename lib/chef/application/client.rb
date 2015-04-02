@@ -278,6 +278,7 @@ class Chef::Application::Client < Chef::Application
     update_local_mode
     update_chef_repo_path
     fetch_local_mode_recipes!
+    update_chef_zero
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
@@ -285,8 +286,6 @@ class Chef::Application::Client < Chef::Application
     end
 
 
-    Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
-    Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
@@ -375,6 +374,14 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  def update_chef_zero
+    host_key = :chef_zero_host
+    port_key = :chef_zero_port
+
+    Chef::Config.chef_zero.host = config[host_key] if config[host_key]
+    Chef::Config.chef_zero.port = config[port_key] if config[port_key]
+  end
 
   def fetch_local_mode_recipes!
     return unless Chef::Config.has_key?(:recipe_url)
