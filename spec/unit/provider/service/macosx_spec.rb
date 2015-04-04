@@ -230,13 +230,6 @@ SVC_LIST
             provider.start_service
           end
 
-          it "shows warning message if service is already running" do
-            allow(current_resource).to receive(:running).and_return(true)
-            expect(Chef::Log).to receive(:debug).with("service[#{service_name}] already running, not starting")
-
-            provider.start_service
-          end
-
           it "starts service via launchctl if service found" do
             expect(provider).to receive(:shell_out_with_systems_locale!).
                      with("launchctl load -w '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
@@ -259,13 +252,6 @@ SVC_LIST
             allow(new_resource).to receive(:stop_command).and_return("kill -9 123")
 
             expect(provider).to receive(:shell_out_with_systems_locale!).with("kill -9 123")
-            provider.stop_service
-          end
-
-          it "shows warning message if service is not running" do
-            allow(current_resource).to receive(:running).and_return(false)
-            expect(Chef::Log).to receive(:debug).with("service[#{service_name}] not running, not stopping")
-
             provider.stop_service
           end
 

@@ -79,26 +79,18 @@ class Chef
         end
 
         def start_service
-          if @current_resource.running
-            Chef::Log.debug("#{@new_resource} already running, not starting")
+          if @new_resource.start_command
+            super
           else
-            if @new_resource.start_command
-              super
-            else
-              shell_out_with_systems_locale!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
-            end
+            shell_out_with_systems_locale!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
           end
         end
 
         def stop_service
-          unless @current_resource.running
-            Chef::Log.debug("#{@new_resource} not running, not stopping")
+          if @new_resource.stop_command
+            super
           else
-            if @new_resource.stop_command
-              super
-            else
-              shell_out_with_systems_locale!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
-            end
+            shell_out_with_systems_locale!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
           end
         end
 
