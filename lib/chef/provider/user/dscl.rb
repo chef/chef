@@ -195,9 +195,10 @@ user password using shadow hash.")
 
         #
         # Saves the specified Chef user `comment` into RealName attribute
-        # of Mac user.
+        # of Mac user. If `comment` is not specified, it takes `username` value.
         #
         def dscl_create_comment
+          @new_resource.comment(@new_resource.username) if @new_resource.comment.nil?
           run_dscl("create /Users/#{@new_resource.username} RealName '#{@new_resource.comment}'")
         end
 

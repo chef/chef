@@ -760,6 +760,13 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         provider.dscl_create_comment
       end
 
+      it "sets the comment field to username" do
+        new_resource.comment nil
+        expect(provider).to receive(:run_dscl).with("create /Users/toor RealName '#mockssuck'").and_return(true)
+        provider.dscl_create_comment
+        expect(new_resource.comment).to eq("#mockssuck")
+      end
+
       it "should run run_dscl with create /Users/user PrimaryGroupID to set the users primary group" do
         expect(provider).to receive(:run_dscl).with("create /Users/toor PrimaryGroupID '1001'").and_return(true)
         provider.dscl_set_gid
