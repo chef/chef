@@ -79,4 +79,18 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only, :not_supported_o
     end).to be_truthy
   end
 
+  it 'writes run_failed event with event_id 10003 even when run_status is not set' do
+    logger.run_failed(mock_exception)
+
+    expect(event_log.read(flags, offset).any? do |e|
+      e.source == 'Chef' && e.event_id == 10003 &&
+        e.string_inserts[0].include?("UNKNOWN") &&
+        e.string_inserts[1].include?("UNKNOWN") &&
+        e.string_inserts[2].include?(mock_exception.class.name) &&
+        e.string_inserts[3].include?(mock_exception.message) &&
+        e.string_inserts[4].include?(mock_exception.backtrace[0]) &&
+        e.string_inserts[4].include?(mock_exception.backtrace[1])
+    end).to be_truthy
+  end
+
 end
