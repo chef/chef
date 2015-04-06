@@ -182,7 +182,7 @@ class Chef
             #   `keys` - want the key named `keys`, not a list of
             #   available keys.
             elsif data.respond_to?(:[])
-              data = data[attr]
+              data = data[attr] ? data[attr] : data.send(attr.to_sym)
             elsif data.respond_to?(attr.to_sym)
               data = data.send(attr.to_sym)
             else
