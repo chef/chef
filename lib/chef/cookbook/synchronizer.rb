@@ -131,7 +131,11 @@ class Chef
       files_remaining_by_cookbook[file.cookbook] -= 1
 
       if files_remaining_by_cookbook[file.cookbook] == 0
-        @events.synchronized_cookbook(file.cookbook.name, file.cookbook.version)
+		begin
+			@events.synchronized_cookbook(file.cookbook.name, file.cookbook.version)
+		rescue ArgumentError
+			@events.synchronized_cookbook(file.cookbook.name)
+		end
       end
     end
 
