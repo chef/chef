@@ -34,27 +34,38 @@ describe Chef::Knife::Status do
   end
 
   describe "run" do
+    let(:opts) {{filter_result:
+                 { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
+                  ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
+                  platform_version: ["platform_version"], chef_environment: ["chef_environment"]}}}
+
     it "should default to searching for everything" do
-      expect(@query).to receive(:search).with(:node, "*:*")
+      expect(@query).to receive(:search).with(:node, "*:*", opts)
       @knife.run
     end
 
     it "should filter healthy nodes" do
       @knife.config[:hide_healthy] = true
-      expect(@query).to receive(:search).with(:node, "NOT ohai_time:[119856 TO 123456]")
+      expect(@query).to receive(:search).with(:node, "NOT ohai_time:[119856 TO 123456]", opts)
       @knife.run
     end
 
     it "should filter by environment" do
       @knife.config[:environment] = "production"
-      expect(@query).to receive(:search).with(:node, "chef_environment:production")
+      expect(@query).to receive(:search).with(:node, "chef_environment:production", opts)
       @knife.run
     end
 
     it "should filter by environment and health" do
       @knife.config[:environment] = "production"
       @knife.config[:hide_healthy] = true
-      expect(@query).to receive(:search).with(:node, "chef_environment:production NOT ohai_time:[119856 TO 123456]")
+      expect(@query).to receive(:search).with(:node, "chef_environment:production NOT ohai_time:[119856 TO 123456]", opts)
+      @knife.run
+    end
+
+    it "should not use partial search with long output" do
+      @knife.config[:long_output] = true
+      expect(@query).to receive(:search).with(:node, "*:*", {})
       @knife.run
     end
 
@@ -64,26 +75,26 @@ describe Chef::Knife::Status do
       end
 
       it "should allow a custom query to be specified" do
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name")
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name", opts)
         @knife.run
       end
 
       it "should filter healthy nodes" do
         @knife.config[:hide_healthy] = true
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name NOT ohai_time:[119856 TO 123456]")
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name NOT ohai_time:[119856 TO 123456]", opts)
         @knife.run
       end
 
       it "should filter by environment" do
         @knife.config[:environment] = "production"
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production")
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production", opts)
         @knife.run
       end
 
       it "should filter by environment and health" do
         @knife.config[:environment] = "production"
         @knife.config[:hide_healthy] = true
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production NOT ohai_time:[119856 TO 123456]")
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production NOT ohai_time:[119856 TO 123456]", opts)
         @knife.run
       end
     end

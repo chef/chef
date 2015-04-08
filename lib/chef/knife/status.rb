@@ -22,6 +22,7 @@ require 'chef/knife/core/status_presenter'
 class Chef
   class Knife
     class Status < Knife
+      include Knife::Core::NodeFormattingOptions
 
       deps do
         require 'chef/search/query'
@@ -52,6 +53,15 @@ class Chef
       def run
         ui.use_presenter Knife::Core::StatusPresenter
 
+        if config[:long_output]
+          opts = {}
+        else
+          opts = {filter_result:
+                 { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
+                  ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
+                  platform_version: ["platform_version"], chef_environment: ["chef_environment"]}}
+        end
+
         @query ||= ""
         append_to_query(@name_args[0]) if @name_args[0]
         append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
@@ -67,7 +77,8 @@ class Chef
 
         all_nodes = []
         q = Chef::Search::Query.new
-        q.search(:node, @query) do |node|
+        Chef::Log.info("Sending query: #{@query}")
+        q.search(:node, @query, opts) do |node|
           all_nodes << node
         end
 
