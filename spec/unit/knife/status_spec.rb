@@ -24,7 +24,7 @@ describe Chef::Knife::Status do
       n.automatic_attrs["fqdn"] = "foobar"
       n.automatic_attrs["ohai_time"] = 1343845969
     end
-    allow(Time).to receive(:now).and_return(1428573420)
+    allow(Time).to receive(:now).and_return(Time.at(1428573420))
     @query = double("Chef::Search::Query")
     allow(@query).to receive(:search).and_yield(node)
     allow(Chef::Search::Query).to receive(:new).and_return(@query)
