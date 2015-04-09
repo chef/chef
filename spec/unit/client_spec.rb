@@ -820,7 +820,7 @@ describe Chef::Client do
 
   end
 
-  describe "should always attempt to run handlers" do
+  describe "always attempt to run handlers" do
     let(:e) { NoMethodError }
     subject { client }
     before do
