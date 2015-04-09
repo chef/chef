@@ -97,6 +97,13 @@ EXPECTED
     end
   end
 
+  describe "when tags are given" do
+    let(:config) { {:tags => [ "unicorn" ] } }
+    it "adds the attributes to first_boot" do
+      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json({:run_list => run_list, :tags => ["unicorn"]}))
+    end
+  end
+
   describe "when JSON attributes are given" do
     let(:config) { {:first_boot_attributes => {:baz => :quux}} }
     it "adds the attributes to first_boot" do
