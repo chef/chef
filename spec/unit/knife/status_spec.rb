@@ -24,7 +24,7 @@ describe Chef::Knife::Status do
       n.automatic_attrs["fqdn"] = "foobar"
       n.automatic_attrs["ohai_time"] = 1343845969
     end
-    allow(Time).to receive(:now).and_return(123456)
+    allow(Time).to receive(:now).and_return(1428573420)
     @query = double("Chef::Search::Query")
     allow(@query).to receive(:search).and_yield(node)
     allow(Chef::Search::Query).to receive(:new).and_return(@query)
@@ -46,7 +46,7 @@ describe Chef::Knife::Status do
 
     it "should filter healthy nodes" do
       @knife.config[:hide_healthy] = true
-      expect(@query).to receive(:search).with(:node, "NOT ohai_time:[119856 TO 123456]", opts)
+      expect(@query).to receive(:search).with(:node, "NOT ohai_time:[1428569820 TO 1428573420]", opts)
       @knife.run
     end
 
@@ -59,7 +59,7 @@ describe Chef::Knife::Status do
     it "should filter by environment and health" do
       @knife.config[:environment] = "production"
       @knife.config[:hide_healthy] = true
-      expect(@query).to receive(:search).with(:node, "chef_environment:production NOT ohai_time:[119856 TO 123456]", opts)
+      expect(@query).to receive(:search).with(:node, "chef_environment:production NOT ohai_time:[1428569820 TO 1428573420]", opts)
       @knife.run
     end
 
@@ -81,7 +81,7 @@ describe Chef::Knife::Status do
 
       it "should filter healthy nodes" do
         @knife.config[:hide_healthy] = true
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name NOT ohai_time:[119856 TO 123456]", opts)
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name NOT ohai_time:[1428569820 TO 1428573420]", opts)
         @knife.run
       end
 
@@ -94,7 +94,7 @@ describe Chef::Knife::Status do
       it "should filter by environment and health" do
         @knife.config[:environment] = "production"
         @knife.config[:hide_healthy] = true
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production NOT ohai_time:[119856 TO 123456]", opts)
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production NOT ohai_time:[1428569820 TO 1428573420]", opts)
         @knife.run
       end
     end
