@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/chef_fs/command_line'
 require 'chef/chef_fs/file_system/rest_list_dir'
 require 'chef/chef_fs/file_system/cookbook_subdir'
 require 'chef/chef_fs/file_system/cookbook_file'
