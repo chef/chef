@@ -96,6 +96,24 @@ describe Chef::Knife::Ssh do
         should_return_specified_attributes
       end
 
+      context "when cloud hostnames are available but empty" do
+        before do
+          @node_foo.automatic_attrs[:cloud][:public_hostname] = ''
+          @node_bar.automatic_attrs[:cloud][:public_hostname] = ''
+        end
+
+        it "returns an array of fqdns" do
+          configure_query([@node_foo, @node_bar])
+          expect(@knife).to receive(:session_from_list).with([
+            ['foo.example.org', nil],
+            ['bar.example.org', nil]
+          ])
+          @knife.configure_session
+        end
+
+        should_return_specified_attributes
+      end
+
       it "should raise an error if no host are found" do
           configure_query([ ])
           expect(@knife.ui).to receive(:fatal)
