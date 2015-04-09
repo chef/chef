@@ -66,7 +66,7 @@ class Chef
           list.each do |node|
             result = {}
 
-            result["name"] = node["name"]
+            result["name"] = node["name"] || node.name
             result["chef_environment"] = node["chef_environment"]
             ip = (node["ec2"] && node["ec2"]["public_ipv4"]) || node["ipaddress"]
             fqdn = (node["ec2"] && node["ec2"]["public_hostname"]) || node["fqdn"]
@@ -99,6 +99,7 @@ class Chef
             # special case ec2 with their split horizon whatsis.
             ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
             fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
+            name = node['name'] || node.name
 
             hours, minutes, _ = time_difference_in_hms(node["ohai_time"])
             hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
@@ -116,7 +117,7 @@ class Chef
             end
 
             line_parts = Array.new
-            line_parts << @ui.color(text, color) + ' ago' << node['name']
+            line_parts << @ui.color(text, color) + ' ago' << name
             line_parts << fqdn if fqdn
             line_parts << ip if ip
             line_parts << run_list if run_list
