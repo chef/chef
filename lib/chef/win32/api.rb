@@ -67,7 +67,7 @@ class Chef
         # BaseTsd.h: #ifdef (_WIN64) host.typedef int HALF_PTR; #else host.typedef short HALF_PTR;
         host.typedef :ulong,   :HACCEL # (L) Handle to an accelerator table. WinDef.h: #host.typedef HANDLE HACCEL;
         # See http://msdn.microsoft.com/en-us/library/ms645526%28VS.85%29.aspx
-        host.typedef :ulong,   :HANDLE # (L) Handle to an object. WinNT.h: #host.typedef PVOID HANDLE;
+        host.typedef :size_t,   :HANDLE # (L) Handle to an object. WinNT.h: #host.typedef PVOID HANDLE;
         # todo: Platform-dependent! Need to change to :uint64 for Win64
         host.typedef :ulong,   :HBITMAP # (L) Handle to a bitmap: http://msdn.microsoft.com/en-us/library/dd183377%28VS.85%29.aspx
         host.typedef :ulong,   :HBRUSH # (L) Handle to a brush. http://msdn.microsoft.com/en-us/library/dd183394%28VS.85%29.aspx
