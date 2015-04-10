@@ -2,6 +2,8 @@
 
 Every release of Chef we pick someone from the community to name as the Most Valuable Player for that release. It could be someone who provided a big feature, reported a security vulnerability, or someone doing great things in the community that we want to highlight.
 
+In addition to the Hall of Fame and MVP recipients, three individuals are awarded the distinction of "Awesome Community Chef" each year at ChefConf.
+
 #### Hall of Fame
 
 After receiving three MVP awards, we add someone to the hall of fame. We want to express our gratitude to their continuing participation and give newer community members the opportunity to be reconignized.
@@ -86,3 +88,21 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 | [Chef 0.5.6](http://www.opscode.com/blog/2009/03/06/chef-0-5-6/) | 2009-03-06 | Sean Cribbs |
 | [Chef 0.5.4](http://www.opscode.com/blog/2009/02/13/chef-0-5-4/) | 2009-02-13 | Arjuna Christensen |
 | [Chef 0.5.2](http://www.opscode.com/blog/2009/02/01/chef-0-5-2-and-ohai-0-1-4/) | 2009-02-01 | Bryan McLellan |
+
+#### Awesome Community Chefs
+
+Each year at ChefConf, three individuals are awarded the Awesome Community Chef award. The Awesome Community Chef awards are a way for the community to recognize a few of the individuals who have made a dramatic impact and have helped further the cause.
+
+* 2013
+  * [Bryan Berry](https://github.com/bryanwb)
+  * [Fletcher Nichol](https://github.com/fnichol)
+  * [Jamie Winsor](https://github.com/reset)
+* 2014
+  * [Ranjib Dey](https://github.com/ranjib)
+  * [Miah Johnson](https://github.com/miah)
+  * [Seth Vargo](https://github.com/sethvargo)
+  * [Eric Wolfe](https://github.com/atomic-penguin)
+* 2015
+  * [Jon Cowie](https://github.com/jonlives)
+  * [Noah Kantrowitz](https://github.com/coderanger)
+  * [Matt Wrock](https://github.com/mwrock)
