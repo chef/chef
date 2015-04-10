@@ -61,7 +61,7 @@ class Chef
         when /^(\d+)\.(\d+)$/
           [ $1.to_i, $2.to_i, 0 ]
         else
-          msg = "'#{str.to_s}' does not match 'x.y.z' or 'x.y'"
+          msg = "'#{str.to_s}' does not match 'x.y.z' or 'x.y', Where x,y and z are positive numbers"
           raise Chef::Exceptions::InvalidCookbookVersion.new( msg )
         end
     end
