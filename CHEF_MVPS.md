@@ -6,7 +6,7 @@ In addition to the Hall of Fame and MVP recipients, three individuals are awarde
 
 #### Hall of Fame
 
-After receiving three MVP awards, we add someone to the hall of fame. We want to express our gratitude to their continuing participation and give newer community members the opportunity to be reconignized.
+After receiving three MVP awards, we add someone to the hall of fame. We want to express our gratitude to their continuing participation and give newer community members the opportunity to be recognized.
 
 * Matthew Kent
 * Doug MacEachern
