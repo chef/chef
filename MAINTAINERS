@@ -38,7 +38,7 @@ another component.
         "jdmundrawala",
         "jonlives",
         "lamont-granquist",
-        "mcquin",
+        "smurawski"
         "tyler-ball",
         "ranjib"
       ]
@@ -136,10 +136,19 @@ The specific components of Chef related to a given platform - including (but not
 
         lieutenant = "martinisoft"
 
+        maintainers = [
+          "Aevin1387"
+        ]
+
+
 [people]
   [people.adamhjk]
     Name = Adam Jacob
     GitHub = adamhjk
+
+  [people.Aevin1387]
+    Name = Cory Stephenson
+    GitHub = Aevin1387
 
   [people.btm]
     Name = Bryan McLellan
@@ -200,6 +209,7 @@ The specific components of Chef related to a given platform - including (but not
   [people.thommay]
     Name = Thom May
     GitHub = thommay
+    IRC = thom
     Twitter = thommay
 
   [people.tyler-ball]
