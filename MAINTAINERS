@@ -1,0 +1,217 @@
+#
+# This file is structured to be consumed by both humans and computers.
+# It is a TOML document containing Markdown
+#
+[Preamble]
+  title = "Maintainers"
+  text = """
+This file lists how the Chef project is maintained. When making changes to the system, this
+file tells you who needs to review your patch - you need a simple majority of maintainers
+for the relevant subsystems to provide a :+1: on your pull request. Additionally, you need
+to not receive a veto from a Lieutenant or the Project Lead.
+
+Check out [How Chef is Maintained](https://github.com/opscode/chef-rfc/blob/master/rfc030-maintenance-policy.md#how-the-project-is-maintained) for details on the process, how to become
+a maintainer, lieutenant, or the project lead.
+"""
+
+[Org]
+  [Org.Lead]
+    title = "Project Lead"
+    person = "adamhjk"
+
+  [Org.Components]
+    [Org.Components.Core]
+      title = "Chef Core"
+      text = """
+Handles the core parts of the Chef DSL, base resource and provider
+infrastructure, and the Chef applications. Includes anything not covered by
+another component.
+"""
+
+      lieutenant = "thommay"
+
+      maintainers = [
+        "btm",
+        "danielsdeleo",
+        "fujin",
+        "jaymzh",
+        "jdmundrawala",
+        "jonlives",
+        "lamont-granquist",
+        "smurawski"
+        "tyler-ball",
+        "ranjib"
+      ]
+
+    [Org.Components.DevTools]
+      title = "Dev Tools"
+      text = "Chef Zero, Knife, Chef Apply and Chef Shell."
+
+      paths = [
+        "lib/chef/knife.rb",
+        "lib/chef/knife/",
+        "spec/functional/knife/",
+        "spec/integration/knife/",
+        "spec/unit/knife/"
+      ]
+
+      maintainers = [
+        "danielsdeleo",
+        "jtimberman",
+        "lamont-granquist",
+        "stevendanna"
+      ]
+
+    [Org.Components.TestTools]
+      title = "Test Tools"
+      text = "ChefSpec"
+
+      lieutenant = "sethvargo"
+
+      maintainers = [
+        "jtimberman",
+        "lamont-granquist",
+        "ranjib"
+      ]
+
+    [Org.Components.Subsystems]
+      title = "Platform Specific Components"
+      text = """
+The specific components of Chef related to a given platform - including (but not limited to) resources, providers, and the core DSL.
+"""
+
+      [Org.Components.Subsystems."Enterprise Linux"]
+        title = "Enterprise Linux"
+
+        lieutenant = "jonlives"
+
+        maintainers = [
+          "jaymzh",
+          "lamont-granquist"
+        ]
+
+      [Org.Components.Subsystems.Ubuntu]
+        title = "Ubuntu"
+
+        maintainers = [
+          "lamont-granquist",
+          "ranjib",
+          "thommay"
+        ]
+
+      [Org.Components.Subsystems.Windows]
+        title = "Windows"
+
+        lieutenant = "btm"
+        maintainers = [
+          "jdmundrawala",
+          "smurawski"
+        ]
+
+      [Org.Components.Subsystems.Solaris]
+        title = "Solaris"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+      [Org.Components.Subsystems.AIX]
+        title = "AIX"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+      [Org.Components.Subsystems."Mac OS X"]
+        title = "Mac OS X"
+
+        lieutenant = "jtimberman"
+
+        maintainers = [
+          "tyler-ball"
+        ]
+
+      [Org.Components.Subsystems.FreeBSD]
+        title = "FreeBSD"
+
+        lieutenant = "martinisoft"
+
+        maintainers = [
+          "Aevin1387"
+        ]
+
+
+[people]
+  [people.adamhjk]
+    Name = Adam Jacob
+    GitHub = adamhjk
+
+  [people.Aevin1387]
+    Name = Cory Stephenson
+    GitHub = Aevin1387
+
+  [people.btm]
+    Name = Bryan McLellan
+    GitHub = btm
+
+  [people.danielsdeleo]
+    Name = Daniel DeLeo
+    GitHub = danielsdeleo
+
+  [people.fujin]
+    Name = AJ Christensen
+    GitHub = fujin
+
+  [people.jaymzh]
+    Name = Phil Dibowitz
+    GitHub = jaymzh
+
+  [people.jdmundrawala]
+    Name = Jay Mundrawala
+    GitHub = jdmundrawala
+
+  [people.jonlives]
+    Name = Jon Cowie
+    GitHub = jonlives
+
+  [people.jtimberman]
+    Name = Joshua Timberman
+    GitHub = jtimberman
+
+  [people.lamont-granquist]
+    Name = Lamont Granquist
+    GitHub = lamont-granquist
+
+  [people.martinisoft]
+    Name = Aaron Kalin
+    GitHub = martinisoft
+
+  [people.mcquin]
+    Name = Claire McQuin
+    GitHub = mcquin
+
+  [people.ranjib]
+    Name = Ranjib Dey
+    GitHub = ranjib
+
+  [people.sethvargo]
+    Name = Seth Vargo
+    GitHub = sethvargo
+
+  [people.smurawski]
+    Name = Steven Murawski
+    GitHub = smurawski
+
+  [people.stevendanna]
+    Name = Steven Danna
+    GitHub = stevendanna
+
+  [people.thommay]
+    Name = Thom May
+    GitHub = thommay
+    IRC = thom
+    Twitter = thommay
+
+  [people.tyler-ball]
+    Name = Tyler Ball
+    GitHub = tyler-ball
