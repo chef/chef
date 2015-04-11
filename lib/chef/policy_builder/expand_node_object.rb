@@ -24,6 +24,7 @@ require 'chef/rest'
 require 'chef/run_context'
 require 'chef/config'
 require 'chef/node'
+require 'chef/chef_class'
 
 class Chef
   module PolicyBuilder
@@ -54,6 +55,21 @@ class Chef
         @run_list_expansion = nil
       end
 
+      # This method injects the run_context and provider and resource priority
+      # maps into the Chef class.  The run_context has to be injected here, the provider and
+      # resource maps could be moved if a better place can be found to do this work.
+      #
+      # @param run_context [Chef::RunContext] the run_context to inject
+      def setup_chef_class(run_context)
+        # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
+        require 'chef/platform/provider_priority_map'
+        require 'chef/platform/resource_priority_map'
+
+        Chef.set_run_context(run_context)
+        Chef.set_provider_priority_map(Chef::Platform::ProviderPriorityMap.instance)
+        Chef.set_resource_priority_map(Chef::Platform::ResourcePriorityMap.instance)
+      end
+
       def setup_run_context(specific_recipes=nil)
         if Chef::Config[:solo]
           Chef::Cookbook::FileVendor.fetch_from_disk(Chef::Config[:cookbook_path])
@@ -67,6 +83,10 @@ class Chef
           cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
           run_context = Chef::RunContext.new(node, cookbook_collection, @events)
         end
+
+        # TODO: this is really obviously not the place for this
+        # FIXME: need same edits
+        setup_chef_class(run_context)
 
         # TODO: this is not the place for this. It should be in Runner or
         # CookbookCompiler or something.

@@ -1,4 +1,5 @@
-provides 'buck_passer'
+provides :buck_passer
+
 action :pass_buck do
   lwrp_foo :prepared_thumbs do
     action :prepare_thumbs

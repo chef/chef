@@ -47,7 +47,7 @@ class Chef
     def enabled_handlers
       @enabled_handlers ||=
         providers.select do |klass|
-          klass.provides?(node, resource)
+          klass.provides?(node, resource.resource_name)
         end.sort {|a,b| a.to_s <=> b.to_s }
     end
 
@@ -84,8 +84,13 @@ class Chef
       if handlers.count >= 2
         # this magic stack ranks the providers by where they appear in the provider_priority_map, it is mostly used
         # to pick amongst N different ways to start init scripts on different debian/ubuntu systems.
-        priority_list = [ get_provider_priority_map(resource.resource_name, node) ].flatten.compact
+        priority_list = [ get_priority_array(node, resource.resource_name) ].flatten.compact
         handlers = handlers.sort_by { |x| i = priority_list.index x; i.nil? ? Float::INFINITY : i }
+        if priority_list.index(handlers.first).nil?
+          # if we had more than one and we picked one with a precidence of infinity that means that the resource_priority_map
+          # entry for this resource is missing -- we should probably raise here and force resolution of the ambiguity.
+          Chef::Log.warn "Ambiguous provider precedence: #{handlers}, please use Chef.set_provider_priority_array to provide determinism"
+        end
         handlers = [ handlers.first ]
       end
 
@@ -106,12 +111,12 @@ class Chef
     end
 
     # dep injection hooks
-    def get_provider_priority_map(resource_name, node)
-      provider_priority_map.get(node, resource_name)
+    def get_priority_array(node, resource_name)
+      provider_priority_map.get_priority_array(node, resource_name)
     end
 
     def provider_priority_map
-      Chef::Platform::ProviderPriorityMap.instance.priority_map
+      Chef::Platform::ProviderPriorityMap.instance
     end
   end
 end
