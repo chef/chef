@@ -241,7 +241,8 @@ class Chef
     # Chef::Node:: The updated node object
     def build_node
       policy_builder.build_node
-      @run_status = Chef::RunStatus.new(node, events)
+      @run_status.node = node
+      @run_status.events = events
       node
     end
 
