@@ -37,3 +37,6 @@ suites:
       - recipe[apt::default]
       - recipe[webapp::default]
     attributes:
+  - name: installthings
+    run_list:
+      - recipe[installthings::default]

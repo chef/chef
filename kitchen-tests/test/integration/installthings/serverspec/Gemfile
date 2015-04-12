@@ -1,0 +1,4 @@
+# This Gemfile is only needed so that busser will install gems it needs for serverspec_helper.rb to work
+source "https://rubygems.org"
+
+gem 'ffi-yajl', '~> 1.1' # Go away, JSON gem
