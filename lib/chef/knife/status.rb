@@ -18,6 +18,7 @@
 
 require 'chef/knife'
 require 'chef/knife/core/status_presenter'
+require 'chef/knife/core/node_presenter'
 
 class Chef
   class Knife
