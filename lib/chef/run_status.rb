@@ -23,7 +23,7 @@
 # Chef run.
 class Chef::RunStatus
 
-  attr_accessor :events
+  attr_reader :events
 
   attr_reader :run_context
 

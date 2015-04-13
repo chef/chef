@@ -242,7 +242,6 @@ class Chef
     def build_node
       policy_builder.build_node
       @run_status.node = node
-      @run_status.events = events
       node
     end
 
