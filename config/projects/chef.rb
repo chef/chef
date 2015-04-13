@@ -73,7 +73,7 @@ end
 
 package :pkg do
   identifier "com.getchef.pkg.chef"
-  signing_identity "Developer ID Installer: Opscode Inc. (9NBR9JL2R2)"
+  signing_identity "Developer ID Installer: Chef Software, Inc. (EU3VF8YLX2)"
 end
 compress :dmg
 
