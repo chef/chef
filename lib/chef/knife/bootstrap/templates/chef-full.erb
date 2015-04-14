@@ -21,7 +21,7 @@ exists() {
 }
 
 http_404_error() {
-  echo "Could not retrieve a valid install.sh!"
+  echo "ERROR 404: Could not retrieve a valid install.sh!"
   exit 1
 }
 
@@ -42,7 +42,6 @@ do_wget() {
   # check for 404
   grep "ERROR 404" $tmp_dir/stderr 2>&1 >/dev/null
   if test $? -eq 0; then
-    echo "ERROR 404"
     http_404_error
   fi
 
@@ -63,7 +62,6 @@ do_curl() {
   # check for 404
   grep "404 Not Found" $tmp_dir/stderr 2>&1 >/dev/null
   if test $? -eq 0; then
-    echo "ERROR 404"
     http_404_error
   fi
 
@@ -93,7 +91,6 @@ do_perl() {
   # check for 404
   grep "404 Not Found" $tmp_dir/stderr 2>&1 >/dev/null
   if test $? -eq 0; then
-    echo "ERROR 404"
     http_404_error
   fi
 
@@ -114,7 +111,6 @@ do_python() {
   # check for 404
   grep "HTTP Error 404" $tmp_dir/stderr 2>&1 >/dev/null
   if test $? -eq 0; then
-    echo "ERROR 404"
     http_404_error
   fi
 
@@ -157,7 +153,7 @@ do_download() {
     do_python $1 $2 && return 0
   fi
 
-  echo ">>>>>> wget, curl, fetch, perl or python not found on this instance."
+  echo ">>>>>> wget, curl, fetch, perl, or python not found on this instance."
 
   if test "x$stderr_results" != "x"; then
     echo "\nDEBUG OUTPUT FOLLOWS:\n$stderr_results"
@@ -175,7 +171,7 @@ do_download() {
     do_download ${install_sh} $tmp_dir/install.sh
     sh $tmp_dir/install.sh -P chef <%= latest_current_chef_version_string %>
   else
-    echo "-----> Chef Omnibus installation detected (<%= latest_current_chef_version_string %>)"
+    echo "-----> Existing Chef installation detected"
   fi
 <% end %>
 
