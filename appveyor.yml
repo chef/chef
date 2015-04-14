@@ -22,7 +22,7 @@ install:
   - echo %PATH%
   - ruby --version
   - gem --version
-  - gem install bundler -v 1.9.2 --quiet --no-ri --no-rdoc
+  - gem install bundler --quiet --no-ri --no-rdoc
   - bundler --version
 
 build_script:
