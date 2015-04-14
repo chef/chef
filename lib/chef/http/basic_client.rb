@@ -132,8 +132,8 @@ class Chef
           Net::HTTP
         else
           Chef::Log.debug("Using #{http_proxy.host}:#{http_proxy.port} for proxy")
-          user = Chef::Config["#{url.scheme}_proxy_user"]
-          pass = Chef::Config["#{url.scheme}_proxy_pass"]
+          user = http_proxy.user || Chef::Config["#{url.scheme}_proxy_user"]
+          pass = http_proxy.password || Chef::Config["#{url.scheme}_proxy_pass"]
           Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass)
         end
       end
