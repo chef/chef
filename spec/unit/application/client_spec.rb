@@ -264,16 +264,15 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
   end
 
-  describe "when both the pidfile and lockfile opts are set to the same value" do
-
+  describe 'verifying no PID file Lockfile match' do
     before do
-      Chef::Config[:pid_file] = "/path/to/file"
-      Chef::Config[:lockfile] = "/path/to/file"
+      Chef::Config[:pid_file] = '/path/to/file'
+      Chef::Config[:lockfile] = '/path/to/file'
     end
 
-    it "should throw an exception" do
-      expect { @app.reconfigure }.to raise_error
-    end
+    subject { proc { app.reconfigure } }
+
+    it { is_expected.to raise_error(Chef::Exceptions::PIDFileLockfileMatch) }
   end
 end
 
