@@ -108,9 +108,9 @@ module Shell
     irb_conf[:IRB_RC] = lambda do |conf|
       m = conf.main
 
-      conf.prompt_c       = "chef#{leader(m)} > "
+      conf.prompt_c       = "chef#{leader(m)} (#{Chef::VERSION})> "
       conf.return_format  = " => %s \n"
-      conf.prompt_i       = "chef#{leader(m)} > "
+      conf.prompt_i       = "chef#{leader(m)} (#{Chef::VERSION})> "
       conf.prompt_n       = "chef#{leader(m)} ?> "
       conf.prompt_s       = "chef#{leader(m)}%l> "
       conf.use_tracer     = false

@@ -67,9 +67,9 @@ describe Shell do
       conf.main = Object.new
       conf.main.instance_eval(&ObjectTestHarness)
       Shell.irb_conf[:IRB_RC].call(conf)
-      expect(conf.prompt_c).to      eq("chef > ")
+      expect(conf.prompt_c).to      eq("chef (#{Chef::VERSION})> ")
       expect(conf.return_format).to eq(" => %s \n")
-      expect(conf.prompt_i).to      eq("chef > ")
+      expect(conf.prompt_i).to      eq("chef (#{Chef::VERSION})> ")
       expect(conf.prompt_n).to      eq("chef ?> ")
       expect(conf.prompt_s).to      eq("chef%l> ")
       expect(conf.use_tracer).to    eq(false)
@@ -82,8 +82,8 @@ describe Shell do
       events = Chef::EventDispatch::Dispatcher.new
       conf.main = Chef::Recipe.new(nil,nil,Chef::RunContext.new(Chef::Node.new, {}, events))
       Shell.irb_conf[:IRB_RC].call(conf)
-      expect(conf.prompt_c).to      eq("chef:recipe > ")
-      expect(conf.prompt_i).to      eq("chef:recipe > ")
+      expect(conf.prompt_c).to      eq("chef:recipe (#{Chef::VERSION})> ")
+      expect(conf.prompt_i).to      eq("chef:recipe (#{Chef::VERSION})> ")
       expect(conf.prompt_n).to      eq("chef:recipe ?> ")
       expect(conf.prompt_s).to      eq("chef:recipe%l> ")
     end
@@ -94,8 +94,8 @@ describe Shell do
       conf = OpenStruct.new
       conf.main = Chef::Node.new
       Shell.irb_conf[:IRB_RC].call(conf)
-      expect(conf.prompt_c).to      eq("chef:attributes > ")
-      expect(conf.prompt_i).to      eq("chef:attributes > ")
+      expect(conf.prompt_c).to      eq("chef:attributes (#{Chef::VERSION})> ")
+      expect(conf.prompt_i).to      eq("chef:attributes (#{Chef::VERSION})> ")
       expect(conf.prompt_n).to      eq("chef:attributes ?> ")
       expect(conf.prompt_s).to      eq("chef:attributes%l> ")
     end
