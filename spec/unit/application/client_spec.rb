@@ -24,15 +24,20 @@ describe Chef::Application::Client, "reconfigure" do
     a
   end
 
+  let(:command_result) { double(Mixlib::ShellOut, stdout: 'foo') }
+
   before do
     allow(Kernel).to receive(:trap).and_return(:ok)
     allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
+    allow(::File).to receive(:open).and_return(true)
+    allow(FileUtils).to receive(:mkdir_p).and_return(true)
 
     @original_argv = ARGV.dup
     ARGV.clear
 
     allow(app).to receive(:trap)
     allow(app).to receive(:configure_logging).and_return(true)
+    allow(app).to receive(:shell_out!).and_return(command_result)
     Chef::Config[:interval] = 10
 
     Chef::Config[:once] = false
@@ -46,6 +51,31 @@ describe Chef::Application::Client, "reconfigure" do
     it 'should call set_specific_recipes' do
       expect(app).to receive(:set_specific_recipes).and_return(true)
       app.reconfigure
+    end
+  end
+
+  describe 'fetching local-mode recipes' do
+    before { Chef::Config[:recipe_url] = 'http://foo.com/recipes.tgz' }
+    after { app.reconfigure }
+
+    subject { Chef::Application }
+
+    context 'when in local-mode' do
+      before { Chef::Config.local_mode = true }
+
+      it { is_expected.to_not receive(:fatal!) }
+    end
+
+    context 'when not in local-mode' do
+      before { Chef::Config.local_mode = false }
+
+      it { is_expected.to receive(:fatal!).with(local_mode_error, exit_status) }
+
+      let(:local_mode_error) do
+        'chef-client recipe-url can be used only in local-mode'
+      end
+
+      let(:exit_status) { 1 }
     end
   end
 
