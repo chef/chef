@@ -2,7 +2,7 @@
 
 # $PROJECT_NAME is set by Jenkins, this allows us to use the same script to verify
 # Chef and Angry Chef
-PATH=/opt/$PROJECT_NAME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PATH=/opt/$PROJECT_NAME/bin:$PATH
 export PATH
 
 # We don't want to add the embedded bin dir to the main PATH as this
