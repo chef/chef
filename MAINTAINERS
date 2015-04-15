@@ -137,7 +137,8 @@ The specific components of Chef related to a given platform - including (but not
         lieutenant = "martinisoft"
 
         maintainers = [
-          "Aevin1387"
+          "Aevin1387",
+          "tBunnyMan"
         ]
 
 
@@ -205,7 +206,13 @@ The specific components of Chef related to a given platform - including (but not
   [people.stevendanna]
     Name = Steven Danna
     GitHub = stevendanna
-
+  
+  [people.tBunnyMan]
+    Name = David Aronsohn
+    GitHub = tbunnyman
+    IRC = tBunnyMan
+    Twitter = OnlyHaveCans
+  
   [people.thommay]
     Name = Thom May
     GitHub = thommay
