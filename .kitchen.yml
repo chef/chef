@@ -102,14 +102,6 @@ suites:
         install_dir: /opt/chefdk
     run_list:
       - omnibus::default
-  - name: chef-container
-    attributes:
-      omnibus:
-        <<: *attribute_defaults
-        install_dir: /opt/chef-container
-    run_list:
-      - omnibus::default
-      - docker::default
   - name: push-jobs-client
     attributes:
       omnibus:
