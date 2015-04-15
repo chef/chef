@@ -17,7 +17,7 @@ driver:
 
 provisioner:
   name: chef_zero
-  require_chef_omnibus: 12.2
+  require_chef_omnibus: true # Always install the latest version of Chef
 
 platforms:
   - name: centos-5.10
@@ -89,6 +89,9 @@ suites:
     run_list:
       - omnibus::default
   - name: chef
+    provisioner:
+      chef_omnibus_install_options: -P angrychef
+      chef_omnibus_root: /opt/angrychef
     attributes:
       omnibus:
         <<: *attribute_defaults
