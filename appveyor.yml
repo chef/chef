@@ -7,6 +7,7 @@ platform:
 environment:
   matrix:
     - ruby_version: "200"
+    - ruby_version: "21"
 
 clone_folder: c:\projects\chef
 clone_depth: 1
@@ -19,6 +20,8 @@ branches:
 cache:
   - C:\Ruby200\lib\ruby\gems\2.0.0
   - C:\Ruby200\bin
+  - C:\Ruby21\lib\ruby\gems\2.0.0
+  - C:\Ruby21\bin
 
 install:
   - winrm quickconfig -q
