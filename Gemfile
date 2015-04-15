@@ -12,7 +12,7 @@ group :development do
   gem 'berkshelf', '~> 3.0'
 
   # Use Test Kitchen with Vagrant for converging the build environment
-  gem 'test-kitchen',      '~> 1.2'
-  gem 'kitchen-vagrant',   '~> 0.15'
-  gem 'windows_chef_zero', '~> 2.0'
+  gem 'test-kitchen',    '~> 1.4.0.rc.1'
+  gem 'kitchen-vagrant', '~> 0.17.0.rc.1'
+  gem 'winrm-transport', '~> 1.0'
 end
