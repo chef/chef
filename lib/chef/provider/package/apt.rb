@@ -148,12 +148,12 @@ class Chef
           install_package(name, version)
         end
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           package_name = [ name ].flatten.join(' ')
           run_noninteractive("apt-get -q -y#{expand_options(@new_resource.options)} remove #{package_name}")
         end
 
-        def purge_package(name, version)
+        def purge_package(name, _version)
           package_name = [ name ].flatten.join(' ')
           run_noninteractive("apt-get -q -y#{expand_options(@new_resource.options)} purge #{package_name}")
         end
@@ -163,7 +163,7 @@ class Chef
           run_noninteractive("debconf-set-selections #{preseed_file}")
         end
 
-        def reconfig_package(name, version)
+        def reconfig_package(name, _version)
           package_name = [ name ].flatten.join(' ')
           Chef::Log.info("#{@new_resource} reconfiguring")
           run_noninteractive("dpkg-reconfigure #{package_name}")

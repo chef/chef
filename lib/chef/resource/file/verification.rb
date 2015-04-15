@@ -99,13 +99,13 @@ class Chef
 
         # opts is currently unused, but included in the API
         # to support future extensions
-        def verify_block(path, opts)
+        def verify_block(path, _opts)
           @block.call(path)
         end
 
         # We reuse Chef::GuardInterpreter in order to support
         # the same set of options that the not_if/only_if blocks do
-        def verify_command(path, opts)
+        def verify_command(path, _opts)
           command = @command % {:file => path}
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           interpreter.evaluate

@@ -80,7 +80,7 @@ class Chef
       include Chef::DSL::PlatformIntrospection
       include Chef::DSL::DataQuery
 
-      def self.build_from_file(cookbook_name, filename, run_context)
+      def self.build_from_file(cookbook_name, filename, _run_context)
         provider_class = nil
         provider_name = filename_to_qualified_string(cookbook_name, filename)
 

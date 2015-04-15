@@ -106,7 +106,7 @@ class Chef
 
       end
 
-      def get_category(cookbook_name)
+      def get_category(_cookbook_name)
         begin
           data = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
           if !data["category"] && data["error_code"]

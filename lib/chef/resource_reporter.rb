@@ -177,17 +177,17 @@ class Chef
       end
     end
 
-    def resource_up_to_date(new_resource, action)
+    def resource_up_to_date(new_resource, _action)
       @total_res_count += 1
       @pending_update = nil unless nested_resource?(new_resource)
     end
 
-    def resource_skipped(resource, action, conditional)
+    def resource_skipped(resource, _action, _conditional)
       @total_res_count += 1
       @pending_update = nil unless nested_resource?(resource)
     end
 
-    def resource_updated(new_resource, action)
+    def resource_updated(_new_resource, _action)
       @total_res_count += 1
     end
 
@@ -209,7 +209,7 @@ class Chef
       end
     end
 
-    def run_completed(node)
+    def run_completed(_node)
       @status = "success"
       post_reporting_data
     end

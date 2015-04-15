@@ -5,7 +5,7 @@ class Chef
     module DataHandler
       class PolicyDataHandler < DataHandlerBase
 
-        def normalize(policy, entry)
+        def normalize(policy, _entry)
           policy
         end
       end

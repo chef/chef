@@ -74,7 +74,7 @@ class Chef
         )
       end
 
-      def run_completed(node)
+      def run_completed(_node)
         @eventlog.report_event(
           :event_type => ::Win32::EventLog::INFO_TYPE,
           :source => SOURCE,

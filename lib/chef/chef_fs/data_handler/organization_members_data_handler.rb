@@ -4,11 +4,11 @@ class Chef
   module ChefFS
     module DataHandler
       class OrganizationMembersDataHandler < DataHandlerBase
-        def normalize(members, entry)
+        def normalize(members, _entry)
           members.map { |member| member.is_a?(Hash) ? member['user']['username'] : member }.sort.uniq
         end
 
-        def minimize(members, entry)
+        def minimize(members, _entry)
           members
         end
       end

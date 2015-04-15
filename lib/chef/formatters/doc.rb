@@ -40,7 +40,7 @@ class Chef
         successful_audits + failed_audits
       end
 
-      def run_completed(node)
+      def run_completed(_node)
         @end_time = Time.now
         if Chef::Config[:why_run]
           puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
@@ -52,7 +52,7 @@ class Chef
         end
       end
 
-      def run_failed(exception)
+      def run_failed(_exception)
         @end_time = Time.now
         if Chef::Config[:why_run]
           puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
@@ -65,22 +65,22 @@ class Chef
       end
 
       # Called right after ohai runs.
-      def ohai_completed(node)
+      def ohai_completed(_node)
       end
 
       # Already have a client key, assuming this node has registered.
-      def skipping_registration(node_name, config)
+      def skipping_registration(_node_name, _config)
       end
 
       # About to attempt to register as +node_name+
-      def registration_start(node_name, config)
+      def registration_start(node_name, _config)
         puts_line "Creating a new client identity for #{node_name} using the validator key."
       end
 
       def registration_completed
       end
 
-      def node_load_start(node_name, config)
+      def node_load_start(_node_name, _config)
       end
 
       # Failed to load node data from the server
@@ -90,7 +90,7 @@ class Chef
 
       # Default and override attrs from roles have been computed, but not yet applied.
       # Normal attrs from JSON have been added to the node.
-      def node_load_completed(node, expanded_run_list, config)
+      def node_load_completed(_node, _expanded_run_list, _config)
       end
 
       # Called before the cookbook collection is fetched from the server.
@@ -105,7 +105,7 @@ class Chef
       end
 
       # Called when the cookbook collection is returned from the server.
-      def cookbook_resolution_complete(cookbook_collection)
+      def cookbook_resolution_complete(_cookbook_collection)
       end
 
       # Called before unneeded cookbooks are removed
@@ -115,7 +115,7 @@ class Chef
       # Called after the file at +path+ is removed. It may be removed if the
       # cookbook containing it was removed from the run list, or if the file was
       # removed from the cookbook.
-      def removed_cookbook_file(path)
+      def removed_cookbook_file(_path)
       end
 
       # Called when cookbook cleaning is finished.
@@ -123,7 +123,7 @@ class Chef
       end
 
       # Called before cookbook sync starts
-      def cookbook_sync_start(cookbook_count)
+      def cookbook_sync_start(_cookbook_count)
         puts_line "Synchronizing Cookbooks:"
         indent
       end
@@ -134,7 +134,7 @@ class Chef
       end
 
       # Called when an individual file in a cookbook has been updated
-      def updated_cookbook_file(cookbook_name, path)
+      def updated_cookbook_file(_cookbook_name, _path)
       end
 
       # Called after all cookbooks have been sync'd.
@@ -143,12 +143,12 @@ class Chef
       end
 
       # Called when cookbook loading starts.
-      def library_load_start(file_count)
+      def library_load_start(_file_count)
         puts_line "Compiling Cookbooks..."
       end
 
       # Called after a file in a cookbook is loaded.
-      def file_loaded(path)
+      def file_loaded(_path)
       end
 
       # Called when recipes have been loaded.
@@ -165,13 +165,13 @@ class Chef
         unindent if @current_recipe
       end
 
-      def converge_failed(e)
+      def converge_failed(_e)
         # Currently a failed converge is handled the same way as a successful converge
         converge_complete
       end
 
       # Called before audit phase starts
-      def audit_phase_start(run_status)
+      def audit_phase_start(_run_status)
         puts_line "Starting audit phase"
       end
 
@@ -189,16 +189,16 @@ class Chef
         end
       end
 
-      def control_example_success(control_group_name, example_data)
+      def control_example_success(_control_group_name, _example_data)
         @successful_audits += 1
       end
 
-      def control_example_failure(control_group_name, example_data, error)
+      def control_example_failure(_control_group_name, _example_data, _error)
         @failed_audits += 1
       end
 
       # Called before action is executed on a resource.
-      def resource_action_start(resource, action, notification_type=nil, notifier=nil)
+      def resource_action_start(resource, action, _notification_type=nil, _notifier=nil)
         if resource.cookbook_name && resource.recipe_name
           resource_recipe = "#{resource.cookbook_name}::#{resource.recipe_name}"
         else
@@ -217,7 +217,7 @@ class Chef
       end
 
       # Called when a resource fails, but will retry.
-      def resource_failed_retriable(resource, action, retry_count, exception)
+      def resource_failed_retriable(_resource, _action, _retry_count, _exception)
       end
 
       # Called when a resource fails and will not be retried.
@@ -227,36 +227,36 @@ class Chef
       end
 
       # Called when a resource action has been skipped b/c of a conditional
-      def resource_skipped(resource, action, conditional)
+      def resource_skipped(resource, _action, conditional)
         # TODO: more info about conditional
         puts " (skipped due to #{conditional.short_description})", :stream => resource
         unindent
       end
 
       # Called after #load_current_resource has run.
-      def resource_current_state_loaded(resource, action, current_resource)
+      def resource_current_state_loaded(_resource, _action, _current_resource)
       end
 
       # Called when a resource has no converge actions, e.g., it was already correct.
-      def resource_up_to_date(resource, action)
+      def resource_up_to_date(resource, _action)
         @up_to_date_resources+= 1
         puts " (up to date)", :stream => resource
         unindent
       end
 
-      def resource_bypassed(resource, action, provider)
+      def resource_bypassed(resource, _action, provider)
         puts " (Skipped: whyrun not supported by provider #{provider.class.name})", :stream => resource
         unindent
       end
 
-      def output_record(line)
+      def output_record(_line)
 
       end
 
       # Called when a change has been made to a resource. May be called multiple
       # times per resource, e.g., a file may have its content updated, and then
       # its permissions updated.
-      def resource_update_applied(resource, action, update)
+      def resource_update_applied(_resource, _action, update)
         prefix = Chef::Config[:why_run] ? "Would " : ""
         Array(update).each do |line|
           next if line.nil?
@@ -274,7 +274,7 @@ class Chef
       end
 
       # Called after a resource has been completely converged.
-      def resource_updated(resource, action)
+      def resource_updated(_resource, _action)
         @updated_resources += 1
         unindent
         puts "\n"
@@ -282,7 +282,7 @@ class Chef
 
       # Called when resource current state load is skipped due to the provider
       # not supporting whyrun mode.
-      def resource_current_state_load_bypassed(resource, action, current_resource)
+      def resource_current_state_load_bypassed(resource, _action, _current_resource)
         puts_line("* Whyrun not supported for #{resource}, bypassing load.", :yellow)
       end
 
@@ -291,7 +291,7 @@ class Chef
       end
 
       # Called before handlers run
-      def handlers_start(handler_count)
+      def handlers_start(_handler_count)
         puts ''
         puts "Running handlers:"
         indent
@@ -310,7 +310,7 @@ class Chef
 
       # Called when a provider makes an assumption after a failed assertion
       # in whyrun mode, in order to allow execution to continue
-      def whyrun_assumption(action, resource, message)
+      def whyrun_assumption(_action, _resource, message)
         return unless message
         [ message ].flatten.each do |line|
           start_line("* #{line}", :yellow)
@@ -318,7 +318,7 @@ class Chef
       end
 
       # Called when an assertion declared by a provider fails
-      def provider_requirement_failed(action, resource, exception, message)
+      def provider_requirement_failed(_action, _resource, _exception, message)
         return unless message
         color = Chef::Config[:why_run] ? :yellow : :red
         [ message ].flatten.each do |line|

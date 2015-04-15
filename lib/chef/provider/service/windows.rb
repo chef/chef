@@ -257,7 +257,7 @@ EOS
     Chef::Util::PathHelper.canonical_path("#{Dir.tmpdir}/service_logon_policy-#{clean_username_for_path(username)}-#{$$}.inf", prefix=false)
   end
 
-  def grant_dbfile_name(username)
+  def grant_dbfile_name(_username)
     "#{ENV['TEMP']}\\secedit.sdb"
   end
 

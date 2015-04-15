@@ -21,7 +21,7 @@ class Chef
           @children.push(child)
         end
 
-        def can_have_child?(name, is_dir)
+        def can_have_child?(name, _is_dir)
           root.cannot_be_in_regex ? (name !~ root.cannot_be_in_regex) : true
         end
 

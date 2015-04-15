@@ -25,11 +25,11 @@ class Chef
         class Port < Base
           include PortsHelper
 
-          def install_package(name, version)
+          def install_package(_name, _version)
             shell_out!("make -DBATCH install clean", :timeout => 1800, :env => nil, :cwd => port_dir).status
           end
 
-          def remove_package(name, version)
+          def remove_package(_name, _version)
             shell_out!("make deinstall", :timeout => 300, :env => nil, :cwd => port_dir).status
           end
 

@@ -24,7 +24,7 @@ class Chef
       module Freebsd
         class Pkgng < Base
 
-          def install_package(name, version)
+          def install_package(name, _version)
             unless @current_resource.version
               case @new_resource.source
               when /^(http|ftp|\/)/

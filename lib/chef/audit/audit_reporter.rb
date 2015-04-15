@@ -57,7 +57,7 @@ class Chef
       # that runs tests - normal errors are interpreted as EXAMPLE failures and captured.
       # We still want to send available audit information to the server so we process the
       # known control groups.
-      def audit_phase_failed(error)
+      def audit_phase_failed(_error)
         # The stacktrace information has already been logged elsewhere
         Chef::Log.debug("Audit Reporter failed.")
         ordered_control_groups.each do |name, control_group|
@@ -65,7 +65,7 @@ class Chef
         end
       end
 
-      def run_completed(node)
+      def run_completed(_node)
         post_auditing_data
       end
 

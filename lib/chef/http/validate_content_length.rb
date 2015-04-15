@@ -41,7 +41,7 @@ class Chef
         end
       end
 
-      def initialize(opts={})
+      def initialize(_opts={})
       end
 
       def handle_request(method, url, headers={}, data=false)
@@ -66,7 +66,7 @@ class Chef
         return [http_response, rest_request, return_value]
       end
 
-      def stream_response_handler(response)
+      def stream_response_handler(_response)
         @content_length_counter = ContentLengthCounter.new
       end
 

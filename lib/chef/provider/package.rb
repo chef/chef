@@ -201,27 +201,27 @@ class Chef
       end
 
       # @todo use composition rather than inheritance
-      def install_package(name, version)
+      def install_package(_name, _version)
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :install"
       end
 
-      def upgrade_package(name, version)
+      def upgrade_package(_name, _version)
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :upgrade"
       end
 
-      def remove_package(name, version)
+      def remove_package(_name, _version)
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remove"
       end
 
-      def purge_package(name, version)
+      def purge_package(_name, _version)
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :purge"
       end
 
-      def preseed_package(file)
+      def preseed_package(_file)
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions"
       end
 
-      def reconfig_package(name, version)
+      def reconfig_package(_name, _version)
         raise( Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reconfig" )
       end
 

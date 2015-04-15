@@ -23,7 +23,7 @@ class Chef
   class Resource
     class Breakpoint < Chef::Resource
 
-      def initialize(action="break", *args)
+      def initialize(_action="break", *args)
         @name = caller.first
         super(@name, *args)
         @action = "break"

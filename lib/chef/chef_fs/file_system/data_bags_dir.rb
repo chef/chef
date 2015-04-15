@@ -48,11 +48,11 @@ class Chef
           end
         end
 
-        def can_have_child?(name, is_dir)
+        def can_have_child?(_name, is_dir)
           is_dir
         end
 
-        def create_child(name, file_contents)
+        def create_child(name, _file_contents)
           begin
             rest.post(api_path, { 'name' => name })
           rescue Timeout::Error => e

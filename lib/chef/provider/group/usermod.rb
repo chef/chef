@@ -69,7 +69,7 @@ class Chef
           shell_out!("usermod #{append_flags} #{@new_resource.group_name} #{member}")
         end
 
-        def remove_member(member)
+        def remove_member(_member)
           # This provider only supports adding members with
           # append. This function should never be called.
           raise Chef::Exceptions::UnsupportedAction, "Removing members members is not supported by #{self.to_s}"

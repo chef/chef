@@ -29,7 +29,7 @@ class Chef
         class Pkg < Base
           include PortsHelper
 
-          def install_package(name, version)
+          def install_package(_name, _version)
             unless @current_resource.version
               case @new_resource.source
               when /^http/, /^ftp/
@@ -50,7 +50,7 @@ class Chef
             end
           end
 
-          def remove_package(name, version)
+          def remove_package(_name, version)
             shell_out!("pkg_delete #{package_name}-#{version || @current_resource.version}", :env => nil).status
           end
 

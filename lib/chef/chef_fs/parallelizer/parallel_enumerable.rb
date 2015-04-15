@@ -129,7 +129,7 @@ class Chef
               @parallel_enumerable.restricted_copy(input)
             end
 
-            def method_missing(method, *args, &block)
+            def method_missing(_method, *args, &block)
               @actual_lazy.send(:method, *args, &block)
             end
           end

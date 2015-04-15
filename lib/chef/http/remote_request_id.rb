@@ -21,7 +21,7 @@ class Chef
   class HTTP
     class RemoteRequestID
 
-      def initialize(opts={})
+      def initialize(_opts={})
       end
 
       def handle_request(method, url, headers={}, data=false)
@@ -33,7 +33,7 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
-      def stream_response_handler(response)
+      def stream_response_handler(_response)
         nil
       end
 

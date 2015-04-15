@@ -315,7 +315,7 @@ class Chef
         return path[0] == 'sandboxes' || path[0] == 'file_store' && path[1] == 'checksums' || path == [ 'environments', '_default' ]
       end
 
-      def write_cookbook(path, data, *options)
+      def write_cookbook(path, data, *_options)
         if chef_fs.versioned_cookbooks
           cookbook_path = File.join('cookbooks', "#{path[1]}-#{path[2]}")
         else

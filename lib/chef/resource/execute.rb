@@ -140,7 +140,7 @@ class Chef
         @class_inherited_attributes = inherited_attributes
       end
 
-      def self.guard_inherited_attributes(*inherited_attributes)
+      def self.guard_inherited_attributes(*_inherited_attributes)
         # Similar to patterns elsewhere, return attributes from this
         # class and superclasses as a form of inheritance
         ancestor_attributes = []

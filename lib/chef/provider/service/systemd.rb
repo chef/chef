@@ -32,7 +32,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
   end
 
-  def self.supports?(resource, action)
+  def self.supports?(resource, _action)
     Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:systemd)
   end
 

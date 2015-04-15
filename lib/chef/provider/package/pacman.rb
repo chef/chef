@@ -84,7 +84,7 @@ class Chef
 
         end
 
-        def install_package(name, version)
+        def install_package(name, _version)
           shell_out!( "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 
@@ -92,7 +92,7 @@ class Chef
           install_package(name, version)
         end
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           shell_out!( "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 

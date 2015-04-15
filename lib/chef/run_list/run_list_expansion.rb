@@ -113,7 +113,7 @@ class Chef
       end
 
       # In subclasses, this method will fetch the role from the data source.
-      def fetch_role(name, included_by)
+      def fetch_role(_name, _included_by)
         raise NotImplementedError
       end
 

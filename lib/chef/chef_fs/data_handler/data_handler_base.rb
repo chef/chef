@@ -38,7 +38,7 @@ class Chef
         # Return true if minimize() should preserve a key even if it is the same
         # as the default.  Often used for ids and names.
         #
-        def preserve_key?(key)
+        def preserve_key?(_key)
           false
         end
 
@@ -123,7 +123,7 @@ class Chef
         #
         # Write out the Ruby file for this instance.  (Like roles/x.rb)
         #
-        def to_ruby(object)
+        def to_ruby(_object)
           raise NotImplementedError
         end
 
