@@ -275,9 +275,7 @@ class Chef::Application::Client < Chef::Application
     verify_no_pid_file_lockfile_match!
     set_specific_recipes
     update_chef_server_url
-    update_local_mode
-    update_chef_repo_path
-    fetch_local_mode_recipes!
+    configure_local_mode
     update_chef_zero
     update_interval_and_splay
     verify_forked_interval!
@@ -345,6 +343,12 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  def configure_local_mode
+    update_local_mode
+    update_chef_repo_path
+    fetch_local_mode_recipes!
+  end
 
   def verify_audit_mode!
     mode = config[:audit_mode] || Chef::Config[:audit_mode]
