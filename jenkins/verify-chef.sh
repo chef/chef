@@ -8,7 +8,7 @@ export PATH
 # We don't want to add the embedded bin dir to the main PATH as this
 # could mask issues in our binstub shebangs.
 EMBEDDED_BIN_DIR=/opt/$PROJECT_NAME/embedded/bin
-export PATH
+export EMBEDDED_BIN_DIR
 
 # sanity check that we're getting symlinks from the pre-install script
 if [ ! -L "/usr/bin/chef-client" ]; then
