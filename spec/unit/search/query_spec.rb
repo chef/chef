@@ -81,6 +81,9 @@ describe Chef::Search::Query do
   end
 
   describe "search" do
+    let(:query_string) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0" }
+    let(:query_string_continue) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=4" }
+
     let(:response) { {
       "rows" => [
         { "name" => "my-name-is-node",
@@ -140,6 +143,19 @@ describe Chef::Search::Query do
       "total" => 4
     } }
 
+    let(:big_response) {
+      r = response.dup
+      r["total"] = 8
+      r
+    }
+
+    let(:big_response_end) {
+      r = response.dup
+      r["start"] = 4
+      r["total"] = 8
+      r
+    }
+
     it "accepts a type as the first argument" do
       expect { query.search("node") }.not_to raise_error
       expect { query.search(:node) }.not_to raise_error
@@ -193,6 +209,14 @@ describe Chef::Search::Query do
       @call_me = double("blocky")
       response["rows"].each { |r| expect(@call_me).to receive(:do).with(r) }
       query.search(:node, "*:*", sort: nil, start: 0, rows: 1) { |r| @call_me.do(r) }
+    end
+
+    it "sends multiple API requests when the server indicates there is more data" do
+      expect(rest).to receive(:get_rest).with(query_string).and_return(big_response)
+      expect(rest).to receive(:get_rest).with(query_string_continue).and_return(big_response_end)
+      query.search(:node, "platform:rhel") do |r|
+        nil
+      end
     end
 
     context "when :filter_result is provided as a result" do
