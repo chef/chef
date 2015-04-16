@@ -18,3 +18,28 @@ however advanced users may find it useful in certain use cases. Any
 cookbook that relies on other ohai data will absolutely not work in this
 mode unless the user implements workarounds such as running the ohai
 resource during the compile phase.
+
+## Dynamic Resource Resolution and Chef Class Fascade
+
+Resolution of Resources is now dynamic and similar to Providers and handles
+multiple resources having the same provides line on a given platform.  When
+the user types a resource like 'package' into the DSL that is resolved via
+the provides lines, and if multiple classes provide the same resource (like
+Homebrew and MacPorts package resources on Mac) then which one is selected
+is governed by the Chef::Platform::ResourcePriorityMap.
+
+In order to change the priorities in both the ResourcePriorityMap and
+ProviderPriorityMap a helper API has been constructed off of the Chef class:
+
+* `Chef.get_provider_priority_array(resource_name)`
+* `Chef.get_resource_priority_array(resource_name)`
+* `Chef.set_provider_priority_array(resource_name, Array<Class>, *filter)`
+* `Chef.set_resoruce_priority_array(resource_name, Array<Class>, *filter)`
+
+In order to change the `package` resource globally on MacOSX to the MacPorts provider:
+
+`Chef.set_resource_priority_array(:package, [ Chef::Resource::MacportsPackage ], os: 'darwin')`
+
+That line can be placed into a library file in a cookbook so that it is applied before
+any recipes are compiled.
+

@@ -17,6 +17,8 @@
 * [**Mike Dodge**](https://github.com/mikedodge04)
   MacOSX services: Load LaunchAgents as console user, adding plist and
   session_type options.
+* Add dynamic resource resolution similar to dynamic provider resolution
+* Add Chef class fascade to internal structures
 
 ## 12.2.1
 * [Issue 3153](https://github.com/chef/chef/issues/3153): Fix bug where unset HOME would cause chef to crash
