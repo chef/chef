@@ -2110,5 +2110,31 @@ describe "Chef::Provider::Package::Yum - Multi" do
       allow(@new_resource).to receive(:options).and_return("--disablerepo epmd")
       @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", '1.0'])
     end
+
+    it "should run yum install with the package name and version when name has arch" do
+      @new_resource = Chef::Resource::Package.new(['cups.x86_64', 'vim'])
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+
+      # Inside of load_current_resource() we'll call parse_arch for cups,
+      # and we need to craft the right response. The default mock setup above
+      # will just return valid versions all the time which won't work for this
+      # test.
+      allow(@yum_cache).to receive(:installed_version).with('cups', 'x86_64').and_return('XXXX')
+      allow(@yum_cache).to receive(:candidate_version).with('cups', 'x86_64').and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('cups.x86_64').and_return(nil)
+      allow(@yum_cache).to receive(:candidate_version).with('cups.x86_64').and_return(nil)
+
+      # Normal mock's for the idempotency check
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('0.9')
+
+      @provider.load_current_resource
+      expect(@provider).to receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5.x86_64 vim-1.0"
+      )
+      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", '1.0'])
+    end
+
   end
 end
