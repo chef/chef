@@ -33,7 +33,7 @@ require 'chef/platform'
 require 'chef/resource/resource_notification'
 
 require 'chef/mixin/deprecation'
-require 'chef/mixin/descendants_tracker'
+require 'chef/mixin/provides'
 
 class Chef
   class Resource
@@ -46,6 +46,7 @@ class Chef
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
+    extend Chef::Mixin::Provides
 
     #
     # The node the current Chef run is using.
@@ -879,7 +880,6 @@ class Chef
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
-    extend Chef::Mixin::DescendantsTracker
 
     # XXX: this is required for definition params inside of the scope of a
     # subresource to work correctly.
@@ -1016,6 +1016,7 @@ class Chef
     end
 
     def provider_for_action(action)
+      require 'chef/provider_resolver'
       provider = Chef::ProviderResolver.new(node, self, action).resolve.new(self, run_context)
       provider.action = action
       provider
@@ -1080,33 +1081,6 @@ class Chef
       end
     end
 
-    # Maps a short_name (and optionally a platform  and version) to a
-    # Chef::Resource.  This allows finer grained per platform resource
-    # attributes and the end of overloaded resource definitions
-    # (I'm looking at you Chef::Resource::Package)
-    # Ex:
-    #   class WindowsFile < Chef::Resource
-    #     provides :file, os: "linux", platform_family: "rhel", platform: "redhat"
-    #     provides :file, os: "!windows
-    #     provides :file, os: [ "linux", "aix" ]
-    #     provides :file, os: "solaris2" do |node|
-    #       node['platform_version'].to_f <= 5.11
-    #     end
-    #     # ...other stuff
-    #   end
-    #
-    def self.provides(short_name, opts={}, &block)
-      short_name_sym = short_name
-      if short_name.kind_of?(String)
-        # YAGNI: this is probably completely unnecessary and can be removed?
-        Chef::Log.warn "[DEPRECATION] Passing a String to Chef::Resource#provides will be removed"
-        short_name.downcase!
-        short_name.gsub!(/\s/, "_")
-        short_name_sym = short_name.to_sym
-      end
-      node_map.set(short_name_sym, constantize(self.name), opts, &block)
-    end
-
     # Returns a resource based on a short_name and node
     #
     # ==== Parameters
@@ -1116,14 +1090,10 @@ class Chef
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_for_node(short_name, node)
-      klass = node_map.get(node, short_name) ||
-        resource_matching_short_name(short_name)
+      require 'chef/resource_resolver'
+      klass = Chef::ResourceResolver.new(node, short_name).resolve
       raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
       klass
-    end
-
-    def self.node_map
-      @@node_map ||= NodeMap.new
     end
 
     # Returns the class of a Chef::Resource based on the short name
@@ -1156,7 +1126,3 @@ class Chef
     end
   end
 end
-
-# We require this at the BOTTOM of this file to avoid circular requires (it is used
-# at runtime but not load time)
-require 'chef/provider_resolver'

@@ -22,7 +22,7 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/enforce_ownership_and_permissions'
 require 'chef/mixin/why_run'
 require 'chef/mixin/shell_out'
-require 'chef/mixin/descendants_tracker'
+require 'chef/mixin/provides'
 require 'chef/platform/service_helpers'
 require 'chef/node_map'
 
@@ -30,26 +30,11 @@ class Chef
   class Provider
     include Chef::Mixin::WhyRun
     include Chef::Mixin::ShellOut
-    extend Chef::Mixin::DescendantsTracker
+    extend Chef::Mixin::Provides
 
-    class << self
-      def node_map
-        @node_map ||= Chef::NodeMap.new
-      end
-
-      def provides(resource_name, opts={}, &block)
-        node_map.set(resource_name.to_sym, true, opts, &block)
-      end
-
-      # provides a node on the resource (early binding)
-      def provides?(node, resource)
-        node_map.get(node, resource.resource_name)
-      end
-
-      # supports the given resource and action (late binding)
-      def supports?(resource, action)
-        true
-      end
+    # supports the given resource and action (late binding)
+    def self.supports?(resource, action)
+      true
     end
 
     attr_accessor :new_resource

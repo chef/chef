@@ -166,6 +166,13 @@ class Chef
       if new_runlist = args.delete(:runlist)
         @json_attribs["run_list"] = new_runlist
       end
+
+      # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
+      require 'chef/platform/provider_priority_map' unless defined? Chef::Platform::ProviderPriorityMap
+      require 'chef/platform/resource_priority_map' unless defined? Chef::Platform::ResourcePriorityMap
+
+      Chef.set_provider_priority_map(Chef::Platform::ProviderPriorityMap.instance)
+      Chef.set_resource_priority_map(Chef::Platform::ResourcePriorityMap.instance)
     end
 
     def configure_formatters
@@ -224,21 +231,21 @@ class Chef
     end
 
     # Instantiates a Chef::Node object, possibly loading the node's prior state
-    # when using chef-client. Delegates to policy_builder
+    # when using chef-client. Delegates to policy_builder.  Injects the built node
+    # into the Chef class.
     #
-    #
-    # === Returns
-    # Chef::Node:: The node object for this chef run
+    # @return [Chef::Node] The node object for this Chef run
     def load_node
       policy_builder.load_node
       @node = policy_builder.node
+      Chef.set_node(@node)
+      node
     end
 
     # Mutates the `node` object to prepare it for the chef run. Delegates to
     # policy_builder
     #
-    # === Returns
-    # Chef::Node:: The updated node object
+    # @return [Chef::Node] The updated node object
     def build_node
       policy_builder.build_node
       @run_status = Chef::RunStatus.new(node, events)
