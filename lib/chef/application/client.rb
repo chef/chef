@@ -265,8 +265,6 @@ class Chef::Application::Client < Chef::Application
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
-  attr_reader :chef_client_json
-
   # Reconfigure the chef client
   # Re-open the JSON attributes and load them into the node
   def reconfigure
@@ -279,7 +277,6 @@ class Chef::Application::Client < Chef::Application
     update_chef_zero
     update_interval_and_splay
     verify_forked_interval!
-    update_chef_client_json
     verify_audit_mode!
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
@@ -342,6 +339,12 @@ class Chef::Application::Client < Chef::Application
     end
   end
 
+  def chef_client_json
+    json = Chef::Config[:json_attribs]
+
+    @chef_client_json ||= Chef::ConfigFetcher.new(json).fetch_json if json
+  end
+
   private
 
   def configure_local_mode
@@ -366,14 +369,6 @@ class Chef::Application::Client < Chef::Application
     valid_mode = %i(enabled disabled audit_only).include?(mode)
 
     Chef::Application.fatal!(error_message) unless valid_mode
-  end
-
-  def update_chef_client_json
-    json = Chef::Config[:json_attribs]
-
-    return unless json
-
-    @chef_client_json = Chef::ConfigFetcher.new(json).fetch_json
   end
 
   def verify_forked_interval!
