@@ -49,13 +49,6 @@ override :cacerts, version: '2014.08.20'
 
 override :bundler,        version: "1.7.12"
 override :chef,           version: "12.2.1"
-
-# TODO: Can we bump default versions in omnibus-software?
-override :libedit,        version: "20130712-3.1"
-override :libtool,        version: "2.4.2"
-override :libxml2,        version: "2.9.1"
-override :libxslt,        version: "1.1.28"
-
 override :ruby,           version: "2.1.5"
 ######
 # Ruby 2.1/2.2 has an error on Windows - HTTPS gem downloads aren't working
