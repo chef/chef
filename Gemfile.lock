@@ -1,17 +1,18 @@
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 3039a4439971ab95e476d02f742bc12a6d0e2bd7
+  revision: ebe47c86eb3368e6d86a183b8162c266b5c52c1d
   specs:
     omnibus-software (4.0.0)
 
 GIT
   remote: git://github.com/opscode/omnibus.git
-  revision: 50f19078a3de46bc93b15bd5549264cd1841adb1
+  revision: bd87fe4f6b4d3c82adf67434a34d14c203968f22
   specs:
     omnibus (4.0.0)
-      chef-sugar (~> 2.2)
+      chef-sugar (~> 3.0)
       cleanroom (~> 1.0)
       mixlib-shellout (~> 1.4)
+      mixlib-versioning
       ohai (~> 7.2)
       ruby-progressbar (~> 1.7)
       thor (~> 0.18)
@@ -52,7 +53,7 @@ GEM
     celluloid-io (0.16.1)
       celluloid (>= 0.16.0)
       nio4r (>= 1.0.0)
-    chef-sugar (2.5.0)
+    chef-sugar (3.1.0)
     cleanroom (1.0.0)
     dep-selector-libgecode (1.0.2)
     dep_selector (1.0.3)
@@ -61,8 +62,8 @@ GEM
     erubis (2.7.0)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.6)
-    ffi (1.9.6-x86-mingw32)
+    ffi (1.9.8)
+    ffi (1.9.8-x86-mingw32)
     ffi-yajl (1.4.0)
       ffi (~> 1.5)
       libyajl2 (~> 1.2)
@@ -94,6 +95,7 @@ GEM
     mixlib-shellout (1.6.1-x86-mingw32)
       win32-process (~> 0.7.1)
       windows-pr (~> 1.2.2)
+    mixlib-versioning (1.0.0)
     multi_json (1.11.0)
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
@@ -133,7 +135,7 @@ GEM
       retryable
       semverse (~> 1.1)
       varia_model (~> 0.4)
-    ruby-progressbar (1.7.1)
+    ruby-progressbar (1.7.5)
     rubyntlm (0.4.0)
     rubyzip (1.1.7)
     safe_yaml (1.0.4)
@@ -144,7 +146,7 @@ GEM
     solve (1.2.1)
       dep_selector (~> 1.0)
       semverse (~> 1.1)
-    systemu (2.6.4)
+    systemu (2.6.5)
     test-kitchen (1.4.0.rc.1)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
@@ -160,10 +162,10 @@ GEM
     varia_model (0.4.0)
       buff-extensions (~> 1.0)
       hashie (>= 2.0.2, < 3.0.0)
-    win32-api (1.5.2-x86-mingw32)
+    win32-api (1.5.3-x86-mingw32)
     win32-process (0.7.5)
       ffi (>= 1.0.0)
-    windows-api (0.4.3)
+    windows-api (0.4.4)
       win32-api (>= 1.4.5)
     windows-pr (1.2.4)
       win32-api (>= 1.4.5)
