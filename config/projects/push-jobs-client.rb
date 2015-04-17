@@ -24,13 +24,7 @@ replace  "opscode-push-jobs-client"
 conflict "opscode-push-jobs-client"
 
 build_iteration 1
-build_version do
-  # Use chef to determine the build version
-  source :git, from_dependency: 'opscode-pushy-client'
-
-  # Output a SemVer compliant version string
-  output_format :semver
-end
+build_version "2.0.0-alpha.1"
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
