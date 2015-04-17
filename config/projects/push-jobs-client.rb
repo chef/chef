@@ -53,10 +53,31 @@ end
 # Software does).
 override :cacerts, version: '2014.08.20'
 
-override :bundler,        version: "1.7.2"
-override :ruby,           version: "1.9.3-p547"
-override :'ruby-windows', version: "1.9.3-p484"
-override :rubygems,       version: "2.4.1"
+override :bundler,        version: "1.7.12"
+override :chef,           version: "12.2.1"
+
+# TODO: Can we bump default versions in omnibus-software?
+override :libedit,        version: "20130712-3.1"
+override :libtool,        version: "2.4.2"
+override :libxml2,        version: "2.9.1"
+override :libxslt,        version: "1.1.28"
+
+override :ruby,           version: "2.1.5"
+######
+# Ruby 2.1/2.2 has an error on Windows - HTTPS gem downloads aren't working
+# https://bugs.ruby-lang.org/issues/11033
+# Going to leave 2.1.5 for now since there is a workaround
+override :'ruby-windows', version: "2.1.5"
+override :'ruby-windows-devkit', version: "4.7.2-20130224-1151"
+#override :'ruby-windows', version: "2.0.0-p451"
+######
+
+######
+# rubygems 2.4.5 is not working on windows.
+# See https://github.com/rubygems/rubygems/issues/1120
+# Once this is fixed, we can bump the version
+override :rubygems,       version: "2.4.4"
+######
 
 dependency "preparation"
 dependency "opscode-pushy-client"
