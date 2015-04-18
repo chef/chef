@@ -35,32 +35,64 @@ class Chef
 
       # Evaluates the LWRP resource file and instantiates a new Resource class.
       def self.build_from_file(cookbook_name, filename, run_context)
-        resource_class = nil
-        rname = filename_to_qualified_string(cookbook_name, filename)
+        resource_name = filename_to_qualified_string(cookbook_name, filename)
 
-        class_name = convert_to_class_name(rname)
-        if Resource.const_defined?(class_name, false)
-          Chef::Log.info("#{class_name} light-weight resource is already initialized -- Skipping loading #{filename}!")
-          Chef::Log.debug("Overriding already defined LWRPs is not supported anymore starting with Chef 12.")
-          resource_class = Resource.const_get(class_name)
-        else
-          resource_class = Class.new(self)
+        node = run_context ? run_context.node : Chef::Node.new
+        existing_class = Chef::ResourceResolver.new(node, resource_name).resolve
 
-          Chef::Resource.const_set(class_name, resource_class)
-          resource_class.resource_name = rname
-          resource_class.run_context = run_context
-          resource_class.class_from_file(filename)
-
-          Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
+        if existing_class
+          Chef::Log.info("Skipping LWRP resource #{filename} from cookbook #{cookbook_name}.  #{existing_class} already defined.")
+          Chef::Log.debug("Overriding resources with LWRPs is not supported anymore starting with Chef 12.")
+          return existing_class
         end
+
+        # We load the class first to give it a chance to set its own name
+        resource_class = Class.new(self)
+        resource_class.resource_name = resource_name
+        resource_class.run_context = run_context
+        resource_class.class_from_file(filename)
+
+        # Respect resource_name set inside the LWRP
+        resource_class.instance_eval do
+          define_method(:to_s) do
+            "LWRP #{resource_name} from cookbook #{cookbook_name}"
+          end
+          define_method(:inspect) { to_s }
+        end
+
+        Chef::Log.debug("Loaded contents of #{filename} into #{resource_class}")
+
+        create_deprecated_class_in_chef_resource(resource_class)
 
         resource_class
       end
 
-      # Set the resource name for this LWRP
+      def self.create_deprecated_class_in_chef_resource(resource_class)
+        # Create a class in Chef::Resource::MyResource with deprecation
+        # warnings if you try to instantiate or inherit it (for Chef 12 compatibility)
+        class_name = convert_to_class_name(resource_class.resource_name)
+        if Chef::Resource.const_defined?(class_name, false)
+          Chef::Log.debug "#{class_name} already exists!  Cannot create deprecation class #{resource_class}"
+        else
+          Chef::Resource.const_set(class_name, Class.new(resource_class) do
+            self.resource_name = resource_class.resource_name
+            self.run_context = resource_class.run_context
+            define_method(:initialize) do |*args, &block|
+              Chef::Log.warn("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.")
+              super(*args, &block)
+            end
+            define_singleton_method(:inherited) do |*args, &block|
+              Chef::Log.warn("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.")
+              super(*args, &block)
+            end
+          end)
+        end
+        Chef::Resource.const_get(class_name)
+      end
+
       def self.resource_name(arg = NULL_ARG)
         if arg.equal?(NULL_ARG)
-          @resource_name
+          @resource_name || dsl_name
         else
           @resource_name = arg
         end
@@ -127,7 +159,7 @@ class Chef
       end
 
       def self.node
-        run_context.node
+        run_context ? run_context.node : nil
       end
 
       def self.lazy(&block)

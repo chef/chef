@@ -67,6 +67,8 @@ describe "LWRP" do
 
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
         expect(Chef::Log).to receive(:info).with(/Skipping/)
+        expect(Chef::Log).to receive(:debug).with(/enabled on node/)
+        expect(Chef::Log).to receive(:debug).with(/survived replacement/)
         expect(Chef::Log).to receive(:debug).with(/anymore/)
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end

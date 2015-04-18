@@ -18,9 +18,11 @@
 
 require 'chef/exceptions'
 require 'chef/platform/resource_priority_map'
+require 'chef/mixin/convert_to_class_name'
 
 class Chef
   class ResourceResolver
+    include Chef::Mixin::ConvertToClassName
 
     attr_reader :node
     attr_reader :resource
@@ -37,23 +39,6 @@ class Chef
     end
 
     def resolve
-      maybe_dynamic_resource_resolution(resource) ||
-        maybe_chef_platform_lookup(resource)
-    end
-
-    # this cut looks at if the resource can handle the resource type on the node
-    def enabled_handlers
-      @enabled_handlers ||=
-        resources.select do |klass|
-          klass.provides?(node, resource)
-        end.sort {|a,b| a.to_s <=> b.to_s }
-      @enabled_handlers
-    end
-
-    private
-
-    # try dynamically finding a resource based on querying the resources to see what they support
-    def maybe_dynamic_resource_resolution(resource)
       # log this so we know what resources will work for the generic resource on the node (early cut)
       Chef::Log.debug "resources for generic #{resource} resource enabled on node include: #{enabled_handlers}"
 
@@ -61,7 +46,7 @@ class Chef
       # enabled on the node to handle the why-run use case.
       handlers = enabled_handlers
 
-      if handlers.count >= 2
+      if handlers.size >= 2
         # this magic stack ranks the resources by where they appear in the resource_priority_map
         priority_list = [ get_priority_array(node, resource) ].flatten.compact
         handlers = handlers.sort_by { |x| i = priority_list.index x; i.nil? ? Float::INFINITY : i }
@@ -70,7 +55,7 @@ class Chef
           # entry for this resource is missing -- we should probably raise here and force resolution of the ambiguity.
           Chef::Log.warn "Ambiguous resource precedence: #{handlers}, please use Chef.set_resource_priority_array to provide determinism"
         end
-        handlers = [ handlers.first ]
+        handlers = handlers[0..0]
       end
 
       Chef::Log.debug "resources that survived replacement include: #{handlers}"
@@ -84,9 +69,48 @@ class Chef
       handlers[0]
     end
 
-    # try the old static lookup of resources by mangling name to resource klass
-    def maybe_chef_platform_lookup(resource)
-      Chef::Resource.resource_matching_short_name(resource)
+    # this cut looks at if the resource can handle the resource type on the node
+    def enabled_handlers
+      @enabled_handlers ||= begin
+        enabled_handlers = resources.select do |klass|
+          klass.provides?(node, resource)
+        end.sort {|a,b| a.to_s <=> b.to_s }
+
+        # Add Chef::Resource::X as a possibility if it is not a handler already
+        check_for_deprecated_chef_resource_class(enabled_handlers)
+
+        enabled_handlers
+      end
+    end
+
+    private
+
+    #
+    # Checks if the Chef::Resource::* class corresponding to the DSL name
+    # exists, emits a deprecation warning, marks it as providing the given
+    # short name and adds it to the DSL.  This is used for method_missing
+    # deprecation and ResourceResolver checking, when people have created
+    # anonymous classes and assigned them to Chef::Resource::X.
+    #
+    # Returns the matched class, if it exists.
+    #
+    # @api private
+    def check_for_deprecated_chef_resource_class(enabled_handlers)
+      # If Chef::Resource::MyResource exists, but was not set, it won't have a
+      # DSL name.  Add the DSL method and warn about this pattern.
+      class_name = convert_to_class_name(resource.to_s)
+      if Chef::Resource.const_defined?(class_name)
+        # If Chef::Resource::X already exists, and is *not* already marked as
+        # providing this resource, mark it as providing the resource and add it
+        # to the list of handlers for next time.
+        resource_class = Chef::Resource.const_get(class_name)
+        if resource_class <= Chef::Resource && !enabled_handlers.include?(resource_class)
+          Chef::Log.warn("Class #{resource_class} was created with Class.new and assigned directly to a constant (#{resource_class.name} = <class>) rather than being created directly (class #{resource_class.name} < <superclass>).")
+          Chef::Log.warn("This will no longer work in Chef 13: you can either declare your class directly (in any namespace), or specify 'provides #{resource.to_sym.inspect}' in the class definition.")
+          resource_class.provides resource.to_sym
+          enabled_handlers << resource_class
+        end
+      end
     end
 
     # dep injection hooks

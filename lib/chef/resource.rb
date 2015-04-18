@@ -22,6 +22,7 @@ require 'chef/dsl/platform_introspection'
 require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/dsl/reboot_pending'
+require 'chef/dsl/resources'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
@@ -820,7 +821,10 @@ class Chef
     #
     # @return [String] The DSL name of this resource.
     def self.dsl_name
-      convert_to_snake_case(name, 'Chef::Resource')
+      if name
+        name = self.name.split('::')[-1]
+        convert_to_snake_case(name)
+      end
     end
 
     #
@@ -969,6 +973,19 @@ class Chef
       end
     end
 
+    # Cause each subclass to register itself with the DSL
+    def self.inherited(subclass)
+      super
+      if subclass.dsl_name
+        subclass.provides subclass.dsl_name.to_sym
+      end
+    end
+
+    def self.provides(name, *args, &block)
+      super
+      Chef::DSL::Resources.add_resource_dsl(name)
+    end
+
     # Helper for #notifies
     def validate_resource_spec!(resource_spec)
       run_context.resource_collection.validate_lookup_spec!(resource_spec)
@@ -1099,25 +1116,23 @@ class Chef
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_for_node(short_name, node)
-      require 'chef/resource_resolver'
       klass = Chef::ResourceResolver.new(node, short_name).resolve
       raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
       klass
     end
 
+    #
     # Returns the class of a Chef::Resource based on the short name
+    # Only returns the *canonical* class with the given name, not the one that
+    # would be picked by the ResourceResolver.
+    #
     # ==== Parameters
     # short_name<Symbol>:: short_name of the resource (ie :directory)
     #
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_matching_short_name(short_name)
-      begin
-        rname = convert_to_class_name(short_name.to_s)
-        Chef::Resource.const_get(rname)
-      rescue NameError
-        nil
-      end
+      Chef::ResourceResolver.new(Chef::Node.new, short_name).resolve
     end
 
     private
@@ -1135,3 +1150,5 @@ class Chef
     end
   end
 end
+
+require 'chef/resource_resolver'
