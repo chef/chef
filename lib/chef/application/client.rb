@@ -350,7 +350,7 @@ class Chef::Application::Client < Chef::Application
   def configure_local_mode
     update_local_mode
     update_chef_repo_path
-    fetch_local_mode_recipes!
+    handle_recipe_url if Chef::Config.has_key?(:recipe_url)
   end
 
   def verify_audit_mode
@@ -396,15 +396,13 @@ class Chef::Application::Client < Chef::Application
     Chef::Config.chef_zero.port = config[port_key] if config[port_key]
   end
 
-  def fetch_local_mode_recipes!
-    return unless Chef::Config.has_key?(:recipe_url)
-
-    exit_status = 1
-
-    Chef::Application.fatal!(
-      'chef-client recipe-url can be used only in local-mode', exit_status
-    ) unless Chef::Config.local_mode
-    extract_recipe_tarball
+  def handle_recipe_url
+    if Chef::Config.local_mode
+      extract_recipe_tarball
+    else
+      Chef::Application
+        .fatal!('chef-client recipe-url can be used only in local-mode', 1)
+    end
   end
 
   def extract_recipe_tarball
