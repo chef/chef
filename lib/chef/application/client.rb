@@ -270,14 +270,14 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
-    verify_no_pid_file_lockfile_match!
+    verify_no_pid_file_lockfile_match
     set_specific_recipes
     update_chef_server_url
     configure_local_mode
     update_chef_zero
     update_interval_and_splay
-    verify_forked_interval!
-    verify_audit_mode!
+    verify_forked_interval
+    verify_audit_mode
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
@@ -353,7 +353,7 @@ class Chef::Application::Client < Chef::Application
     fetch_local_mode_recipes!
   end
 
-  def verify_audit_mode!
+  def verify_audit_mode
     mode = config[:audit_mode] || Chef::Config[:audit_mode]
 
     return unless mode
@@ -371,7 +371,7 @@ class Chef::Application::Client < Chef::Application
     Chef::Application.fatal!(error_message) unless valid_mode
   end
 
-  def verify_forked_interval!
+  def verify_forked_interval
     Chef::Application.fatal!(unforked_interval_error_message) if
       !Chef::Config[:client_fork] && Chef::Config[:interval] &&
       !Chef::Platform.windows?
@@ -449,7 +449,7 @@ class Chef::Application::Client < Chef::Application
     Chef::Config[url_key] = config[url_key] if config.has_key?(url_key)
   end
 
-  def verify_no_pid_file_lockfile_match!
+  def verify_no_pid_file_lockfile_match
     pid_file = Chef::Config[:pid_file] || ''
     lockfile = Chef::Config[:lockfile] || ''
 
