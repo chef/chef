@@ -358,17 +358,11 @@ class Chef::Application::Client < Chef::Application
 
     return unless mode
 
-    assert_valid_audit_mode!(mode)
+    handle_unrecognized_audit_mode(mode) unless
+      %i(enabled disabled audit_only).include?(mode)
     # This should be removed when audit-mode is enabled by default/no longer
     # an experimental feature.
     Chef::Log.warn(audit_mode_experimental_message) unless mode == :disabled
-  end
-
-  def assert_valid_audit_mode!(mode)
-    error_message = unrecognized_audit_mode(mode)
-    valid_mode = %i(enabled disabled audit_only).include?(mode)
-
-    Chef::Application.fatal!(error_message) unless valid_mode
   end
 
   def verify_forked_interval
@@ -526,8 +520,11 @@ class Chef::Application::Client < Chef::Application
     "\nAudit mode is disabled by default."
   end
 
-  def unrecognized_audit_mode(mode)
-    "Unrecognized setting #{mode} for audit mode." + audit_mode_settings_explaination
+  def handle_unrecognized_audit_mode(mode)
+    Chef::Application.fatal!(
+      "Unrecognized setting #{mode} for audit mode." +
+        audit_mode_settings_explaination
+    )
   end
 
   def audit_mode_experimental_message
