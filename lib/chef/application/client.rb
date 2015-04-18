@@ -350,7 +350,7 @@ class Chef::Application::Client < Chef::Application
   def configure_local_mode
     update_local_mode
     update_chef_repo_path
-    handle_recipe_url if Chef::Config.has_key?(:recipe_url)
+    handle_recipe_url if recipe_url
   end
 
   def verify_audit_mode
@@ -390,22 +390,25 @@ class Chef::Application::Client < Chef::Application
 
   def handle_recipe_url
     if Chef::Config.local_mode
-      extract_recipe_tarball
+      load_remote_recipes
     else
       Chef::Application
         .fatal!('chef-client recipe-url can be used only in local-mode', 1)
     end
   end
 
-  def extract_recipe_tarball
-    recipe_url = Chef::Config[:recipe_url]
-    log_result = ->(result) { Chef::Log.debug(result.stdout) }
-
+  def load_remote_recipes
     create_recipe_path
-    fetch_recipe_tarball(recipe_url, recipe_tarball_path)
-    shell_out!(
+    fetch_recipe_tarball
+    extract_recipe_tarball
+  end
+
+  def extract_recipe_tarball
+    result = shell_out!(
       "tar zxvf #{recipe_tarball_path} -C #{Chef::Config.chef_repo_path}"
-    ).tap(&log_result)
+    )
+
+    Chef::Log.debug(result.stdout)
   end
 
   def create_recipe_path
@@ -416,7 +419,8 @@ class Chef::Application::Client < Chef::Application
   end
 
   def recipe_tarball_path
-    File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
+    @recipe_tarball_path ||=
+      File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
   end
 
   def update_chef_repo_path
@@ -449,6 +453,10 @@ class Chef::Application::Client < Chef::Application
 
   def audit_mode
     @audit_mode ||= config[:audit_mode] || Chef::Config[:audit_mode]
+  end
+
+  def recipe_url
+    @recipe_url ||= Chef::Config[:recipe_url]
   end
 
   def interval_run_chef_client
@@ -540,12 +548,14 @@ class Chef::Application::Client < Chef::Application
     return msg
   end
 
-  def fetch_recipe_tarball(url, path)
-    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
-    File.open(path, 'wb') do |f|
-      open(url) do |r|
-        f.write(r.read)
-      end
-    end
+  def fetch_recipe_tarball
+    Chef::Log.debug(
+      "Download recipes tarball from #{recipe_url} to #{recipe_tarball_path}"
+    )
+    File.open(recipe_tarball_path, 'wb') { |file| write_tarball_to_file(file) }
+  end
+
+  def write_tarball_to_file(file)
+    open(recipe_url) { |open_url| file.write(open_url.read) }
   end
 end
