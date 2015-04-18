@@ -277,7 +277,7 @@ class Chef::Application::Client < Chef::Application
     update_chef_zero
     update_interval_and_splay
     verify_forked_interval
-    verify_audit_mode
+    verify_audit_mode unless audit_mode == :disabled
 
     if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
       Chef::Config.delete(:chef_repo_path)
@@ -354,15 +354,13 @@ class Chef::Application::Client < Chef::Application
   end
 
   def verify_audit_mode
-    mode = config[:audit_mode] || Chef::Config[:audit_mode]
-
-    return unless mode
-
-    handle_unrecognized_audit_mode(mode) unless
-      %i(enabled disabled audit_only).include?(mode)
-    # This should be removed when audit-mode is enabled by default/no longer
-    # an experimental feature.
-    Chef::Log.warn(audit_mode_experimental_message) unless mode == :disabled
+    if %i(enabled audit_only).include?(audit_mode)
+      # TODO: remove this when audit-mode is enabled by default/no longer
+      # an experimental feature.
+      Chef::Log.warn(audit_mode_experimental_message)
+    else
+      handle_unrecognized_audit_mode
+    end
   end
 
   def verify_forked_interval
@@ -449,6 +447,10 @@ class Chef::Application::Client < Chef::Application
       Chef::Util::PathHelper.paths_eql?(pid_file, lockfile)
   end
 
+  def audit_mode
+    @audit_mode ||= config[:audit_mode] || Chef::Config[:audit_mode]
+  end
+
   def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
@@ -520,15 +522,15 @@ class Chef::Application::Client < Chef::Application
     "\nAudit mode is disabled by default."
   end
 
-  def handle_unrecognized_audit_mode(mode)
+  def handle_unrecognized_audit_mode
     Chef::Application.fatal!(
-      "Unrecognized setting #{mode} for audit mode." +
+      "Unrecognized setting #{audit_mode} for audit mode." +
         audit_mode_settings_explaination
     )
   end
 
   def audit_mode_experimental_message
-    msg = if Chef::Config[:audit_mode] == :audit_only
+    msg = if audit_mode == :audit_only
       "Chef-client has been configured to skip converge and only audit."
     else
       "Chef-client has been configured to audit after it converges."
