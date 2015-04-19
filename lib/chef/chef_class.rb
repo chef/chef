@@ -43,6 +43,12 @@ class Chef
     # @return [Chef::RunContext] run_context of the chef-client run
     attr_reader :run_context
 
+    # Adds an event handler with user defined block
+    def event_handler(&block)
+      dsl = Chef::EventDispatch::DSL.new
+      dsl.instance_eval(&block)
+    end
+
     # Get the array of providers associated with a resource_name for the current node
     #
     # @param resource_name [Symbol] name of the resource as a symbol
