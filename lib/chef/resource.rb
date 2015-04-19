@@ -978,12 +978,36 @@ class Chef
       super
       if subclass.dsl_name
         subclass.provides subclass.dsl_name.to_sym
+        subclass.instance_eval { @auto_provides = subclass.dsl_name.to_sym }
       end
     end
 
     def self.provides(name, *args, &block)
+      # If the user specifies provides, then we get rid of the auto-provided DSL
+      # and let them specify what they want
+      if @auto_provides
+        @auto_provides = auto_provides = nil
+        does_not_provide(auto_provides)
+      end
+
       super
+
       Chef::DSL::Resources.add_resource_dsl(name)
+    end
+
+    def self.does_not_provide(name=nil)
+      name ||= dsl_name
+      if @auto_provides
+        @auto_provides = auto_provides = nil
+        does_not_provide(auto_provides) if name != auto_provides
+      end
+
+      super
+
+      # Get rid of the DSL if this was the only resource that used it
+      if !Chef::Resource.resource_matching_short_name(name)
+        Chef::DSL::Resources.remove_resource_dsl(name)
+      end
     end
 
     # Helper for #notifies

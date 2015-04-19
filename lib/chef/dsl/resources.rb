@@ -14,6 +14,9 @@ class Chef
           end
         EOM
       end
+      def self.remove_resource_dsl(dsl_name)
+        remove_method dsl_name if method_defined?(dsl_name)
+      end
     end
   end
 end

@@ -78,6 +78,10 @@ class Chef
       nil
     end
 
+    def delete(key)
+      @map.delete(key)
+    end
+
     private
 
     # only allow valid filter options
