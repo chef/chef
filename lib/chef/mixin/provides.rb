@@ -23,8 +23,8 @@ class Chef
         node_map.set(short_name, true, opts, &block)
       end
 
-      def does_not_provide(short_name)
-        node_map.delete(short_name)
+      def provides_nothing
+        node_map.clear
       end
 
       # Check whether this resource provides the resource_name DSL for the given

@@ -78,8 +78,10 @@ class Chef
       nil
     end
 
-    def delete(key)
-      @map.delete(key)
+    def clear
+      result = @map.keys
+      @map.clear
+      result
     end
 
     private

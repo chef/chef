@@ -105,10 +105,12 @@ class Chef
         # to the list of handlers for next time.
         resource_class = Chef::Resource.const_get(class_name)
         if resource_class <= Chef::Resource && !enabled_handlers.include?(resource_class)
-          Chef::Log.warn("Class #{resource_class} was created with Class.new and assigned directly to a constant (#{resource_class.name} = <class>) rather than being created directly (class #{resource_class.name} < <superclass>).")
-          Chef::Log.warn("This will no longer work in Chef 13: you can either declare your class directly (in any namespace), or specify 'provides #{resource.to_sym.inspect}' in the class definition.")
-          resource_class.provides resource.to_sym
           enabled_handlers << resource_class
+          if resource_class.using_automatic_dsl?
+            Chef::Log.warn("Class #{resource_class} was created with Class.new and assigned directly to a constant (#{resource_class.name} = <class>) rather than being created directly (class #{resource_class.name} < <superclass>).")
+            Chef::Log.warn("This will no longer work in Chef 13: you can either declare your class directly (in any namespace), or specify 'provides #{resource.to_sym.inspect}' in the class definition.")
+            resource_class.provides resource.to_sym
+          end
         end
       end
     end
