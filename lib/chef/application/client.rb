@@ -273,7 +273,8 @@ class Chef::Application::Client < Chef::Application
     verify_no_pid_file_lockfile_match
     set_specific_recipes
     update_chef_server_url
-    configure_local_mode
+    update_chef_repo_path if undefined_local_paths?
+    handle_recipe_url if recipe_url
     update_chef_zero
     update_interval_and_splay
     verify_forked_interval
@@ -287,7 +288,7 @@ class Chef::Application::Client < Chef::Application
 
   def load_config_file
     if !config.has_key?(:config_file) && !config[:disable_config]
-      if config[:local_mode]
+      if local_mode?
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
@@ -347,12 +348,6 @@ class Chef::Application::Client < Chef::Application
 
   private
 
-  def configure_local_mode
-    update_local_mode
-    update_chef_repo_path if undefined_local_paths?
-    handle_recipe_url if recipe_url
-  end
-
   def verify_audit_mode
     if %i(enabled audit_only).include?(audit_mode)
       # TODO: remove this when audit-mode is enabled by default/no longer
@@ -389,7 +384,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def handle_recipe_url
-    if Chef::Config.local_mode
+    if local_mode?
       load_remote_recipes
     else
       Chef::Application
@@ -428,14 +423,18 @@ class Chef::Application::Client < Chef::Application
   end
 
   def undefined_local_paths?
-    Chef::Config.local_mode && !(Chef::Config.has_key?(:cookbook_path) ||
-      Chef::Config.has_key?(:chef_repo_path))
+    local_mode? && !(
+      Chef::Config.has_key?(:cookbook_path) ||
+      Chef::Config.has_key?(:chef_repo_path)
+    )
   end
 
-  def update_local_mode
-    mode_key = :local_mode
-
-    Chef::Config.local_mode = config[mode_key] if config.has_key?(mode_key)
+  def local_mode?
+    @local_mode ||= if config.has_key?(:local_mode)
+                      Chef::Config.local_mode = config[:local_mode]
+                    else
+                      Chef::Config.local_mode
+                    end
   end
 
   def update_chef_server_url
