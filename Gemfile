@@ -10,6 +10,7 @@ end
 group(:development, :test) do
   gem "simplecov"
   gem 'rack', "~> 1.5.1"
+  gem 'cheffish', github: 'chef/cheffish', branch: 'jk/chef_run_additions'
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 end
