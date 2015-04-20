@@ -349,7 +349,7 @@ class Chef::Application::Client < Chef::Application
 
   def configure_local_mode
     update_local_mode
-    update_chef_repo_path
+    update_chef_repo_path if undefined_local_paths?
     handle_recipe_url if recipe_url
   end
 
@@ -424,11 +424,12 @@ class Chef::Application::Client < Chef::Application
   end
 
   def update_chef_repo_path
-    return unless Chef::Config.local_mode &&
-                  !Chef::Config.has_key?(:cookbook_path) &&
-                  !Chef::Config.has_key?(:chef_repo_path)
-
     Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+  end
+
+  def undefined_local_paths?
+    Chef::Config.local_mode && !(Chef::Config.has_key?(:cookbook_path) ||
+      Chef::Config.has_key?(:chef_repo_path))
   end
 
   def update_local_mode
