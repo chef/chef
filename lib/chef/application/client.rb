@@ -341,7 +341,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def chef_client_json
-    json = Chef::Config[:json_attribs]
+    json = Chef::Config.json_attribs
 
     @chef_client_json ||= Chef::ConfigFetcher.new(json).fetch_json if json
   end
@@ -360,18 +360,16 @@ class Chef::Application::Client < Chef::Application
 
   def verify_forked_interval
     Chef::Application.fatal!(unforked_interval_error_message) if
-      !Chef::Config[:client_fork] && Chef::Config[:interval] &&
+      !Chef::Config.client_fork && Chef::Config.interval &&
       !Chef::Platform.windows?
   end
 
   def update_interval_and_splay
-    interval_key = :interval
-
-    if Chef::Config[:daemonize]
-      Chef::Config[interval_key] ||= 1800
-    elsif Chef::Config[:once]
-      Chef::Config[interval_key] = nil
-      Chef::Config[:splay] = nil
+    if Chef::Config.daemonize
+      Chef::Config.interval ||= 1800
+    elsif Chef::Config.once
+      Chef::Config.interval = nil
+      Chef::Config.splay = nil
     end
   end
 
@@ -438,14 +436,13 @@ class Chef::Application::Client < Chef::Application
   end
 
   def update_chef_server_url
-    url_key = :chef_server_url
-
-    Chef::Config[url_key] = config[url_key] if config.has_key?(url_key)
+    Chef::Config.chef_server_url = config[:chef_server_url] if
+      config.has_key?(:chef_server_url)
   end
 
   def verify_no_pid_file_lockfile_match
-    pid_file = Chef::Config[:pid_file] || ''
-    lockfile = Chef::Config[:lockfile] || ''
+    pid_file = Chef::Config.pid_file || ''
+    lockfile = Chef::Config.lockfile || ''
 
     fail(Chef::Exceptions::PIDFileLockfileMatch) if
       Chef::Util::PathHelper.paths_eql?(pid_file, lockfile)
@@ -456,7 +453,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def recipe_url
-    @recipe_url ||= Chef::Config[:recipe_url]
+    @recipe_url ||= Chef::Config.recipe_url
   end
 
   def interval_run_chef_client
