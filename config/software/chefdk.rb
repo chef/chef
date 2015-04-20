@@ -61,7 +61,7 @@ build do
     'rubocop'           => '0.28.0',
     'knife-spork'       => '1.5.0',
     'kitchen-vagrant'   => '0.15.0',
-    'knife-windows'     => '0.8.5',
+    'knife-windows'     => '0.8.4',
     # Strainer build is hosed on windows
     # 'strainer'        => '0.15.0',
   }.each do |name, version|
