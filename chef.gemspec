@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.description = s.summary
   s.license = "Apache-2.0"
   s.author = "Adam Jacob"
-  s.email = "adam@getchef.com"
-  s.homepage = "http://www.getchef.com"
+  s.email = "adam@chef.io"
+  s.homepage = "http://www.chef.io"
 
   s.required_ruby_version = ">= 2.0.0"
 
