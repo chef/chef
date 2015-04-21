@@ -374,11 +374,11 @@ class Chef::Application::Client < Chef::Application
   end
 
   def update_chef_zero
-    host_key = :chef_zero_host
-    port_key = :chef_zero_port
+    host = config[:chef_zero_host]
+    port = config[:chef_zero_port]
 
-    Chef::Config.chef_zero.host = config[host_key] if config[host_key]
-    Chef::Config.chef_zero.port = config[port_key] if config[port_key]
+    Chef::Config.chef_zero.host = host if host
+    Chef::Config.chef_zero.port = port if port
   end
 
   def handle_recipe_url
