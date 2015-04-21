@@ -9,14 +9,19 @@
   Reset $HOME to user running chef-client when running via sudo
 * [**Torben Knerr**](https://github.com/tknerr):
   Allow for the chef gem installation to succeed without elevated privileges #3126
+* [**Mike Dodge**](https://github.com/mikedodge04)
+  MacOSX services: Load LaunchAgents as console user, adding plist and
+  session_type options.
+
 * [pr#3162](https://github.com/chef/chef/pull/3162): Add
   `--minimal-ohai` flag to client/solo/apply; restricts ohai to only the
   bare minimum of plugins.
 * Ensure link's path attribute works with delayed #3130
 * gem_package, chef_gem should not shell out to using https://rubygems.org #2867
-* [**Mike Dodge**](https://github.com/mikedodge04)
-  MacOSX services: Load LaunchAgents as console user, adding plist and
-  session_type options.
+* Add dynamic resource resolution similar to dynamic provider resolution
+* Add Chef class fascade to internal structures
+* Convert bootstrap template to use sh #2877
+* Fix nil pointer for windows event logger #3200
 
 ## 12.2.1
 * [Issue 3153](https://github.com/chef/chef/issues/3153): Fix bug where unset HOME would cause chef to crash

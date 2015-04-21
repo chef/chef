@@ -18,6 +18,7 @@
 
 require 'spec_helper'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/provider_resolver'
 
 include Chef::Mixin::ConvertToClassName
 

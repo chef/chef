@@ -62,7 +62,7 @@ describe Chef::Resource::Execute do
   end
 
   describe "when parent resource sets :cwd" do
-    let(:guard) { %{ruby -e 'exit 1 unless File.exists?("./big_json_plus_one.json")'} }
+    let(:guard) { %{ruby -e 'exit 1 unless File.exists?("./nested.json")'} }
 
     it "guard inherits :cwd from resource and runs" do
       resource.cwd CHEF_SPEC_DATA
