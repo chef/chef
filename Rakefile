@@ -40,7 +40,7 @@ task :uninstall do
 end
 
 desc "Build it, tag it and ship it"
-task :ship => :gem do
+task :ship => [:clobber_package, :gem] do
   sh("git tag #{Chef::VERSION}")
   sh("git push opscode --tags")
   Dir[File.expand_path("../pkg/*.gem", __FILE__)].reverse.each do |built_gem|
