@@ -78,6 +78,19 @@ describe Chef::Client do
     allow(Ohai::System).to receive(:new).and_return(ohai_system)
   end
 
+  context "when minimal ohai is configured" do
+    before do
+      Chef::Config[:minimal_ohai] = true
+    end
+
+    it "runs ohai with only the minimum required plugins" do
+      expected_filter = %w[fqdn machinename hostname platform platform_version os os_version]
+      expect(ohai_system).to receive(:all_plugins).with(expected_filter)
+      client.run_ohai
+    end
+
+  end
+
   describe "authentication protocol selection" do
     after do
       Chef::Config[:authentication_protocol_version] = "1.0"

@@ -180,6 +180,11 @@ class Chef::Application::Solo < Chef::Application
     :description  => "Set maximum duration to wait for another client run to finish, default is indefinitely.",
     :proc         => lambda { |s| s.to_i }
 
+  option :minimal_ohai,
+    :long           => "--minimal-ohai",
+    :description    => "Only run the bare minimum ohai plugins chef needs to function",
+    :boolean        => true
+
   attr_reader :chef_client_json
 
   def initialize

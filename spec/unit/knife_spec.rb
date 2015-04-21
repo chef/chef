@@ -271,6 +271,11 @@ describe Chef::Knife do
         expect(knife_command.config[:opt_with_default]).to eq("from-cli")
       end
 
+      it "merges `listen` config to Chef::Config" do
+        Chef::Knife.run(%w[test yourself --no-listen], Chef::Application::Knife.options)
+        expect(Chef::Config[:listen]).to be(false)
+      end
+
       context "verbosity is greater than zero" do
         let(:fake_config) { "/does/not/exist/knife.rb" }
 

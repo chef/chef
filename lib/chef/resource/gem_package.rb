@@ -27,10 +27,15 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :gem_package
+        @clear_sources = false
       end
 
       def source(arg=nil)
         set_or_return(:source, arg, :kind_of => [ String, Array ])
+      end
+
+      def clear_sources(arg=nil)
+        set_or_return(:clear_sources, arg, :kind_of => [ TrueClass, FalseClass ])
       end
 
       # Sets a custom gem_binary to run for gem commands.

@@ -131,6 +131,16 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
   end
 
+  describe "when --no-listen is set" do
+
+    it "configures listen = false" do
+      app.config[:listen] = false
+      app.reconfigure
+      expect(Chef::Config[:listen]).to eq(false)
+    end
+
+  end
+
   describe "when the json_attribs configuration option is specified" do
 
     let(:json_attribs) { {"a" => "b"} }

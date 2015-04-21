@@ -21,7 +21,7 @@ require 'chef/http/basic_client'
 describe "HTTP Connection" do
 
   let(:uri) { URI("https://example.com:4443") }
-  subject { Chef::HTTP::BasicClient.new(uri) }
+  subject(:basic_client) { Chef::HTTP::BasicClient.new(uri) }
 
   describe ".new" do
     it "creates an instance" do
@@ -45,11 +45,6 @@ describe "HTTP Connection" do
       let(:proxy_port) { 8080 }
       let(:proxy) { "#{proxy_prefix}#{proxy_host}:#{proxy_port}" }
 
-      before do
-        Chef::Config["#{uri.scheme}_proxy"] = proxy
-        Chef::Config[:no_proxy] = nil
-      end
-
       it "should contain the host" do
         proxy_uri = subject.proxy_uri
         expect(proxy_uri.host).to eq(proxy_host)
@@ -63,14 +58,56 @@ describe "HTTP Connection" do
 
     context "when the config setting is normalized (does not contain the scheme)" do
       include_examples "a proxy uri" do
+
         let(:proxy_prefix) { "" }
+
+        before do
+          Chef::Config["#{uri.scheme}_proxy"] = proxy
+          Chef::Config[:no_proxy] = nil
+        end
+
       end
     end
 
     context "when the config setting is not normalized (contains the scheme)" do
       include_examples "a proxy uri" do
         let(:proxy_prefix) { "#{uri.scheme}://" }
+
+        before do
+          Chef::Config["#{uri.scheme}_proxy"] = proxy
+          Chef::Config[:no_proxy] = nil
+        end
+
       end
+    end
+
+    context "when the proxy is set by the environment" do
+
+      include_examples "a proxy uri" do
+
+        let(:env) do
+          {
+            "https_proxy" => "https://proxy.mycorp.com:8080",
+            "https_proxy_user" => "jane_username",
+            "https_proxy_pass" => "opensesame"
+          }
+        end
+
+        let(:proxy_uri) { URI.parse(env["https_proxy"]) }
+
+        before do
+          allow(basic_client).to receive(:env).and_return(env)
+        end
+
+        it "sets the proxy user" do
+          expect(basic_client.http_proxy_user(proxy_uri)).to eq("jane_username")
+        end
+
+        it "sets the proxy pass" do
+          expect(basic_client.http_proxy_pass(proxy_uri)).to eq("opensesame")
+        end
+      end
+
     end
   end
 end

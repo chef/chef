@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Mike Dodge (<mikedodge04@gmail.com>)
+# Copyright:: Copyright (c) 2015 Facebook, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,32 +16,44 @@
 # limitations under the License.
 #
 
-require "chef/resource/scm"
+require 'chef/resource/service'
 
 class Chef
   class Resource
-    class Git < Chef::Resource::Scm
+    class MacosxService < Chef::Resource::Service
 
-      provides :git
+      provides :service, os: "darwin"
+      provides :macosx_service, os: "darwin"
+
+      identity_attr :service_name
+
+      state_attrs :enabled, :running
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :git
-        @additional_remotes = Hash[]
+        @resource_name = :macosx_service
+        @plist = nil
+        @session_type = nil
       end
 
-      def additional_remotes(arg=nil)
+      # This will enable user to pass a plist in the case
+      # that the filename and label for the service dont match
+      def plist(arg=nil)
         set_or_return(
-          :additional_remotes,
+          :plist,
           arg,
-          :kind_of => Hash
+          :kind_of => String
         )
       end
 
-      alias :branch :revision
-      alias :reference :revision
+      def session_type(arg=nil)
+        set_or_return(
+          :session_type,
+          arg,
+          :kind_of => String
+        )
+      end
 
-      alias :repo :repository
     end
   end
 end

@@ -230,4 +230,26 @@ describe Chef::Util::PathHelper do
       end
     end
   end
+
+  describe "all_homes" do
+    before do
+      stub_const('ENV', env)
+      allow(Chef::Platform).to receive(:windows?).and_return(is_windows)
+    end
+
+    context "on windows" do
+      let (:is_windows) { true }
+    end
+
+    context "on unix" do
+      let (:is_windows) { false }
+
+      context "when HOME is not set" do
+        let (:env) { {} }
+        it "returns an empty array" do
+          expect(PathHelper.all_homes).to eq([])
+        end
+      end
+    end
+  end
 end

@@ -25,10 +25,16 @@ describe Chef::CookbookUploader do
   let(:cookbook_loader) do
     loader = Chef::CookbookLoader.new(File.join(CHEF_SPEC_DATA, "cookbooks"))
     loader.load_cookbooks
+    loader.cookbooks_by_name["apache2"].identifier = apache2_identifier
+    loader.cookbooks_by_name["java"].identifier = java_identifier
     loader
   end
 
+  let(:apache2_identifier) { "6644e6cb2ade90b8aff2ebb44728958fbc939ebf" }
+
   let(:apache2_cookbook) { cookbook_loader.cookbooks_by_name["apache2"] }
+
+  let(:java_identifier) { "edd40c30c4e0ebb3658abde4620597597d2e9c17" }
 
   let(:java_cookbook) { cookbook_loader.cookbooks_by_name["java"] }
 
@@ -175,7 +181,7 @@ describe Chef::CookbookUploader do
       let(:policy_mode) { true }
 
       def expected_save_url(cookbook)
-        "cookbook_artifacts/#{cookbook.name}/#{cookbook.version}"
+        "cookbook_artifacts/#{cookbook.name}/#{cookbook.identifier}"
       end
 
       it "uploads all files in a sandbox transaction, then creates cookbooks on the server using cookbook_artifacts API" do

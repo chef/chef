@@ -45,7 +45,7 @@ describe "chef-client" do
   # machine that has omnibus chef installed. In that case we need to ensure
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
-  let(:chef_client) { "ruby '#{chef_dir}/chef-client'" }
+  let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
 
   when_the_repository "has a cookbook with a no-op recipe" do
     before { file 'cookbooks/x/recipes/default.rb', '' }
@@ -59,6 +59,17 @@ EOM
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
       result.error!
     end
+
+    it "should complete successfully with --no-listen" do
+      file 'config/client.rb', <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+
+      result = shell_out("#{chef_client} --no-listen -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result.error!
+    end
+
 
     context 'and no config file' do
       it 'should complete with success when cwd is just above cookbooks and paths are not specified' do

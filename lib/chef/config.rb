@@ -305,6 +305,14 @@ class Chef
 
     default :pid_file, nil
 
+    # Whether Chef Zero local mode should bind to a port. All internal requests
+    # will go through the socketless code path regardless, so the socket is
+    # only needed if other processes will connect to the local mode server.
+    #
+    # For compatibility this is set to true but it will be changed to false in
+    # the future.
+    default :listen, true
+
     config_context :chef_zero do
       config_strict_mode true
       default(:enabled) { Chef::Config.local_mode }
@@ -332,6 +340,11 @@ class Chef
     # a warning is issued in application/client#reconfigure.
     # This can be removed when audit-mode is enabled by default.
     default :audit_mode, :disabled
+
+    # Chef only needs ohai to run the hostname plugin for the most basic
+    # functionality. If the rest of the ohai plugins are not needed (like in
+    # most of our testing scenarios)
+    default :minimal_ohai, false
 
     # Policyfile is an experimental feature where a node gets its run list and
     # cookbook version set from a single document on the server instead of

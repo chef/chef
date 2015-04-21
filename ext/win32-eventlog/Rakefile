@@ -41,10 +41,14 @@ end
 task :register => EVT_SHARED_OBJECT do
   require 'win32/eventlog'
   dll_file = File.expand_path(EVT_SHARED_OBJECT)
-  Win32::EventLog.add_event_source(
-    :source => "Application",
-    :key_name => "Chef",
-    :event_message_file => dll_file,
-    :category_message_file => dll_file
-  )
+  begin
+    Win32::EventLog.add_event_source(
+      :source => "Application",
+      :key_name => "Chef",
+      :event_message_file => dll_file,
+      :category_message_file => dll_file
+    )
+  rescue Errno::EIO => e
+    puts "Skipping event log registration due to missing privileges: #{e}"
+  end
 end
