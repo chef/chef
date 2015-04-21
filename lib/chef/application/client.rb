@@ -365,9 +365,9 @@ class Chef::Application::Client < Chef::Application
   end
 
   def update_interval_and_splay
-    if Chef::Config.daemonize
-      Chef::Config.interval ||= 1800
-    elsif Chef::Config.once
+    Chef::Config.interval ||= 1800 if Chef::Config.daemonize
+
+    if Chef::Config.once
       Chef::Config.interval = nil
       Chef::Config.splay = nil
     end
