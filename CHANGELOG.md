@@ -1,4 +1,4 @@
-## Unreleased
+## 12.3.0
 
 * [pr#3160](https://github.com/chef/chef/pull/3160): Use Chef Zero in
   socketless mode for local mode, add `--no-listen` flag to disable port
