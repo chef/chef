@@ -317,13 +317,6 @@ describe Chef::Provider::Mount::Mount do
         @provider.mount_fs()
       end
 
-      it "should remount the filesystem if it is mounted and the options have changed" do
-        options = "rw,noexec,noauto"
-        @new_resource.options(%w{rw exec auto})
-        expect(@provider).to receive(:shell_out!).with("mount -t ext3 -o remount,rw,exec,auto /dev/sdz1 /tmp/foo")
-        @provider.mount_fs()
-      end
-
       it "should not mount the filesystem if it is mounted and the options have not changed" do
         allow(@current_resource).to receive(:mounted).and_return(true)
         expect(@provider).to_not receive(:shell_out!)
