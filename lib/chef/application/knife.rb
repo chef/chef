@@ -121,6 +121,11 @@ class Chef::Application::Knife < Chef::Application
     :long         => "--chef-zero-port PORT",
     :description  => "Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
+  option :listen,
+    :long           => "--[no-]listen",
+    :description    => "Whether a local mode (-z) server binds to a port",
+    :boolean        => true
+
   option :version,
     :short        => "-v",
     :long         => "--version",
@@ -128,7 +133,6 @@ class Chef::Application::Knife < Chef::Application
     :boolean      => true,
     :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
     :exit         => 0
-
 
   # Run knife
   def run

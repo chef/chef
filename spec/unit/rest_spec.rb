@@ -92,6 +92,15 @@ describe Chef::REST do
     Chef::REST.new(base_url, nil, nil, options)
   end
 
+  context 'when created with a chef zero URL' do
+
+    let(:url) { "chefzero://localhost:1" }
+
+    it "does not load the signing key" do
+      expect { Chef::REST.new(url) }.to_not raise_error
+    end
+  end
+
   describe "calling an HTTP verb on a path or absolute URL" do
     it "adds a relative URL to the base url it was initialized with" do
       expect(rest.create_url("foo/bar/baz")).to eq(URI.parse(base_url + "/foo/bar/baz"))

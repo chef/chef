@@ -20,12 +20,26 @@ require 'spec_helper'
 
 require 'chef/http'
 require 'chef/http/basic_client'
+require 'chef/http/socketless_chef_zero_client'
 
 class Chef::HTTP
   public :create_url
 end
 
 describe Chef::HTTP do
+
+  context "when given a chefzero:// URL" do
+
+    let(:uri) { URI("chefzero://localhost:1") }
+
+    subject(:http) { Chef::HTTP.new(uri) }
+
+    it "uses the SocketlessChefZeroClient to handle requests" do
+      expect(http.http_client).to be_a_kind_of(Chef::HTTP::SocketlessChefZeroClient)
+      expect(http.http_client.url).to eq(uri)
+    end
+
+  end
 
   describe "create_url" do
 

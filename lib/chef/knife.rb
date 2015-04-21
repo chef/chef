@@ -373,6 +373,9 @@ class Chef
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
       Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+
+      Chef::Config.listen = config[:listen] if config.has_key?(:listen)
+
       if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
         Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
       end

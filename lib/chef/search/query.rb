@@ -89,7 +89,7 @@ WARNDEP
         if block
           response["rows"].each { |row| block.call(row) if row }
           unless (response["start"] + response["rows"].length) >= response["total"]
-            args_h[:start] = response["start"] + (args_h[:rows] || 0)
+            args_h[:start] = response["start"] + response["rows"].length
             search(type, query, args_h, &block)
           end
           true

@@ -24,6 +24,8 @@ describe Chef::CookbookManifest do
 
   let(:version) { "1.2.3" }
 
+  let(:identifier) { "9e10455ce2b4a4e29424b7064b1d67a1a25c9d3b" }
+
   let(:metadata) do
     Chef::Cookbook::Metadata.new.tap do |m|
       m.version(version)
@@ -35,6 +37,7 @@ describe Chef::CookbookManifest do
   let(:cookbook_version) do
     Chef::CookbookVersion.new("tatft", cookbook_root).tap do |c|
       c.metadata = metadata
+      c.identifier = identifier
     end
   end
 
@@ -212,12 +215,26 @@ describe Chef::CookbookManifest do
 
       let(:policy_mode) { true }
 
+      let(:cookbook_manifest_hash) { cookbook_manifest.to_hash }
+
+      it "sets the identifier in the manifest data" do
+        expect(cookbook_manifest_hash["identifier"]).to eq("9e10455ce2b4a4e29424b7064b1d67a1a25c9d3b")
+      end
+
+      it "sets the name to just the name" do
+        expect(cookbook_manifest_hash["name"]).to eq("tatft")
+      end
+
+      it "does not set a 'cookbook_name' field" do
+        expect(cookbook_manifest_hash).to_not have_key("cookbook_name")
+      end
+
       it "gives the save URL" do
-        expect(cookbook_manifest.save_url).to eq("cookbook_artifacts/tatft/1.2.3")
+        expect(cookbook_manifest.save_url).to eq("cookbook_artifacts/tatft/9e10455ce2b4a4e29424b7064b1d67a1a25c9d3b")
       end
 
       it "gives the force save URL" do
-        expect(cookbook_manifest.force_save_url).to eq("cookbook_artifacts/tatft/1.2.3?force=true")
+        expect(cookbook_manifest.force_save_url).to eq("cookbook_artifacts/tatft/9e10455ce2b4a4e29424b7064b1d67a1a25c9d3b?force=true")
       end
 
     end

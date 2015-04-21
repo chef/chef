@@ -16,8 +16,10 @@
 # limitations under the License.
 #
 
+require 'etc'
 require 'rexml/document'
 require 'chef/resource/service'
+require 'chef/resource/macosx_service'
 require 'chef/provider/service/simple'
 require 'chef/util/path_helper'
 
@@ -27,6 +29,7 @@ class Chef
       class Macosx < Chef::Provider::Service::Simple
 
         provides :service, os: "darwin"
+        provides :macosx_service, os: "darwin"
 
         def self.gather_plist_dirs
           locations = %w{/Library/LaunchAgents
@@ -40,18 +43,32 @@ class Chef
         PLIST_DIRS = gather_plist_dirs
 
         def load_current_resource
-          @current_resource = Chef::Resource::Service.new(@new_resource.name)
+          @current_resource = Chef::Resource::MacosxService.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
           @plist_size = 0
-          @plist = find_service_plist
+          @plist = @new_resource.plist ? @new_resource.plist : find_service_plist
           @service_label = find_service_label
+          # LauchAgents should be loaded as the console user.
+          @console_user = @plist ? @plist.include?('LaunchAgents') : false
+          @session_type = @new_resource.session_type
+
+          if @console_user
+            @console_user = Etc.getlogin
+            Chef::Log.debug("#{new_resource} console_user: '#{@console_user}'")
+            cmd = "su "
+            param = !node['platform_version'].include?('10.10') ? '-l ' : ''
+            @base_user_cmd = cmd + param + "#{@console_user} -c"
+            # Default LauchAgent session should be Aqua
+            @session_type = 'Aqua' if @session_type.nil?
+          end
+
+          Chef::Log.debug("#{new_resource} Plist: '#{@plist}' service_label: '#{@service_label}'")
           set_service_status
 
           @current_resource
         end
 
         def define_resource_requirements
-          #super
           requirements.assert(:reload) do |a|
             a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
           end
@@ -59,6 +76,12 @@ class Chef
           requirements.assert(:all_actions) do |a|
             a.assertion { @plist_size < 2 }
             a.failure_message Chef::Exceptions::Service, "Several plist files match service name. Please use full service name."
+          end
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion {::File.exists?(@plist.to_s) }
+            a.failure_message Chef::Exceptions::Service,
+              "Could not find plist for #{@new_resource}"
           end
 
           requirements.assert(:enable, :disable) do |a|
@@ -69,7 +92,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @plist_size > 0 }
-            # No failrue here in original code - so we also will not
+            # No failure here in original code - so we also will not
             # fail. Instead warn that the service is potentially missing
             a.whyrun "Assuming that the service would have been previously installed and is currently disabled." do
               @current_resource.enabled(false)
@@ -85,7 +108,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              shell_out_with_systems_locale!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              load_service
             end
           end
         end
@@ -97,7 +120,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              shell_out_with_systems_locale!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              unload_service
             end
           end
         end
@@ -106,9 +129,9 @@ class Chef
           if @new_resource.restart_command
             super
           else
-            stop_service
+            unload_service
             sleep 1
-            start_service
+            load_service
           end
         end
 
@@ -121,10 +144,7 @@ class Chef
           if @current_resource.enabled
             Chef::Log.debug("#{@new_resource} already enabled, not enabling")
           else
-            shell_out!(
-              "launchctl load -w '#{@plist}'",
-              :user => @owner_uid, :group => @owner_gid
-            )
+            load_service
           end
         end
 
@@ -132,38 +152,49 @@ class Chef
           unless @current_resource.enabled
             Chef::Log.debug("#{@new_resource} not enabled, not disabling")
           else
-            shell_out!(
-              "launchctl unload -w '#{@plist}'",
-              :user => @owner_uid, :group => @owner_gid
-            )
+            unload_service
+          end
+        end
+
+       def load_service
+          session = @session_type ? "-S #{@session_type} " : ''
+          cmd = 'launchctl load -w ' + session + @plist
+          shell_out_as_user(cmd)
+        end
+
+        def unload_service
+          cmd = 'launchctl unload -w ' + @plist
+          shell_out_as_user(cmd)
+        end
+
+        def shell_out_as_user(cmd)
+          if @console_user
+            shell_out_with_systems_locale("#{@base_user_cmd} '#{cmd}'")
+          else
+            shell_out_with_systems_locale(cmd)
+
           end
         end
 
         def set_service_status
           return if @plist == nil or @service_label.to_s.empty?
 
-          cmd = shell_out(
-            "launchctl list #{@service_label}",
-            :user => @owner_uid, :group => @owner_gid
-          )
+          cmd = "launchctl list #{@service_label}"
+          res = shell_out_as_user(cmd)
 
-          if cmd.exitstatus == 0
+          if res.exitstatus == 0
             @current_resource.enabled(true)
           else
             @current_resource.enabled(false)
           end
 
           if @current_resource.enabled
-            @owner_uid = ::File.stat(@plist).uid
-            @owner_gid = ::File.stat(@plist).gid
-
-            shell_out!(
-              "launchctl list", :user => @owner_uid, :group => @owner_gid
-            ).stdout.each_line do |line|
-              case line
-              when /(\d+|-)\s+(?:\d+|-)\s+(.*\.?)#{@service_label}/
+            res.stdout.each_line do |line|
+              case line.downcase
+              when /\s+\"pid\"\s+=\s+(\d+).*/
                 pid = $1
                 @current_resource.running(!pid.to_i.zero?)
+                Chef::Log.debug("Current PID for #{@service_label} is #{pid}")
               end
             end
           else
@@ -178,6 +209,9 @@ class Chef
           # onto the node yet."
           return nil if @plist.nil?
 
+          # Plist must exist by this point
+          raise Chef::Exceptions::FileNotFound, "Cannot find #{@plist}!" unless ::File.exists?(@plist)
+
           # Most services have the same internal label as the name of the
           # plist file. However, there is no rule saying that *has* to be
           # the case, and some core services (notably, ssh) do not follow
@@ -185,7 +219,9 @@ class Chef
 
           # plist files can come in XML or Binary formats. this command
           # will make sure we get XML every time.
-          plist_xml = shell_out!("plutil -convert xml1 -o - #{@plist}").stdout
+          plist_xml = shell_out_with_systems_locale!(
+            "plutil -convert xml1 -o - #{@plist}"
+          ).stdout
 
           plist_doc = REXML::Document.new(plist_xml)
           plist_doc.elements[

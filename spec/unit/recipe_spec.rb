@@ -20,6 +20,7 @@
 #
 
 require 'spec_helper'
+require 'chef/platform/resource_priority_map'
 
 describe Chef::Recipe do
 
@@ -136,6 +137,44 @@ describe Chef::Recipe do
           res.kind_of?(YourMom)
         end
 
+        describe "when there is more than one resource that resolves on a node" do
+          before do
+            node.automatic[:platform] = "nbc_sports"
+            Sounders = Class.new(Chef::Resource)
+            Sounders.provides :football, platform: "nbc_sports"
+            TottenhamHotspur = Class.new(Chef::Resource)
+            TottenhamHotspur.provides :football, platform: "nbc_sports"
+          end
+
+          after do
+            Object.send(:remove_const, :Sounders)
+            Object.send(:remove_const, :TottenhamHotspur)
+          end
+
+          it "warns if resolution of the two resources is ambiguous" do
+            expect(Chef::Log).to receive(:warn).at_least(:once).with(/Ambiguous resource precedence/)
+            res1 = recipe.football "club world cup"
+            expect(res1.name).to eql("club world cup")
+            # the class of res1 is not defined.
+          end
+
+          it "selects one if it is given priority" do
+            expect(Chef::Log).not_to receive(:warn)
+            Chef::Platform::ResourcePriorityMap.instance.send(:priority, :football, TottenhamHotspur, platform: "nbc_sports")
+            res1 = recipe.football "club world cup"
+            expect(res1.name).to eql("club world cup")
+            expect(res1).to be_a_kind_of(TottenhamHotspur)
+          end
+
+          it "selects the other one if it is given priority" do
+            expect(Chef::Log).not_to receive(:warn)
+            Chef::Platform::ResourcePriorityMap.instance.send(:priority, :football, Sounders, platform: "nbc_sports")
+            res1 = recipe.football "club world cup"
+            expect(res1.name).to eql("club world cup")
+            expect(res1).to be_a_kind_of(Sounders)
+          end
+        end
+
       end
     end
 
@@ -237,7 +276,16 @@ describe Chef::Recipe do
           action :nothing
         end
       end
+
+      it "validating resources via build_resource" do
+        expect {recipe.build_resource(:remote_file, "klopp") do
+          source Chef::DelayedEvaluator.new {"http://chef.io"}
+        end}.to_not raise_error
+      end
+
     end
+
+
 
     describe "creating resources via declare_resource" do
       let(:zm_resource) do

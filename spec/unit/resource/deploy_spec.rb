@@ -30,34 +30,11 @@ describe Chef::Resource::Deploy do
 
 
   class << self
-
-    def resource_has_a_hash_attribute(attr_name)
-      it "has a Hash attribute for #{attr_name.to_s}" do
-        @resource.send(attr_name, {foo: "bar"})
-        expect(@resource.send(attr_name)).to eql({foo: "bar"})
-        expect {@resource.send(attr_name, 8675309)}.to raise_error(ArgumentError)
-      end
-
-      it "the Hash attribute for #{attr_name.to_s} is nillable" do
-        @resource.send(attr_name, {foo: "bar"})
-        expect(@resource.send(attr_name)).to eql({foo: "bar"})
-        @resource.send(attr_name, nil)
-        expect(@resource.send(attr_name)).to eql(nil)
-      end
-    end
-
     def resource_has_a_string_attribute(attr_name)
       it "has a String attribute for #{attr_name.to_s}" do
         @resource.send(attr_name, "this is a string")
         expect(@resource.send(attr_name)).to eql("this is a string")
         expect {@resource.send(attr_name, 8675309)}.to raise_error(ArgumentError)
-      end
-
-      it "the String attribute for #{attr_name.to_s} is nillable" do
-        @resource.send(attr_name, "this is a string")
-        expect(@resource.send(attr_name)).to eql("this is a string")
-        @resource.send(attr_name, nil)
-        expect(@resource.send(attr_name)).to eql(nil)
       end
     end
 
@@ -211,10 +188,6 @@ describe Chef::Resource::Deploy do
     @resource.symlink_before_migrate "wtf?" => "wtf is going on"
     expect(@resource.symlink_before_migrate).to eq({"wtf?" => "wtf is going on"})
   end
-
-  resource_has_a_hash_attribute :symlink_before_migrate
-  resource_has_a_hash_attribute :symlinks
-  resource_has_a_hash_attribute :additional_remotes
 
   resource_has_a_callback_attribute :before_migrate
   resource_has_a_callback_attribute :before_symlink

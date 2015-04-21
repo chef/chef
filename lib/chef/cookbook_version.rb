@@ -78,6 +78,16 @@ class Chef
 
     attr_accessor :chef_server_rest
 
+    # The `identifier` field is used for cookbook_artifacts, which are
+    # organized on the chef server according to their content. If the
+    # policy_mode option to CookbookManifest is set to true it will include
+    # this field in the manifest Hash and in the upload URL.
+    #
+    # This field may be removed or have different behavior in the future, don't
+    # use it in 3rd party code.
+    # @api private
+    attr_accessor :identifier
+
     # The first root path is the primary cookbook dir, from which metadata is loaded
     def root_dir
       root_paths[0]
@@ -455,6 +465,15 @@ class Chef
       cookbook_version.manifest["metadata"] = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(cookbook_version.metadata))
 
       cookbook_version.freeze_version if o["frozen?"]
+      cookbook_version
+    end
+
+    def self.from_cb_artifact_data(o)
+      cookbook_version = new(o["name"])
+      # We want the Chef::Cookbook::Metadata object to always be inflated
+      cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
+      cookbook_version.manifest = o
+      cookbook_version.identifier = o["identifier"]
       cookbook_version
     end
 

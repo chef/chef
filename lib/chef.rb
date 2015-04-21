@@ -32,3 +32,4 @@ require 'chef/run_status'
 require 'chef/handler'
 require 'chef/handler/json_file'
 
+require 'chef/chef_class'

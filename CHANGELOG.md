@@ -1,10 +1,38 @@
-## Unreleased
+## 12.3.0
+
+* [pr#3160](https://github.com/chef/chef/pull/3160): Use Chef Zero in
+  socketless mode for local mode, add `--no-listen` flag to disable port
+  binding
+* [**Nolan Davidson**](https://github.com/nsdavidson):
+  Removed after_created and added test to recipe_spec
+* [**Tim Sogard**](https://github.com/drags):
+  Reset $HOME to user running chef-client when running via sudo
+* [**Torben Knerr**](https://github.com/tknerr):
+  Allow for the chef gem installation to succeed without elevated privileges #3126
+* [**Mike Dodge**](https://github.com/mikedodge04)
+  MacOSX services: Load LaunchAgents as console user, adding plist and
+  session_type options.
+* [**Eric Herot**](https://github.com/eherot)
+  Ensure knife ssh doesn't use a non-existant field for hostname #3131
+* [**Tom Hughes**](https://github.com/tomhughes)
+  Ensure searches progress in the face of incomplete responses #3135
+
+* [pr#3162](https://github.com/chef/chef/pull/3162): Add
+  `--minimal-ohai` flag to client/solo/apply; restricts ohai to only the
+  bare minimum of plugins.
+* Ensure link's path attribute works with delayed #3130
+* gem_package, chef_gem should not shell out to using https://rubygems.org #2867
+* Add dynamic resource resolution similar to dynamic provider resolution
+* Add Chef class fascade to internal structures
+* Fix nil pointer for windows event logger #3200
+* Use partial search for knife status
+* Ensure chef/knife properly honours proxy config
+
+## 12.2.1
+* [Issue 3153](https://github.com/chef/chef/issues/3153): Fix bug where unset HOME would cause chef to crash
 
 ## 12.2.0
-
-* make deploy resource attributes nillable (`symlink_before_migrate nil`) works now
-* mixin the LWRP attribute DSL method into Chef::Resource directly
-* make all LWRP attributes nillable
+* Update policyfile API usage to match forthcoming Chef Server release
 * `knife ssh` now has an --exit-on-error option that allows users to
   fail-fast rather than moving on to the next machine.
 * migrate macosx, windows, openbsd, and netbsd resources to dynamic resolution

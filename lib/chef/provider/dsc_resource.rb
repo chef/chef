@@ -107,7 +107,7 @@ class Chef
                 if found[0]['Module'].nil?
                   :none
                 else
-                  found[0]['Module']
+                  found[0]['Module']['Name']
                 end
               else
                 raise Chef::Exceptions::MultipleDscResourcesFound, found

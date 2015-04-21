@@ -6,79 +6,21 @@ Example Doc Change:
 Description of the required change.
 -->
 
-### knife ssh has --exit-on-error option
-`knife ssh` now has an --exit-on-error option that will cause it to
-fail immediately in the face of an SSH connection error.  The default
-behavior is move on to the next node.
+### Chef Client and Knife `--no-listen` Flag and `listen` Config Option
 
-### DSC Resource
+Chef Client and Knife have a `--no-listen` CLI option. It is only
+relevant when using local mode (`-z`). When this flag is given, Chef
+Zero does not bind to a port on localhost. The same behavior can be
+activated by setting `listen false` in the relevant config file.
 
-The `dsc_resource` resource for Windows systems that allows cookbook authors to invoke [PowerShell Desired
-State Configuration](http://technet.microsoft.com/en-us/library/dn249912.aspx) resources in Chef DSL.
+### Chef Client, Solo, and Apply `--minimal-ohai` Flag
 
-#### Prerequisites
-
-* **Windows Management Framework 5** February Preview
-* **Local Configuration Manager** must be set to have a `RefreshMode` of `Disabled`
-
-#### Syntax
-
-```ruby
-dsc_resource "description" do
-  resource "resource_name"
-  property :property_name, property_value
-  ...
-  property :property_name, property_value
-end
-```
-
-#### Attributes
-
-- `resource`: The friendly name of the DSC resource
-
-- `property`: `:property_name`, `property_value` pair for each property that must be set for the DSC resource.
-`property_name` must be of the `Symbol`. The following types are supported for `property_value`, along with
-their conversion into Powershell:
-
-| Ruby Type                           | Powershell Type |
-|-------------------------------------|-----------------|
-| Fixnum                              | Integer         |
-| Float                               | Double          |
-| FalseClass                          | bool($false)    |
-| TrueClass                           | bool($true)     |
-| Chef::Util::Powershell:PSCredential | PSCredential    |
-| Hash                                | Hashtable       |
-| Array                               | Object[]        |
-
-- `module_name` is the name of the module that the DSC resource comes from. If it is not provided, it will
-  be inferred.
-
-#### Actions
-
-|Action|Description|
-|------|------------------------|
-|`:run`| Invoke the DSC resource|
-
-#### Example
-
-```ruby
-dsc_resource "demogroupremove" do
-  resource :group
-  property :groupname, 'demo1'
-  property :ensure, 'present'
-end
- 
-dsc_resource "useradd" do
-  resource :user
-  property :username, "Foobar1"
-  property :fullname, "Foobar1"
-  property :password, ps_credential("P@assword!")
-  property :ensure, 'present'
-end
- 
-dsc_resource "AddFoobar1ToUsers" do
-  resource :Group
-  property :GroupName, "demo1"
-  property :MembersToInclude, ["Foobar1"]
-end
-```
+Chef Client, Solo, and Apply all implement a `--minimal-ohai` flag. When
+set, Chef only runs the bare minimum necessary ohai plugins required for
+internal functionality. This reduces the run time of ohai and might
+improve Chef performance by reducing the amount of data kept in memory.
+Most users should NOT use this mode, however, because cookbooks that
+rely on data collected by other ohai plugins will definitely be broken
+when Chef is run in this mode. It may be possible for advanced users to
+work around that by using the ohai resource to collect the "missing"
+data during the compile phase.

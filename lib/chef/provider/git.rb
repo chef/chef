@@ -39,10 +39,6 @@ class Chef
         end
       end
 
-      def additional_remotes
-        new_resource.additional_remotes || {}
-      end
-
       def define_resource_requirements
         # Parent directory of the target must exist.
         requirements.assert(:checkout, :sync) do |a|

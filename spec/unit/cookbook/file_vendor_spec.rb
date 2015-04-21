@@ -21,9 +21,6 @@ describe Chef::Cookbook::FileVendor do
 
   let(:file_vendor_class) { Class.new(described_class) }
 
-  # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-  let(:manifest) { {:cookbook_name => "bob"} }
-
   context "when configured to fetch files over http" do
 
     let(:http) { double("Chef::REST") }
@@ -40,18 +37,41 @@ describe Chef::Cookbook::FileVendor do
       expect(file_vendor_class.initialization_options).to eq(http)
     end
 
-    it "creates a RemoteFileVendor for a given manifest" do
-      file_vendor = file_vendor_class.create_from_manifest(manifest)
-      expect(file_vendor).to be_a_kind_of(Chef::Cookbook::RemoteFileVendor)
-      expect(file_vendor.rest).to eq(http)
-      expect(file_vendor.cookbook_name).to eq("bob")
+    context "with a manifest from a cookbook version" do
+
+      # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
+      let(:manifest) { {:cookbook_name => "bob", :name => "bob-1.2.3"} }
+
+      it "creates a RemoteFileVendor for a given manifest" do
+        file_vendor = file_vendor_class.create_from_manifest(manifest)
+        expect(file_vendor).to be_a_kind_of(Chef::Cookbook::RemoteFileVendor)
+        expect(file_vendor.rest).to eq(http)
+        expect(file_vendor.cookbook_name).to eq("bob")
+      end
+
     end
 
+    context "with a manifest from a cookbook artifact" do
+
+      # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
+      let(:manifest) { {:name => "bob"} }
+
+      it "creates a RemoteFileVendor for a given manifest" do
+        file_vendor = file_vendor_class.create_from_manifest(manifest)
+        expect(file_vendor).to be_a_kind_of(Chef::Cookbook::RemoteFileVendor)
+        expect(file_vendor.rest).to eq(http)
+        expect(file_vendor.cookbook_name).to eq("bob")
+      end
+
+    end
   end
 
   context "when configured to load files from disk" do
 
     let(:cookbook_path) { %w[/var/chef/cookbooks /var/chef/other_cookbooks] }
+
+    # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
+    let(:manifest) { {:cookbook_name => "bob"} }
 
     before do
       file_vendor_class.fetch_from_disk(cookbook_path)

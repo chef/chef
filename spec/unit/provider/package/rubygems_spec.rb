@@ -547,6 +547,25 @@ describe Chef::Provider::Package::Rubygems do
           expect(@new_resource).to be_updated_by_last_action
         end
 
+        it "installs the gem with rubygems.org as an added source" do
+          @new_resource.gem_binary('/foo/bar')
+          @new_resource.source('http://mirror.ops.rhcloud.com/mirror/ruby')
+          expected ="/foo/bar install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" --source=#{@new_resource.source} --source=https://rubygems.org"
+          expect(@provider).to receive(:shell_out!).with(expected, :env => nil)
+          @provider.run_action(:install)
+          expect(@new_resource).to be_updated_by_last_action
+        end
+
+        it "installs the gem with cleared sources and explict source when specified" do
+          @new_resource.gem_binary('/foo/bar')
+          @new_resource.source('http://mirror.ops.rhcloud.com/mirror/ruby')
+          @new_resource.clear_sources(true)
+          expected ="/foo/bar install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" --clear-sources --source=#{@new_resource.source}"
+          expect(@provider).to receive(:shell_out!).with(expected, :env => nil)
+          @provider.run_action(:install)
+          expect(@new_resource).to be_updated_by_last_action
+        end
+
         context "when no version is given" do
           let(:target_version) { nil }
 

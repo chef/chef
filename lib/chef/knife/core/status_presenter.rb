@@ -66,16 +66,16 @@ class Chef
           list.each do |node|
             result = {}
 
-            result["name"] = node.name
-            result["chef_environment"] = node.chef_environment
-            ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
-            fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
+            result["name"] = node["name"] || node.name
+            result["chef_environment"] = node["chef_environment"]
+            ip = (node["ec2"] && node["ec2"]["public_ipv4"]) || node["ipaddress"]
+            fqdn = (node["ec2"] && node["ec2"]["public_hostname"]) || node["fqdn"]
             result["ip"] = ip if ip
             result["fqdn"] = fqdn if fqdn
-            result["run_list"] = node.run_list if config[:run_list]
-            result["ohai_time"] = node[:ohai_time]
-            result["platform"] = node[:platform] if node[:platform]
-            result["platform_version"] = node[:platform_version] if node[:platform_version]
+            result["run_list"] = node.run_list if config["run_list"]
+            result["ohai_time"] = node["ohai_time"]
+            result["platform"] = node["platform"] if node["platform"]
+            result["platform_version"] = node["platform_version"] if node["platform_version"]
 
             if config[:long_output]
               result["default"]   = node.default_attrs
@@ -99,11 +99,12 @@ class Chef
             # special case ec2 with their split horizon whatsis.
             ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
             fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
+            name = node['name'] || node.name
 
-            hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
+            hours, minutes, _ = time_difference_in_hms(node["ohai_time"])
             hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
             minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
-            run_list = "#{node.run_list}" if config[:run_list]
+            run_list = "#{node['run_list']}" if config[:run_list]
             if hours > 24
               color = :red
               text = hours_text
@@ -116,7 +117,7 @@ class Chef
             end
 
             line_parts = Array.new
-            line_parts << @ui.color(text, color) + ' ago' << node.name
+            line_parts << @ui.color(text, color) + ' ago' << name
             line_parts << fqdn if fqdn
             line_parts << ip if ip
             line_parts << run_list if run_list

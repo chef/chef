@@ -25,6 +25,7 @@ require 'tempfile'
 require 'net/https'
 require 'uri'
 require 'chef/http/basic_client'
+require 'chef/http/socketless_chef_zero_client'
 require 'chef/monkey_patches/net_http'
 require 'chef/config'
 require 'chef/platform/query_helpers'
@@ -196,14 +197,18 @@ class Chef
 
     def http_client(base_url=nil)
       base_url ||= url
-      BasicClient.new(base_url)
+      if chef_zero_uri?(base_url)
+        SocketlessChefZeroClient.new(base_url)
+      else
+        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+      end
     end
 
     protected
 
     def create_url(path)
       return path if path.is_a?(URI)
-      if path =~ /^(http|https):\/\//i
+      if path =~ /^(http|https|chefzero):\/\//i
         URI.parse(path)
       elsif path.nil? or path.empty?
         URI.parse(@url)
@@ -292,7 +297,7 @@ class Chef
           http_attempts += 1
           response, request, return_value = yield
           # handle HTTP 50X Error
-          if response.kind_of?(Net::HTTPServerError)
+          if response.kind_of?(Net::HTTPServerError) && !Chef::Config.local_mode
             if http_retry_count - http_attempts + 1 > 0
               sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
               Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
@@ -350,6 +355,11 @@ class Chef
     end
 
     private
+
+    def chef_zero_uri?(uri)
+      uri = URI.parse(uri) unless uri.respond_to?(:scheme)
+      uri.scheme == "chefzero"
+    end
 
     def redirected_to(response)
       return nil  unless response.kind_of?(Net::HTTPRedirection)
