@@ -829,11 +829,7 @@ describe Chef::Client do
 
     it "should run exception handlers on early fail" do
       expect(subject).to receive(:run_failed)
-       begin
-         subject.run
-       rescue => exception
-         expect(exception).to be_instance_of(NoMethodError)
-       end
+      expect { subject.run }.to raise_error(NoMethodError)
     end
   end
 end
