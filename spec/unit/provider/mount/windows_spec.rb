@@ -113,7 +113,7 @@ describe Chef::Provider::Mount::Windows do
       end
 
       it "should remount the filesystem if it is mounted and the options have changed" do
-        @vol.should_receive(:add).with(:remote => @new_resource.device,
+        expect(@vol).to receive(:add).with(:remote => @new_resource.device,
                                        :username => @new_resource.username,
                                        :domainname => @new_resource.domain,
                                        :password => @new_resource.password)
@@ -121,8 +121,8 @@ describe Chef::Provider::Mount::Windows do
       end
 
       it "should not mount the filesystem if it is mounted and the options have not changed" do
-        @vol.should_not_receive(:add)
-        @current_resource.stub(:mounted).and_return(true)
+        expect(@vol).to_not receive(:add)
+        allow(@current_resource).to receive(:mounted).and_return(true)
         @provider.mount_fs
       end
     end
