@@ -37,6 +37,8 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
+dependency "openssl-customization"
+
 package :pkg do
   identifier "com.getchef.pkg.angrychef"
   signing_identity "Developer ID Installer: Chef Software, Inc. (EU3VF8YLX2)"
