@@ -951,7 +951,7 @@ describe Mixlib::ShellOut do
 
         context 'on windows', :windows_only do
           let(:cmd) do
-            "sleep 10"
+            'powershell -c "sleep 10"'
           end
 
           it "should raise CommandTimeout" do
