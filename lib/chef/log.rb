@@ -21,9 +21,26 @@ require 'logger'
 require 'chef/monologger'
 require 'chef/exceptions'
 require 'mixlib/log'
+require 'syslog-logger'
 
 class Chef
   class Log
+    #
+    # Chef::Log::Syslog class.
+    # usage in client.rb:
+    #  log_location Chef::Log::Syslog.new("::Syslog::LOG_DAEMON", "chef-client")
+    #
+    class Syslog < Logger::Syslog
+      attr_accessor :sync, :formatter
+
+      def write(message)
+        self << message
+      end
+
+      def close
+      end
+    end
+
     extend Mixlib::Log
 
     # Force initialization of the primary log device (@logger)
