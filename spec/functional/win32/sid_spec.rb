@@ -22,7 +22,9 @@ if Chef::Platform.windows?
 end
 
 describe 'Chef::ReservedNames::Win32::SID', :windows_only do
-  SID ||= Chef::ReservedNames::Win32::Security::SID
+  if Chef::Platform.windows?
+    SID ||= Chef::ReservedNames::Win32::Security::SID
+  end
 
   it 'should resolve default_security_object_group as the current user' do
     expect(SID.default_security_object_group).to eq(SID.current_user)
