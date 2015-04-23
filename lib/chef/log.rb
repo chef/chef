@@ -28,13 +28,19 @@ class Chef
     #
     # Chef::Log::Syslog class.
     # usage in client.rb:
-    #  log_location Chef::Log::Syslog.new("::Syslog::LOG_DAEMON", "chef-client")
+    #  log_location Chef::Log::Syslog.new("chef-client", ::Syslog::LOG_DAEMON)
     #
     class Syslog < Logger::Syslog
       attr_accessor :sync, :formatter
 
+      def initialize(program_name = 'chef-client', facility = ::Syslog::LOG_DAEMON, logopts=nil)
+        super
+        ::Logger::Syslog.const_set :SYSLOG, SYSLOG
+      end
+
       def write(message)
-        self << message
+        data = message.match(/(\[.+?\]) ([\w]+):(.*)$/)
+        self.send(data[2].downcase.to_sym, data[3])
       end
 
       def close
