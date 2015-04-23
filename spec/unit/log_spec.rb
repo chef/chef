@@ -35,4 +35,9 @@ describe Chef::Log::Syslog do
     expect_any_instance_of(Logger::Syslog).to receive(:warn).with(" No config file found or specified on command line, using command line options.")
     logger.write("[2015-04-23T15:16:20+09:00] WARN: No config file found or specified on command line, using command line options.")
   end
+
+  it "should fallback into send message with severity info to syslog when wrong format." do
+    expect_any_instance_of(Logger::Syslog).to receive(:info).with("chef message")
+    logger.write("chef message")
+  end
 end
