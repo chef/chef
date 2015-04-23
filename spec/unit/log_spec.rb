@@ -27,12 +27,12 @@ describe Chef::Log::Syslog do
   let(:logger) { Chef::Log::Syslog.new }
 
   it "should send message with severity info to syslog." do
-    expect_any_instance_of(Logger::Syslog).to receive(:info).with(" *** Chef 12.4.0.dev.0 ***")
+    expect_any_instance_of(Logger::Syslog).to receive(:info).with("*** Chef 12.4.0.dev.0 ***")
     logger.write("[2015-04-23T15:16:23+09:00] INFO: *** Chef 12.4.0.dev.0 ***")
   end
 
   it "should send message with severity warning to syslog." do
-    expect_any_instance_of(Logger::Syslog).to receive(:warn).with(" No config file found or specified on command line, using command line options.")
+    expect_any_instance_of(Logger::Syslog).to receive(:warn).with("No config file found or specified on command line, using command line options.")
     logger.write("[2015-04-23T15:16:20+09:00] WARN: No config file found or specified on command line, using command line options.")
   end
 
