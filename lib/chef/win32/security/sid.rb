@@ -213,7 +213,8 @@ class Chef
         end
 
         # See https://technet.microsoft.com/en-us/library/cc961996.aspx
-        # In practice, this is generally the same as current_user
+        # In practice, this seems to be SID.current_user for Microsoft Accounts, the current
+        # user's Domain Users group for domain accounts, and SID.None otherwise.
         def self.default_security_object_group
           token = Chef::ReservedNames::Win32::Security.open_current_process_token
           Chef::ReservedNames::Win32::Security.get_token_information_primary_group(token)

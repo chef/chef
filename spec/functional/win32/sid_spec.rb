@@ -26,8 +26,11 @@ describe 'Chef::ReservedNames::Win32::SID', :windows_only do
     SID ||= Chef::ReservedNames::Win32::Security::SID
   end
 
-  it 'should resolve default_security_object_group as the current user' do
-    expect(SID.default_security_object_group).to eq(SID.current_user)
+  it 'should resolve default_security_object_group as a sane user group', :windows_not_domain_joined_only do
+    # Domain accounts: domain-specific Domain Users SID
+    # Microsoft Accounts: SID.current_user
+    # Else: SID.None
+    expect(SID.default_security_object_group).to eq(SID.None).or eq(SID.current_user)
   end
 
   context 'running as an elevated administrator user' do
