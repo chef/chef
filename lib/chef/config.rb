@@ -326,8 +326,10 @@ class Chef
       # 'some_url.../organizations/*' then remove the '/organization/*' by default
       if self.configuration[:chef_server_url] =~ /\/organizations\/\S*$/
         self.configuration[:chef_server_url].split('/')[0..-3].join('/')
-      else # default to whatever chef_server_url is
+      elsif self.configuration[:chef_server_url] # default to whatever chef_server_url is
         self.configuration[:chef_server_url]
+      else
+        "https://localhost:443"
       end
     end
 

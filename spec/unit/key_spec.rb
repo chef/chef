@@ -520,15 +520,15 @@ EOS
 
       context "when updating a user key" do
         it_should_behave_like "update key" do
-          let(:url)        { "users/#{key.actor}/keys/#{key.name}" }
-          let(:key)        { user_key }
+          let(:url) { "users/#{key.actor}/keys/#{key.name}" }
+          let(:key) { user_key }
         end
       end
 
       context "when updating a client key" do
         it_should_behave_like "update key" do
-          let(:url)        { "clients/#{client_key.actor}/keys/#{key.name}" }
-          let(:key)        { client_key }
+          let(:url) { "clients/#{client_key.actor}/keys/#{key.name}" }
+          let(:key) { client_key }
         end
       end
 
