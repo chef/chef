@@ -295,10 +295,10 @@ shared_examples_for "a securable resource without existing target" do
   context "on Windows", :windows_only do
     include_context "use Windows permissions"
 
-    it "sets owner to Administrators on create if owner is not specified" do
+    it "leaves owner as system default on create if owner is not specified" do
       expect(File.exist?(path)).to eq(false)
       resource.run_action(:create)
-      expect(descriptor.owner).to eq(SID.Administrators)
+      expect(descriptor.owner).to eq(SID.default_security_object_owner)
     end
 
     it "sets owner when owner is specified" do
@@ -318,22 +318,24 @@ shared_examples_for "a securable resource without existing target" do
     end
 
     it "leaves owner alone if owner is not specified and resource already exists" do
-      # Set owner to Guest so it's not the same as the current user (which is the default on create)
-      resource.owner 'Guest'
+      arbitrary_non_default_owner = SID.Guest
+      expect(arbitrary_non_default_owner).not_to eq(SID.default_security_object_owner)
+
+      resource.owner 'Guest' # Change to arbitrary_non_default_owner once issue #1508 is fixed
       resource.run_action(:create)
-      expect(descriptor.owner).to eq(SID.Guest)
+      expect(descriptor.owner).to eq(arbitrary_non_default_owner)
 
       new_resource = create_resource
       expect(new_resource.owner).to eq(nil)
       new_resource.run_action(:create)
-      expect(descriptor.owner).to eq(SID.Guest)
+      expect(descriptor.owner).to eq(arbitrary_non_default_owner)
     end
 
-    it "sets group to None on create if group is not specified" do
+    it "leaves group as system default on create if group is not specified" do
       expect(resource.group).to eq(nil)
       expect(File.exist?(path)).to eq(false)
       resource.run_action(:create)
-      expect(descriptor.group).to eq(SID.None)
+      expect(descriptor.group).to eq(SID.default_security_object_group)
     end
 
     it "sets group when group is specified" do
@@ -354,15 +356,17 @@ shared_examples_for "a securable resource without existing target" do
     end
 
     it "leaves group alone if group is not specified and resource already exists" do
-      # Set group to Everyone so it's not the default (None)
-      resource.group 'Everyone'
+      arbitrary_non_default_group = SID.Everyone
+      expect(arbitrary_non_default_group).not_to eq(SID.default_security_object_group)
+
+      resource.group 'Everyone' # Change to arbitrary_non_default_group once issue #1508 is fixed
       resource.run_action(:create)
-      expect(descriptor.group).to eq(SID.Everyone)
+      expect(descriptor.group).to eq(arbitrary_non_default_group)
 
       new_resource = create_resource
       expect(new_resource.group).to eq(nil)
       new_resource.run_action(:create)
-      expect(descriptor.group).to eq(SID.Everyone)
+      expect(descriptor.group).to eq(arbitrary_non_default_group)
     end
 
     describe "with rights and deny_rights attributes" do
