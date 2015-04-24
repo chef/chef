@@ -18,32 +18,34 @@
 # limitations under the License.
 
 require 'logger'
-require 'chef/monologger'
-require 'chef/exceptions'
-require 'mixlib/log'
-require 'chef/log/syslog'
+require 'syslog-logger'
 
 class Chef
   class Log
-    extend Mixlib::Log
+    #
+    # Chef::Log::Syslog class.
+    # usage in client.rb:
+    #  log_location Chef::Log::Syslog.new("chef-client", ::Syslog::LOG_DAEMON)
+    #
+    class Syslog < Logger::Syslog
+      attr_accessor :sync, :formatter
 
-    # Force initialization of the primary log device (@logger)
-    init(MonoLogger.new(STDOUT))
+      def initialize(program_name = 'chef-client', facility = ::Syslog::LOG_DAEMON, logopts=nil)
+        super
+        return if defined? ::Logger::Syslog::SYSLOG
+        ::Logger::Syslog.const_set :SYSLOG, SYSLOG
+      end
 
-    class Formatter
-      def self.show_time=(*args)
-        Mixlib::Log::Formatter.show_time = *args
+      def write(message)
+        data = message.match(/(\[.+?\]) ([\w]+):(.*)$/)
+        self.send(data[2].downcase.to_sym, data[3].strip)
+      rescue NoMethodError
+        self.send(:info, message)
+      end
+
+      def close
       end
     end
-
-    def self.deprecation(msg=nil, &block)
-      if Chef::Config[:treat_deprecation_warnings_as_errors]
-        error(msg, &block)
-        raise Chef::Exceptions::DeprecatedFeatureError.new(msg)
-      else
-        warn(msg, &block)
-      end
-    end
-
   end
 end
+
