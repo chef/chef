@@ -83,7 +83,7 @@ class Chef
     end
 
     def chef_server_rest
-      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:node_name], Chef::Config[:client_key], validate_utf8: false)
     end
 
     # Set the name of this Node, or return the current name.
