@@ -23,7 +23,7 @@ class Chef
     class SubcommandLoader
 
       MATCHES_CHEF_GEM = %r{/chef-[\d]+\.[\d]+\.[\d]+}.freeze
-      MATCHES_THIS_CHEF_GEM = %r{/chef-#{Chef::VERSION}/}.freeze
+      MATCHES_THIS_CHEF_GEM = %r{/chef-#{Chef::VERSION}(-x86-mingw32)?/}.freeze
 
       attr_reader :chef_config_dir
       attr_reader :env
