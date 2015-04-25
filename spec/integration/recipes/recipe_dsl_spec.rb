@@ -43,7 +43,7 @@ describe "Recipe DSL methods" do
       BaseThingy.created_provider = nil
     end
 
-    context "Automatic resource DSL" do
+    context "Deprecated automatic resource DSL" do
       context "With a resource 'backcompat_thingy' declared in Chef::Resource and Chef::Provider" do
         before(:context) {
 
@@ -67,9 +67,10 @@ describe "Recipe DSL methods" do
         }
 
         it "backcompat_thingy creates a Chef::Resource::BackcompatThingy" do
-          expect_recipe {
+          recipe = converge {
             backcompat_thingy 'blah' do; end
-          }.to emit_no_warnings_or_errors
+          }
+          expect(recipe.logged_warnings).to match /Chef::Resource/i
           expect(BaseThingy.created_resource).to eq Chef::Resource::BackcompatThingy
           expect(BaseThingy.created_provider).to eq Chef::Provider::BackcompatThingy
         end
@@ -77,7 +78,9 @@ describe "Recipe DSL methods" do
         context "And another resource 'backcompat_thingy' in BackcompatThingy with 'provides'" do
           before(:context) {
 
-            class Foo::BackcompatThingy < BaseThingy; end
+            class Foo::BackcompatThingy < BaseThingy
+              provides :backcompat_thingy
+            end
 
           }
 
@@ -85,33 +88,25 @@ describe "Recipe DSL methods" do
             recipe = converge {
               backcompat_thingy 'blah' do; end
             }
+            expect(recipe.logged_warnings).to match /Chef::Resource/i
             expect(recipe.logged_warnings).to match /ambiguous resource precedence/i
             expect(BaseThingy.created_resource).not_to be_nil
           end
         end
       end
 
-      context "With a resource 'thingy' declared in Foo::Bar::Thingy2" do
+      context "With a resource named Foo::Bar::Thingy" do
         before(:context) {
 
           class Foo::Bar::Thingy < BaseThingy; end
 
         }
 
-        it "thingy creates a Foo::Bar::Thingy" do
-          expect_recipe {
+        it "thingy does not work" do
+          expect_converge {
             thingy 'blah' do; end
-          }.to emit_no_warnings_or_errors
-          expect(BaseThingy.created_resource).to eq Foo::Bar::Thingy
+          }.to raise_error(NoMethodError)
         end
-      end
-
-      it "When resource 'thingy2' does not exist and is created during the recipe, it still works" do
-        expect_recipe {
-          class Foo::Thingy2 < BaseThingy; end
-          thingy2 'blah' do; end
-        }.to emit_no_warnings_or_errors
-        expect(BaseThingy.created_resource).to eq Foo::Thingy2
       end
     end
 

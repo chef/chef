@@ -973,38 +973,12 @@ class Chef
       end
     end
 
-    # Cause each subclass to register itself with the DSL
-    def self.inherited(subclass)
-      super
-      if subclass.dsl_name
-        subclass.provides subclass.dsl_name.to_sym
-        subclass.using_automatic_dsl = true
-      end
-    end
-
-    def self.using_automatic_dsl?
-      @using_automatic_dsl
-    end
-
-    def self.using_automatic_dsl=(value)
-      @using_automatic_dsl = value
-    end
-
     def self.provides(name, *args, &block)
-      # If the user specifies provides, then we get rid of the auto-provided DSL
-      # and let them specify what they want
-      if using_automatic_dsl?
-        provides_nothing
-      end
-
       super
-
       Chef::DSL::Resources.add_resource_dsl(name)
     end
 
     def self.provides_nothing
-      @using_automatic_dsl = false
-
       unprovided_names = super
 
       unprovided_names.each do |name|
