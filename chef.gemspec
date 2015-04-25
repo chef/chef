@@ -46,8 +46,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rack"
   s.add_development_dependency "cheffish", "~> 1.1"
 
-  # Rake 10.2 drops Ruby 1.8 support
-  s.add_development_dependency "rake", "~> 10.1.0"
+  s.add_development_dependency "rake", "~> 10.1"
 
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife chef-shell chef-apply )

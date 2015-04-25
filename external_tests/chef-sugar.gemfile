@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+gemspec(name: 'chef', path: "../")
+
+gem 'chef-sugar', github: 'sethvargo/chef-sugar'
+gem 'chefspec'

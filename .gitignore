@@ -6,6 +6,7 @@ pkg
 *~
 
 # you should check in your Gemfile.lock in applications, and not in gems
+external_tests/*.lock
 Gemfile.lock
 Gemfile.local
 

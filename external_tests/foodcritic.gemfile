@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+gemspec(name: 'chef', path: "../")
+
+gem 'foodcritic', github: 'acrmp/foodcritic'
+gem 'cucumber'
+gem 'rubocop'
+gem 'simplecov'
