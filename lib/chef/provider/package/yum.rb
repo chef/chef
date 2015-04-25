@@ -19,6 +19,7 @@
 require 'chef/config'
 require 'chef/provider/package'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/which'
 require 'chef/resource/package'
 require 'singleton'
 require 'chef/mixin/get_source_from_package'
@@ -647,6 +648,7 @@ class Chef
         # Cache for our installed and available packages, pulled in from yum-dump.py
         class YumCache
           include Chef::Mixin::Command
+          include Chef::Mixin::Which
           include Chef::Mixin::ShellOut
           include Singleton
 
@@ -713,7 +715,7 @@ class Chef
             status = nil
 
             begin
-              status = shell_out!("/usr/bin/python #{helper}#{opts}", :timeout => Chef::Config[:yum_timeout])
+              status = shell_out!("#{python_bin} #{helper}#{opts}", :timeout => Chef::Config[:yum_timeout])
               status.stdout.each_line do |line|
                 one_line = true
 
@@ -777,6 +779,32 @@ class Chef
 
             # A reload method must be called before the cache is altered
             @next_refresh = :none
+          end
+
+          def python_bin
+            yum_executable = which("yum")
+            if yum_executable && shabang?(yum_executable)
+              extract_interpreter(yum_executable)
+            else
+              Chef::Log.warn("Yum executable not found or doesn't start with #!. Using default python.")
+              "/usr/bin/python"
+            end
+          rescue StandardError => e
+            Chef::Log.warn("An error occured attempting to determine correct python executable. Using default.")
+            Chef::Log.debug(e)
+            "/usr/bin/python"
+          end
+
+          def extract_interpreter(file)
+            ::File.open(file, 'r', &:readline)[2..-1].chomp
+          end
+
+          def shabang?(file)
+            ::File.open(file, 'r') do |f|
+              f.read(2) == '#!'
+            end
+          rescue Errno::ENOENT
+            false
           end
 
           def reload
