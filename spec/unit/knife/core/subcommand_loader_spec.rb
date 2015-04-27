@@ -22,14 +22,14 @@ describe Chef::Knife::SubcommandLoader do
   let(:loader) { Chef::Knife::SubcommandLoader.new(File.join(CHEF_SPEC_DATA, 'knife-site-subcommands')) }
   let(:home) { File.join(CHEF_SPEC_DATA, 'knife-home') }
   let(:plugin_dir) { File.join(home, '.chef', 'plugins', 'knife') }
-  
+
   before do
     allow(Chef::Platform).to receive(:windows?) { false }
-    Chef::Util::PathHelper.class_variable_set(:@@home_dir, home) 
+    Chef::Util::PathHelper.class_variable_set(:@@home_dir, home)
   end
 
   after do
-    Chef::Util::PathHelper.class_variable_set(:@@home_dir, nil) 
+    Chef::Util::PathHelper.class_variable_set(:@@home_dir, nil)
   end
 
   it "builds a list of the core subcommand file require paths" do
@@ -106,6 +106,17 @@ describe Chef::Knife::SubcommandLoader do
         # Chef 12.0.0.rc.0 gem also:
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}.rc.0/lib/chef/knife/thing.rb",
 
+        # Test that we ignore the platform suffix when checking for different
+        # gem versions.
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-x86-mingw32/lib/chef/knife/valid.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-i386-mingw64/lib/chef/knife/valid-too.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-mswin32/lib/chef/knife/also-valid.rb",
+        # ...but don't ignore the .rc / .dev parts in the case when we have
+        # platform suffixes
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}.rc.0-x86-mingw32/lib/chef/knife/invalid.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}.dev-mswin32/lib/chef/knife/invalid-too.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}.dev.0-x86-mingw64/lib/chef/knife/still-invalid.rb",
+
         # This command is "extra" compared to what's in the embedded/apps/chef install:
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/data_bag_secret_options.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-vault-2.2.4/lib/chef/knife/decrypt.rb",
@@ -133,6 +144,9 @@ describe Chef::Knife::SubcommandLoader do
         "/opt/chefdk/embedded/apps/chef/lib/chef/knife/bootstrap.rb",
         "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_bulk_delete.rb",
         "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_create.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-x86-mingw32/lib/chef/knife/valid.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-i386-mingw64/lib/chef/knife/valid-too.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-mswin32/lib/chef/knife/also-valid.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-vault-2.2.4/lib/chef/knife/decrypt.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/knife-spork-1.4.1/lib/chef/knife/spork-bump.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-#{Chef::VERSION}/lib/chef/knife/chef-foo.rb",
