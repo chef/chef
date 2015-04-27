@@ -4,6 +4,7 @@ gemspec :name => "chef"
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
 group(:docgen) do
+  gem "tomlrb"
   gem "yard"
 end
 

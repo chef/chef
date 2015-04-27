@@ -20,6 +20,8 @@ a maintainer, lieutenant, or the project lead.
     person = "adamhjk"
 
   [Org.Components]
+    title = "Components"
+
     [Org.Components.Core]
       title = "Chef Core"
       text = """
