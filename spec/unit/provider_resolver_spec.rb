@@ -46,6 +46,10 @@ describe Chef::ProviderResolver do
 
   let(:resource) { double(Chef::Resource, provider: provider, resource_name: resource_name) }
 
+  before do
+    allow(resource).to receive(:is_a?).with(Chef::Resource).and_return(true)
+  end
+
   describe "resolving service resource" do
     def stub_service_providers(*services)
       services ||= []
