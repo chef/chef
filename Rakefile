@@ -24,6 +24,7 @@ require 'rubygems/package_task'
 require 'rdoc/task'
 require_relative 'tasks/rspec'
 require_relative 'tasks/external_tests'
+require_relative 'tasks/maintainers'
 
 GEM_NAME = "chef"
 
