@@ -147,7 +147,11 @@ class Chef
       payload['public_key'] = @public_key unless @public_key.nil?
       payload['create_key'] = @create_key if @create_key
       payload['expiration_date'] = @expiration_date unless @expiration_date.nil?
-      new_key = chef_rest.post_rest("#{api_base}/#{@actor}/keys", payload)
+      result = chef_rest.post_rest("#{api_base}/#{@actor}/keys", payload)
+      # append the private key to the current key if the server returned one,
+      # since the POST endpoint just returns uri and private_key if needed.
+      new_key = self.to_hash
+      new_key["private_key"] = result["private_key"] if result["private_key"]
       Chef::Key.from_hash(new_key)
     end
 
