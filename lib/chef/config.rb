@@ -319,7 +319,17 @@ class Chef
       default :host, 'localhost'
       default :port, 8889.upto(9999) # Will try ports from 8889-9999 until one works
     end
+
     default :chef_server_url,   "https://localhost:443"
+    default(:chef_server_root) do
+      # if the chef_server_url is a path to an organization, aka
+      # 'some_url.../organizations/*' then remove the '/organization/*' by default
+      if self.configuration[:chef_server_url] =~ /\/organizations\/\S*$/
+        self.configuration[:chef_server_url].split('/')[0..-3].join('/')
+      else # default to whatever chef_server_url is
+        self.configuration[:chef_server_url]
+      end
+    end
 
     default :rest_timeout, 300
     default :yum_timeout, 900
