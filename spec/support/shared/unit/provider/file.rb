@@ -529,9 +529,10 @@ shared_examples_for Chef::Provider::File do
                                   :for_reporting => diff_for_reporting )
             allow(diff).to receive(:diff).with(resource_path, tempfile_path).and_return(true)
             expect(provider).to receive(:diff).at_least(:once).and_return(diff)
-            expect(provider).to receive(:managing_content?).at_least(:once).and_return(true)
             expect(provider).to receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
-            expect(provider).to receive(:checksum).with(resource_path).and_return(tempfile_sha256)
+            allow(provider).to receive(:managing_content?).and_return(true)
+            allow(provider).to receive(:checksum).with(resource_path).and_return(tempfile_sha256)
+            expect(resource).not_to receive(:checksum)  # do not mutate the new resource
             expect(provider.deployment_strategy).to receive(:deploy).with(tempfile_path, normalized_path)
           end
           context "when the file was created" do
