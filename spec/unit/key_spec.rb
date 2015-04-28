@@ -435,16 +435,36 @@ EOS
           end
 
           context "when create_key is true and public_key is nil" do
+
             before do
               key.delete_public_key
               key.create_key true
+              $expected_output = {
+                actor_type => "foobar",
+                "name" => key.name,
+                "create_key" => true,
+                "expiration_date" => key.expiration_date
+              }
+              $expected_input = {
+                "name" => key.name,
+                "create_key" => true,
+                "expiration_date" => key.expiration_date
+              }
             end
+
             it "should create a new key via the API" do
-              expect(rest).to receive(:post_rest).with(url,
-                                                       {"name" => key.name,
-                                                        "create_key" => true,
-                                                        "expiration_date" => key.expiration_date}).and_return({})
+              expect(rest).to receive(:post_rest).with(url, $expected_input).and_return({})
               key.create
+            end
+
+            context "when the server returns the private_key via key.create" do
+              before do
+                allow(rest).to receive(:post_rest).with(url, $expected_input).and_return({"private_key" => "this_private_key"})
+              end
+
+              it "key.create returns the original key plus the private_key" do
+                expect(key.create.to_hash).to eq($expected_output.merge({"private_key" => "this_private_key"}))
+              end
             end
           end
 
@@ -464,6 +484,7 @@ EOS
         it_should_behave_like "create key" do
           let(:url) { "users/#{key.actor}/keys" }
           let(:key) { user_key }
+          let(:actor_type) { "user" }
         end
       end
 
@@ -471,6 +492,7 @@ EOS
         it_should_behave_like "create key" do
           let(:url) { "clients/#{client_key.actor}/keys" }
           let(:key) { client_key }
+          let(:actor_type) { "client" }
         end
       end
     end # create
@@ -496,14 +518,14 @@ EOS
         end
       end
 
-      context "when creating a user key" do
+      context "when updating a user key" do
         it_should_behave_like "update key" do
           let(:url) { "users/#{key.actor}/keys/#{key.name}" }
           let(:key) { user_key }
         end
       end
 
-      context "when creating a client key" do
+      context "when updating a client key" do
         it_should_behave_like "update key" do
           let(:url) { "clients/#{client_key.actor}/keys/#{key.name}" }
           let(:key) { client_key }
