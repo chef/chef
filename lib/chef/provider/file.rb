@@ -388,9 +388,6 @@ class Chef
         do_backup unless needs_creating?
         deployment_strategy.deploy(tempfile.path, ::File.realpath(@new_resource.path))
         Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
-        if managing_content?
-          @new_resource.checksum(checksum(@new_resource.path)) # for reporting
-        end
       end
 
       def do_contents_changes
