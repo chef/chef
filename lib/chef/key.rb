@@ -99,6 +99,10 @@ class Chef
       @public_key = nil
     end
 
+    def delete_create_key
+      @create_key = nil
+    end
+
     def create_key(arg=nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set create_key to true if the public_key field exists" if arg == true && !@public_key.nil?
       set_or_return(:create_key, arg,
@@ -171,6 +175,10 @@ class Chef
       put_name = @name if put_name.nil?
 
       new_key = chef_rest.put_rest("#{api_base}/#{@actor}/keys/#{put_name}", to_hash)
+      # if the server returned a public_key, remove the create_key field, as we now have a key
+      if new_key["public_key"]
+        self.delete_create_key
+      end
       Chef::Key.from_hash(self.to_hash.merge(new_key))
     end
 
