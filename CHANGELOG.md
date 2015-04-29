@@ -16,7 +16,6 @@
   Ensure knife ssh doesn't use a non-existant field for hostname #3131
 * [**Tom Hughes**](https://github.com/tomhughes)
   Ensure searches progress in the face of incomplete responses #3135
-
 * [pr#3162](https://github.com/chef/chef/pull/3162): Add
   `--minimal-ohai` flag to client/solo/apply; restricts ohai to only the
   bare minimum of plugins.
@@ -28,6 +27,8 @@
 * Fix nil pointer for windows event logger #3200
 * Use partial search for knife status
 * Ensure chef/knife properly honours proxy config
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix multipackage and architectures
 
 ## 12.2.1
 * [Issue 3153](https://github.com/chef/chef/issues/3153): Fix bug where unset HOME would cause chef to crash

@@ -986,11 +986,28 @@ class Chef
         # Extra attributes
         #
 
+        def arch_for_name(n)
+          if @new_resource.respond_to?("arch")
+            @new_resource.arch
+          elsif @arch
+            idx = package_name_array.index(n)
+            as_array(@arch)[idx]
+          else
+            nil
+          end
+        end
+
         def arch
           if @new_resource.respond_to?("arch")
             @new_resource.arch
           else
             nil
+          end
+        end
+
+        def set_arch(arch)
+          if @new_resource.respond_to?("arch")
+            @new_resource.arch(arch)
           end
         end
 
@@ -1005,11 +1022,12 @@ class Chef
         # Helpers
         #
 
-        def yum_arch
+        def yum_arch(arch)
           arch ? ".#{arch}" : nil
         end
 
         def yum_command(command)
+          Chef::Log.debug("#{@new_resource}: yum command: \"#{command}\"")
           status = shell_out(command, {:timeout => Chef::Config[:yum_timeout]})
 
           # This is fun: rpm can encounter errors in the %post/%postun scripts which aren't
@@ -1087,16 +1105,13 @@ class Chef
             end
           end
 
-          # Don't overwrite an existing arch
-          unless arch
-            parse_arch
-          end
 
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
           installed_version = []
           @candidate_version = []
+          @arch = []
           if @new_resource.source
             unless ::File.exists?(@new_resource.source)
               raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
@@ -1113,24 +1128,43 @@ class Chef
             @candidate_version << @new_resource.version
             installed_version << @yum.installed_version(@current_resource.package_name, arch)
           else
-            if @new_resource.version
-              new_resource = "#{@new_resource.package_name}-#{@new_resource.version}#{yum_arch}"
-            else
-              new_resource = "#{@new_resource.package_name}#{yum_arch}"
+
+            package_name_array.each_with_index do |pkg, idx|
+              # Don't overwrite an existing arch
+              if arch
+                name, parch = pkg, arch
+              else
+                name, parch = parse_arch(pkg)
+                # if we parsed an arch from the name, update the name
+                # to be just the package name.
+                if parch
+                  if @new_resource.package_name.is_a?(Array)
+                    @new_resource.package_name[idx] = name
+                  else
+                    @new_resource.package_name(name)
+                    # only set the arch if it's a single package
+                    set_arch(parch)
+                  end
+                end
+              end
+
+              if @new_resource.version
+                new_resource =
+                  "#{@new_resource.package_name}-#{@new_resource.version}#{yum_arch(parch)}"
+              else
+                new_resource = "#{@new_resource.package_name}#{yum_arch(parch)}"
+              end
+              Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}")
+              installed_version << @yum.installed_version(name, parch)
+              @candidate_version << @yum.candidate_version(name, parch)
+              @arch << parch
             end
-
-            Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}")
-
-            package_name_array.each do |pkg|
-              installed_version << @yum.installed_version(pkg, arch)
-              @candidate_version << @yum.candidate_version(pkg, arch)
-            end
-
           end
 
           if installed_version.size == 1
             @current_resource.version(installed_version[0])
             @candidate_version = @candidate_version[0]
+            @arch = @arch[0]
           else
             @current_resource.version(installed_version)
           end
@@ -1145,7 +1179,7 @@ class Chef
           # Work around yum not exiting with an error if a package doesn't exist
           # for CHEF-2062
           all_avail = as_array(name).zip(as_array(version)).any? do |n, v|
-            @yum.version_available?(n, v, arch)
+            @yum.version_available?(n, v, arch_for_name(n))
           end
           method = log_method = nil
           methods = []
@@ -1187,16 +1221,16 @@ class Chef
 
             repos = []
             pkg_string_bits = []
-            index = 0
             as_array(name).zip(as_array(version)).each do |n, v|
+              idx = package_name_array.index(n)
+              a = arch_for_name(n)
               s = ''
-              unless v == current_version_array[index]
-                s = "#{n}-#{v}#{yum_arch}"
-                repo = @yum.package_repository(n, v, arch)
+              unless v == current_version_array[idx]
+                s = "#{n}-#{v}#{yum_arch(a)}"
+                repo = @yum.package_repository(n, v, a)
                 repos << "#{s} from #{repo} repository"
                 pkg_string_bits << s
               end
-              index += 1
             end
             pkg_string = pkg_string_bits.join(' ')
             Chef::Log.info("#{@new_resource} #{log_method} #{repos.join(' ')}")
@@ -1247,11 +1281,15 @@ class Chef
 
         def remove_package(name, version)
           if version
-            remove_str = as_array(name).zip(as_array(version)).map do |x|
-              "#{x.join('-')}#{yum_arch}"
+            remove_str = as_array(name).zip(as_array(version)).map do |n, v|
+              a = arch_for_name(n)
+              "#{[n, v].join('-')}#{yum_arch(a)}"
             end.join(' ')
           else
-            remove_str = as_array(name).map { |n| "#{n}#{yum_arch}" }.join(' ')
+            remove_str = as_array(name).map do |n|
+              a = arch_for_name(n)
+              "#{n}#{yum_arch(a)}"
+            end.join(' ')
           end
           yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{remove_str}")
 
@@ -1268,22 +1306,26 @@ class Chef
 
         private
 
-        def parse_arch
+        def parse_arch(package_name)
           # Allow for foo.x86_64 style package_name like yum uses in it's output
           #
-          if @new_resource.package_name =~ %r{^(.*)\.(.*)$}
+          if package_name =~ %r{^(.*)\.(.*)$}
             new_package_name = $1
             new_arch = $2
             # foo.i386 and foo.beta1 are both valid package names or expressions of an arch.
             # Ensure we don't have an existing package matching package_name, then ensure we at
             # least have a match for the new_package+new_arch before we overwrite. If neither
             # then fall through to standard package handling.
-            if (@yum.installed_version(@new_resource.package_name).nil? and @yum.candidate_version(@new_resource.package_name).nil?) and
-                 (@yum.installed_version(new_package_name, new_arch) or @yum.candidate_version(new_package_name, new_arch))
-               @new_resource.package_name(new_package_name)
-               @new_resource.arch(new_arch)
+            old_installed = @yum.installed_version(package_name)
+            old_candidate = @yum.candidate_version(package_name)
+            new_installed = @yum.installed_version(new_package_name, new_arch)
+            new_candidate = @yum.candidate_version(new_package_name, new_arch)
+            if (old_installed.nil? and old_candidate.nil?) and (new_installed or new_candidate)
+              Chef::Log.debug("Parsed out arch #{new_arch}, new package name is #{new_package_name}")
+              return new_package_name, new_arch
             end
           end
+          return package_name, nil
         end
 
         # If we don't have the package we could have been passed a 'whatprovides' feature
