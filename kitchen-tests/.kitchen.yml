@@ -6,10 +6,10 @@ driver:
     memory: 2048
 
 provisioner:
-  name: chef_zero
-  github: "opscode/chef"
-  branch: <%= %x(git rev-parse HEAD) %>
-  require_chef_omnibus: true
+  name: chef_github
+  github_owner: "chef"
+  github_repo: "chef"
+  refname: <%= %x(git rev-parse HEAD) %>
   data_path: test/fixtures
   client_rb:
     diff_disabled: true
