@@ -159,12 +159,18 @@ class Chef
       self.class.generate_fingerprint(@public_key)
     end
 
-    def update
-      if @name.nil?
-        raise Chef::Exceptions::MissingKeyAttribute, "the name field must be populated when update is called"
+    # set @name and pass put_name if you wish to update the name of an existing key put_name to @name
+    def update(put_name=nil)
+      if @name.nil? && put_name.nil?
+        raise Chef::Exceptions::MissingKeyAttribute, "the name field must be populated or you must pass a name to update when update is called"
       end
 
-      new_key = chef_rest.put_rest("#{api_base}/#{@actor}/keys/#{@name}", to_hash)
+      # If no name was passed, fall back to using @name in the PUT URL, otherwise
+      # use the put_name passed. This will update the a key by the name put_name
+      # to @name.
+      put_name = @name if put_name.nil?
+
+      new_key = chef_rest.put_rest("#{api_base}/#{@actor}/keys/#{put_name}", to_hash)
       Chef::Key.from_hash(self.to_hash.merge(new_key))
     end
 

@@ -499,7 +499,7 @@ EOS
 
     describe "update" do
       shared_examples_for "update key" do
-        context "when name is missing" do
+        context "when name is missing and no argument was passed to update" do
           it "should raise an MissingKeyAttribute" do
             expect { key.update }.to raise_error(Chef::Exceptions::MissingKeyAttribute)
           end
@@ -516,11 +516,23 @@ EOS
             key.update
           end
         end
+
+        context "when @name is not nil and a arg is passed to update" do
+          before do
+            key.name "new_name"
+          end
+
+          it "passes @name in the body and the arg in the PUT URL" do
+            expect(rest).to receive(:put_rest).with(update_name_url, key.to_hash).and_return({})
+            key.update("old_name")
+          end
+        end
       end
 
       context "when updating a user key" do
         it_should_behave_like "update key" do
           let(:url) { "users/#{key.actor}/keys/#{key.name}" }
+          let(:update_name_url) { "users/#{key.actor}/keys/old_name" }
           let(:key) { user_key }
         end
       end
@@ -528,6 +540,7 @@ EOS
       context "when updating a client key" do
         it_should_behave_like "update key" do
           let(:url) { "clients/#{client_key.actor}/keys/#{key.name}" }
+          let(:update_name_url) { "clients/#{client_key.actor}/keys/old_name" }
           let(:key) { client_key }
         end
       end
