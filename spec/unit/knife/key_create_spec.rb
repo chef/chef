@@ -23,12 +23,10 @@ require 'chef/knife/key_create'
 require 'chef/key'
 
 describe "key create commands that inherit knife" do
-
-  let(:stderr) { StringIO.new }
-  let(:params) { [] }
-  let(:service_object) { instance_double(Chef::Knife::KeyCreate) }
-
   shared_examples_for "a key create command" do
+    let(:stderr) { StringIO.new }
+    let(:params) { [] }
+    let(:service_object) { instance_double(Chef::Knife::KeyCreate) }
     let(:command) do
       c = described_class.new([])
       c.ui.config[:disable_editing] = true
@@ -38,32 +36,10 @@ describe "key create commands that inherit knife" do
       c
     end
 
-    context "before apply_params! is called" do
-      context "when apply_params! is called with invalid args" do
-        it "shows the usage" do
-          expect(command).to receive(:show_usage)
-          expect { command.apply_params!(params) }.to exit_with_code(1)
-        end
-
-        it "outputs the proper error" do
-          expect { command.apply_params!(params) }.to exit_with_code(1)
-          expect(stderr.string).to include(command.actor_missing_error)
-        end
-
-        it "exits 1" do
-          expect { command.apply_params!(params) }.to exit_with_code(1)
-        end
-      end
-    end # before apply_params! is called
-
     context "after apply_params! is called with valid args" do
       let(:params) { ["charmander"] }
       before do
         command.apply_params!(params)
-      end
-
-      it "properly defines the actor" do
-        expect(command.actor).to eq("charmander")
       end
 
       context "when the service object is called" do
@@ -75,26 +51,22 @@ describe "key create commands that inherit knife" do
         end
       end # when the service object is called
     end # after apply_params! is called with valid args
-    context "when the command is run" do
-      before do
-        allow(command).to receive(:service_object).and_return(service_object)
-        allow(command).to receive(:name_args).and_return(["charmander"])
-      end
-
-      context "when the command is successful" do
-        before do
-          expect(service_object).to receive(:run)
-        end
-      end
-    end
   end # a key create command
 
   describe Chef::Knife::UserKeyCreate do
     it_should_behave_like "a key create command"
+    # defined in key_helper.rb
+    it_should_behave_like "a knife key command" do
+      let(:service_object) { instance_double(Chef::Knife::KeyCreate) }
+    end
   end
 
   describe Chef::Knife::ClientKeyCreate do
     it_should_behave_like "a key create command"
+    # defined in key_helper.rb
+    it_should_behave_like "a knife key command" do
+      let(:service_object) { instance_double(Chef::Knife::KeyCreate) }
+    end
   end
 end
 
