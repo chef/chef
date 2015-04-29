@@ -91,15 +91,18 @@ class Chef
 
         protected
         def determine_current_status!
-          Chef::Log.debug "#{@new_resource} using lssrc to check the status "
+          Chef::Log.debug "#{@new_resource} using lssrc to check the status"
           begin
-            services = shell_out!("lssrc -a | grep -w #{@new_resource.service_name}").stdout.split("\n")
-            is_resource_group?(services)
-
-            if services.length == 1 && services[0].split(' ').last == "active"
-              @current_resource.running true
-            else
+            if is_resource_group?
+              # Groups as a whole have no notion of whether they're running
               @current_resource.running false
+            else
+              service = shell_out!("lssrc -s #{@new_resource.service_name}").stdout
+              if service.split(' ').last == 'active'
+                @current_resource.running true
+              else
+                @current_resource.running false
+              end
             end
             Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
             # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
@@ -112,11 +115,9 @@ class Chef
           end
         end
 
-        def is_resource_group? (services)
-          if services.length > 1
-            Chef::Log.debug("#{@new_resource.service_name} is a group")
-            @is_resource_group = true
-          elsif services[0].split(' ')[1] == @new_resource.service_name
+        def is_resource_group?
+          so = shell_out!("lssrc -g #{@new_resource.service_name}")
+          if so.exitstatus == 0
             Chef::Log.debug("#{@new_resource.service_name} is a group")
             @is_resource_group = true
           end
