@@ -20,7 +20,6 @@ require 'spec_helper'
 
 shared_examples_for "a knife key command" do
   let(:stderr) { StringIO.new }
-  let(:params) { [] }
   let(:command) do
     c = described_class.new([])
     c.ui.config[:disable_editing] = true
@@ -31,7 +30,8 @@ shared_examples_for "a knife key command" do
   end
 
   context "before apply_params! is called" do
-    context "when apply_params! is called with invalid args" do
+    context "when apply_params! is called with invalid args (missing actor)" do
+      let(:params) { [] }
       it "shows the usage" do
         expect(command).to receive(:show_usage)
         expect { command.apply_params!(params) }.to exit_with_code(1)
@@ -49,7 +49,6 @@ shared_examples_for "a knife key command" do
   end # before apply_params! is called
 
   context "after apply_params! is called with valid args" do
-    let(:params) { ["charmander"] }
     before do
       command.apply_params!(params)
     end

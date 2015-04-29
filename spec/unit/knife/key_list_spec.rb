@@ -58,6 +58,7 @@ describe "key list commands that inherit knife" do
     # defined in key_helpers.rb
     it_should_behave_like "a knife key command" do
       let(:service_object) { instance_double(Chef::Knife::KeyList) }
+      let(:params) { ["charmander"] }
     end
   end
 
@@ -66,6 +67,7 @@ describe "key list commands that inherit knife" do
     # defined in key_helpers.rb
     it_should_behave_like "a knife key command" do
       let(:service_object) { instance_double(Chef::Knife::KeyList) }
+      let(:params) { ["charmander"] }
     end
   end
 end
