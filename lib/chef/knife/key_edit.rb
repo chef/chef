@@ -99,7 +99,7 @@ EOS
         key = update_key_from_hash(output)
 
         to_display = "Updated key: #{key.name}"
-        to_display = "#{to_display} (formally #{@original_name})" if key.name != @original_name
+        to_display << " (formally #{@original_name})" if key.name != @original_name
         display_info(to_display)
         if key.private_key
           if @config[:file]

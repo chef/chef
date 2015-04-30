@@ -81,7 +81,7 @@ describe Chef::Knife::KeyDelete do
 
   shared_examples_for "key delete run command" do
     let(:key_delete_object) {
-      described_class.new(keyname, actor, actor_field_name, ui,)
+      described_class.new(keyname, actor, actor_field_name, ui)
     }
 
     before do

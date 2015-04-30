@@ -27,7 +27,7 @@ class Chef
     #
     # @attr_reader [String] actor the name of the client that this key is for
     class UserKeyDelete < Knife
-      banner "knife user key delete USER KEYNAME"
+      banner "knife user key delete USER KEYNAME (options)"
 
       attr_reader :actor
 
