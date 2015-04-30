@@ -152,7 +152,6 @@ class Chef
     def initialize(json_attribs=nil, args={})
       @json_attribs = json_attribs || {}
       @node = nil
-      @run_status = nil
       @runner = nil
       @ohai = Ohai::System.new
 
@@ -162,6 +161,7 @@ class Chef
       @events = EventDispatch::Dispatcher.new(*event_handlers)
       @override_runlist = args.delete(:override_runlist)
       @specific_recipes = args.delete(:specific_recipes)
+      @run_status = Chef::RunStatus.new(node, events)
 
       if new_runlist = args.delete(:runlist)
         @json_attribs["run_list"] = new_runlist
@@ -248,7 +248,7 @@ class Chef
     # @return [Chef::Node] The updated node object
     def build_node
       policy_builder.build_node
-      @run_status = Chef::RunStatus.new(node, events)
+      @run_status.node = node
       node
     end
 

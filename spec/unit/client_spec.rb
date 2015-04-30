@@ -819,4 +819,17 @@ describe Chef::Client do
     end
 
   end
+
+  describe "always attempt to run handlers" do
+    subject { client }
+    before do
+      # fail on the first thing in begin block
+      allow_any_instance_of(Chef::RunLock).to receive(:save_pid).and_raise(NoMethodError)
+    end
+
+    it "should run exception handlers on early fail" do
+      expect(subject).to receive(:run_failed)
+      expect { subject.run }.to raise_error(NoMethodError)
+    end
+  end
 end
