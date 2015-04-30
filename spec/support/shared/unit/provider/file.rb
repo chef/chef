@@ -537,19 +537,39 @@ shared_examples_for Chef::Provider::File do
           end
           context "when the file was created" do
             before { expect(provider).to receive(:needs_creating?).at_least(:once).and_return(true) }
-            it "does not backup the file and does not produce a diff for reporting" do
+            it "does not backup the file" do
               expect(provider).not_to receive(:do_backup)
               provider.send(:do_contents_changes)
+            end
+
+            it "does not produce a diff for reporting" do
+              provider.send(:do_contents_changes)
               expect(resource.diff).to be_nil
+            end
+
+            it "renders the final checksum correctly for reporting" do
+              provider.send(:do_contents_changes)
               expect(resource.state_for_resource_reporter[:checksum]).to eql(tempfile_sha256)
             end
           end
           context "when the file was not created" do
-            before { expect(provider).to receive(:needs_creating?).at_least(:once).and_return(false) }
-            it "backs up the file and produces a diff for reporting" do
+            before do
+              allow(provider).to receive(:do_backup)  # stub do_backup
+              expect(provider).to receive(:needs_creating?).at_least(:once).and_return(false)
+            end
+
+            it "backs up the file" do
               expect(provider).to receive(:do_backup)
               provider.send(:do_contents_changes)
+            end
+
+            it "produces a diff for reporting" do
+              provider.send(:do_contents_changes)
               expect(resource.diff).to eq(diff_for_reporting)
+            end
+
+            it "renders the final checksum correctly for reporting" do
+              provider.send(:do_contents_changes)
               expect(resource.state_for_resource_reporter[:checksum]).to eql(tempfile_sha256)
             end
           end
