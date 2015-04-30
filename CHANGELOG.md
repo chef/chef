@@ -5,6 +5,7 @@
   Always run exception handlers
 
 * Convert bootstrap template to use sh #2877
+* [Issue #3316](https://github.com/chef/chef/issues/3316) Fix idempotency issues with the `windows_package` resource
 
 ## 12.3.0
 * [pr#3160](https://github.com/chef/chef/pull/3160): Use Chef Zero in
