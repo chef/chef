@@ -83,7 +83,15 @@ class Chef
     end
 
     def chef_server_rest
-      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:node_name], Chef::Config[:client_key], validate_utf8: false)
+      # for saving node data we use validate_utf8: false which will not
+      # raise an exception on bad utf8 data, but will replace the bad
+      # characters and render valid JSON.
+      @chef_server_rest ||= Chef::REST.new(
+        Chef::Config[:chef_server_url],
+        Chef::Config[:node_name],
+        Chef::Config[:client_key],
+        validate_utf8: false,
+      )
     end
 
     # Set the name of this Node, or return the current name.
