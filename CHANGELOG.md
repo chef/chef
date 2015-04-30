@@ -1,6 +1,8 @@
 ## Unreleased
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   Fix multipackage and architectures
+* [**Igor Shpakov**](https://github.com/Igorshp)
+  Always run exception handlers
 
 * Convert bootstrap template to use sh #2877
 
