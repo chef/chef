@@ -69,8 +69,8 @@ describe Chef::REST do
     rest
   end
 
-  let(:standard_read_headers) {{"Accept"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id}}
-  let(:standard_write_headers) {{"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id}}
+  let(:standard_read_headers) {{"Accept"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id, 'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::SERVER_API_VERSION}}
+  let(:standard_write_headers) {{"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id, 'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::SERVER_API_VERSION}}
 
   before(:each) do
     Chef::Log.init(log_stringio)
@@ -277,19 +277,6 @@ describe Chef::REST do
       rest
     end
 
-    let(:base_headers) do
-      {
-        'Accept' => 'application/json',
-        'X-Chef-Version' => Chef::VERSION,
-        'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
-        'X-REMOTE-REQUEST-ID' => request_id
-      }
-    end
-
-    let (:req_with_body_headers) do
-      base_headers.merge("Content-Type" => "application/json", "Content-Length" => '13')
-    end
-
     before(:each) do
       Chef::Config[:ssl_client_cert] = nil
       Chef::Config[:ssl_client_key]  = nil
@@ -304,7 +291,8 @@ describe Chef::REST do
           'X-Chef-Version' => Chef::VERSION,
           'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
           'Host' => host_header,
-          'X-REMOTE-REQUEST-ID' => request_id
+          'X-REMOTE-REQUEST-ID' => request_id,
+          'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::SERVER_API_VERSION
         }
       end
 
@@ -548,7 +536,7 @@ describe Chef::REST do
           end
         end
       end
-    end
+    end # as JSON API requests
 
     context "when streaming downloads to a tempfile" do
       let!(:tempfile) {  Tempfile.open("chef-rspec-rest_spec-line-@{__LINE__}--") }
@@ -586,7 +574,8 @@ describe Chef::REST do
                             'X-Chef-Version' => Chef::VERSION,
                             'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
                             'Host' => host_header,
-                            'X-REMOTE-REQUEST-ID'=> request_id
+                            'X-REMOTE-REQUEST-ID'=> request_id,
+                            'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::SERVER_API_VERSION
                             }
         expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
         rest.streaming_request(url, {})
@@ -597,7 +586,8 @@ describe Chef::REST do
                             'X-Chef-Version' => Chef::VERSION,
                             'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
                             'Host' => host_header,
-                            'X-REMOTE-REQUEST-ID'=> request_id
+                            'X-REMOTE-REQUEST-ID'=> request_id,
+                            'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::SERVER_API_VERSION
                             }
         expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
         rest.streaming_request(url, {})
@@ -695,7 +685,7 @@ describe Chef::REST do
         expect(block_called).to be_truthy
       end
     end
-  end
+  end # when making REST requests
 
   context "when following redirects" do
     let(:rest) do

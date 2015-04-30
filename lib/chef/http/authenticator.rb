@@ -24,6 +24,8 @@ class Chef
   class HTTP
     class Authenticator
 
+      SERVER_API_VERSION = "0"
+
       attr_reader :signing_key_filename
       attr_reader :raw_key
       attr_reader :attr_names
@@ -41,6 +43,7 @@ class Chef
 
       def handle_request(method, url, headers={}, data=false)
         headers.merge!(authentication_headers(method, url, data)) if sign_requests?
+        headers.merge!({'X-Ops-Server-API-Version' => SERVER_API_VERSION})
         [method, url, headers, data]
       end
 
