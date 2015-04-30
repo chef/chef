@@ -143,7 +143,7 @@ class Chef
         state_attrs = super()
         # fix up checksum state with final_checksum saved by the provider
         if checksum.nil? && final_checksum
-          state_attrs['checksum'] = final_checksum
+          state_attrs[:checksum] = final_checksum
         end
         state_attrs
       end

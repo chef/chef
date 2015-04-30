@@ -532,7 +532,7 @@ shared_examples_for Chef::Provider::File do
             expect(provider).to receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
             allow(provider).to receive(:managing_content?).and_return(true)
             allow(provider).to receive(:checksum).with(resource_path).and_return(tempfile_sha256)
-            expect(resource).not_to receive(:checksum)  # do not mutate the new resource
+            expect(resource).not_to receive(:checksum).with(tempfile_sha256)  # do not mutate the new resource
             expect(provider.deployment_strategy).to receive(:deploy).with(tempfile_path, normalized_path)
           end
           context "when the file was created" do
@@ -541,6 +541,7 @@ shared_examples_for Chef::Provider::File do
               expect(provider).not_to receive(:do_backup)
               provider.send(:do_contents_changes)
               expect(resource.diff).to be_nil
+              expect(resource.state_for_resource_reporter[:checksum]).to eql(tempfile_sha256)
             end
           end
           context "when the file was not created" do
@@ -549,6 +550,7 @@ shared_examples_for Chef::Provider::File do
               expect(provider).to receive(:do_backup)
               provider.send(:do_contents_changes)
               expect(resource.diff).to eq(diff_for_reporting)
+              expect(resource.state_for_resource_reporter[:checksum]).to eql(tempfile_sha256)
             end
           end
         end
