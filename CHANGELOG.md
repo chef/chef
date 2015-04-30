@@ -1,5 +1,10 @@
 ## Unreleased
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix multipackage and architectures
 
+* Convert bootstrap template to use sh #2877
+
+## 12.3.0
 * [pr#3160](https://github.com/chef/chef/pull/3160): Use Chef Zero in
   socketless mode for local mode, add `--no-listen` flag to disable port
   binding
@@ -16,6 +21,7 @@
   Ensure knife ssh doesn't use a non-existant field for hostname #3131
 * [**Tom Hughes**](https://github.com/tomhughes)
   Ensure searches progress in the face of incomplete responses #3135
+
 * [pr#3162](https://github.com/chef/chef/pull/3162): Add
   `--minimal-ohai` flag to client/solo/apply; restricts ohai to only the
   bare minimum of plugins.
@@ -23,12 +29,9 @@
 * gem_package, chef_gem should not shell out to using https://rubygems.org #2867
 * Add dynamic resource resolution similar to dynamic provider resolution
 * Add Chef class fascade to internal structures
-* Convert bootstrap template to use sh #2877
 * Fix nil pointer for windows event logger #3200
 * Use partial search for knife status
 * Ensure chef/knife properly honours proxy config
-* [**Phil Dibowitz**](https://github.com/jaymzh):
-  Fix multipackage and architectures
 
 ## 12.2.1
 * [Issue 3153](https://github.com/chef/chef/issues/3153): Fix bug where unset HOME would cause chef to crash
