@@ -279,7 +279,7 @@ class Chef
     end
 
     def run_ohai
-      filter = Chef::Config[:minimal_ohai] ? %w[fqdn machinename hostname platform platform_version os os_version] : nil
+      filter = Chef::Config[:minimal_ohai] ? %w[fqdn machinename hostname platform platform_version os os_version ps] : nil
       ohai.all_plugins(filter)
       @events.ohai_completed(node)
     end
