@@ -158,7 +158,7 @@ UINT MsiCloseHandle(
             raise Chef::Exceptions::Package, msg
           end
 
-          version
+          version.chomp(0.chr)
         end
       end
     end
