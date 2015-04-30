@@ -71,3 +71,34 @@ shared_examples_for "a knife key command" do
     end
   end
 end # a knife key command
+
+shared_examples_for "a knife key command with a keyname as the second arg" do
+  let(:stderr) { StringIO.new }
+  let(:command) do
+    c = described_class.new([])
+    c.ui.config[:disable_editing] = true
+    allow(c.ui).to receive(:stderr).and_return(stderr)
+    allow(c.ui).to receive(:stdout).and_return(stderr)
+    allow(c).to receive(:show_usage)
+    c
+  end
+
+  context "before apply_params! is called" do
+    context "when apply_params! is called with invalid args (missing keyname)" do
+      let(:params) { ["charmander"] }
+      it "shows the usage" do
+        expect(command).to receive(:show_usage)
+        expect { command.apply_params!(params) }.to exit_with_code(1)
+      end
+
+      it "outputs the proper error" do
+        expect { command.apply_params!(params) }.to exit_with_code(1)
+        expect(stderr.string).to include(command.keyname_missing_error)
+      end
+
+      it "exits 1" do
+        expect { command.apply_params!(params) }.to exit_with_code(1)
+      end
+    end
+  end # before apply_params! is called
+end

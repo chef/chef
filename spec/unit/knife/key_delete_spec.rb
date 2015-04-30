@@ -36,25 +36,6 @@ describe "key delete commands that inherit knife" do
       c
     end
 
-    context "before apply_params! is called" do
-      context "when apply_params! is called with invalid args (missing keyname)" do
-        let(:params) { ["charmander"] }
-        it "shows the usage" do
-          expect(command).to receive(:show_usage)
-          expect { command.apply_params!(params) }.to exit_with_code(1)
-        end
-
-        it "outputs the proper error" do
-          expect { command.apply_params!(params) }.to exit_with_code(1)
-          expect(stderr.string).to include(command.keyname_missing_error)
-        end
-
-        it "exits 1" do
-          expect { command.apply_params!(params) }.to exit_with_code(1)
-        end
-      end
-    end # before apply_params! is called
-
     context "after apply_params! is called with valid args" do
       let(:params) { ["charmander", "charmander-key"] }
       before do
@@ -75,6 +56,7 @@ describe "key delete commands that inherit knife" do
   describe Chef::Knife::UserKeyDelete do
     it_should_behave_like "a key delete command"
     # defined in key_helpers.rb
+    it_should_behave_like "a knife key command with a keyname as the second arg"
     it_should_behave_like "a knife key command" do
       let(:service_object) { instance_double(Chef::Knife::KeyDelete) }
       let(:params) { ["charmander", "charmander-key"] }
@@ -84,6 +66,7 @@ describe "key delete commands that inherit knife" do
   describe Chef::Knife::ClientKeyDelete do
     it_should_behave_like "a key delete command"
     # defined in key_helpers.rb
+    it_should_behave_like "a knife key command with a keyname as the second arg"
     it_should_behave_like "a knife key command" do
       let(:service_object) { instance_double(Chef::Knife::KeyDelete) }
       let(:params) { ["charmander", "charmander-key"] }

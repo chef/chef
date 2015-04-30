@@ -17,19 +17,20 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/key_edit_base'
 
 class Chef
   class Knife
-    # Implements knife user key create using Chef::Knife::KeyCreate
+    # Implements knife user key edit using Chef::Knife::KeyEdit
     # as a service class.
     #
     # @author Tyler Cloke
     #
     # @attr_reader [String] actor the name of the user that this key is for
-    class UserKeyCreate < Knife
-      include Chef::Knife::KeyCreateBase
+    class UserKeyEdit < Knife
+      include Chef::Knife::KeyEditBase
 
-      banner 'knife user key create USER (options)'
+      banner 'knife user key edit USER KEYNAME (options)'
 
       attr_reader :actor
 
@@ -48,11 +49,15 @@ class Chef
       end
 
       def service_object
-        @service_object ||= Chef::Knife::KeyCreate.new(@actor, actor_field_name, ui, config)
+        @service_object ||= Chef::Knife::KeyEdit.new(@name, @actor, actor_field_name, ui, config)
       end
 
       def actor_missing_error
         'You must specify a user name'
+      end
+
+      def keyname_missing_error
+        'You must specify a key name'
       end
 
       def apply_params!(params)
@@ -62,7 +67,14 @@ class Chef
           ui.fatal(actor_missing_error)
           exit 1
         end
+        @name = params[1]
+        if @name.nil?
+          show_usage
+          ui.fatal(keyname_missing_error)
+          exit 1
+        end
       end
     end
   end
 end
+
