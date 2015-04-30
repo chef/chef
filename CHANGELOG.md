@@ -1,9 +1,12 @@
 # Chef Client Changelog
 
-## 11.18.10
+## 11.18.12
 * Omnibus security updates for OpenSSL vulnerabilities CVE-2015-0286,
   CVE-2015-0287, CVE-2015-0289, CVE-2015-0292, CVE-2015-0293,
   CVE-2015-0209, CVE-2015-0288
+
+## 11.18.10
+* Unreleased
 
 ## 11.18.8
 * Unreleased
