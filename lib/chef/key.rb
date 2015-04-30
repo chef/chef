@@ -204,8 +204,10 @@ class Chef
     def self.from_hash(key_hash)
       if key_hash.has_key?("user")
         key = Chef::Key.new(key_hash["user"], "user")
-      else
+      elsif key_hash.has_key?("client")
         key = Chef::Key.new(key_hash["client"], "client")
+      else
+        raise Chef::Exceptions::MissingKeyAttribute, "The hash passed to from_hash does not contain the key 'user' or 'client'. Please pass a hash that defines one of those keys."
       end
       key.name key_hash['name'] if key_hash.key?('name')
       key.public_key key_hash['public_key'] if key_hash.key?('public_key')
@@ -235,12 +237,12 @@ class Chef
 
     def self.load_by_user(actor, key_name)
       response = Chef::REST.new(Chef::Config[:chef_server_root]).get_rest("users/#{actor}/keys/#{key_name}")
-      Chef::Key.from_hash(response)
+      Chef::Key.from_hash(response.merge({"user" => actor}))
     end
 
     def self.load_by_client(actor, key_name)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients/#{actor}/keys/#{key_name}")
-      Chef::Key.from_hash(response)
+      Chef::Key.from_hash(response.merge({"client" => actor}))
     end
 
     def self.generate_fingerprint(public_key)
