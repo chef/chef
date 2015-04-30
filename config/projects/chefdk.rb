@@ -34,6 +34,8 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
+override :chefdk, version: '0.5.1'
+
 # As of 27 October 2014, the newest CA cert bundle does not work with AWS's
 # root cert. See:
 # * https://github.com/opscode/chef-dk/issues/199
@@ -48,7 +50,7 @@ override :cacerts, version: '2014.08.20'
 
 override :berkshelf,      version: "v3.2.3"
 override :bundler,        version: "1.7.12"
-override :chef,           version: "12.2.1"
+override :chef,           version: "12.3.0"
 override :'chef-vault',   version: "v2.4.0"
 
 # TODO: Can we bump default versions in omnibus-software?
