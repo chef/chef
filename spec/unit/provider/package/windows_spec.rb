@@ -47,14 +47,14 @@ describe Chef::Provider::Package::Windows, :windows_only do
       provider.load_current_resource
       expect(provider.new_resource.version).to eql("2.0")
     end
-
-    it "checks that the source path is valid" do
-      expect(Chef::Util::PathHelper).to receive(:validate_path)
-      provider.load_current_resource
-    end
   end
 
   describe "package_provider" do
+    it "checks that the source path is valid" do
+      expect(Chef::Util::PathHelper).to receive(:validate_path)
+      provider.package_provider
+    end
+
     it "sets the package provider to MSI if the the installer type is :msi" do
       allow(provider).to receive(:installer_type).and_return(:msi)
       expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::MSI)

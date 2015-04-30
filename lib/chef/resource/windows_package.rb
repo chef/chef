@@ -69,10 +69,26 @@ class Chef
           @source
         else
           raise ArgumentError, "Bad type for WindowsPackage resource, use a String" unless arg.is_a?(String)
-          Chef::Log.debug("#{package_name}: sanitizing source path '#{arg}'")
-          @source = ::File.absolute_path(arg).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
+          if is_url?(arg)
+            @source = arg
+          else
+            @source = ::File.absolute_path(arg).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
+          end
         end
       end
+
+      private
+
+      def is_url?(source)
+        begin
+          scheme = URI.split(source).first
+          return false unless scheme
+          %w(http https ftp file).include?(scheme.downcase)
+        rescue URI::InvalidURIError
+          return false
+        end
+      end
+
     end
   end
 end

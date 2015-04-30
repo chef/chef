@@ -19,6 +19,7 @@
 require 'chef/resource/windows_package'
 require 'chef/provider/package'
 require 'chef/util/path_helper'
+require 'uri'
 
 class Chef
   class Provider
@@ -36,19 +37,23 @@ class Chef
 
         # load_current_resource is run in Chef::Provider#run_action when not in whyrun_mode?
         def load_current_resource
-          @new_resource.source(Chef::Util::PathHelper.validate_path(@new_resource.source))
-
           @current_resource = Chef::Resource::WindowsPackage.new(@new_resource.name)
-          @current_resource.version(package_provider.installed_version)
-          @new_resource.version(package_provider.package_version)
-          @current_resource
+          if should_download?
+            Chef::Log.debug("We do not know the version of #{new_resource.source} because the file is not downloaded")
+            current_resource.version(:unknown.to_s)
+          else
+            current_resource.version(package_provider.installed_version)
+            new_resource.version(package_provider.package_version)
+          end
+
+          current_resource
         end
 
         def package_provider
           @package_provider ||= begin
             case installer_type
             when :msi
-              Chef::Provider::Package::Windows::MSI.new(@new_resource)
+              Chef::Provider::Package::Windows::MSI.new(resource_for_provider)
             else
               raise "Unable to find a Chef::Provider::Package::Windows provider for installer_type '#{installer_type}'"
             end
@@ -71,6 +76,14 @@ class Chef
           end
         end
 
+        def action_install
+          if should_download?
+            download_source_file
+            load_current_resource
+          end
+          super
+        end
+
         # Chef::Provider::Package action_install + action_remove call install_package + remove_package
         # Pass those calls to the correct sub-provider
         def install_package(name, version)
@@ -80,6 +93,63 @@ class Chef
         def remove_package(name, version)
           package_provider.remove_package(name, version)
         end
+
+        # @return [Array] new_version(s) as an array
+        def new_version_array
+          # Because the one in the parent caches things
+          [new_resource.version]
+        end
+
+        private
+
+        def should_download?
+          is_url?(new_resource.source) && !::File.exists?(source_location)
+        end
+
+        def resource_for_provider
+          @resource_for_provider = Chef::Resource::WindowsPackage.new(new_resource.name).tap do |r|
+            r.source(Chef::Util::PathHelper.validate_path(source_location))
+            r.timeout(new_resource.timeout)
+            r.returns(new_resource.returns)
+            r.options(new_resource.options)
+          end
+        end
+
+        def download_source_file
+          source_resource.run_action(:create)
+          Chef::Log.debug("#{@new_resource} fetched source file to #{source_resource.path}")
+        end
+
+        def source_resource
+          @remote_file ||= Chef::Resource::RemoteFile.new(source_location, run_context).tap do |r|
+            r.source(new_resource.source)
+            r.backup(false)
+          end
+        end
+
+        def source_location
+          @source_location ||= begin
+            if is_url?(new_resource.source)
+              uri = ::URI.parse(new_resource.source)
+              filename = ::File.basename(::URI.unescape(uri.path))
+              file_cache_dir = Chef::FileCache.create_cache_path("package/")
+              Chef::Util::PathHelper.cleanpath("#{file_cache_dir}/#{filename}")
+            else
+              Chef::Util::PathHelper.cleanpath(new_resource.source)
+            end
+          end
+        end
+
+        def is_url?(source)
+          begin
+            scheme = URI.split(source).first
+            return false unless scheme
+            %w(http https ftp file).include?(scheme.downcase)
+          rescue URI::InvalidURIError
+            return false
+          end
+        end
+
       end
     end
   end
