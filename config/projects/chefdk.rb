@@ -60,12 +60,12 @@ override :libtool,        version: "2.4.2"
 override :libxml2,        version: "2.9.1"
 override :libxslt,        version: "1.1.28"
 
-override :ruby,           version: "2.1.5"
+override :ruby,           version: "2.1.6"
 ######
 # Ruby 2.1/2.2 has an error on Windows - HTTPS gem downloads aren't working
 # https://bugs.ruby-lang.org/issues/11033
 # Going to leave 2.1.5 for now since there is a workaround
-override :'ruby-windows', version: "2.1.5"
+override :'ruby-windows', version: "2.1.6"
 override :'ruby-windows-devkit', version: "4.7.2-20130224-1151"
 #override :'ruby-windows', version: "2.0.0-p451"
 ######
