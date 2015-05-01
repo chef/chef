@@ -1,35 +1,36 @@
 ---
-driver_config:
+driver:
+  name: ec2
   aws_access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
   aws_secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
   aws_ssh_key_id: <%= ENV['AWS_KEYPAIR_NAME'] %>
-  iam_profile_name: <%= ENV['IAM_PROFILE_NAME'] %>
+  region: "us-west-2"
+  availability_zone: "us-west-2a"
+  security_group_ids: ["travis-ci"]
+
 
 provisioner:
-  name: chef_zero
-  github: <%= ENV['TRAVIS_REPO_SLUG'] %>
-  branch: <%= ENV['TRAVIS_COMMIT'] %>
-  require_chef_omnibus: 12.0.0-rc.2
+  name: chef_github
+  github_owner: "chef"
+  github_repo: "chef"
+  refname: <%= ENV['TRAVIS_COMMIT'] %>
   data_path: test/fixtures
 # disable file provider diffs so we don't overflow travis' line limit
   client_rb:
     diff_disabled: true
 
+transport:
+  ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
+
 platforms:
   - name: ubuntu-12.04
-    driver_plugin: ec2
-    driver_config:
-      region: "us-west-2"
-      availability_zone: "us-west-2a"
-      ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
-      security_group_ids: ["travis-ci"]
-  - name: centos-6.4
-    driver_plugin: ec2
-    driver_config:
-      region: "us-west-2"
-      availability_zone: "us-west-2a"
-      ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
-      security_group_ids: ["travis-ci"]
+    driver:
+      # http://cloud-images.ubuntu.com/locator/ec2/
+      image_id: ami-c15379f1
+  - name: rhel-6
+    driver:
+      # https://github.com/chef/releng-chef-repo/blob/master/script/ci#L93-L96
+      image_id: ami-7df0bd4d
 
 suites:
   - name: webapp

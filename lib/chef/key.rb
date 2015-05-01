@@ -99,6 +99,10 @@ class Chef
       @public_key = nil
     end
 
+    def delete_create_key
+      @create_key = nil
+    end
+
     def create_key(arg=nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set create_key to true if the public_key field exists" if arg == true && !@public_key.nil?
       set_or_return(:create_key, arg,
@@ -147,7 +151,11 @@ class Chef
       payload['public_key'] = @public_key unless @public_key.nil?
       payload['create_key'] = @create_key if @create_key
       payload['expiration_date'] = @expiration_date unless @expiration_date.nil?
-      new_key = chef_rest.post_rest("#{api_base}/#{@actor}/keys", payload)
+      result = chef_rest.post_rest("#{api_base}/#{@actor}/keys", payload)
+      # append the private key to the current key if the server returned one,
+      # since the POST endpoint just returns uri and private_key if needed.
+      new_key = self.to_hash
+      new_key["private_key"] = result["private_key"] if result["private_key"]
       Chef::Key.from_hash(new_key)
     end
 
@@ -155,12 +163,22 @@ class Chef
       self.class.generate_fingerprint(@public_key)
     end
 
-    def update
-      if @name.nil?
-        raise Chef::Exceptions::MissingKeyAttribute, "the name field must be populated when update is called"
+    # set @name and pass put_name if you wish to update the name of an existing key put_name to @name
+    def update(put_name=nil)
+      if @name.nil? && put_name.nil?
+        raise Chef::Exceptions::MissingKeyAttribute, "the name field must be populated or you must pass a name to update when update is called"
       end
 
-      new_key = chef_rest.put_rest("#{api_base}/#{@actor}/keys/#{@name}", to_hash)
+      # If no name was passed, fall back to using @name in the PUT URL, otherwise
+      # use the put_name passed. This will update the a key by the name put_name
+      # to @name.
+      put_name = @name if put_name.nil?
+
+      new_key = chef_rest.put_rest("#{api_base}/#{@actor}/keys/#{put_name}", to_hash)
+      # if the server returned a public_key, remove the create_key field, as we now have a key
+      if new_key["public_key"]
+        self.delete_create_key
+      end
       Chef::Key.from_hash(self.to_hash.merge(new_key))
     end
 
@@ -186,8 +204,10 @@ class Chef
     def self.from_hash(key_hash)
       if key_hash.has_key?("user")
         key = Chef::Key.new(key_hash["user"], "user")
-      else
+      elsif key_hash.has_key?("client")
         key = Chef::Key.new(key_hash["client"], "client")
+      else
+        raise Chef::Exceptions::MissingKeyAttribute, "The hash passed to from_hash does not contain the key 'user' or 'client'. Please pass a hash that defines one of those keys."
       end
       key.name key_hash['name'] if key_hash.key?('name')
       key.public_key key_hash['public_key'] if key_hash.key?('public_key')
@@ -217,12 +237,12 @@ class Chef
 
     def self.load_by_user(actor, key_name)
       response = Chef::REST.new(Chef::Config[:chef_server_root]).get_rest("users/#{actor}/keys/#{key_name}")
-      Chef::Key.from_hash(response)
+      Chef::Key.from_hash(response.merge({"user" => actor}))
     end
 
     def self.load_by_client(actor, key_name)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients/#{actor}/keys/#{key_name}")
-      Chef::Key.from_hash(response)
+      Chef::Key.from_hash(response.merge({"client" => actor}))
     end
 
     def self.generate_fingerprint(public_key)

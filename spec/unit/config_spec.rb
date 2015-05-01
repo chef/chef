@@ -51,7 +51,6 @@ describe Chef::Config do
         expect(Chef::Config.chef_server_url).to eq("https://junglist.gen.nz")
       end
     end
-
   end
 
   describe "when configuring formatters" do
@@ -173,6 +172,50 @@ describe Chef::Config do
           end
 
           allow(Chef::Config).to receive(:path_accessible?).and_return(false)
+        end
+
+        describe "Chef::Config[:chef_server_root]" do
+          context "when chef_server_url isn't set manually" do
+            it "returns the default of 'https://localhost:443'" do
+              expect(Chef::Config[:chef_server_root]).to eq("https://localhost:443")
+            end
+          end
+
+          context "when chef_server_url matches '../organizations/*' without a trailing slash" do
+            before do
+              Chef::Config[:chef_server_url] = "https://example.com/organizations/myorg"
+            end
+            it "returns the full URL without /organizations/*" do
+              expect(Chef::Config[:chef_server_root]).to eq("https://example.com")
+            end
+          end
+
+          context "when chef_server_url matches '../organizations/*' with a trailing slash" do
+            before do
+              Chef::Config[:chef_server_url] = "https://example.com/organizations/myorg/"
+            end
+            it "returns the full URL without /organizations/*" do
+              expect(Chef::Config[:chef_server_root]).to eq("https://example.com")
+            end
+          end
+
+          context "when chef_server_url matches '..organizations..' but not '../organizations/*'" do
+            before do
+              Chef::Config[:chef_server_url] = "https://organizations.com/organizations"
+            end
+            it "returns the full URL without any modifications" do
+              expect(Chef::Config[:chef_server_root]).to eq(Chef::Config[:chef_server_url])
+            end
+          end
+
+          context "when chef_server_url is a standard URL without the string organization(s)" do
+            before do
+              Chef::Config[:chef_server_url] = "https://example.com/some_other_string"
+            end
+            it "returns the full URL without any modifications" do
+              expect(Chef::Config[:chef_server_root]).to eq(Chef::Config[:chef_server_url])
+            end
+          end
         end
 
         describe "Chef::Config[:cache_path]" do

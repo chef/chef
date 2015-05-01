@@ -2,13 +2,8 @@ source "https://rubygems.org"
 
 group :end_to_end do
   gem 'berkshelf'
-  # Once merged into test-kitchen/test-kitchen:master we can remove
-  # this and replace it with
-  # gem 'test-kitchen', :github => 'test-kitchen/test-kitchen'
-  # until the next test-kitchen gem release.
-  gem 'test-kitchen', :github => 'mcquin/test-kitchen',
-                      :branch => 'mcquin/install_chef_from_github'
-
-  gem 'kitchen-vagrant' # Used for local testing
-  gem 'kitchen-ec2'     # Used for remote (Travis) testing
+  gem 'test-kitchen', '~> 1.4.0'
+  gem 'kitchen-appbundle-updater', '~> 0.0.1'
+  gem "kitchen-vagrant", '~> 0.17.0'
+  gem 'kitchen-ec2', :github => 'test-kitchen/kitchen-ec2'
 end

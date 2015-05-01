@@ -39,13 +39,11 @@ class Chef::RunStatus
 
   attr_accessor :run_id
 
+  attr_accessor :node
+
   def initialize(node, events)
     @node = node
     @events = events
-  end
-
-  def node
-    @node
   end
 
   # sets +start_time+ to the current time.
