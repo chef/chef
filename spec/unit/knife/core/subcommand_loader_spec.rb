@@ -111,6 +111,7 @@ describe Chef::Knife::SubcommandLoader do
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-x86-mingw32/lib/chef/knife/valid.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-i386-mingw64/lib/chef/knife/valid-too.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-mswin32/lib/chef/knife/also-valid.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}-universal-mingw32/lib/chef/knife/universal-is-valid.rb",
         # ...but don't ignore the .rc / .dev parts in the case when we have
         # platform suffixes
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}.rc.0-x86-mingw32/lib/chef/knife/invalid.rb",
