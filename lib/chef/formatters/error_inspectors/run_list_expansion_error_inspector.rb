@@ -98,6 +98,8 @@ E
             error_description.section("Possible Causes:",<<-E)
 * Your client (#{username}) may have misconfigured authorization permissions.
 E
+          when Net::HTTPNotAcceptable
+            describe_406_error(error_description, response)
           when Net::HTTPInternalServerError
             error_description.section("Unknown Server Error:",<<-E)
 The server had a fatal error attempting to load a role.

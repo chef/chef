@@ -381,8 +381,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone", :min_version => "0", :max_version => "1"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[The version of Chef that Knife is using is not supported by the Chef server you sent this request to])
-      expect(stderr.string).to match(%r[This version of Chef requires a server API version of #{Chef::HTTP::Authenticator::SERVER_API_VERSION}])
+      expect(stderr.string).to include('The version of Chef that Knife is using is not supported by the Chef server you sent this request to')
+      expect(stderr.string).to include("This version of Chef requires a server API version of #{Chef::HTTP::Authenticator::SERVER_API_VERSION}")
     end
 
     it "formats 500s nicely" do

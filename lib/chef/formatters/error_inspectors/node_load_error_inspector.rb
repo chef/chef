@@ -84,6 +84,8 @@ E
             describe_500_error(error_description)
           when Net::HTTPBadGateway, Net::HTTPServiceUnavailable
             describe_503_error(error_description)
+          when Net::HTTPNotAcceptable
+            describe_406_error(error_description, response)
           else
             describe_http_error(error_description)
           end
