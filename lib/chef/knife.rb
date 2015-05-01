@@ -27,6 +27,7 @@ require 'chef/knife/core/subcommand_loader'
 require 'chef/knife/core/ui'
 require 'chef/local_mode'
 require 'chef/rest'
+require 'chef/http/authenticator'
 require 'pp'
 
 class Chef
@@ -483,6 +484,13 @@ class Chef
       when Net::HTTPServiceUnavailable
         ui.error "Service temporarily unavailable"
         ui.info "Response: #{format_rest_error(response)}"
+      when Net::HTTPNotAcceptable
+        min_version = Chef::JSONCompat.from_json(response.body)["min_version"]
+        max_version = Chef::JSONCompat.from_json(response.body)["max_version"]
+        ui.error "The version of Chef that Knife is using is not supported by the Chef server you sent this request to"
+        ui.info "This version of Chef requires a server API version of #{Chef::HTTP::Authenticator::SERVER_API_VERSION}"
+        ui.info "The Chef server you sent the request to supports a min API verson of #{min_version} and a max API version of #{max_version}"
+        ui.info "Please either update your Chef client or server to be a compatible set"
       else
         ui.error response.message
         ui.info "Response: #{format_rest_error(response)}"

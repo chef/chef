@@ -375,6 +375,16 @@ describe Chef::Knife do
       expect(stderr.string).to match(%r[Response: nothing to see here])
     end
 
+    it "formats 406s (non-supported API version error) nicely" do
+      response = Net::HTTPNotAcceptable.new("1.1", "406", "Not Acceptable")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone", :min_version => "0", :max_version => "1"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
+      knife.run_with_pretty_exceptions
+      expect(stderr.string).to match(%r[The version of Chef that Knife is using is not supported by the Chef server you sent this request to])
+      expect(stderr.string).to match(%r[This version of Chef requires a server API version of #{Chef::HTTP::Authenticator::SERVER_API_VERSION}])
+    end
+
     it "formats 500s nicely" do
       response = Net::HTTPInternalServerError.new("1.1", "500", "Internal Server Error")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
