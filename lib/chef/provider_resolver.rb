@@ -47,7 +47,9 @@ class Chef
     def enabled_handlers
       @enabled_handlers ||=
         providers.select do |klass|
-          klass.provides?(node, resource.resource_name)
+          # NB: this is different from resource_resolver which must pass a resource_name
+          # FIXME: deprecate this and normalize on passing resource_name here
+          klass.provides?(node, resource)
         end.sort {|a,b| a.to_s <=> b.to_s }
     end
 

@@ -1,5 +1,13 @@
 ## Unreleased
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix multipackage and architectures
+* [**Igor Shpakov**](https://github.com/Igorshp)
+  Always run exception handlers
 
+* Convert bootstrap template to use sh #2877
+* [Issue #3316](https://github.com/chef/chef/issues/3316) Fix idempotency issues with the `windows_package` resource
+
+## 12.3.0
 * [pr#3160](https://github.com/chef/chef/pull/3160): Use Chef Zero in
   socketless mode for local mode, add `--no-listen` flag to disable port
   binding
@@ -24,7 +32,6 @@
 * gem_package, chef_gem should not shell out to using https://rubygems.org #2867
 * Add dynamic resource resolution similar to dynamic provider resolution
 * Add Chef class fascade to internal structures
-* Convert bootstrap template to use sh #2877
 * Fix nil pointer for windows event logger #3200
 * Use partial search for knife status
 * Ensure chef/knife properly honours proxy config

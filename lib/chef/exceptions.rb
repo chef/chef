@@ -70,6 +70,7 @@ class Chef
     class InvalidPrivateKey < ArgumentError; end
     class ConfigurationError < ArgumentError; end
     class MissingKeyAttribute < ArgumentError; end
+    class KeyCommandInputError < ArgumentError; end
     class InvalidKeyArgument < ArgumentError; end
     class InvalidKeyAttribute < ArgumentError; end
     class RedirectLimitExceeded < RuntimeError; end
