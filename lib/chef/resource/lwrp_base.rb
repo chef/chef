@@ -28,9 +28,6 @@ class Chef
     # so attributes, default action, etc. can be defined with pleasing syntax.
     class LWRPBase < Resource
 
-      # Don't create DSL for l_w_r_p_base
-      provides_nothing
-
       NULL_ARG = Object.new
 
       extend Chef::Mixin::ConvertToClassName

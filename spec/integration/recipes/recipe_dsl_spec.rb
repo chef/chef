@@ -208,22 +208,6 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "When Thingy6 uses provides_nothing" do
-        before(:context) {
-
-          class Foo::Thingy6 < Chef::Resource
-            provides_nothing
-          end
-
-        }
-
-        it "thingy6 does not work in a recipe" do
-          expect_converge {
-            thingy6 'blah' do; end
-          }.to raise_error(NoMethodError)
-        end
-      end
-
       context "With platform-specific resources 'my_super_thingy_foo' and 'my_super_thingy_bar'" do
         before(:context) {
           class MySuperThingyFoo < BaseThingy

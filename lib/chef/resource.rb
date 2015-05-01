@@ -978,17 +978,6 @@ class Chef
       Chef::DSL::Resources.add_resource_dsl(name)
     end
 
-    def self.provides_nothing
-      unprovided_names = super
-
-      unprovided_names.each do |name|
-        resource = resource_matching_short_name(name)
-        if !resource || resource == self
-          Chef::DSL::Resources.remove_resource_dsl(name)
-        end
-      end
-    end
-
     # Helper for #notifies
     def validate_resource_spec!(resource_spec)
       run_context.resource_collection.validate_lookup_spec!(resource_spec)
