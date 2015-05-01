@@ -48,9 +48,15 @@ platforms:
     run_list: apt::default
   - name: ubuntu-14.04
     run_list: apt::default
-  # The following (private) boxes are shared via Atlas. Please note this
-  # requires adding your Atlans account to the `Chef` org and will
-  # require a `vagrant login`.
+  # The following (private) boxes are shared via Atlas and are only
+  # available to users working for Chef. Sorry, it's about software licensing.
+  # 
+  # Chef-internal users, you will need to:  
+  # 1.  Create an Atlas account:  https://atlas.hashicorp.com/
+  # 2.  Ping the Release Services room with your Atlas account name
+  #     to be added to the relevant team in Atlas,
+  # 3.  Do `vagrant login` with your Atlas creds so that you can download
+  #     the private boxes.   
   #
   # The Mac OS X boxes are VMware only also. You can enable VMware Fusion
   # as the default provider by copying `.kitchen.local.yml.vmware.example`
