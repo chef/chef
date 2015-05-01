@@ -30,17 +30,17 @@ describe "Chef::Log::Syslog", :unix_only => true do
   end
 
   it "should send message with severity info to syslog." do
-    expect_any_instance_of(Logger::Syslog).to receive(:info).with("*** Chef 12.4.0.dev.0 ***")
+    expect(syslog).to receive(:info).with("*** Chef 12.4.0.dev.0 ***")
     Chef::Log.info("*** Chef 12.4.0.dev.0 ***")
   end
 
   it "should send message with severity warning to syslog." do
-    expect_any_instance_of(Logger::Syslog).to receive(:warn).with("No config file found or specified on command line, using command line options.")
+    expect(syslog).to receive(:warn).with("No config file found or specified on command line, using command line options.")
     Chef::Log.warn("No config file found or specified on command line, using command line options.")
   end
 
   it "should fallback into send message with severity info to syslog when wrong format." do
-    expect_any_instance_of(Logger::Syslog).to receive(:info).with("chef message")
+    expect(syslog).to receive(:info).with("chef message")
     syslog.write("chef message")
   end
 end
