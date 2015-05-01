@@ -1,9 +1,17 @@
 ## Unreleased
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   Fix multipackage and architectures
-* [**Igor Shpakov**](https://github.com/Igorshp)
+* [**Igor Shpakov**](https://github.com/Igorshp):
   Always run exception handlers
+* [**Noah Kantrowitz**](https://github.com/coderanger):
+  Cache service_resource_providers for the duration of the run. #2953
+* [**Slava Kardakov**](https://github.com/ojab):
+  Fix installation of yum packages with version constraints #3155
+* [**Dave Eddy**](https://github.com/bahamas10):
+  fix smartos_package for new "pkgin" output, fixes #3112 #3165
 
+* Add an integration test of chef-client with empty ENV. #3321
+* Switch over Windows builds to universal builds. #3278
 * Convert bootstrap template to use sh #2877
 * [Issue #3316](https://github.com/chef/chef/issues/3316) Fix idempotency issues with the `windows_package` resource
 * [pr#3295](https://github.com/chef/chef/pull/3295): Stop mutating `new_resource.checksum` in file providers.  Fixes some ChecksumMismatch exceptions like [issue#3168](https://github.com/chef/chef/issues/3168)
