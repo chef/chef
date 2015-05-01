@@ -467,12 +467,21 @@ class Chef
     #
     # @return [Hash{Symbol => Object}] A Hash of attribute => value for the
     #   Resource class's `state_attrs`.
-    def state
+    def state_for_resource_reporter
       self.class.state_attrs.inject({}) do |state_attrs, attr_name|
         state_attrs[attr_name] = send(attr_name)
         state_attrs
       end
     end
+
+    #
+    # Since there are collisions with LWRP parameters named 'state' this
+    # method is not used by the resource_reporter and is most likely unused.
+    # It certainly cannot be relied upon and cannot be fixed.
+    #
+    # @deprecated
+    #
+    alias_method :state, :state_for_resource_reporter
 
     #
     # The value of the identity attribute, if declared. Falls back to #name if
