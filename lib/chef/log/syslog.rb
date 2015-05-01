@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Author:: Yukihiko Sawanobori (<sawanoboriyu@gmail.com>)
+# Author:: SAWANOBORI Yukihiko (<sawanoboriyu@higanworks.com>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
