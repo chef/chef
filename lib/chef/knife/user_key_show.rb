@@ -20,14 +20,14 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    # Implements knife user key delete using Chef::Knife::KeyDelete
+    # Implements knife user key show using Chef::Knife::KeyShow
     # as a service class.
     #
     # @author Tyler Cloke
     #
     # @attr_reader [String] actor the name of the client that this key is for
-    class UserKeyDelete < Knife
-      banner "knife user key delete USER KEYNAME (options)"
+    class UserKeyShow < Knife
+      banner "knife user key show USER KEYNAME (options)"
 
       attr_reader :actor
 
@@ -41,8 +41,8 @@ class Chef
         service_object.run
       end
 
-      def actor_field_name
-        'user'
+      def load_method
+        :load_by_user
       end
 
       def actor_missing_error
@@ -54,7 +54,7 @@ class Chef
       end
 
       def service_object
-        @service_object ||= Chef::Knife::KeyDelete.new(@name, @actor, actor_field_name, ui)
+        @service_object ||= Chef::Knife::KeyShow.new(@name, @actor, load_method, ui)
       end
 
       def apply_params!(params)

@@ -17,17 +17,20 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/key_edit_base'
 
 class Chef
   class Knife
-    # Implements knife user key delete using Chef::Knife::KeyDelete
+    # Implements knife user key edit using Chef::Knife::KeyEdit
     # as a service class.
     #
     # @author Tyler Cloke
     #
-    # @attr_reader [String] actor the name of the client that this key is for
-    class UserKeyDelete < Knife
-      banner "knife user key delete USER KEYNAME (options)"
+    # @attr_reader [String] actor the name of the user that this key is for
+    class UserKeyEdit < Knife
+      include Chef::Knife::KeyEditBase
+
+      banner 'knife user key edit USER KEYNAME (options)'
 
       attr_reader :actor
 
@@ -45,16 +48,16 @@ class Chef
         'user'
       end
 
+      def service_object
+        @service_object ||= Chef::Knife::KeyEdit.new(@name, @actor, actor_field_name, ui, config)
+      end
+
       def actor_missing_error
         'You must specify a user name'
       end
 
       def keyname_missing_error
         'You must specify a key name'
-      end
-
-      def service_object
-        @service_object ||= Chef::Knife::KeyDelete.new(@name, @actor, actor_field_name, ui)
       end
 
       def apply_params!(params)
@@ -74,3 +77,4 @@ class Chef
     end
   end
 end
+
