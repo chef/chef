@@ -974,8 +974,9 @@ class Chef
     end
 
     def self.provides(name, *args, &block)
-      super
+      result = super
       Chef::DSL::Resources.add_resource_dsl(name)
+      result
     end
 
     # Helper for #notifies
@@ -1108,6 +1109,7 @@ class Chef
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_for_node(short_name, node)
+      require 'chef/resource_resolver'
       klass = Chef::ResourceResolver.new(node, short_name).resolve
       raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
       klass
@@ -1123,8 +1125,20 @@ class Chef
     #
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
+    #
+    # @deprecated Chef::Resource::FooBar will no longer mean anything special in
+    #   Chef 13.  Use `resource_for_node` instead.
     def self.resource_matching_short_name(short_name)
-      Chef::ResourceResolver.new(Chef::Node.new, short_name).resolve
+      require 'chef/resource_resolver'
+      begin
+        rname = convert_to_class_name(short_name.to_s)
+        result = Chef::Resource.const_get(rname)
+        Chef::Log.deprecation("Class Chef::Resource::#{rname} does not declare `provides #{short_name.inspect}`.")
+        Chef::Log.deprecation("This will no longer work in Chef 13: you must use `provides` to provide DSL.")
+        result
+      rescue NameError
+        nil
+      end
     end
 
     private
@@ -1142,5 +1156,3 @@ class Chef
     end
   end
 end
-
-require 'chef/resource_resolver'

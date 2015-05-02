@@ -39,7 +39,22 @@ class Chef
     end
 
     def resolve
-      # log this so we know what resources will work for the generic resource on the node (early cut)
+      maybe_dynamic_resource_resolution ||
+        maybe_chef_platform_lookup
+    end
+
+    # this cut looks at if the resource can handle the resource type on the node
+    def enabled_handlers
+      @enabled_handlers ||=
+        resources.select do |klass|
+          klass.provides?(node, resource)
+        end.sort {|a,b| a.to_s <=> b.to_s }
+    end
+
+    private
+
+    # try dynamically finding a resource based on querying the resources to see what they support
+    def maybe_dynamic_resource_resolution      # log this so we know what resources will work for the generic resource on the node (early cut)
       Chef::Log.debug "resources for generic #{resource} resource enabled on node include: #{enabled_handlers}"
 
       # if none of the resources specifically support the resource, we still need to pick one of the resources that are
@@ -62,55 +77,16 @@ class Chef
 
       raise Chef::Exceptions::AmbiguousResourceResolution.new(resource, handlers) if handlers.count >= 2
 
-      Chef::Log.debug "dynamic resource resolver FAILED to resolve a resouce" if handlers.empty?
+      Chef::Log.debug "dynamic resource resolver FAILED to resolve a resource" if handlers.empty?
 
       return nil if handlers.empty?
 
       handlers[0]
     end
 
-    # this cut looks at if the resource can handle the resource type on the node
-    def enabled_handlers
-      @enabled_handlers ||= begin
-        enabled_handlers = resources.select do |klass|
-          klass.provides?(node, resource)
-        end.sort {|a,b| a.to_s <=> b.to_s }
-
-        # Add Chef::Resource::X as a possibility if it is not a handler already
-        check_for_deprecated_chef_resource_class(enabled_handlers)
-
-        enabled_handlers
-      end
-    end
-
-    private
-
-    #
-    # Checks if the Chef::Resource::* class corresponding to the DSL name
-    # exists, emits a deprecation warning, marks it as providing the given
-    # short name and adds it to the DSL.  This is used for method_missing
-    # deprecation and ResourceResolver checking, when people have created
-    # anonymous classes and assigned them to Chef::Resource::X.
-    #
-    # Returns the matched class, if it exists.
-    #
-    # @api private
-    def check_for_deprecated_chef_resource_class(enabled_handlers)
-      # If Chef::Resource::MyResource exists, but was not set, it won't have a
-      # DSL name.  Add the DSL method and warn about this pattern.
-      class_name = convert_to_class_name(resource.to_s)
-      if Chef::Resource.const_defined?(class_name)
-        # If Chef::Resource::X already exists, and is *not* already marked as
-        # providing this resource, mark it as providing the resource and add it
-        # to the list of handlers for next time.
-        resource_class = Chef::Resource.const_get(class_name)
-        if resource_class <= Chef::Resource && !enabled_handlers.include?(resource_class)
-          enabled_handlers << resource_class
-          Chef::Log.warn("Class Chef::Resource::#{class_name} does not declare `provides #{resource.inspect}`.")
-          Chef::Log.warn("This will no longer work in Chef 13: you must use `provides` to provide DSL.")
-          resource_class.provides resource.to_sym
-        end
-      end
+    # try the old static lookup of resources by mangling name to resource klass
+    def maybe_chef_platform_lookup
+      Chef::Resource.resource_matching_short_name(resource)
     end
 
     # dep injection hooks
