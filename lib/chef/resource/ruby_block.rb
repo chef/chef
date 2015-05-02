@@ -23,6 +23,7 @@ require 'chef/provider/ruby_block'
 class Chef
   class Resource
     class RubyBlock < Chef::Resource
+      provides :ruby_block
 
       identity_attr :block_name
 

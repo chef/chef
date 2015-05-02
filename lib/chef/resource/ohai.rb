@@ -20,6 +20,7 @@
 class Chef
   class Resource
     class Ohai < Chef::Resource
+      provides :ohai
 
       identity_attr :name
 

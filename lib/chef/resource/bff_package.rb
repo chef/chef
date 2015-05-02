@@ -22,6 +22,7 @@ require 'chef/provider/package/aix'
 class Chef
   class Resource
     class BffPackage < Chef::Resource::Package
+      provides :bff_package
 
       def initialize(name, run_context=nil)
         super
@@ -31,5 +32,3 @@ class Chef
     end
   end
 end
-
-

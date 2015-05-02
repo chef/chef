@@ -22,6 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Scm < Chef::Resource
+      provides :scm
 
       identity_attr :destination
 

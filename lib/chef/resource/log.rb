@@ -23,6 +23,7 @@ require 'chef/provider/log'
 class Chef
   class Resource
     class Log < Chef::Resource
+      provides :log
 
       identity_attr :message
 
@@ -75,5 +76,3 @@ class Chef
     end
   end
 end
-
-
