@@ -31,6 +31,10 @@ describe "LWRP" do
     $VERBOSE = @original_VERBOSE
   end
 
+  def get_lwrp(name)
+    Chef::Resource.resource_for_node(name, Chef::Node.new)
+  end
+
   describe "when overriding an existing class" do
     before :each do
       allow($stderr).to receive(:write)
@@ -43,7 +47,6 @@ describe "LWRP" do
       expect(Chef::Log).not_to receive(:debug).with(/anymore/)
       Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       Object.send(:remove_const, 'LwrpFoo')
-      Chef::Resource.send(:remove_const, 'LwrpFoo')
     end
 
     it "should not skip loading a provider when there's a top level symbol of the same name" do
@@ -53,7 +56,6 @@ describe "LWRP" do
       expect(Chef::Log).not_to receive(:debug).with(/anymore/)
       Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
       Object.send(:remove_const, 'LwrpBuckPasser')
-      Chef::Provider.send(:remove_const, 'LwrpBuckPasser')
     end
 
     # @todo: we need a before block to manually remove_const all of the LWRPs that we
@@ -92,7 +94,7 @@ describe "LWRP" do
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
-      first_lwr_foo_class = Chef::Resource::LwrpFoo
+      first_lwr_foo_class = get_lwrp(:lwrp_foo)
       expect(Chef::Resource.resource_classes).to include(first_lwr_foo_class)
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
@@ -120,28 +122,28 @@ describe "LWRP" do
       end
     end
 
-    it "should load the resource into a properly-named class" do
-      expect(Chef::Resource.const_get("LwrpFoo")).to be_kind_of(Class)
+    it "should load the resource into a properly-named class and emit a warning about deprecation when accessing it" do
+      expect { Chef::Resource::LwrpFoo }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
 
     it "should set resource_name" do
-      expect(Chef::Resource::LwrpFoo.new("blah").resource_name).to eql(:lwrp_foo)
+      expect(get_lwrp(:lwrp_foo).new("blah").resource_name).to eql(:lwrp_foo)
     end
 
     it "should add the specified actions to the allowed_actions array" do
-      expect(Chef::Resource::LwrpFoo.new("blah").allowed_actions).to include(:pass_buck, :twiddle_thumbs)
+      expect(get_lwrp(:lwrp_foo).new("blah").allowed_actions).to include(:pass_buck, :twiddle_thumbs)
     end
 
     it "should set the specified action as the default action" do
-      expect(Chef::Resource::LwrpFoo.new("blah").action).to eq(:pass_buck)
+      expect(get_lwrp(:lwrp_foo).new("blah").action).to eq(:pass_buck)
     end
 
     it "should create a method for each attribute" do
-      expect(Chef::Resource::LwrpFoo.new("blah").methods.map{ |m| m.to_sym}).to include(:monkey)
+      expect(get_lwrp(:lwrp_foo).new("blah").methods.map{ |m| m.to_sym}).to include(:monkey)
     end
 
     it "should build attribute methods that respect validation rules" do
-      expect { Chef::Resource::LwrpFoo.new("blah").monkey(42) }.to raise_error(ArgumentError)
+      expect { get_lwrp(:lwrp_foo).new("blah").monkey(42) }.to raise_error(ArgumentError)
     end
 
     it "should have access to the run context and node during class definition" do
@@ -153,7 +155,7 @@ describe "LWRP" do
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, run_context)
       end
 
-      cls = Chef::Resource.const_get("LwrpNodeattr")
+      cls = get_lwrp(:lwrp_nodeattr)
       expect(cls.node).to be_kind_of(Chef::Node)
       expect(cls.run_context).to be_kind_of(Chef::RunContext)
       expect(cls.node[:penguin_name]).to eql("jackass")
@@ -312,7 +314,7 @@ describe "LWRP" do
     end
 
     it "should properly handle a new_resource reference" do
-      resource = Chef::Resource::LwrpFoo.new("morpheus")
+      resource = get_lwrp(:lwrp_foo).new("morpheus")
       resource.monkey("bob")
       resource.provider(:lwrp_monkey_name_printer)
       resource.run_context = @run_context
@@ -332,7 +334,7 @@ describe "LWRP" do
     end
 
     it "should insert resources embedded in the provider into the middle of the resource collection" do
-      injector = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
+      injector = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       injector.action(:pass_buck)
       injector.provider(:lwrp_buck_passer)
       dummy = Chef::Resource::ZenMaster.new("keanu reeves", @run_context)
@@ -349,11 +351,11 @@ describe "LWRP" do
     end
 
     it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
-      injector = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
+      injector = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       injector.action(:pass_buck)
       injector.provider(:lwrp_buck_passer)
 
-      injector2 = Chef::Resource::LwrpBar.new("tank", @run_context)
+      injector2 = get_lwrp(:lwrp_bar).new("tank", @run_context)
       injector2.action(:pass_buck)
       injector2.provider(:lwrp_buck_passer_2)
 
@@ -376,7 +378,7 @@ describe "LWRP" do
     end
 
     it "should properly handle a new_resource reference" do
-      resource = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
+      resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       resource.monkey("bob")
       resource.provider(:lwrp_monkey_name_printer)
 
@@ -387,7 +389,7 @@ describe "LWRP" do
     end
 
     it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
-      resource = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
+      resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       resource.monkey("bob")
       resource.provider(:lwrp_embedded_resource_accesses_providers_scope)
 
@@ -406,7 +408,7 @@ describe "LWRP" do
         # Side effect of lwrp_inline_compiler provider for testing notifications.
         $interior_ruby_block_2 = nil
         # resource type doesn't matter, so make an existing resource type work with provider.
-        @resource = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
+        @resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
         @resource.allowed_actions << :test
         @resource.action(:test)
         @resource.provider(:lwrp_inline_compiler)

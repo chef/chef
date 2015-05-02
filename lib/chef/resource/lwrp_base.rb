@@ -50,6 +50,7 @@ class Chef
         resource_class = Class.new(self)
         resource_class.resource_name = resource_name
         resource_class.run_context = run_context
+        resource_class.provides resource_name.to_sym
         resource_class.class_from_file(filename)
 
         # Respect resource_name set inside the LWRP
@@ -62,32 +63,9 @@ class Chef
 
         Chef::Log.debug("Loaded contents of #{filename} into #{resource_class}")
 
-        create_deprecated_class_in_chef_resource(resource_class)
+        Chef::Resource.create_deprecated_lwrp_class(resource_class)
 
         resource_class
-      end
-
-      def self.create_deprecated_class_in_chef_resource(resource_class)
-        # Create a class in Chef::Resource::MyResource with deprecation
-        # warnings if you try to instantiate or inherit it (for Chef 12 compatibility)
-        class_name = convert_to_class_name(resource_class.resource_name)
-        if Chef::Resource.const_defined?(class_name, false)
-          Chef::Log.debug "#{class_name} already exists!  Cannot create deprecation class #{resource_class}"
-        else
-          Chef::Resource.const_set(class_name, Class.new(resource_class) do
-            self.resource_name = resource_class.resource_name
-            self.run_context = resource_class.run_context
-            define_method(:initialize) do |*args, &block|
-              Chef::Log.warn("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.")
-              super(*args, &block)
-            end
-            define_singleton_method(:inherited) do |*args, &block|
-              Chef::Log.warn("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.")
-              super(*args, &block)
-            end
-          end)
-        end
-        Chef::Resource.const_get(class_name)
       end
 
       def self.resource_name(arg = NULL_ARG)

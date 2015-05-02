@@ -30,7 +30,7 @@ class Chef
 
     def initialize(node, resource)
       @node = node
-      @resource = resource
+      @resource = resource.to_sym
     end
 
     # return a deterministically sorted list of Chef::Resource subclasses

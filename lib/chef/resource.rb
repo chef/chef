@@ -1133,15 +1133,42 @@ class Chef
       begin
         rname = convert_to_class_name(short_name.to_s)
         result = Chef::Resource.const_get(rname)
-        Chef::Log.deprecation("Class Chef::Resource::#{rname} does not declare `provides #{short_name.inspect}`.")
-        Chef::Log.deprecation("This will no longer work in Chef 13: you must use `provides` to provide DSL.")
-        result
+        if result.is_a?(Chef::Resource)
+          Chef::Log.deprecation("Class Chef::Resource::#{rname} does not declare `provides #{short_name.inspect}`.")
+          Chef::Log.deprecation("This will no longer work in Chef 13: you must use `provides` to provide DSL.")
+          result
+        end
       rescue NameError
         nil
       end
     end
 
+    def self.const_missing(class_name)
+      if deprecated_constants[class_name.to_sym]
+        Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+        deprecated_constants[class_name.to_sym]
+      else
+        raise NameError, "uninitialized constant Chef::Resource::#{class_name}"
+      end
+    end
+
+    # @api private
+    def self.create_deprecated_lwrp_class(resource_class)
+      # Create a class in Chef::Resource::MyResource with deprecation
+      # warnings if you try to access it
+      class_name = convert_to_class_name(resource_class.resource_name)
+      if Chef::Resource.const_defined?(class_name, false)
+        Chef::Log.warn "#{class_name} already exists!  Cannot create deprecation class for #{resource_class}"
+      else
+        deprecated_constants[class_name.to_sym] = resource_class
+      end
+    end
+
     private
+
+    def self.deprecated_constants
+      @deprecated_constants ||= {}
+    end
 
     def lookup_provider_constant(name)
       begin

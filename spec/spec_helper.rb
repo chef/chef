@@ -54,6 +54,9 @@ Dir['lib/chef/knife/**/*.rb'].
   map {|f| f.gsub(%r[\.rb$], '') }.
   each {|f| require f }
 
+require 'chef/resource_resolver'
+require 'chef/provider_resolver'
+
 require 'chef/mixins'
 require 'chef/dsl'
 require 'chef/application'
