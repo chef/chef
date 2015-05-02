@@ -164,7 +164,7 @@ Find all nodes running CentOS in the production environment:
 
 ## SEE ALSO
    __knife-ssh__(1)
-   <http://wiki.opscode.com/display/chef/Attributes>
+   <http://docs.chef.io/attributes.html>
    [Lucene Query Parser Syntax](http://lucene.apache.org/java/2_3_2/queryparsersyntax.html)
 
 ## AUTHOR
@@ -175,6 +175,6 @@ Find all nodes running CentOS in the production environment:
    Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
 
 ## CHEF
-   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+   Knife is distributed with Chef. <http://docs.chef.io>
 
 

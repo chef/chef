@@ -236,7 +236,7 @@ to specify alternate files to be used on a specific OS platform or host.
 The default specificity setting is _default_, that is files in
 `COOKBOOK/files/default` will be used when a more specific copy is not
 available. Further documentation for this feature is available on the
-Chef wiki: <http://wiki.opscode.com/display/chef/File+Distribution#FileDistribution-FileSpecificity>
+Chef wiki: <https://docs.chef.io/resource_cookbook_file.html#file-specificity>
 
 Cookbooks also contain a metadata file that defines various properties
 of the cookbook. The most important of these are the _version_ and the
@@ -248,8 +248,8 @@ cookbook.
 
 ## SEE ALSO
    __knife-environment(1)__ __knife-cookbook-site(1)__
-   <http://wiki.opscode.com/display/chef/Cookbooks>
-   <http://wiki.opscode.com/display/chef/Metadata>
+   <http://docs.chef.io/cookbooks.html>
+   <http://docs.chef.io/cookbook_repo.html>
 
 ## AUTHOR
    Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
@@ -260,4 +260,4 @@ cookbook.
 
 
 ## CHEF
-   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+   Knife is distributed with Chef. <http://docs.chef.io>
