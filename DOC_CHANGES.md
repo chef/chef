@@ -19,10 +19,9 @@ module MyModule
 end
 ```
 
-Users are encouraged to declare resources in their own namespaces.
+Users are encouraged to declare resources in their own namespaces instead of putting them in the special `Chef::Resource` namespace.
 
-This is deprecated (and will emit a warning) in Chef 12, and will be removed in
-Chef 13.
+The `Chef::Resource` namespace will no longer get automatic DSL in a future Chef, and will emit a deprecation warning in Chef 12.
 
 ### LWRPs are no longer placed in the `Chef::Resource` namespace
 
