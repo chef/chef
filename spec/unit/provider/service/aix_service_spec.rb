@@ -72,6 +72,19 @@ describe Chef::Provider::Service::Aix do
         expect(@current_resource.running).to be_falsey
       end
     end
+
+    context "when there is no such service" do
+      before do
+        @status = double("Status", :exitstatus => 1, :stdout => "0513-085 The chef Subsystem is not on file.\n")
+      end
+      it "current resource is not running" do
+        expect(@provider).to receive(:shell_out!).with("lssrc -s chef").and_return(@status)
+        expect(@provider).to receive(:is_resource_group?).and_return false
+
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_falsey
+      end
+    end
   end
 
   describe "is resource group" do
