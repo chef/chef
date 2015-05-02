@@ -292,6 +292,8 @@ class Chef
               :user => Chef::Provider::User::Useradd,
               :group => Chef::Provider::Group::Gpasswd,
               :ifconfig => Chef::Provider::Ifconfig,
+              :package => Chef::Provider::Package,
+              :service => Chef::Provider::Service,
             }
           }
         end
@@ -463,7 +465,11 @@ class Chef
         def resource_matching_provider(platform, version, resource_type)
           if resource_type.kind_of?(Chef::Resource)
             begin
-              Chef::Provider.const_get(resource_type.class.to_s.split('::').last)
+              class_name = resource_type.class.to_s.split('::').last
+              result = Chef::Provider.const_get(class_name)
+              Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{resource_type.class.dsl_name.to_sym.inspect}'.")
+              Chef::Log.warn("This will no longer work in Chef 13: you must use 'provides' to provide DSL.")
+              result
             rescue NameError
               nil
             end
