@@ -41,8 +41,8 @@ class Chef
         # method_missing manually. Not a fan. Not. A. Fan.
         #
         if respond_to?(method_symbol)
-          Chef::Log.warn("Calling method_missing(#{method_symbol.inspect}) directly is deprecated in Chef 12 and will be removed in Chef 13.")
-          Chef::Log.warn("Use public_send() or send() instead.")
+          Chef::Log.deprecation("Calling method_missing(#{method_symbol.inspect}) directly is deprecated in Chef 12 and will be removed in Chef 13.")
+          Chef::Log.deprecation("Use public_send() or send() instead.")
           return send(method_symbol, *args, &block)
         end
 
@@ -51,7 +51,7 @@ class Chef
         # never called.  DEPRECATED.
         #
         if run_context.definitions.has_key?(method_symbol.to_sym)
-          Chef::Log.warn("Definition #{method_symbol} (#{run_context.definitions[method_symbol.to_sym]}) was added to the run_context without calling Chef::DSL::Definitions.add_definition(#{method_symbol.to_sym.inspect}).  This will become required in Chef 13.")
+          Chef::Log.deprecation("Definition #{method_symbol} (#{run_context.definitions[method_symbol.to_sym]}) was added to the run_context without calling Chef::DSL::Definitions.add_definition(#{method_symbol.to_sym.inspect}).  This will become required in Chef 13.")
           Chef::DSL::Definitions.add_definition(method_symbol)
           return send(method_symbol, *args, &block)
         end
@@ -70,8 +70,8 @@ class Chef
           # created DSL).  Anything where we don't create DSL is deprecated.
           #
           if !respond_to?(method_symbol)
-            Chef::Log.warn("#{resource_class} is marked as providing DSL #{method_symbol}, but provides #{method_symbol.inspect} was never called!")
-            Chef::Log.warn("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+            Chef::Log.deprecation("#{resource_class} is marked as providing DSL #{method_symbol}, but provides #{method_symbol.inspect} was never called!")
+            Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
             Chef::DSL::Resources.add_resource_dsl(method_symbol)
           end
           return send(method_symbol, *args, &block)
