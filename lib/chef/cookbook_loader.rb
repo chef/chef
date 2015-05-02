@@ -106,7 +106,7 @@ class Chef
       if @cookbooks_by_name.has_key?(cookbook.to_sym) or load_cookbook(cookbook.to_sym)
         @cookbooks_by_name[cookbook.to_sym]
       else
-        raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (http://wiki.opscode.com/display/chef/Metadata)"
+        raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata.html"
       end
     end
 
