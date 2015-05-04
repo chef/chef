@@ -24,9 +24,16 @@ describe "Chef::Log::Syslog", :unix_only => true do
   let(:app) { Chef::Application.new }
 
   before do
-    Chef::Config[:log_level] = :info
-    Chef::Config[:log_location] = syslog
-    app.configure_logging
+    Chef::Log.init(MonoLogger.new(syslog))
+    @old_log_level = Chef::Log.level
+    Chef::Log.level = :info
+    @old_loggers = Chef::Log.loggers
+    Chef::Log.use_log_devices([syslog])
+  end
+
+  after do
+    Chef::Log.level = @old_log_level
+    Chef::Log.use_log_devices(@old_loggers)
   end
 
   it "should send message with severity info to syslog." do
