@@ -60,6 +60,7 @@ class Chef
                   @new_resource.version(fields[2])
                 end
               end
+              raise Chef::Exceptions::Package, "package source #{@new_resource.source} does not provide package #{@new_resource.package_name}" unless @new_resource.version
             end
           end
 
