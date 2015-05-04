@@ -22,6 +22,7 @@ require 'uri'
 require 'net/http'
 require 'mixlib/authentication/signedheaderauth'
 require 'openssl'
+require 'chef/http/ssl_policies'
 
 class Chef
   # == Chef::CookbookSiteStreamingUploader
@@ -106,7 +107,7 @@ class Chef
 
         url = URI.parse(to_url)
 
-        Chef::Log.logger.debug("Signing: method: #{http_verb}, path: #{url.path}, file: #{content_file}, User-id: #{user_id}, Timestamp: #{timestamp}")
+        Chef::Log.logger.debug("Signing: method: #{http_verb}, url: #{url}, file: #{content_file}, User-id: #{user_id}, Timestamp: #{timestamp}")
 
         # We use the body for signing the request if the file parameter
         # wasn't a valid file or wasn't included. Extract the body (with
@@ -145,6 +146,7 @@ class Chef
         if url.scheme == "https"
           http.use_ssl = true
           http.verify_mode = verify_mode
+          Chef::HTTP::DefaultSSLPolicy.apply_to(http)
         end
         res = http.request(req)
         #res = http.start {|http_proc| http_proc.request(req) }
