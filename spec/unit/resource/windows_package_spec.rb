@@ -78,4 +78,13 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     # it's a little late to stub out File.absolute_path
     expect(resource.source).to include("solitaire.msi")
   end
+
+  context 'when a URL is used' do
+    let(:resource_source) { 'https://foo.bar/solitare.msi' }
+    let(:resource) { Chef::Resource::WindowsPackage.new(resource_source) }
+
+    it "should return the source unmodified" do
+      expect(resource.source).to eq(resource_source)
+    end
+  end
 end
