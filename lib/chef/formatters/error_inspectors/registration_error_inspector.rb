@@ -9,6 +9,8 @@ class Chef
       # TODO: Lots of duplication with the node_load_error_inspector, just
       # slightly tweaked to talk about validation keys instead of other keys.
       class RegistrationErrorInspector
+        include APIErrorFormatting
+
         attr_reader :exception
         attr_reader :node_name
         attr_reader :config
@@ -94,6 +96,8 @@ E
             error_description.section("Relevant Config Settings:",<<-E)
 chef_server_url "#{server_url}"
 E
+          when Net::HTTPNotAcceptable
+            describe_406_error(error_description, response)
           when Net::HTTPInternalServerError
             error_description.section("Unknown Server Error:",<<-E)
 The server had a fatal error attempting to load the node data.

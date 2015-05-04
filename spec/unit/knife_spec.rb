@@ -130,7 +130,8 @@ describe Chef::Knife do
                     "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
                     'X-Chef-Version' => Chef::VERSION,
                     "Host"=>"api.opscode.piab",
-                    "X-REMOTE-REQUEST-ID"=>request_id}}
+                    "X-REMOTE-REQUEST-ID"=>request_id,
+                    'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::SERVER_API_VERSION}}
 
     let(:request_id) {"1234"}
 
@@ -372,6 +373,16 @@ describe Chef::Knife do
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r[ERROR: The object you are looking for could not be found])
       expect(stderr.string).to match(%r[Response: nothing to see here])
+    end
+
+    it "formats 406s (non-supported API version error) nicely" do
+      response = Net::HTTPNotAcceptable.new("1.1", "406", "Not Acceptable")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone", :min_version => "0", :max_version => "1"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
+      knife.run_with_pretty_exceptions
+      expect(stderr.string).to include('The version of Chef that Knife is using is not supported by the Chef server you sent this request to')
+      expect(stderr.string).to include("This version of Chef requires a server API version of #{Chef::HTTP::Authenticator::SERVER_API_VERSION}")
     end
 
     it "formats 500s nicely" do
