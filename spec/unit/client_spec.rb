@@ -279,7 +279,7 @@ describe Chef::Client do
         allow(node).to receive(:data_for_save).and_return(node.for_json)
 
         # --Client#save_updated_node
-        expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_node_save)
+        expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url], fqdn, Chef::Config[:client_key], validate_utf8: false).and_return(http_node_save)
         expect(http_node_save).to receive(:put_rest).with("nodes/#{fqdn}", node.for_json).and_return(true)
       end
 

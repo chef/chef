@@ -87,6 +87,11 @@ EOM
       result.error!
     end
 
+    it "should be able to node.save with bad utf8 characters in the node data" do
+      file "cookbooks/x/attributes/default.rb", 'default["badutf8"] = "Elan Ruusam\xE4e"'
+      result = shell_out("#{chef_client} -z -r 'x::default' --disable-config", :cwd => path_to(''))
+      result.error!
+    end
 
     context 'and no config file' do
       it 'should complete with success when cwd is just above cookbooks and paths are not specified' do
