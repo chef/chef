@@ -45,7 +45,11 @@ class Chef
           sources = sources.dup
           source = sources.shift
           begin
-            uri = URI.parse(source)
+            uri = if Chef::Provider::RemoteFile::Fetcher.network_share?(source)
+              source
+            else
+              URI.parse(source)
+            end
             raw_file = grab_file_from_uri(uri)
           rescue SocketError, Errno::ECONNREFUSED, Errno::ENOENT, Errno::EACCES, Timeout::Error, Net::HTTPServerException, Net::HTTPFatalError, Net::FTPError => e
             Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e.to_s}")
