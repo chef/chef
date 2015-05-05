@@ -76,6 +76,19 @@ describe Chef::Provider::Package::Windows, :windows_only do
         end
         it_behaves_like "a local file"
       end
+
+      context "when remote_file_attributes are provided" do
+        let (:remote_file_attributes) { {:path => 'C:\\foobar.msi'} }
+        before(:each) do
+          new_resource.remote_file_attributes(remote_file_attributes)
+        end
+
+        it 'should override the attributes of the remote file resource used' do
+          expect(::File).to receive(:exists?).with(remote_file_attributes[:path])
+          provider.load_current_resource
+        end
+
+      end
     end
 
     context "when source is a local file" do

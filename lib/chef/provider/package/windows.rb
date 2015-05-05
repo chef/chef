@@ -122,22 +122,30 @@ class Chef
         end
 
         def source_resource
-          @remote_file ||= Chef::Resource::RemoteFile.new(source_location, run_context).tap do |r|
+          @source_resource ||= Chef::Resource::RemoteFile.new(default_download_cache_path, run_context).tap do |r|
             r.source(new_resource.source)
             r.backup(false)
+
+            if new_resource.remote_file_attributes
+              new_resource.remote_file_attributes.each do |(k,v)|
+                r.send(k.to_sym, v)
+              end
+            end
           end
         end
 
+        def default_download_cache_path
+          uri = ::URI.parse(new_resource.source)
+          filename = ::File.basename(::URI.unescape(uri.path))
+          file_cache_dir = Chef::FileCache.create_cache_path("package/")
+          Chef::Util::PathHelper.cleanpath("#{file_cache_dir}/#{filename}")
+        end
+
         def source_location
-          @source_location ||= begin
-            if uri_scheme?(new_resource.source)
-              uri = ::URI.parse(new_resource.source)
-              filename = ::File.basename(::URI.unescape(uri.path))
-              file_cache_dir = Chef::FileCache.create_cache_path("package/")
-              Chef::Util::PathHelper.cleanpath("#{file_cache_dir}/#{filename}")
-            else
-              Chef::Util::PathHelper.cleanpath(new_resource.source)
-            end
+          if uri_scheme?(new_resource.source)
+            source_resource.path
+          else
+            Chef::Util::PathHelper.cleanpath(new_resource.source)
           end
         end
       end

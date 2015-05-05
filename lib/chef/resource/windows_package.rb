@@ -79,6 +79,14 @@ class Chef
         end
       end
 
+      def remote_file_attributes(arg=nil)
+        set_or_return(
+          :remote_file_attributes,
+          arg,
+          :kind_of => [ Hash ]
+        )
+      end
+
     end
   end
 end
