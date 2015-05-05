@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/uris'
 require 'chef/resource/package'
 require 'chef/provider/package/windows'
 require 'chef/win32/error' if RUBY_PLATFORM =~ /mswin|mingw|windows/
@@ -23,6 +24,7 @@ require 'chef/win32/error' if RUBY_PLATFORM =~ /mswin|mingw|windows/
 class Chef
   class Resource
     class WindowsPackage < Chef::Resource::Package
+      include Chef::Mixin::Uris
 
       provides :package, os: "windows"
       provides :windows_package, os: "windows"
@@ -69,23 +71,11 @@ class Chef
           @source
         else
           raise ArgumentError, "Bad type for WindowsPackage resource, use a String" unless arg.is_a?(String)
-          if is_url?(arg)
+          if uri_scheme?(arg)
             @source = arg
           else
             @source = ::File.absolute_path(arg).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
           end
-        end
-      end
-
-      private
-
-      def is_url?(source)
-        begin
-          scheme = URI.split(source).first
-          return false unless scheme
-          %w(http https ftp file).include?(scheme.downcase)
-        rescue URI::InvalidURIError
-          return false
         end
       end
 

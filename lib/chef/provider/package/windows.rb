@@ -16,15 +16,16 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/uris'
 require 'chef/resource/windows_package'
 require 'chef/provider/package'
 require 'chef/util/path_helper'
-require 'uri'
 
 class Chef
   class Provider
     class Package
       class Windows < Chef::Provider::Package
+        include Chef::Mixin::Uris
 
         provides :package, os: "windows"
         provides :windows_package, os: "windows"
@@ -38,7 +39,7 @@ class Chef
         # load_current_resource is run in Chef::Provider#run_action when not in whyrun_mode?
         def load_current_resource
           @current_resource = Chef::Resource::WindowsPackage.new(@new_resource.name)
-          if should_download?
+          if download_file_missing?
             Chef::Log.debug("We do not know the version of #{new_resource.source} because the file is not downloaded")
             current_resource.version(:unknown.to_s)
           else
@@ -77,7 +78,7 @@ class Chef
         end
 
         def action_install
-          if should_download?
+          if uri_scheme?(new_resource.source)
             download_source_file
             load_current_resource
           end
@@ -102,8 +103,8 @@ class Chef
 
         private
 
-        def should_download?
-          is_url?(new_resource.source) && !::File.exists?(source_location)
+        def download_file_missing?
+          uri_scheme?(new_resource.source) && !::File.exists?(source_location)
         end
 
         def resource_for_provider
@@ -129,7 +130,7 @@ class Chef
 
         def source_location
           @source_location ||= begin
-            if is_url?(new_resource.source)
+            if uri_scheme?(new_resource.source)
               uri = ::URI.parse(new_resource.source)
               filename = ::File.basename(::URI.unescape(uri.path))
               file_cache_dir = Chef::FileCache.create_cache_path("package/")
@@ -139,17 +140,6 @@ class Chef
             end
           end
         end
-
-        def is_url?(source)
-          begin
-            scheme = URI.split(source).first
-            return false unless scheme
-            %w(http https ftp file).include?(scheme.downcase)
-          rescue URI::InvalidURIError
-            return false
-          end
-        end
-
       end
     end
   end

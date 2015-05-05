@@ -62,7 +62,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       context "when the source has not been downloaded" do
         before(:each) do
-          allow(provider).to receive(:should_download?).and_return(true)
+          allow(provider).to receive(:download_file_missing?).and_return(true)
         end
         it "sets the current version to unknown" do
           provider.load_current_resource
@@ -72,7 +72,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       context "when the source has been downloaded" do
         before(:each) do
-          allow(provider).to receive(:should_download?).and_return(false)
+          allow(provider).to receive(:download_file_missing?).and_return(false)
         end
         it_behaves_like "a local file"
       end
