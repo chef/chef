@@ -145,7 +145,6 @@ class Chef
         http = Net::HTTP.new(url.host, url.port)
         if url.scheme == "https"
           http.use_ssl = true
-          http.verify_mode = verify_mode
           Chef::HTTP::DefaultSSLPolicy.apply_to(http)
         end
         res = http.request(req)
@@ -166,17 +165,6 @@ class Chef
           end
         end
         res
-      end
-
-      private
-
-      def verify_mode
-        verify_mode = Chef::Config[:ssl_verify_mode]
-        if verify_mode == :verify_none
-          OpenSSL::SSL::VERIFY_NONE
-        elsif verify_mode == :verify_peer
-          OpenSSL::SSL::VERIFY_PEER
-        end
       end
 
     end
