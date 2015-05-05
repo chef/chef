@@ -16,15 +16,30 @@
 # limitations under the License.
 #
 
-require 'uri'
+require 'spec_helper'
+require 'chef/mixin/uris'
 
-class Chef
-  module Mixin
-    module Uris
-      def uri_scheme?(source)
-        # From open-uri
-        !!(%r{\A[A-Za-z][A-Za-z0-9+\-\.]*://} =~ source)
-      end
-    end
+class Chef::UrisTest
+  include Chef::Mixin::Uris
+end
+
+describe Chef::Mixin::Uris do
+  let (:uris) { Chef::UrisTest.new }
+
+  it "matches 'scheme://foo.com'" do
+    expect(uris.uri_scheme?('scheme://foo.com')).to eq(true)
   end
+
+  it "does not match 'c:/foo.com'" do
+    expect(uris.uri_scheme?('c:/foo.com')).to eq(false)
+  end
+
+  it "does not match '/usr/bin/foo.com'" do
+    expect(uris.uri_scheme?('/usr/bin/foo.com')).to eq(false)
+  end
+
+  it "does not match 'c:/foo.com://bar.com'" do
+    expect(uris.uri_scheme?('c:/foo.com://bar.com')).to eq(false)
+  end
+
 end
