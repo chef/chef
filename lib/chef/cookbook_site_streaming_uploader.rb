@@ -142,13 +142,8 @@ class Chef
         req.content_type = 'multipart/form-data; boundary=' + boundary unless parts.empty?
         req.body_stream = body_stream
 
-        http = Net::HTTP.new(url.host, url.port)
-        if url.scheme == "https"
-          http.use_ssl = true
-          Chef::HTTP::DefaultSSLPolicy.apply_to(http)
-        end
+        http = Chef::HTTP::BasicClient.new(url).http_client
         res = http.request(req)
-        #res = http.start {|http_proc| http_proc.request(req) }
 
         # alias status to code and to_s to body for test purposes
         # TODO: stop the following madness!
