@@ -22,7 +22,6 @@ require 'uri'
 require 'net/http'
 require 'mixlib/authentication/signedheaderauth'
 require 'openssl'
-require 'chef/http/ssl_policies'
 
 class Chef
   # == Chef::CookbookSiteStreamingUploader
