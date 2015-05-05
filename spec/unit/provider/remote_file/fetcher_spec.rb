@@ -24,6 +24,17 @@ describe Chef::Provider::RemoteFile::Fetcher do
   let(:new_resource) { double("new resource") }
   let(:fetcher_instance) { double("fetcher") }
 
+  describe "when passed a network share" do
+    let(:source) { "\\\\foohost\\fooshare\\Foo.tar.gz" }
+
+    before do
+      expect(Chef::Provider::RemoteFile::NetworkFile).to receive(:new).and_return(fetcher_instance)
+    end
+    it "returns a network file fetcher" do
+      expect(described_class.for_resource(source, new_resource, current_resource)).to eq(fetcher_instance)
+    end
+  end
+
   describe "when passed an http url" do
     let(:uri) { double("uri", :scheme => "http" ) }
     before do
@@ -72,4 +83,3 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
 end
-
