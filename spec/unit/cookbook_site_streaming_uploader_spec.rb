@@ -142,6 +142,55 @@ describe Chef::CookbookSiteStreamingUploader do
       end
     end
 
+    describe "ssl_cert_file" do
+
+      before do
+        @uri = "https://cookbooks.dummy.com/api/v1/cookbooks"
+        uri_info = URI.parse(@uri)
+        @http = Net::HTTP.new(uri_info.host, uri_info.port)
+        expect(Net::HTTP).to receive(:new).with(uri_info.host, uri_info.port).and_return(@http)
+      end
+
+      context "when configured" do
+        let(:open_ssl_store) { double("OpenSSL::X509::Store", set_default_paths: true, add_file: true) }
+
+        before do
+          allow(OpenSSL::X509::Store).to receive(:new).and_return(open_ssl_store)
+          Chef::Config[:ssl_cert_file] = "/path/to/ssl/cert"
+        end
+
+        it "should create a cert_store" do
+          Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+          expect(@http.cert_store).to eq(open_ssl_store)
+        end
+
+        it "should set the default paths" do
+          allow(@http).to receive(:cert_store).and_return(open_ssl_store)
+          expect(@http.cert_store).to receive(:set_default_paths).and_return(true)
+          Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+        end
+
+        it "should add the cert file" do
+          allow(@http).to receive(:cert_store).and_return(open_ssl_store)
+          expect(@http.cert_store).to receive(:set_default_paths).and_return(true)
+          expect(@http.cert_store).to receive(:add_file).with(Chef::Config[:ssl_cert_file])
+          Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+        end
+      end
+
+      context "when not configured" do
+        before do
+          Chef::Config[:ssl_cert_file] = nil
+        end
+
+        it "does not create a cert store" do
+          expect(@http).to_not receive(:cert_store)
+          Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+        end
+      end
+
+    end
+
   end # make_request
 
   describe "StreamPart" do

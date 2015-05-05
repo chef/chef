@@ -146,6 +146,13 @@ class Chef
           http.use_ssl = true
           http.verify_mode = verify_mode
         end
+
+        if Chef::Config[:ssl_cert_file]
+          http.cert_store = OpenSSL::X509::Store.new
+          http.cert_store.set_default_paths
+          http.cert_store.add_file(Chef::Config[:ssl_cert_file])
+        end
+
         res = http.request(req)
         #res = http.start {|http_proc| http_proc.request(req) }
 
