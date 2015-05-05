@@ -11,6 +11,8 @@
   fix smartos_package for new "pkgin" output, fixes #3112 #3165
 * [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly):
   Show Chef version on chef shell prompt
+* [**Jacob Minshall**](https://github.com/minshallj):
+  Ensure suid bit is preserved if group or owner changes
 
 * Add an integration test of chef-client with empty ENV. #3321
 * Switch over Windows builds to universal builds. #3278
