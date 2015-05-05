@@ -197,6 +197,8 @@ class Chef
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.debug("found target_mode != current_mode, updating mode")
           return true
+        elsif suid_bit_set? and (should_update_group? or should_update_owner?)
+          return true
         else
           Chef::Log.debug("found target_mode == current_mode, not updating mode")
           # the user has specified a permission, but it matches the file, so behave idempotently
@@ -280,6 +282,9 @@ class Chef
         return nil
       end
 
+      def suid_bit_set?
+        return target_mode & 04000 > 0
+      end
     end
   end
 end

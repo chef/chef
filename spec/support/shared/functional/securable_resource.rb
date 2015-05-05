@@ -231,6 +231,24 @@ shared_examples_for "a securable resource with existing target" do
         expect(resource.updated_by_last_action?).to eq(expect_updated?)
       end
     end
+
+    describe "when setting the suid bit", :requires_root do
+      before do
+        @suid_mode = 04776
+        resource.mode @suid_mode
+        resource.run_action(:create)
+      end
+
+      it "should set the suid bit" do
+        expect(File.lstat(path).mode & 007777).to eq(@suid_mode & 007777)
+      end
+
+      it "should retain the suid bit when updating the user" do
+        resource.user 1338
+        resource.run_action(:create)
+        expect(File.lstat(path).mode & 007777).to eq(@suid_mode & 007777)
+      end
+    end
   end
 
   context "on Windows", :windows_only do
