@@ -137,8 +137,8 @@ The Ruby format of an environment is as follows:
 
 ## SEE ALSO
    __knife-node(1)__ __knife-cookbook(1)__ __knife-role(1)__
-  <http://wiki.opscode.com/display/chef/Environments>
-  <http://wiki.opscode.com/display/chef/Version+Constraints>
+  <http://docs.chef.io/environments.html>
+  <http://docs.chef.io/cookbook_versions.html>
 
 ## AUTHOR
    Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
@@ -148,4 +148,4 @@ The Ruby format of an environment is as follows:
    Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
 
 ## CHEF
-   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+   Knife is distributed with Chef. <http://docs.chef.io>

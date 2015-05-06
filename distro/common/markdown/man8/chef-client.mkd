@@ -59,8 +59,7 @@ are largely services that exist only to provide the Client with information.
 
 ## SEE ALSO
 
-Full  documentation  for  Chef  and  chef-client is located on the Chef
-wiki, http://wiki.opscode.com/display/chef/Home.
+Full  documentation  for  Chef  and  chef-client is located on docs site, http://docs.chef.io/.
 
 ## AUTHOR
 

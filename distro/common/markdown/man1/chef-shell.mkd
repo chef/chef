@@ -131,8 +131,8 @@ Recipe mode implements Chef's recipe DSL. Exhaustively documenting this
 DSL is outside the scope of this document. See the following pages in
 the Chef documentation for more information:
 
-  * <http://wiki.opscode.com/display/chef/Resources>
-  * <http://wiki.opscode.com/display/chef/Recipes>
+  * <http://docs.chef.io/resources.html>
+  * <http://docs.chef.io/recipes.html>
 
 Once you have defined resources in the recipe, you can trigger a
 convergence run via `run_chef`
@@ -176,7 +176,7 @@ libraries.
 ## SEE ALSO
 
   chef-client(8) knife(1)
-  <http://wiki.opscode.com/display/chef/Chef+Shell>
+  <http://docs.chef.io/ctl_chef_shell.html>
 
 ## AUTHOR
 
@@ -192,4 +192,4 @@ libraries.
 
 ## CHEF
 
-   chef-shell is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+   chef-shell is distributed with Chef. <http://docs.chef.io>

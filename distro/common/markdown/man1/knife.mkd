@@ -186,7 +186,7 @@ recommended though, and git fits with a lot of the workflow paradigms.
   __knife-node(1)__ __knife-recipe(1)__ __knife-role(1)__
   __knife-search(1)__ __knife-ssh(1)__ __knife-tag(1)__
 
-  Complete Chef documentation is available online: <http://wiki.opscode.com/display/chef/Home/>
+  Complete Chef documentation is available online: <http://docs.chef.io/>
 
   JSON is JavaScript Object Notation <http://json.org/>
 
@@ -209,5 +209,5 @@ recommended though, and git fits with a lot of the workflow paradigms.
    On some systems, the complete text of the Apache 2.0 License may be found in `/usr/share/common-licenses/Apache-2.0`.
 
 ## CHEF
-   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+   Knife is distributed with Chef. <http://docs.chef.io/>
 

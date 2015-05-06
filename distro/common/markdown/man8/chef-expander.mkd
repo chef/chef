@@ -67,8 +67,7 @@ See __chef-expanderctl__(8) for details.
 __chef-expanderctl__(8)
 __chef-solr__(8)
 
-Full documentation for Chef and chef-server is located on the Chef
-wiki, http://wiki.opscode.com/display/chef/Home.
+Full documentation for Chef and chef-server is located on docs site, http://docs.chef.io/.
 
 ## AUTHOR
 

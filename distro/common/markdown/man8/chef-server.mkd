@@ -106,8 +106,7 @@ __chef-client__(8)
 __chef-server-webui__(8)
 __knife__(1)
 
-Full documentation for Chef and chef-server is located on the Chef
-wiki, http://wiki.opscode.com/display/chef/Home.
+Full documentation for Chef and chef-server is located on docs site, http://docs.chef.io/.
 
 ## AUTHOR
 

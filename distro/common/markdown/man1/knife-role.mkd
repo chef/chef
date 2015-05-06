@@ -70,8 +70,8 @@ run\_list.
 
 ## SEE ALSO
    __knife-node(1)__ __knife-environment(1)__
-   <http://wiki.opscode.com/display/chef/Roles>
-   <http://wiki.opscode.com/display/chef/Attributes>
+   <http://docs.chef.io/roles.html>
+   <http://docs.chef.io/attributes.html>
 
 ## AUTHOR
    Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
@@ -81,5 +81,5 @@ run\_list.
    Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
 
 ## CHEF
-   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+   Knife is distributed with Chef. <http://docs.chef.io>
 
