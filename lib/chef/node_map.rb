@@ -68,14 +68,16 @@ class Chef
     def get(node, key)
       # FIXME: real exception
       raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node)
-      return nil unless @map.has_key?(key)
-      @map[key].each do |matcher|
-        if filters_match?(node, matcher[:filters]) &&
-          block_matches?(node, matcher[:block])
-          return matcher[:value]
-        end
-      end
-      nil
+      list(node, key).first
+    end
+
+    def list(node, key)
+      # FIXME: real exception
+      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node)
+      return [] unless @map.has_key?(key)
+      @map[key].select do |matcher|
+        filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block])
+      end.map { |matcher| matcher[:value] }
     end
 
     private

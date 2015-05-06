@@ -16,6 +16,9 @@
 # limitations under the License.
 #
 
+require 'chef/platform/query_helpers'
+require 'chef/exceptions'
+
 class Chef
   class Util
     class PathHelper
@@ -146,10 +149,10 @@ class Chef
       # Retrieves the "home directory" of the current user while trying to ascertain the existence
       # of said directory.  The path returned uses / for all separators (the ruby standard format).
       # If the home directory doesn't exist or an error is otherwise encountered, nil is returned.
-      # 
+      #
       # If a set of path elements is provided, they are appended as-is to the home path if the
-      # homepath exists. 
-      # 
+      # homepath exists.
+      #
       # If an optional block is provided, the joined path is passed to that block if the home path is
       # valid and the result of the block is returned instead.
       #
@@ -221,7 +224,3 @@ class Chef
     end
   end
 end
-
-# Break a require loop when require chef/util/path_helper
-require 'chef/platform'
-require 'chef/exceptions'

@@ -487,3 +487,8 @@ class Chef
     end
   end
 end
+
+require 'chef/chef_class'
+require 'chef/provider/package/homebrew'
+
+Chef.set_provider_priority_array :package, Chef::Provider::Package::Homebrew, os: "darwin"

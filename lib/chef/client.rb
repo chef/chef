@@ -166,13 +166,6 @@ class Chef
       if new_runlist = args.delete(:runlist)
         @json_attribs["run_list"] = new_runlist
       end
-
-      # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
-      require 'chef/platform/provider_priority_map' unless defined? Chef::Platform::ProviderPriorityMap
-      require 'chef/platform/resource_priority_map' unless defined? Chef::Platform::ResourcePriorityMap
-
-      Chef.set_provider_priority_map(Chef::Platform::ProviderPriorityMap.instance)
-      Chef.set_resource_priority_map(Chef::Platform::ResourcePriorityMap.instance)
     end
 
     def configure_formatters
