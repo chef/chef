@@ -117,6 +117,7 @@ class Chef
         host.typedef :uint32,  :LCID # Locale identifier. For more information, see Locales.
         host.typedef :uint32,  :LCTYPE # Locale information type. For a list, see Locale Information Constants.
         host.typedef :uint32,  :LGRPID # Language group identifier. For a list, see EnumLanguageGroupLocales.
+        host.typedef :pointer, :LMSTR
         host.typedef :long,    :LONG # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int32,   :LONG32 # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int64,   :LONG64 # 64-bit signed integer. The range is –9,223,372,036,854,775,808 through +...807

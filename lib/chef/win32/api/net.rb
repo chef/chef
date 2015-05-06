@@ -32,8 +32,23 @@ class Chef
 
         MAX_PREFERRED_LENGTH                = 0xFFFF
 
-        NERR_Success                        = 0
-        NERR_UserNotFound                   = 2221
+        DOMAIN_GROUP_RID_USERS = 0x00000201
+
+        UF_SCRIPT              = 0x000001
+        UF_ACCOUNTDISABLE      = 0x000002
+        UF_PASSWD_CANT_CHANGE  = 0x000040
+        UF_NORMAL_ACCOUNT      = 0x000200
+        UF_DONT_EXPIRE_PASSWD  = 0x010000
+
+        NERR_Success = 0
+        NERR_InvalidComputer = 2351
+        NERR_NotPrimary = 2226
+        NERR_SpeGroupOp = 2234
+        NERR_LastAdmin = 2452
+        NERR_BadPassword = 2203
+        NERR_PasswordTooShort = 2245
+        NERR_UserNotFound = 2221
+        ERROR_ACCESS_DENIED = 5
 
         ffi_lib "netapi32"
 
@@ -67,6 +82,18 @@ class Chef
             :usri3_profile, :LPWSTR,
             :usri3_home_dir_drive, :LPWSTR,
             :usri3_password_expired, :DWORD
+
+
+          def set(key, val)
+            if val.class == String
+              val = FFI::MemoryPointer.from_string(val.to_wstring)
+            end
+            self[key] = val
+          end
+        end
+
+        class LOCALGROUP_MEMBERS_INFO_3 < FFI::Struct
+          layout :lgrmi3_domainandname, :LPWSTR
         end
 
 # NET_API_STATUS NetUserEnum(
@@ -85,6 +112,24 @@ class Chef
 #   _In_  LPVOID Buffer
 # );
         safe_attach_function :NetApiBufferFree, [ :LPVOID ], :DWORD
+
+#NET_API_STATUS NetUserAdd(
+  #_In_  LMSTR   servername,
+  #_In_  DWORD   level,
+  #_In_  LPBYTE  buf,
+  #_Out_ LPDWORD parm_err
+#);
+        safe_attach_function :NetUserAdd, [:LMSTR, :DWORD, :LPBYTE, :LPDWORD ], :DWORD
+
+#NET_API_STATUS NetLocalGroupAddMembers(
+#  _In_ LPCWSTR servername,
+#  _In_ LPCWSTR groupname,
+#  _In_ DWORD   level,
+#  _In_ LPBYTE  buf,
+#  _In_ DWORD   totalentries
+#);
+        safe_attach_function :NetLocalGroupAddMembers, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD ], :DWORD
+
       end
     end
   end

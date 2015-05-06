@@ -18,6 +18,7 @@
 
 require 'chef/util/windows'
 require 'chef/exceptions'
+require 'chef/win32/user'
 
 #wrapper around a subset of the NetUser* APIs.
 #nothing Chef specific, but not complete enough to be its own gem, so util for now.
@@ -76,12 +77,51 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   ]
 
   USER_INFO_3_TEMPLATE =
-    USER_INFO_3.collect { |field| field[1].class == Fixnum ? 'i' : 'L' }.join
+    USER_INFO_3.collect { |field| field[1].class == Fixnum ? 'i' : 'P' }.join
 
   SIZEOF_USER_INFO_3 = #sizeof(USER_INFO_3)
     USER_INFO_3.inject(0){|sum,item|
       sum + (item[1].class == Fixnum ? 4 : PTR_SIZE)
     }
+
+  USER_INFO_3_TRANSFORM = {
+    name: :usri3_name,
+    password: :usri3_password,
+    password_age: :usri3_password_age,
+    priv: :usri3_priv,
+    home_dir: :usri3_home_dir,
+    comment: :usri3_comment,
+    flags: :usri3_flags,
+    script_path: :usri3_script_path,
+    auth_flags: :usri3_auth_flags,
+    full_name: :usri3_full_name,
+    user_comment: :usri3_usr_comment,
+    parms: :usri3_parms,
+    workstations: :usri3_workstations,
+    last_logon: :usri3_last_logon,
+    last_logoff: :usri3_last_logoff,
+    acct_expires: :usri3_acct_expires,
+    max_storage: :usri3_max_storage,
+    units_per_week: :usri3_units_per_week,
+    logon_hours: :usri3_logon_hours,
+    bad_pw_count: :usri3_bad_pw_count,
+    num_logons: :usri3_num_logons,
+    logon_server: :usri3_logon_server,
+    country_code: :usri3_country_code,
+    code_page: :usri3_code_page,
+    user_id: :usri3_user_id,
+    primary_group_id: :usri3_primary_group_id,
+    profile: :usri3_profile,
+    home_dir_drive: :usri3_home_dir_drive,
+    password_expired: :usri3_password_expired,
+  }
+
+  def transform_usri3(args)
+    args.inject({}) do |memo, (k,v)|
+      memo[USER_INFO_3_TRANSFORM[k]] = v
+      memo
+    end
+  end
 
   def user_info_3(args)
     USER_INFO_3.collect { |field|
@@ -152,17 +192,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   end
 
   def add(args)
-    user = user_info_3(args)
-    buffer = user_info_3_pack(user)
-
-    rc = NetUserAdd.call(nil, 3, buffer, rc)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
-    end
-
-    #usri3_primary_group_id:
-    #"When you call the NetUserAdd function, this member must be DOMAIN_GROUP_RID_USERS"
-    NetLocalGroupAddMembers(nil, multi_to_wide("Users"), 3, buffer[0,PTR_SIZE], 1)
+    transformed_args = transform_usri3(args)
+    Chef::ReservedNames::Win32::NetUser::net_user_add_l3(nil, transformed_args)
+    Chef::ReservedNames::Win32::NetUser::net_local_group_add_member(nil, "Users", args[:name])
   end
 
   def user_modify(&proc)
