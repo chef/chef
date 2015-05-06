@@ -1,4 +1,12 @@
-﻿function Run-Command($command, $argList) {
+﻿function Get-ScriptDirectory {
+  if (!$PSScriptRoot) {
+    $Invocation = (Get-Variable MyInvocation -Scope 1).Value
+    $PSScriptRoot = Split-Path $Invocation.MyCommand.Path
+  }
+  $PSScriptRoot
+}
+
+function Run-Command($command, $argList) {
   # Take each input string, escape any \ ' or " character in it and then surround it with "s.
   # This is to defeat the second-level parsing performed by the MSVCRT argument parser used
   # by ruby which only understands \ ' and ".
@@ -10,8 +18,13 @@
   # that needs substituting - it's a capture group that's interpreted by the regex engine.
   # \ in the replacement pattern does not need to be escaped - it is literally substituted.
   $transformed = $argList | foreach { '"' + ( $_ -replace "([\\'""])",'\$1' ) + '"' }
+  
   #& "echoargs.exe" $transformed
-  & "ruby.exe" $command $transformed
+  # Use the correct embedded ruby path.  We'll be deployed at a path that looks like
+  # [C:\opscode or some other prefix]\chef\modules\chef
+  $ruby = Join-Path (Get-ScriptDirectory)  "..\..\embedded\bin\ruby.exe"
+  $commandPath = Join-Path (Get-ScriptDirectory) "..\..\bin\$command"
+  & $ruby $commandPath $transformed
 }
 
 
