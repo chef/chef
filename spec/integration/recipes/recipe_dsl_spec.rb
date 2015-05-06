@@ -44,6 +44,10 @@ describe "Recipe DSL methods" do
     end
 
     context "Deprecated automatic resource DSL" do
+      before do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      end
+
       context "With a resource 'backcompat_thingy' declared in Chef::Resource and Chef::Provider" do
         before(:context) {
 
@@ -70,7 +74,7 @@ describe "Recipe DSL methods" do
           recipe = converge {
             backcompat_thingy 'blah' do; end
           }
-          expect(recipe.logged_warnings).to match /Chef::Resource/i
+          expect(recipe.logged_warnings).to match /Class Chef::Resource::BackcompatThingy does not declare 'provides :backcompat_thingy'/i
           expect(BaseThingy.created_resource).to eq Chef::Resource::BackcompatThingy
           expect(BaseThingy.created_provider).to eq Chef::Provider::BackcompatThingy
         end
@@ -84,12 +88,11 @@ describe "Recipe DSL methods" do
 
           }
 
-          it "backcompat_thingy creates a BackcompatThingy and warns about ambiguity" do
+          it "backcompat_thingy creates a BackcompatThingy" do
             recipe = converge {
               backcompat_thingy 'blah' do; end
             }
-            expect(recipe.logged_warnings).to match /Chef::Resource/i
-            expect(recipe.logged_warnings).to match /ambiguous resource precedence/i
+            expect(recipe.logged_warnings).to eq ''
             expect(BaseThingy.created_resource).not_to be_nil
           end
         end

@@ -1129,13 +1129,12 @@ class Chef
     # @deprecated Chef::Resource::FooBar will no longer mean anything special in
     #   Chef 13.  Use `resource_for_node` instead.
     def self.resource_matching_short_name(short_name)
-      require 'chef/resource_resolver'
       begin
         rname = convert_to_class_name(short_name.to_s)
         result = Chef::Resource.const_get(rname)
-        if result.is_a?(Chef::Resource)
-          Chef::Log.deprecation("Class Chef::Resource::#{rname} does not declare `provides #{short_name.inspect}`.")
-          Chef::Log.deprecation("This will no longer work in Chef 13: you must use `provides` to provide DSL.")
+        if result <= Chef::Resource
+          Chef::Log.deprecation("Class Chef::Resource::#{rname} does not declare 'provides #{short_name.inspect}'.")
+          Chef::Log.deprecation("This will no longer work in Chef 13: you must use 'provides' to provide DSL.")
           result
         end
       rescue NameError
