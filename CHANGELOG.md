@@ -13,6 +13,8 @@
   Show Chef version on chef shell prompt
 * [**Jacob Minshall**](https://github.com/minshallj):
   Ensure suid bit is preserved if group or owner changes
+* [**Tim Smith**](https://github.com/tas50):
+  Convert wiki links to point to docs.chef.io
 
 * Add an integration test of chef-client with empty ENV. #3321
 * Switch over Windows builds to universal builds. #3278
@@ -22,6 +24,7 @@
 * [pr#3320] Sanitize non-UTF8 characters in the node data before doing node.save().  Works around many UTF8 exception issues reported on node.save().
 * Implemented X-Ops-Server-API-Version with a API version of 0, as well as error handling when the Chef server does not support the API version that the client supports.
 * [pr#3327] Fix unreliable AIX service group parsing mechanism.
+* [pr#3333] Fix SSL errors when connecting to private Supermarkets
 
 ## 12.3.0
 
