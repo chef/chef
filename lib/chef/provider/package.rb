@@ -484,11 +484,13 @@ class Chef
           false
         end
       end
+
+      # Set provider priority
+      require 'chef/chef_class'
+      require 'chef/provider/package/homebrew'
+      require 'chef/provider/package/macports'
+
+      Chef.set_provider_priority_array :package, [ Homebrew, Macports ], os: "darwin"
     end
   end
 end
-
-require 'chef/chef_class'
-require 'chef/provider/package/homebrew'
-
-Chef.set_provider_priority_array :package, Chef::Provider::Package::Homebrew, os: "darwin"
