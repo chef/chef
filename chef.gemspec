@@ -41,6 +41,8 @@ Gem::Specification.new do |s|
   s.add_dependency "serverspec", "~> 2.7"
   s.add_dependency "specinfra", "~> 2.10"
 
+  s.add_dependency "syslog-logger", "~> 1.6"
+
   s.add_development_dependency "rack"
 
   # Rake 10.2 drops Ruby 1.8 support
