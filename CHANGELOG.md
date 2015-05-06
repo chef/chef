@@ -15,6 +15,8 @@
   Ensure suid bit is preserved if group or owner changes
 * [**Tim Smith**](https://github.com/tas50):
   Convert wiki links to point to docs.chef.io
+* [**SAWANOBORI Yukihiko**](https://github.com/sawanoboly):
+  Add Chef::Log::Syslog class for integrating sending logs to syslog
 
 * Add an integration test of chef-client with empty ENV. #3321
 * Switch over Windows builds to universal builds. #3278
