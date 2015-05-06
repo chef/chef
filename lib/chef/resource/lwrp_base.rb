@@ -19,6 +19,13 @@
 #
 
 require 'chef/resource'
+require 'chef/resource_resolver'
+require 'chef/node'
+require 'chef/log'
+require 'chef/exceptions'
+require 'chef/mixin/convert_to_class_name'
+require 'chef/mixin/from_file'
+require 'chef/mixin/params_validate' # for DelayedEvaluator
 
 class Chef
   class Resource
