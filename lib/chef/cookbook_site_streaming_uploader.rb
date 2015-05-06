@@ -106,7 +106,7 @@ class Chef
 
         url = URI.parse(to_url)
 
-        Chef::Log.logger.debug("Signing: method: #{http_verb}, path: #{url.path}, file: #{content_file}, User-id: #{user_id}, Timestamp: #{timestamp}")
+        Chef::Log.logger.debug("Signing: method: #{http_verb}, url: #{url}, file: #{content_file}, User-id: #{user_id}, Timestamp: #{timestamp}")
 
         # We use the body for signing the request if the file parameter
         # wasn't a valid file or wasn't included. Extract the body (with
@@ -141,13 +141,8 @@ class Chef
         req.content_type = 'multipart/form-data; boundary=' + boundary unless parts.empty?
         req.body_stream = body_stream
 
-        http = Net::HTTP.new(url.host, url.port)
-        if url.scheme == "https"
-          http.use_ssl = true
-          http.verify_mode = verify_mode
-        end
+        http = Chef::HTTP::BasicClient.new(url).http_client
         res = http.request(req)
-        #res = http.start {|http_proc| http_proc.request(req) }
 
         # alias status to code and to_s to body for test purposes
         # TODO: stop the following madness!
@@ -164,17 +159,6 @@ class Chef
           end
         end
         res
-      end
-
-      private
-
-      def verify_mode
-        verify_mode = Chef::Config[:ssl_verify_mode]
-        if verify_mode == :verify_none
-          OpenSSL::SSL::VERIFY_NONE
-        elsif verify_mode == :verify_peer
-          OpenSSL::SSL::VERIFY_PEER
-        end
       end
 
     end
