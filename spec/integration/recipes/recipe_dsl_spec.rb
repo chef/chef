@@ -70,7 +70,7 @@ describe "Recipe DSL methods" do
 
         }
 
-        it "backcompat_thingy creates a Chef::Resource::BackcompatThingy", :focus do
+        it "backcompat_thingy creates a Chef::Resource::BackcompatThingy" do
           recipe = converge {
             backcompat_thingy 'blah' do; end
           }
@@ -156,18 +156,17 @@ describe "Recipe DSL methods" do
         context "And Thingy4 provides :thingy3" do
           before(:context) {
 
-            class Foo::Thingy4 < Chef::Resource
+            class Foo::Thingy4 < BaseThingy
               provides :thingy3
             end
 
           }
 
-          it "thingy3 works in a recipe and yields " do
+          it "thingy3 works in a recipe and yields Foo::Thingy4 (the explicit one)" do
             recipe = converge {
               thingy3 'blah' do; end
             }
-            expect(recipe.logged_warnings).to match /ambiguous resource precedence/i
-            expect(BaseThingy.created_resource).not_to be_nil
+            expect(BaseThingy.created_resource).to eq Foo::Thingy4
           end
 
           it "thingy4 does not work in a recipe" do
