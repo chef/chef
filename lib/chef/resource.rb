@@ -977,9 +977,14 @@ class Chef
     end
 
     def self.provides(name, opts={}, &block)
-      result = super
+      priority_map = Chef::Platform::ResourcePriorityMap.instance
+      result = priority_map.priority(name, self, opts, &block)
       Chef::DSL::Resources.add_resource_dsl(name)
       result
+    end
+
+    def self.provides?(node, resource)
+      Chef::ResourceResolver.new(node, resource).provided_by?(self)
     end
 
     # Helper for #notifies

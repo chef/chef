@@ -159,11 +159,16 @@ class Chef
       converge_actions.add_action(descriptions, &block)
     end
 
-    protected
-
-    def self.provides_priority_map
-      Chef::Platform::ResourcePriorityMap.instance
+    def self.provides(short_name, opts={}, &block)
+      priority_map = Chef::Platform::ProviderPriorityMap.instance
+      priority_map.priority(short_name, self, opts, &block)
     end
+
+    def self.provides?(node, resource)
+      Chef::ProviderResolver.new(node, resource, :nothing).provided_by?(self)
+    end
+
+    protected
 
     def converge_actions
       @converge_actions ||= ConvergeActions.new(@new_resource, run_context, @action)
@@ -224,4 +229,5 @@ end
 require 'chef/chef_class'
 require 'chef/mixin/why_run'
 require 'chef/resource_collection'
+require 'chef/platform/provider_priority_map'
 require 'chef/runner'
