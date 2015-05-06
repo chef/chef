@@ -23,8 +23,10 @@
 * [pr#3295](https://github.com/chef/chef/pull/3295): Stop mutating `new_resource.checksum` in file providers.  Fixes some ChecksumMismatch exceptions like [issue#3168](https://github.com/chef/chef/issues/3168)
 * [pr#3320] Sanitize non-UTF8 characters in the node data before doing node.save().  Works around many UTF8 exception issues reported on node.save().
 * Implemented X-Ops-Server-API-Version with a API version of 0, as well as error handling when the Chef server does not support the API version that the client supports.
-* [pr#3327] Fix unreliable AIX service group parsing mechanism.
-* [pr#3333] Fix SSL errors when connecting to private Supermarkets
+* [pr#3327](https://github.com/chef/chef/pull/3327): Fix unreliable AIX service group parsing mechanism.
+* [pr#3333](https://github.com/chef/chef/pull/3333): Fix SSL errors when connecting to private Supermarkets
+* [pr#3340](https://github.com/chef/chef/pull/3340): Allow Event
+  dispatch subscribers to be inspected.
 
 ## 12.3.0
 
