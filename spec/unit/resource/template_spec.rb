@@ -183,7 +183,7 @@ describe Chef::Resource::Template do
       expect { @resource.helpers(ExampleHelpers) { module_code } }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
-    it "collects helper modules", :focus do
+    it "collects helper modules" do
       @resource.helpers(ExampleHelpers)
       expect(@resource.helper_modules).to include(ExampleHelpers)
     end

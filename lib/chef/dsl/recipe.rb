@@ -63,6 +63,7 @@ class Chef
         #
         resource_class = Chef::ResourceResolver.new(run_context ? run_context.node : nil, method_symbol).resolve
         if resource_class
+          Chef::DSL::Resources.add_resource_dsl(method_symbol)
           return send(method_symbol, *args, &block)
         end
 
