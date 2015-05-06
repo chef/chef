@@ -63,17 +63,6 @@ class Chef
         #
         resource_class = Chef::ResourceResolver.new(run_context ? run_context.node : nil, method_symbol).resolve
         if resource_class
-          #
-          # If the DSL method was *not* added, this is the case where the
-          # matching class implements 'provides?' and matches resources that it
-          # never declared "provides" for (which means we would never have
-          # created DSL).  Anything where we don't create DSL is deprecated.
-          #
-          if !respond_to?(method_symbol)
-            Chef::Log.deprecation("#{resource_class} is marked as providing DSL #{method_symbol}, but provides #{method_symbol.inspect} was never called!")
-            Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
-            Chef::DSL::Resources.add_resource_dsl(method_symbol)
-          end
           return send(method_symbol, *args, &block)
         end
 

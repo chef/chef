@@ -17,7 +17,8 @@ class Chef
         priority_map.set(*args)
       end
 
-      def list(*args)
+      # @api private
+      def list_handlers(*args)
         priority_map.list(*args).flatten(1).uniq
       end
 
