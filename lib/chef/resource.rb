@@ -1103,7 +1103,7 @@ class Chef
       end
     end
 
-    def self.provides(name, *args, &block)
+    def self.provides(name, opts={}, &block)
       result = super
       Chef::DSL::Resources.add_resource_dsl(name)
       result
@@ -1270,6 +1270,12 @@ class Chef
       end
     end
 
+    protected
+
+    def self.provides_priority_map
+      Chef::Platform::ResourcePriorityMap.instance
+    end
+
     # Implement deprecated LWRP class
     module DeprecatedLWRPClass
       # @api private
@@ -1289,8 +1295,6 @@ class Chef
           raise NameError, "uninitialized constant Chef::Resource::#{class_name}"
         end
       end
-
-      private
 
       def deprecated_constants
         @deprecated_constants ||= {}

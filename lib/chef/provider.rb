@@ -29,6 +29,9 @@ require 'chef/node_map'
 
 class Chef
   class Provider
+    require 'chef/mixin/why_run'
+    require 'chef/mixin/shell_out'
+    require 'chef/mixin/provides'
     include Chef::Mixin::WhyRun
     include Chef::Mixin::ShellOut
     include Chef::Mixin::PowershellOut
@@ -174,6 +177,10 @@ class Chef
 
     protected
 
+    def self.provides_priority_map
+      Chef::Platform::ResourcePriorityMap.instance
+    end
+
     def converge_actions
       @converge_actions ||= ConvergeActions.new(@new_resource, run_context, @action)
     end
@@ -228,3 +235,9 @@ class Chef
     extend DeprecatedLWRPClass
   end
 end
+
+# Requiring things at the bottom breaks cycles
+require 'chef/chef_class'
+require 'chef/mixin/why_run'
+require 'chef/resource_collection'
+require 'chef/runner'
