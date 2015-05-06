@@ -168,80 +168,58 @@ class Chef
         @new_resource.respond_to?(method_name) &&
           !!@new_resource.send(method_name)
       end
+
+      #
+      # Platform-specific versions
+      #
+
+      #
+      # Linux
+      #
+
+      require 'chef/chef_class'
+      require 'chef/provider/service/systemd'
+      require 'chef/provider/service/insserv'
+      require 'chef/provider/service/redhat'
+      require 'chef/provider/service/arch'
+      require 'chef/provider/service/gentoo'
+      require 'chef/provider/service/upstart'
+      require 'chef/provider/service/debian'
+      require 'chef/provider/service/invokercd'
+      require 'chef/provider/service/freebsd'
+      require 'chef/provider/service/openbsd'
+      require 'chef/provider/service/solaris'
+      require 'chef/provider/service/macosx'
+
+      # default block for linux O/Sen must come before platform_family exceptions
+      # so that they take precedence
+      Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ],
+        os: "linux"
+
+        Chef.set_provider_priority_array :service, [ Systemd, Arch ],
+          platform_family: "arch"
+        Chef.set_provider_priority_array :service, [ Systemd, Gentoo ],
+          platform_family: "gentoo"
+        # we can determine what systemd supports accurately
+        # on debian-ish system if an upstart script exists that must win over sysv types
+        Chef.set_provider_priority_array :service, [ Systemd, Upstart, Insserv, Debian, Invokercd ],
+          platform_family: "debian"
+        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ],
+          platform_family: %w(rhel fedora suse)
+
+      # BSDen
+      Chef.set_provider_priority_array :service, Freebsd,
+        os: %w(freebsd netbsd)
+      Chef.set_provider_priority_array :service, Openbsd,
+        os: "openbsd"
+
+      # Solaris-en
+      Chef.set_provider_priority_array :service, Solaris,
+        os: "solaris2"
+
+      # Mac
+      Chef.set_provider_priority_array :service, Macosx,
+        os: "darwin"
     end
   end
 end
-
-#
-# Platform-specific versions
-#
-
-#
-# Linux
-#
-
-require 'chef/chef_class'
-require 'chef/provider/service/systemd'
-require 'chef/provider/service/insserv'
-require 'chef/provider/service/redhat'
-require 'chef/provider/service/arch'
-require 'chef/provider/service/gentoo'
-require 'chef/provider/service/upstart'
-require 'chef/provider/service/debian'
-require 'chef/provider/service/invokercd'
-require 'chef/provider/service/freebsd'
-require 'chef/provider/service/openbsd'
-require 'chef/provider/service/solaris'
-require 'chef/provider/service/macosx'
-
-# default block for linux O/Sen must come before platform_family exceptions
-Chef.set_provider_priority_array :service, [
-  Chef::Provider::Service::Systemd,
-  Chef::Provider::Service::Insserv,
-  Chef::Provider::Service::Redhat,
-], os: "linux"
-
-Chef.set_provider_priority_array :service, [
-  Chef::Provider::Service::Systemd,
-  Chef::Provider::Service::Arch,
-], platform_family: "arch"
-
-Chef.set_provider_priority_array :service, [
-  Chef::Provider::Service::Systemd,
-  Chef::Provider::Service::Gentoo,
-], platform_family: "gentoo"
-
-Chef.set_provider_priority_array :service, [
-  # we can determine what systemd supports accurately
-  Chef::Provider::Service::Systemd,
-  # on debian-ish system if an upstart script exists that must win over sysv types
-  Chef::Provider::Service::Upstart,
-  Chef::Provider::Service::Insserv,
-  Chef::Provider::Service::Debian,
-  Chef::Provider::Service::Invokercd,
-], platform_family: "debian"
-
-Chef.set_provider_priority_array :service, [
-  Chef::Provider::Service::Systemd,
-  Chef::Provider::Service::Insserv,
-  Chef::Provider::Service::Redhat,
-], platform_family: [ "rhel", "fedora", "suse" ]
-
-#
-# BSDen
-#
-
-Chef.set_provider_priority_array :service, Chef::Provider::Service::Freebsd, os: [ "freebsd", "netbsd" ]
-Chef.set_provider_priority_array :service, Chef::Provider::Service::Openbsd, os: [ "openbsd" ]
-
-#
-# Solaris-en
-#
-
-Chef.set_provider_priority_array :service, Chef::Provider::Service::Solaris, os: "solaris2"
-
-#
-# Mac
-#
-
-Chef.set_provider_priority_array :service, Chef::Provider::Service::Macosx, os: "darwin"
