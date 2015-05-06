@@ -977,8 +977,7 @@ class Chef
     end
 
     def self.provides(name, opts={}, &block)
-      priority_map = Chef::Platform::ResourcePriorityMap.instance
-      result = priority_map.priority(name, self, opts, &block)
+      result = Chef.set_resource_priority_array(name, self, opts, &block)
       Chef::DSL::Resources.add_resource_dsl(name)
       result
     end
@@ -1194,3 +1193,6 @@ class Chef
     end
   end
 end
+
+# Requiring things at the bottom breaks cycles
+require 'chef/chef_class'

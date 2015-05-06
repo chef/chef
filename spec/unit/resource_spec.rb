@@ -709,22 +709,22 @@ describe Chef::Resource do
     end
 
     it 'adds mappings for a single platform' do
-      expect(Chef::Resource::Klz.node_map).to receive(:set).with(
-        :dinobot, true, { platform: ['autobots'] }
+      expect(Chef).to receive(:set_resource_priority_array).with(
+        :dinobot, Chef::Resource::Klz, { platform: ['autobots'] }
       )
       klz.provides :dinobot, platform: ['autobots']
     end
 
     it 'adds mappings for multiple platforms' do
-      expect(Chef::Resource::Klz.node_map).to receive(:set).with(
-        :energy, true, { platform: ['autobots', 'decepticons']}
+      expect(Chef).to receive(:set_resource_priority_array).with(
+        :energy, Chef::Resource::Klz, { platform: ['autobots', 'decepticons']}
       )
       klz.provides :energy, platform: ['autobots', 'decepticons']
     end
 
     it 'adds mappings for all platforms' do
-      expect(Chef::Resource::Klz.node_map).to receive(:set).with(
-        :tape_deck, true, {}
+      expect(Chef).to receive(:set_resource_priority_array).with(
+        :tape_deck, Chef::Resource::Klz, {}
       )
       klz.provides :tape_deck
     end

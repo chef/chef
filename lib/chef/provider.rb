@@ -160,8 +160,7 @@ class Chef
     end
 
     def self.provides(short_name, opts={}, &block)
-      priority_map = Chef::Platform::ProviderPriorityMap.instance
-      priority_map.priority(short_name, self, opts, &block)
+      Chef.set_provider_priority_array(short_name, self, opts, &block)
     end
 
     def self.provides?(node, resource)
