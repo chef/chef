@@ -119,33 +119,14 @@ class Chef
       @action = action
     end
 
-    # return a deterministically sorted list of Chef::Provider subclasses
-    def providers
-      @providers ||= Chef::Provider.descendants
-    end
-
     def resolve
       maybe_explicit_provider(resource) ||
         maybe_dynamic_provider_resolution(resource, action) ||
         maybe_chef_platform_lookup(resource)
     end
 
-    # this cut looks at if the provider can handle the resource type on the node
-    def enabled_handlers
-      @enabled_handlers ||=
-        providers.select do |klass|
-          # NB: this is different from resource_resolver which must pass a resource_name
-          # FIXME: deprecate this and normalize on passing resource_name here
-          klass.provides?(node, resource)
-        end.sort {|a,b| a.to_s <=> b.to_s }
-    end
-
-    # this cut looks at if the provider can handle the specific resource and action
-    def supported_handlers
-      @supported_handlers ||=
-        enabled_handlers.select do |klass|
-          klass.supports?(resource, action)
-        end
+    def provided_by?(provider_class)
+      prioritized_handlers.include?(provider_class)
     end
 
     private
@@ -158,40 +139,37 @@ class Chef
 
     # try dynamically finding a provider based on querying the providers to see what they support
     def maybe_dynamic_provider_resolution(resource, action)
-      # log this so we know what providers will work for the generic resource on the node (early cut)
-      Chef::Log.debug "providers for generic #{resource.resource_name} resource enabled on node include: #{enabled_handlers}"
+      Chef::Log.debug "Providers for generic #{resource.resource_name} resource enabled on node include: #{enabled_handlers}"
 
-      # what providers were excluded by machine state (late cut)
-      Chef::Log.debug "providers that refused resource #{resource} were: #{enabled_handlers - supported_handlers}"
-      Chef::Log.debug "providers that support resource #{resource} include: #{supported_handlers}"
+      # Get all the handlers in the priority bucket
+      handlers = prioritized_handlers
 
-      # if none of the providers specifically support the resource, we still need to pick one of the providers that are
-      # enabled on the node to handle the why-run use case.
-      handlers = supported_handlers.empty? ? enabled_handlers : supported_handlers
-      Chef::Log.debug "no providers supported the resource, falling back to enabled handlers" if supported_handlers.empty?
+      # Narrow it down to handlers that return `true` to `provides?`
+      # TODO deprecate this and don't bother calling--the fact that they said
+      # `provides` should be enough.  But we need to do it right now because
+      # some classes implement additional handling.
+      enabled_handlers = prioritized_handlers.select { |handler| handler.provides?(node, resource) }
 
-      if handlers.count >= 2
-        # this magic stack ranks the providers by where they appear in the provider_priority_map, it is mostly used
-        # to pick amongst N different ways to start init scripts on different debian/ubuntu systems.
-        priority_list = [ get_priority_array(node, resource.resource_name) ].flatten.compact
-        handlers = handlers.sort_by { |x| i = priority_list.index x; i.nil? ? Float::INFINITY : i }
-        if priority_list.index(handlers.first).nil?
-          # if we had more than one and we picked one with a precidence of infinity that means that the resource_priority_map
-          # entry for this resource is missing -- we should probably raise here and force resolution of the ambiguity.
-          Chef::Log.warn "Ambiguous provider precedence: #{handlers}, please use Chef.set_provider_priority_array to provide determinism"
-        end
-        handlers = [ handlers.first ]
+      # Narrow it down to handlers that return `true` to `supports?`
+      # TODO deprecate this and allow actions to be passed as a filter to
+      # `provides` so we don't have to have two separate things.
+      supported_handlers = handlers.select { |handler| handler.supports?(resource, action) }
+      if supported_handlers.empty?
+        # if none of the providers specifically support the resource, we still need to pick one of the providers that are
+        # enabled on the node to handle the why-run use case. FIXME we should only do this in why-run mode then.
+        Chef::Log.debug "No providers responded true to `supports?` for action #{action} on resource #{resource}, falling back to enabled handlers so we can return something anyway."
+        handler = enabled_handlers.first
+      else
+        handler = supported_handlers.first
       end
 
-      Chef::Log.debug "providers that survived replacement include: #{handlers}"
+      if handler
+        Chef::Log.debug "Provider for action #{action} on resource #{resource} is #{handler}"
+      else
+        Chef::Log.debug "Dynamic provider resolver FAILED to resolve a provider for action #{action} on resource #{resource}"
+      end
 
-      raise Chef::Exceptions::AmbiguousProviderResolution.new(resource, handlers) if handlers.count >= 2
-
-      Chef::Log.debug "dynamic provider resolver FAILED to resolve a provider" if handlers.empty?
-
-      return nil if handlers.empty?
-
-      handlers[0]
+      handler
     end
 
     # try the old static lookup of providers by platform
@@ -199,13 +177,51 @@ class Chef
       Chef::Platform.find_provider_for_node(node, resource)
     end
 
-    # dep injection hooks
-    def get_priority_array(node, resource_name)
-      provider_priority_map.get_priority_array(node, resource_name)
-    end
-
     def provider_priority_map
       Chef::Platform::ProviderPriorityMap.instance
     end
+
+    def prioritized_handlers
+      @prioritized_handlers ||=
+        provider_priority_map.list_handlers(node, resource.resource_name).flatten(1).uniq
+    end
+
+    module Deprecated
+      # return a deterministically sorted list of Chef::Provider subclasses
+      def providers
+        @providers ||= Chef::Provider.descendants
+      end
+
+      # this cut looks at if the provider can handle the resource type on the node
+      def enabled_handlers
+        @enabled_handlers ||=
+          providers.select do |klass|
+            # NB: this is different from resource_resolver which must pass a resource_name
+            # FIXME: deprecate this and normalize on passing resource_name here
+            klass.provides?(node, resource)
+          end.sort {|a,b| a.to_s <=> b.to_s }
+      end
+
+      # this cut looks at if the provider can handle the specific resource and action
+      def supported_handlers
+        @supported_handlers ||=
+          enabled_handlers.select do |klass|
+            klass.supports?(resource, action)
+          end
+      end
+
+      # If there are no providers for a DSL, we search through the
+      def prioritized_handlers
+        @prioritized_handlers ||= super || begin
+          result = providers.select { |handler| handler.provides?(node, resource) }.sort_by(:name)
+          if !result.empty?
+            Chef::Log.deprecation("#{resource.resource_name.to_sym} is marked as providing DSL #{method_symbol}, but provides #{resource.resource_name.to_sym.inspect} was never called!")
+            Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+          end
+          result
+        end
+      end
+    end
+    prepend Deprecated
   end
 end

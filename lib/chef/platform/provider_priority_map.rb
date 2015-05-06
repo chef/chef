@@ -10,15 +10,16 @@ class Chef
       end
 
       def set_priority_array(resource_name, priority_array, *filter)
-        priority(resource_name.to_sym, Array(priority_array), *filter)
+        priority(resource_name.to_sym, priority_array, *filter)
       end
 
-      def priority(*args)
-        priority_map.set(*args)
+      def priority(resource_name, priority_array, *filter)
+        priority_map.set(resource_name.to_sym, Array(priority_array), *filter)
       end
 
-      def list(node, resource_name)
-        priority_map.list(node, resource_name).flatten(1).uniq
+      # @api private
+      def list_handlers(node, resource_name)
+        priority_map.list(node, resource_name.to_sym).flatten(1).uniq
       end
 
       private

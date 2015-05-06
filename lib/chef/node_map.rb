@@ -71,6 +71,13 @@ class Chef
       list(node, key).first
     end
 
+    # List all matches for the given node and key from the NodeMap, from
+    # most-recently added to oldest.
+    #
+    # @param node [Chef::Node] The Chef::Node object for the run
+    # @param key [Object] Key to look up
+    # @return [Object] Value
+    #
     def list(node, key)
       # FIXME: real exception
       raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node)

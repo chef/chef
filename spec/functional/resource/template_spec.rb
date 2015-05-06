@@ -31,8 +31,6 @@ describe Chef::Resource::Template do
 
   let(:node) do
     node = Chef::Node.new
-    node.normal[:os] = 'linux'
-    node.normal[:os_version] = '1.0.0'
     node.normal[:slappiness] = "a warm gun"
     node
   end

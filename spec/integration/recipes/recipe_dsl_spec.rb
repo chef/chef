@@ -70,7 +70,7 @@ describe "Recipe DSL methods" do
 
         }
 
-        it "backcompat_thingy creates a Chef::Resource::BackcompatThingy" do
+        it "backcompat_thingy creates a Chef::Resource::BackcompatThingy", :focus do
           recipe = converge {
             backcompat_thingy 'blah' do; end
           }
