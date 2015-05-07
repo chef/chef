@@ -40,12 +40,25 @@
         </Directory>
         <Directory Id="INSTALLLOCATION" Name="opscode">
           <Directory Id="PROJECTLOCATION" Name="chef" >
+            <Directory Id="PROJECTLOCATIONBIN" Name="bin" >
+              <Component Id="ChefClientPath" Guid="{7F663F88-55A2-4E20-82BF-8BD2E60BB83A}" >
+                <Environment Id="ClientPathEnvironment"
+                             Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATIONBIN]" />
+              </Component>
+            </Directory>
+            <Directory Id="PSMODULES" Name="modules" >
+              <Directory Id="PSMODULESCHEF" Name="chef" >
+                <Component Id="ChefPSModuleFile" Guid="{DF0E99BF-1877-4099-85A4-067C84A743F2}" >
+                  <File Id="chef.psm1" Source="$(var.ProjectSourceDir)\embedded\apps\chef\distro\powershell\chef\chef.psm1" KeyPath="yes" />
+                </Component>
+              </Directory>
+              <Component Id="ChefPSModulePath" Guid="{357DA654-F02E-430A-9EA6-A10554E3EF38}" >
+                <Environment Id="ChefPSModulePathEnvironment"
+                             Name="PSModulePath" Action="set" Part="last" System="yes" Value="[PSMODULES]" />
+              </Component>
+            </Directory>
             <Directory Id="EMBEDDED" Name="embedded" >
               <Directory Id="EMBEDDEDBIN" Name="bin" >
-                <Component Id="ChefClientPath" Guid="{7F663F88-55A2-4E20-82BF-8BD2E60BB83A}" >
-                  <Environment Id="Environment"
-                               Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATION]bin" />
-                </Component>
                 <Component Id="ChefClientService" Guid="{69B2D8BE-4A47-4BE3-AEE8-83FAEB6E2FAF}" >
                   <File Id="RubyExecutable" Source="$(var.ProjectSourceDir)\embedded\bin\ruby.exe" KeyPath="yes" />
                   <ServiceInstall Name="chef-client" Type="ownProcess"
@@ -77,6 +90,11 @@
       <ComponentRef Id="ChefClientPath" />
       <ComponentRef Id="CONFIGLOCATIONDIR" />
       <ComponentRef Id="ChefClientLog" />
+    </Feature>
+
+    <Feature Id="ChefPSModuleFeature" Title="!(loc.FeaturePSModuleName)" Level="1000" AllowAdvertise="no">
+      <ComponentRef Id="ChefPSModuleFile" />
+      <ComponentRef Id="ChefPSModulePath" />
     </Feature>
 
     <Feature Id="ChefServiceFeature" Title="!(loc.FeatureServiceName)" Level="1000" AllowAdvertise="no">
