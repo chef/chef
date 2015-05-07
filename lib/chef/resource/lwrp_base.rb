@@ -145,6 +145,12 @@ class Chef
           DelayedEvaluator.new(&block)
         end
 
+        protected
+
+        def loaded_lwrps
+          @loaded_lwrps ||= {}
+        end
+
         private
 
         # Get the value from the superclass, if it responds, otherwise return
@@ -154,10 +160,6 @@ class Chef
         def from_superclass(m, default = nil)
           return default if superclass == Chef::Resource::LWRPBase
           superclass.respond_to?(m) ? superclass.send(m) : default
-        end
-
-        def loaded_lwrps
-          @loaded_lwrps ||= {}
         end
       end
 
