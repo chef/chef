@@ -19,18 +19,12 @@
 
 require 'spec_helper'
 
-module Win32
-  class EventLog
-  end
-end
-
 describe Chef::Log::WinEvt do
-  let(:winevt) { Chef::Log::WinEvt.new }
-  let(:app) { Chef::Application.new }
   let(:evtlog) { instance_double("Win32::EventLog")}
+  let(:winevt) { Chef::Log::WinEvt.new(evtlog) }
+  let(:app) { Chef::Application.new }
 
   before do
-    allow(::Win32::EventLog).to receive(:open).and_return(evtlog)
 
     Chef::Log.init(MonoLogger.new(winevt))
     @old_log_level = Chef::Log.level
