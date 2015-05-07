@@ -320,38 +320,43 @@ describe "LWRP" do
     end
 
     before(:each) do
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
+      Dir[File.expand_path(File.expand_path("../../data/lwrp/resources/*", __FILE__))].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
-        Chef::Provider::LWRPBase.build_from_file("lwrp", file, @run_context)
-      end
-
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
+      Dir[File.expand_path(File.expand_path("../../data/lwrp/providers/*", __FILE__))].each do |file|
         Chef::Provider::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
     end
 
     it "should properly handle a new_resource reference" do
-      resource = get_lwrp(:lwrp_foo).new("morpheus")
+      resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       resource.monkey("bob")
       resource.provider(:lwrp_monkey_name_printer)
-      resource.run_context = @run_context
 
       provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
       provider.action_twiddle_thumbs
     end
 
-    it "should load the provider into a properly-named class" do
-      expect(Chef::Provider.const_get("LwrpBuckPasser")).to be_kind_of(Class)
-    end
+    context "resource class created" do
+      before do
+        @old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      end
+      after do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = @old_treat_deprecation_warnings_as_errors
+      end
 
-    it "should create a method for each attribute" do
-      new_resource = double("new resource").as_null_object
-      expect(Chef::Provider::LwrpBuckPasser.new(nil, new_resource).methods.map{|m|m.to_sym}).to include(:action_pass_buck)
-      expect(Chef::Provider::LwrpThumbTwiddler.new(nil, new_resource).methods.map{|m|m.to_sym}).to include(:action_twiddle_thumbs)
+      it "should load the provider into a properly-named class" do
+        expect(Chef::Provider.const_get("LwrpBuckPasser")).to be_kind_of(Class)
+        expect(Chef::Provider::LwrpBuckPasser <= Chef::Provider::LWRPBase).to be_truthy
+      end
+
+      it "should create a method for each action" do
+        expect(Chef::Provider::LwrpBuckPasser.instance_methods).to include(:action_pass_buck)
+        expect(Chef::Provider::LwrpThumbTwiddler.instance_methods).to include(:action_twiddle_thumbs)
+      end
     end
 
     it "should insert resources embedded in the provider into the middle of the resource collection" do

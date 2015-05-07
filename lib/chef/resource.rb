@@ -32,6 +32,8 @@ require 'chef/node_map'
 require 'chef/node'
 require 'chef/platform'
 require 'chef/resource/resource_notification'
+require 'chef/provider_resolver'
+require 'chef/resource_resolver'
 
 require 'chef/mixin/deprecation'
 require 'chef/mixin/provides'
@@ -684,6 +686,8 @@ class Chef
     #
     def provider(arg=nil)
       klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
+        # TODO deprecate.  This does class munging.  If you know
+        # the class name, just pass the class.
         lookup_provider_constant(arg)
       else
         arg
@@ -1036,7 +1040,6 @@ class Chef
     end
 
     def provider_for_action(action)
-      require 'chef/provider_resolver'
       provider = Chef::ProviderResolver.new(node, self, action).resolve.new(self, run_context)
       provider.action = action
       provider
@@ -1110,7 +1113,6 @@ class Chef
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_for_node(short_name, node)
-      require 'chef/resource_resolver'
       klass = Chef::ResourceResolver.new(node, short_name).resolve
       raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
       klass
@@ -1143,43 +1145,42 @@ class Chef
       end
     end
 
-    def self.const_missing(class_name)
-      if deprecated_constants[class_name.to_sym]
-        Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
-        deprecated_constants[class_name.to_sym]
-      else
-        raise NameError, "uninitialized constant Chef::Resource::#{class_name}"
-      end
-    end
-
-    # @api private
-    def self.create_deprecated_lwrp_class(resource_class)
-      # Create a class in Chef::Resource::MyResource with deprecation
-      # warnings if you try to access it
-      class_name = convert_to_class_name(resource_class.resource_name)
-      if Chef::Resource.const_defined?(class_name, false)
-        Chef::Log.warn "#{class_name} already exists!  Cannot create deprecation class for #{resource_class}"
-      else
-        deprecated_constants[class_name.to_sym] = resource_class
-      end
-    end
-
-    private
-
-    def self.deprecated_constants
-      @deprecated_constants ||= {}
-    end
-
-    def lookup_provider_constant(name)
-      begin
-        self.class.provider_base.const_get(convert_to_class_name(name.to_s))
-      rescue NameError => e
-        if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
-          raise ArgumentError, "No provider found to match '#{name}'"
+    # Implement deprecated LWRP class
+    module DeprecatedLWRPClass
+      # @api private
+      def register_deprecated_lwrp_class(resource_class, class_name)
+        if Chef::Resource.const_defined?(class_name, false)
+          Chef::Log.warn "#{class_name} already exists!  Cannot create deprecation class for #{resource_class}"
         else
-          raise e
+          deprecated_constants[class_name.to_sym] = resource_class
         end
       end
+
+      def const_missing(class_name)
+        if deprecated_constants[class_name.to_sym]
+          Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+          deprecated_constants[class_name.to_sym]
+        else
+          raise NameError, "uninitialized constant Chef::Resource::#{class_name}"
+        end
+      end
+
+      private
+
+      def deprecated_constants
+        @deprecated_constants ||= {}
+      end
+    end
+    extend DeprecatedLWRPClass
+
+    def lookup_provider_constant(name, action=:nothing)
+      resource = Chef::Resource.new(self.name, self.run_context)
+      resource.instance_eval { @resource_name = name }
+      provider = Chef::ProviderResolver.new(self.node, resource, action).resolve
+      if !provider
+        raise ArgumentError, "No provider found to match '#{name}'"
+      end
+      provider
     end
   end
 end

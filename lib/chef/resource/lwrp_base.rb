@@ -47,7 +47,7 @@ class Chef
 
         def build_from_file(cookbook_name, filename, run_context)
           if LWRPBase.loaded_lwrps[filename]
-            Chef::Log.info("LWRP provider #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
+            Chef::Log.info("LWRP resource #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
             return loaded_lwrps[filename]
           end
 
@@ -63,16 +63,16 @@ class Chef
           # Respect resource_name set inside the LWRP
           resource_class.instance_eval do
             define_method(:to_s) do
-              "LWRP #{resource_name} from cookbook #{cookbook_name}"
+              "LWRP resource #{resource_name} from cookbook #{cookbook_name}"
             end
             define_method(:inspect) { to_s }
           end
 
-          Chef::Log.debug("Loaded contents of #{filename} into #{resource_class}")
+          Chef::Log.debug("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
 
           LWRPBase.loaded_lwrps[filename] = true
 
-          Chef::Resource.create_deprecated_lwrp_class(resource_class)
+          Chef::Resource.register_deprecated_lwrp_class(resource_class, convert_to_class_name(resource_name))
 
           resource_class
         end
