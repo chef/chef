@@ -59,7 +59,7 @@ class Chef
       # attrs.
       def for_json
         as_hash = {}
-        as_hash["type"]   = new_resource.class.dsl_name
+        as_hash["type"]   = new_resource.resource_name.to_sym
         as_hash["name"]   = new_resource.name.to_s
         as_hash["id"]     = new_resource.identity.to_s
         as_hash["after"]  = new_resource.state_for_resource_reporter

@@ -467,7 +467,7 @@ class Chef
             begin
               class_name = resource_type.class.to_s.split('::').last
               result = Chef::Provider.const_get(class_name)
-              Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{resource_type.class.dsl_name.to_sym.inspect}'.")
+              Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{resource.resource_name.inspect}'.")
               Chef::Log.warn("This will no longer work in Chef 13: you must use 'provides' to provide DSL.")
               result
             rescue NameError

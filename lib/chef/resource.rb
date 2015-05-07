@@ -605,7 +605,7 @@ class Chef
       return "suppressed sensitive resource output" if sensitive
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       text = "# Declared in #{@source_line}\n\n"
-      text << self.class.dsl_name + "(\"#{name}\") do\n"
+      text << "#{resource_name}(\"#{name}\") do\n"
       ivars.each do |ivar|
         if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
           value_string = value.respond_to?(:to_text) ? value.to_text : value.inspect
@@ -821,6 +821,7 @@ class Chef
     #
     # @return [String] The DSL name of this resource.
     def self.dsl_name
+      Chef::Log.deprecation "Resource.dsl_name is deprecated and will be removed in Chef 11.  Use resource.resource_name instead."
       if name
         name = self.name.split('::')[-1]
         convert_to_snake_case(name)
