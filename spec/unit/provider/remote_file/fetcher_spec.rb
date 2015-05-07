@@ -25,13 +25,22 @@ describe Chef::Provider::RemoteFile::Fetcher do
   let(:fetcher_instance) { double("fetcher") }
 
   describe "when passed a network share" do
-    let(:source) { "\\\\foohost\\fooshare\\Foo.tar.gz" }
-
     before do
       expect(Chef::Provider::RemoteFile::NetworkFile).to receive(:new).and_return(fetcher_instance)
     end
-    it "returns a network file fetcher" do
-      expect(described_class.for_resource(source, new_resource, current_resource)).to eq(fetcher_instance)
+
+    context "when host is a name" do
+      let(:source) { "\\\\foohost\\fooshare\\Foo.tar.gz" }
+      it "returns a network file fetcher" do
+        expect(described_class.for_resource(source, new_resource, current_resource)).to eq(fetcher_instance)
+      end
+    end
+
+    context "when host is an ip" do
+      let(:source) { "\\\\127.0.0.1\\fooshare\\Foo.tar.gz" }
+      it "returns a network file fetcher" do
+        expect(described_class.for_resource(source, new_resource, current_resource)).to eq(fetcher_instance)
+      end
     end
   end
 

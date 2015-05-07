@@ -43,7 +43,7 @@ class Chef
         def self.network_share?(source)
           case source
           when String
-            !!(%r{\A\\\\[A-Za-z][A-Za-z0-9+\-\.]*} =~ source)
+            !!(%r{\A\\\\[A-Za-z0-9+\-\.]+} =~ source)
           else
             false
           end
