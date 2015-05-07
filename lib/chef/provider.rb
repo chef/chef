@@ -228,5 +228,4 @@ end
 require 'chef/chef_class'
 require 'chef/mixin/why_run'
 require 'chef/resource_collection'
-require 'chef/platform/provider_priority_map'
 require 'chef/runner'

@@ -39,6 +39,8 @@ require 'erb'
 class Chef
   class Provider
     class Ifconfig < Chef::Provider
+      provides :ifconfig
+
       include Chef::Mixin::ShellOut
       include Chef::Mixin::Command
 

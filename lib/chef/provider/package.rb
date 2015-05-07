@@ -25,6 +25,8 @@ require 'chef/platform'
 class Chef
   class Provider
     class Package < Chef::Provider
+      provides :package
+
       include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
 
@@ -489,8 +491,28 @@ class Chef
       require 'chef/chef_class'
       require 'chef/provider/package/homebrew'
       require 'chef/provider/package/macports'
+      require 'chef/provider/package/apt'
+      require 'chef/provider/package/yum'
+      require 'chef/provider/package/zypper'
+      require 'chef/provider/package/portage'
+      require 'chef/provider/package/pacman'
+      require 'chef/provider/package/ips'
+      require 'chef/provider/package/solaris'
+      require 'chef/provider/package/smartos'
+      require 'chef/provider/package/aix'
+      require 'chef/provider/package/paludis'
 
       Chef.set_provider_priority_array :package, [ Homebrew, Macports ], os: "darwin"
+      Chef.set_provider_priority_array :package,  Apt,      platform: %w(ubuntu gcel linaro raspbian linuxmint debian)
+      Chef.set_provider_priority_array :package,  Yum,      platform: %w(xenserver xcp centos amazon scientific fedora oracle redhat ibm_powerkvm cloudlinux parallels)
+      Chef.set_provider_priority_array :package,  Zypper,   platform: %w(opensuse suse)
+      Chef.set_provider_priority_array :package,  Portage,  platform: %w(gentoo)
+      Chef.set_provider_priority_array :package,  Pacman,   platform: %w(arch)
+      Chef.set_provider_priority_array :package,  Ips,      platform: %w(openindiana opensolaris omnios solaris2)
+      Chef.set_provider_priority_array :package,  Solaris,  platform: %w(nexentacore solaris2 < 5.11)
+      Chef.set_provider_priority_array :package,  SmartOS,  platform: %w(smartos)
+      Chef.set_provider_priority_array :package,  Aix,      platform: %w(aix)
+      Chef.set_provider_priority_array :package,  Paludis,  platform: %w(exherbo)
     end
   end
 end
