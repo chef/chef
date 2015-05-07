@@ -50,11 +50,20 @@ class Chef
     def set(key, value, filters = {}, &block)
       validate_filter!(filters)
       deprecate_filter!(filters)
+      new_matcher = { filters: filters, block: block, value: value }
       @map[key] ||= []
-      # we match on the first value we find, so we want to unshift so that the
-      # last setter wins
-      # FIXME: need a test for this behavior
-      @map[key].unshift({ filters: filters, block: block, value: value })
+      # Decide where to insert the matcher; the new value is preferred over
+      # anything more specific (see `priority_of`) and is preferred over older
+      # values of the same specificity.  (So all other things being equal,
+      # newest wins.)
+      insert_at = 0
+      @map[key].each_with_index do |matcher, index|
+        if specificity(new_matcher) >= specificity(matcher)
+          insert_at = index
+          break
+        end
+      end
+      @map[key].insert(insert_at, new_matcher)
       self
     end
 
@@ -88,6 +97,29 @@ class Chef
     end
 
     private
+
+    #
+    # Gives a value for "how specific" the matcher is.
+    # Things which specify more specific filters get a higher number
+    # (platform_version > platform > platform_family > os); things
+    # with a block have higher specificity than similar things without
+    # a block.
+    #
+    def specificity(matcher)
+      if matcher[:filters].has_key?(:platform_version)
+        specificity = 8
+      elsif matcher[:filters].has_key?(:platform)
+        specificity = 6
+      elsif matcher[:filters].has_key?(:platform_family)
+        specificity = 4
+      elsif matcher[:filters].has_key?(:os)
+        specificity = 2
+      else
+        specificity = 0
+      end
+      specificity += 1 if matcher[:block]
+      specificity
+    end
 
     # only allow valid filter options
     def validate_filter!(filters)
