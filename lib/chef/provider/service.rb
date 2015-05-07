@@ -23,6 +23,8 @@ class Chef
   class Provider
     class Service < Chef::Provider
 
+      provides :service
+
       include Chef::Mixin::Command
 
       def initialize(new_resource, run_context)
@@ -169,57 +171,49 @@ class Chef
           !!@new_resource.send(method_name)
       end
 
-      #
-      # Platform-specific versions
-      #
+      module ServicePriorityInit
 
-      #
-      # Linux
-      #
+        #
+        # Platform-specific versions
+        #
 
-      require 'chef/chef_class'
-      require 'chef/provider/service/systemd'
-      require 'chef/provider/service/insserv'
-      require 'chef/provider/service/redhat'
-      require 'chef/provider/service/arch'
-      require 'chef/provider/service/gentoo'
-      require 'chef/provider/service/upstart'
-      require 'chef/provider/service/debian'
-      require 'chef/provider/service/invokercd'
-      require 'chef/provider/service/freebsd'
-      require 'chef/provider/service/openbsd'
-      require 'chef/provider/service/solaris'
-      require 'chef/provider/service/macosx'
+        #
+        # Linux
+        #
 
-      # default block for linux O/Sen must come before platform_family exceptions
-      # so that they take precedence
-      Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ],
-        os: "linux"
+        require 'chef/chef_class'
+        require 'chef/provider/service/systemd'
+        require 'chef/provider/service/insserv'
+        require 'chef/provider/service/redhat'
+        require 'chef/provider/service/arch'
+        require 'chef/provider/service/gentoo'
+        require 'chef/provider/service/upstart'
+        require 'chef/provider/service/debian'
+        require 'chef/provider/service/invokercd'
+        require 'chef/provider/service/freebsd'
+        require 'chef/provider/service/openbsd'
+        require 'chef/provider/service/solaris'
+        require 'chef/provider/service/macosx'
 
-        Chef.set_provider_priority_array :service, [ Systemd, Arch ],
-          platform_family: "arch"
-        Chef.set_provider_priority_array :service, [ Systemd, Gentoo ],
-          platform_family: "gentoo"
-        # we can determine what systemd supports accurately
-        # on debian-ish system if an upstart script exists that must win over sysv types
-        Chef.set_provider_priority_array :service, [ Systemd, Upstart, Insserv, Debian, Invokercd ],
-          platform_family: "debian"
-        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ],
-          platform_family: %w(rhel fedora suse)
+        def self.os(os, *providers)
+          Chef.set_provider_priority_array(:service, providers, os: os)
+        end
+        def self.platform_family(platform_family, *providers)
+          Chef.set_provider_priority_array(:service, providers, platform_family: platform_family)
+        end
 
-      # BSDen
-      Chef.set_provider_priority_array :service, Freebsd,
-        os: %w(freebsd netbsd)
-      Chef.set_provider_priority_array :service, Openbsd,
-        os: "openbsd"
+        os %w(freebsd netbsd), Freebsd
+        os %w(openbsd),        Openbsd
+        os %w(solaris2),       Solaris
+        os %w(darwin),         Macosx
+        os %w(linux),          Systemd, Insserv, Redhat
 
-      # Solaris-en
-      Chef.set_provider_priority_array :service, Solaris,
-        os: "solaris2"
+        platform_family %w(arch),             Systemd, Arch
+        platform_family %w(gentoo),           Systemd, Gentoo
+        platform_family %w(debian),           Systemd, Upstart, Insserv, Debian, Invokercd
+        platform_family %w(rhel fedora suse), Systemd, Insserv, Redhat
 
-      # Mac
-      Chef.set_provider_priority_array :service, Macosx,
-        os: "darwin"
+      end
     end
   end
 end

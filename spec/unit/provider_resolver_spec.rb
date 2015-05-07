@@ -154,7 +154,7 @@ describe Chef::ProviderResolver do
           )
         end
 
-        it "returns a Service::Debian provider" do
+        it "returns a Service::Debian provider", :focus do
           expect(resolved_provider).to eql(Chef::Provider::Service::Debian)
         end
       end

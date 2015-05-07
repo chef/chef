@@ -23,6 +23,7 @@ class Chef
   class Provider
     class Ifconfig
       class Debian < Chef::Provider::Ifconfig
+        provides :ifconfig, platform: %w(ubuntu >= 11.10 debian >= 7.0)
 
         INTERFACES_FILE = "/etc/network/interfaces"
         INTERFACES_DOT_D_DIR = "/etc/network/interfaces.d"
