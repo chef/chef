@@ -18,6 +18,7 @@
 
 require 'logger'
 require 'syslog-logger'
+require 'chef/mixin/unformatter'
 
 class Chef
   class Log
@@ -27,19 +28,14 @@ class Chef
     #  log_location Chef::Log::Syslog.new("chef-client", ::Syslog::LOG_DAEMON)
     #
     class Syslog < Logger::Syslog
+      include Chef::Mixin::Unformatter
+
       attr_accessor :sync, :formatter
 
       def initialize(program_name = 'chef-client', facility = ::Syslog::LOG_DAEMON, logopts=nil)
         super
         return if defined? ::Logger::Syslog::SYSLOG
         ::Logger::Syslog.const_set :SYSLOG, SYSLOG
-      end
-
-      def write(message)
-        data = message.match(/(\[.+?\]) ([\w]+):(.*)$/)
-        self.send(data[2].downcase.to_sym, data[3].strip)
-      rescue NoMethodError
-        self.send(:info, message)
       end
 
       def close
