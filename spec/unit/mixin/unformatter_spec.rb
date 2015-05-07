@@ -46,13 +46,11 @@ describe Chef::Mixin::Unformatter do
 
     context "without a timestamp" do
       it "sends foo to itself when the message is of severity foo" do
-        pending
         expect(unformatter).to receive(:foo).with(message)
         unformatter.write("foo: #{message}")
       end
 
       it "sends foo to itself when the message is of severity FOO" do
-        pending
         expect(unformatter).to receive(:foo).with(message)
         unformatter.write("FOO: #{message}")
       end
