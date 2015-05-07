@@ -17,6 +17,8 @@
 #
 
 require 'spec_helper'
+require 'tmpdir'
+require 'fileutils'
 
 module LwrpConstScopingConflict
 end
@@ -25,6 +27,7 @@ describe "LWRP" do
   before do
     @original_VERBOSE = $VERBOSE
     $VERBOSE = nil
+    Chef::Resource::LWRPBase.class_eval { @loaded_lwrps = {} }
   end
 
   after do
@@ -69,9 +72,6 @@ describe "LWRP" do
 
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
         expect(Chef::Log).to receive(:info).with(/Skipping/)
-        expect(Chef::Log).to receive(:debug).with(/enabled on node/)
-        expect(Chef::Log).to receive(:debug).with(/survived replacement/)
-        expect(Chef::Log).to receive(:debug).with(/anymore/)
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
@@ -83,7 +83,6 @@ describe "LWRP" do
 
       Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
         expect(Chef::Log).to receive(:info).with(/Skipping/)
-        expect(Chef::Log).to receive(:debug).with(/anymore/)
         Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
@@ -110,14 +109,40 @@ describe "LWRP" do
 
   end
 
+  context "When an LWRP resource lwrp_foo is loaded" do
+    before do
+      @tmpdir = Dir.mktmpdir("lwrp_test")
+      @lwrp_path = File.join(@tmpdir, "foo.rb")
+      content = IO.read(File.expand_path("../../data/lwrp/resources/foo.rb", __FILE__))
+      IO.write(@lwrp_path, content)
+      Chef::Resource::LWRPBase.build_from_file("lwrp", @lwrp_path, nil)
+      @original_resource = Chef::Resource.resource_for_node(:lwrp_foo, Chef::Node.new)
+    end
+
+    after do
+      FileUtils.remove_entry @tmpdir
+    end
+
+    context "And the LWRP is asked to load again, this time with different code" do
+      before do
+        content = IO.read(File.expand_path("../../data/lwrp_override/resources/foo.rb", __FILE__))
+        IO.write(@lwrp_path, content)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", @lwrp_path, nil)
+      end
+
+      it "Should load the old content, and not the new" do
+        resource = Chef::Resource.resource_for_node(:lwrp_foo, Chef::Node.new)
+        expect(resource).to eq @original_resource
+        expect(resource.default_action).to eq :pass_buck
+        expect(Chef.method_defined?(:method_created_by_override_lwrp_foo)).to be_falsey
+      end
+    end
+  end
+
   describe "Lightweight Chef::Resource" do
 
     before do
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
-      end
-
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
@@ -296,10 +321,6 @@ describe "LWRP" do
 
     before(:each) do
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-        Chef::Resource::LWRPBase.build_from_file("lwrp", file, @run_context)
-      end
-
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
