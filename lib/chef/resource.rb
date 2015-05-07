@@ -686,8 +686,6 @@ class Chef
     #
     def provider(arg=nil)
       klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
-        # TODO deprecate.  This does class munging.  If you know
-        # the class name, just pass the class.
         lookup_provider_constant(arg)
       else
         arg
@@ -1173,14 +1171,17 @@ class Chef
     end
     extend DeprecatedLWRPClass
 
+    # @api private
     def lookup_provider_constant(name, action=:nothing)
-      resource = Chef::Resource.new(self.name, self.run_context)
-      resource.instance_eval { @resource_name = name }
-      provider = Chef::ProviderResolver.new(self.node, resource, action).resolve
-      if !provider
-        raise ArgumentError, "No provider found to match '#{name}'"
+      begin
+        self.class.provider_base.const_get(convert_to_class_name(name.to_s))
+      rescue NameError => e
+        if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
+          raise ArgumentError, "No provider found to match '#{name}'"
+        else
+          raise e
+        end
       end
-      provider
     end
   end
 end

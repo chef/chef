@@ -19,11 +19,14 @@
 require 'spec_helper'
 require 'tmpdir'
 require 'fileutils'
+require 'chef/mixin/convert_to_class_name'
 
 module LwrpConstScopingConflict
 end
 
 describe "LWRP" do
+  include Chef::Mixin::ConvertToClassName
+
   before do
     @original_VERBOSE = $VERBOSE
     $VERBOSE = nil
@@ -36,6 +39,16 @@ describe "LWRP" do
 
   def get_lwrp(name)
     Chef::Resource.resource_for_node(name, Chef::Node.new)
+  end
+
+  def get_lwrp_provider(name)
+    old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    begin
+      Chef::Provider.const_get(convert_to_class_name(name.to_s))
+    ensure
+      Chef::Config[:treat_deprecation_warnings_as_errors] = old_treat_deprecation_warnings_as_errors
+    end
   end
 
   describe "when overriding an existing class" do
@@ -327,13 +340,12 @@ describe "LWRP" do
       Dir[File.expand_path(File.expand_path("../../data/lwrp/providers/*", __FILE__))].each do |file|
         Chef::Provider::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
-
     end
 
     it "should properly handle a new_resource reference" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       resource.monkey("bob")
-      resource.provider(:lwrp_monkey_name_printer)
+      resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
 
       provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
       provider.action_twiddle_thumbs
@@ -354,15 +366,15 @@ describe "LWRP" do
       end
 
       it "should create a method for each action" do
-        expect(Chef::Provider::LwrpBuckPasser.instance_methods).to include(:action_pass_buck)
-        expect(Chef::Provider::LwrpThumbTwiddler.instance_methods).to include(:action_twiddle_thumbs)
+        expect(get_lwrp_provider(:lwrp_buck_passer).instance_methods).to include(:action_pass_buck)
+        expect(get_lwrp_provider(:lwrp_thumb_twiddler).instance_methods).to include(:action_twiddle_thumbs)
       end
     end
 
     it "should insert resources embedded in the provider into the middle of the resource collection" do
       injector = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       injector.action(:pass_buck)
-      injector.provider(:lwrp_buck_passer)
+      injector.provider(get_lwrp_provider(:lwrp_buck_passer))
       dummy = Chef::Resource::ZenMaster.new("keanu reeves", @run_context)
       dummy.provider(Chef::Provider::Easy)
       @run_context.resource_collection.insert(injector)
@@ -379,11 +391,11 @@ describe "LWRP" do
     it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
       injector = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       injector.action(:pass_buck)
-      injector.provider(:lwrp_buck_passer)
+      injector.provider(get_lwrp_provider(:lwrp_buck_passer))
 
       injector2 = get_lwrp(:lwrp_bar).new("tank", @run_context)
       injector2.action(:pass_buck)
-      injector2.provider(:lwrp_buck_passer_2)
+      injector2.provider(get_lwrp_provider(:lwrp_buck_passer_2))
 
       dummy = Chef::Resource::ZenMaster.new("keanu reeves", @run_context)
       dummy.provider(Chef::Provider::Easy)
@@ -406,7 +418,7 @@ describe "LWRP" do
     it "should properly handle a new_resource reference" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       resource.monkey("bob")
-      resource.provider(:lwrp_monkey_name_printer)
+      resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
 
       provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
       provider.action_twiddle_thumbs
@@ -417,7 +429,7 @@ describe "LWRP" do
     it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
       resource.monkey("bob")
-      resource.provider(:lwrp_embedded_resource_accesses_providers_scope)
+      resource.provider(get_lwrp_provider(:lwrp_embedded_resource_accesses_providers_scope))
 
       provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
       #provider = @runner.build_provider(resource)
@@ -437,7 +449,7 @@ describe "LWRP" do
         @resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
         @resource.allowed_actions << :test
         @resource.action(:test)
-        @resource.provider(:lwrp_inline_compiler)
+        @resource.provider(get_lwrp_provider(:lwrp_inline_compiler))
       end
 
       it "does not add interior resources to the exterior resource collection" do
