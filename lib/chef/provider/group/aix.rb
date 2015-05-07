@@ -23,6 +23,7 @@ class Chef
   class Provider
     class Group
       class Aix < Chef::Provider::Group::Groupadd
+        provides :group, platform: %w(aix)
 
         def required_binaries
           [ "/usr/bin/mkgroup",

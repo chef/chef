@@ -18,9 +18,10 @@ class Chef
   class Provider
     class User
       class Aix < Chef::Provider::User::Useradd
+        provides :user, platform: %w(aix)
 
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
-        
+
         def create_user
           super
           add_password
@@ -88,7 +89,7 @@ class Chef
             end
           end
         end
-          
+
       end
     end
   end
