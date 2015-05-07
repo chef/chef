@@ -86,7 +86,7 @@ class Chef
       @reboot_info = {}
 
       @node.run_context = self
-      @node.consume_cookbook_collection
+      @node.set_cookbook_attribute
       @cookbook_compiler = nil
     end
 
