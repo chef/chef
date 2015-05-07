@@ -389,8 +389,8 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:example1_cookbook_data) { double("CookbookVersion Hash for example1 cookbook") }
         let(:example2_cookbook_data) { double("CookbookVersion Hash for example2 cookbook") }
 
-        let(:example1_cookbook_object) { double("Chef::CookbookVersion for example1 cookbook") }
-        let(:example2_cookbook_object) { double("Chef::CookbookVersion for example2 cookbook") }
+        let(:example1_cookbook_object) { double("Chef::CookbookVersion for example1 cookbook", version: "0.1.2") }
+        let(:example2_cookbook_object) { double("Chef::CookbookVersion for example2 cookbook", version: "1.2.3") }
 
         let(:expected_cookbook_hash) do
           { "example1" => example1_cookbook_object, "example2" => example2_cookbook_object }
