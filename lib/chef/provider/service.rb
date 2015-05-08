@@ -23,8 +23,6 @@ class Chef
   class Provider
     class Service < Chef::Provider
 
-      provides :service
-
       include Chef::Mixin::Command
 
       def initialize(new_resource, run_context)
