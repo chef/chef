@@ -8,12 +8,12 @@ driver:
   availability_zone: "us-west-2a"
   security_group_ids: ["travis-ci"]
 
-
 provisioner:
   name: chef_github
   github_owner: "chef"
   github_repo: "chef"
   refname: <%= ENV['TRAVIS_COMMIT'] %>
+  github_access_token: <%= ENV['KITCHEN_GITHUB_TOKEN'] %>
   data_path: test/fixtures
 # disable file provider diffs so we don't overflow travis' line limit
   client_rb:
