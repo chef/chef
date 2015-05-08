@@ -18,6 +18,8 @@
 
 require 'chef/win32/api/net'
 require 'chef/win32/error'
+require 'chef/mixin/wstring'
+
 class Chef
   module ReservedNames::Win32
     class NetUser
@@ -26,6 +28,9 @@ class Chef
 
       include Chef::ReservedNames::Win32::API::Net
       extend Chef::ReservedNames::Win32::API::Net
+
+      include Chef::Mixin::WideString
+      extend Chef::Mixin::WideString
 
       def self.default_user_info_3
         ui3 = USER_INFO_3.new.tap do |s|
@@ -208,13 +213,6 @@ END
 
       private
 
-      def self.wstring(str)
-        if str.nil? || str.encoding == Encoding::UTF_16LE
-          str
-        else
-          str.to_wstring
-        end
-      end
 
     end
   end

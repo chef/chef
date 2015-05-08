@@ -19,6 +19,7 @@
 require 'chef/util/windows'
 require 'chef/exceptions'
 require 'chef/win32/net'
+require 'chef/win32/security'
 
 #wrapper around a subset of the NetUser* APIs.
 #nothing Chef specific, but not complete enough to be its own gem, so util for now.
@@ -26,8 +27,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   private
   NetUser = Chef::ReservedNames::Win32::NetUser
-
-  LogonUser = Windows::API.new('LogonUser', 'SSSLLP', 'I', 'advapi32')
+  Security = Chef::ReservedNames::Win32::Security
 
   USER_INFO_3_TRANSFORM = {
     name: :usri3_name,
@@ -91,18 +91,17 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     @name = multi_to_wide(username)
   end
 
-  LOGON32_PROVIDER_DEFAULT = 0
-  LOGON32_LOGON_NETWORK = 3
+  LOGON32_PROVIDER_DEFAULT = Security::LOGON32_PROVIDER_DEFAULT
+  LOGON32_LOGON_NETWORK = Security::LOGON32_LOGON_NETWORK
   #XXX for an extra painful alternative, see: http://support.microsoft.com/kb/180548
   def validate_credentials(passwd)
-    token = 0.chr * PTR_SIZE
-    res = LogonUser.call(@username, nil, passwd,
-                         LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT, token)
-    if res == 0
+    begin
+      token = Security::logon_user(@username, nil, passwd,
+                 LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
+      return true
+    rescue Chef::Exceptions::Win32APIError
       return false
     end
-    ::Windows::Handle::CloseHandle.call(token.unpack('L')[0])
-    return true
   end
 
   def get_info
