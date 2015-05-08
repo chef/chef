@@ -1147,12 +1147,6 @@ class Chef
       end
     end
 
-    protected
-
-    def self.provides_priority_map
-      Chef::Platform::ResourcePriorityMap.instance
-    end
-
     # Implement deprecated LWRP class
     module DeprecatedLWRPClass
       # @api private
