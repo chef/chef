@@ -90,7 +90,7 @@ class Chef
       # Narrow it down to handlers that return `true` to `supports?`
       # TODO deprecate this and allow actions to be passed as a filter to
       # `provides` so we don't have to have two separate things.
-      supported_handlers = handlers.select { |handler| handler.supports?(resource, action) }
+      supported_handlers = enabled_handlers.select { |handler| handler.supports?(resource, action) }
       if supported_handlers.empty?
         # if none of the providers specifically support the resource, we still need to pick one of the providers that are
         # enabled on the node to handle the why-run use case. FIXME we should only do this in why-run mode then.
