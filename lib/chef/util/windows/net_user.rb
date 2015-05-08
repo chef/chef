@@ -25,64 +25,9 @@ require 'chef/win32/user'
 class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   private
+  NetUser = Chef::ReservedNames::Win32::NetUser
 
   LogonUser = Windows::API.new('LogonUser', 'SSSLLP', 'I', 'advapi32')
-
-  DOMAIN_GROUP_RID_USERS = 0x00000201
-
-  UF_SCRIPT              = 0x000001
-  UF_ACCOUNTDISABLE      = 0x000002
-  UF_PASSWD_CANT_CHANGE  = 0x000040
-  UF_NORMAL_ACCOUNT      = 0x000200
-  UF_DONT_EXPIRE_PASSWD  = 0x010000
-
-  #[:symbol_name, default_val]
-  #default_val duals as field type
-  #array index duals as structure offset
-
-  #OC-8391
-  #Changing [:password, nil], to [:password, ""],
-  #if :password is set to nil, windows user creation api ignores the password policy applied
-  #thus initializing it with empty string value.
-  USER_INFO_3 = [
-    [:name, nil],
-    [:password, ""],
-    [:password_age, 0],
-    [:priv, 0], #"The NetUserAdd and NetUserSetInfo functions ignore this member"
-    [:home_dir, nil],
-    [:comment, nil],
-    [:flags, UF_SCRIPT|UF_DONT_EXPIRE_PASSWD|UF_NORMAL_ACCOUNT],
-    [:script_path, nil],
-    [:auth_flags, 0],
-    [:full_name, nil],
-    [:user_comment, nil],
-    [:parms, nil],
-    [:workstations, nil],
-    [:last_logon, 0],
-    [:last_logoff, 0],
-    [:acct_expires, -1],
-    [:max_storage, -1],
-    [:units_per_week, 0],
-    [:logon_hours, nil],
-    [:bad_pw_count, 0],
-    [:num_logons, 0],
-    [:logon_server, nil],
-    [:country_code, 0],
-    [:code_page, 0],
-    [:user_id, 0],
-    [:primary_group_id, DOMAIN_GROUP_RID_USERS],
-    [:profile, nil],
-    [:home_dir_drive, nil],
-    [:password_expired, 0]
-  ]
-
-  USER_INFO_3_TEMPLATE =
-    USER_INFO_3.collect { |field| field[1].class == Fixnum ? 'i' : 'P' }.join
-
-  SIZEOF_USER_INFO_3 = #sizeof(USER_INFO_3)
-    USER_INFO_3.inject(0){|sum,item|
-      sum + (item[1].class == Fixnum ? 4 : PTR_SIZE)
-    }
 
   USER_INFO_3_TRANSFORM = {
     name: :usri3_name,
@@ -131,30 +76,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     end
   end
 
-  def user_info_3(args)
-    USER_INFO_3.collect { |field|
-      args.include?(field[0]) ? args[field[0]] : field[1]
-    }
-  end
-
-  def user_info_3_pack(user)
-    user.collect { |v|
-      v.class == Fixnum ? v : str_to_ptr(multi_to_wide(v))
-    }.pack(USER_INFO_3_TEMPLATE)
-  end
-
-  def user_info_3_unpack(buffer)
-    user = Hash.new
-    USER_INFO_3.each_with_index do |field,offset|
-      user[field[0]] = field[1].class == Fixnum ?
-        dword_to_i(buffer, offset) : lpwstr_to_s(buffer, offset)
-    end
-    user
-  end
-
   def set_info(args)
     begin
-      rc = Chef::ReservedNames::Win32::NetUser::net_user_set_info_l3(nil, @username, transform_usri3(args))
+      rc = NetUser::net_user_set_info_l3(nil, @username, transform_usri3(args))
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -183,7 +107,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def get_info
     begin
-      ui3 = Chef::ReservedNames::Win32::NetUser::net_user_get_info_l3(nil, @username)
+      ui3 = NetUser::net_user_get_info_l3(nil, @username)
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -192,8 +116,8 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def add(args)
     transformed_args = transform_usri3(args)
-    Chef::ReservedNames::Win32::NetUser::net_user_add_l3(nil, transformed_args)
-    Chef::ReservedNames::Win32::NetUser::net_local_group_add_member(nil, "Users", args[:name])
+    NetUser::net_user_add_l3(nil, transformed_args)
+    NetUser::net_local_group_add_member(nil, "Users", args[:name])
   end
 
   def user_modify(&proc)
@@ -214,7 +138,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def delete
     begin
-      Chef::ReservedNames::Win32::NetUser::net_user_del(nil, @username)
+      NetUser::net_user_del(nil, @username)
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -222,7 +146,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def disable_account
     user_modify do |user|
-      user[:flags] |= UF_ACCOUNTDISABLE
+      user[:flags] |= NetUser::UF_ACCOUNTDISABLE
       #This does not set the password to nil. It (for some reason) means to ignore updating the field.
       #See similar behavior for the logon_hours field documented at
       #http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
@@ -232,7 +156,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def enable_account
     user_modify do |user|
-      user[:flags] &= ~UF_ACCOUNTDISABLE
+      user[:flags] &= ~NetUser::UF_ACCOUNTDISABLE
       #This does not set the password to nil. It (for some reason) means to ignore updating the field.
       #See similar behavior for the logon_hours field documented at
       #http://msdn.microsoft.com/en-us/library/windows/desktop/aa371338%28v=vs.85%29.aspx
@@ -241,6 +165,6 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   end
 
   def check_enabled
-    (get_info()[:flags] & UF_ACCOUNTDISABLE) != 0
+    (get_info()[:flags] & NetUser::UF_ACCOUNTDISABLE) != 0
   end
 end
