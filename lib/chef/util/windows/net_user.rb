@@ -126,7 +126,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   def usri3_to_hash(usri3)
     t = USER_INFO_3_TRANSFORM.invert
     usri3.inject({}) do |memo, (k,v)|
-      memo[USER_INFO_3_TRANSFORM[k]] = v
+      memo[t[k]] = v
       memo
     end
   end
@@ -153,11 +153,10 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   end
 
   def set_info(args)
-    user = user_info_3(args)
-    buffer = user_info_3_pack(user)
-    rc = NetUserSetInfo.call(nil, @name, 3, buffer, nil)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+    begin
+      rc = Chef::ReservedNames::Win32::NetUser::net_user_set_info_l3(nil, @username, transform_usri3(args))
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
   end
 

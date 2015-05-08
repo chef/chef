@@ -84,10 +84,16 @@ class Chef
             :usri3_home_dir_drive, :LPWSTR,
             :usri3_password_expired, :DWORD
 
-
           def set(key, val)
-            if val.is_a? String
-              val = FFI::MemoryPointer.from_string(val.to_wstring)
+            val = if val.is_a? String
+              encoded = if val.encoding == Encoding::UTF_16LE
+                val
+              else
+                val.to_wstring
+              end
+              FFI::MemoryPointer.from_string(encoded)
+            else
+              val
             end
             self[key] = val
           end
@@ -176,6 +182,16 @@ class Chef
 #  _In_ LPVOID Buffer
 #);
         safe_attach_function :NetApiBufferFree, [:LPVOID], :DWORD
+
+#NET_API_STATUS NetUserSetInfo(
+#  _In_  LPCWSTR servername,
+#  _In_  LPCWSTR username,
+#  _In_  DWORD   level,
+#  _In_  LPBYTE  buf,
+#  _Out_ LPDWORD parm_err
+#);
+        safe_attach_function :NetUserSetInfo, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
+
       end
     end
   end

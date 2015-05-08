@@ -152,6 +152,27 @@ END
         ui3
       end
 
+      def self.net_user_set_info_l3(server_name, user_name, info)
+        param_err = FFI::Buffer.new(:long)
+        buf = default_user_info_3
+
+        info.each do |k, v|
+          buf.set(k, v)
+        end
+
+        server_name = wstring(server_name)
+        user_name = wstring(user_name)
+
+        rc = NetUserSetInfo(server_name, user_name, 3, buf, param_err)
+        if rc != NERR_Success
+          if Chef::ReservedNames::Win32::Error.get_last_error != 0
+            Chef::ReservedNames::Win32::Error.raise!
+          else
+            net_api_error!(rc)
+          end
+        end
+      end
+
       def self.net_local_group_add_member(server_name, group_name, domain_user)
         server_name = server_name.to_wstring if server_name
         group_name = group_name.to_wstring
