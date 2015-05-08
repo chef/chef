@@ -192,6 +192,12 @@ class Chef
 #);
         safe_attach_function :NetUserSetInfo, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
 
+#NET_API_STATUS NetUserDel(
+#  _In_ LPCWSTR servername,
+#  _In_ LPCWSTR username
+#);
+        safe_attach_function :NetUserDel, [:LPCWSTR, :LPCWSTR], :DWORD
+
       end
     end
   end

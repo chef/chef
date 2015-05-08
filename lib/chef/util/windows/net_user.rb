@@ -213,9 +213,10 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   end
 
   def delete
-    rc = NetUserDel.call(nil, @name)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_user_del(nil, @username)
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
   end
 

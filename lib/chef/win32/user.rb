@@ -173,6 +173,20 @@ END
         end
       end
 
+      def self.net_user_del(server_name, user_name)
+        server_name = wstring(server_name)
+        user_name = wstring(user_name)
+
+        rc = NetUserDel(server_name, user_name)
+        if rc != NERR_Success
+          if Chef::ReservedNames::Win32::Error.get_last_error != 0
+            Chef::ReservedNames::Win32::Error.raise!
+          else
+            net_api_error!(rc)
+          end
+        end
+      end
+
       def self.net_local_group_add_member(server_name, group_name, domain_user)
         server_name = server_name.to_wstring if server_name
         group_name = group_name.to_wstring
