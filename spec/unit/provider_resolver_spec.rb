@@ -23,6 +23,9 @@ require 'chef/platform/service_helpers'
 
 include Chef::Mixin::ConvertToClassName
 
+# Open up Provider so we can write things down easier in here
+#module Chef::Provider
+
 describe Chef::ProviderResolver do
 
   let(:node) do
@@ -49,6 +52,51 @@ describe Chef::ProviderResolver do
 
   before do
     allow(resource).to receive(:is_a?).with(Chef::Resource).and_return(true)
+  end
+
+  def self.on_platform(platform, *tags,
+    platform_version: '11.0.1',
+    platform_family: nil,
+    os: nil,
+    &block)
+    Array(platform).each do |platform|
+      Array(platform_version).each do |platform_version|
+        on_one_platform(platform, platform_version, platform_family || platform, os || platform_family || platform, *tags, &block)
+      end
+    end
+  end
+
+  def self.on_one_platform(platform, platform_version, platform_family, os, *tags, &block)
+    describe "on #{platform} #{platform_version}, platform_family: #{platform_family}, os: #{os}", *tags do
+      let(:os)               { os }
+      let(:platform)         { platform }
+      let(:platform_family)  { platform_family }
+      let(:platform_version) { platform_version }
+
+      define_singleton_method(:os) { os }
+      define_singleton_method(:platform) { platform }
+      define_singleton_method(:platform_family) { platform_family }
+      define_singleton_method(:platform_version) { platform_version }
+
+      instance_eval(&block)
+    end
+  end
+
+  def self.expect_providers(**providers)
+    providers.each do |name, provider|
+      describe "for #{name}" do
+        let(:resource_name) { name }
+        if provider
+          it "resolves to a #{provider}" do
+            expect(resolved_provider).to eql(provider)
+          end
+        else
+          it "Fails to resolve (since #{name.inspect} is unsupported on #{platform} #{platform_version})" do
+            expect { resolved_provider }.to raise_error /Cannot find a provider/
+          end
+        end
+      end
+    end
   end
 
   describe "resolving service resource" do
@@ -302,299 +350,216 @@ describe Chef::ProviderResolver do
       end
     end
 
-    describe "on Ubuntu 14.10" do
-      let(:os) { "linux" }
-      let(:platform) { "ubuntu" }
-      let(:platform_family) { "debian" }
-      let(:platform_version) { "14.04" }
-
+    on_platform "ubuntu", platform_version: "14.10", platform_family: "debian", os: "linux" do
       it_behaves_like "an ubuntu platform with upstart, update-rc.d and systemd"
     end
 
-    describe "on Ubuntu 14.04" do
-      let(:os) { "linux" }
-      let(:platform) { "ubuntu" }
-      let(:platform_family) { "debian" }
-      let(:platform_version) { "14.04" }
-
+    on_platform "ubuntu", platform_version: "14.04", platform_family: "debian", os: "linux" do
       it_behaves_like "an ubuntu platform with upstart and update-rc.d"
     end
 
-    describe "on Ubuntu 10.04" do
-      let(:os) { "linux" }
-      let(:platform) { "ubuntu" }
-      let(:platform_family) { "debian" }
-      let(:platform_version) { "10.04" }
-
+    on_platform "ubuntu", platform_version: "10.04", platform_family: "debian", os: "linux" do
       it_behaves_like "an ubuntu platform with upstart and update-rc.d"
     end
 
     # old debian uses the Debian provider (does not have insserv or upstart, or update-rc.d???)
-    describe "on Debian 4.0" do
-      let(:os) { "linux" }
-      let(:platform) { "debian" }
-      let(:platform_family) { "debian" }
-      let(:platform_version) { "4.0" }
-
+    on_platform "debian", platform_version: "4.0", os: "linux" do
       #it_behaves_like "a debian platform using the debian provider"
     end
 
     # Debian replaced the debian provider with insserv in the FIXME:VERSION distro
-    describe "on Debian 7.0" do
-      let(:os) { "linux" }
-      let(:platform) { "debian" }
-      let(:platform_family) { "debian" }
-      let(:platform_version) { "7.0" }
-
+    on_platform "debian", platform_version: "7.0", os: "linux" do
       it_behaves_like "a debian platform using the insserv provider"
     end
 
-    %w{solaris2 openindiana opensolaris nexentacore omnios smartos}.each do |platform|
-      describe "on #{platform}" do
-        let(:os) { "solaris2" }
-        let(:platform) { platform }
-        let(:platform_family) { platform }
-        let(:platform_version) { "5.11" }
+    on_platform %w{solaris2 openindiana opensolaris nexentacore omnios smartos}, os: "solaris2", platform_version: "5.11" do
+      it "returns a Solaris provider" do
+        stub_service_providers
+        stub_service_configs
+        expect(resolved_provider).to eql(Chef::Provider::Service::Solaris)
+      end
 
-        it "returns a Solaris provider" do
-          stub_service_providers
-          stub_service_configs
-          expect(resolved_provider).to eql(Chef::Provider::Service::Solaris)
-        end
-
-        it "always returns a Solaris provider" do
-          # no matter what we stub on the next two lines we should get a Solaris provider
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:initd, :upstart, :xinetd, :user_local_etc_rcd, :systemd)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Solaris)
-        end
+      it "always returns a Solaris provider" do
+        # no matter what we stub on the next two lines we should get a Solaris provider
+        stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
+        stub_service_configs(:initd, :upstart, :xinetd, :user_local_etc_rcd, :systemd)
+        expect(resolved_provider).to eql(Chef::Provider::Service::Solaris)
       end
     end
 
-    %w{mswin mingw32 windows}.each do |platform|
-      describe "on #{platform}" do
-        let(:os) { "windows" }
-        let(:platform) { platform }
-        let(:platform_family) { "windows" }
-        let(:platform_version) { "5.11" }
+    on_platform %w{mswin mingw32 windows}, platform_family: "windows", platform_version: "5.11" do
+      it "returns a Windows provider" do
+        stub_service_providers
+        stub_service_configs
+        expect(resolved_provider).to eql(Chef::Provider::Service::Windows)
+      end
 
-        it "returns a Windows provider" do
-          stub_service_providers
-          stub_service_configs
-          expect(resolved_provider).to eql(Chef::Provider::Service::Windows)
-        end
-
-        it "always returns a Windows provider" do
-          # no matter what we stub on the next two lines we should get a Windows provider
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:initd, :upstart, :xinetd, :user_local_etc_rcd, :systemd)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Windows)
-        end
+      it "always returns a Windows provider" do
+        # no matter what we stub on the next two lines we should get a Windows provider
+        stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
+        stub_service_configs(:initd, :upstart, :xinetd, :user_local_etc_rcd, :systemd)
+        expect(resolved_provider).to eql(Chef::Provider::Service::Windows)
       end
     end
 
-    %w{mac_os_x mac_os_x_server}.each do |platform|
-      describe "on #{platform}" do
-        let(:os) { "darwin" }
-        let(:platform) { platform }
-        let(:platform_family) { "mac_os_x" }
-        let(:platform_version) { "10.9.2" }
+    on_platform %w{mac_os_x mac_os_x_server}, os: "darwin", platform_family: "mac_os_x", platform_version: "10.9.2" do
+      it "returns a Macosx provider" do
+        stub_service_providers
+        stub_service_configs
+        expect(resolved_provider).to eql(Chef::Provider::Service::Macosx)
+      end
 
-        it "returns a Macosx provider" do
-          stub_service_providers
-          stub_service_configs
-          expect(resolved_provider).to eql(Chef::Provider::Service::Macosx)
-        end
-
-        it "always returns a Macosx provider" do
-          # no matter what we stub on the next two lines we should get a Macosx provider
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:initd, :upstart, :xinetd, :user_local_etc_rcd, :systemd)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Macosx)
-        end
+      it "always returns a Macosx provider" do
+        # no matter what we stub on the next two lines we should get a Macosx provider
+        stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
+        stub_service_configs(:initd, :upstart, :xinetd, :user_local_etc_rcd, :systemd)
+        expect(resolved_provider).to eql(Chef::Provider::Service::Macosx)
       end
     end
 
-    %w{freebsd netbsd}.each do |platform|
-      describe "on #{platform}" do
-        let(:os) { platform }
-        let(:platform) { platform }
-        let(:platform_family) { platform }
-        let(:platform_version) { "10.0-RELEASE" }
+    on_platform %w(freebsd netbsd), platform_version: '10.0-RELEASE' do
+      it "returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
+        stub_service_providers
+        stub_service_configs(:usr_local_etc_rcd)
+        expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
+      end
 
-        it "returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
-          stub_service_providers
-          stub_service_configs(:usr_local_etc_rcd)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
-        end
+      it "returns a Freebsd provider if it finds the /etc/rc.d initscript" do
+        stub_service_providers
+        stub_service_configs(:etc_rcd)
+        expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
+      end
 
-        it "returns a Freebsd provider if it finds the /etc/rc.d initscript" do
-          stub_service_providers
-          stub_service_configs(:etc_rcd)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
-        end
+      it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
+        # should only care about :usr_local_etc_rcd stub in the service configs
+        stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
+        stub_service_configs(:usr_local_etc_rcd, :initd, :upstart, :xinetd, :systemd)
+        expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
+      end
 
-        it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
-          # should only care about :usr_local_etc_rcd stub in the service configs
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:usr_local_etc_rcd, :initd, :upstart, :xinetd, :systemd)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
-        end
+      it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
+        # should only care about :etc_rcd stub in the service configs
+        stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
+        stub_service_configs(:etc_rcd, :initd, :upstart, :xinetd, :systemd)
+        expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
+      end
 
-        it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
-          # should only care about :etc_rcd stub in the service configs
-          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-          stub_service_configs(:etc_rcd, :initd, :upstart, :xinetd, :systemd)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
-        end
-
-        it "foo" do
-          stub_service_providers
-          stub_service_configs
-          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
-        end
+      it "foo" do
+        stub_service_providers
+        stub_service_configs
+        expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
       end
     end
 
   end
 
-  describe "for the package provider" do
-    let(:resource_name) { :package }
-
-    before do
-      expect(provider_resolver).not_to receive(:maybe_chef_platform_lookup)
-    end
-
-    %w{mac_os_x mac_os_x_server}.each do |platform|
-      describe "on #{platform}" do
-        let(:os) { "darwin" }
-        let(:platform) { platform }
-        let(:platform_family) { "mac_os_x" }
-        let(:platform_version) { "10.9.2" }
-
-
-        it "returns a Chef::Provider::Package::Homebrew provider" do
-          expect(resolved_provider).to eql(Chef::Provider::Package::Homebrew)
-        end
-      end
-    end
+  on_platform %w(mac_os_x mac_os_x_server), os: "darwin", platform_family:  "mac_os_x", platform_version: "10.9.2" do
+    expect_providers(
+      package: Chef::Provider::Package::Homebrew,
+      user:    Chef::Provider::User::Dscl,
+      group:   Chef::Provider::Group::Dscl
+    )
   end
 
-  provider_mapping = {
-    "mac_os_x" => {
-      :package => Chef::Provider::Package::Homebrew,
-      :user => Chef::Provider::User::Dscl,
-      :group => Chef::Provider::Group::Dscl,
-    },
-    "mac_os_x_server" => {
-      :package => Chef::Provider::Package::Homebrew,
-      :user => Chef::Provider::User::Dscl,
-      :group => Chef::Provider::Group::Dscl,
-    },
-    "mswin" => {
-      :env =>  Chef::Provider::Env::Windows,
-      :user => Chef::Provider::User::Windows,
-      :group => Chef::Provider::Group::Windows,
-      :mount => Chef::Provider::Mount::Windows,
-      :batch => Chef::Provider::Batch,
-      :powershell_script => Chef::Provider::PowershellScript,
-    },
-    "mingw32" => {
-      :env =>  Chef::Provider::Env::Windows,
-      :user => Chef::Provider::User::Windows,
-      :group => Chef::Provider::Group::Windows,
-      :mount => Chef::Provider::Mount::Windows,
-      :batch => Chef::Provider::Batch,
-      :powershell_script => Chef::Provider::PowershellScript,
-    },
-    "windows" => {
-      :env =>  Chef::Provider::Env::Windows,
-      :user => Chef::Provider::User::Windows,
-      :group => Chef::Provider::Group::Windows,
-      :mount => Chef::Provider::Mount::Windows,
-      :batch => Chef::Provider::Batch,
-      :powershell_script => Chef::Provider::PowershellScript,
-    },
-    "aix" => {
-      :cron => Chef::Provider::Cron::Aix,
-    },
-    "netbsd"=> {
-      :group => Chef::Provider::Group::Groupmod,
-    },
-    "openbsd" => {
-      :group => Chef::Provider::Group::Usermod,
-      :package => Chef::Provider::Package::Openbsd,
-    },
-  }
-
-  def self.do_platform(platform_hash)
-    platform_hash.each do |resource, provider|
-      describe "for #{resource}" do
-        let(:resource_name) { resource }
-
-        it "resolves to a #{provider}" do
-          expect(resolved_provider).to eql(provider)
-        end
-      end
-    end
+  on_platform %w(mswin mingw32 windows), platform_family: "windows", platform_version: "10.9.2" do
+    expect_providers(
+      env:   Chef::Provider::Env::Windows,
+      user:  Chef::Provider::User::Windows,
+      group: Chef::Provider::Group::Windows,
+      mount: Chef::Provider::Mount::Windows,
+      batch: Chef::Provider::Batch,
+      package: Chef::Provider::Package::Windows,
+      service: Chef::Provider::Service::Windows,
+      dsc_script: Chef::Provider::DscScript,
+      windows_package: Chef::Provider::Package::Windows,
+      windows_service: Chef::Provider::Service::Windows,
+      powershell_script: Chef::Provider::PowershellScript
+    )
   end
 
-  describe "individual platform mappings" do
-    let(:resource_name) { :user }
+  on_platform "aix", platform_version: "5.6" do
+    expect_providers(
+      cron: Chef::Provider::Cron::Aix,
+      bff_package: Chef::Provider::Package::Aix
+    )
+  end
 
-    before do
-      expect(provider_resolver).not_to receive(:maybe_chef_platform_lookup)
-    end
+  on_platform "netbsd", platform_version: "10.0-RELEASE" do
+    expect_providers(
+      group: Chef::Provider::Group::Groupmod
+    )
+  end
 
-    %w{mac_os_x mac_os_x_server}.each do |platform|
-      describe "on #{platform}" do
-        let(:os) { "darwin" }
-        let(:platform) { platform }
-        let(:platform_family) { "mac_os_x" }
-        let(:platform_version) { "10.9.2" }
+  on_platform "openbsd", platform_version: "10.0-RELEASE" do
+    expect_providers(
+      group: Chef::Provider::Group::Usermod,
+      package: Chef::Provider::Package::Openbsd
+    )
+  end
 
-        do_platform(provider_mapping[platform])
-      end
-    end
+  on_platform "solaris2", platform_version: "5.9" do
+    expect_providers(
+      package: Chef::Provider::Package::Solaris,
+      solaris_package: Chef::Provider::Package::Solaris
+    )
+  end
 
-    %w{mswin mingw32 windows}.each do |platform|
-      describe "on #{platform}" do
-        let(:os) { "windows" }
-        let(:platform) { platform }
-        let(:platform_family) { "windows" }
-        let(:platform_version) { "10.9.2" }
+  on_platform "solaris2", platform_version: "5.11" do
+    expect_providers(
+      package: Chef::Provider::Package::Ips,
+      ips_package: Chef::Provider::Package::Ips
+    )
+  end
 
-        do_platform(provider_mapping[platform])
-      end
-    end
+  on_platform %w(openindiana opensolaris), os: "solaris2" do
+    expect_providers(
+      package: Chef::Provider::Package::Ips,
+      ips_package: Chef::Provider::Package::Ips
+    )
+  end
 
-    describe "on AIX" do
-      let(:os) { "aix" }
-      let(:platform) { "aix" }
-      let(:platform_family) { "aix" }
-      let(:platform_version) { "6.2" }
+  on_platform "suse", platform_version: %w(11.1 11.2 11.3) do
+    expect_providers(
+      group: Chef::Provider::Group::Suse
+      # service is now handled by direct support? checking
+      # service: Chef::Provider::Service::Redhat
+    )
+  end
 
-      do_platform(provider_mapping['aix'])
-    end
+  on_platform "suse", platform_version: "12.0" do
+    expect_providers(
+      group: Chef::Provider::Group::Gpasswd
+      # service is now handled by direct support? checking
+      # service: Chef::Provider::Service::Systemd
+    )
+  end
 
-    %w{netbsd openbsd}.each do |platform|
-      describe "on #{platform}" do
-        let(:os) { platform }
-        let(:platform) { platform }
-        let(:platform_family) { platform }
-        let(:platform_version) { "10.0-RELEASE" }
+  on_platform "some_other_linux", os: "linux" do
+    expect_providers(
+      package: Chef::Provider::Package::Dpkg,
+      dpkg_package: Chef::Provider::Package::Dpkg
+    )
+  end
 
-        do_platform(provider_mapping[platform])
-      end
-    end
+  on_platform "gentoo", os: "linux" do
+    expect_providers(
+      package: Chef::Provider::Package::Portage,
+      portage_package: Chef::Provider::Package::Portage
+    )
+  end
+
+  on_platform "smartos", os: "solaris2" do
+    expect_providers(
+      package: Chef::Provider::Package::SmartOS,
+      smartos_package: Chef::Provider::Package::SmartOS
+    )
   end
 
   describe "resolving static providers" do
-    def self.static_mapping
-      {
+    on_platform "ubuntu", os: "linux", platform_family: "debian", platform_version: "14.04" do
+      expect_providers(
         apt_package:  Chef::Provider::Package::Apt,
         bash: Chef::Provider::Script,
-        bff_package: Chef::Provider::Package::Aix,
         breakpoint:  Chef::Provider::Breakpoint,
         chef_gem: Chef::Provider::Package::Rubygems,
         cookbook_file:  Chef::Provider::CookbookFile,
@@ -603,7 +568,6 @@ describe Chef::ProviderResolver do
         deploy_revision:  Chef::Provider::Deploy::Revision,
         directory:  Chef::Provider::Directory,
         dpkg_package: Chef::Provider::Package::Dpkg,
-        dsc_script: Chef::Provider::DscScript,
         easy_install_package:  Chef::Provider::Package::EasyInstall,
         erl_call: Chef::Provider::ErlCall,
         execute:  Chef::Provider::Execute,
@@ -612,7 +576,6 @@ describe Chef::ProviderResolver do
         git:  Chef::Provider::Git,
         homebrew_package: Chef::Provider::Package::Homebrew,
         http_request: Chef::Provider::HttpRequest,
-        ips_package: Chef::Provider::Package::Ips,
         link:  Chef::Provider::Link,
         log:  Chef::Provider::Log::ChefLog,
         macports_package:  Chef::Provider::Package::Macports,
@@ -620,7 +583,7 @@ describe Chef::ProviderResolver do
         pacman_package: Chef::Provider::Package::Pacman,
         paludis_package: Chef::Provider::Package::Paludis,
         perl: Chef::Provider::Script,
-        portage_package:  Chef::Provider::Package::Portage,
+        portage_package: Chef::Provider::Package::Portage,
         python: Chef::Provider::Script,
         remote_directory: Chef::Provider::RemoteDirectory,
         route:  Chef::Provider::Route,
@@ -628,59 +591,22 @@ describe Chef::ProviderResolver do
         ruby:  Chef::Provider::Script,
         ruby_block:   Chef::Provider::RubyBlock,
         script:   Chef::Provider::Script,
-        smartos_package:  Chef::Provider::Package::SmartOS,
-        solaris_package:  Chef::Provider::Package::Solaris,
         subversion:   Chef::Provider::Subversion,
         template:   Chef::Provider::Template,
         timestamped_deploy:  Chef::Provider::Deploy::Timestamped,
         whyrun_safe_ruby_block:  Chef::Provider::WhyrunSafeRubyBlock,
-        windows_package:  Chef::Provider::Package::Windows,
-        windows_service:  Chef::Provider::Service::Windows,
         yum_package:  Chef::Provider::Package::Yum,
-      }
-    end
-
-    describe "on Ubuntu 14.04" do
-      let(:os) { "linux" }
-      let(:platform) { "ubuntu" }
-      let(:platform_family) { "debian" }
-      let(:platform_version) { "14.04" }
-
-      supported_providers = %w(
-        apt_package  bash  breakpoint  chef_gem  cookbook_file  csh  deploy
-        deploy_revision  directory  dpkg_package  easy_install_package  erl_call
-        execute  file  gem_package  git  homebrew_package  http_request  link
-        log  macports_package  mdadm  pacman_package  paludis_package  perl  python
-        remote_directory  route  rpm_package  ruby  ruby_block  script  subversion
-        template  timestamped_deploy  whyrun_safe_ruby_block  yum_package
-      ).map { |s| s.to_sym }
-
-      supported_providers.each do |static_resource|
-        static_provider = static_mapping[static_resource]
-        context "when the resource is a #{static_resource}" do
-          let(:resource) { double(Chef::Resource, provider: nil, resource_name: static_resource) }
-          let(:action) { :start }  # in reality this doesn't matter much
-          it "should resolve to a #{static_provider} provider" do
-            expect(provider_resolver).not_to receive(:maybe_chef_platform_lookup)
-            expect(resolved_provider).to eql(static_provider)
-          end
-        end
-      end
-
-      unsupported_providers = static_mapping.keys - supported_providers
-
-      unsupported_providers.each do |static_resource|
-        static_provider = static_mapping[static_resource]
-        context "when the resource is a #{static_resource}" do
-          let(:resource) { double(Chef::Resource, provider: nil, resource_name: static_resource) }
-          let(:action) { :start }  # in reality this doesn't matter much
-          it "should get back nil (since the provider is unsupported)" do
-            retval = Object.new
-            expect(provider_resolver).to receive(:maybe_chef_platform_lookup).and_return(nil)
-            expect(resolved_provider).to be_nil
-          end
-        end
-      end
+        # We want to check that these are unsupported:
+        bff_package: nil,
+        dsc_script: nil,
+        ips_package: nil,
+        smartos_package: nil,
+        solaris_package: nil,
+        windows_package: nil,
+        windows_service: nil
+      )
     end
   end
 end
+
+#end

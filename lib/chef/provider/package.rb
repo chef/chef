@@ -487,6 +487,7 @@ class Chef
 
       # Set provider priority
       require 'chef/chef_class'
+      require 'chef/provider/package/dpkg'
       require 'chef/provider/package/homebrew'
       require 'chef/provider/package/macports'
       require 'chef/provider/package/apt'
@@ -501,13 +502,21 @@ class Chef
       require 'chef/provider/package/paludis'
 
       Chef.set_provider_priority_array :package, [ Homebrew, Macports ], os: "darwin"
+
+      Chef.set_provider_priority_array :package,  Dpkg,     os: "linux"
       Chef.set_provider_priority_array :package,  Apt,      platform: %w(ubuntu gcel linaro raspbian linuxmint debian)
       Chef.set_provider_priority_array :package,  Yum,      platform: %w(xenserver xcp centos amazon scientific fedora oracle redhat ibm_powerkvm cloudlinux parallels)
       Chef.set_provider_priority_array :package,  Zypper,   platform: %w(opensuse suse)
       Chef.set_provider_priority_array :package,  Portage,  platform: %w(gentoo)
       Chef.set_provider_priority_array :package,  Pacman,   platform: %w(arch)
       Chef.set_provider_priority_array :package,  Ips,      platform: %w(openindiana opensolaris omnios solaris2)
-      Chef.set_provider_priority_array :package,  Solaris,  platform: %w(nexentacore solaris2 < 5.11)
+      Chef.set_provider_priority_array :package,  Solaris,  platform: %w(nexentacore)
+      Chef.set_provider_priority_array :package,  Solaris,  platform: %w(solaris2) do |node|
+        if node[:platform_version]
+          Chef::VersionConstraint::Platform.new('< 5.11').include?(node[:platform_version])
+        end
+      end
+
       Chef.set_provider_priority_array :package,  SmartOS,  platform: %w(smartos)
       Chef.set_provider_priority_array :package,  Aix,      platform: %w(aix)
       Chef.set_provider_priority_array :package,  Paludis,  platform: %w(exherbo)
