@@ -68,8 +68,8 @@ class Chef
     # @param priority_array [Class, Array<Class>] Class or Array of Classes to set as the priority for resource_name on the node
     # @param filter [Hash] Chef::Nodearray-style filter
     # @return [Array<Class>] Modified Priority Array of Provider Classes to use for the resource_name on the node
-    def set_provider_priority_array(resource_name, priority_array, *filter)
-      provider_priority_map.set_priority_array(resource_name, priority_array, *filter).dup
+    def set_provider_priority_array(resource_name, priority_array, *filter, &block)
+      provider_priority_map.set_priority_array(resource_name, priority_array, *filter, &block).dup
     end
 
     # Get the array of resources associated with a resource_name for the current node
@@ -78,8 +78,8 @@ class Chef
     # @param priority_array [Class, Array<Class>] Class or Array of Classes to set as the priority for resource_name on the node
     # @param filter [Hash] Chef::Nodearray-style filter
     # @return [Array<Class>] Modified Priority Array of Resource Classes to use for the resource_name on the node
-    def set_resource_priority_array(resource_name, priority_array, *filter)
-      resource_priority_map.set_priority_array(resource_name, priority_array, *filter).dup
+    def set_resource_priority_array(resource_name, priority_array, *filter, &block)
+      resource_priority_map.set_priority_array(resource_name, priority_array, *filter, &block).dup
     end
 
     #
@@ -135,13 +135,11 @@ class Chef
     def provider_priority_map
       @provider_priority_map ||= begin
         # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
-        require 'chef/platform/provider_priority_map'
         Chef::Platform::ProviderPriorityMap.instance
       end
     end
     def resource_priority_map
       @resource_priority_map ||= begin
-        require 'chef/platform/resource_priority_map'
         Chef::Platform::ResourcePriorityMap.instance
       end
     end
