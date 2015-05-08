@@ -352,6 +352,13 @@ class Chef
     class << self
       def debug_stacktrace(e)
         message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+
+        cause = e.cause if e.respond_to?(:cause)
+        while cause != nil
+          message << "\n\n>>>> Caused by #{cause.class}: #{cause}\n#{cause.backtrace.join("\n")}"
+          cause = cause.respond_to?(:cause) ? cause.cause : nil
+        end
+
         chef_stacktrace_out = "Generated at #{Time.now}\n"
         chef_stacktrace_out += message
 
