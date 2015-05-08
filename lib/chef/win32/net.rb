@@ -114,7 +114,7 @@ END
           buf.set(k, v)
         end
 
-        server_name = server_name.to_wstring if server_name
+        server_name = wstring(server_name)
 
         rc = NetUserAdd(server_name, 3, buf, param_err)
         if rc != NERR_Success
@@ -193,9 +193,9 @@ END
       end
 
       def self.net_local_group_add_member(server_name, group_name, domain_user)
-        server_name = server_name.to_wstring if server_name
-        group_name = group_name.to_wstring
-        domain_user = domain_user.to_wstring
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+        domain_user = wstring(domain_user)
 
         buf = LOCALGROUP_MEMBERS_INFO_3.new
         buf[:lgrmi3_domainandname] = FFI::MemoryPointer.from_string(domain_user)
@@ -210,9 +210,6 @@ END
           end
         end
       end
-
-      private
-
 
     end
   end
