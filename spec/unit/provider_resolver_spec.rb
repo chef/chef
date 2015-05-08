@@ -154,7 +154,7 @@ describe Chef::ProviderResolver do
           )
         end
 
-        it "returns a Service::Debian provider", :focus do
+        it "returns a Service::Debian provider" do
           expect(resolved_provider).to eql(Chef::Provider::Service::Debian)
         end
       end
@@ -590,10 +590,8 @@ describe Chef::ProviderResolver do
   end
 
   describe "resolving static providers" do
-    def resource_class(resource)
-      Chef::Resource.const_get(convert_to_class_name(resource.to_s))
-    end
-      static_mapping = {
+    def self.static_mapping
+      {
         apt_package:  Chef::Provider::Package::Apt,
         bash: Chef::Provider::Script,
         bff_package: Chef::Provider::Package::Aix,
@@ -640,6 +638,7 @@ describe Chef::ProviderResolver do
         windows_service:  Chef::Provider::Service::Windows,
         yum_package:  Chef::Provider::Package::Yum,
       }
+    end
 
     describe "on Ubuntu 14.04" do
       let(:os) { "linux" }
@@ -647,14 +646,14 @@ describe Chef::ProviderResolver do
       let(:platform_family) { "debian" }
       let(:platform_version) { "14.04" }
 
-      supported_providers = [
-        :apt_package, :bash, :breakpoint, :chef_gem, :cookbook_file, :csh, :deploy,
-        :deploy_revision, :directory, :dpkg_package, :easy_install_package, :erl_call,
-        :execute, :file, :gem_package, :git, :homebrew_package, :http_request, :link,
-        :log, :macports_package, :pacman_package, :paludis_package, :perl, :python,
-        :remote_directory, :route, :rpm_package, :ruby, :ruby_block, :script, :subversion,
-        :template, :timestamped_deploy, :whyrun_safe_ruby_block, :yum_package,
-      ]
+      supported_providers = %w(
+        apt_package  bash  breakpoint  chef_gem  cookbook_file  csh  deploy
+        deploy_revision  directory  dpkg_package  easy_install_package  erl_call
+        execute  file  gem_package  git  homebrew_package  http_request  link
+        log  macports_package  mdadm  pacman_package  paludis_package  perl  python
+        remote_directory  route  rpm_package  ruby  ruby_block  script  subversion
+        template  timestamped_deploy  whyrun_safe_ruby_block  yum_package
+      ).map { |s| s.to_sym }
 
       supported_providers.each do |static_resource|
         static_provider = static_mapping[static_resource]
@@ -668,20 +667,17 @@ describe Chef::ProviderResolver do
         end
       end
 
-      unsupported_providers = [
-        :bff_package, :dsc_script, :ips_package, :smartos_package,
-        :solaris_package, :windows_package, :windows_service,
-      ]
+      unsupported_providers = static_mapping.keys - supported_providers
 
       unsupported_providers.each do |static_resource|
         static_provider = static_mapping[static_resource]
         context "when the resource is a #{static_resource}" do
           let(:resource) { double(Chef::Resource, provider: nil, resource_name: static_resource) }
           let(:action) { :start }  # in reality this doesn't matter much
-          it "should fall back into the old provider mapper code and hooks" do
+          it "should get back nil (since the provider is unsupported)" do
             retval = Object.new
-            expect(provider_resolver).to receive(:maybe_chef_platform_lookup).and_return(retval)
-            expect(resolved_provider).to equal(retval)
+            expect(provider_resolver).to receive(:maybe_chef_platform_lookup).and_return(nil)
+            expect(resolved_provider).to be_nil
           end
         end
       end
