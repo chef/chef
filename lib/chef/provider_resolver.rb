@@ -58,7 +58,8 @@ class Chef
 
     def resolve
       maybe_explicit_provider(resource) ||
-        maybe_dynamic_provider_resolution(resource, action)
+        maybe_dynamic_provider_resolution(resource, action) ||
+        maybe_chef_platform_lookup(resource)
     end
 
     def provided_by?(provider_class)
