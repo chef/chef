@@ -79,7 +79,8 @@ override :'kitchen-vagrant', version: "v0.17.0"
 override :yajl,           version: "1.2.1"
 override :zlib,           version: "1.2.8"
 
-override :'chef-provisioning', version: "v1.1.1"
+# NOTE: the base chef-provisioning gem is a dependency of chef-dk (the app).
+# Manage the chef-provisioning version via chef-dk.gemspec.
 override :'chef-provisioning-fog', version: "v0.13.2"
 override :'chef-provisioning-vagrant', version: "v0.8.3"
 override :'chef-provisioning-azure', version: "v0.3.2"
@@ -87,7 +88,6 @@ override :'chef-provisioning-aws', version: "v1.1.1"
 
 dependency "preparation"
 dependency "chefdk"
-dependency "chef-provisioning"
 dependency "chef-provisioning-fog"
 dependency "chef-provisioning-vagrant"
 dependency "chef-provisioning-azure"
