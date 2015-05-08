@@ -261,41 +261,4 @@ describe Chef::Platform do
 
   end
 
-  context "while testing the configured platform data" do
-
-    it "should use the solaris package provider on Solaris <11" do
-      pmap = Chef::Platform.find("Solaris2", "5.9")
-      expect(pmap[:package]).to eql(Chef::Provider::Package::Solaris)
-    end
-
-    it "should use the IPS package provider on Solaris 11" do
-      pmap = Chef::Platform.find("Solaris2", "5.11")
-      expect(pmap[:package]).to eql(Chef::Provider::Package::Ips)
-    end
-
-    it "should use the Redhat service provider on SLES11" do
-      1.upto(3) do |sp|
-        pmap = Chef::Platform.find("SUSE", "11.#{sp}")
-        expect(pmap[:service]).to eql(Chef::Provider::Service::Redhat)
-      end
-    end
-
-    it "should use the Systemd service provider on SLES12" do
-      pmap = Chef::Platform.find("SUSE", "12.0")
-      expect(pmap[:service]).to eql(Chef::Provider::Service::Systemd)
-    end
-
-    it "should use the SUSE group provider on SLES11" do
-      1.upto(3) do |sp|
-        pmap = Chef::Platform.find("SUSE", "11.#{sp}")
-        expect(pmap[:group]).to eql(Chef::Provider::Group::Suse)
-      end
-    end
-
-    it "should use the Gpasswd group provider on SLES12" do
-      pmap = Chef::Platform.find("SUSE", "12.0")
-      expect(pmap[:group]).to eql(Chef::Provider::Group::Gpasswd)
-    end
-  end
-
 end
