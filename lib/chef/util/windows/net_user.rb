@@ -18,7 +18,7 @@
 
 require 'chef/util/windows'
 require 'chef/exceptions'
-require 'chef/win32/user'
+require 'chef/win32/net'
 
 #wrapper around a subset of the NetUser* APIs.
 #nothing Chef specific, but not complete enough to be its own gem, so util for now.
