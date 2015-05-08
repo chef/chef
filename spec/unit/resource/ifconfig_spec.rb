@@ -54,9 +54,7 @@ describe Chef::Resource::Ifconfig do
     end
 
     it "should use an ordinary Provider::Ifconfig as a provider for #{platform} #{version}" do
-      expect(@resource.provider_for_action(:add)).to be_a_kind_of(Chef::Provider::Ifconfig)
-      expect(@resource.provider_for_action(:add)).not_to be_a_kind_of(Chef::Provider::Ifconfig::Debian)
-      expect(@resource.provider_for_action(:add)).not_to be_a_kind_of(Chef::Provider::Ifconfig::Redhat)
+      expect(@resource.provider_for_action(:add).class).to eq(Chef::Provider::Ifconfig)
     end
   end
 
