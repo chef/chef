@@ -123,6 +123,14 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     end
   end
 
+  def usri3_to_hash(usri3)
+    t = USER_INFO_3_TRANSFORM.invert
+    usri3.inject({}) do |memo, (k,v)|
+      memo[USER_INFO_3_TRANSFORM[k]] = v
+      memo
+    end
+  end
+
   def user_info_3(args)
     USER_INFO_3.collect { |field|
       args.include?(field[0]) ? args[field[0]] : field[1]
@@ -175,20 +183,12 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   end
 
   def get_info
-    ptr  = 0.chr * PTR_SIZE
-    rc = NetUserGetInfo.call(nil, @name, 3, ptr)
-
-    if rc == NERR_UserNotFound
-      raise Chef::Exceptions::UserIDNotFound, get_last_error(rc)
-    elsif rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+    begin
+      ui3 = Chef::ReservedNames::Win32::NetUser::net_user_get_info_l3(nil, @username)
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
-
-    ptr = ptr.unpack('L')[0]
-    buffer = 0.chr * SIZEOF_USER_INFO_3
-    memcpy(buffer, ptr, buffer.size)
-    NetApiBufferFree(ptr)
-    user_info_3_unpack(buffer)
+    usri3_to_hash(ui3)
   end
 
   def add(args)

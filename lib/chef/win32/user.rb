@@ -65,10 +65,6 @@ class Chef
       end
 
       def self.net_api_error!(code)
-        formatted_message = ""
-        formatted_message << "---- Begin Win32 API output ----\n"
-        formatted_message << "Net Api Error Code: #{code}\n"
-
         msg = case code
         when NERR_InvalidComputer
           "The user does not have access to the requested information."
@@ -83,7 +79,7 @@ class Chef
         when NERR_BadPassword
           "The password parameter is invalid."
         when NERR_UserNotFound
-          "The user name could not be found."
+          raise Chef::Exceptions::UserIDNotFound, code
         when NERR_PasswordTooShort
           <<END
 The password is shorter than required. (The password could also be too
@@ -96,8 +92,12 @@ END
           "Received unknown error code (#{code})"
         end
 
+        formatted_message = ""
+        formatted_message << "---- Begin Win32 API output ----\n"
+        formatted_message << "Net Api Error Code: #{code}\n"
         formatted_message << "Net Api Error Message: #{msg}\n"
         formatted_message << "---- End Win32 API output ----\n"
+
         raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
       end
 
@@ -121,6 +121,37 @@ END
         end
       end
 
+      def self.net_user_get_info_l3(server_name, user_name)
+        server_name = wstring(server_name)
+        user_name = wstring(user_name)
+
+        ui3_p = FFI::MemoryPointer.new(:pointer)
+
+        rc = NetUserGetInfo(server_name, user_name, 3, ui3_p)
+
+        if rc != NERR_Success
+          if Chef::ReservedNames::Win32::Error.get_last_error != 0
+            Chef::ReservedNames::Win32::Error.raise!
+          else
+            net_api_error!(rc)
+          end
+        end
+
+        ui3 = USER_INFO_3.new(ui3_p.read_pointer).as_ruby
+
+        rc = NetApiBufferFree(ui3_p.read_pointer)
+
+        if rc != NERR_Success
+          if Chef::ReservedNames::Win32::Error.get_last_error != 0
+            Chef::ReservedNames::Win32::Error.raise!
+          else
+            net_api_error!(rc)
+          end
+        end
+
+        ui3
+      end
+
       def self.net_local_group_add_member(server_name, group_name, domain_user)
         server_name = server_name.to_wstring if server_name
         group_name = group_name.to_wstring
@@ -137,6 +168,16 @@ END
           else
             net_api_error!(rc)
           end
+        end
+      end
+
+      private
+
+      def self.wstring(str)
+        if str.nil? || str.encoding == Encoding::UTF_16LE
+          str
+        else
+          str.to_wstring
         end
       end
 

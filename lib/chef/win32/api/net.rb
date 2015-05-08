@@ -45,6 +45,7 @@ class Chef
         NERR_NotPrimary = 2226
         NERR_SpeGroupOp = 2234
         NERR_LastAdmin = 2452
+        NERR_BadUsername = 2202
         NERR_BadPassword = 2203
         NERR_PasswordTooShort = 2245
         NERR_UserNotFound = 2221
@@ -85,10 +86,43 @@ class Chef
 
 
           def set(key, val)
-            if val.class == String
+            if val.is_a? String
               val = FFI::MemoryPointer.from_string(val.to_wstring)
             end
             self[key] = val
+          end
+
+          def get(key)
+            if respond_to? key
+             send(key)
+            else
+              val = self[key]
+              if val.is_a? FFI::Pointer
+                if val.null?
+                  nil
+                else
+                  val.read_wstring
+                end
+              else
+                val
+              end
+            end
+          end
+
+          def usri3_logon_hours
+            val = self[:usri3_logon_hours]
+            if !val.nil? && !val.null?
+              val.read_bytes(21)
+            else
+              nil
+            end
+          end
+
+          def as_ruby
+            members.inject({}) do |memo, key|
+              memo[key] = get(key)
+              memo
+            end
           end
         end
 
@@ -130,6 +164,18 @@ class Chef
 #);
         safe_attach_function :NetLocalGroupAddMembers, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD ], :DWORD
 
+#NET_API_STATUS NetUserGetInfo(
+#  _In_  LPCWSTR servername,
+#  _In_  LPCWSTR username,
+#  _In_  DWORD   level,
+#  _Out_ LPBYTE  *bufptr
+#);
+        safe_attach_function :NetUserGetInfo, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE], :DWORD
+
+#NET_API_STATUS NetApiBufferFree(
+#  _In_ LPVOID Buffer
+#);
+        safe_attach_function :NetApiBufferFree, [:LPVOID], :DWORD
       end
     end
   end
