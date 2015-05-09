@@ -34,11 +34,11 @@ class Chef
     # @yield [node] Arbitrary node filter as a block which takes a node argument
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, value, platform: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, &block)
+    def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, &block)
       Chef::Log.deprecation "The on_platform option to node_map has been deprecated" if on_platform
       Chef::Log.deprecation "The on_platforms option to node_map has been deprecated" if on_platforms
       platform ||= on_platform || on_platforms
-      filters = { platform: platform, platform_family: platform_family, os: os }
+      filters = { platform: platform, platform_version: platform_version, platform_family: platform_family, os: os }
       new_matcher = { filters: filters, block: block, value: value }
       @map[key] ||= []
       # Decide where to insert the matcher; the new value is preferred over
@@ -110,47 +110,32 @@ class Chef
       specificity
     end
 
-    # @todo: this works fine, but is probably hard to understand
-    def negative_match(filter, param)
-      # We support strings prefaced by '!' to mean 'not'.  In particular, this is most useful
-      # for os matching on '!windows'.
-      negative_matches = filter.select { |f| f[0] == '!' }
-      return true if !negative_matches.empty? && negative_matches.include?('!' + param)
+    #
+    # Succeeds if:
+    # - no negative matches (!value)
+    # - at least one positive match (value or :all), or no positive filters
+    #
+    def matches_black_white_list?(node, filters, attribute)
+      # It's super common for the filter to be nil.  Catch that so we don't
+      # spend any time here.
+      return true if !filters[attribute]
+      filter_values = Array(filters[attribute])
+      value = node[attribute]
 
-      # We support the symbol :all to match everything, for backcompat, but this can and should
-      # simply be ommitted.
-      positive_matches = filter.reject { |f| f[0] == '!' || f == :all }
-      return true if !positive_matches.empty? && !positive_matches.include?(param)
+      # Split the blacklist and whitelist
+      blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?('!') }
 
-      # sorry double-negative: this means we pass this filter.
-      false
+      # If any blacklist value matches, we don't match
+      return false if blacklist.any? { |v| v[1..-1] == value }
+
+      # If the whitelist is empty, or anything matches, we match.
+      whitelist.empty? || whitelist.any? { |v| v == :all || v == value }
     end
 
     def filters_match?(node, filters)
-      return true if filters.empty?
-
-      # each filter is applied in turn.  if any fail, then it shortcuts and returns false.
-      # if it passes or does not exist it succeeds and continues on.  so multiple filters are
-      # effectively joined by 'and'.  all filters can be single strings, or arrays which are
-      # effectively joined by 'or'.
-
-      os_filter = [ filters[:os] ].flatten.compact
-      unless os_filter.empty?
-        return false if negative_match(os_filter, node[:os])
-      end
-
-      platform_family_filter = [ filters[:platform_family] ].flatten.compact
-      unless platform_family_filter.empty?
-        return false if negative_match(platform_family_filter, node[:platform_family])
-      end
-
-      # :on_platform and :on_platforms here are synonyms which are deprecated
-      platform_filter = [ filters[:platform] || filters[:on_platform] || filters[:on_platforms] ].flatten.compact
-      unless platform_filter.empty?
-        return false if negative_match(platform_filter, node[:platform])
-      end
-
-      return true
+      matches_black_white_list?(node, filters, :os) &&
+      matches_black_white_list?(node, filters, :platform_family) &&
+      matches_black_white_list?(node, filters, :platform)
     end
 
     def block_matches?(node, block)

@@ -18,29 +18,6 @@
 
 require 'spec_helper'
 
-describe "Chef::Platform supports" do
-  [
-    :freebsd,
-    :ubuntu,
-    :debian,
-    :centos,
-    :fedora,
-    :suse,
-    :opensuse,
-    :redhat,
-    :oracle,
-    :gentoo,
-    :arch,
-    :solaris,
-    :gcel,
-    :ibm_powerkvm
-  ].each do |platform|
-    it "#{platform}" do
-      expect(Chef::Platform.platforms).to have_key(platform)
-    end
-  end
-end
-
 describe Chef::Platform do
 
   context "while testing with fake data" do
