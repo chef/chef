@@ -188,8 +188,10 @@ class Chef
         puts_line "Audit phase exception:"
         indent
         puts_line "#{error.message}"
-        error.backtrace.each do |l|
-          puts_line l
+        if error.backtrace
+          error.backtrace.each do |l|
+            puts_line l
+          end
         end
       end
 
