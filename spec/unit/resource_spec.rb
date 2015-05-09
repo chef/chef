@@ -764,7 +764,7 @@ describe Chef::Resource do
         @node.name("bumblebee")
         @node.automatic[:platform] = "autobots"
         @node.automatic[:platform_version] = "6.1"
-        klz2.provides :dinobot, :on_platforms => ['autobots']
+        klz2.provides :dinobot, :platform => ['autobots']
         Object.const_set('Grimlock', klz2)
         klz2.provides :grimlock
       end
