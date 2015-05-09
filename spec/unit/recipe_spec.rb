@@ -122,7 +122,7 @@ describe Chef::Recipe do
         it "locate resource for particular platform" do
           ShaunTheSheep = Class.new(Chef::Resource)
           ShaunTheSheep.use_automatic_resource_name
-          ShaunTheSheep.provides :laughter, :on_platforms => ["television"]
+          ShaunTheSheep.provides :laughter, :platform => ["television"]
           node.automatic[:platform] = "television"
           node.automatic[:platform_version] = "123"
           res = recipe.laughter "timmy"
@@ -144,10 +144,8 @@ describe Chef::Recipe do
             node.automatic[:platform] = "nbc_sports"
             Sounders = Class.new(Chef::Resource)
             Sounders.use_automatic_resource_name
-            Sounders.provides :football, platform: "nbc_sports"
             TottenhamHotspur = Class.new(Chef::Resource)
             TottenhamHotspur.use_automatic_resource_name
-            TottenhamHotspur.provides :football, platform: "nbc_sports"
           end
 
           after do
@@ -155,9 +153,12 @@ describe Chef::Recipe do
             Object.send(:remove_const, :TottenhamHotspur)
           end
 
-          it "selects one if it is given priority" do
+          it "selects one if it is the last declared" do
             expect(Chef::Log).not_to receive(:warn)
-            Chef::Platform::ResourcePriorityMap.instance.send(:priority, :football, TottenhamHotspur, platform: "nbc_sports")
+
+            Sounders.provides :football, platform: "nbc_sports"
+            TottenhamHotspur.provides :football, platform: "nbc_sports"
+
             res1 = recipe.football "club world cup"
             expect(res1.name).to eql("club world cup")
             expect(res1).to be_a_kind_of(TottenhamHotspur)
@@ -165,7 +166,10 @@ describe Chef::Recipe do
 
           it "selects the other one if it is given priority" do
             expect(Chef::Log).not_to receive(:warn)
-            Chef::Platform::ResourcePriorityMap.instance.send(:priority, :football, Sounders, platform: "nbc_sports")
+
+            TottenhamHotspur.provides :football, platform: "nbc_sports"
+            Sounders.provides :football, platform: "nbc_sports"
+
             res1 = recipe.football "club world cup"
             expect(res1.name).to eql("club world cup")
             expect(res1).to be_a_kind_of(Sounders)
