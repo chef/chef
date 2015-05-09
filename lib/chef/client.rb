@@ -336,7 +336,7 @@ class Chef
           @events.converge_start(run_context)
           Chef::Log.debug("Converging node #{node_name}")
           @runner = Chef::Runner.new(run_context)
-          runner.converge
+          @runner.converge
           @events.converge_complete
         rescue Exception => e
           @events.converge_failed(e)
@@ -370,9 +370,11 @@ class Chef
         auditor = Chef::Audit::Runner.new(run_context)
         auditor.run
         if auditor.failed?
-          raise Chef::Exceptions::AuditsFailed.new(auditor.num_failed, auditor.num_total)
+          audit_exception = Chef::Exceptions::AuditsFailed.new(auditor.num_failed, auditor.num_total)
+          @events.audit_phase_failed(audit_exception)
+        else
+          @events.audit_phase_complete
         end
-        @events.audit_phase_complete
       rescue Exception => e
         Chef::Log.error("Audit phase failed with error message: #{e.message}")
         @events.audit_phase_failed(e)
@@ -464,10 +466,9 @@ class Chef
           audit_error = run_audits(run_context)
         end
 
-        if converge_error || audit_error
-          e = Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
-          e.fill_backtrace
-          raise e
+        if err = wrap_exceptions(converge_error, audit_error)
+          err.fill_backtrace
+          raise err
         end
 
         run_status.stop_clock
@@ -535,6 +536,19 @@ class Chef
       require 'chef/win32/security'
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
+    end
+
+    def wrap_exceptions(converge_error, audit_error)
+      if audit_error && !(audit_error.is_a?(Chef::Exceptions::AuditsFailed) && Chef::Config[:audit_as_warning])
+        if converge_error
+          return Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
+        else
+          return Chef::Exceptions::RunFailedWrappingError.new(audit_error)
+        end
+      elsif converge_error
+        return Chef::Exceptions::RunFailedWrappingError.new(converge_error)
+      end
+      nil
     end
 
   end

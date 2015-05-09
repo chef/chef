@@ -407,13 +407,18 @@ describe Chef::Client do
       end
     end
 
-    describe "when converge fails" do
+    context "when converge errors" do
       include_context "a client run" do
-        let(:e) { Exception.new }
+
+        let(:converge_error) do
+          err = Chef::Exceptions::UnsupportedAction.new("Action unsupported")
+          err.set_backtrace([ "/path/recipe.rb:15", "/path/recipe.rb:12" ])
+          err
+        end
+
         def stub_for_converge
           expect(Chef::Runner).to receive(:new).and_return(runner)
-          expect(runner).to receive(:converge).and_raise(e)
-          expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
+          expect(runner).to receive(:converge).and_raise(converge_error)
         end
 
         def stub_for_node_save
@@ -432,178 +437,231 @@ describe Chef::Client do
           expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
           expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
         end
-      end
 
-      it "runs the audits and raises the error" do
-        expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-          expect(error.wrapped_errors.size).to eq(1)
-          expect(error.wrapped_errors[0]).to eq(e)
+        before do
+          expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
+        end
+
+        context "without audit phase errors" do
+          it "skips node save and raises the converge error in a wrapping error" do
+            expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+              expect(error.wrapped_errors.size).to eq(1)
+              expect(error.wrapped_errors).to include(converge_error)
+              expect(error.backtrace).to include(*converge_error.backtrace)
+            end
+          end
+        end
+
+        context "when audit phase errors" do
+          context "with failed audits" do
+
+            let(:audit_error) do
+              err = Chef::Exceptions::AuditsFailed.new(num_failed, num_total)
+              err.set_backtrace([ "/path/recipe.rb:57", "/path/recipe.rb:55" ])
+              err
+            end
+
+            let(:num_failed) { 1 }
+
+            let(:num_total) { 5 }
+
+            def stub_for_audit
+              expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+              expect(audit_runner).to receive(:run)
+              expect(audit_runner).to receive(:failed?).and_return(true)
+              expect(Chef::Exceptions::AuditsFailed).to receive(:new).with(num_failed, num_total).and_return(audit_error)
+              allow(audit_runner).to receive(:num_failed).and_return(num_failed)
+              allow(audit_runner).to receive(:num_total).and_return(num_total)
+            end
+
+            context "with audit_as_warning true" do
+              before do
+                Chef::Config[:audit_as_warning] = true
+              end
+
+              it "skips node save and raises the converge error in a wrapping error" do
+                expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+                  expect(error.wrapped_errors.size).to eq(1)
+                  expect(error.wrapped_errors[0]).to eq(converge_error)
+                end
+              end
+            end
+
+            context "with audit_as_warning false" do
+
+              before do
+                Chef::Config[:audit_as_warning] = false
+              end
+
+              it "skips node save and raises converge and audit errors in a wrapping error" do
+                expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+                  expect(error.wrapped_errors.size).to eq(2)
+                  expect(error.wrapped_errors).to include(converge_error)
+                  expect(error.wrapped_errors).to include(audit_error)
+                  expect(error.backtrace).to include(*converge_error.backtrace)
+                  expect(error.backtrace).to include(*audit_error.backtrace)
+                end
+              end
+            end
+          end
+
+          context "with unexpected error" do
+
+            let(:audit_error) do
+              err = RuntimeError.new("Unexpected audit error")
+              err.set_backtrace([ "/path/recipe.rb:57", "/path/recipe.rb:55" ])
+              err
+            end
+
+            def stub_for_audit
+              expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+              expect(audit_runner).to receive(:run).and_raise(audit_error)
+            end
+
+            context "with audit_as_warning true" do
+              it "skips node save and raises converge and audit errors in a wrapping error" do
+                expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+                  expect(error.wrapped_errors.size).to eq(2)
+                  expect(error.wrapped_errors).to include(converge_error)
+                  expect(error.wrapped_errors).to include(audit_error)
+                  expect(error.backtrace).to include(*converge_error.backtrace)
+                  expect(error.backtrace).to include(*audit_error.backtrace)
+                end
+              end
+            end
+
+            context "with audit_as_warning false" do
+              it "skips node save and raises converge and audit errors in a wrapping error" do
+                expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+                  expect(error.wrapped_errors.size).to eq(2)
+                  expect(error.wrapped_errors).to include(converge_error)
+                  expect(error.wrapped_errors).to include(audit_error)
+                  expect(error.backtrace).to include(*converge_error.backtrace)
+                  expect(error.backtrace).to include(*audit_error.backtrace)
+                end
+              end
+            end
+          end
         end
       end
     end
 
-    describe "when the audit phase fails" do
-      context "with an exception" do
-        context "when audit mode is enabled" do
-          include_context "a client run" do
-            let(:e) { Exception.new }
-            def stub_for_audit
-              expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
-              expect(audit_runner).to receive(:run).and_raise(e)
+    context "when audit phase errors" do
+      include_context "a client run" do
+
+        def stub_for_run
+          expect_any_instance_of(Chef::RunLock).to receive(:acquire)
+          expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
+          expect_any_instance_of(Chef::RunLock).to receive(:release)
+
+          # Post conditions: check that node has been filled in correctly
+          expect(client).to receive(:run_started)
+        end
+
+        context "with failed audits" do
+
+          let(:audit_error) do
+            err = Chef::Exceptions::AuditsFailed.new(num_failed, num_total)
+            err.set_backtrace([ "/path/recipe.rb:57", "/path/recipe.rb:55" ])
+            err
+          end
+
+          let(:num_failed) { 1 }
+
+          let(:num_total) { 5 }
+
+          def stub_for_audit
+            expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+            expect(audit_runner).to receive(:run)
+            expect(audit_runner).to receive(:failed?).and_return(true)
+            expect(Chef::Exceptions::AuditsFailed).to receive(:new).with(num_failed, num_total).and_return(audit_error)
+            allow(audit_runner).to receive(:num_failed).and_return(num_failed)
+            allow(audit_runner).to receive(:num_total).and_return(num_total)
+          end
+
+          context "with audit_as_warning true" do
+            before do
+              Chef::Config[:audit_as_warning] = true
+            end
+
+            it "saves the node and completes the run successfully" do
+              expect(client).to receive(:run_completed_successfully)
+              expect_any_instance_of(Chef::ResourceReporter).to receive(:run_completed)
+              expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_completed)
+              client.run
+            end
+          end
+
+          context "with audit_as_warning false" do
+
+            before do
+              Chef::Config[:audit_as_warning] = false
               expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
             end
 
-            def stub_for_run
-              expect_any_instance_of(Chef::RunLock).to receive(:acquire)
-              expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
-              expect_any_instance_of(Chef::RunLock).to receive(:release)
-
-              # Post conditions: check that node has been filled in correctly
-              expect(client).to receive(:run_started)
+            it "saves the node and raises audit error in a wrapping error" do
               expect(client).to receive(:run_failed)
-
               expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
               expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
-            end
-          end
 
-          it "should save the node after converge and raise exception" do
-            expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-              expect(error.wrapped_errors.size).to eq(1)
-              expect(error.wrapped_errors[0]).to eq(e)
-            end
-          end
-        end
-
-        context "when audit mode is disabled" do
-          include_context "a client run" do
-            before do
-              Chef::Config[:audit_mode] = :disabled
-            end
-
-            let(:e) { FooError.new }
-
-            def stub_for_audit
-              expect(Chef::Audit::Runner).to_not receive(:new)
-            end
-
-            def stub_for_converge
-              expect(Chef::Runner).to receive(:new).and_return(runner)
-              expect(runner).to receive(:converge).and_raise(e)
-              expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(FooError)
-            end
-
-            def stub_for_node_save
-              expect(client).to_not receive(:save_updated_node)
-            end
-
-            def stub_for_run
-              expect_any_instance_of(Chef::RunLock).to receive(:acquire)
-              expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
-              expect_any_instance_of(Chef::RunLock).to receive(:release)
-
-
-              # Post conditions: check that node has been filled in correctly
-              expect(client).to receive(:run_started)
-              expect(client).to receive(:run_failed)
-
-              expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
-
-            end
-
-            it "re-raises an unwrapped exception" do
-              expect { client.run }.to raise_error(FooError)
+              expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+                expect(error.wrapped_errors.size).to eq(1)
+                expect(error.wrapped_errors).to include(audit_error)
+                expect(error.backtrace).to include(*audit_error.backtrace)
+              end
             end
           end
         end
 
+        context "with unexpected error" do
 
-      end
-
-      context "with failed audits" do
-        include_context "a client run" do
-          let(:audit_runner) do
-            instance_double("Chef::Audit::Runner", :run => true, :failed? => true, :num_failed => 1, :num_total => 1)
+          let(:audit_error) do
+            err = RuntimeError.new("Unexpected audit error")
+            err.set_backtrace([ "/path/recipe.rb:57", "/path/recipe.rb:55" ])
+            err
           end
 
           def stub_for_audit
             expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+            expect(audit_runner).to receive(:run).and_raise(audit_error)
+          end
+
+          before do
             expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
           end
 
-          def stub_for_run
-            expect_any_instance_of(Chef::RunLock).to receive(:acquire)
-            expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
-            expect_any_instance_of(Chef::RunLock).to receive(:release)
+          context "with audit_as_warning true" do
+            it "saves the node and raises audit error in a wrapping error" do
+              expect(client).to receive(:run_failed)
+              expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+              expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
 
-            # Post conditions: check that node has been filled in correctly
-            expect(client).to receive(:run_started)
-            expect(client).to receive(:run_failed)
+              expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+                expect(error.wrapped_errors.size).to eq(1)
+                expect(error.wrapped_errors).to include(audit_error)
+                expect(error.backtrace).to include(*audit_error.backtrace)
+              end
+            end
+          end
 
-            expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
-            expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+          context "with audit_as_warning false" do
+            it "skips node save and raises converge and audit errors in a wrapping error" do
+              expect(client).to receive(:run_failed)
+              expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+              expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+
+              expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+                expect(error.wrapped_errors.size).to eq(1)
+                expect(error.wrapped_errors).to include(audit_error)
+                expect(error.backtrace).to include(*audit_error.backtrace)
+              end
+            end
           end
         end
-
-        it "should save the node after converge and raise exception" do
-          expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-            expect(error.wrapped_errors.size).to eq(1)
-            expect(error.wrapped_errors[0]).to be_instance_of(Chef::Exceptions::AuditsFailed)
-          end
-        end
       end
+
     end
-
-    describe "when why_run mode is enabled" do
-      include_context "a client run" do
-
-        before do
-          Chef::Config[:why_run] = true
-        end
-
-        def stub_for_audit
-          expect(Chef::Audit::Runner).to_not receive(:new)
-        end
-
-        def stub_for_node_save
-          # This is how we should be mocking external calls - not letting it fall all the way through to the
-          # REST call
-          expect(node).to receive(:save)
-        end
-
-        it "runs successfully without enabling the audit runner" do
-          client.run
-
-          # fork is stubbed, so we can see the outcome of the run
-          expect(node.automatic_attrs[:platform]).to eq("example-platform")
-          expect(node.automatic_attrs[:platform_version]).to eq("example-platform-1.0")
-        end
-      end
-    end
-
-    describe "when audits are disabled" do
-      include_context "a client run" do
-
-        before do
-          Chef::Config[:audit_mode] = :disabled
-        end
-
-        def stub_for_audit
-          expect(Chef::Audit::Runner).to_not receive(:new)
-        end
-
-        it "runs successfully without enabling the audit runner" do
-          client.run
-
-          # fork is stubbed, so we can see the outcome of the run
-          expect(node.automatic_attrs[:platform]).to eq("example-platform")
-          expect(node.automatic_attrs[:platform_version]).to eq("example-platform-1.0")
-        end
-      end
-    end
-
   end
-
 
   describe "when handling run failures" do
 
