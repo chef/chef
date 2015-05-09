@@ -88,6 +88,29 @@ describe Chef::Audit::AuditReporter do
         reporter.run_completed(node)
       end
 
+      context "when audit phase failed" do
+
+        let(:audit_error) { double("AuditError", :class => "Chef::Exceptions::AuditError",
+          :message => "Audit phase failed with error message: derpderpderp",
+          :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) }
+
+          before do
+            reporter.instance_variable_set(:@exception, audit_error)
+          end
+
+        it "reports an error" do
+          reporter.run_completed(node)
+          expect(run_data).to have_key(:error)
+          expect(run_data).to have_key(:error)
+          expect(run_data[:error]).to eq <<-EOM.strip!
+Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+/path/recipe.rb:57
+/path/library.rb:106
+EOM
+        end
+
+      end
+
       context "when unable to post to server" do
 
         let(:error) do
@@ -215,9 +238,9 @@ describe Chef::Audit::AuditReporter do
     let(:audit_data) { Chef::Audit::AuditData.new(node.name, run_id) }
     let(:run_data) { audit_data.to_hash }
 
-    let(:error) { double("AuditError", :class => "Chef::Exception::AuditError",
-      :message => "Well that certainly didn't work",
-      :backtrace => ["line 0", "line 1", "line 2"]) }
+    let(:audit_error) { double("AuditError", :class => "Chef::Exceptions::AuditError",
+      :message => "Audit phase failed with error message: derpderpderp",
+      :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) }
 
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
@@ -226,15 +249,60 @@ describe Chef::Audit::AuditReporter do
       allow(audit_data).to receive(:to_hash).and_return(run_data)
     end
 
-    it "adds the error information to the reported data" do
-      expect(rest).to receive(:create_url)
-      expect(rest).to receive(:post)
-      reporter.run_failed(error)
-      expect(run_data).to have_key(:error)
-      expect(run_data[:error]).to eq "Chef::Exception::AuditError: Well that certainly didn't work\n" +
-        "line 0\nline 1\nline 2"
+    context "when no prior exception is stored" do
+      it "reports the error" do
+        expect(rest).to receive(:create_url)
+        expect(rest).to receive(:post)
+        reporter.run_failed(audit_error)
+        expect(run_data).to have_key(:error)
+        expect(run_data[:error]).to eq <<-EOM.strip!
+Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+/path/recipe.rb:57
+/path/library.rb:106
+EOM
+      end
     end
 
+    context "when some prior exception is stored" do
+      before do
+        reporter.instance_variable_set(:@exception, audit_error)
+      end
+
+      context "when the error is the same as the prior exception" do
+        it "reports one error" do
+          expect(rest).to receive(:create_url)
+          expect(rest).to receive(:post)
+          reporter.run_failed(audit_error)
+          expect(run_data).to have_key(:error)
+          expect(run_data[:error]).to eq <<-EOM.strip!
+Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+/path/recipe.rb:57
+/path/library.rb:106
+EOM
+        end
+      end
+
+      context "when the error is not the same as the prior exception" do
+        let(:converge_error) { double("ConvergeError", :class => "Chef::Exceptions::ConvergeError",
+          :message => "Welp converge failed that's a bummer",
+          :backtrace => ["/path/recipe.rb:14", "/path/library.rb:5"]) }
+
+        it "reports both errors" do
+          expect(rest).to receive(:create_url)
+          expect(rest).to receive(:post)
+          reporter.run_failed(converge_error)
+          expect(run_data).to have_key(:error)
+          expect(run_data[:error]).to eq <<-EOM.strip!
+Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+/path/recipe.rb:57
+/path/library.rb:106
+Chef::Exceptions::ConvergeError: Welp converge failed that's a bummer
+/path/recipe.rb:14
+/path/library.rb:5
+EOM
+        end
+      end
+    end
   end
 
   shared_context "audit data" do
