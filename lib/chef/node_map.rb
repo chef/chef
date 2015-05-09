@@ -19,19 +19,6 @@
 class Chef
   class NodeMap
 
-    VALID_OPTS = [
-      :on_platform,
-      :on_platforms,
-      :platform,
-      :os,
-      :platform_family,
-    ]
-
-    DEPRECATED_OPTS = [
-      :on_platform,
-      :on_platforms,
-    ]
-
     # Create a new NodeMap
     #
     def initialize
@@ -47,9 +34,11 @@ class Chef
     # @yield [node] Arbitrary node filter as a block which takes a node argument
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, value, filters = {}, &block)
-      validate_filter!(filters)
-      deprecate_filter!(filters)
+    def set(key, value, platform: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, &block)
+      Chef::Log.deprecation "The on_platform option to node_map has been deprecated" if on_platform
+      Chef::Log.deprecation "The on_platforms option to node_map has been deprecated" if on_platforms
+      platform ||= on_platform || on_platforms
+      filters = { platform: platform, platform_family: platform_family, os: os }
       new_matcher = { filters: filters, block: block, value: value }
       @map[key] ||= []
       # Decide where to insert the matcher; the new value is preferred over
@@ -106,34 +95,19 @@ class Chef
     # a block.
     #
     def specificity(matcher)
-      if matcher[:filters].has_key?(:platform_version)
+      if matcher[:filters][:platform_version]
         specificity = 8
-      elsif matcher[:filters].has_key?(:platform)
+      elsif matcher[:filters][:platform]
         specificity = 6
-      elsif matcher[:filters].has_key?(:platform_family)
+      elsif matcher[:filters][:platform_family]
         specificity = 4
-      elsif matcher[:filters].has_key?(:os)
+      elsif matcher[:filters][:os]
         specificity = 2
       else
         specificity = 0
       end
       specificity += 1 if matcher[:block]
       specificity
-    end
-
-    # only allow valid filter options
-    def validate_filter!(filters)
-      filters.each_key do |key|
-        # FIXME: real exception
-        raise "Bad key #{key} in Chef::NodeMap filter expression" unless VALID_OPTS.include?(key)
-      end
-    end
-
-    # warn on deprecated filter options
-    def deprecate_filter!(filters)
-      filters.each_key do |key|
-        Chef::Log.warn "The #{key} option to node_map has been deprecated" if DEPRECATED_OPTS.include?(key)
-      end
     end
 
     # @todo: this works fine, but is probably hard to understand
