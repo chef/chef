@@ -511,11 +511,7 @@ class Chef
       Chef.set_provider_priority_array :package,  Pacman,   platform: %w(arch)
       Chef.set_provider_priority_array :package,  Ips,      platform: %w(openindiana opensolaris omnios solaris2)
       Chef.set_provider_priority_array :package,  Solaris,  platform: %w(nexentacore)
-      Chef.set_provider_priority_array :package,  Solaris,  platform: %w(solaris2) do |node|
-        if node[:platform_version]
-          Chef::VersionConstraint::Platform.new('< 5.11').include?(node[:platform_version])
-        end
-      end
+      Chef.set_provider_priority_array :package,  Solaris,  platform: %w(solaris2), platform_version: '< 5.11'
 
       Chef.set_provider_priority_array :package,  SmartOS,  platform: %w(smartos)
       Chef.set_provider_priority_array :package,  Aix,      platform: %w(aix)

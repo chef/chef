@@ -132,10 +132,24 @@ class Chef
       whitelist.empty? || whitelist.any? { |v| v == :all || v == value }
     end
 
+    def matches_version_list?(node, filters, attribute)
+      # It's super common for the filter to be nil.  Catch that so we don't
+      # spend any time here.
+      return true if !filters[attribute]
+      filter_values = Array(filters[attribute])
+      value = node[attribute]
+
+      filter_values.empty? ||
+      Array(filter_values).any? do |v|
+        Chef::VersionConstraint::Platform.new(v).include?(value)
+      end
+    end
+
     def filters_match?(node, filters)
       matches_black_white_list?(node, filters, :os) &&
       matches_black_white_list?(node, filters, :platform_family) &&
-      matches_black_white_list?(node, filters, :platform)
+      matches_black_white_list?(node, filters, :platform) &&
+      matches_version_list?(node, filters, :platform_version)
     end
 
     def block_matches?(node, block)
