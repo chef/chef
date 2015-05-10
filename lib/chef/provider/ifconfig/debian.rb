@@ -23,16 +23,8 @@ class Chef
   class Provider
     class Ifconfig
       class Debian < Chef::Provider::Ifconfig
-        provides :ifconfig, platform: %w(ubuntu) do |node|
-          if node[:platform_version]
-            Chef::VersionConstraint::Platform.new('>= 11.10').include?(node[:platform_version])
-          end
-        end
-        provides :ifconfig, platform: %w(debian) do |node|
-          if node[:platform_version]
-            Chef::VersionConstraint::Platform.new('>= 7.0').include?(node[:platform_version])
-          end
-        end
+        provides :ifconfig, platform: %w(ubuntu), platform_version: '>= 11.10'
+        provides :ifconfig, platform: %w(debian), platform_version: '>= 7.0'
 
         INTERFACES_FILE = "/etc/network/interfaces"
         INTERFACES_DOT_D_DIR = "/etc/network/interfaces.d"
