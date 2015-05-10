@@ -23,11 +23,7 @@ class Chef
     class Group
       class Suse < Chef::Provider::Group::Groupadd
         provides :group, platform: %w(opensuse)
-        provides :group, platform: %w(suse) do |node|
-          if node[:platform_version]
-            Chef::VersionConstraint::Platform.new('< 12.0').include?(node[:platform_version])
-          end
-        end
+        provides :group, platform: %w(suse), platform_version: '< 12.0'
 
         def load_current_resource
           super
