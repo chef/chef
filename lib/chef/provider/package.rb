@@ -43,6 +43,12 @@ class Chef
         true
       end
 
+      def check_resource_semantics!
+        if new_resource.package_name.is_a?(Array) && new_resource.source != nil
+          raise Chef::Exceptions::InvalidResourceSpecification, "You may not specify both multipackage and source"
+        end
+      end
+
       def load_current_resource
       end
 
