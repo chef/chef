@@ -107,7 +107,6 @@ END
       end
 
       def self.net_user_add_l3(server_name, args)
-        param_err = FFI::Buffer.new(:long)
         buf = default_user_info_3
 
         args.each do |k, v|
@@ -116,7 +115,7 @@ END
 
         server_name = wstring(server_name)
 
-        rc = NetUserAdd(server_name, 3, buf, param_err)
+        rc = NetUserAdd(server_name, 3, buf, nil)
         if rc != NERR_Success
           if Chef::ReservedNames::Win32::Error.get_last_error != 0
             Chef::ReservedNames::Win32::Error.raise!
