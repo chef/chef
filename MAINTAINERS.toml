@@ -105,6 +105,7 @@ The specific components of Chef related to a given platform - including (but not
         lieutenant = "btm"
         maintainers = [
           "jdmundrawala",
+          "ksubrama",
           "smurawski"
         ]
 
