@@ -83,6 +83,9 @@ class Chef
       new_resource.cookbook_name
     end
 
+    def check_resource_semantics!
+    end
+
     def load_current_resource
       raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
     end
@@ -107,6 +110,8 @@ class Chef
 
       # TODO: it would be preferable to get the action to be executed in the
       # constructor...
+
+      check_resource_semantics!
 
       # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
       if !whyrun_mode? || whyrun_supported?
