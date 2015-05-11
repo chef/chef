@@ -157,7 +157,6 @@ END
       end
 
       def self.net_user_set_info_l3(server_name, user_name, info)
-        param_err = FFI::Buffer.new(:long)
         buf = default_user_info_3
 
         info.each do |k, v|
@@ -167,7 +166,7 @@ END
         server_name = wstring(server_name)
         user_name = wstring(user_name)
 
-        rc = NetUserSetInfo(server_name, user_name, 3, buf, param_err)
+        rc = NetUserSetInfo(server_name, user_name, 3, buf, nil)
         if rc != NERR_Success
           if Chef::ReservedNames::Win32::Error.get_last_error != 0
             Chef::ReservedNames::Win32::Error.raise!
