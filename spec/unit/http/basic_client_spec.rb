@@ -109,5 +109,21 @@ describe "HTTP Connection" do
       end
 
     end
+
+    context "when an empty proxy is set by the environment" do
+      let(:env) do
+        {
+          "https_proxy" => ""
+        }
+      end
+
+      before do
+        allow(subject).to receive(:env).and_return(env)
+      end
+
+      it "to not fail with URI parse exception" do
+        expect { subject.proxy_uri }.to_not raise_error
+      end
+    end
   end
 end
