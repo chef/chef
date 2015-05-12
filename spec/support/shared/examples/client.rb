@@ -2,6 +2,7 @@
 require 'spec_helper'
 require 'spec/support/shared/context/client'
 
+# requires platform and platform_version be defined
 shared_examples "a completed run" do
   include_context "run completed"
 
@@ -10,8 +11,8 @@ shared_examples "a completed run" do
     expect(client.run).to be true
 
     # fork is stubbed, so we can see the outcome of the run
-    expect(node.automatic_attrs[:platform]).to eq("example-platform")
-    expect(node.automatic_attrs[:platform_version]).to eq("example-platform-1.0")
+    expect(node.automatic_attrs[:platform]).to eq(platform)
+    expect(node.automatic_attrs[:platform_version]).to eq(platform_version)
   end
 end
 
