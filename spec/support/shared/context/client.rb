@@ -3,28 +3,28 @@ require 'spec_helper'
 
 # Stubs a basic client object
 shared_context "client" do
-  let(:hostname)    { "hostname" }
-  let(:machinename) { "machinename.example.org" }
-  let(:fqdn)        { "hostname.example.org" }
+  let(:fqdn)             { "hostname.example.org" }
+  let(:hostname)         { "hostname" }
+  let(:machinename)      { "machinename.example.org" }
+  let(:platform)         { "example-platform" }
+  let(:platform_version) { "example-platform-1.0" }
 
   let(:ohai_data) do
-    { :fqdn             => fqdn,
-      :hostname         => hostname,
-      :machinename      => machinename,
-      :platform         => 'example-platform',
-      :platform_version => 'example-platform-1.0',
-      :data             => {}
+    {
+      :fqdn =>             fqdn,
+      :hostname =>         hostname,
+      :machinename =>      machinename,
+      :platform =>         platform,
+      :platform_version => platform_version
     }
   end
 
   let(:ohai_system) do
-    ohai_system = double( "Ohai::System",
-                          :all_plugins => true,
-                          :data => ohai_data)
-    allow(ohai_system).to receive(:[]) do |key|
-      ohai_data[key]
+    ohai = instance_double("Ohai::System", :all_plugins => true, :data => ohai_data)
+    allow(ohai).to receive(:[]) do |k|
+      ohai_data[k]
     end
-    ohai_system
+    ohai
   end
 
   let(:node) do
