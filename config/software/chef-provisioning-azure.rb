@@ -28,7 +28,6 @@ else
 end
 
 dependency "bundler"
-dependency "chef-provisioning"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
