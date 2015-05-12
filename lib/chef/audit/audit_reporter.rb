@@ -167,10 +167,6 @@ class Chef
       def iso8601ify(time)
         time.utc.iso8601.to_s
       end
-
-      def error_message_for_run_data(error)
-        "#{err.class.to_s}: #{err.message}\n#{err.backtrace.join("\n")}"
-      end
     end
   end
 end
