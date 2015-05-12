@@ -32,7 +32,8 @@ class Chef
       INFO_EVENT_ID = 10100
       WARN_EVENT_ID = 10101
       DEBUG_EVENT_ID = 10102
-      FATAL_EVENT_ID = 10103
+      ERROR_EVENT_ID = 10103
+      FATAL_EVENT_ID = 10104
 
       # Since we must install the event logger, this is not really configurable
       SOURCE = 'Chef'
@@ -71,6 +72,15 @@ class Chef
           :event_type => ::Win32::EventLog::INFO_TYPE,
           :source => SOURCE,
           :event_id => DEBUG_EVENT_ID,
+          :data => [msg]
+        )
+      end
+
+      def error(msg)
+        @eventlog.report_event(
+          :event_type => ::Win32::EventLog::ERROR_TYPE,
+          :source => SOURCE,
+          :event_id => ERROR_EVENT_ID,
           :data => [msg]
         )
       end

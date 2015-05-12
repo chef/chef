@@ -44,6 +44,12 @@ Language=English
 .
 
 MessageId=10103
+SymbolicName=ERROR
+Language=English
+[ERROR] %1
+.
+
+MessageId=10104
 SymbolicName=FATAL
 Language=English
 [FATAL] %1
