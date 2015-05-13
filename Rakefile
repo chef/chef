@@ -23,6 +23,7 @@ require 'rubygems'
 require 'rubygems/package_task'
 require 'rdoc/task'
 require './tasks/rspec.rb'
+require './tasks/maintainers.rb'
 
 GEM_NAME = "chef"
 
