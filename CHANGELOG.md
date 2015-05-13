@@ -30,6 +30,7 @@
 * [pr#3333](https://github.com/chef/chef/pull/3333): Fix SSL errors when connecting to private Supermarkets
 * [pr#3340](https://github.com/chef/chef/pull/3340): Allow Event
   dispatch subscribers to be inspected.
+* [Issue #3055](https://github.com/chef/chef/issues/3055) Fix regex parsing for recipe failures on Windows
 
 ## 12.3.0
 
