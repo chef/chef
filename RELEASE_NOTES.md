@@ -21,3 +21,15 @@ log_location Chef::Log::WinEvt.new
 ```
 
 This will write to the Application log with the source set as Chef.
+
+## RemoteFile resource supports UNC paths on Windows
+
+You can now use UNC paths with `remote_file` on Windows machines. For
+example, you can get `Foo.tar.gz` off of `fooshare` on `foohost` using
+the following resource:
+
+```ruby
+remote_file 'C:\Foo.tar.gz' do
+  source "\\\\foohost\\fooshare\\Foo.tar.gz"
+end
+```
