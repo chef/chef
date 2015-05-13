@@ -32,6 +32,7 @@
   dispatch subscribers to be inspected.
 * [Issue #3055](https://github.com/chef/chef/issues/3055) Fix regex parsing for recipe failures on Windows
 * [pr#3345](https://github.com/chef/chef/pull/3345) Windows Event log logger
+* [pr#3336](https://github.com/chef/chef/pull/3336) Remote file understands UNC paths
 
 ## 12.3.0
 
