@@ -3,6 +3,7 @@
   Fix multipackage and architectures
 * [**Igor Shpakov**](https://github.com/Igorshp):
   Always run exception handlers
+  Prioritise manual ssh attribute over automatic ones for knife
 * [**Noah Kantrowitz**](https://github.com/coderanger):
   Cache service_resource_providers for the duration of the run. #2953
 * [**Slava Kardakov**](https://github.com/ojab):
