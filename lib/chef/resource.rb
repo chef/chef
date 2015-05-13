@@ -61,6 +61,42 @@ class Chef
     NULL_ARG = Object.new
 
     #
+    # Define an action on this resource.
+    #
+    # The action is defined as a *recipe* block that will be compiled and then
+    # converged when the action is taken (when Resource is converged).  The recipe
+    # has access to the resource's attributes and methods, as well as the Chef
+    # recipe DSL.
+    #
+    # Resources in the action recipe may notify and subscribe to other resources
+    # within the action recipe, but cannot notify or subscribe to resources
+    # in the main Chef run.
+    #
+    # Resource actions are *inheritable*: if resource A defines `action :create`
+    # and B is a subclass of A, B gets all of A's actions.  Additionally,
+    # resource B can define `action :create` and call `super()` to invoke A's
+    # action code.
+    #
+    # @param name [Symbol] The action name to define.
+    # @param recipe_block The recipe to run when the action is taken. This block
+    #   takes no parameters, and will be evaluated in a new context containing:
+    #
+    #   - The resource's public and protected methods (including attributes)
+    #   - The Chef Recipe DSL (file, etc.)
+    #   - super() referring to the parent version of the action (if any)
+    #
+    # @return The Action class implementing the action
+    #
+    def self.action(action, &recipe_block)
+      action = action.to_sym
+      self.action_classes[action] ||= Class.new(ActionRecipe) do
+        resource_class self
+        action action
+        recipe_block recipe_block
+      end
+    end
+
+    #
     # The node the current Chef run is using.
     #
     # Corresponds to `run_context.node`.
