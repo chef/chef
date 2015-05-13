@@ -37,6 +37,12 @@ describe Chef::Provider::Package do
       allow(@provider).to receive(:install_package).and_return(true)
     end
 
+    it "raises a Chef::Exceptions::InvalidResourceSpecification if both multipackage and source are provided" do
+      @new_resource.package_name(['a', 'b'])
+      @new_resource.source('foo')
+      expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+    end
+
     it "should raise a Chef::Exceptions::Package if no version is specified, and no candidate is available" do
       @provider.candidate_version = nil
       expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
