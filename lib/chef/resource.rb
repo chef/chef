@@ -976,10 +976,14 @@ class Chef
       end
     end
 
-    def self.provides(name, *args, &block)
-      result = super
+    def self.provides(name, opts={}, &block)
+      result = Chef.set_resource_priority_array(name, self, opts, &block)
       Chef::DSL::Resources.add_resource_dsl(name)
       result
+    end
+
+    def self.provides?(node, resource)
+      Chef::ResourceResolver.new(node, resource).provided_by?(self)
     end
 
     # Helper for #notifies
@@ -1163,8 +1167,6 @@ class Chef
         end
       end
 
-      private
-
       def deprecated_constants
         @deprecated_constants ||= {}
       end
@@ -1185,3 +1187,6 @@ class Chef
     end
   end
 end
+
+# Requiring things at the bottom breaks cycles
+require 'chef/chef_class'

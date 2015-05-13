@@ -22,6 +22,7 @@ class Chef
   class Provider
     class Ifconfig
       class Aix < Chef::Provider::Ifconfig
+        Aix.provides :ifconfig, platform: %w(aix)
 
         def load_current_resource
           @current_resource = Chef::Resource::Ifconfig.new(@new_resource.name)

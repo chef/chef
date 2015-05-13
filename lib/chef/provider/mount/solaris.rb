@@ -27,6 +27,8 @@ class Chef
     class Mount
       # Mount Solaris File systems
       class Solaris < Chef::Provider::Mount
+        provides :mount, platform: %w(openindiana opensolaris nexentacore omnios solaris2 solaris2 < 5.11 smartos)
+
         extend Forwardable
 
         VFSTAB = '/etc/vfstab'.freeze

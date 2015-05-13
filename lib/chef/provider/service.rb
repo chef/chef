@@ -168,6 +168,50 @@ class Chef
         @new_resource.respond_to?(method_name) &&
           !!@new_resource.send(method_name)
       end
+
+      module ServicePriorityInit
+
+        #
+        # Platform-specific versions
+        #
+
+        #
+        # Linux
+        #
+
+        require 'chef/chef_class'
+        require 'chef/provider/service/systemd'
+        require 'chef/provider/service/insserv'
+        require 'chef/provider/service/redhat'
+        require 'chef/provider/service/arch'
+        require 'chef/provider/service/gentoo'
+        require 'chef/provider/service/upstart'
+        require 'chef/provider/service/debian'
+        require 'chef/provider/service/invokercd'
+        require 'chef/provider/service/freebsd'
+        require 'chef/provider/service/openbsd'
+        require 'chef/provider/service/solaris'
+        require 'chef/provider/service/macosx'
+
+        def self.os(os, *providers)
+          Chef.set_provider_priority_array(:service, providers, os: os)
+        end
+        def self.platform_family(platform_family, *providers)
+          Chef.set_provider_priority_array(:service, providers, platform_family: platform_family)
+        end
+
+        os %w(freebsd netbsd), Freebsd
+        os %w(openbsd),        Openbsd
+        os %w(solaris2),       Solaris
+        os %w(darwin),         Macosx
+        os %w(linux),          Systemd, Insserv, Redhat
+
+        platform_family %w(arch),             Systemd, Arch
+        platform_family %w(gentoo),           Systemd, Gentoo
+        platform_family %w(debian),           Systemd, Upstart, Insserv, Debian, Invokercd
+        platform_family %w(rhel fedora suse), Systemd, Insserv, Redhat
+
+      end
     end
   end
 end

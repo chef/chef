@@ -23,6 +23,7 @@ class Chef
   class Provider
     class User
       class Useradd < Chef::Provider::User
+        provides :user
 
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
 

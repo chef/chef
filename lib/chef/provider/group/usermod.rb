@@ -24,6 +24,8 @@ class Chef
       class Usermod < Chef::Provider::Group::Groupadd
 
         provides :group, os: "openbsd"
+        provides :group, platform: %w(opensuse), platform_version: '>= 12.3'
+        provides :group, platform: %w(openindiana opensolaris nexentacore omnios solaris2 smartos hpux)
 
         def load_current_resource
           super

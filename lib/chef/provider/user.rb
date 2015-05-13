@@ -23,6 +23,7 @@ require 'etc'
 class Chef
   class Provider
     class User < Chef::Provider
+      provides :user
 
       include Chef::Mixin::Command
 
@@ -208,7 +209,6 @@ class Chef
       def unlock_user
         raise NotImplementedError
       end
-
     end
   end
 end
