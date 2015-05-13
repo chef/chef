@@ -31,6 +31,7 @@
 * [pr#3340](https://github.com/chef/chef/pull/3340): Allow Event
   dispatch subscribers to be inspected.
 * [Issue #3055](https://github.com/chef/chef/issues/3055) Fix regex parsing for recipe failures on Windows
+* [pr#3345](https://github.com/chef/chef/pull/3345) Windows Event log logger
 
 ## 12.3.0
 
