@@ -19,6 +19,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef/log'
+require 'chef-config/logger'
+
+# DI our logger into ChefConfig before we load the config. Some defaults are
+# auto-detected, and this emits log messages on some systems, all of which will
+# occur at require-time. So we need to set the logger first.
+ChefConfig.logger = Chef::Log
+
 require 'chef-config/config'
 
 class Chef
