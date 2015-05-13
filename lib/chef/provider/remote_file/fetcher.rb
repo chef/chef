@@ -23,15 +23,29 @@ class Chef
       class Fetcher
 
         def self.for_resource(uri, new_resource, current_resource)
-          case uri.scheme
-          when "http", "https"
-            Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-          when "ftp"
-            Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
-          when "file"
-            Chef::Provider::RemoteFile::LocalFile.new(uri, new_resource, current_resource)
+          if network_share?(uri)
+            Chef::Provider::RemoteFile::NetworkFile.new(uri, new_resource, current_resource)
           else
-            raise ArgumentError, "Invalid uri, Only http(s), ftp, and file are currently supported"
+            case uri.scheme
+            when "http", "https"
+              Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
+            when "ftp"
+              Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
+            when "file"
+              Chef::Provider::RemoteFile::LocalFile.new(uri, new_resource, current_resource)
+            else
+              raise ArgumentError, "Invalid uri, Only http(s), ftp, and file are currently supported"
+            end
+          end
+        end
+
+        # Windows network share: \\computername\share\file
+        def self.network_share?(source)
+          case source
+          when String
+            !!(%r{\A\\\\[A-Za-z0-9+\-\.]+} =~ source)
+          else
+            false
           end
         end
 

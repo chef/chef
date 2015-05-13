@@ -140,7 +140,7 @@ class Chef
       end
 
       def absolute_uri?(source)
-        source.kind_of?(String) and URI.parse(source).absolute?
+        Chef::Provider::RemoteFile::Fetcher.network_share?(source) or (source.kind_of?(String) and URI.parse(source).absolute?) 
       rescue URI::InvalidURIError
         false
       end
