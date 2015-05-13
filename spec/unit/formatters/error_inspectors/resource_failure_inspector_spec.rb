@@ -126,6 +126,13 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         expect(@inspector.recipe_snippet).to match(/^# In C:\/Users\/btm/)
       end
 
+      it "parses a Windows path" do
+        source_line = "C:\\Windows\\Temp\\packer\\cookbooks\\fake_file.rb:2: undefined local variable or method `non_existent' for main:Object (NameError)"
+        @resource.source_line = source_line
+        @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
+        expect(@inspector.recipe_snippet).to match(/^# In C:\\Windows\\Temp\\packer\\/)
+      end
+
       it "parses a unix path" do
         source_line = "/home/btm/src/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existent' for main:Object (NameError)"
         @resource.source_line = source_line
