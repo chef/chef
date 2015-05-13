@@ -27,7 +27,7 @@ Users are encouraged to declare resources in their own namespaces instead of put
 
 Starting with Chef 12.4.0, accessing an LWRP class by name from the `Chef::Resource` namespace will trigger a deprecation warning message. This means that if your cookbook includes the LWRP `mycookbook/resources/myresource.rb`, you will no longer be able to extend or reference `Chef::Resource::MycookbookMyresource` in Ruby code.  LWRP recipe DSL does not change: the LWRP will still be available to recipes as `mycookbook_myresource`.
 
-You can still get the LWRP class by calling `Chef::Resource.resource_matching_short_name(:mycookbook_myresource)`.
+You can still get the LWRP class by calling `Chef::ResourceResolver.resolve(:mycookbook_myresource)`.
 
 The primary aim here is clearing out the `Chef::Resource` namespace.
 

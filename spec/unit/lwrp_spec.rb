@@ -164,6 +164,10 @@ describe "LWRP" do
       expect { Chef::Resource::LwrpFoo }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
 
+    it "should be resolvable with Chef::ResourceResolver.resolve(:lwrp_foo)" do
+      expect(Chef::ResourceResolver.resolve(:lwrp_foo, node: Chef::Node.new)).to eq(get_lwrp(:lwrp_foo))
+    end
+
     it "should set resource_name" do
       expect(get_lwrp(:lwrp_foo).new("blah").resource_name).to eql(:lwrp_foo)
     end

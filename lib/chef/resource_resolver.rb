@@ -51,6 +51,16 @@ class Chef
         end.sort {|a,b| a.to_s <=> b.to_s }
     end
 
+    #
+    # Resolve a resource by name.
+    #
+    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`)
+    # @param node [Chef::Node] The node on which the resource will run.
+    #
+    def self.resolve(resource_name, node: Chef.node)
+      new(node, resource_name).resolve
+    end
+
     private
 
     # try dynamically finding a resource based on querying the resources to see what they support
