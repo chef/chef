@@ -292,8 +292,6 @@ class Chef
               :user => Chef::Provider::User::Useradd,
               :group => Chef::Provider::Group::Gpasswd,
               :ifconfig => Chef::Provider::Ifconfig,
-              :package => Chef::Provider::Package,
-              :service => Chef::Provider::Service,
             }
           }
         end
