@@ -78,12 +78,6 @@ class Chef
       nil
     end
 
-    def clear
-      result = @map.keys
-      @map.clear
-      result
-    end
-
     private
 
     # only allow valid filter options
