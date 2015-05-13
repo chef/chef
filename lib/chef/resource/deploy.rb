@@ -50,6 +50,7 @@ class Chef
     # release directory. Callback files can contain chef code (resources, etc.)
     #
     class Deploy < Chef::Resource
+      provides :deploy
 
       provider_base Chef::Provider::Deploy
 

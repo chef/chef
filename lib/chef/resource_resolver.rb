@@ -18,9 +18,11 @@
 
 require 'chef/exceptions'
 require 'chef/platform/resource_priority_map'
+require 'chef/mixin/convert_to_class_name'
 
 class Chef
   class ResourceResolver
+    include Chef::Mixin::ConvertToClassName
 
     attr_reader :node
     attr_reader :resource
@@ -28,7 +30,7 @@ class Chef
 
     def initialize(node, resource)
       @node = node
-      @resource = resource
+      @resource = resource.to_sym
     end
 
     # return a deterministically sorted list of Chef::Resource subclasses
@@ -37,8 +39,8 @@ class Chef
     end
 
     def resolve
-      maybe_dynamic_resource_resolution(resource) ||
-        maybe_chef_platform_lookup(resource)
+      maybe_dynamic_resource_resolution ||
+        maybe_chef_platform_lookup
     end
 
     # this cut looks at if the resource can handle the resource type on the node
@@ -47,21 +49,29 @@ class Chef
         resources.select do |klass|
           klass.provides?(node, resource)
         end.sort {|a,b| a.to_s <=> b.to_s }
-      @enabled_handlers
+    end
+
+    #
+    # Resolve a resource by name.
+    #
+    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`)
+    # @param node [Chef::Node] The node on which the resource will run.
+    #
+    def self.resolve(resource_name, node: Chef.node)
+      new(node, resource_name).resolve
     end
 
     private
 
     # try dynamically finding a resource based on querying the resources to see what they support
-    def maybe_dynamic_resource_resolution(resource)
-      # log this so we know what resources will work for the generic resource on the node (early cut)
+    def maybe_dynamic_resource_resolution      # log this so we know what resources will work for the generic resource on the node (early cut)
       Chef::Log.debug "resources for generic #{resource} resource enabled on node include: #{enabled_handlers}"
 
       # if none of the resources specifically support the resource, we still need to pick one of the resources that are
       # enabled on the node to handle the why-run use case.
       handlers = enabled_handlers
 
-      if handlers.count >= 2
+      if handlers.size >= 2
         # this magic stack ranks the resources by where they appear in the resource_priority_map
         priority_list = [ get_priority_array(node, resource) ].flatten.compact
         handlers = handlers.sort_by { |x| i = priority_list.index x; i.nil? ? Float::INFINITY : i }
@@ -70,14 +80,14 @@ class Chef
           # entry for this resource is missing -- we should probably raise here and force resolution of the ambiguity.
           Chef::Log.warn "Ambiguous resource precedence: #{handlers}, please use Chef.set_resource_priority_array to provide determinism"
         end
-        handlers = [ handlers.first ]
+        handlers = handlers[0..0]
       end
 
       Chef::Log.debug "resources that survived replacement include: #{handlers}"
 
       raise Chef::Exceptions::AmbiguousResourceResolution.new(resource, handlers) if handlers.count >= 2
 
-      Chef::Log.debug "dynamic resource resolver FAILED to resolve a resouce" if handlers.empty?
+      Chef::Log.debug "dynamic resource resolver FAILED to resolve a resource" if handlers.empty?
 
       return nil if handlers.empty?
 
@@ -85,7 +95,7 @@ class Chef
     end
 
     # try the old static lookup of resources by mangling name to resource klass
-    def maybe_chef_platform_lookup(resource)
+    def maybe_chef_platform_lookup
       Chef::Resource.resource_matching_short_name(resource)
     end
 

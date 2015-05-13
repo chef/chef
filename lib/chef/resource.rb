@@ -22,6 +22,7 @@ require 'chef/dsl/platform_introspection'
 require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/dsl/reboot_pending'
+require 'chef/dsl/resources'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
@@ -31,6 +32,8 @@ require 'chef/node_map'
 require 'chef/node'
 require 'chef/platform'
 require 'chef/resource/resource_notification'
+require 'chef/provider_resolver'
+require 'chef/resource_resolver'
 
 require 'chef/mixin/deprecation'
 require 'chef/mixin/provides'
@@ -604,7 +607,7 @@ class Chef
       return "suppressed sensitive resource output" if sensitive
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       text = "# Declared in #{@source_line}\n\n"
-      text << self.class.dsl_name + "(\"#{name}\") do\n"
+      text << "#{resource_name}(\"#{name}\") do\n"
       ivars.each do |ivar|
         if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
           value_string = value.respond_to?(:to_text) ? value.to_text : value.inspect
@@ -820,7 +823,11 @@ class Chef
     #
     # @return [String] The DSL name of this resource.
     def self.dsl_name
-      convert_to_snake_case(name, 'Chef::Resource')
+      Chef::Log.deprecation "Resource.dsl_name is deprecated and will be removed in Chef 11.  Use resource.resource_name instead."
+      if name
+        name = self.name.split('::')[-1]
+        convert_to_snake_case(name)
+      end
     end
 
     #
@@ -969,6 +976,12 @@ class Chef
       end
     end
 
+    def self.provides(name, *args, &block)
+      result = super
+      Chef::DSL::Resources.add_resource_dsl(name)
+      result
+    end
+
     # Helper for #notifies
     def validate_resource_spec!(resource_spec)
       run_context.resource_collection.validate_lookup_spec!(resource_spec)
@@ -1025,7 +1038,6 @@ class Chef
     end
 
     def provider_for_action(action)
-      require 'chef/provider_resolver'
       provider = Chef::ProviderResolver.new(node, self, action).resolve.new(self, run_context)
       provider.action = action
       provider
@@ -1099,30 +1111,68 @@ class Chef
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_for_node(short_name, node)
-      require 'chef/resource_resolver'
       klass = Chef::ResourceResolver.new(node, short_name).resolve
       raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
       klass
     end
 
+    #
     # Returns the class of a Chef::Resource based on the short name
+    # Only returns the *canonical* class with the given name, not the one that
+    # would be picked by the ResourceResolver.
+    #
     # ==== Parameters
     # short_name<Symbol>:: short_name of the resource (ie :directory)
     #
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
+    #
+    # @deprecated Chef::Resource::FooBar will no longer mean anything special in
+    #   Chef 13.  Use `resource_for_node` instead.
     def self.resource_matching_short_name(short_name)
       begin
         rname = convert_to_class_name(short_name.to_s)
-        Chef::Resource.const_get(rname)
+        result = Chef::Resource.const_get(rname)
+        if result <= Chef::Resource
+          Chef::Log.deprecation("Class Chef::Resource::#{rname} does not declare 'provides #{short_name.inspect}'.")
+          Chef::Log.deprecation("This will no longer work in Chef 13: you must use 'provides' to provide DSL.")
+          result
+        end
       rescue NameError
         nil
       end
     end
 
-    private
+    # Implement deprecated LWRP class
+    module DeprecatedLWRPClass
+      # @api private
+      def register_deprecated_lwrp_class(resource_class, class_name)
+        if Chef::Resource.const_defined?(class_name, false)
+          Chef::Log.warn "#{class_name} already exists!  Cannot create deprecation class for #{resource_class}"
+        else
+          deprecated_constants[class_name.to_sym] = resource_class
+        end
+      end
 
-    def lookup_provider_constant(name)
+      def const_missing(class_name)
+        if deprecated_constants[class_name.to_sym]
+          Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+          deprecated_constants[class_name.to_sym]
+        else
+          raise NameError, "uninitialized constant Chef::Resource::#{class_name}"
+        end
+      end
+
+      private
+
+      def deprecated_constants
+        @deprecated_constants ||= {}
+      end
+    end
+    extend DeprecatedLWRPClass
+
+    # @api private
+    def lookup_provider_constant(name, action=:nothing)
       begin
         self.class.provider_base.const_get(convert_to_class_name(name.to_s))
       rescue NameError => e

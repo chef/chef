@@ -50,6 +50,7 @@ class Chef
       else
         raise ArgumentError, "You must pass a block to a definition."
       end
+      Chef::DSL::Definitions.add_definition(name)
       true
     end
 

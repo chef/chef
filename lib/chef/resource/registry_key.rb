@@ -22,6 +22,7 @@ require 'chef/digester'
 class Chef
   class Resource
     class RegistryKey < Chef::Resource
+      provides :registry_key
 
       identity_attr :key
       state_attrs :values

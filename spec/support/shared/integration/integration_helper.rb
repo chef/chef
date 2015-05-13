@@ -22,13 +22,18 @@ require 'fileutils'
 require 'chef/config'
 require 'chef/json_compat'
 require 'chef/server_api'
-require 'chef_zero/rspec'
 require 'support/shared/integration/knife_support'
 require 'support/shared/integration/app_server_support'
+require 'cheffish/rspec/chef_run_support'
 require 'spec_helper'
 
 module IntegrationSupport
   include ChefZero::RSpec
+
+  def self.included(includer_class)
+    includer_class.extend(Cheffish::RSpec::ChefRunSupport)
+    includer_class.extend(ClassMethods)
+  end
 
   module ClassMethods
     include ChefZero::RSpec
@@ -47,10 +52,6 @@ module IntegrationSupport
         module_eval(&block)
       end
     end
-  end
-
-  def self.included(includer_class)
-    includer_class.extend(ClassMethods)
   end
 
   def api

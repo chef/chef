@@ -22,6 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Route < Chef::Resource
+      provides :route
 
       identity_attr :target
 
@@ -136,5 +137,3 @@ class Chef
     end
   end
 end
-
-

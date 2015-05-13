@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+gemspec(name: 'chef', path: "../")
+
+gem 'chefspec', github: 'sethvargo/chefspec', group: :development
+gem 'aruba'
+gem 'yard'

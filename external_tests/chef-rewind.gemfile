@@ -1,0 +1,5 @@
+source 'https://rubygems.org'
+
+gemspec(name: 'chef', path: "../")
+
+gem 'chef-rewind', github: 'thommay/chef-rewind'

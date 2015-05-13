@@ -24,6 +24,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
+    node.automatic[:os] = 'windows'
     node
   end
 
@@ -144,4 +145,3 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
     end
   end
 end
-

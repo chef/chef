@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+gemspec(name: 'chef', path: "../")
+
+gem 'poise', github: 'poise/poise'
+gem 'halite', github: 'poise/halite'
+gem 'poise-boiler', github: 'poise/poise-boiler'

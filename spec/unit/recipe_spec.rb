@@ -83,7 +83,7 @@ describe Chef::Recipe do
       it "should require a name argument" do
         expect {
           recipe.cat
-        }.to raise_error(ArgumentError, "You must supply a name when declaring a cat resource")
+        }.to raise_error(ArgumentError)
       end
 
       it "should allow regular errors (not NameErrors) to pass unchanged" do

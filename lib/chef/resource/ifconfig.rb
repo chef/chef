@@ -22,6 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Ifconfig < Chef::Resource
+      provides :ifconfig
 
       identity_attr :device
 
@@ -145,5 +146,3 @@ class Chef
 
   end
 end
-
-

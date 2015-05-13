@@ -31,6 +31,8 @@ class Chef
 
   class Provider
     class RegistryKey < Chef::Provider
+      provides :registry_key
+
       include Chef::Mixin::Checksum
 
       def whyrun_supported?

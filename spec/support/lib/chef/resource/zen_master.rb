@@ -22,6 +22,8 @@ require 'chef/json_compat'
 class Chef
   class Resource
     class ZenMaster < Chef::Resource
+      provides :zen_master
+
       attr_reader :peace
 
       def initialize(name, run_context=nil)

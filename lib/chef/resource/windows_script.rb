@@ -22,6 +22,7 @@ require 'chef/mixin/windows_architecture_helper'
 class Chef
   class Resource
     class WindowsScript < Chef::Resource::Script
+      # This is an abstract resource meant to be subclasses; thus no 'provides'
 
       set_guard_inherited_attributes(:architecture)
 

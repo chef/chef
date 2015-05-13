@@ -731,35 +731,51 @@ describe Chef::Resource do
 
   end
 
-  describe "lookups from the platform map" do
-    let(:klz1) { Class.new(Chef::Resource) }
-    let(:klz2) { Class.new(Chef::Resource) }
+  describe "resource_for_node" do
+    describe "lookups from the platform map" do
+      let(:klz1) { Class.new(Chef::Resource) }
 
-    before(:each) do
-      Chef::Resource::Klz1 = klz1
-      Chef::Resource::Klz2 = klz2
-      @node = Chef::Node.new
-      @node.name("bumblebee")
-      @node.automatic[:platform] = "autobots"
-      @node.automatic[:platform_version] = "6.1"
-      Object.const_set('Soundwave', klz1)
-      klz2.provides :dinobot, :on_platforms => ['autobots']
-      Object.const_set('Grimlock', klz2)
-    end
-
-    after(:each) do
-      Object.send(:remove_const, :Soundwave)
-      Object.send(:remove_const, :Grimlock)
-      Chef::Resource.send(:remove_const, :Klz1)
-      Chef::Resource.send(:remove_const, :Klz2)
-    end
-
-    describe "resource_for_node" do
-      it "returns a resource by short_name and node" do
-        expect(Chef::Resource.resource_for_node(:dinobot, @node)).to eql(Grimlock)
+      before(:each) do
+        Chef::Resource::Klz1 = klz1
+        @node = Chef::Node.new
+        @node.name("bumblebee")
+        @node.automatic[:platform] = "autobots"
+        @node.automatic[:platform_version] = "6.1"
+        Object.const_set('Soundwave', klz1)
+        klz1.provides :soundwave
       end
+
+      after(:each) do
+        Object.send(:remove_const, :Soundwave)
+        Chef::Resource.send(:remove_const, :Klz1)
+      end
+
       it "returns a resource by short_name if nothing else matches" do
-        expect(Chef::Resource.resource_for_node(:soundwave, @node)).to eql(Soundwave)
+        expect(Chef::Resource.resource_for_node(:soundwave, @node)).to eql(klz1)
+      end
+    end
+
+    describe "lookups from the platform map" do
+      let(:klz2) { Class.new(Chef::Resource) }
+
+      before(:each) do
+        Chef::Resource::Klz2 = klz2
+        @node = Chef::Node.new
+        @node.name("bumblebee")
+        @node.automatic[:platform] = "autobots"
+        @node.automatic[:platform_version] = "6.1"
+        klz2.provides :dinobot, :on_platforms => ['autobots']
+        Object.const_set('Grimlock', klz2)
+        klz2.provides :grimlock
+      end
+
+      after(:each) do
+        Object.send(:remove_const, :Grimlock)
+        Chef::Resource.send(:remove_const, :Klz2)
+      end
+
+      it "returns a resource by short_name and node" do
+        expect(Chef::Resource.resource_for_node(:dinobot, @node)).to eql(klz2)
       end
     end
 

@@ -191,5 +191,33 @@ class Chef
       end
     end
 
+    module DeprecatedLWRPClass
+      def const_missing(class_name)
+        if deprecated_constants[class_name.to_sym]
+          Chef::Log.deprecation("Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
+          deprecated_constants[class_name.to_sym]
+        else
+          raise NameError, "uninitialized constant Chef::Provider::#{class_name}"
+        end
+      end
+
+      # @api private
+      def register_deprecated_lwrp_class(provider_class, class_name)
+        # Register Chef::Provider::MyProvider with deprecation warnings if you
+        # try to access it
+        if Chef::Provider.const_defined?(class_name, false)
+          Chef::Log.warn "Chef::Provider::#{class_name} already exists!  Cannot create deprecation class for #{provider_class}"
+        else
+          deprecated_constants[class_name.to_sym] = provider_class
+        end
+      end
+
+      private
+
+      def deprecated_constants
+        @deprecated_constants ||= {}
+      end
+    end
+    extend DeprecatedLWRPClass
   end
 end

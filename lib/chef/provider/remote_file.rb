@@ -24,6 +24,7 @@ require 'chef/deprecation/warnings'
 class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
+      provides :remote_file
 
       extend Chef::Deprecation::Warnings
       include Chef::Deprecation::Provider::RemoteFile
