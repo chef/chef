@@ -29,6 +29,26 @@ ChefConfig.logger = Chef::Log
 
 require 'chef-config/config'
 
+require 'chef/platform/query_helpers'
+
 class Chef
   Config = ChefConfig::Config
+
+  # We re-open ChefConfig::Config to add additional settings. Generally,
+  # everything should go in chef-config so it's shared with whoever uses that.
+  # We make execeptions to that rule when:
+  # * The functionality isn't likely to be useful outside of Chef
+  # * The functionality makes use of a dependency we don't want to add to chef-config
+  class Config
+
+    default :event_loggers do
+      evt_loggers = []
+      if ChefConfig.windows? and not Chef::Platform.windows_server_2003?
+        evt_loggers << :win_evt
+      end
+      evt_loggers
+    end
+
+  end
 end
+
