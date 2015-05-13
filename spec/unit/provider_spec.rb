@@ -49,6 +49,13 @@ class ConvergeActionDemonstrator < Chef::Provider
   end
 end
 
+class CheckResourceSemanticsDemonstrator < ConvergeActionDemonstrator
+  def check_resource_semantics!
+    raise Chef::Exceptions::InvalidResourceSpecification.new("check_resource_semantics!")
+  end
+end
+
+
 describe Chef::Provider do
   before(:each) do
     @cookbook_collection = Chef::CookbookCollection.new([])
@@ -87,6 +94,10 @@ describe Chef::Provider do
 
   it "should not support whyrun by default" do
     expect(@provider.send(:whyrun_supported?)).to eql(false)
+  end
+
+  it "should do nothing for check_resource_semantics! by default" do
+    expect { @provider.check_resource_semantics! }.not_to raise_error
   end
 
   it "should return true for action_nothing" do
@@ -175,6 +186,15 @@ describe Chef::Provider do
         expect(@resource).not_to be_updated
         expect(@resource).not_to be_updated_by_last_action
       end
+    end
+
+    describe "and the resource is invalid" do
+      let(:provider) { CheckResourceSemanticsDemonstrator.new(@resource, @run_context) }
+
+      it "fails with InvalidResourceSpecification when run" do
+        expect { provider.run_action(:foo) }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+      end
+
     end
   end
 
