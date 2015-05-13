@@ -23,7 +23,7 @@ require 'chef/json_compat'
 require 'chef/search/query'
 
 class Chef
-  class User
+  class UserV0
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
@@ -84,7 +84,7 @@ class Chef
       payload = {:name => self.name, :admin => self.admin, :password => self.password }
       payload[:public_key] = public_key if public_key
       new_user =Chef::REST.new(Chef::Config[:chef_server_url]).post_rest("users", payload)
-      Chef::User.from_hash(self.to_hash.merge(new_user))
+      Chef::UserV0.from_hash(self.to_hash.merge(new_user))
     end
 
     def update(new_key=false)
@@ -92,7 +92,7 @@ class Chef
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
       updated_user = Chef::REST.new(Chef::Config[:chef_server_url]).put_rest("users/#{name}", payload)
-      Chef::User.from_hash(self.to_hash.merge(updated_user))
+      Chef::UserV0.from_hash(self.to_hash.merge(updated_user))
     end
 
     def save(new_key=false)
@@ -119,14 +119,14 @@ class Chef
     end
 
     def inspect
-      "Chef::User name:'#{name}' admin:'#{admin.inspect}'" +
+      "Chef::UserV0 name:'#{name}' admin:'#{admin.inspect}'" +
       "public_key:'#{public_key}' private_key:#{private_key}"
     end
 
     # Class Methods
 
     def self.from_hash(user_hash)
-      user = Chef::User.new
+      user = Chef::UserV0.new
       user.name user_hash['name']
       user.private_key user_hash['private_key'] if user_hash.key?('private_key')
       user.password user_hash['password'] if user_hash.key?('password')
@@ -136,7 +136,7 @@ class Chef
     end
 
     def self.from_json(json)
-      Chef::User.from_hash(Chef::JSONCompat.from_json(json))
+      Chef::UserV0.from_hash(Chef::JSONCompat.from_json(json))
     end
 
     class << self
@@ -152,7 +152,7 @@ class Chef
       end
       if inflate
         users.inject({}) do |user_map, (name, _url)|
-          user_map[name] = Chef::User.load(name)
+          user_map[name] = Chef::UserV0.load(name)
           user_map
         end
       else
@@ -162,7 +162,7 @@ class Chef
 
     def self.load(name)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("users/#{name}")
-      Chef::User.from_hash(response)
+      Chef::UserV0.from_hash(response)
     end
 
     # Gross.  Transforms an API response in the form of:

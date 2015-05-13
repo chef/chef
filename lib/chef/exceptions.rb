@@ -73,6 +73,8 @@ class Chef
     class KeyCommandInputError < ArgumentError; end
     class InvalidKeyArgument < ArgumentError; end
     class InvalidKeyAttribute < ArgumentError; end
+    class InvalidUserAttribute < ArgumentError; end
+    class InvalidClientAttribute < ArgumentError; end
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookFrozen < ArgumentError; end
