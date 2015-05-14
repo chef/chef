@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 2.0.0"
 
-  s.add_dependency "chef-config", "~> #{Chef::VERSION}"
+  s.add_dependency "chef-config", "= #{Chef::VERSION}"
 
   s.add_dependency "mixlib-cli", "~> 1.4"
   s.add_dependency "mixlib-log", "~> 1.3"
