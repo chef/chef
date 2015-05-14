@@ -17,12 +17,12 @@
 #
 
 require 'chef/exceptions'
-require 'chef/api_client_v0'
-require 'chef/api_client_v1'
+require 'chef/user_v0'
+require 'chef/user_v1'
 
 class Chef
-  # Proxy object for Chef::ApiClientV0 and Chef::ApiClientV1
-  class ApiClient < BasicObject
+  # Proxy object for Chef::UserV0 and Chef::UserV1
+  class User < BasicObject
 
     SUPPORTED_VERSIONS = [0,1]
 
@@ -31,13 +31,15 @@ class Chef
     def initialize(version=0)
       unless SUPPORTED_VERSIONS.include?(version)
         # something about inherting from BasicObject is forcing me to use :: in front of Chef::<whatever>
-        raise ::Chef::Exceptions::InvalidObjectAPIVersionRequested, "You requested Chef::ApiClient version #{version}. Valid versions include #{SUPPORTED_VERSIONS.join(', ')}."
+        raise ::Chef::Exceptions::InvalidObjectAPIVersionRequested, "You requested Chef::User version #{version}. Valid versions include #{SUPPORTED_VERSIONS.join(', ')}."
       end
 
       if version == 0
-        @proxy_object = ::Chef::ApiClientV0.new
+        @proxy_class = ::Chef::UserV0
+        @proxy_object = @proxy_class.new
       elsif version == 1
-        @proxy_object = ::Chef::ApiClientV1.new
+        @proxy_class = ::Chef::UserV1
+        @proxy_object = @proxy_class.new
       end
     end
 
@@ -46,6 +48,9 @@ class Chef
     end
 
     def self.method_missing(method, *arguments, &block)
+      puts "halp"*100
+      puts method
+      puts @proxy_class.class
       @proxy_class.send(method, *args, &block)
     end
 
