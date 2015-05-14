@@ -37,7 +37,7 @@ class Chef
             end
           end
         else
-          ::File.dirname(path)
+          ::File.expand_path(::File.dirname(path))
         end
       end
 
