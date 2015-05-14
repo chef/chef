@@ -80,7 +80,9 @@ class Chef
         opts[:umask]       = umask if umask
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s
-        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !sensitive?
+        if (Chef::Config[:always_stream_execute] || run_context.events.formatter?) && !sensitive?
+          opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
+        elsif STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !sensitive?
           opts[:live_stream] = STDOUT
         end
         opts

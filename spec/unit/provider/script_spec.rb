@@ -88,7 +88,7 @@ describe Chef::Provider::Script, "action_run" do
 
     describe "when running the script" do
       let (:default_opts) {
-        {timeout: 3600, returns: 0, log_level: :info, log_tag: "script[run some perl code]", live_stream: STDOUT}
+        {timeout: 3600, returns: 0, log_level: :info, log_tag: "script[run some perl code]",}
       }
 
       before do
