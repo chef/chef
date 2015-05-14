@@ -35,7 +35,7 @@ describe Chef::Mixin::PathSanity do
       @gem_bindir = '/some/gem/bin'
       allow(Gem).to receive(:bindir).and_return(@gem_bindir)
       allow(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return(@ruby_bindir)
-      allow(Chef::Platform).to receive(:windows?).and_return(false)
+      allow(ChefConfig).to receive(:windows?).and_return(false)
     end
 
     it "adds all useful PATHs even if environment is an empty hash" do
@@ -77,7 +77,7 @@ describe Chef::Mixin::PathSanity do
       gem_bindir = 'C:\gems\bin'
       allow(Gem).to receive(:bindir).and_return(gem_bindir)
       allow(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return(ruby_bindir)
-      allow(Chef::Platform).to receive(:windows?).and_return(true)
+      allow(ChefConfig).to receive(:windows?).and_return(true)
       env = {"PATH" => 'C:\Windows\system32;C:\mr\softie'}
       @sanity.enforce_path_sanity(env)
       expect(env["PATH"]).to eq("C:\\Windows\\system32;C:\\mr\\softie;#{ruby_bindir};#{gem_bindir}")

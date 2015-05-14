@@ -24,7 +24,7 @@ require 'mixlib/shellout'
 
 describe Chef::Provider::User::Dscl do
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
   end
   let(:node) {
     node = Chef::Node.new

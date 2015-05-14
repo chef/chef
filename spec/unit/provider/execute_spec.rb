@@ -39,7 +39,7 @@ describe Chef::Provider::Execute do
   let(:new_resource) { Chef::Resource::Execute.new("foo_resource", run_context) }
 
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
     @original_log_level = Chef::Log.level
     Chef::Log.level = :info
     allow(STDOUT).to receive(:tty?).and_return(true)
