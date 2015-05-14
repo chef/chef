@@ -23,7 +23,7 @@ Chef::Knife::EnvironmentFromFile.load_deps
 
 describe Chef::Knife::EnvironmentFromFile do
   before(:each) do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
     @knife = Chef::Knife::EnvironmentFromFile.new
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)

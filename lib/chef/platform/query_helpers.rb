@@ -21,11 +21,7 @@ class Chef
 
     class << self
       def windows?
-        if RUBY_PLATFORM =~ /mswin|mingw|windows/
-          true
-        else
-          false
-        end
+        ChefConfig.windows?
       end
 
       def windows_server_2003?

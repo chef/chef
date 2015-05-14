@@ -420,7 +420,7 @@ EOM
       before(:each) do
         stdout = double('StringIO', :tty? => true)
         allow(@ui).to receive(:stdout).and_return(stdout)
-        allow(Chef::Platform).to receive(:windows?) { true }
+        allow(ChefConfig).to receive(:windows?) { true }
         Chef::Config.reset
       end
 

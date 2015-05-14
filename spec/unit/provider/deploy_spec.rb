@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Deploy do
 
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
     @release_time = Time.utc( 2004, 8, 15, 16, 23, 42)
     allow(Time).to receive(:now).and_return(@release_time)
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"

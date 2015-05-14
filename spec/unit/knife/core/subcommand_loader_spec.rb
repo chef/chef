@@ -24,7 +24,7 @@ describe Chef::Knife::SubcommandLoader do
   let(:plugin_dir) { File.join(home, '.chef', 'plugins', 'knife') }
   
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
     Chef::Util::PathHelper.class_variable_set(:@@home_dir, home) 
   end
 
