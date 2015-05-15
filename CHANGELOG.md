@@ -6,6 +6,8 @@
   `with_login` flag now correctly does the magic on unix to simulate a login
   shell for a user (secondary groups, environment variables, set primary group and
   generally emulate `su -`).
+* went back to setsid() to drop the controlling tty, fixed old AIX issue with
+  getpgid() via avoiding calling getpgid().
 
 ## Release: 2.0.1
 
@@ -14,7 +16,7 @@
 
 ## Release: 2.0.0
 
-* remove LC_ALL=C default setting, consumers should now set this if they
+* remove `LC_ALL=C` default setting, consumers should now set this if they
   still need it.
 * Change the minimum required version of Ruby to >= 1.9.3.
 
