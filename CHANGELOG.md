@@ -35,6 +35,7 @@
 * [pr#3336](https://github.com/chef/chef/pull/3336) Remote file understands UNC paths
 * [pr#3269](https://github.com/chef/chef/pull/3269): Deprecate automatic recipe
   DSL for classes in `Chef::Resource`
+* [pr#3360](https://github.com/chef/chef/pull/3360): Add check_resource_semantics! lifecycle method to provider
 
 ## 12.3.0
 
