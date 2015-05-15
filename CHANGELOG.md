@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+* [**BackSlasher**:](https://github.com/BackSlasher)
+  `with_login` flag now correctly does the magic on unix to simulate a login
+  shell for a user (secondary groups, environment variables, set primary group and
+  generally emulate `su -`).
+
 ## Release: 2.0.1
 
 * add buffering to the child process status pipe to fix chef-client deadlocks
