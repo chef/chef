@@ -120,7 +120,11 @@ class Chef
 
         if @exception || error
           errors = [@exception, error].uniq.compact
-          errors_messages = errors.map  { |err| "#{err.class.to_s}: #{err.message}\n#{err.backtrace.join("\n")}" }
+          errors_messages = errors.map  do |err|
+            msg = "#{err.class.to_s}: #{err.message}"
+            msg << "\n#{err.backtrace.join("\n")}" if err.backtrace
+            msg
+          end
           run_data[:error] = errors_messages.join("\n")
         end
 
