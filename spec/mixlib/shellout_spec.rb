@@ -27,25 +27,72 @@ describe Mixlib::ShellOut do
     let(:cmd) { 'apt-get install chef' }
 
     it "should set the command" do
-      subject.command.should eql(cmd)
+      expect(subject.command).to eql(cmd)
     end
 
     context 'with default settings' do
-      its(:cwd) { should be_nil }
-      its(:user) { should be_nil }
-      its(:with_logon) { should be_nil }
-      its(:login) { should be_nil }
-      its(:domain) { should be_nil }
-      its(:password) { should be_nil }
-      its(:group) { should be_nil }
-      its(:umask) { should be_nil }
-      its(:timeout) { should eql(600) }
-      its(:valid_exit_codes) { should eql([0]) }
-      its(:live_stream) { should be_nil }
-      its(:input) { should be_nil }
+      describe '#cwd' do
+        subject { super().cwd }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#user' do
+        subject { super().user }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#with_logon' do
+        subject { super().with_logon }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#login' do
+        subject { super().login }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#domain' do
+        subject { super().domain }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#password' do
+        subject { super().password }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#group' do
+        subject { super().group }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#umask' do
+        subject { super().umask }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#timeout' do
+        subject { super().timeout }
+        it { is_expected.to eql(600) }
+      end
+
+      describe '#valid_exit_codes' do
+        subject { super().valid_exit_codes }
+        it { is_expected.to eql([0]) }
+      end
+
+      describe '#live_stream' do
+        subject { super().live_stream }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#input' do
+        subject { super().input }
+        it { is_expected.to be_nil }
+      end
 
       it "should not set any default environmental variables" do
-        shell_cmd.environment.should == {}
+        expect(shell_cmd.environment).to eq({})
       end
     end
 
@@ -61,14 +108,14 @@ describe Mixlib::ShellOut do
         let(:value) { 'root' }
 
         it "should set the user" do
-          should eql(value)
+          is_expected.to eql(value)
         end
 
         # TODO add :unix_only
         context 'with an integer value for user' do
           let(:value) { 0 }
           it "should use the user-supplied uid" do
-            shell_cmd.uid.should eql(value)
+            expect(shell_cmd.uid).to eql(value)
           end
         end
 
@@ -81,7 +128,7 @@ describe Mixlib::ShellOut do
           let(:user_info) { Etc.getpwent }
 
           it "should compute the uid of the user", :unix_only do
-            shell_cmd.uid.should eql(expected_uid)
+            expect(shell_cmd.uid).to eql(expected_uid)
           end
         end
       end
@@ -91,7 +138,7 @@ describe Mixlib::ShellOut do
         let(:value) { 'root' }
 
         it "should set the with_logon" do
-          should eql(value)
+          is_expected.to eql(value)
         end
       end
 
@@ -100,7 +147,7 @@ describe Mixlib::ShellOut do
         let(:value) { true }
 
         it "should set the login" do
-          should eql(value)
+          is_expected.to eql(value)
         end
       end
 
@@ -109,7 +156,7 @@ describe Mixlib::ShellOut do
         let(:value) { 'localhost' }
 
         it "should set the domain" do
-          should eql(value)
+          is_expected.to eql(value)
         end
       end
 
@@ -118,7 +165,7 @@ describe Mixlib::ShellOut do
         let(:value) { 'vagrant' }
 
         it "should set the password" do
-          should eql(value)
+          is_expected.to eql(value)
         end
       end
 
@@ -127,14 +174,14 @@ describe Mixlib::ShellOut do
         let(:value) { 'wheel' }
 
         it "should set the group" do
-          should eql(value)
+          is_expected.to eql(value)
         end
 
         # TODO add :unix_only
         context 'with integer value for group' do
           let(:value) { 0 }
           it "should use the user-supplied gid" do
-            shell_cmd.gid.should eql(value)
+            expect(shell_cmd.gid).to eql(value)
           end
         end
 
@@ -145,7 +192,7 @@ describe Mixlib::ShellOut do
           let(:group_info) { Etc.getgrent }
 
           it "should compute the gid of the user", :unix_only do
-            shell_cmd.gid.should eql(expected_gid)
+            expect(shell_cmd.gid).to eql(expected_gid)
           end
         end
       end
@@ -157,7 +204,7 @@ describe Mixlib::ShellOut do
           let(:value) { 007555}
 
           it 'should set the umask' do
-            should eql(value)
+            is_expected.to eql(value)
           end
         end
 
@@ -165,7 +212,7 @@ describe Mixlib::ShellOut do
           let(:value) { 2925 }
 
           it 'should sets the umask' do
-            should eql(005555)
+            is_expected.to eql(005555)
           end
         end
 
@@ -173,7 +220,7 @@ describe Mixlib::ShellOut do
           let(:value) { '7777' }
 
           it 'should sets the umask' do
-            should eql(007777)
+            is_expected.to eql(007777)
           end
         end
       end
@@ -183,7 +230,7 @@ describe Mixlib::ShellOut do
         let(:value) { 10 }
 
         it 'should set the read timeout' do
-          should eql(value)
+          is_expected.to eql(value)
         end
       end
 
@@ -192,7 +239,7 @@ describe Mixlib::ShellOut do
         let(:value) { [0, 23, 42] }
 
         it "should set the valid exit codes" do
-          should eql(value)
+          is_expected.to eql(value)
         end
       end
 
@@ -206,15 +253,15 @@ describe Mixlib::ShellOut do
         end
 
         it "live stream should return the stream used for live stdout and live stderr" do
-          shell_cmd.live_stream.should eql(stream)
+          expect(shell_cmd.live_stream).to eql(stream)
         end
 
         it "should set the live stdout stream" do
-          shell_cmd.live_stderr.should eql(stream)
+          expect(shell_cmd.live_stderr).to eql(stream)
         end
 
         it "should set the live stderr stream" do
-          shell_cmd.live_stderr.should eql(stream)
+          expect(shell_cmd.live_stderr).to eql(stream)
         end
       end
 
@@ -231,15 +278,15 @@ describe Mixlib::ShellOut do
         end
 
         it "live_stream should return nil" do
-          shell_cmd.live_stream.should be_nil
+          expect(shell_cmd.live_stream).to be_nil
         end
 
         it "should set the live stdout" do
-          shell_cmd.live_stdout.should eql(stdout_stream)
+          expect(shell_cmd.live_stdout).to eql(stdout_stream)
         end
 
         it "should set the live stderr" do
-          shell_cmd.live_stderr.should eql(stderr_stream)
+          expect(shell_cmd.live_stderr).to eql(stderr_stream)
         end
       end
 
@@ -254,15 +301,15 @@ describe Mixlib::ShellOut do
         end
 
         it "should return nil" do
-          should be_nil
+          is_expected.to be_nil
         end
 
         it "should set the live stdout" do
-          shell_cmd.live_stdout.should eql(stream)
+          expect(shell_cmd.live_stdout).to eql(stream)
         end
 
         it "should set the live stderr" do
-          shell_cmd.live_stderr.should eql(nil)
+          expect(shell_cmd.live_stderr).to eql(nil)
         end
       end
 
@@ -271,7 +318,7 @@ describe Mixlib::ShellOut do
         let(:value) { "Random content #{rand(1000000)}" }
 
         it "should set the input" do
-          should eql(value)
+          is_expected.to eql(value)
         end
       end
     end
@@ -292,32 +339,50 @@ describe Mixlib::ShellOut do
           double("Etc::Group", :name=>'rats', :passwd=>'x', :gid=>43, :mem=>['ratbert']),
           double("Etc::Group", :name=>'dilbertpets', :passwd=>'x', :gid=>700, :mem=>['catbert', 'ratbert']),
         ]
-        Etc.stub(:getpwuid).with(1005) {catbert_user}
-        Etc.stub(:getpwnam).with('catbert') {catbert_user}
-        shell_cmd.stub(:all_seconderies) {group_double}
+        allow(Etc).to receive(:getpwuid).with(1005) {catbert_user}
+        allow(Etc).to receive(:getpwnam).with('catbert') {catbert_user}
+        allow(shell_cmd).to receive(:all_seconderies) {group_double}
       end
 
       # Setting the user by name should change the uid
       context 'when setting user by name' do
         before(:each){ shell_cmd.user='catbert' }
-          its(:uid) { should eq(uid) }
+          describe '#uid' do
+            subject { super().uid }
+            it { is_expected.to eq(uid) }
+          end
       end
 
       context 'when setting user by id' do
         before(:each){shell_cmd.user=uid}
         # Setting the user by uid should change the uid
         #it 'should set the uid' do
-        its(:uid) { should eq(uid) }
+
+        describe '#uid' do
+          subject { super().uid }
+          it { is_expected.to eq(uid) }
+        end
         #end
         # Setting the user without a different gid should change the gid to 1002
-        its(:gid) { should eq(gid) }
+
+        describe '#gid' do
+          subject { super().gid }
+          it { is_expected.to eq(gid) }
+        end
         # Setting the user and the group (to 43) should change the gid to 43
         context 'when setting the group manually' do
           before(:each){shell_cmd.group=43}
-          its(:gid) {should eq(43)}
+
+          describe '#gid' do
+            subject { super().gid }
+            it {is_expected.to eq(43)}
+          end
         end
         # Setting the user should set the env variables
-	its(:process_environment) { should eq ({'HOME'=>dir, 'SHELL'=>shell, 'USER'=>'catbert', 'LOGNAME'=>'catbert', 'PATH'=>path, 'IFS'=>"\t\n"}) }
+	describe '#process_environment' do
+	  subject { super().process_environment }
+	  it { is_expected.to eq ({'HOME'=>dir, 'SHELL'=>shell, 'USER'=>'catbert', 'LOGNAME'=>'catbert', 'PATH'=>path, 'IFS'=>"\t\n"}) }
+	end
         # Setting the user with overriding env variables should override
 	context 'when adding environment variables' do
 	  before(:each){shell_cmd.environment={'PATH'=>'/lord:/of/the/dance', 'CUSTOM'=>'costume'}}
@@ -330,12 +395,15 @@ describe Mixlib::ShellOut do
 	  end
 	end
         # Setting the user should set secondary groups
-	its(:sgids) { should =~ [52,700] }
+	describe '#sgids' do
+	  subject { super().sgids }
+	  it { is_expected.to match_array([52,700]) }
+	end
       end
       # Setting login with user should throw errors
       context 'when not setting a user id' do
         it 'should fail showing an error' do
-          lambda { Mixlib::ShellOut.new('hostname', {login:true}) }.should raise_error(Mixlib::ShellOut::InvalidCommandOption)
+          expect { Mixlib::ShellOut.new('hostname', {login:true}) }.to raise_error(Mixlib::ShellOut::InvalidCommandOption)
         end
       end
     end
@@ -361,43 +429,43 @@ describe Mixlib::ShellOut do
       let(:input) { 1.upto(10).map { "Data #{rand(100000)}" }.join("\n") }
 
       it "should set the working directory" do
-        shell_cmd.cwd.should eql(cwd)
+        expect(shell_cmd.cwd).to eql(cwd)
       end
 
       it "should set the user" do
-        shell_cmd.user.should eql(user)
+        expect(shell_cmd.user).to eql(user)
       end
 
       it "should set the with_logon" do
-        shell_cmd.with_logon.should eql(with_logon)
+        expect(shell_cmd.with_logon).to eql(with_logon)
       end
 
       it "should set the login" do
-        shell_cmd.login.should eql(login)
+        expect(shell_cmd.login).to eql(login)
       end
 
       it "should set the domain" do
-        shell_cmd.domain.should eql(domain)
+        expect(shell_cmd.domain).to eql(domain)
       end
 
       it "should set the password" do
-        shell_cmd.password.should eql(password)
+        expect(shell_cmd.password).to eql(password)
       end
 
       it "should set the group" do
-        shell_cmd.group.should eql(group)
+        expect(shell_cmd.group).to eql(group)
       end
 
       it "should set the umask" do
-        shell_cmd.umask.should eql(002222)
+        expect(shell_cmd.umask).to eql(002222)
       end
 
       it "should set the timout" do
-        shell_cmd.timeout.should eql(timeout)
+        expect(shell_cmd.timeout).to eql(timeout)
       end
 
       it "should add environment settings to the default" do
-        shell_cmd.environment.should eql({'RUBY_OPTS' => '-w'})
+        expect(shell_cmd.environment).to eql({'RUBY_OPTS' => '-w'})
       end
 
       context 'when setting custom environments' do
@@ -405,7 +473,7 @@ describe Mixlib::ShellOut do
           let(:options) { { :env => environment } }
 
           it "should also set the enviroment" do
-            shell_cmd.environment.should eql({'RUBY_OPTS' => '-w'})
+            expect(shell_cmd.environment).to eql({'RUBY_OPTS' => '-w'})
           end
         end
 
@@ -413,7 +481,7 @@ describe Mixlib::ShellOut do
           let(:options) { { :environment => nil } }
 
           it "should not set any environment" do
-            shell_cmd.environment.should == {}
+            expect(shell_cmd.environment).to eq({})
           end
         end
 
@@ -421,21 +489,21 @@ describe Mixlib::ShellOut do
           let(:options) { { :env => nil } }
 
           it "should not set any environment" do
-            shell_cmd.environment.should eql({})
+            expect(shell_cmd.environment).to eql({})
           end
         end
       end
 
       it "should set valid exit codes" do
-        shell_cmd.valid_exit_codes.should eql(valid_exit_codes)
+        expect(shell_cmd.valid_exit_codes).to eql(valid_exit_codes)
       end
 
       it "should set the live stream" do
-        shell_cmd.live_stream.should eql(stream)
+        expect(shell_cmd.live_stream).to eql(stream)
       end
 
       it "should set the input" do
-        shell_cmd.input.should eql(input)
+        expect(shell_cmd.input).to eql(input)
       end
 
       context 'with an invalid option' do
@@ -444,7 +512,7 @@ describe Mixlib::ShellOut do
         let(:exception_message) { "option ':frab' is not a valid option for Mixlib::ShellOut" }
 
         it "should raise InvalidCommandOPtion" do
-          lambda { shell_cmd }.should raise_error(invalid_option_exception, exception_message)
+          expect { shell_cmd }.to raise_error(invalid_option_exception, exception_message)
         end
       end
     end
@@ -456,7 +524,7 @@ describe Mixlib::ShellOut do
         let(:options) { nil }
 
         it "should set the command to the array of command and args" do
-          shell_cmd.command.should eql(cmd)
+          expect(shell_cmd.command).to eql(cmd)
         end
       end
 
@@ -464,13 +532,13 @@ describe Mixlib::ShellOut do
         let(:options) { {:cwd => '/tmp', :user => 'nobody', :password => "something"} }
 
         it "should set the command to the array of command and args" do
-          shell_cmd.command.should eql(cmd)
+          expect(shell_cmd.command).to eql(cmd)
         end
 
         it "should evaluate the options" do
-          shell_cmd.cwd.should eql('/tmp')
-          shell_cmd.user.should eql('nobody')
-          shell_cmd.password.should eql('something')
+          expect(shell_cmd.cwd).to eql('/tmp')
+          expect(shell_cmd.user).to eql('nobody')
+          expect(shell_cmd.password).to eql('something')
         end
       end
     end
@@ -493,7 +561,7 @@ describe Mixlib::ShellOut do
         let(:cmd) { 'pwd' }
 
         it "should chdir to the working directory" do
-          should eql(fully_qualified_cwd)
+          is_expected.to eql(fully_qualified_cwd)
         end
       end
 
@@ -502,7 +570,7 @@ describe Mixlib::ShellOut do
         let(:cmd) { 'echo %cd%' }
 
         it "should chdir to the working directory" do
-          should eql(fully_qualified_cwd)
+          is_expected.to eql(fully_qualified_cwd)
         end
       end
     end
@@ -523,7 +591,7 @@ describe Mixlib::ShellOut do
       context 'without specifying environment' do
         let(:options) { nil }
         it "should no longer use the C locale by default" do
-          should eql("en_US.UTF-8")
+          is_expected.to eql("en_US.UTF-8")
         end
       end
 
@@ -531,7 +599,7 @@ describe Mixlib::ShellOut do
         let(:locale) { 'es' }
 
         it "should use the requested locale" do
-          should eql(locale)
+          is_expected.to eql(locale)
         end
       end
 
@@ -540,13 +608,13 @@ describe Mixlib::ShellOut do
 
         context 'when running under Unix', :unix_only do
           it "should unset the process's locale" do
-            should eql("")
+            is_expected.to eql("")
           end
         end
 
         context 'when running under Windows', :windows_only do
           it "should unset process's locale" do
-            should eql('%LC_ALL%')
+            is_expected.to eql('%LC_ALL%')
           end
         end
       end
@@ -561,17 +629,17 @@ describe Mixlib::ShellOut do
         # to match how whoami returns the information
 
         it "should run as current user" do
-          running_user.should eql("#{ENV['COMPUTERNAME'].downcase}\\#{ENV['USERNAME'].downcase}")
+          expect(running_user).to eql("#{ENV['COMPUTERNAME'].downcase}\\#{ENV['USERNAME'].downcase}")
         end
       end
 
       context "when user is specified" do
         before do
-          system("net user #{user} #{password} /add").should == true
+          expect(system("net user #{user} #{password} /add")).to eq(true)
         end
 
         after do
-          system("net user #{user} /delete").should == true
+          expect(system("net user #{user} /delete")).to eq(true)
         end
 
         let(:user) { 'testuser' }
@@ -579,7 +647,7 @@ describe Mixlib::ShellOut do
         let(:options) { { :user => user, :password => password } }
 
         it "should run as specified user" do
-          running_user.should eql("#{ENV['COMPUTERNAME'].downcase}\\#{user}")
+          expect(running_user).to eql("#{ENV['COMPUTERNAME'].downcase}\\#{user}")
         end
       end
     end
@@ -591,13 +659,13 @@ describe Mixlib::ShellOut do
 
       it "should copy the child's stdout to the live stream" do
         shell_cmd.run_command
-        stream.string.should include("hello#{LINE_ENDING}")
+        expect(stream.string).to include("hello#{LINE_ENDING}")
       end
 
       context "with default live stderr" do
         it "should copy the child's stderr to the live stream" do
           shell_cmd.run_command
-          stream.string.should include("world#{LINE_ENDING}")
+          expect(stream.string).to include("world#{LINE_ENDING}")
         end
       end
 
@@ -605,7 +673,7 @@ describe Mixlib::ShellOut do
         it "should not copy the child's stderr to the live stream" do
           shell_cmd.live_stderr = nil
           shell_cmd.run_command
-          stream.string.should_not include("world#{LINE_ENDING}")
+          expect(stream.string).not_to include("world#{LINE_ENDING}")
         end
       end
 
@@ -615,13 +683,13 @@ describe Mixlib::ShellOut do
         it "should not copy the child's stderr to the live stream" do
           shell_cmd.live_stderr = stderr_stream
           shell_cmd.run_command
-          stream.string.should_not include("world#{LINE_ENDING}")
+          expect(stream.string).not_to include("world#{LINE_ENDING}")
         end
 
         it "should copy the child's stderr to the live stderr stream" do
           shell_cmd.live_stderr = stderr_stream
           shell_cmd.run_command
-          stderr_stream.string.should include("world#{LINE_ENDING}")
+          expect(stderr_stream.string).to include("world#{LINE_ENDING}")
         end
       end
     end
@@ -634,7 +702,7 @@ describe Mixlib::ShellOut do
       let(:options) { { :input => input } }
 
       it "should copy the input to the child's stdin" do
-        should eql("hello#{LINE_ENDING}")
+        is_expected.to eql("hello#{LINE_ENDING}")
       end
     end
 
@@ -655,7 +723,7 @@ describe Mixlib::ShellOut do
           let(:script_content) { 'echo blah' }
 
           it 'should execute' do
-            should eql('blah')
+            is_expected.to eql('blah')
           end
         end
 
@@ -665,7 +733,7 @@ describe Mixlib::ShellOut do
           let(:argument) { rand(10000).to_s }
 
           it 'should execute' do
-            should eql(argument)
+            is_expected.to eql(argument)
           end
 
           context 'with multiple quotes in the command and args' do
@@ -673,7 +741,7 @@ describe Mixlib::ShellOut do
               let(:argument) { "\"Random #{rand(10000)}\"" }
 
               it 'should execute' do
-                should eql(argument)
+                is_expected.to eql(argument)
               end
             end
 
@@ -689,7 +757,7 @@ describe Mixlib::ShellOut do
               let(:try_ruby) { lambda { |path| "#{path}\\ruby.exe" if File.executable? "#{path}\\ruby.exe" } }
 
               it 'should execute' do
-                should eql(expected_output)
+                is_expected.to eql(expected_output)
               end
             end
           end
@@ -705,7 +773,7 @@ describe Mixlib::ShellOut do
         let(:cmd) { "echo #{echotext}" }
 
         it 'should execute' do
-          should eql(echotext)
+          is_expected.to eql(echotext)
         end
       end
 
@@ -716,7 +784,7 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { "print \"#{special_characters}\"" }
 
         it 'should execute' do
-          should eql(special_characters)
+          is_expected.to eql(special_characters)
         end
       end
 
@@ -726,7 +794,7 @@ describe Mixlib::ShellOut do
         let(:cmd) { ruby_eval.call("print \"#{backslashes}\"") }
 
         it 'should execute' do
-          should eql("\"\\")
+          is_expected.to eql("\"\\")
         end
       end
 
@@ -736,11 +804,11 @@ describe Mixlib::ShellOut do
         let(:cmd) { ruby_eval.call(input_script) + " | " + ruby_eval.call(output_script) }
 
         it 'should execute' do
-          stdout.should eql('4')
+          expect(stdout).to eql('4')
         end
 
         it 'should handle stderr' do
-          stderr.should eql('false')
+          expect(stderr).to eql('false')
         end
       end
 
@@ -749,15 +817,15 @@ describe Mixlib::ShellOut do
         let(:cmd) { ruby_eval.call(code) + " > #{dump_file}" }
 
         it 'should execute' do
-          stdout.should eql('')
+          expect(stdout).to eql('')
         end
 
         it 'should handle stderr' do
-          stderr.should eql('false')
+          expect(stderr).to eql('false')
         end
 
         it 'should write to file pipe' do
-          dump_file_content.should eql('true')
+          expect(dump_file_content).to eql('true')
         end
       end
 
@@ -774,11 +842,11 @@ describe Mixlib::ShellOut do
         let(:write_file) { lambda { |f| f.write(file_content) } }
 
         it 'should execute' do
-          stdout.should eql(file_content)
+          expect(stdout).to eql(file_content)
         end
 
         it 'should handle stderr' do
-          stderr.should eql('false')
+          expect(stderr).to eql('false')
         end
       end
 
@@ -787,11 +855,11 @@ describe Mixlib::ShellOut do
         let(:cmd) { ruby_eval.call(code) + " > #{dump_file} 2>&1" }
 
         it 'should execute' do
-          stdout.should eql('')
+          expect(stdout).to eql('')
         end
 
         it 'should write to file pipe' do
-          dump_file_content.should eql('truefalse')
+          expect(dump_file_content).to eql('truefalse')
         end
       end
 
@@ -800,7 +868,7 @@ describe Mixlib::ShellOut do
         let(:cmd) { ruby_eval.call('print "foo"') + ' && ' + ruby_eval.call('print "bar"') }
 
         it 'should execute' do
-          should eql('foobar')
+          is_expected.to eql('foobar')
         end
       end
 
@@ -808,11 +876,11 @@ describe Mixlib::ShellOut do
         let(:cmd) { ruby_eval.call('print "foo"; exit 1') + ' || ' + ruby_eval.call('print "bar"') }
 
         it 'should execute' do
-          stdout.should eql('foobar')
+          expect(stdout).to eql('foobar')
         end
 
         it 'should exit with code 0' do
-          exit_status.should eql(0)
+          expect(exit_status).to eql(0)
         end
       end
     end
@@ -824,11 +892,11 @@ describe Mixlib::ShellOut do
         let(:exit_code) { 0 }
 
         it "should not raise error" do
-          lambda { executed_cmd.error! }.should_not raise_error
+          expect { executed_cmd.error! }.not_to raise_error
         end
 
         it "should set the exit status of the command" do
-          exit_status.should eql(exit_code)
+          expect(exit_status).to eql(exit_code)
         end
       end
 
@@ -837,19 +905,19 @@ describe Mixlib::ShellOut do
         let(:exception_message_format) { Regexp.escape(executed_cmd.format_for_exception) }
 
         it "should raise ShellCommandFailed" do
-          lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+          expect { executed_cmd.error! }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
         end
 
         it "includes output with exceptions from #error!" do
           begin
             executed_cmd.error!
           rescue Mixlib::ShellOut::ShellCommandFailed => e
-            e.message.should match(exception_message_format)
+            expect(e.message).to match(exception_message_format)
           end
         end
 
         it "should set the exit status of the command" do
-          exit_status.should eql(exit_code)
+          expect(exit_status).to eql(exit_code)
         end
       end
 
@@ -862,11 +930,11 @@ describe Mixlib::ShellOut do
           let(:exit_code) { 42 }
 
           it "should not raise error" do
-            lambda { executed_cmd.error! }.should_not raise_error
+            expect { executed_cmd.error! }.not_to raise_error
           end
 
           it "should set the exit status of the command" do
-            exit_status.should eql(exit_code)
+            expect(exit_status).to eql(exit_code)
           end
         end
 
@@ -875,11 +943,11 @@ describe Mixlib::ShellOut do
           let(:exit_code) { 2 }
 
           it "should raise ShellCommandFailed" do
-            lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+            expect { executed_cmd.error! }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
           end
 
           it "should set the exit status of the command" do
-            exit_status.should eql(exit_code)
+            expect(exit_status).to eql(exit_code)
           end
 
           context 'with input data' do
@@ -887,11 +955,11 @@ describe Mixlib::ShellOut do
             let(:input) { "Random data #{rand(1000000)}" }
 
             it "should raise ShellCommandFailed" do
-              lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+              expect { executed_cmd.error! }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
             end
 
             it "should set the exit status of the command" do
-              exit_status.should eql(exit_code)
+              expect(exit_status).to eql(exit_code)
             end
           end
         end
@@ -901,11 +969,11 @@ describe Mixlib::ShellOut do
           let(:exit_code) { 0 }
 
           it "should raise ShellCommandFailed" do
-            lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+            expect { executed_cmd.error! }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
           end
 
           it "should set the exit status of the command" do
-            exit_status.should eql(exit_code)
+            expect(exit_status).to eql(exit_code)
           end
         end
       end
@@ -914,7 +982,7 @@ describe Mixlib::ShellOut do
         let(:exit_code) { 0 }
 
         it "should raise ShellCommandFailed" do
-          lambda { executed_cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+          expect { executed_cmd.invalid!("I expected this to exit 42, not 0") }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
         end
       end
 
@@ -923,7 +991,7 @@ describe Mixlib::ShellOut do
           let(:exit_code) { 2 }
 
           it "should return true" do
-            executed_cmd.error?.should be_true
+            expect(executed_cmd.error?).to be_truthy
           end
         end
 
@@ -931,7 +999,7 @@ describe Mixlib::ShellOut do
           let(:exit_code) { 0 }
 
           it "should return false" do
-            executed_cmd.error?.should be_false
+            expect(executed_cmd.error?).to be_falsey
           end
         end
       end
@@ -945,8 +1013,8 @@ describe Mixlib::ShellOut do
         # sure that stderr and stdout gets collected without stepping
         # on each other.
         it "should collect all of STDOUT and STDERR" do
-          stderr.should eql("hello#{LINE_ENDING}")
-          stdout.should eql("world#{LINE_ENDING}")
+          expect(stderr).to eql("hello#{LINE_ENDING}")
+          expect(stdout).to eql("world#{LINE_ENDING}")
         end
       end
 
@@ -954,11 +1022,11 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { "exit if fork; 10.times { sleep 1 }" }
 
         it "should not hang" do
-          proc do
+          expect do
             Timeout.timeout(2) do
               executed_cmd
             end
-          end.should_not raise_error
+          end.not_to raise_error
         end
       end
 
@@ -983,13 +1051,13 @@ describe Mixlib::ShellOut do
               created_procs += 1
             end
           end
-          created_procs.should == 100
+          expect(created_procs).to eq(100)
           reaped_procs = 0
           begin
             loop { Process.wait(-1); reaped_procs += 1 }
           rescue Errno::ECHILD
           end
-          reaped_procs.should == 0
+          expect(reaped_procs).to eq(0)
         end
       end
 
@@ -1005,7 +1073,7 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { "fd = File.for_fd(#{@test_file.to_i}) rescue nil; puts fd.nil?" }
 
         it "should not see file descriptors of the parent" do
-          stdout.chomp.should eql("true")
+          expect(stdout.chomp).to eql("true")
         end
       end
 
@@ -1013,7 +1081,7 @@ describe Mixlib::ShellOut do
         let(:cmd) { [ 'exit' ] }
 
         it "handles ESRCH from getpgid of a zombie", :unix_only do
-          Process.stub(:setsid) { exit!(4) }
+          allow(Process).to receive(:setsid) { exit!(4) }
 
           # we used to have race conditions if the child exited and zombied
           # quickly which would cause an exception.  we no longer call getpgrp()
@@ -1038,7 +1106,7 @@ describe Mixlib::ShellOut do
 
           it "should raise CommandTimeout" do
             Timeout::timeout(5) do
-              lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+              expect { executed_cmd }.to raise_error(Mixlib::ShellOut::CommandTimeout)
             end
           end
         end
@@ -1060,15 +1128,15 @@ describe Mixlib::ShellOut do
           end
 
           it "should raise CommandTimeout" do
-            lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+            expect { executed_cmd }.to raise_error(Mixlib::ShellOut::CommandTimeout)
           end
 
           it "should ask the process nicely to exit" do
             # note: let blocks don't correctly memoize if an exception is raised,
             # so can't use executed_cmd
-            lambda { shell_cmd.run_command }.should raise_error(Mixlib::ShellOut::CommandTimeout)
-            shell_cmd.stdout.should include("got term")
-            shell_cmd.exitstatus.should == 123
+            expect { shell_cmd.run_command }.to raise_error(Mixlib::ShellOut::CommandTimeout)
+            expect(shell_cmd.stdout).to include("got term")
+            expect(shell_cmd.exitstatus).to eq(123)
           end
 
           context "and the child is unresponsive" do
@@ -1083,9 +1151,9 @@ describe Mixlib::ShellOut do
             it "should KILL the wayward child" do
               # note: let blocks don't correctly memoize if an exception is raised,
               # so can't use executed_cmd
-              lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
-              shell_cmd.stdout.should include("nanana cant hear you")
-              shell_cmd.status.termsig.should == 9
+              expect { shell_cmd.run_command}.to raise_error(Mixlib::ShellOut::CommandTimeout)
+              expect(shell_cmd.stdout).to include("nanana cant hear you")
+              expect(shell_cmd.status.termsig).to eq(9)
             end
 
             context "and a logger is configured" do
@@ -1096,12 +1164,12 @@ describe Mixlib::ShellOut do
               it "should log messages about killing the child process" do
                 # note: let blocks don't correctly memoize if an exception is raised,
                 # so can't use executed_cmd
-                lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
-                shell_cmd.stdout.should include("nanana cant hear you")
-                shell_cmd.status.termsig.should == 9
+                expect { shell_cmd.run_command}.to raise_error(Mixlib::ShellOut::CommandTimeout)
+                expect(shell_cmd.stdout).to include("nanana cant hear you")
+                expect(shell_cmd.status.termsig).to eq(9)
 
-                log_output.string.should include("Command exceeded allowed execution time, sending TERM")
-                log_output.string.should include("Command exceeded allowed execution time, sending KILL")
+                expect(log_output.string).to include("Command exceeded allowed execution time, sending TERM")
+                expect(log_output.string).to include("Command exceeded allowed execution time, sending KILL")
               end
 
             end
@@ -1123,9 +1191,9 @@ describe Mixlib::ShellOut do
             it "should TERM the wayward child and grandchild" do
               # note: let blocks don't correctly memoize if an exception is raised,
               # so can't use executed_cmd
-              lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
-              shell_cmd.stdout.should include("got term in child")
-              shell_cmd.stdout.should include("got term in grandchild")
+              expect { shell_cmd.run_command}.to raise_error(Mixlib::ShellOut::CommandTimeout)
+              expect(shell_cmd.stdout).to include("got term in child")
+              expect(shell_cmd.stdout).to include("got term in grandchild")
             end
 
           end
@@ -1146,7 +1214,7 @@ describe Mixlib::ShellOut do
             it "should TERM the wayward child and grandchild, then KILL whoever is left" do
               # note: let blocks don't correctly memoize if an exception is raised,
               # so can't use executed_cmd
-              lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+              expect { shell_cmd.run_command}.to raise_error(Mixlib::ShellOut::CommandTimeout)
 
               begin
 
@@ -1157,8 +1225,8 @@ describe Mixlib::ShellOut do
                 child_pgid = shell_cmd.send(:child_pgid)
                 initial_process_listing = `ps -j`
 
-                shell_cmd.stdout.should include("got term in child")
-                shell_cmd.stdout.should include("got term in grandchild")
+                expect(shell_cmd.stdout).to include("got term in child")
+                expect(shell_cmd.stdout).to include("got term in grandchild")
 
                 kill_return_val = Process.kill(:INT, child_pgid) # should raise ESRCH
                 # AIX - kill returns code > 0 for error, where as other platforms return -1. Ruby code signal.c treats < 0 as error and raises exception and hence fails on AIX. So we check the return code for assertions since ruby wont raise an error here.
@@ -1186,7 +1254,7 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { 'print("X" * 16 * 1024); print("." * 1024)' }
 
         it "should still reads all of the output" do
-          stdout.should match(/X{16384}\.{1024}/)
+          expect(stdout).to match(/X{16384}\.{1024}/)
         end
       end
 
@@ -1194,11 +1262,11 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { 'exit 0' }
 
         it 'should return an empty string for stdout' do
-          stdout.should eql('')
+          expect(stdout).to eql('')
         end
 
         it 'should return an empty string for stderr' do
-          stderr.should eql('')
+          expect(stderr).to eql('')
         end
       end
 
@@ -1207,7 +1275,7 @@ describe Mixlib::ShellOut do
         let(:options) { { :input => "Random data #{rand(100000)}" } }
 
         it 'should not hang or lose output' do
-          stdout.should eql("win#{LINE_ENDING}")
+          expect(stdout).to eql("win#{LINE_ENDING}")
         end
       end
 
@@ -1215,7 +1283,7 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { "STDOUT.close; sleep 0.5; STDERR.puts :win" }
 
         it 'should not hang or lose output' do
-          stderr.should eql("win#{LINE_ENDING}")
+          expect(stderr).to eql("win#{LINE_ENDING}")
         end
       end
 
@@ -1223,7 +1291,7 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { "STDERR.close; sleep 0.5; STDOUT.puts :win" }
 
         it 'should not hang or lose output' do
-          stdout.should eql("win#{LINE_ENDING}")
+          expect(stdout).to eql("win#{LINE_ENDING}")
         end
       end
 
@@ -1244,11 +1312,11 @@ describe Mixlib::ShellOut do
         let(:unclosed_pipes) { executed_cmd.send(:open_pipes) }
 
         it 'should not hang' do
-          stdout.should_not be_empty
+          expect(stdout).not_to be_empty
         end
 
         it 'should close all pipes', :unix_only do
-          unclosed_pipes.should be_empty
+          expect(unclosed_pipes).to be_empty
         end
       end
 
@@ -1260,7 +1328,7 @@ describe Mixlib::ShellOut do
         let(:input_size) { input.size }
 
         it 'should not hang' do
-          should eql(input_size)
+          is_expected.to eql(input_size)
         end
       end
 
@@ -1271,8 +1339,8 @@ describe Mixlib::ShellOut do
           let(:ruby_code) { %q{puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000} }
 
           it "should not deadlock" do
-            stdout.should eql(expected_output_with.call('f'))
-            stderr.should eql(expected_output_with.call('u'))
+            expect(stdout).to eql(expected_output_with.call('f'))
+            expect(stderr).to eql(expected_output_with.call('u'))
           end
         end
 
@@ -1280,8 +1348,8 @@ describe Mixlib::ShellOut do
           let(:ruby_code) { %q{STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000} }
 
           it "should not deadlock" do
-            stdout.should eql(expected_output_with.call('f'))
-            stderr.should eql(expected_output_with.call('u'))
+            expect(stdout).to eql(expected_output_with.call('f'))
+            expect(stderr).to eql(expected_output_with.call('u'))
           end
         end
       end
@@ -1299,8 +1367,8 @@ describe Mixlib::ShellOut do
           let(:input) { [ 'f' * multiplier, 'u' * multiplier, 'f' * multiplier, 'u' * multiplier ].join(LINE_ENDING) }
 
           it "should not deadlock" do
-            stdout.should eql(expected_output_with.call('f'))
-            stderr.should eql(expected_output_with.call('u'))
+            expect(stdout).to eql(expected_output_with.call('f'))
+            expect(stderr).to eql(expected_output_with.call('u'))
           end
         end
 
@@ -1308,8 +1376,8 @@ describe Mixlib::ShellOut do
           let(:input) { [ 'u' * multiplier, 'f' * multiplier, 'u' * multiplier, 'f' * multiplier ].join(LINE_ENDING) }
 
           it "should not deadlock" do
-            stdout.should eql(expected_output_with.call('f'))
-            stderr.should eql(expected_output_with.call('u'))
+            expect(stdout).to eql(expected_output_with.call('f'))
+            expect(stderr).to eql(expected_output_with.call('u'))
           end
         end
       end
@@ -1322,7 +1390,7 @@ describe Mixlib::ShellOut do
 
           # Should the exception be handled?
           it 'should raise error' do
-            lambda { executed_cmd }.should raise_error(Errno::EPIPE)
+            expect { executed_cmd }.to raise_error(Errno::EPIPE)
           end
         end
       end
@@ -1332,7 +1400,7 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { %q{puts "before"; sleep 0.5; puts "after"} }
 
         it 'should not hang or lose output' do
-          should eql("before#{LINE_ENDING}after#{LINE_ENDING}")
+          is_expected.to eql("before#{LINE_ENDING}after#{LINE_ENDING}")
         end
       end
 
@@ -1341,7 +1409,7 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { 'sleep 0.5; puts "missed_the_bus"' }
 
         it 'should not hang or lose output' do
-          should eql("missed_the_bus#{LINE_ENDING}")
+          is_expected.to eql("missed_the_bus#{LINE_ENDING}")
         end
       end
 
@@ -1353,7 +1421,7 @@ describe Mixlib::ShellOut do
         let(:options) { { :input => input } }
 
         it 'should not hang or lose output' do
-          should eql(input_size)
+          is_expected.to eql(input_size)
         end
       end
 
@@ -1362,7 +1430,7 @@ describe Mixlib::ShellOut do
 
         context 'when running under Unix', :unix_only do
           it "should recover the error message" do
-            lambda { executed_cmd }.should raise_error(Errno::ENOENT)
+            expect { executed_cmd }.to raise_error(Errno::ENOENT)
           end
 
           context 'with input' do
@@ -1370,12 +1438,12 @@ describe Mixlib::ShellOut do
             let(:input) { "Random input #{rand(1000000)}" }
 
             it "should recover the error message" do
-              lambda { executed_cmd }.should raise_error(Errno::ENOENT)
+              expect { executed_cmd }.to raise_error(Errno::ENOENT)
             end
           end
         end
 
-        pending 'when running under Windows', :windows_only
+        skip 'when running under Windows', :windows_only
       end
 
       context 'without input data' do
@@ -1385,7 +1453,7 @@ describe Mixlib::ShellOut do
           # If we don't have anything to send to the subprocess, we need to close
           # stdin so that the subprocess won't wait for input.
           it 'should close stdin' do
-            stdout.should eql("true")
+            expect(stdout).to eql("true")
           end
         end
       end
@@ -1404,7 +1472,7 @@ describe Mixlib::ShellOut do
 
       it "should format exception messages" do
         exception_output.each_with_index do |output_line, i|
-          output_line.should eql(expected_output[i])
+          expect(output_line).to eql(expected_output[i])
         end
       end
     end
@@ -1416,7 +1484,7 @@ describe Mixlib::ShellOut do
 
     context "when no user is set" do
       it "should run as current user" do
-        running_user.should eql(ENV["USER"])
+        expect(running_user).to eql(ENV["USER"])
       end
     end
 
@@ -1426,7 +1494,7 @@ describe Mixlib::ShellOut do
       let(:options) { { :user => user } }
 
       it "should run as specified user" do
-        running_user.should eql("#{user}")
+        expect(running_user).to eql("#{user}")
       end
     end
   end
