@@ -171,6 +171,7 @@ module Mixlib
       @cwd = nil
       @valid_exit_codes = [0]
       @terminate_reason = nil
+      @timeout = nil
 
       if command_args.last.is_a?(Hash)
         parse_options(command_args.pop)

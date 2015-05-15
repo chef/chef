@@ -106,6 +106,7 @@ module Mixlib
         propagate_pre_exec_failure
         get_child_pgid
 
+        @status = nil
         @result = nil
         @execution_time = 0
 
