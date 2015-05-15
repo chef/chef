@@ -24,8 +24,8 @@ require 'chef/provider'
 class Chef
   class Provider
     class Mount < Chef::Provider
-      Mount.provides :mount
-      
+      provides :mount
+
       include Chef::Mixin::ShellOut
 
       attr_accessor :unmount_retries
