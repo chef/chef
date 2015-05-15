@@ -74,7 +74,7 @@ class Chef
           if uri_scheme?(arg)
             @source = arg
           else
-            @source = ::File.absolute_path(arg).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
+            @source = Chef::Util::PathHelper.canonical_path(arg, false)
           end
         end
       end

@@ -63,9 +63,9 @@ describe Chef::Resource::WindowsPackage, "initialize" do
   end
 
   it "coverts a source to an absolute path" do
-    allow(::File).to receive(:absolute_path).and_return("c:\\Files\\frost.msi")
+    allow(::File).to receive(:absolute_path).and_return("c:\\files\\frost.msi")
     resource.source("frost.msi")
-    expect(resource.source).to eql "c:\\Files\\frost.msi"
+    expect(resource.source).to eql "c:\\files\\frost.msi"
   end
 
   it "converts slashes to backslashes in the source path" do
