@@ -79,6 +79,14 @@ class Chef
         end
       end
 
+      def checksum(arg=nil)
+        set_or_return(
+          :checksum,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
       def remote_file_attributes(arg=nil)
         set_or_return(
           :remote_file_attributes,

@@ -79,6 +79,11 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     expect(resource.source).to include("solitaire.msi")
   end
 
+  it "supports the checksum attribute" do
+    resource.checksum('somechecksum')
+    expect(resource.checksum).to eq('somechecksum')
+  end
+
   context 'when a URL is used' do
     let(:resource_source) { 'https://foo.bar/solitare.msi' }
     let(:resource) { Chef::Resource::WindowsPackage.new(resource_source) }

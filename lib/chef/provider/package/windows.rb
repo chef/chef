@@ -20,12 +20,14 @@ require 'chef/mixin/uris'
 require 'chef/resource/windows_package'
 require 'chef/provider/package'
 require 'chef/util/path_helper'
+require 'chef/mixin/checksum'
 
 class Chef
   class Provider
     class Package
       class Windows < Chef::Provider::Package
         include Chef::Mixin::Uris
+        include Chef::Mixin::Checksum
 
         provides :package, os: "windows"
         provides :windows_package, os: "windows"
@@ -81,7 +83,10 @@ class Chef
           if uri_scheme?(new_resource.source)
             download_source_file
             load_current_resource
+          else
+            validate_content!
           end
+
           super
         end
 
@@ -124,6 +129,7 @@ class Chef
         def source_resource
           @source_resource ||= Chef::Resource::RemoteFile.new(default_download_cache_path, run_context).tap do |r|
             r.source(new_resource.source)
+            r.checksum(new_resource.checksum)
             r.backup(false)
 
             if new_resource.remote_file_attributes
@@ -148,6 +154,16 @@ class Chef
             Chef::Util::PathHelper.cleanpath(new_resource.source)
           end
         end
+
+        def validate_content!
+          if new_resource.checksum
+            source_checksum = checksum(source_location)
+            if new_resource.checksum != source_checksum
+              raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(source_checksum))
+            end
+          end
+        end
+
       end
     end
   end
