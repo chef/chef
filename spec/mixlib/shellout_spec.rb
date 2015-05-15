@@ -1013,15 +1013,15 @@ describe Mixlib::ShellOut do
         let(:cmd) { [ 'exit' ] }
 
         it "handles ESRCH from getpgid of a zombie", :unix_only do
-          Process.stub(:setpgrp) { exit!(4) }
+          Process.stub(:setsid) { exit!(4) }
 
-          # there is a small race condition here if the child doesn't get
-          # scheduled and call exit! before the parent can call getpgid, so run
-          # this a few times to make sure we've created the reproduction case
-          # correctly.
+          # we used to have race conditions if the child exited and zombied
+          # quickly which would cause an exception.  we no longer call getpgrp()
+          # after setsid()/setpgrp() though so this race condition should no
+          # longer exist.  still test 5 times for it though.
           5.times do
             s = Mixlib::ShellOut.new(cmd)
-            s.run_command # should not raise Errno::ESRCH
+            s.run_command # should not raise Errno::ESRCH (or anything else)
           end
 
         end
