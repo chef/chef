@@ -21,6 +21,9 @@ require 'uri'
 class Chef
   module Mixin
     module Uris
+      # uri_scheme? returns true if the string starts with
+      # scheme://
+      # For example, it will match http://foo.bar.com
       def uri_scheme?(source)
         # From open-uri
         !!(%r{\A[A-Za-z][A-Za-z0-9+\-\.]*://} =~ source)
