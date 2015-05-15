@@ -30,6 +30,47 @@ module Mixlib
         # No options to validate, raise exceptions here if needed
       end
 
+      # Whether we're simulating a login shell
+      def using_login?
+        return login && user
+      end
+
+      # Helper method for sgids
+      def all_seconderies
+        ret = []
+        Etc.endgrent
+        while ( g = Etc.getgrent ) do
+          ret << g
+        end
+        Etc.endgrent
+        return ret
+      end
+
+      # The secondary groups that the subprocess will switch to.
+      # Currently valid only if login is used, and is set
+      # to the user's secondary groups
+      def sgids
+        return nil unless using_login?
+        user_name = Etc.getpwuid(uid).name
+        all_seconderies.select{|g| g.mem.include?(user_name)}.map{|g|g.gid}
+      end
+
+      # The environment variables that are deduced from simulating logon
+      # Only valid if login is used
+      def logon_environment
+        return {} unless using_login?
+        entry = Etc.getpwuid(uid)
+        # According to `man su`, the set fields are:
+        #  $HOME, $SHELL, $USER, $LOGNAME, $PATH, and $IFS 
+        # Values are copied from "shadow" package in Ubuntu 14.10
+        {'HOME'=>entry.dir, 'SHELL'=>entry.shell, 'USER'=>entry.name, 'LOGNAME'=>entry.name, 'PATH'=>'/sbin:/bin:/usr/sbin:/usr/bin', 'IFS'=>"\t\n"}
+      end
+
+      # Merges the two environments for the process
+      def process_environment
+        logon_environment.merge(self.environment)
+      end
+
       # Run the command, writing the command's standard out and standard error
       # to +stdout+ and +stderr+, and saving its exit status object to +status+
       # === Returns
@@ -133,8 +174,15 @@ module Mixlib
         end
       end
 
+      def set_secondarygroups
+        if sgids
+          Process.groups = sgids
+        end
+      end
+
       def set_environment
-        environment.each do |env_var,value|
+        # user-set variables should override the login ones
+        process_environment.each do |env_var,value|
           ENV[env_var] = value
         end
       end
@@ -295,6 +343,7 @@ module Mixlib
 
           configure_subprocess_file_descriptors
 
+          set_secondarygroups
           set_group
           set_user
           set_environment
