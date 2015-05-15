@@ -61,7 +61,7 @@ module Mixlib
         return {} unless using_login?
         entry = Etc.getpwuid(uid)
         # According to `man su`, the set fields are:
-        #  $HOME, $SHELL, $USER, $LOGNAME, $PATH, and $IFS 
+        #  $HOME, $SHELL, $USER, $LOGNAME, $PATH, and $IFS
         # Values are copied from "shadow" package in Ubuntu 14.10
         {'HOME'=>entry.dir, 'SHELL'=>entry.shell, 'USER'=>entry.name, 'LOGNAME'=>entry.name, 'PATH'=>'/sbin:/bin:/usr/sbin:/usr/bin', 'IFS'=>"\t\n"}
       end
@@ -104,7 +104,6 @@ module Mixlib
         # CHEF-3390: Marshall.load on Ruby < 1.8.7p369 also has a GC bug related
         # to Marshall.load, so try disabling GC first.
         propagate_pre_exec_failure
-        get_child_pgid
 
         @result = nil
         @execution_time = 0
@@ -148,18 +147,6 @@ module Mixlib
 
       private
 
-      def get_child_pgid
-        # The behavior of Process.getpgid (see also getpgid(2) ) when the
-        # argument is the pid of a zombie isn't well specified. On Linux it
-        # works, on OS X it returns ESRCH (which ruby turns into Errno::ESRCH).
-        #
-        # If the child dies very quickly, @child_pid may be a zombie, so handle
-        # ESRCH here.
-        @child_pgid = -Process.getpgid(@child_pid)
-      rescue Errno::ESRCH, Errno::EPERM
-        @child_pgid = nil
-      end
-
       def set_user
         if user
           Process.uid = uid
@@ -195,14 +182,10 @@ module Mixlib
         Dir.chdir(cwd) if cwd
       end
 
-      # Process group id of the child. Returned as a negative value so you can
-      # put it directly in arguments to kill, wait, etc.
-      #
-      # This may be nil if the child dies before the parent can query the
-      # system for its pgid (on some systems it is an error to get the pgid of
-      # a zombie).
+      # Since we call setsid the child_pgid will be the child_pid, set to negative here
+      # so it can be directly used in arguments to kill, wait, etc.
       def child_pgid
-        @child_pgid
+        -@child_pid
       end
 
       def initialize_ipc
@@ -336,10 +319,10 @@ module Mixlib
           # support the "ONESHOT" optimization (where sh -c does exec without
           # forking). To support cleaning up all the children, we need to
           # ensure they're in a unique process group.
-          # We cannot use setsid here since getpgid fails on AIX with EPERM 
-          # when parent and child have different sessions and the parent tries to get the process group,
-          # hence we just create a new process group, and have the same session.
-          Process.setpgrp
+          #
+          # We use setsid here to abandon our controlling tty and get a new session
+          # and process group that are set to the pid of the child process.
+          Process.setsid
 
           configure_subprocess_file_descriptors
 
