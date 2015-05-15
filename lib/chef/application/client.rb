@@ -253,6 +253,11 @@ class Chef::Application::Client < Chef::Application
     :description    => "Enable audit-mode with `enabled`. Disable audit-mode with `disabled`. Skip converge and only perform audits with `audit-only`",
     :proc           => lambda { |mo| mo.gsub("-", "_").to_sym }
 
+  option :audit_as_warning,
+    :long           => "--audit-as-warning",
+    :description    => "Interpret failed controls as warnings.",
+    :boolean        => true
+
   option :minimal_ohai,
     :long           => "--minimal-ohai",
     :description    => "Only run the bare minimum ohai plugins chef needs to function",
