@@ -41,7 +41,7 @@ class Chef
         # load_current_resource is run in Chef::Provider#run_action when not in whyrun_mode?
         def load_current_resource
           @current_resource = Chef::Resource::WindowsPackage.new(@new_resource.name)
-          if download_file_missing?
+          if downloadable_file_missing?
             Chef::Log.debug("We do not know the version of #{new_resource.source} because the file is not downloaded")
             current_resource.version(:unknown.to_s)
           else
@@ -108,7 +108,7 @@ class Chef
 
         private
 
-        def download_file_missing?
+        def downloadable_file_missing?
           uri_scheme?(new_resource.source) && !::File.exists?(source_location)
         end
 
