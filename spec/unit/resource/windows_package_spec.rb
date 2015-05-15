@@ -63,9 +63,9 @@ describe Chef::Resource::WindowsPackage, "initialize" do
   end
 
   it "coverts a source to an absolute path" do
-    allow(::File).to receive(:absolute_path).and_return("c:\\Files\\frost.msi")
+    allow(::File).to receive(:absolute_path).and_return("c:\\files\\frost.msi")
     resource.source("frost.msi")
-    expect(resource.source).to eql "c:\\Files\\frost.msi"
+    expect(resource.source).to eql "c:\\files\\frost.msi"
   end
 
   it "converts slashes to backslashes in the source path" do
@@ -77,5 +77,19 @@ describe Chef::Resource::WindowsPackage, "initialize" do
   it "defaults source to the resource name" do
     # it's a little late to stub out File.absolute_path
     expect(resource.source).to include("solitaire.msi")
+  end
+
+  it "supports the checksum attribute" do
+    resource.checksum('somechecksum')
+    expect(resource.checksum).to eq('somechecksum')
+  end
+
+  context 'when a URL is used' do
+    let(:resource_source) { 'https://foo.bar/solitare.msi' }
+    let(:resource) { Chef::Resource::WindowsPackage.new(resource_source) }
+
+    it "should return the source unmodified" do
+      expect(resource.source).to eq(resource_source)
+    end
   end
 end
