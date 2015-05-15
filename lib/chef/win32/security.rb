@@ -22,6 +22,7 @@ require 'chef/win32/memory'
 require 'chef/win32/process'
 require 'chef/win32/unicode'
 require 'chef/win32/security/token'
+require 'chef/mixin/wstring'
 
 class Chef
   module ReservedNames::Win32
@@ -31,6 +32,8 @@ class Chef
       include Chef::ReservedNames::Win32::API::Security
       extend Chef::ReservedNames::Win32::API::Security
       extend Chef::ReservedNames::Win32::API::Macros
+      include Chef::Mixin::WideString
+      extend Chef::Mixin::WideString
 
       def self.access_check(security_descriptor, token, desired_access, generic_mapping)
         token_handle = token.handle.handle
@@ -542,6 +545,18 @@ class Chef
           # Process is elevated if the result is different than 0.
           success && (elevation_result.read_ulong != 0)
         end
+      end
+
+      def self.logon_user(username, domain, password, logon_type, logon_provider)
+        username = wstring(username)
+        domain = wstring(domain)
+        password = wstring(password)
+
+        token = FFI::Buffer.new(:pointer)
+        unless LogonUserW(username, domain, password, logon_type, logon_provider, token)
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+        Token.new(Handle.new(token.read_pointer))
       end
     end
   end
