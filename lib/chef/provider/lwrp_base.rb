@@ -38,35 +38,30 @@ class Chef
         # Class methods for InlineResources. Overrides the `action` DSL method
         # with one that enables inline resource convergence.
         module ClassMethods
-          # Defines an action method on the provider, using
-          # recipe_eval_with_update_check to execute the given block.
+          # Defines an action method on the provider, running the block to
+          # compile the resources, converging them, and then checking if any
+          # were updated (and updating new-resource if so)
           def action(name, &block)
             define_method("action_#{name}") do
-              recipe_eval_with_update_check(&block)
+              begin
+                return_value = instance_eval(&block)
+                Chef::Runner.new(run_context).converge
+                return_value
+              ensure
+                if run_context.resource_collection.any? {|r| r.updated? }
+                  new_resource.updated_by_last_action(true)
+                end
+              end
             end
           end
         end
 
-        # Executes the given block in a temporary run_context with its own
-        # resource collection. After the block is executed, any resources
-        # declared inside are converged, and if any are updated, the
-        # new_resource will be marked updated.
-        def recipe_eval_with_update_check(&block)
-          saved_run_context = @run_context
-          temp_run_context = @run_context.dup
-          @run_context = temp_run_context
-          @run_context.resource_collection = Chef::ResourceCollection.new
-
-          return_value = instance_eval(&block)
-          Chef::Runner.new(@run_context).converge
-          return_value
-        ensure
-          @run_context = saved_run_context
-          if temp_run_context.resource_collection.any? {|r| r.updated? }
-            new_resource.updated_by_last_action(true)
-          end
+        # Our run context is a child of the main run context; that gives us a
+        # whole new resource collection and notification set.
+        def initialize(*args, &block)
+          super
+          @run_context = @run_context.create_child
         end
-
       end
 
       include Chef::DSL::Recipe
