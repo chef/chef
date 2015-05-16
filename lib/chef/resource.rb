@@ -34,6 +34,7 @@ require 'chef/platform'
 require 'chef/resource/resource_notification'
 require 'chef/provider_resolver'
 require 'chef/resource_resolver'
+require 'set'
 
 require 'chef/mixin/deprecation'
 require 'chef/mixin/provides'
@@ -54,42 +55,6 @@ class Chef
 
     # This lets user code do things like `not_if { shell_out!("command") }`
     include Chef::Mixin::ShellOut
-
-    #
-    # Define an action on this resource.
-    #
-    # The action is defined as a *recipe* block that will be compiled and then
-    # converged when the action is taken (when Resource is converged).  The recipe
-    # has access to the resource's attributes and methods, as well as the Chef
-    # recipe DSL.
-    #
-    # Resources in the action recipe may notify and subscribe to other resources
-    # within the action recipe, but cannot notify or subscribe to resources
-    # in the main Chef run.
-    #
-    # Resource actions are *inheritable*: if resource A defines `action :create`
-    # and B is a subclass of A, B gets all of A's actions.  Additionally,
-    # resource B can define `action :create` and call `super()` to invoke A's
-    # action code.
-    #
-    # @param name [Symbol] The action name to define.
-    # @param recipe_block The recipe to run when the action is taken. This block
-    #   takes no parameters, and will be evaluated in a new context containing:
-    #
-    #   - The resource's public and protected methods (including attributes)
-    #   - The Chef Recipe DSL (file, etc.)
-    #   - super() referring to the parent version of the action (if any)
-    #
-    # @return The Action class implementing the action
-    #
-    def self.action(action, &recipe_block)
-      action = action.to_sym
-      self.action_classes[action] ||= Class.new(ActionRecipe) do
-        resource_class self
-        action action
-        recipe_block recipe_block
-      end
-    end
 
     #
     # The node the current Chef run is using.
@@ -141,8 +106,10 @@ class Chef
       @before = nil
       @params = Hash.new
       @provider = nil
-      @allowed_actions = [ :nothing ]
-      @action = :nothing
+      # Allowed actions include all actions defined on the resource
+      @allowed_actions ||= self.class.allowed_actions.to_a
+      # Default action is the first action *not* defined by Chef::Resource
+      @action ||= self.class.default_action
       @updated = false
       @updated_by_last_action = false
       @supports = {}
@@ -205,12 +172,11 @@ class Chef
     #
     def action(arg=nil)
       if arg
-        action_list = arg.kind_of?(Array) ? arg : [ arg ]
-        action_list = action_list.collect { |a| a.to_sym }
+        action_list = Array(arg).map { |a| a.to_sym }
         action_list.each do |action|
           validate(
             { action: action },
-            { action: { kind_of: Symbol, equal_to: @allowed_actions } }
+            { action: { kind_of: Symbol, equal_to: allowed_actions } }
           )
         end
         @action = action_list
@@ -223,8 +189,7 @@ class Chef
     # Sets up a notification that will run a particular action on another resource
     # if and when *this* resource is updated by an action.
     #
-    # If the action does nothing--does not update this resource, the
-    # notification never triggers.)
+    # If the action does not update this resource, the notification never triggers.
     #
     # Only one resource may be specified per notification.
     #
@@ -640,7 +605,7 @@ class Chef
     #
 
     def to_s
-      "#{@resource_name}[#{@name}]"
+      "#{resource_name}[#{name}]"
     end
 
     def to_text
@@ -730,7 +695,8 @@ class Chef
       else
         arg
       end
-      set_or_return(:provider, klass, kind_of: [ Class ])
+      set_or_return(:provider, klass, kind_of: [ Class ]) ||
+        self.class.action_provider_class
     end
     def provider=(arg)
       provider(arg)
@@ -875,7 +841,9 @@ class Chef
     #
     # @return [String] The name of this resource.
     #
-    attr_reader :resource_name
+    def resource_name
+      @resource_name || declared_type
+    end
 
     #
     # Sets a list of capabilities of the real resource.  For example, `:remount`
@@ -907,25 +875,158 @@ class Chef
       nil
     end
 
-    #
-    # The module where Chef should look for providers for this resource.
-    # The provider for `MyResource` will be looked up using
-    # `provider_base::MyResource`.  Defaults to `Chef::Provider`.
-    #
-    # @param arg [Module] The module containing providers for this resource
-    # @return [Module] The module containing providers for this resource
-    #
-    # @example
-    #   class MyResource < Chef::Resource
-    #     provider_base Chef::Provider::Deploy
-    #     # ...other stuff
-    #   end
-    #
-    def self.provider_base(arg=nil)
-      @provider_base ||= arg
-      @provider_base ||= Chef::Provider
+    # Provider lookup
+    class<<self
+      #
+      # The module where Chef should look for providers for this resource.
+      # The provider for `MyResource` will be looked up using
+      # `provider_base::MyResource`.  Defaults to `Chef::Provider`.
+      #
+      # @param arg [Module] The module containing providers for this resource
+      # @return [Module] The module containing providers for this resource
+      #
+      # @example
+      #   class MyResource < Chef::Resource
+      #     provider_base Chef::Provider::Deploy
+      #     # ...other stuff
+      #   end
+      #
+      def provider_base(arg=nil)
+        @provider_base ||= arg || Chef::Provider
+      end
+
+      #
+      # Define an action on this resource.
+      #
+      # The action is defined as a *recipe* block that will be compiled and then
+      # converged when the action is taken (when Resource is converged).  The recipe
+      # has access to the resource's attributes and methods, as well as the Chef
+      # recipe DSL.
+      #
+      # Resources in the action recipe may notify and subscribe to other resources
+      # within the action recipe, but cannot notify or subscribe to resources
+      # in the main Chef run.
+      #
+      # Resource actions are *inheritable*: if resource A defines `action :create`
+      # and B is a subclass of A, B gets all of A's actions.  Additionally,
+      # resource B can define `action :create` and call `super()` to invoke A's
+      # action code.
+      #
+      # @param name [Symbol] The action name to define.
+      # @param recipe_block The recipe to run when the action is taken. This block
+      #   takes no parameters, and will be evaluated in a new context containing:
+      #
+      #   - The resource's public and protected methods (including attributes)
+      #   - The Chef Recipe DSL (file, etc.)
+      #   - super() referring to the parent version of the action (if any)
+      #
+      # @return The Action class implementing the action
+      #
+      def action(action, &recipe_block)
+        action = action.to_sym
+        create_action_provider_class.action(action, &recipe_block)
+        self.allowed_actions += [ action ]
+        default_action action if default_action == [ :nothing ]
+      end
+
+      #
+      # The list of allowed actions for the resource.
+      #
+      # The first time this is called with arguments, allowed_actions is replaced.
+      # @return [Set<Symbol>] The list of actions, as symbols.  (See
+      #   #action_definitions for the filled-in list of action recipe blocks.)
+      #
+      def allowed_actions(*actions)
+        if @allowed_actions
+          @allowed_actions |= actions
+        elsif actions.empty?
+          superclass.allowed_actions.dup
+        else
+          @allowed_actions = actions.to_set
+        end
+      end
+      def allowed_actions=(value)
+        @allowed_actions = value.to_set
+      end
+
+      NULL_ARG = Object.new
+
+      #
+      # The action that will be run if no other action is specified.
+      #
+      # Defaults to the :nothing.
+      #
+      # @param action_name [Symbol,Array<Symbol>] The default action (or series
+      #   of actions) to use.
+      #
+      # @return [Symbol,Array<Symbol>] The default actions for the resource.
+      #
+      def default_action(action_name=NULL_ARG)
+        unless action_name.equal?(NULL_ARG)
+          @default_action = Array(action_name).map { |arg| arg.to_sym }
+          self.allowed_actions |= @default_action
+        end
+
+        if @default_action
+          @default_action
+        elsif superclass.respond_to?(:default_action)
+          superclass.default_action
+        else
+          [ :nothing ]
+        end
+      end
+      def default_action=(action_name)
+        default_action action_name
+      end
+
+      #
+      # A hash of action recipe blocks.
+      #
+      # @api private
+      private def action_definitions
+        @action_definitions ||= {}
+      end
+
+      #
+      # The created action provider class for this resource, or nil if it has
+      # not been / does not need to be created.
+      #
+      # @api private
+      #
+      def action_provider_class
+        @action_provider_class ||
+          # If the superclass needed one, then we need one as well.
+          if superclass.respond_to?(:action_provider_class) && superclass.action_provider_class
+            create_action_provider_class
+          end
+      end
+
+      #
+      # Create the action provider class
+      #
+      def create_action_provider_class
+        return @action_provider_class if @action_provider_class
+
+        if superclass.respond_to?(:action_provider_class)
+          base_provider = superclass.action_provider_class
+        end
+        base_provider ||= Chef::Provider
+
+        resource_class = self
+        @action_provider_class = Class.new(base_provider) do
+          use_inline_resources
+          include_resource_dsl true
+          define_singleton_method(:to_s) { "#{resource_class} action provider" }
+          define_singleton_method(:inspect) { to_s }
+          define_method(:load_current_resource) {}
+        end
+      end
+
+      def ensure_action_provider_class
+      end
     end
 
+    self.allowed_actions = [ :nothing ]
 
     #
     # Internal Resource Interface (for Chef)
@@ -1078,7 +1179,9 @@ class Chef
     end
 
     def provider_for_action(action)
-      provider = Chef::ProviderResolver.new(node, self, action).resolve.new(self, run_context)
+      provider_class = self.class.action_provider_class
+      provider_class ||= Chef::ProviderResolver.new(node, self, action).resolve
+      provider = provider_class.new(self, run_context)
       provider.action = action
       provider
     end

@@ -409,7 +409,7 @@ describe Chef::Recipe do
 
       it "does not copy the action from the first resource" do
         expect(original_resource.action).to eq([:score])
-        expect(duplicated_resource.action).to eq(:nothing)
+        expect(duplicated_resource.action).to eq([:nothing])
       end
 
       it "does not copy the source location of the first resource" do
