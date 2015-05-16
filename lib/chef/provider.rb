@@ -200,12 +200,14 @@ class Chef
       # manipulating notifies.
 
       converge_by ("evaluate block and run any associated actions") do
-        saved_run_context = @run_context
-        @run_context = @run_context.dup
-        @run_context.resource_collection = Chef::ResourceCollection.new
-        instance_eval(&block)
-        Chef::Runner.new(@run_context).converge
-        @run_context = saved_run_context
+        saved_run_context = run_context
+        begin
+          @run_context = run_context.create_child
+          instance_eval(&block)
+          Chef::Runner.new(run_context).converge
+        ensure
+          @run_context = saved_run_context
+        end
       end
     end
 
