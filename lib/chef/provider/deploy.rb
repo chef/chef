@@ -375,9 +375,7 @@ class Chef
       def gem_resource_collection_runner
         gems_collection = Chef::ResourceCollection.new
         gem_packages.each { |rbgem| gems_collection.insert(rbgem) }
-        gems_run_context = run_context.dup
-        gems_run_context.resource_collection = gems_collection
-        Chef::Runner.new(gems_run_context)
+        Chef::Runner.new(run_context.create_child)
       end
 
       def gem_packages
