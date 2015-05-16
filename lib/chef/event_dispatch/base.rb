@@ -269,24 +269,35 @@ class Chef
       # def notifications_resolved
       # end
 
+      #
+      # Resource events and ordering:
+      #
+      # 1. Start the action
+      #    - resource_action_start
+      # 2. Check the guard
+      #    - resource_skipped: (goto 7) if only_if/not_if say to skip
+      # 3. Load the current resource
+      #    - resource_current_state_loaded
+      #    - resource_current_state_load_bypassed (if not why-run safe)
+      # 4. Check if why-run safe
+      #    - resource_bypassed: (goto 7) if not why-run safe
+      # 5. During processing:
+      #    - resource_update_applied: For each actual change
+      # 6. Processing complete status:
+      #    - resource_failed if the resource threw an exception while running
+      #    - resource_failed_retriable: (goto 3) if resource failed and will be retried
+      #    - resource_updated if the resource was updated (resource_update_applied will have been called)
+      #    - resource_up_to_date if the resource was up to date (no resource_update_applied)
+      # 7. Processing complete:
+      #    - resource_completed
+      #
+
       # Called before action is executed on a resource.
       def resource_action_start(resource, action, notification_type=nil, notifier=nil)
       end
 
-      # Called when a resource fails, but will retry.
-      def resource_failed_retriable(resource, action, retry_count, exception)
-      end
-
-      # Called when a resource fails and will not be retried.
-      def resource_failed(resource, action, exception)
-      end
-
       # Called when a resource action has been skipped b/c of a conditional
       def resource_skipped(resource, action, conditional)
-      end
-
-      # Called when a resource action has been completed
-      def resource_completed(resource)
       end
 
       # Called after #load_current_resource has run.
@@ -302,20 +313,33 @@ class Chef
       def resource_bypassed(resource, action, current_resource)
       end
 
-      # Called when a resource has no converge actions, e.g., it was already correct.
-      def resource_up_to_date(resource, action)
-      end
-
       # Called when a change has been made to a resource. May be called multiple
       # times per resource, e.g., a file may have its content updated, and then
       # its permissions updated.
       def resource_update_applied(resource, action, update)
       end
 
+      # Called when a resource fails, but will retry.
+      def resource_failed_retriable(resource, action, retry_count, exception)
+      end
+
+      # Called when a resource fails and will not be retried.
+      def resource_failed(resource, action, exception)
+      end
+
       # Called after a resource has been completely converged, but only if
       # modifications were made.
       def resource_updated(resource, action)
       end
+
+      # Called when a resource has no converge actions, e.g., it was already correct.
+      def resource_up_to_date(resource, action)
+      end
+
+      # Called when a resource action has been completed
+      def resource_completed(resource)
+      end
+
 
       # A stream has opened.
       def stream_opened(stream, options = {})

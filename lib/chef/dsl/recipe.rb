@@ -122,9 +122,9 @@ class Chef
 
       def describe_self_for_error
         if respond_to?(:name)
-          %Q[`#{self.class.name} "#{name}"']
+          %Q[`#{self.class} "#{name}"']
         elsif respond_to?(:recipe_name)
-          %Q[`#{self.class.name} "#{recipe_name}"']
+          %Q[`#{self.class} "#{recipe_name}"']
         else
           to_s
         end
@@ -175,6 +175,24 @@ class Chef
         rescue NameError
           raise NameError, "No resource, method, or local variable named `#{method_symbol}' for #{describe_self_for_error}"
         end
+      end
+
+      module Everything
+        require 'chef/dsl/data_query'
+        require 'chef/dsl/platform_introspection'
+        require 'chef/dsl/include_recipe'
+        require 'chef/dsl/registry_helper'
+        require 'chef/dsl/reboot_pending'
+        require 'chef/dsl/audit'
+        require 'chef/dsl/powershell'
+        include Chef::DSL::DataQuery
+        include Chef::DSL::PlatformIntrospection
+        include Chef::DSL::IncludeRecipe
+        include Chef::DSL::Recipe
+        include Chef::DSL::RegistryHelper
+        include Chef::DSL::RebootPending
+        include Chef::DSL::Audit
+        include Chef::DSL::Powershell
       end
     end
   end

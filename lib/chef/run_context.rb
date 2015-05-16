@@ -70,7 +70,7 @@ class Chef
     #
     # @return [Hash]
     #
-    attr_reader :reboot_info
+    attr_accessor :reboot_info
 
     #
     # Scoped state
@@ -121,20 +121,51 @@ class Chef
     #
     attr_reader :delayed_notification_collection
 
+    # Creates a new Chef::RunContext object and populates its fields. This object gets
+    # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
-    # Create non-shared state.
+    # @param node [Chef::Node] The node to run against.
+    # @param cookbook_collection [Chef::CookbookCollection] The cookbooks
+    #   involved in this run.
+    # @param events [EventDispatch::Dispatcher] The event dispatcher for this
+    #   run.
     #
-    def initialize
-      # This is all non-shared state.
+    def initialize(node, cookbook_collection, events)
+      @node = node
+      @cookbook_collection = cookbook_collection
+      @events = events
+
+      node.run_context = self
+      node.set_cookbook_attribute
+
+      @definitions = Hash.new
+      @loaded_recipes_hash = {}
+      @loaded_attributes_hash = {}
+      @reboot_info = {}
+      @cookbook_compiler = nil
+
+      initialize_non_shared_state
+    end
+
+    #
+    # Triggers the compile phase of the chef run.
+    #
+    # @param run_list_expansion [Chef::RunList::RunListExpansion] The run list.
+    # @see Chef::RunContext::CookbookCompiler
+    #
+    def load(run_list_expansion)
+      @cookbook_compiler = CookbookCompiler.new(self, run_list_expansion, events)
+      cookbook_compiler.compile
+    end
+
+    #
+    # Initialize state that applies to both Chef::RunContext and Chef::ChildRunContext
+    #
+    def initialize_non_shared_state
       @audits = {}
       @resource_collection = Chef::ResourceCollection.new
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
-    end
-
-    def self.new(node, cookbook_collection, events)
-      Chef::Log.deprecation("RunContext.new will be removed in a future Chef version.  Use RootRunContext instead.")
-      RootRunContext.new(node, cookbook_collection, events)
     end
 
     #
@@ -373,7 +404,7 @@ ERROR_MESSAGE
     # @param recipe [String] Recipe name.
     #
     def loaded_recipe(cookbook, recipe)
-      loaded_recipes["#{cookbook}::#{recipe}"] = true
+      loaded_recipes_hash["#{cookbook}::#{recipe}"] = true
     end
 
     #
@@ -385,7 +416,7 @@ ERROR_MESSAGE
     # @return [Boolean] `true` if the recipe has been loaded, `false` otherwise.
     #
     def loaded_fully_qualified_attribute?(cookbook, attribute_file)
-      loaded_attributes.has_key?("#{cookbook}::#{attribute_file}")
+      loaded_attributes_hash.has_key?("#{cookbook}::#{attribute_file}")
     end
 
     #
@@ -477,12 +508,12 @@ ERROR_MESSAGE
     # 6. ?
     def request_reboot(reboot_info)
       Chef::Log::info "Changing reboot status from #{self.reboot_info.inspect} to #{reboot_info.inspect}"
-      self.reboot_info = reboot_info
+      @reboot_info = reboot_info
     end
 
     def cancel_reboot
       Chef::Log::info "Changing reboot status from #{reboot_info.inspect} to {}"
-      reboot_info = {}
+      @reboot_info = {}
     end
 
     def reboot_requested?
@@ -492,20 +523,20 @@ ERROR_MESSAGE
     #
     # Create a child RunContext.
     #
-    def push
+    def create_child
       ChildRunContext.new(self)
     end
 
     private
 
+    attr_reader :cookbook_compiler
+    attr_reader :loaded_attributes_hash
+    attr_reader :loaded_recipes_hash
+
     module Deprecated
       ###
       # These need to be settable so deploy can run a resource_collection
       # independent of any cookbooks via +recipe_eval+
-
-      def resource_collection=(value)
-        Chef::Log.deprecation("Setting run_context.resource_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
-      end
 
       def audits=(value)
         Chef::Log.deprecation("Setting run_context.audits will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
@@ -529,51 +560,14 @@ ERROR_MESSAGE
     #
     class ChildRunContext < RunContext
       extend Forwardable
-      def_delegator :parent_run_context, :node, :cookbook_collection, :definitions, :events, :reboot_info
+      def_delegators :parent_run_context, :node, :cookbook_collection, :definitions, :events, :reboot_info, :reboot_info=, :cookbook_compiler
 
       def initialize(parent_run_context)
+        # We don't call super, because we don't bother initializing stuff we're
+        # going to delegate to the parent anyway.  Just initialize things that
+        # every instance needs.
+        initialize_non_shared_state
         @parent_run_context = parent_run_context
-      end
-    end
-
-    #
-    # The root run context.  Contains all top-level state for the run.
-    #
-    # @api private
-    #
-    class RootRunContext < RunContext
-      # Creates a new Chef::RunContext object and populates its fields. This object gets
-      # used by the Chef Server to generate a fully compiled recipe list for a node.
-      #
-      # @param node [Chef::Node] The node to run against.
-      # @param cookbook_collection [Chef::CookbookCollection] The cookbooks
-      #   involved in this run.
-      # @param events [EventDispatch::Dispatcher] The event dispatcher for this
-      #   run.
-      #
-      def initialize(node, cookbook_collection, events)
-        node.run_context = self
-        @node = node
-        @cookbook_collection = cookbook_collection
-        @definitions = Hash.new
-        @loaded_recipes_hash = {}
-        @loaded_attributes_hash = {}
-        @events = events
-        @reboot_info = {}
-        @cookbook_compiler = nil
-
-        @node.set_cookbook_attribute
-      end
-
-      #
-      # Triggers the compile phase of the chef run.
-      #
-      # @param run_list_expansion [Chef::RunList::RunListExpansion] The run list.
-      # @see Chef::RunContext::CookbookCompiler
-      #
-      def load(run_list_expansion)
-        @cookbook_compiler = CookbookCompiler.new(self, run_list_expansion, events)
-        cookbook_compiler.compile
       end
     end
   end

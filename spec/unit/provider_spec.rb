@@ -114,9 +114,7 @@ describe Chef::Provider do
   end
 
   it "does not re-load recipes when creating the temporary run context" do
-    # we actually want to test that RunContext#load is never called, but we
-    # can't stub all instances of an object with rspec's mocks. :/
-    allow(Chef::RunContext).to receive(:new).and_raise("not supposed to happen")
+    expect_any_instance_of(Chef::RunContext).not_to receive(:load)
     snitch = Proc.new {temporary_collection = @run_context.resource_collection}
     @provider.send(:recipe_eval, &snitch)
   end

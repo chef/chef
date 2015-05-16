@@ -26,6 +26,7 @@ require 'chef/mixin/powershell_out'
 require 'chef/mixin/provides'
 require 'chef/platform/service_helpers'
 require 'chef/node_map'
+require 'forwardable'
 
 class Chef
   class Provider
@@ -65,6 +66,7 @@ class Chef
 
       @recipe_name = nil
       @cookbook_name = nil
+      self.class.include_resource_dsl_module(new_resource)
     end
 
     def whyrun_mode?
@@ -119,11 +121,11 @@ class Chef
       check_resource_semantics!
 
       # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
-      if !whyrun_mode? || whyrun_supported?
+      if whyrun_mode? && !whyrun_supported?
+        events.resource_current_state_load_bypassed(@new_resource, @action, @current_resource)
+      else
         load_current_resource
         events.resource_current_state_loaded(@new_resource, @action, @current_resource)
-      elsif whyrun_mode? && !whyrun_supported?
-        events.resource_current_state_load_bypassed(@new_resource, @action, @current_resource)
       end
 
       define_resource_requirements
@@ -136,9 +138,7 @@ class Chef
       # we can't execute the action.
       # in non-whyrun mode, this will still cause the action to be
       # executed normally.
-      if whyrun_supported? && !requirements.action_blocked?(@action)
-        send("action_#{@action}")
-      elsif whyrun_mode?
+      if whyrun_mode? && (!whyrun_supported? || requirements.action_blocked?(@action))
         events.resource_bypassed(@new_resource, @action, self)
       else
         send("action_#{@action}")
@@ -181,6 +181,116 @@ class Chef
 
     def self.provides?(node, resource)
       Chef::ProviderResolver.new(node, resource, :nothing).provided_by?(self)
+    end
+
+    #
+    # Include attributes, public and protected methods from this Resource in
+    # the provider.  Will delegate to
+    #
+    # The actual include does not happen until the first time the Provider
+    # is instantiated (so that we don't have to worry about load order issues).
+    #
+    # @param include_resource_dsl [Boolean] Whether to include resource DSL or
+    #   not (defaults to `false`).
+    def self.include_resource_dsl(include_resource_dsl)
+      @include_resource_dsl = include_resource_dsl
+    end
+
+    # Create the resource DSL module that forwards resource methods to new_resource
+    #
+    # @api private
+    def self.include_resource_dsl_module(resource)
+      if @include_resource_dsl && !defined?(@included_resource_dsl_module)
+        provider_class = self
+        @included_resource_dsl_module = Module.new do
+          extend Forwardable
+          define_singleton_method(:to_s) { "#{resource_class} forwarder module" }
+          define_singleton_method(:inspect) { to_s }
+          dsl_methods =
+             resource.class.public_instance_methods +
+             resource.class.protected_instance_methods -
+             provider_class.instance_methods
+          def_delegators(:new_resource, *dsl_methods)
+        end
+        include @included_resource_dsl_module
+      end
+    end
+
+    # Enables inline evaluation of resources in provider actions.
+    #
+    # Without this option, any resources declared inside the Provider are added
+    # to the resource collection after the current position at the time the
+    # action is executed. Because they are added to the primary resource
+    # collection for the chef run, they can notify other resources outside
+    # the Provider, and potentially be notified by resources outside the Provider
+    # (but this is complicated by the fact that they don't exist until the
+    # provider executes). In this mode, it is impossible to correctly set the
+    # updated_by_last_action flag on the parent Provider resource, since it
+    # executes and returns before its component resources are run.
+    #
+    # With this option enabled, each action creates a temporary run_context
+    # with its own resource collection, evaluates the action's code in that
+    # context, and then converges the resources created. If any resources
+    # were updated, then this provider's new_resource will be marked updated.
+    #
+    # In this mode, resources created within the Provider cannot interact with
+    # external resources via notifies, though notifications to other
+    # resources within the Provider will work. Delayed notifications are executed
+    # at the conclusion of the provider's action, *not* at the end of the
+    # main chef run.
+    #
+    # This mode of evaluation is experimental, but is believed to be a better
+    # set of tradeoffs than the append-after mode, so it will likely become
+    # the default in a future major release of Chef.
+    #
+    def self.use_inline_resources
+      extend InlineResources::ClassMethods
+      include InlineResources
+    end
+
+    # Chef::Provider::InlineResources
+    # Implementation of inline resource convergence for providers. See
+    # Provider.use_inline_resources for a longer explanation.
+    #
+    # This code is restricted to a module so that it can be selectively
+    # applied to providers on an opt-in basis.
+    #
+    # @api private
+    module InlineResources
+
+      # Our run context is a child of the main run context; that gives us a
+      # whole new resource collection and notification set.
+      def initialize(resource, run_context)
+        super(resource, run_context.create_child)
+      end
+
+      # Class methods for InlineResources. Overrides the `action` DSL method
+      # with one that enables inline resource convergence.
+      #
+      # @api private
+      module ClassMethods
+        # Defines an action method on the provider, running the block to
+        # compile the resources, converging them, and then checking if any
+        # were updated (and updating new-resource if so)
+        def action(name, &block)
+          class_eval <<-EOM, __FILE__, __LINE__+1
+            def action_#{name}
+              return_value = compile_action_#{name}
+              Chef::Runner.new(run_context).converge
+              return_value
+            ensure
+              if run_context.resource_collection.any? {|r| r.updated? }
+                new_resource.updated_by_last_action(true)
+              end
+            end
+          EOM
+          # We put the action in its own method so that super() works.
+          define_method("compile_action_#{name}", &block)
+        end
+      end
+
+      require 'chef/dsl/recipe'
+      include Chef::DSL::Recipe::Everything
     end
 
     protected
