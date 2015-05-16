@@ -95,6 +95,34 @@ class Chef
         DeprecatedInstanceVariable.new(obj, name, level)
       end
 
+      def deprecated_attr(name, alternative)
+        deprecated_attr_reader(name, alternative)
+        deprecated_attr_writer(name, alternative)
+      end
+
+      def deprecated_attr_reader(name, alternative)
+        instance_eval <<-EOM
+          def #{name}(value)
+            Chef::Log.deprecation("#{self}.#{name} is deprecated. Support will be removed in a future release.")
+            Chef::Log.deprecation(#{alternative.inspect})
+            Chef::Log.deprecation("Called from:")
+            caller[0..3].each {|l| log(l)}
+            @#{name}
+          end
+        EOM
+      end
+
+      def deprecated_attr_writer(name, alternative)
+        instance_eval <<-EOM
+          def #{name}=(value)
+            Chef::Log.deprecation("Writing to #{self}.#{name}= is deprecated. Support will be removed in a future release.")
+            Chef::Log.deprecation(#{alternative.inspect})
+            Chef::Log.deprecation("Called from:")
+            caller[0..3].each {|l| log(l)}
+            @#{name} = value
+          end
+        EOM
+      end
     end
   end
 end
