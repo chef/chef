@@ -47,7 +47,7 @@ describe "chef-client" do
   # cf. CHEF-4914
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
 
-  let(:critical_env_vars) { %w(PATH RUBYOPT BUNDLE_GEMFILE).map {|o| "#{o}=#{ENV[o]}"} .join(' ') }
+  let(:critical_env_vars) { %w(PATH RUBYOPT BUNDLE_GEMFILE GEM_PATH).map {|o| "#{o}=#{ENV[o]}"} .join(' ') }
 
   when_the_repository "has a cookbook with a no-op recipe" do
     before { file 'cookbooks/x/recipes/default.rb', '' }
@@ -362,7 +362,7 @@ EOM
 
     it 'should fail when passed --recipe-url and not passed -z' do
       result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
-      expect(result.exitstatus).to eq(1)
+      expect(result.exitstatus).not_to eq(0)
     end
   end
 end
