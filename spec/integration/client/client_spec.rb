@@ -362,7 +362,7 @@ EOM
 
     it 'should fail when passed --recipe-url and not passed -z' do
       result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
-      expect(result.exitstatus).to eq(1)
+      expect(result.exitstatus).not_to eq(0)
     end
   end
 end
