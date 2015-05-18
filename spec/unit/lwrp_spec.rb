@@ -172,6 +172,14 @@ describe "LWRP" do
       expect(get_lwrp(:lwrp_foo).new("blah").resource_name).to eql(:lwrp_foo)
     end
 
+    it "should output the resource_name in .to_s" do
+      expect(get_lwrp(:lwrp_foo).new("blah").to_s).to eq "lwrp_foo[blah]"
+    end
+
+    it "should have a class that outputs a reasonable string" do
+      expect(get_lwrp(:lwrp_foo).to_s).to eq "LWRP resource lwrp_foo from cookbook lwrp"
+    end
+
     it "should add the specified actions to the allowed_actions array" do
       expect(get_lwrp(:lwrp_foo).new("blah").allowed_actions).to include(:pass_buck, :twiddle_thumbs)
     end

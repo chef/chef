@@ -103,10 +103,10 @@ class Chef
 
           # Respect resource_name set inside the LWRP
           provider_class.instance_eval do
-            define_method(:to_s) do
+            define_singleton_method(:to_s) do
               "LWRP provider #{resource_name} from cookbook #{cookbook_name}"
             end
-            define_method(:inspect) { to_s }
+            define_singleton_method(:inspect) { to_s }
           end
 
           Chef::Log.debug("Loaded contents of #{filename} into provider #{resource_name} (#{provider_class})")
