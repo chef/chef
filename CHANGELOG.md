@@ -38,6 +38,7 @@
 * [pr#3360](https://github.com/chef/chef/pull/3360): Add check_resource_semantics! lifecycle method to provider
 * [pr#3344](https://github.com/chef/chef/pull/3344): Rewrite Windows user resouce code to use ffi instead of win32-api
 * [pr#3318](https://github.com/chef/chef/pull/3318) Modify Windows package provider to allow for url source
+* [pr#3381](https://github.com/chef/chef/pull/3381) warn on cookbook self-deps
 
 ## 12.3.0
 
