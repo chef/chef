@@ -63,6 +63,24 @@ class Chef
           end
         end
       end
+
+      # Get an array of strings of the fully-qualified recipe names (with ::default appended) and
+      # with the versions in "NAME@VERSION" format.
+      #
+      # @return [Array] Array of strings with fully-qualified recipe names
+      def with_fully_qualified_names_and_version_constraints
+        self.map do |recipe_name|
+          ret = if recipe_name.include?('::')
+            recipe_name
+          else
+            "#{recipe_name}::default"
+          end
+          if @versions[recipe_name]
+            ret << "@#{@versions[recipe_name]}"
+          end
+          ret
+        end
+      end
     end
   end
 end

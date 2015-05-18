@@ -39,6 +39,7 @@
 * [pr#3344](https://github.com/chef/chef/pull/3344): Rewrite Windows user resouce code to use ffi instead of win32-api
 * [pr#3318](https://github.com/chef/chef/pull/3318) Modify Windows package provider to allow for url source
 * [pr#3381](https://github.com/chef/chef/pull/3381) warn on cookbook self-deps
+* [pr#2312](https://github.com/chef/chef/pull/2312): fix `node[:recipes]` duplication, add `node[:cookbooks]` and `node[:expanded_run_list]`
 
 ## 12.3.0
 

@@ -53,6 +53,37 @@ describe Chef::RunContext do
     expect(run_context.node).to eq(node)
   end
 
+  it "loads up node[:cookbooks]" do
+    expect(run_context.node[:cookbooks]).to eql(
+      {
+        "circular-dep1" => {
+          "version" => "0.0.0",
+        },
+        "circular-dep2" => {
+          "version" => "0.0.0",
+        },
+        "dependency1" => {
+          "version" => "0.0.0",
+        },
+        "dependency2" => {
+          "version" => "0.0.0",
+        },
+        "no-default-attr" => {
+          "version" => "0.0.0",
+        },
+        "test" => {
+          "version" => "0.0.0",
+        },
+        "test-with-circular-deps" => {
+          "version" => "0.0.0",
+        },
+        "test-with-deps" => {
+          "version" => "0.0.0",
+        },
+      }
+    )
+  end
+
   describe "loading cookbooks for a run list" do
     before do
 
