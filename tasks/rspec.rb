@@ -31,7 +31,7 @@ begin
   RSpec::Core::RakeTask.new(:spec) do |t|
     # right now this just limits to functional + unit, but could also remove
     # individual tests marked long-running
-    t.pattern = FileList['spec/{functional,unit}/**/*_spec.rb']
+    t.pattern = FileList['spec/**/*_spec.rb']
   end
 
   namespace :spec do

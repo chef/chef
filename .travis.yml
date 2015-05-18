@@ -15,12 +15,8 @@ branches:
 # do not run expensive spec tests on PRs, only on branches
 script: "
 echo '--color\n-fp' > .rspec;
-if [ ${TRAVIS_PULL_REQUEST} = 'false' ];
-then
-  bundle exec rake spec:all;
-else
-  bundle exec rake spec;
-fi"
+bundle exec rake spec;
+"
 
 env:
   global:

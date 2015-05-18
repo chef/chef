@@ -33,8 +33,8 @@ describe "Recipe DSL methods" do
       end
 
       # Modules to put stuff in
-      module Foo; end
-      module Foo::Bar; end
+      module RecipeDSLSpecNamespace; end
+      module RecipeDSLSpecNamespace::Bar; end
 
     }
 
@@ -74,7 +74,7 @@ describe "Recipe DSL methods" do
           recipe = converge {
             backcompat_thingy 'blah' do; end
           }
-          expect(recipe.logged_warnings).to match /Class Chef::Resource::BackcompatThingy does not declare 'provides :backcompat_thingy'/i
+          expect(recipe.logged_warnings).to match(/Class Chef::Resource::BackcompatThingy does not declare 'provides :backcompat_thingy'/i)
           expect(BaseThingy.created_resource).to eq Chef::Resource::BackcompatThingy
           expect(BaseThingy.created_provider).to eq Chef::Provider::BackcompatThingy
         end
@@ -82,7 +82,7 @@ describe "Recipe DSL methods" do
         context "And another resource 'backcompat_thingy' in BackcompatThingy with 'provides'" do
           before(:context) {
 
-            class Foo::BackcompatThingy < BaseThingy
+            class RecipeDSLSpecNamespace::BackcompatThingy < BaseThingy
               provides :backcompat_thingy
             end
 
@@ -98,10 +98,10 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "With a resource named Foo::Bar::Thingy" do
+      context "With a resource named RecipeDSLSpecNamespace::Bar::Thingy" do
         before(:context) {
 
-          class Foo::Bar::Thingy < BaseThingy; end
+          class RecipeDSLSpecNamespace::Bar::Thingy < BaseThingy; end
 
         }
 
@@ -117,7 +117,7 @@ describe "Recipe DSL methods" do
       context "When MySupplier provides :hemlock" do
         before(:context) {
 
-          class Foo::MySupplier < BaseThingy
+          class RecipeDSLSpecNamespace::MySupplier < BaseThingy
             provides :hemlock
           end
 
@@ -133,14 +133,14 @@ describe "Recipe DSL methods" do
           expect_recipe {
             hemlock 'blah' do; end
           }.to emit_no_warnings_or_errors
-          expect(BaseThingy.created_resource).to eq Foo::MySupplier
+          expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::MySupplier
         end
       end
 
       context "When Thingy3 provides :thingy3" do
         before(:context) {
 
-          class Foo::Thingy3 < BaseThingy
+          class RecipeDSLSpecNamespace::Thingy3 < BaseThingy
             provides :thingy3
           end
 
@@ -150,13 +150,13 @@ describe "Recipe DSL methods" do
           expect_recipe {
             thingy3 'blah' do; end
           }.to emit_no_warnings_or_errors
-          expect(BaseThingy.created_resource).to eq Foo::Thingy3
+          expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy3
         end
 
         context "And Thingy4 provides :thingy3" do
           before(:context) {
 
-            class Foo::Thingy4 < Chef::Resource
+            class RecipeDSLSpecNamespace::Thingy4 < Chef::Resource
               provides :thingy3
             end
 
@@ -166,7 +166,7 @@ describe "Recipe DSL methods" do
             recipe = converge {
               thingy3 'blah' do; end
             }
-            expect(recipe.logged_warnings).to match /ambiguous resource precedence/i
+            expect(recipe.logged_warnings).to match(/ambiguous resource precedence/i)
             expect(BaseThingy.created_resource).not_to be_nil
           end
 
@@ -181,7 +181,7 @@ describe "Recipe DSL methods" do
       context "When Thingy5 provides :thingy5, :twizzle and :twizzle2" do
         before(:context) {
 
-          class Foo::Thingy5 < BaseThingy
+          class RecipeDSLSpecNamespace::Thingy5 < BaseThingy
             provides :thingy5
             provides :twizzle
             provides :twizzle2
@@ -193,21 +193,21 @@ describe "Recipe DSL methods" do
           expect_recipe {
             thingy5 'blah' do; end
           }.to emit_no_warnings_or_errors
-          expect(BaseThingy.created_resource).to eq Foo::Thingy5
+          expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy5
         end
 
         it "twizzle works in a recipe and yields Thingy5" do
           expect_recipe {
             twizzle 'blah' do; end
           }.to emit_no_warnings_or_errors
-          expect(BaseThingy.created_resource).to eq Foo::Thingy5
+          expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy5
         end
 
         it "twizzle2 works in a recipe and yields Thingy5" do
           expect_recipe {
             twizzle2 'blah' do; end
           }.to emit_no_warnings_or_errors
-          expect(BaseThingy.created_resource).to eq Foo::Thingy5
+          expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy5
         end
       end
 
