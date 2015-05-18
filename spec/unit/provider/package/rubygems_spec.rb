@@ -403,6 +403,24 @@ describe Chef::Provider::Package::Rubygems do
       expect(provider.gem_env.gem_binary_location).to eq('/usr/weird/bin/gem')
     end
 
+    it "recognizes chef as omnibus" do
+      allow(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
+      provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+      expect(provider.is_omnibus?).to be true
+    end
+
+    it "recognizes opscode as omnibus" do
+      allow(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return("/opt/opscode/embedded/bin")
+      provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+      expect(provider.is_omnibus?).to be true
+    end
+
+    it "recognizes chefdk as omnibus" do
+      allow(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return("/opt/chefdk/embedded/bin")
+      provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+      expect(provider.is_omnibus?).to be true
+    end
+
     it "searches for a gem binary when running on Omnibus on Unix" do
       platform_mock :unix do
         allow(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
