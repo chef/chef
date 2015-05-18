@@ -216,22 +216,16 @@ depends "self"'
         end
 
         it 'knife deps prints each once' do
-          knife('deps /cookbooks/foo /cookbooks/self').should_succeed <<EOM
-/cookbooks/baz
-/cookbooks/bar
-/cookbooks/foo
-/cookbooks/self
-EOM
+          knife('deps /cookbooks/foo /cookbooks/self').should_succeed(
+            stdout: "/cookbooks/baz\n/cookbooks/bar\n/cookbooks/foo\n/cookbooks/self\n",
+            stderr: "WARN: Ignoring self-dependency in cookbook self, please remove it (in the future this will be fatal).\n"
+          )
         end
         it 'knife deps --tree prints each once' do
-          knife('deps --tree /cookbooks/foo /cookbooks/self').should_succeed <<EOM
-/cookbooks/foo
-  /cookbooks/bar
-    /cookbooks/baz
-      /cookbooks/foo
-/cookbooks/self
-  /cookbooks/self
-EOM
+          knife('deps --tree /cookbooks/foo /cookbooks/self').should_succeed(
+            stdout: "/cookbooks/foo\n  /cookbooks/bar\n    /cookbooks/baz\n      /cookbooks/foo\n/cookbooks/self\n",
+            stderr: "WARN: Ignoring self-dependency in cookbook self, please remove it (in the future this will be fatal).\n"
+          )
         end
       end
       when_the_repository 'has roles with circular dependencies' do
