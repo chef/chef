@@ -49,7 +49,7 @@ override :cacerts, version: '2014.08.20'
 
 override :bundler,        version: "1.7.12"
 override :chef,           version: "12.2.1"
-override :ruby,           version: "2.1.5"
+override :ruby,           version: "2.1.6"
 ######
 # Ruby 2.1/2.2 has an error on Windows - HTTPS gem downloads aren't working
 # https://bugs.ruby-lang.org/issues/11033
