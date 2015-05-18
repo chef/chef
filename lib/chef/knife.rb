@@ -359,7 +359,7 @@ class Chef
 
       case Chef::Config[:verbosity]
       when 0, nil
-        Chef::Config[:log_level] = :error
+        Chef::Config[:log_level] = :warn
       when 1
         Chef::Config[:log_level] = :info
       else
@@ -401,6 +401,8 @@ class Chef
     end
 
     def configure_chef
+      # knife needs to send logger output to STDERR by default
+      Chef::Config[:log_location] = STDERR
       config_loader = self.class.load_config(config[:config_file])
       config[:config_file] = config_loader.config_location
 

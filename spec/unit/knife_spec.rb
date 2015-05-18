@@ -252,6 +252,18 @@ describe Chef::Knife do
                                         :default => "default-value")
       end
 
+      it "sets the default log_location to STDERR for Chef::Log warnings" do
+        knife_command = KnifeSpecs::TestYourself.new([])
+        knife_command.configure_chef
+        expect(Chef::Config[:log_location]).to eq(STDERR)
+      end
+
+      it "sets the default log_level to warn so we can issue Chef::Log.warn" do
+        knife_command = KnifeSpecs::TestYourself.new([])
+        knife_command.configure_chef
+        expect(Chef::Config[:log_level]).to eql(:warn)
+      end
+
       it "prefers the default value if no config or command line value is present" do
         knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
         knife_command.configure_chef
