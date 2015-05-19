@@ -29,7 +29,7 @@ describe Shell do
   describe "smoke tests", :unix_only => true do
     include Chef::Mixin::Command::Unix
 
-    TIMEOUT=30
+    TIMEOUT=300
 
     def read_until(io, expected_value)
       start = Time.new
