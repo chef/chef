@@ -106,6 +106,39 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       end
     end
 
+    context "when the error does not contain any lines from cookbooks" do
+
+      let(:trace) do
+        [
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:144:in `rescue in block in load_libraries'",
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:138:in `block in load_libraries'",
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:230:in `call'",
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:230:in `block (2 levels) in foreach_cookbook_load_segment'",
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:229:in `each'",
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:229:in `block in foreach_cookbook_load_segment'",
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:227:in `each'",
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:227:in `foreach_cookbook_load_segment'",
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:137:in `load_libraries'"
+        ]
+      end
+
+      let(:exception) do
+        e = Chef::Exceptions::RecipeNotFound.new("recipe nope:nope not found")
+        e.set_backtrace(trace)
+        e
+      end
+
+      let(:path_to_failed_file) { nil }
+
+      it "gives a full, non-filtered trace" do
+        expect(inspector.filtered_bt).to eq(trace)
+      end
+
+      it "does not error when displaying the error" do
+        expect { description.display(outputter) }.to_not raise_error
+      end
+
+    end
   end
 
   describe "when explaining an error on windows" do
