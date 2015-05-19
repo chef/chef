@@ -5,7 +5,7 @@
 ## Release 2.1.0
 
 * [**BackSlasher**:](https://github.com/BackSlasher)
-  `with_login` flag now correctly does the magic on unix to simulate a login
+  `login` flag now correctly does the magic on unix to simulate a login
   shell for a user (secondary groups, environment variables, set primary group and
   generally emulate `su -`).
 * went back to setsid() to drop the controlling tty, fixed old AIX issue with
