@@ -96,6 +96,10 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
           inspector.add_explanation(description)
         end
 
+        it "reports the error was not located within cookbooks" do
+          expect(inspector.found_error_in_cookbooks?).to be(true)
+        end
+
         it "finds the line number of the error from the stacktrace" do
           expect(inspector.culprit_line).to eq(14)
         end
@@ -136,6 +140,10 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
       it "does not error when displaying the error" do
         expect { description.display(outputter) }.to_not raise_error
+      end
+
+      it "reports the error was not located within cookbooks" do
+        expect(inspector.found_error_in_cookbooks?).to be(false)
       end
 
     end
@@ -184,6 +192,10 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
       let(:full_path_to_failed_file) { "C:/opscode/chef#{path_to_failed_file}" }
 
+      it "reports the error was not located within cookbooks" do
+        expect(inspector.found_error_in_cookbooks?).to be(true)
+      end
+
       it "finds the culprit recipe name" do
         expect(inspector.culprit_file).to eq("C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb")
       end
@@ -204,6 +216,10 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       end
 
       let(:full_path_to_failed_file) { "c:/opscode/chef#{path_to_failed_file}" }
+
+      it "reports the error was not located within cookbooks" do
+        expect(inspector.found_error_in_cookbooks?).to be(true)
+      end
 
       it "finds the culprit recipe name from the stacktrace" do
         expect(inspector.culprit_file).to eq("c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb")
