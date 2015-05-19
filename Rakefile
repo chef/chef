@@ -35,6 +35,13 @@ task :install => :package do
   sh %{gem install pkg/#{GEM_NAME}-#{Chef::VERSION}.gem --no-rdoc --no-ri}
 end
 
+# In Chef 12.4, some parts of Chef Client are moved to subprojects in the same
+# git repo. Omnibus calls `rake install_components` to build these. This rake
+# task makes 11-stable forward compatible.
+task :install_components do
+  true
+end
+
 task :uninstall do
   sh %{gem uninstall #{GEM_NAME} -x -v #{Chef::VERSION} }
 end
