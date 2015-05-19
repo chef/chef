@@ -3,34 +3,35 @@ require 'chef/mixin/shell_out'
 require 'tiny_server'
 require 'tmpdir'
 
-def recipes_filename
-  File.join(CHEF_SPEC_DATA, 'recipes.tgz')
-end
-
-def start_tiny_server(server_opts={})
-  recipes_size = File::Stat.new(recipes_filename).size
-  @server = TinyServer::Manager.new(server_opts)
-  @server.start
-    @api = TinyServer::API.instance
-  @api.clear
-  #
-  # trivial endpoints
-  #
-  # just a normal file
-  # (expected_content should be uncompressed)
-  @api.get("/recipes.tgz", 200) {
-    File.open(recipes_filename, "rb") do |f|
-      f.read
-    end
-  }
-end
-
-def stop_tiny_server
-  @server.stop
-  @server = @api = nil
-end
 
 describe "chef-client" do
+
+  def recipes_filename
+    File.join(CHEF_SPEC_DATA, 'recipes.tgz')
+  end
+
+  def start_tiny_server(server_opts={})
+    @server = TinyServer::Manager.new(server_opts)
+    @server.start
+      @api = TinyServer::API.instance
+    @api.clear
+    #
+    # trivial endpoints
+    #
+    # just a normal file
+    # (expected_content should be uncompressed)
+    @api.get("/recipes.tgz", 200) {
+      File.open(recipes_filename, "rb") do |f|
+        f.read
+      end
+    }
+  end
+
+  def stop_tiny_server
+    @server.stop
+    @server = @api = nil
+  end
+
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
@@ -58,7 +59,7 @@ local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
     end
 
     it "should complete successfully with no other environment variables", :skip => (Chef::Platform.windows?) do
@@ -341,7 +342,8 @@ end
     end
   end
 
-  context "when using recipe-url" do
+  # Fails on appveyor, but works locally on windows and on windows hosts in Ci.
+  context "when using recipe-url", :skip_appveyor do
     before(:all) do
       start_tiny_server
     end

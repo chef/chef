@@ -115,7 +115,8 @@ RSpec.configure do |config|
   config.filter_run_excluding :volatile_on_solaris => true if solaris?
   config.filter_run_excluding :volatile_from_verify => false
 
-  # Add jruby filters here
+  config.filter_run_excluding :skip_appveyor => true if ENV["APPVEYOR"]
+
   config.filter_run_excluding :windows_only => true unless windows?
   config.filter_run_excluding :not_supported_on_mac_osx_106 => true if mac_osx_106?
   config.filter_run_excluding :not_supported_on_mac_osx=> true if mac_osx?
