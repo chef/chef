@@ -24,6 +24,8 @@
 * [**Dan Bjorge**](https://github.com/dbjorge):
   Fix bad Windows securable\_resource functional spec assumptions for default file owners/groups #3266
 
+* [pr#3720](https://github.com/chef/chef/pull/3270): Extract chef's
+  configuration to a separate gem. Code stays in the Chef git repo.
 * Add an integration test of chef-client with empty ENV. #3321
 * Switch over Windows builds to universal builds. #3278
 * Convert bootstrap template to use sh #2877
