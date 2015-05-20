@@ -117,11 +117,7 @@ END
 
         rc = NetUserAdd(server_name, 3, buf, nil)
         if rc != NERR_Success
-          if Chef::ReservedNames::Win32::Error.get_last_error != 0
-            Chef::ReservedNames::Win32::Error.raise!
-          else
-            net_api_error!(rc)
-          end
+          net_api_error!(rc)
         end
       end
 
@@ -134,11 +130,7 @@ END
         rc = NetUserGetInfo(server_name, user_name, 3, ui3_p)
 
         if rc != NERR_Success
-          if Chef::ReservedNames::Win32::Error.get_last_error != 0
-            Chef::ReservedNames::Win32::Error.raise!
-          else
-            net_api_error!(rc)
-          end
+          net_api_error!(rc)
         end
 
         ui3 = USER_INFO_3.new(ui3_p.read_pointer).as_ruby
@@ -146,11 +138,7 @@ END
         rc = NetApiBufferFree(ui3_p.read_pointer)
 
         if rc != NERR_Success
-          if Chef::ReservedNames::Win32::Error.get_last_error != 0
-            Chef::ReservedNames::Win32::Error.raise!
-          else
-            net_api_error!(rc)
-          end
+          net_api_error!(rc)
         end
 
         ui3
@@ -168,11 +156,7 @@ END
 
         rc = NetUserSetInfo(server_name, user_name, 3, buf, nil)
         if rc != NERR_Success
-          if Chef::ReservedNames::Win32::Error.get_last_error != 0
-            Chef::ReservedNames::Win32::Error.raise!
-          else
-            net_api_error!(rc)
-          end
+          net_api_error!(rc)
         end
       end
 
@@ -182,11 +166,7 @@ END
 
         rc = NetUserDel(server_name, user_name)
         if rc != NERR_Success
-          if Chef::ReservedNames::Win32::Error.get_last_error != 0
-            Chef::ReservedNames::Win32::Error.raise!
-          else
-            net_api_error!(rc)
-          end
+          net_api_error!(rc)
         end
       end
 
@@ -201,11 +181,7 @@ END
         rc = NetLocalGroupAddMembers(server_name, group_name, 3, buf, 1)
 
         if rc != NERR_Success
-          if Chef::ReservedNames::Win32::Error.get_last_error != 0
-            Chef::ReservedNames::Win32::Error.raise!
-          else
-            net_api_error!(rc)
-          end
+          net_api_error!(rc)
         end
       end
 
