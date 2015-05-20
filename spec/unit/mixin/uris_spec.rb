@@ -44,4 +44,14 @@ describe Chef::Mixin::Uris do
     end
   end
 
+  describe "#as_uri" do
+    it "parses a file scheme uri with spaces" do
+      expect{ uris.as_uri("file:///c:/foo bar.txt") }.not_to raise_exception
+    end
+
+    it "returns a URI object" do
+      expect( uris.as_uri("file:///c:/foo bar.txt") ).to be_a(URI)
+    end
+  end
+
 end
