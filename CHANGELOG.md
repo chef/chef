@@ -19,7 +19,7 @@
 * [**SAWANOBORI Yukihiko**](https://github.com/sawanoboly):
   Add Chef::Log::Syslog class for integrating sending logs to syslog
 * [**Pavel Yudin**](https://github.com/Kasen):
-  Ensure LWRP and HWRP @action variable is consistent
+  Ensure LWRP and HWRP @action variable is consistent #3156
 
 * Add an integration test of chef-client with empty ENV. #3321
 * Switch over Windows builds to universal builds. #3278
