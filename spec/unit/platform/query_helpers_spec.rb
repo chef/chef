@@ -20,7 +20,7 @@ require 'spec_helper'
 
 describe "Chef::Platform#windows_server_2003?" do
   it "returns false early when not on windows" do
-    allow(Chef::Platform).to receive(:windows?).and_return(false)
+    allow(ChefConfig).to receive(:windows?).and_return(false)
     expect(Chef::Platform).not_to receive(:require) 
     expect(Chef::Platform.windows_server_2003?).to be_falsey
   end

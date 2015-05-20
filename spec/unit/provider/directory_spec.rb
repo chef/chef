@@ -48,7 +48,7 @@ describe Chef::Provider::Directory do
 
   describe "scanning file security metadata on unix" do
     before do
-      allow(Chef::Platform).to receive(:windows?).and_return(false)
+      allow(ChefConfig).to receive(:windows?).and_return(false)
     end
     let(:mock_stat) do
       cstats = double("stats")

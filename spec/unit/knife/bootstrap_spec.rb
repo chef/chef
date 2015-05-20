@@ -23,7 +23,7 @@ require 'net/ssh'
 
 describe Chef::Knife::Bootstrap do
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
   end
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)

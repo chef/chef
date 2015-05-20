@@ -1,0 +1,31 @@
+language: ruby
+
+sudo: false
+# Early warning system to catch if Rubygems breaks something
+before_install:
+  gem update --system
+
+branches:
+  only:
+  - master
+
+matrix:
+  include:
+  - rvm: 2.0
+  - rvm: 2.1
+
+notifications:
+  on_change: true
+  on_failure: true
+  on_success: change
+  on_pull_requests: false
+  irc:
+    channels:
+    - chat.freenode.net#chef-hacking
+  hipchat:
+    rooms:
+    # Build Statuses
+    - secure: G8MNo94L8bmWWwkH2/ViB2QaZnZHZscYM/mEjDbOGd15sqrruwckeARyBoUcRI7P1C6AFmS4IKCNVXa6KzX4Pbh51gQWM92zRpRTZpplwtXz53/1l8ajLFLLMLvEMTlBFAANUKEUFAQPY4dMa14V3Qc5oijfIncN61k4nZNTKpY=
+  - rvm: 2.2
+    # Open Source
+    - secure: hmcex4PpG5dn8WvjndONO4xCUKOC5kPU/bUEGRrfVbe2YKJE7t0XXbNDC96W/xBgzgnJzvf1Er0zJKDrNf4qEDEWFoozdN00WLcqREgaLLS3Seto2FjR/BpBk5q+sCV0rwwEMms2P4Qk+VSnDCnm9EaeM55hOabqNuOrRzoZLBQ=

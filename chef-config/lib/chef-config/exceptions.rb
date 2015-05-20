@@ -1,6 +1,5 @@
 #
-# Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright (c) 2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +15,12 @@
 # limitations under the License.
 #
 
-require 'chef-config/path_helper'
+require 'chef-config/windows'
+require 'chef-config/logger'
 
-class Chef
-  class Util
-    PathHelper = ChefConfig::PathHelper
+module ChefConfig
+
+  class InvalidPath < StandardError
   end
-end
 
+end

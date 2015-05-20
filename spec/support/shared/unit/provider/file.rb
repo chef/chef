@@ -255,7 +255,7 @@ shared_examples_for Chef::Provider::File do
     context "examining file security metadata on Unix with a file that exists" do
       before do
         # fake that we're on unix even if we're on windows
-        allow(Chef::Platform).to receive(:windows?).and_return(false)
+        allow(ChefConfig).to receive(:windows?).and_return(false)
         # mock up the filesystem to behave like unix
         setup_normal_file
         stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
@@ -331,7 +331,7 @@ shared_examples_for Chef::Provider::File do
     context "examining file security metadata on Unix with a file that does not exist" do
       before do
         # fake that we're on unix even if we're on windows
-        allow(Chef::Platform).to receive(:windows?).and_return(false)
+        allow(ChefConfig).to receive(:windows?).and_return(false)
         setup_missing_file
       end
 
@@ -380,7 +380,7 @@ shared_examples_for Chef::Provider::File do
 
     before do
       # fake that we're on unix even if we're on windows
-      allow(Chef::Platform).to receive(:windows?).and_return(false)
+      allow(ChefConfig).to receive(:windows?).and_return(false)
       # mock up the filesystem to behave like unix
       setup_normal_file
       stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)

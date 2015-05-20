@@ -719,7 +719,7 @@ describe Chef::Client do
   describe "windows_admin_check" do
     context "platform is not windows" do
       before do
-        allow(Chef::Platform).to receive(:windows?).and_return(false)
+        allow(ChefConfig).to receive(:windows?).and_return(false)
       end
 
       it "shouldn't be called" do
@@ -730,7 +730,7 @@ describe Chef::Client do
 
     context "platform is windows" do
       before do
-        allow(Chef::Platform).to receive(:windows?).and_return(true)
+        allow(ChefConfig).to receive(:windows?).and_return(true)
       end
 
       it "should be called" do

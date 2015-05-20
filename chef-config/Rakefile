@@ -1,3 +1,28 @@
+require 'rspec/core/rake_task'
+require 'rubygems/package_task'
+
+VERSION = IO.read(File.expand_path("../../VERSION", __FILE__)).strip
+
+Dir[File.expand_path("../*gemspec", __FILE__)].reverse.each do |gemspec_path|
+  gemspec = eval(IO.read(gemspec_path))
+  Gem::PackageTask.new(gemspec).define
+end
+
+desc "Build and install a chef-config gem"
+task :install => [:package] do
+  sh %{gem install pkg/chef-config-#{ChefConfig::VERSION}.gem --no-rdoc --no-ri}
+end
+
+task :default => :spec
+
+desc "Run standard specs"
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.pattern = FileList['spec/**/*_spec.rb']
+end
+
+desc "Regenerate lib/chef/version.rb from VERSION file"
+task :version do
+  contents = <<-VERSION_RB
 # Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,16 +44,12 @@
 # task instead.
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-class Chef
-  CHEF_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
-  VERSION = '12.4.0.dev.0'
+module ChefConfig
+  VERSION = '#{VERSION}'
 end
 
-#
-# NOTE: the Chef::Version class is defined in version_class.rb
-#
-# NOTE: DO NOT Use the Chef::Version class on Chef::VERSIONs.  The
-#       Chef::Version class is for _cookbooks_ only, and cannot handle
-#       pre-release chef-client versions like "10.14.0.rc.2".  Please
-#       use Rubygem's Gem::Version class instead.
-#
+VERSION_RB
+  version_rb_path = File.expand_path("../lib/chef-config/version.rb", __FILE__)
+  IO.write(version_rb_path, contents)
+end
+
