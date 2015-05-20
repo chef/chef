@@ -1,7 +1,12 @@
-﻿Add-Type -TypeDefinition @"
+﻿
+function Load-Win32Bindings {
+  Add-Type -TypeDefinition @"
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+
+namespace Chef
+{
 
 [StructLayout(LayoutKind.Sequential)]
 public struct PROCESS_INFORMATION
@@ -78,6 +83,25 @@ public enum STARTF : uint
   STARTF_USESTDHANDLES = 0x00000100,
 }
 
+public enum ShowWindow : short
+{
+    SW_HIDE = 0,
+    SW_SHOWNORMAL = 1,
+    SW_NORMAL = 1,
+    SW_SHOWMINIMIZED = 2,
+    SW_SHOWMAXIMIZED = 3,
+    SW_MAXIMIZE = 3,
+    SW_SHOWNOACTIVATE = 4,
+    SW_SHOW = 5,
+    SW_MINIMIZE = 6,
+    SW_SHOWMINNOACTIVE = 7,
+    SW_SHOWNA = 8,
+    SW_RESTORE = 9,
+    SW_SHOWDEFAULT = 10,
+    SW_FORCEMINIMIZE = 11,
+    SW_MAX = 11
+}
+
 public enum StandardHandle : int
 {
   Input = -10,
@@ -106,31 +130,36 @@ public static class Kernel32
   [DllImport("kernel32", SetLastError=true)]
   public static extern int WaitForSingleObject(IntPtr hHandle, int dwMilliseconds);
 }
+}
 "@
+}
 
 function Run-ExecutableAndWait($AppPath, $ArgumentString) {
   # Use the Win32 API to create a new process and wait for it to terminate.
-  $si = New-Object STARTUPINFO
-  $pi = New-Object PROCESS_INFORMATION
+  Load-Win32Bindings
+
+  $si = New-Object Chef.STARTUPINFO
+  $pi = New-Object Chef.PROCESS_INFORMATION
 
   $si.cb = [System.Runtime.InteropServices.Marshal]::SizeOf($si)
-  $si.dwFlags = [STARTF]::STARTF_USESTDHANDLES
-  $si.hStdError = [Kernel32]::GetStdHandle([StandardHandle]::Error)
-  $si.hStdOutput = [Kernel32]::GetStdHandle([StandardHandle]::Output)
-  $si.hStdInput = [Kernel32]::GetStdHandle([StandardHandle]::Input)
+  $si.wShowWindow = [Chef.ShowWindow]::SW_SHOW
+  $si.dwFlags = [Chef.STARTF]::STARTF_USESTDHANDLES
+  $si.hStdError = [Chef.Kernel32]::GetStdHandle([Chef.StandardHandle]::Error)
+  $si.hStdOutput = [Chef.Kernel32]::GetStdHandle([Chef.StandardHandle]::Output)
+  $si.hStdInput = [Chef.Kernel32]::GetStdHandle([Chef.StandardHandle]::Input)
 
-  $pSec = New-Object SECURITY_ATTRIBUTES
+  $pSec = New-Object Chef.SECURITY_ATTRIBUTES
   $pSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($pSec)
   $pSec.bInheritHandle = $true
-  $tSec = New-Object SECURITY_ATTRIBUTES
+  $tSec = New-Object Chef.SECURITY_ATTRIBUTES
   $tSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($tSec)
   $tSec.bInheritHandle = $true
 
-  $success = [Kernel32]::CreateProcess($AppPath, $ArgumentString, [ref] $pSec, [ref] $tSec, $true, [CreationFlags]::NONE, [IntPtr]::Zero, $pwd, [ref] $si, [ref] $pi)
+  $success = [Chef.Kernel32]::CreateProcess($AppPath, $ArgumentString, [ref] $pSec, [ref] $tSec, $true, [Chef.CreationFlags]::NONE, [IntPtr]::Zero, $pwd, [ref] $si, [ref] $pi)
   if ($success -eq 0) {
     [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
   } else {
-    [Kernel32]::WaitForSingleObject($pi.hProcess, -1)
+    [Chef.Kernel32]::WaitForSingleObject($pi.hProcess, -1)
   }
 }
 
