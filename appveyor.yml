@@ -21,7 +21,8 @@ install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - echo %PATH%
   - ruby --version
-  - gem update --system --quiet --no-ri --no-rdoc
+  - gem install rubygems-pkg/rubygems-update-2.4.6.gem
+  - update_rubygems
   - gem --version
   - gem install bundler --quiet --no-ri --no-rdoc
   - bundler --version
