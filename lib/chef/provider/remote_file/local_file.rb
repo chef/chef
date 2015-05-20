@@ -38,13 +38,15 @@ class Chef
           path.gsub(/^\/([a-zA-Z]:)/,'\1')
         end
 
-        def uri_path
-          URI.unescape(uri.path)
+        def source_path
+          @source_path ||= begin
+            path = URI.unescape(uri.path)
+            Chef::Platform.windows? ? fix_windows_path(path) : path
+          end
         end
 
         # Fetches the file at uri, returning a Tempfile-like File handle
         def fetch
-          source_path = Chef::Platform.windows? ? fix_windows_path(uri_path) : uri_path
           tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
           Chef::Log.debug("#{new_resource} staging #{source_path} to #{tempfile.path}")
           FileUtils.cp(source_path, tempfile.path)

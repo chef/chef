@@ -60,6 +60,11 @@ describe Chef::Resource::RemoteFile do
       expect(@resource.source).to eql([ "\\\\fakey\\fakerton\\fake.txt" ])
     end
 
+    it 'should accept file URIs with spaces' do
+      @resource.source("file:///C:/foo bar")
+      expect(@resource.source).to eql(["file:///C:/foo bar"])
+    end
+
     it "should accept a delayed evalutator (string) for the remote file source" do
       @resource.source Chef::DelayedEvaluator.new {"http://opscode.com/"}
       expect(@resource.source).to eql([ "http://opscode.com/" ])
