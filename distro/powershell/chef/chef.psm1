@@ -112,12 +112,13 @@ public enum StandardHandle : int
 public static class Kernel32
 {
   [DllImport("kernel32.dll", SetLastError=true)]
-  public static extern int CreateProcess(
+  [return: MarshalAs(UnmanagedType.Bool)]
+  public static extern bool CreateProcess(
     string lpApplicationName,
     string lpCommandLine,
     ref SECURITY_ATTRIBUTES lpProcessAttributes,
     ref SECURITY_ATTRIBUTES lpThreadAttributes,
-    bool bInheritHandles,
+    [MarshalAs(UnmanagedType.Bool)] bool bInheritHandles,
     CreationFlags dwCreationFlags,
     IntPtr lpEnvironment,
     string lpCurrentDirectory,
@@ -125,10 +126,24 @@ public static class Kernel32
     out PROCESS_INFORMATION lpProcessInformation);
 
   [DllImport("kernel32.dll", SetLastError=true)]
-  public static extern IntPtr GetStdHandle(StandardHandle nStdHandle);
+  public static extern IntPtr GetStdHandle(
+    StandardHandle nStdHandle);
 
   [DllImport("kernel32", SetLastError=true)]
-  public static extern int WaitForSingleObject(IntPtr hHandle, int dwMilliseconds);
+  public static extern int WaitForSingleObject(
+    IntPtr hHandle,
+    int dwMilliseconds);
+
+  [DllImport("kernel32", SetLastError=true)]
+  [return: MarshalAs(UnmanagedType.Bool)]
+  public static extern bool CloseHandle(
+    IntPtr hObject);
+
+  [DllImport("kernel32", SetLastError=true)]
+  [return: MarshalAs(UnmanagedType.Bool)]
+  public static extern bool GetExitCodeProcess(
+    IntPtr hProcess,
+    out int lpExitCode);
 }
 }
 "@
@@ -136,7 +151,7 @@ public static class Kernel32
 
 function Run-ExecutableAndWait($AppPath, $ArgumentString) {
   # Use the Win32 API to create a new process and wait for it to terminate.
-  Load-Win32Bindings
+  $null = Load-Win32Bindings
 
   $si = New-Object Chef.STARTUPINFO
   $pi = New-Object Chef.PROCESS_INFORMATION
@@ -156,10 +171,33 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
   $tSec.bInheritHandle = $true
 
   $success = [Chef.Kernel32]::CreateProcess($AppPath, $ArgumentString, [ref] $pSec, [ref] $tSec, $true, [Chef.CreationFlags]::NONE, [IntPtr]::Zero, $pwd, [ref] $si, [ref] $pi)
-  if ($success -eq 0) {
-    [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-  } else {
-    [Chef.Kernel32]::WaitForSingleObject($pi.hProcess, -1)
+  if (-Not $success) {
+    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    throw "Unable to create process [$ArgumentString].  Error code $reason."
+  }
+  $waitReason = [Chef.Kernel32]::WaitForSingleObject($pi.hProcess, -1)
+  if ($waitReason -ne 0) {
+    if ($waitReason -eq -1) {
+      $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+      throw "Could not wait for process to terminate.  Error code $reason."
+    } else {
+      throw "WaitForSingleObject failed with return code $waitReason - it's impossible!"
+    }
+  }
+  $success = [Chef.Kernel32]::GetExitCodeProcess($pi.hProcess, [ref] $global:LASTEXITCODE)
+  if (-Not $success) {
+    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    throw "Process exit code unavailable.  Error code $reason."
+  }
+  $success = [Chef.Kernel32]::CloseHandle($pi.hProcess)
+  if (-Not $success) {
+    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    throw "Unable to release process handle.  Error code $reason."
+  }
+  $success = [Chef.Kernel32]::CloseHandle($pi.hThread)
+  if (-Not $success) {
+    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    throw "Unable to release thread handle.  Error code $reason."
   }
 }
 
