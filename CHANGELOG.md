@@ -18,6 +18,8 @@
   Convert wiki links to point to docs.chef.io
 * [**SAWANOBORI Yukihiko**](https://github.com/sawanoboly):
   Add Chef::Log::Syslog class for integrating sending logs to syslog
+* [**Pavel Yudin**](https://github.com/Kasen):
+  Ensure LWRP and HWRP @action variable is consistent
 
 * Add an integration test of chef-client with empty ENV. #3321
 * Switch over Windows builds to universal builds. #3278
@@ -28,18 +30,17 @@
 * Implemented X-Ops-Server-API-Version with a API version of 0, as well as error handling when the Chef server does not support the API version that the client supports.
 * [pr#3327](https://github.com/chef/chef/pull/3327): Fix unreliable AIX service group parsing mechanism.
 * [pr#3333](https://github.com/chef/chef/pull/3333): Fix SSL errors when connecting to private Supermarkets
-* [pr#3340](https://github.com/chef/chef/pull/3340): Allow Event
-  dispatch subscribers to be inspected.
+* [pr#3340](https://github.com/chef/chef/pull/3340): Allow Event dispatch subscribers to be inspected.
 * [Issue #3055](https://github.com/chef/chef/issues/3055) Fix regex parsing for recipe failures on Windows
 * [pr#3345](https://github.com/chef/chef/pull/3345) Windows Event log logger
 * [pr#3336](https://github.com/chef/chef/pull/3336) Remote file understands UNC paths
-* [pr#3269](https://github.com/chef/chef/pull/3269): Deprecate automatic recipe
-  DSL for classes in `Chef::Resource`
+* [pr#3269](https://github.com/chef/chef/pull/3269): Deprecate automatic recipe DSL for classes in `Chef::Resource`
 * [pr#3360](https://github.com/chef/chef/pull/3360): Add check_resource_semantics! lifecycle method to provider
 * [pr#3344](https://github.com/chef/chef/pull/3344): Rewrite Windows user resouce code to use ffi instead of win32-api
 * [pr#3318](https://github.com/chef/chef/pull/3318) Modify Windows package provider to allow for url source
 * [pr#3381](https://github.com/chef/chef/pull/3381) warn on cookbook self-deps
 * [pr#2312](https://github.com/chef/chef/pull/2312): fix `node[:recipes]` duplication, add `node[:cookbooks]` and `node[:expanded_run_list]`
+* [pr#3325](https://github.com/chef/chef/pull/3325) enforce passing a node name with validatorless bootstrapping
 
 ## 12.3.0
 
