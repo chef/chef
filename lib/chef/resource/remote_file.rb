@@ -21,6 +21,7 @@ require 'uri'
 require 'chef/resource/file'
 require 'chef/provider/remote_file'
 require 'chef/mixin/securable'
+require 'chef/mixin/uris'
 
 class Chef
   class Resource
@@ -127,6 +128,8 @@ class Chef
 
       private
 
+      include Chef::Mixin::Uris
+
       def validate_source(source)
         source = Array(source).flatten
         raise ArgumentError, "#{resource_name} has an empty source" if source.empty?
@@ -140,7 +143,7 @@ class Chef
       end
 
       def absolute_uri?(source)
-        Chef::Provider::RemoteFile::Fetcher.network_share?(source) or (source.kind_of?(String) and URI.parse(source).absolute?) 
+        Chef::Provider::RemoteFile::Fetcher.network_share?(source) or (source.kind_of?(String) and as_uri(source).absolute?)
       rescue URI::InvalidURIError
         false
       end
