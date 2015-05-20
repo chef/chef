@@ -5,11 +5,11 @@
   Always run exception handlers
   Prioritise manual ssh attribute over automatic ones for knife
 * [**Noah Kantrowitz**](https://github.com/coderanger):
-  Cache service_resource_providers for the duration of the run. #2953
+  Cache service\_resource\_providers for the duration of the run. #2953
 * [**Slava Kardakov**](https://github.com/ojab):
   Fix installation of yum packages with version constraints #3155
 * [**Dave Eddy**](https://github.com/bahamas10):
-  fix smartos_package for new "pkgin" output, fixes #3112 #3165
+  fix smartos\_package for new "pkgin" output, fixes #3112 #3165
 * [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly):
   Show Chef version on chef shell prompt
 * [**Jacob Minshall**](https://github.com/minshallj):
@@ -20,6 +20,8 @@
   Add Chef::Log::Syslog class for integrating sending logs to syslog
 * [**Pavel Yudin**](https://github.com/Kasen):
   Ensure LWRP and HWRP @action variable is consistent #3156
+* [**Dan Bjorge**](https://github.com/dbjorge):
+  Fix bad Windows securable\_resource functional spec assumptions for default file owners/groups #3266
 
 * Add an integration test of chef-client with empty ENV. #3321
 * Switch over Windows builds to universal builds. #3278
