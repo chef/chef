@@ -1,4 +1,140 @@
-﻿function Get-ScriptDirectory {
+﻿Add-Type -TypeDefinition @"
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct PROCESS_INFORMATION
+{
+  public IntPtr hProcess;
+  public IntPtr hThread;
+  public uint dwProcessId;
+  public uint dwThreadId;
+}
+
+[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+public struct STARTUPINFO
+{
+  public uint cb;
+  public string lpReserved;
+  public string lpDesktop;
+  public string lpTitle;
+  public uint dwX;
+  public uint dwY;
+  public uint dwXSize;
+  public uint dwYSize;
+  public uint dwXCountChars;
+  public uint dwYCountChars;
+  public uint dwFillAttribute;
+  public STARTF dwFlags;
+  public ShowWindow wShowWindow;
+  public short cbReserved2;
+  public IntPtr lpReserved2;
+  public IntPtr hStdInput;
+  public IntPtr hStdOutput;
+  public IntPtr hStdError;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct SECURITY_ATTRIBUTES
+{
+  public int length;
+  public IntPtr lpSecurityDescriptor;
+  public bool bInheritHandle;
+}
+
+[Flags]
+public enum CreationFlags : int
+{
+  NONE = 0,
+  DEBUG_PROCESS = 0x00000001,
+  DEBUG_ONLY_THIS_PROCESS = 0x00000002,
+  CREATE_SUSPENDED = 0x00000004,
+  DETACHED_PROCESS = 0x00000008,
+  CREATE_NEW_CONSOLE = 0x00000010,
+  CREATE_NEW_PROCESS_GROUP = 0x00000200,
+  CREATE_UNICODE_ENVIRONMENT = 0x00000400,
+  CREATE_SEPARATE_WOW_VDM = 0x00000800,
+  CREATE_SHARED_WOW_VDM = 0x00001000,
+  CREATE_PROTECTED_PROCESS = 0x00040000,
+  EXTENDED_STARTUPINFO_PRESENT = 0x00080000,
+  CREATE_BREAKAWAY_FROM_JOB = 0x01000000,
+  CREATE_PRESERVE_CODE_AUTHZ_LEVEL = 0x02000000,
+  CREATE_DEFAULT_ERROR_MODE = 0x04000000,
+  CREATE_NO_WINDOW = 0x08000000,
+}
+
+[Flags]
+public enum STARTF : uint
+{
+  STARTF_USESHOWWINDOW = 0x00000001,
+  STARTF_USESIZE = 0x00000002,
+  STARTF_USEPOSITION = 0x00000004,
+  STARTF_USECOUNTCHARS = 0x00000008,
+  STARTF_USEFILLATTRIBUTE = 0x00000010,
+  STARTF_RUNFULLSCREEN = 0x00000020,  // ignored for non-x86 platforms
+  STARTF_FORCEONFEEDBACK = 0x00000040,
+  STARTF_FORCEOFFFEEDBACK = 0x00000080,
+  STARTF_USESTDHANDLES = 0x00000100,
+}
+
+public enum StandardHandle : int
+{
+  Input = -10,
+  Output = -11,
+  Error = -12
+}
+
+public static class Kernel32
+{
+  [DllImport("kernel32.dll", SetLastError=true)]
+  public static extern int CreateProcess(
+    string lpApplicationName,
+    string lpCommandLine,
+    ref SECURITY_ATTRIBUTES lpProcessAttributes,
+    ref SECURITY_ATTRIBUTES lpThreadAttributes,
+    bool bInheritHandles,
+    CreationFlags dwCreationFlags,
+    IntPtr lpEnvironment,
+    string lpCurrentDirectory,
+    ref STARTUPINFO lpStartupInfo,
+    out PROCESS_INFORMATION lpProcessInformation);
+
+  [DllImport("kernel32.dll", SetLastError=true)]
+  public static extern IntPtr GetStdHandle(StandardHandle nStdHandle);
+
+  [DllImport("kernel32", SetLastError=true)]
+  public static extern int WaitForSingleObject(IntPtr hHandle, int dwMilliseconds);
+}
+"@
+
+function Run-ExecutableAndWait($AppPath, $ArgumentString) {
+  # Use the Win32 API to create a new process and wait for it to terminate.
+  $si = New-Object STARTUPINFO
+  $pi = New-Object PROCESS_INFORMATION
+
+  $si.cb = [System.Runtime.InteropServices.Marshal]::SizeOf($si)
+  $si.dwFlags = [STARTF]::STARTF_USESTDHANDLES
+  $si.hStdError = [Kernel32]::GetStdHandle([StandardHandle]::Error)
+  $si.hStdOutput = [Kernel32]::GetStdHandle([StandardHandle]::Output)
+  $si.hStdInput = [Kernel32]::GetStdHandle([StandardHandle]::Input)
+
+  $pSec = New-Object SECURITY_ATTRIBUTES
+  $pSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($pSec)
+  $pSec.bInheritHandle = $true
+  $tSec = New-Object SECURITY_ATTRIBUTES
+  $tSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($tSec)
+  $tSec.bInheritHandle = $true
+
+  $success = [Kernel32]::CreateProcess($AppPath, $ArgumentString, [ref] $pSec, [ref] $tSec, $true, [CreationFlags]::NONE, [IntPtr]::Zero, $pwd, [ref] $si, [ref] $pi)
+  if ($success -eq 0) {
+    [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+  } else {
+    [Kernel32]::WaitForSingleObject($pi.hProcess, -1)
+  }
+}
+
+function Get-ScriptDirectory {
   if (!$PSScriptRoot) {
     $Invocation = (Get-Variable MyInvocation -Scope 1).Value
     $PSScriptRoot = Split-Path $Invocation.MyCommand.Path
@@ -24,13 +160,20 @@ function Run-RubyCommand($command, $argList) {
   #
   # In the process of defeating ruby, one must also defeat the helpfulness of powershell.
   # When arguments come into this method, the standard PS rules for interpreting cmdlet arguments
-  # apply.  When using & (call operator) and providing an array of arguments, powershell will not
-  # evaluate them but (contrary to documentation), it will still marginally interpret them.  If any
-  # of the provided arguments has a space in it, powershell checks the first and last character to
-  # ensure that they are " characters (and that's all it checks).  If they are not, it will blindly
-  # surround that argument with " characters.  It won't do this operation if no space is present,
-  # even if other special characters are present. If it notices leading and trailing " characters,
-  # it won't actually check to see if there are other " characters in the string.
+  # apply.  When using & (call operator) and providing an array of arguments, powershell (verified
+  # on PS 4.0 on Windows Server 2012R2) will not evaluate them but (contrary to documentation),
+  # it will still marginally interpret them.  The behaviour of PS 5.0 seems to be different but
+  # ignore that for now.  If any of the provided arguments has a space in it, powershell checks
+  # the first and last character to ensure that they are " characters (and that's all it checks).
+  # If they are not, it will blindly surround that argument with " characters.  It won't do this
+  # operation if no space is present, even if other special characters are present. If it notices
+  # leading and trailing " characters, it won't actually check to see if there are other "
+  # characters in the string.  Since PS 5.0 changes this behavior, we could consider using the --%
+  # "stop screwing up my arguments" operator, which is available since PS 3.0.  When encountered
+  # --% indicates that the rest of line is to be sent literally...  except if the parser encounters
+  # %FOO% cmd style environment variables.  Because reasons.  And there is no way to escape the
+  # % character in *any* waym shape or form.
+  # https://connect.microsoft.com/PowerShell/feedback/details/376207/executing-commands-which-require-quotes-and-variables-is-practically-impossible
   #
   # In case you think that you're either reading this incorrectly or that I'm full of shit, here
   # are some examples.  These use EchoArgs.exe from the PowerShell Community Extensions package.
@@ -51,24 +194,25 @@ function Run-RubyCommand($command, $argList) {
   # & EchoArgs @($x, $x)
   # Command line:
   # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  ""Look ma! Tonnes of spaces! 'foo' 'bar'"" ""Look ma! Tonnes of spaces! 'foo' 'bar'""
-  # 
+  #
   # Given all this, we can now device a strategy to work around all these immensely helpful, well
   # documented and useful tools by looking at each incoming argument, escaping any ' characters
-  # with a '"'"' sequence, surrounding each argument with ', joining them with a space separating
-  # them and finally injecting a "" sequence at the beginning and end of the concatenated string.
+  # with a '"'"' sequence, surrounding each argument with ' & joining them with a space separating
+  # them.
   # There is another bug (https://bugs.ruby-lang.org/issues/11142) that causes ruby to mangle any
   # "" two-character double quote sequence but since we always emit our strings inside ' except for
   # ' characters, this should be ok.  Just remember that an argument '' should get translated to
   # ''"'"''"'"'' on the command line.  If those intervening empty ''s are not present, the presence
   # of "" will cause ruby to mangle that argument.
   $transformedList = $argList | foreach { "'" + ( $_ -replace "'","'`"'`"'" ) + "'" }
-  $fortifiedArgString = '""' + ($transformedList -join ' ') + '""'
-  
+  $fortifiedArgString = $transformedList -join ' '
+
   # Use the correct embedded ruby path.  We'll be deployed at a path that looks like
   # [C:\opscode or some other prefix]\chef\modules\chef
   $ruby = Join-Path (Get-ScriptDirectory)  "..\..\embedded\bin\ruby.exe"
   $commandPath = Join-Path (Get-ScriptDirectory) "..\..\bin\$command"
-  & $ruby $commandPath $fortifiedArgString
+
+  Run-ExecutableAndWait $ruby """$ruby"" '$commandPath' $fortifiedArgString"
 }
 
 
