@@ -146,7 +146,7 @@ describe "LWRP" do
       it "Should load the old content, and not the new" do
         resource = Chef::Resource.resource_for_node(:lwrp_foo, Chef::Node.new)
         expect(resource).to eq @original_resource
-        expect(resource.default_action).to eq :pass_buck
+        expect(resource.default_action).to eq([:pass_buck])
         expect(Chef.method_defined?(:method_created_by_override_lwrp_foo)).to be_falsey
       end
     end
