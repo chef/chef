@@ -284,6 +284,14 @@ class Chef
              :MaxTokenInfoClass
         ]
 
+        class TOKEN_OWNER < FFI::Struct
+          layout :Owner, :pointer
+        end
+
+        class TOKEN_PRIMARY_GROUP < FFI::Struct
+          layout :PrimaryGroup, :pointer
+        end
+
         # https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572%28v=vs.85%29.aspx
         SECURITY_IMPERSONATION_LEVEL = enum :SECURITY_IMPERSONATION_LEVEL, [
              :SecurityAnonymous,
