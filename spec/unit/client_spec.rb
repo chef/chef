@@ -253,24 +253,7 @@ describe Chef::Client do
 
       describe "when audit phase completed with failed controls" do
         include_context "audit phase completed with failed controls"
-
-        context "with :audit_as_warning true" do
-          before do
-            Chef::Config[:audit_as_warning] = true
-          end
-
-          include_examples "a completed run"
-        end
-
-        context "with :audit_as_warning false" do
-          before do
-            Chef::Config[:audit_as_warning] = false
-          end
-
-          include_examples "a failed run" do
-            let(:run_errors) { [audit_error] }
-          end
-        end
+        include_examples "a completed run"
       end
     end
 
@@ -294,25 +277,8 @@ describe Chef::Client do
 
       describe "when audit phase completed with failed controls" do
         include_context "audit phase completed with failed controls"
-
-        context "with :audit_as_warning true" do
-          before do
-            Chef::Config[:audit_as_warning] = true
-          end
-
-          include_examples "a failed run" do
-            let(:run_errors) { [converge_error] }
-          end
-        end
-
-        context "with :audit_as_warning false" do
-          before do
-            Chef::Config[:audit_as_warning] = false
-          end
-
-          include_examples "a failed run" do
-            let(:run_errors) { [converge_error, audit_error] }
-          end
+        include_examples "a failed run" do
+          let(:run_errors) { [converge_error] }
         end
       end
     end

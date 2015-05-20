@@ -72,7 +72,9 @@ class Chef
       end
 
       def run_failed(error)
-        post_auditing_data(error)
+        # Audit phase errors are captured when audit_phase_failed gets called.
+        # The error passed here isn't relevant to auditing, so we ignore it.
+        post_auditing_data
       end
 
       def control_group_started(name)
@@ -100,7 +102,7 @@ class Chef
 
       private
 
-      def post_auditing_data(error = nil)
+      def post_auditing_data
         unless auditing_enabled?
           Chef::Log.debug("Audit Reports are disabled. Skipping sending reports.")
           return
@@ -118,14 +120,10 @@ class Chef
         Chef::Log.debug("Sending audit report (run-id: #{audit_data.run_id})")
         run_data = audit_data.to_hash
 
-        if @exception || error
-          errors = [@exception, error].uniq.compact
-          errors_messages = errors.map  do |err|
-            msg = "#{err.class.to_s}: #{err.message}"
-            msg << "\n#{err.backtrace.join("\n")}" if err.backtrace
-            msg
-          end
-          run_data[:error] = errors_messages.join("\n")
+        if @exception
+          error_info = "#{@exception.class}: #{@exception.message}"
+          error_info << "\n#{@exception.backtrace.join("\n")}" if @exception.backtrace
+          run_data[:error] = error_info
         end
 
         Chef::Log.debug "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
