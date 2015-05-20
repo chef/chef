@@ -26,20 +26,22 @@ end
 describe Chef::Mixin::Uris do
   let (:uris) { Chef::UrisTest.new }
 
-  it "matches 'scheme://foo.com'" do
-    expect(uris.uri_scheme?('scheme://foo.com')).to eq(true)
-  end
+  describe "#uri_scheme?" do
+    it "matches 'scheme://foo.com'" do
+      expect(uris.uri_scheme?('scheme://foo.com')).to eq(true)
+    end
 
-  it "does not match 'c:/foo.com'" do
-    expect(uris.uri_scheme?('c:/foo.com')).to eq(false)
-  end
+    it "does not match 'c:/foo.com'" do
+      expect(uris.uri_scheme?('c:/foo.com')).to eq(false)
+    end
 
-  it "does not match '/usr/bin/foo.com'" do
-    expect(uris.uri_scheme?('/usr/bin/foo.com')).to eq(false)
-  end
+    it "does not match '/usr/bin/foo.com'" do
+      expect(uris.uri_scheme?('/usr/bin/foo.com')).to eq(false)
+    end
 
-  it "does not match 'c:/foo.com://bar.com'" do
-    expect(uris.uri_scheme?('c:/foo.com://bar.com')).to eq(false)
+    it "does not match 'c:/foo.com://bar.com'" do
+      expect(uris.uri_scheme?('c:/foo.com://bar.com')).to eq(false)
+    end
   end
 
 end
