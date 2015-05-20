@@ -16,6 +16,10 @@ branches:
     - master
     - 12-stable
 
+cache:
+  - C:\Ruby200\lib\ruby\gems\2.0.0
+  - C:\Ruby200\bin
+
 install:
   - winrm quickconfig -q
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
