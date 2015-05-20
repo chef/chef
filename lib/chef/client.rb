@@ -539,16 +539,13 @@ class Chef
     end
 
     def wrap_exceptions(converge_error, audit_error)
-      if audit_error && !(audit_error.is_a?(Chef::Exceptions::AuditsFailed) && Chef::Config[:audit_as_warning])
-        if converge_error
-          return Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
-        else
-          return Chef::Exceptions::RunFailedWrappingError.new(audit_error)
-        end
+      err = if audit_error && !audit_error.is_a?(Chef::Exceptions::AuditsFailed)
+        Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
       elsif converge_error
-        return Chef::Exceptions::RunFailedWrappingError.new(converge_error)
+        Chef::Exceptions::RunFailedWrappingError.new(converge_error)
       end
-      nil
+      err.fill_backtrace if err
+      err
     end
 
   end
