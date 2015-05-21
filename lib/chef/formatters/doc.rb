@@ -3,9 +3,9 @@ require 'chef/config'
 
 class Chef
   module Formatters
-    #--
-    # TODO: not sold on the name, but the output is similar to what rspec calls
-    # "specdoc"
+
+    # Formatter similar to RSpec's documentation formatter. Uses indentation to
+    # show context.
     class Doc < Formatters::Base
 
       attr_reader :start_time, :end_time, :successful_audits, :failed_audits
