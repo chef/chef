@@ -34,7 +34,7 @@ class Chef
         @rest_client = rest_client
         # Ruby 1.9.3 and above "enumerate their values in the order that the corresponding keys were inserted."
         @ordered_control_groups = Hash.new
-        @exception = nil
+        @audit_phase_error = nil
       end
 
       def run_context
@@ -60,7 +60,7 @@ class Chef
       # known control groups.
       def audit_phase_failed(error)
         # The stacktrace information has already been logged elsewhere
-        @exception = error
+        @audit_phase_error = error
         Chef::Log.debug("Audit Reporter failed.")
         ordered_control_groups.each do |name, control_group|
           audit_data.add_control_group(control_group)
@@ -120,9 +120,9 @@ class Chef
         Chef::Log.debug("Sending audit report (run-id: #{audit_data.run_id})")
         run_data = audit_data.to_hash
 
-        if @exception
-          error_info = "#{@exception.class}: #{@exception.message}"
-          error_info << "\n#{@exception.backtrace.join("\n")}" if @exception.backtrace
+        if @audit_phase_error
+          error_info = "#{@audit_phase_error.class}: #{@audit_phase_error.message}"
+          error_info << "\n#{@audit_phase_error.backtrace.join("\n")}" if @audit_phase_error.backtrace
           run_data[:error] = error_info
         end
 
