@@ -1,7 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 29d799f3270c2c99b39a3e8d9e0f5c3cb2f235ba
-  branch: jdm/openssl-1.0.1m
+  revision: 73da8ea8c9a6ff53c1e3d04c1a25131d45e29e15
   specs:
     omnibus-software (4.0.0)
 
