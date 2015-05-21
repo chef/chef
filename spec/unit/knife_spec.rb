@@ -30,10 +30,19 @@ describe Chef::Knife do
 
   let(:knife) { Chef::Knife.new }
 
+  let(:config_location) { File.expand_path("~/.chef/config.rb") }
+
+  let(:config_loader) do
+    instance_double("WorkstationConfigLoader", load: nil, no_config_found?: false, config_location: config_location)
+  end
+
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
+
+    allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
+    allow(config_loader).to receive(:explicit_config_file=)
 
     # Prevent gratuitous code reloading:
     allow(Chef::Knife).to receive(:load_commands)
