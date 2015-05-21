@@ -339,15 +339,22 @@ module ChefConfig
     # most of our testing scenarios)
     default :minimal_ohai, false
 
-    # Policyfile is an experimental feature where a node gets its run list and
-    # cookbook version set from a single document on the server instead of
-    # expanding the run list and having the server compute the cookbook version
-    # set based on environment constraints.
-    #
-    # Because this feature is experimental, it is not recommended for
-    # production use. Developent/release of this feature may not adhere to
-    # semver guidelines.
+    # Policyfile is a feature where a node gets its run list and cookbook
+    # version set from a single document on the server instead of expanding the
+    # run list and having the server compute the cookbook version set based on
+    # environment constraints.
     default :use_policyfile, false
+
+    # Policyfiles can be used in a native mode (default) or compatibility mode.
+    # Native mode requires Chef Server 12.1 (it can be enabled via feature flag
+    # on some prior versions). In native mode, policies and associated
+    # cookbooks are accessed via feature-specific APIs. In compat mode,
+    # policies are stored as data bags and cookbooks are stored at the
+    # cookbooks/ endpoint. Compatibility mode can be dangerous on existing Chef
+    # Servers; it's recommended to upgrade your Chef Server rather than use
+    # compatibility mode. Compatibility mode remains available so you can use
+    # policyfiles with servers that don't yet support the native endpoints.
+    default :policy_document_native_api, true
 
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
