@@ -18,7 +18,7 @@ else
 fi
 
 cleanup_symlinks() {
-  binaries="chef chef-solo chef-apply chef-shell knife shef ohai berks chef-zero fauxhai foodcritic kitchen rubocop strain strainer chef-client"
+  binaries="berks chef chef-apply chef-shell chef-solo chef-zero delivery fauxhai foodcritic kitchen knife ohai shef strain strainer rubocop chef-client"
   for binary in $binaries; do
     rm -f $PREFIX/bin/$binary
   done
