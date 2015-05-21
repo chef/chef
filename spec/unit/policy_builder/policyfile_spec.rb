@@ -166,12 +166,16 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     before do
-      # TODO: agree on this name and logic.
+      Chef::Config[:policy_document_native_api] = false
       Chef::Config[:deployment_group] = "example-policy-stage"
       allow(policy_builder).to receive(:http_api).and_return(http_api)
     end
 
     describe "when using compatibility mode (policy_document_native_api == false)" do
+
+      before do
+        Chef::Config[:deployment_group] = "example-policy-stage"
+      end
 
       context "when the deployment group cannot be loaded" do
         let(:error404) { Net::HTTPServerException.new("404 message", :body) }
