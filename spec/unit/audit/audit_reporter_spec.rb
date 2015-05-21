@@ -95,7 +95,7 @@ describe Chef::Audit::AuditReporter do
           :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) }
 
           before do
-            reporter.instance_variable_set(:@exception, audit_error)
+            reporter.instance_variable_set(:@audit_phase_error, audit_error)
           end
 
         it "reports an error" do
@@ -264,7 +264,7 @@ EOM
 
     context "when some prior exception is stored" do
       before do
-        reporter.instance_variable_set(:@exception, audit_error)
+        reporter.instance_variable_set(:@audit_phase_error, audit_error)
       end
 
       it "reports the prior error" do
