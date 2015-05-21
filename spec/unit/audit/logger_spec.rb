@@ -19,4 +19,24 @@ require 'spec_helper'
 
 describe Chef::Audit::Logger do
 
+  before(:each) do
+    Chef::Audit::Logger.instance_variable_set(:@buffer, nil)
+  end
+
+  it 'calling puts creates @buffer and adds the message' do
+    Chef::Audit::Logger.puts("Output message")
+    expect(Chef::Audit::Logger.read_buffer).to eq("Output message\n")
+  end
+
+  it 'calling puts multiple times adds to the message' do
+    Chef::Audit::Logger.puts("Output message")
+    Chef::Audit::Logger.puts("Output message")
+    Chef::Audit::Logger.puts("Output message")
+    expect(Chef::Audit::Logger.read_buffer).to eq("Output message\nOutput message\nOutput message\n")
+  end
+
+  it 'calling it before @buffer is set returns an empty string' do
+    expect(Chef::Audit::Logger.read_buffer).to eq("")
+  end
+
 end
