@@ -45,6 +45,7 @@
 * [pr#3381](https://github.com/chef/chef/pull/3381) warn on cookbook self-deps
 * [pr#2312](https://github.com/chef/chef/pull/2312): fix `node[:recipes]` duplication, add `node[:cookbooks]` and `node[:expanded_run_list]`
 * [pr#3325](https://github.com/chef/chef/pull/3325) enforce passing a node name with validatorless bootstrapping
+* [pr#3398](https://github.com/chef/chef/pull/3398) Allow spaces in files for the `remote_file` resource
 
 ## 12.3.0
 
