@@ -1,4 +1,5 @@
-## Unreleased
+## 12.4.0
+
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   Fix multipackage and architectures
 * [**Igor Shpakov**](https://github.com/Igorshp):
