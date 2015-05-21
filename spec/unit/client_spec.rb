@@ -241,7 +241,7 @@ describe Chef::Client do
 
       describe "when audit phase errors" do
         include_context "audit phase failed with error"
-        include_examples "a failed run" do
+        include_examples "a completed run with audit failure" do
           let(:run_errors) { [audit_error] }
         end
       end
@@ -253,7 +253,9 @@ describe Chef::Client do
 
       describe "when audit phase completed with failed controls" do
         include_context "audit phase completed with failed controls"
-        include_examples "a completed run"
+        include_examples "a completed run with audit failure" do
+          let(:run_errors) { [audit_error] }
+        end
       end
     end
 
@@ -278,7 +280,7 @@ describe Chef::Client do
       describe "when audit phase completed with failed controls" do
         include_context "audit phase completed with failed controls"
         include_examples "a failed run" do
-          let(:run_errors) { [converge_error] }
+          let(:run_errors) { [converge_error, audit_error] }
         end
       end
     end
@@ -512,7 +514,10 @@ describe Chef::Client do
 
     it "should run exception handlers on early fail" do
       expect(subject).to receive(:run_failed)
-      expect { subject.run }.to raise_error(NoMethodError)
+      expect { subject.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+        expect(error.wrapped_errors.size).to eq 1
+        expect(error.wrapped_errors).to include(NoMethodError)
+      end
     end
   end
 end

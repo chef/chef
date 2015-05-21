@@ -425,6 +425,8 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def run
+      run_error = nil
+
       runlock = RunLock.new(Chef::Config.lockfile)
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
@@ -466,10 +468,8 @@ class Chef
           audit_error = run_audits(run_context)
         end
 
-        if err = wrap_exceptions(converge_error, audit_error)
-          err.fill_backtrace
-          raise err
-        end
+        # Raise converge_error so run_failed reporters/events are processed.
+        raise converge_error if converge_error
 
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
@@ -478,21 +478,16 @@ class Chef
 
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
-
-        true
-
-      rescue Exception => e
+      rescue Exception => run_error
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
-        Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
+        Chef::Log.debug("Re-raising exception: #{run_error.class} - #{run_error.message}\n#{run_error.backtrace.join("\n  ")}")
         # If we failed really early, we may not have a run_status yet. Too early for these to be of much use.
         if run_status
           run_status.stop_clock
-          run_status.exception = e
+          run_status.exception = run_error
           run_failed
         end
-        Chef::Application.debug_stacktrace(e)
-        @events.run_failed(e)
-        raise
+        @events.run_failed(run_error)
       ensure
         Chef::RequestID.instance.reset_request_id
         request_id = nil
@@ -501,6 +496,23 @@ class Chef
         runlock.release
         GC.start
       end
+
+      # Raise audit, converge, and other errors here so that we exit
+      # with the proper exit status code and everything gets raised
+      # as a RunFailedWrappingError
+      if run_error || converge_error || audit_error
+        error = if run_error == converge_error
+          Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
+        else
+          Chef::Exceptions::RunFailedWrappingError.new(run_error, converge_error, audit_error)
+        end
+        error.fill_backtrace
+        Chef::Application.debug_stacktrace(error)
+        raise error
+      end
+
+      run_error = nil
+
       true
     end
 
@@ -537,17 +549,6 @@ class Chef
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
     end
-
-    def wrap_exceptions(converge_error, audit_error)
-      err = if audit_error && !audit_error.is_a?(Chef::Exceptions::AuditsFailed)
-        Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
-      elsif converge_error
-        Chef::Exceptions::RunFailedWrappingError.new(converge_error)
-      end
-      err.fill_backtrace if err
-      err
-    end
-
   end
 end
 
