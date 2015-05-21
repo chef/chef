@@ -26,20 +26,32 @@ end
 describe Chef::Mixin::Uris do
   let (:uris) { Chef::UrisTest.new }
 
-  it "matches 'scheme://foo.com'" do
-    expect(uris.uri_scheme?('scheme://foo.com')).to eq(true)
+  describe "#uri_scheme?" do
+    it "matches 'scheme://foo.com'" do
+      expect(uris.uri_scheme?('scheme://foo.com')).to eq(true)
+    end
+
+    it "does not match 'c:/foo.com'" do
+      expect(uris.uri_scheme?('c:/foo.com')).to eq(false)
+    end
+
+    it "does not match '/usr/bin/foo.com'" do
+      expect(uris.uri_scheme?('/usr/bin/foo.com')).to eq(false)
+    end
+
+    it "does not match 'c:/foo.com://bar.com'" do
+      expect(uris.uri_scheme?('c:/foo.com://bar.com')).to eq(false)
+    end
   end
 
-  it "does not match 'c:/foo.com'" do
-    expect(uris.uri_scheme?('c:/foo.com')).to eq(false)
-  end
+  describe "#as_uri" do
+    it "parses a file scheme uri with spaces" do
+      expect{ uris.as_uri("file:///c:/foo bar.txt") }.not_to raise_exception
+    end
 
-  it "does not match '/usr/bin/foo.com'" do
-    expect(uris.uri_scheme?('/usr/bin/foo.com')).to eq(false)
-  end
-
-  it "does not match 'c:/foo.com://bar.com'" do
-    expect(uris.uri_scheme?('c:/foo.com://bar.com')).to eq(false)
+    it "returns a URI object" do
+      expect( uris.as_uri("file:///c:/foo bar.txt") ).to be_a(URI)
+    end
   end
 
 end

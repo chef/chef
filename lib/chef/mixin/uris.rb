@@ -28,6 +28,17 @@ class Chef
         # From open-uri
         !!(%r{\A[A-Za-z][A-Za-z0-9+\-\.]*://} =~ source)
       end
+
+
+      def as_uri(source)
+        begin
+          URI.parse(source)
+        rescue URI::InvalidURIError
+          Chef::Log.warn("#{source} was an invalid URI. Trying to escape invalid characters")
+          URI.parse(URI.escape(source))
+        end
+      end
+
     end
   end
 end
