@@ -314,14 +314,14 @@ EOM
 
     it "notifies audit phase finished to debug log" do
       expect(Chef::Log).to receive(:debug).with(/Audit Reporter completed/)
-      reporter.audit_phase_complete
+      reporter.audit_phase_complete("Output from audit mode")
     end
 
     it "collects audit data" do
       ordered_control_groups.each do |_name, group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
-      reporter.audit_phase_complete
+      reporter.audit_phase_complete("Output from audit mode")
     end
   end
 
@@ -332,14 +332,14 @@ EOM
 
     it "notifies audit phase failed to debug log" do
       expect(Chef::Log).to receive(:debug).with(/Audit Reporter failed/)
-      reporter.audit_phase_failed(error)
+      reporter.audit_phase_failed(error, "Output from audit mode")
     end
 
     it "collects audit data" do
       ordered_control_groups.each do |_name, group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
-      reporter.audit_phase_failed(error)
+      reporter.audit_phase_failed(error, "Output from audit mode")
     end
   end
 

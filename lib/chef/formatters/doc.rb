@@ -179,11 +179,13 @@ class Chef
         puts_line "Starting audit phase"
       end
 
-      def audit_phase_complete
+      def audit_phase_complete(audit_output)
+        puts_line audit_output
         puts_line "Auditing complete"
       end
 
-      def audit_phase_failed(error)
+      def audit_phase_failed(error, audit_output)
+        puts_line audit_output
         puts_line ""
         puts_line "Audit phase exception:"
         indent

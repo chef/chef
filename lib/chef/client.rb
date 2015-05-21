@@ -725,11 +725,11 @@ class Chef
           audit_exception = Chef::Exceptions::AuditsFailed.new(auditor.num_failed, auditor.num_total)
           events.audit_phase_failed(audit_exception)
         else
-          events.audit_phase_complete
+          @events.audit_phase_complete(Chef::Audit::Logger.read_buffer)
         end
       rescue Exception => e
         Chef::Log.error("Audit phase failed with error message: #{e.message}")
-        events.audit_phase_failed(e)
+        @events.audit_phase_failed(e, Chef::Audit::Logger.read_buffer)
         audit_exception = e
       end
       audit_exception

@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/audit/logger'
+
 class Chef
   class Audit
     class Runner
@@ -115,8 +117,8 @@ class Chef
       # the output stream to be changed for a formatter once the formatter has
       # been added.
       def set_streams
-        RSpec.configuration.output_stream = Chef::Config[:log_location]
-        RSpec.configuration.error_stream = Chef::Config[:log_location]
+        RSpec.configuration.output_stream = Chef::Audit::Logger
+        RSpec.configuration.error_stream = Chef::Audit::Logger
       end
 
       # Add formatters which we use to
