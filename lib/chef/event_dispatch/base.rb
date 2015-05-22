@@ -82,6 +82,11 @@ class Chef
       def node_load_completed(node, expanded_run_list, config)
       end
 
+      # Called after the Policyfile was loaded. This event only occurs when
+      # chef is in policyfile mode.
+      def policyfile_loaded(policy)
+      end
+
       # Called before the cookbook collection is fetched from the server.
       def cookbook_resolution_start(expanded_run_list)
       end

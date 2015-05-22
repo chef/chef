@@ -93,6 +93,10 @@ class Chef
       def node_load_completed(node, expanded_run_list, config)
       end
 
+      def policyfile_loaded(policy)
+        puts_line "Using policy '#{policy["name"]}' at revision '#{policy["revision_id"]}'"
+      end
+
       # Called before the cookbook collection is fetched from the server.
       def cookbook_resolution_start(expanded_run_list)
         puts_line "resolving cookbooks for run list: #{expanded_run_list.inspect}"
