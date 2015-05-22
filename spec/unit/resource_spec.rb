@@ -35,6 +35,18 @@ describe Chef::Resource do
     @resource = Chef::Resource.new("funk", @run_context)
   end
 
+  it "should mixin shell_out" do
+    expect(@resource.respond_to?(:shell_out)).to be true
+  end
+
+  it "should mixin shell_out!" do
+    expect(@resource.respond_to?(:shell_out!)).to be true
+  end
+
+  it "should mixin shell_out_with_systems_locale" do
+    expect(@resource.respond_to?(:shell_out_with_systems_locale)).to be true
+  end
+
   describe "when inherited" do
 
     it "adds an entry to a list of subclasses" do
