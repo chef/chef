@@ -511,8 +511,6 @@ class Chef
         raise error
       end
 
-      run_error = nil
-
       true
     end
 
