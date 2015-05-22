@@ -43,7 +43,7 @@ class Chef
     end
 
     def build(&block)
-      raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
+      raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil? || name.empty?
 
       @resource = resource_class.new(name, run_context)
       resource.source_line = created_at
