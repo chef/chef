@@ -21,11 +21,9 @@ class Chef
   class Audit
     class Logger
       def self.puts(message="")
-        if @buffer.nil?
-          @buffer = StringIO.new
-        end
-
+        @buffer ||= StringIO.new
         @buffer.puts(message)
+
         Chef::Log.info(message)
       end
 

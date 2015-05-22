@@ -723,7 +723,7 @@ class Chef
         auditor.run
         if auditor.failed?
           audit_exception = Chef::Exceptions::AuditsFailed.new(auditor.num_failed, auditor.num_total)
-          events.audit_phase_failed(audit_exception)
+          @events.audit_phase_failed(audit_exception, Chef::Audit::Logger.read_buffer)
         else
           @events.audit_phase_complete(Chef::Audit::Logger.read_buffer)
         end
