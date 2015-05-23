@@ -26,7 +26,7 @@ class Chef
 
       def initialize (new_resource, run_context)
         super(new_resource, run_context, '.ps1')
-        normalize_script_exit_status
+        add_exit_status_wrapper
       end
 
       def action_run
@@ -53,7 +53,7 @@ class Chef
 
       # Process exit codes are strange with PowerShell and require
       # special handling to cover common use cases.
-      def normalize_script_exit_status
+      def add_exit_status_wrapper
         self.code = wrapper_script
         Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
         Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
@@ -82,11 +82,17 @@ class Chef
       end
 
       def default_interpreter_flags
+        # 'Bypass' is preferable since it doesn't require user input confirmation
+        # for files such as PowerShell modules downloaded from the
+        # Internet. However, 'Bypass' is not supported prior to
+        # PowerShell 3.0, so the fallback is 'Unrestricted'
+        execution_policy = Chef::Platform.supports_powershell_execution_bypass?(run_context.node) ? 'Bypass' : 'Unrestricted'
+
         [
           "-NoLogo",
           "-NonInteractive",
           "-NoProfile",
-          "-ExecutionPolicy Unrestricted",
+          "-ExecutionPolicy #{execution_policy}",
           # Powershell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
           "-InputFormat None"

@@ -39,6 +39,11 @@ class Chef
         is_server_2003
       end
 
+      def supports_powershell_execution_bypass?(node)
+        node[:languages] && node[:languages][:powershell] &&
+          node[:languages][:powershell][:version].to_i >= 3
+      end
+
       def supports_dsc?(node)
         node[:languages] && node[:languages][:powershell] &&
           node[:languages][:powershell][:version].to_i >= 4

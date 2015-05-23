@@ -134,7 +134,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "returns 1 if the script provided to the code attribute is not syntactically correct" do
       resource.code('if({)')
       resource.returns(1)
-      resource.run_action(:run)
+      expect { resource.run_action(:run) }.not_to raise_error
     end
 
     # This somewhat ambiguous case, two failures of different types,
