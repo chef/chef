@@ -163,9 +163,6 @@ shared_examples_for "a securable resource with existing target" do
     let(:desired_gid) { 1337 }
     let(:expected_gid) { 1337 }
 
-    skip "should set an owner (Rerun specs under root)", :requires_unprivileged_user => true
-    skip "should set a group (Rerun specs under root)",  :requires_unprivileged_user => true
-
     describe "when setting the owner", :requires_root do
       before do
         resource.owner expected_user_name
@@ -205,11 +202,6 @@ shared_examples_for "a securable resource with existing target" do
         resource.run_action(:create)
       end
 
-      it "should set permissions as specified" do
-        pending("Linux does not support lchmod")
-        expect{ File.lstat(path).mode & 007777 }.to eq(@mode_string.oct & 007777)
-      end
-
       it "is marked as updated only if changes are made" do
         expect(resource.updated_by_last_action?).to eq(expect_updated?)
       end
@@ -220,11 +212,6 @@ shared_examples_for "a securable resource with existing target" do
         @mode_integer = 0776
         resource.mode @mode_integer
         resource.run_action(:create)
-      end
-
-      it "should set permissions in numeric form as a ruby-interpreted octal" do
-        pending('Linux does not support lchmod')
-        expect{ File.lstat(path).mode & 007777 }.to eq(@mode_integer & 007777)
       end
 
       it "is marked as updated only if changes are made" do
@@ -306,10 +293,6 @@ shared_examples_for "a securable resource without existing target" do
 
   include_context "diff disabled"
 
-  context "on Unix", :unix_only do
-    skip "if we need any securable resource tests on Unix without existing target resource."
-  end
-
   context "on Windows", :windows_only do
     include_context "use Windows permissions"
 
@@ -364,13 +347,6 @@ shared_examples_for "a securable resource without existing target" do
 
     it "fails to set group when group has invalid characters" do
       expect { resource.group 'Lance "The Nose" Glindenberry III' }.to raise_error(Chef::Exceptions::ValidationFailed)
-    end
-
-    it "sets group when group is specified with a \\" do
-      pending("Need to find a group containing a backslash that is on most peoples' machines")
-      resource.group "#{ENV['COMPUTERNAME']}\\Administrators"
-      resource.run_action(:create)
-      expect{ descriptor.group }.to eq(SID.Everyone)
     end
 
     it "leaves group alone if group is not specified and resource already exists" do

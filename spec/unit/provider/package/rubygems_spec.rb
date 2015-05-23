@@ -222,8 +222,6 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   end
 
   it "uses the cached result for gem paths when available" do
-    gem_env_output = ['/path/to/gems', '/another/path/to/gems'].join(File::PATH_SEPARATOR)
-    shell_out_result = OpenStruct.new(:stdout => gem_env_output)
     expect(@gem_env).not_to receive(:shell_out!)
     expected = ['/path/to/gems', '/another/path/to/gems']
     Chef::Provider::Package::Rubygems::AlternateGemEnvironment.gempath_cache['/usr/weird/bin/gem']= expected
@@ -261,7 +259,7 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
     else
       `which gem`.strip
     end
-    pending("cant find your gem executable") if path_to_gem.empty?
+    skip("cant find your gem executable") if path_to_gem.empty?
     gem_env = Chef::Provider::Package::Rubygems::AlternateGemEnvironment.new(path_to_gem)
     expected = ['rspec-core', Gem::Version.new(RSpec::Core::Version::STRING)]
     actual = gem_env.installed_versions(Gem::Dependency.new('rspec-core', nil)).map { |s| [s.name, s.version] }

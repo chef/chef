@@ -50,18 +50,6 @@ describe Chef::Provider::Package::Openbsd do
 
       context 'when there is a single candidate' do
 
-        context 'when installing from source' do
-          it 'should run the installation command' do
-            pending('Installing from source is not supported yet')
-            # This is a consequence of load_current_resource being called before define_resource_requirements
-            # It can be deleted once an implementation is provided
-            allow(provider).to receive(:shell_out!).with("pkg_info -I \"#{name}\"", anything()).and_return(
-              instance_double('shellout', :stdout => "#{name}-#{version}\n"))
-            new_resource.source('/some/path/on/disk.tgz')
-            provider.run_action(:install)
-          end
-        end
-
         context 'when source is not provided' do
           it 'should run the installation command' do
             expect(provider).to receive(:shell_out!).with("pkg_info -I \"#{name}\"", anything()).and_return(
@@ -106,15 +94,6 @@ describe Chef::Provider::Package::Openbsd do
             end
           end
 
-          context 'if a version is specified' do
-            it 'runs the installation command' do
-              pending('Specifying both a version and flavor is not supported')
-              new_resource.version(version)
-              allow(provider).to receive(:shell_out!).with(/pkg_info -e/, anything()).and_return(instance_double('shellout', :stdout => ''))
-              allow(provider).to receive(:candidate_version).and_return("#{package_name}-#{version}-#{flavor}")
-              provider.run_action(:install)
-            end
-          end
         end
 
         context 'if a version is specified' do

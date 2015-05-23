@@ -108,7 +108,7 @@ describe Chef::Provider::User::Useradd, metadata do
         break if status.exitstatus != 8
 
         sleep 1
-        max_retries = max_retries -1
+        max_retries = max_retries - 1
       rescue UserNotFound
         break
       end
@@ -169,7 +169,7 @@ describe Chef::Provider::User::Useradd, metadata do
     context "when the user does not exist beforehand" do
       before do
         if reason = skip
-          pending(reason)
+          skip(reason)
         end
         user_resource.run_action(:create)
         expect(user_resource).to be_updated_by_last_action
@@ -342,7 +342,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
       before do
         if reason = skip
-          pending(reason)
+          skip(reason)
         end
         existing_user.run_action(:create)
         expect(existing_user).to be_updated_by_last_action
@@ -535,7 +535,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
     def aix_user_lock_status
       lock_info = shell_out!("lsuser -a account_locked #{username}")
-      status = /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)[1]
+      /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)[1]
     end
 
     def user_account_should_be_locked
