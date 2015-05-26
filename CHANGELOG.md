@@ -1,8 +1,8 @@
 ## Unreleased
 
 * [pr#3397](https://github.com/chef/chef/pull/3397): Validate owner exists in directory resources
-* [pr#3418](https://github.com/chef/chef/pull/3418): Add `shell_out` mixin to Chef::Resource class
-for use in `not_if`/`only_if` conditionals, etc.
+* [pr#3418](https://github.com/chef/chef/pull/3418): Add `shell_out` mixin to Chef::Resource class for use in `not_if`/`only_if` conditionals, etc.
+* [pr#3406](https://github.com/chef/chef/pull/3406): Add wide-char 'Environment' to `broadcast_env_change` mixin for setting windows environment variables
 
 ## 12.4.0
 
