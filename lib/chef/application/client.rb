@@ -279,6 +279,12 @@ class Chef::Application::Client < Chef::Application
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 
     Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+
+    if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
+      Chef::Config.delete(:chef_repo_path)
+      Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
+    end
+
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
