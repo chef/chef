@@ -37,6 +37,7 @@ require 'chef/resource_resolver'
 
 require 'chef/mixin/deprecation'
 require 'chef/mixin/provides'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Resource
@@ -50,6 +51,9 @@ class Chef
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
     extend Chef::Mixin::Provides
+
+    # This lets user code do things like `not_if { shell_out!("command") }`
+    include Chef::Mixin::ShellOut
 
     #
     # The node the current Chef run is using.
