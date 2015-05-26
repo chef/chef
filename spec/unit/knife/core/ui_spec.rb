@@ -375,6 +375,13 @@ EOM
         @ui.config[:attribute] = "name"
         expect(@ui.format_for_display(input)).to eq( {"chef.localdomain"=>{"name"=>"chef.localdomain"} })
       end
+
+      it "returns nil when given an attribute path that isn't a name or attribute" do
+        input = { "keys" =>  {"keys" => "values"}, "hi" => "ho", "id" => "sample-data-bag-item" }
+        non_existing_path = "nope.nada.nothingtoseehere"
+        @ui.config[:attribute] = non_existing_path
+        expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { non_existing_path => nil } })
+      end
     end
 
     describe "with --run-list passed" do
