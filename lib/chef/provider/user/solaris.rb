@@ -1,7 +1,9 @@
 #
 # Author:: Stephen Nelson-Smith (<sns@opscode.com>)
 # Author:: Jon Ramsey (<jonathon.ramsey@gmail.com>)
+# Author:: Dave Eddy (<dave@daveeddy.com>)
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2015, Dave Eddy
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +24,7 @@ class Chef
   class Provider
     class User
       class Solaris < Chef::Provider::User::Useradd
+        provides :user, os: 'solaris2'
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
 
         attr_writer :password_file
@@ -39,6 +42,32 @@ class Chef
         def manage_user
           manage_password
           super
+        end
+
+        def check_lock
+          shadow_line = shell_out!('getent', 'shadow', new_resource.username).stdout.strip rescue nil
+
+          # if the command fails we return nil, this can happen if the user
+          # in question doesn't exist
+          return nil if shadow_line.nil?
+
+          # convert "dave:NP:16507::::::\n" to "NP"
+          fields = shadow_line.split(':')
+
+          # '*LK*...' and 'LK' are both considered locked,
+          # so look for LK at the beginning of the shadow entry
+          # optionally surrounded by '*'
+          @locked = !!fields[1].match(/^\*?LK\*?/)
+
+          @locked
+        end
+
+        def lock_user
+          shell_out!('passwd', '-l', new_resource.username)
+        end
+
+        def unlock_user
+          shell_out!('passwd', '-u', new_resource.username)
         end
 
       private
@@ -65,9 +94,10 @@ class Chef
           buffer.close
 
           # FIXME: mostly duplicates code with file provider deploying a file
-          mode = ::File.stat(@password_file).mode & 07777
-          uid  = ::File.stat(@password_file).uid
-          gid  = ::File.stat(@password_file).gid
+          s = ::File.stat(@password_file)
+          mode = s.mode & 07777
+          uid  = s.uid
+          gid  = s.gid
 
           FileUtils.chown uid, gid, buffer.path
           FileUtils.chmod mode, buffer.path
