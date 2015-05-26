@@ -368,6 +368,13 @@ EOM
         @ui.config[:attribute] = "keys.keys"
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "keys.keys" => "values" } })
       end
+
+      it "should return the name attribute" do
+        allow_any_instance_of(Chef::Node).to receive(:name).and_return("chef.localdomain")
+        input = Chef::Node.new
+        @ui.config[:attribute] = "name"
+        expect(@ui.format_for_display(input)).to eq( {"chef.localdomain"=>{"name"=>"chef.localdomain"} })
+      end
     end
 
     describe "with --run-list passed" do
