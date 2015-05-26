@@ -65,8 +65,12 @@ describe Chef::Provider::User::Useradd, metadata do
     end
   end
 
-  def supports_quote_in_username?
-    OHAI_SYSTEM["platform_family"] == "debian"
+  def self.quote_in_username_unsupported?
+    if OHAI_SYSTEM["platform_family"] == "debian"
+      false
+    else
+      "Only debian family systems support quotes in username"
+    end
   end
 
   def password_should_be_set
@@ -181,12 +185,7 @@ describe Chef::Provider::User::Useradd, metadata do
       #  tabulation: '\t', etc.). Note that using a slash ('/') may break the
       #  default algorithm for the definition of the user's home directory.
 
-      context "and the username contains a single quote" do
-        before do
-          if !supports_quote_in_username?
-            skip("Platform #{OHAI_SYSTEM["platform"]} not expected to support username w/ quote")
-          end
-        end
+      context "and the username contains a single quote", skip: quote_in_username_unsupported? do
 
         let(:username) { "t'bilisi" }
 
