@@ -1,5 +1,5 @@
 ## Unreleased
-
+* [pr#3419](https://github.com/chef/chef/pull/3419): Fix cli issue with chef_repo_path when ENV variable is unset
 * [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly): Pass name by
   knife cil attribute [pr#3195](https://github.com/chef/chef/pull/3195)
 
