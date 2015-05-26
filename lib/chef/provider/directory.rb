@@ -43,6 +43,9 @@ class Chef
       end
 
       def define_resource_requirements
+        # deep inside FAC we have to assert requirements, so call FACs hook to set that up
+        access_controls.define_resource_requirements
+
         requirements.assert(:create) do |a|
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
