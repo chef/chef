@@ -162,15 +162,10 @@ describe Chef::Provider::User::Useradd, metadata do
     end
   end
 
-  let(:skip) { false }
-
   describe "action :create" do
 
     context "when the user does not exist beforehand" do
       before do
-        if reason = skip
-          skip(reason)
-        end
         user_resource.run_action(:create)
         expect(user_resource).to be_updated_by_last_action
       end
@@ -187,11 +182,9 @@ describe Chef::Provider::User::Useradd, metadata do
       #  default algorithm for the definition of the user's home directory.
 
       context "and the username contains a single quote" do
-        let(:skip) do
-          if supports_quote_in_username?
-            false
-          else
-            "Platform #{OHAI_SYSTEM["platform"]} not expected to support username w/ quote"
+        before do
+          if !supports_quote_in_username?
+            skip("Platform #{OHAI_SYSTEM["platform"]} not expected to support username w/ quote")
           end
         end
 
