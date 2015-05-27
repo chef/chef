@@ -95,4 +95,59 @@ describe Chef::Deprecation do
     expect { test_instance.deprecated_method(10) }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
   end
 
+  context "When a class has deprecated_attr, _reader and _writer" do
+    before(:context) do
+      class DeprecatedAttrTest
+        extend Chef::Mixin::Deprecation
+        def initialize
+          @a = @r = @w = 1
+        end
+        deprecated_attr :a, "a"
+        deprecated_attr_reader :r, "r"
+        deprecated_attr_writer :w, "w"
+      end
+    end
+
+    it "The deprecated_attr emits warnings" do
+      test = DeprecatedAttrTest.new
+      expect { test.a = 10 }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+      expect { test.a }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    end
+
+    it "The deprecated_attr_writer emits warnings, and does not create a reader" do
+      test = DeprecatedAttrTest.new
+      expect { test.w = 10 }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+      expect { test.w }.to raise_error(NoMethodError)
+    end
+
+    it "The deprecated_attr_reader emits warnings, and does not create a writer" do
+      test = DeprecatedAttrTest.new
+      expect { test.r = 10 }.to raise_error(NoMethodError)
+      expect { test.r }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    end
+
+    context "With deprecation warnings not throwing exceptions" do
+      before do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      end
+
+      it "The deprecated_attr can be written to and read from" do
+        test = DeprecatedAttrTest.new
+        test.a = 10
+        expect(test.a).to eq 10
+      end
+
+      it "The deprecated_attr_reader can be read from" do
+        test = DeprecatedAttrTest.new
+        expect(test.r).to eq 1
+      end
+
+      it "The deprecated_attr_writer can be written to" do
+        test = DeprecatedAttrTest.new
+        test.w = 10
+        expect(test.instance_eval { @w }).to eq 10
+      end
+    end
+  end
+
 end

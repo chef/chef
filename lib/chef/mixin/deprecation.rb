@@ -100,28 +100,24 @@ class Chef
         deprecated_attr_writer(name, alternative)
       end
 
-      def deprecated_attr_reader(name, alternative)
-        instance_eval <<-EOM
-          def #{name}(value)
-            Chef::Log.deprecation("#{self}.#{name} is deprecated. Support will be removed in a future release.")
-            Chef::Log.deprecation(#{alternative.inspect})
-            Chef::Log.deprecation("Called from:")
-            caller[0..3].each {|l| log(l)}
-            @#{name}
-          end
-        EOM
+      def deprecated_attr_reader(name, alternative, level=:warn)
+        define_method(name) do
+          Chef::Log.deprecation("#{self.class}.#{name} is deprecated. Support will be removed in a future release.")
+          Chef::Log.deprecation(alternative)
+          Chef::Log.deprecation("Called from:")
+          caller[0..3].each {|c| Chef::Log.deprecation(c)}
+          instance_variable_get("@#{name}")
+        end
       end
 
-      def deprecated_attr_writer(name, alternative)
-        instance_eval <<-EOM
-          def #{name}=(value)
-            Chef::Log.deprecation("Writing to #{self}.#{name}= is deprecated. Support will be removed in a future release.")
-            Chef::Log.deprecation(#{alternative.inspect})
-            Chef::Log.deprecation("Called from:")
-            caller[0..3].each {|l| log(l)}
-            @#{name} = value
-          end
-        EOM
+      def deprecated_attr_writer(name, alternative, level=:warn)
+        define_method("#{name}=") do |value|
+          Chef::Log.deprecation("Writing to #{self.class}.#{name} with #{name}= is deprecated. Support will be removed in a future release.")
+          Chef::Log.deprecation(alternative)
+          Chef::Log.deprecation("Called from:")
+          caller[0..3].each {|c| Chef::Log.deprecation(c)}
+          instance_variable_set("@#{name}", value)
+        end
       end
     end
   end
