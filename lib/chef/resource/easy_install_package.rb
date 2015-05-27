@@ -24,11 +24,6 @@ class Chef
 
       provides :easy_install_package
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :easy_install_package
-      end
-
       def easy_install_binary(arg=nil)
         set_or_return(
           :easy_install_binary,

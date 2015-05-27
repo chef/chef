@@ -25,11 +25,6 @@ class Chef
 
       provides :follower, platform: "zen"
 
-      def initialize(name, run_context=nil)
-        @resource_name = :zen_follower
-        super
-      end
-
       def master(arg=nil)
         if !arg.nil?
           @master = arg

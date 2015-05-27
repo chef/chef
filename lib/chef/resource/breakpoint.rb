@@ -25,11 +25,9 @@ class Chef
       provides :breakpoint
 
       def initialize(action="break", *args)
-        @name = caller.first
-        super(@name, *args)
+        super(caller.first, *args)
         @action = "break"
         @allowed_actions << :break
-        @resource_name = :breakpoint
       end
     end
   end

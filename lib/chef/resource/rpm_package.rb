@@ -27,7 +27,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :rpm_package
         @allow_downgrade = false
       end
 

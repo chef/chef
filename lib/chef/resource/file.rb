@@ -51,7 +51,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :file
         @path = name
         @backup = 5
         @action = "create"

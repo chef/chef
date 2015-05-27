@@ -28,7 +28,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :yum_package
         @flush_cache = { :before => false, :after => false }
         @allow_downgrade = false
       end

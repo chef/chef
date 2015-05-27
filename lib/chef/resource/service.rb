@@ -30,7 +30,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :service
         @service_name = name
         @enabled = nil
         @running = nil

@@ -49,7 +49,6 @@ class Chef
       # node<Chef::Node>:: Node where resource will be used
       def initialize(name, run_context=nil)
         super
-        @resource_name = :log
         @level = :info
         @action = :write
         @allowed_actions.push(:write)

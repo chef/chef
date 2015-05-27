@@ -29,7 +29,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ruby_block
         @action = "run"
         @allowed_actions << :create << :run
         @block_name = name

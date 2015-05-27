@@ -27,7 +27,6 @@ class Chef
 
       def initialize(name, run_context = nil)
         super(name, run_context)
-        @resource_name = :ips_package
         @allowed_actions.push(:install, :remove, :upgrade)
         @accept_license = false
       end

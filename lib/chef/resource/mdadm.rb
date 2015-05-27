@@ -31,7 +31,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :mdadm
 
         @chunk = 16
         @devices = []
