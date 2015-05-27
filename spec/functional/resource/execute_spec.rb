@@ -137,9 +137,16 @@ describe Chef::Resource::Execute do
     end
   end
 
+  # Ensure that CommandTimeout is raised, and is caused by resource.timeout really expiring.
+  # https://github.com/chef/chef/issues/2985
+  #
+  # resource.timeout should be short, this is what we're testing
+  # resource.command ruby sleep timer should be longer than resource.timeout to give us something to timeout
+  # Timeout::timeout should be longer than resource.timeout, but less than the resource.command ruby sleep timer,
+  #   so we fail if we finish on resource.command instead of resource.timeout, but raise CommandTimeout anyway (#2175).
   it "times out when a timeout is set on the resource" do
-    Timeout::timeout(5) do
-      resource.command %{ruby -e 'sleep 600'}
+    Timeout::timeout(30) do
+      resource.command %{ruby -e 'sleep 300'}
       resource.timeout 0.1
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::CommandTimeout)
     end
