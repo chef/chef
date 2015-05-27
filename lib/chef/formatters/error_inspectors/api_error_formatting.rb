@@ -68,13 +68,16 @@ E
       end
 
       def describe_406_error(error_description, response)
-        if Chef::JSONCompat.from_json(response.body)["error"] == "invalid-x-ops-server-api-version"
-          min_version = Chef::JSONCompat.from_json(response.body)["min_version"]
-          max_version = Chef::JSONCompat.from_json(response.body)["max_version"]
+        if response["x-ops-server-api-version"]
+          version_header = Chef::JSONCompat.from_json(response["x-ops-server-api-version"])
+          client_api_version = version_header["request_version"]
+          min_server_version = version_header["min_version"]
+          max_server_version = version_header["max_version"]
+
           error_description.section("Incompatible server API version:",<<-E)
-This version of Chef is not supported by the Chef server you sent this request to
-This version of Chef requires a server API version of #{Chef::HTTP::Authenticator::SERVER_API_VERSION}
-The Chef server you sent the request to supports a min API version of #{min_version} and a max API version of #{max_version}
+This version of the API that this Chef request specified is not supported by the Chef server you sent this request to
+The Chef server you sent the request to supports a min API version of #{min_server_version} and a max API version of #{max_server_version}
+Chef just made a request with an API version of #{client_api_version}
 Please either update your Chef client or server to be a compatible set
 E
         else

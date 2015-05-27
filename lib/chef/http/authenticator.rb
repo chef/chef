@@ -24,7 +24,7 @@ class Chef
   class HTTP
     class Authenticator
 
-      SERVER_API_VERSION = "0"
+      DEFAULT_SERVER_API_VERSION = "0"
 
       attr_reader :signing_key_filename
       attr_reader :raw_key
@@ -39,11 +39,16 @@ class Chef
         @signing_key_filename = opts[:signing_key_filename]
         @key = load_signing_key(opts[:signing_key_filename], opts[:raw_key])
         @auth_credentials = AuthCredentials.new(opts[:client_name], @key)
+        if opts[:api_version]
+          @api_version = opts[:api_version]
+        else
+          @api_version = DEFAULT_SERVER_API_VERSION
+        end
       end
 
       def handle_request(method, url, headers={}, data=false)
         headers.merge!(authentication_headers(method, url, data)) if sign_requests?
-        headers.merge!({'X-Ops-Server-API-Version' => SERVER_API_VERSION})
+        headers.merge!({'X-Ops-Server-API-Version' => @api_version})
         [method, url, headers, data]
       end
 

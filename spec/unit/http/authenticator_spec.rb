@@ -32,10 +32,19 @@ describe Chef::HTTP::Authenticator do
 
   context "when handle_request is called" do
     shared_examples_for "merging the server API version into the headers" do
-      it "merges X-Ops-Server-API-Version into the headers" do
+      it "merges the default version of X-Ops-Server-API-Version into the headers" do
         # headers returned
         expect(class_instance.handle_request(method, url, headers, data)[2]).
-          to include({'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::SERVER_API_VERSION})
+          to include({'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION})
+      end
+
+      context "when api_version is set to something other than the default" do
+        let(:class_instance) { Chef::HTTP::Authenticator.new({:api_version => '-10'}) }
+
+        it "merges the requested version of X-Ops-Server-API-Version into the headers" do
+          expect(class_instance.handle_request(method, url, headers, data)[2]).
+            to include({'X-Ops-Server-API-Version' => '-10'})
+        end
       end
     end
 

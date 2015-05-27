@@ -26,98 +26,146 @@ describe Chef::User do
     @user = Chef::User.new
   end
 
+  shared_examples_for "string fields with no contraints" do
+    it "should let you set the public key" do
+      expect(@user.send(method, "some_string")).to eq("some_string")
+    end
+
+    it "should return the current public key" do
+      @user.send(method, "some_string")
+      expect(@user.send(method)).to eq("some_string")
+    end
+
+    it "should throw an ArgumentError if you feed it something lame" do
+      expect { @user.send(method, Hash.new) }.to raise_error(ArgumentError)
+    end
+  end
+
+  shared_examples_for "boolean fields with no constraints" do
+    it "should let you set the admin bit" do
+      expect(@user.send(method, true)).to eq(true)
+    end
+
+    it "should return the current admin value" do
+      @user.send(method, true)
+      expect(@user.send(method)).to eq(true)
+    end
+
+    it "should throw an ArgumentError if you feed it anything but true or false" do
+      expect { @user.send(method, Hash.new) }.to raise_error(ArgumentError)
+    end
+  end
+
   describe "initialize" do
     it "should be a Chef::User" do
       expect(@user).to be_a_kind_of(Chef::User)
     end
   end
 
-  describe "name" do
-    it "should let you set the name to a string" do
-      expect(@user.name("ops_master")).to eq("ops_master")
+  describe "username" do
+    it "should let you set the username to a string" do
+      expect(@user.username("ops_master")).to eq("ops_master")
     end
 
-    it "should return the current name" do
-      @user.name "ops_master"
-      expect(@user.name).to eq("ops_master")
+    it "should return the current username" do
+      @user.username "ops_master"
+      expect(@user.username).to eq("ops_master")
     end
 
     # It is not feasible to check all invalid characters.  Here are a few
     # that we probably care about.
     it "should not accept invalid characters" do
       # capital letters
-      expect { @user.name "Bar" }.to raise_error(ArgumentError)
+      expect { @user.username "Bar" }.to raise_error(ArgumentError)
       # slashes
-      expect { @user.name "foo/bar" }.to raise_error(ArgumentError)
+      expect { @user.username "foo/bar" }.to raise_error(ArgumentError)
       # ?
-      expect { @user.name "foo?" }.to raise_error(ArgumentError)
+      expect { @user.username "foo?" }.to raise_error(ArgumentError)
       # &
-      expect { @user.name "foo&" }.to raise_error(ArgumentError)
+      expect { @user.username "foo&" }.to raise_error(ArgumentError)
     end
 
 
     it "should not accept spaces" do
-      expect { @user.name "ops master" }.to raise_error(ArgumentError)
+      expect { @user.username "ops master" }.to raise_error(ArgumentError)
     end
 
     it "should throw an ArgumentError if you feed it anything but a string" do
-      expect { @user.name Hash.new }.to raise_error(ArgumentError)
+      expect { @user.username Hash.new }.to raise_error(ArgumentError)
     end
   end
 
-  describe "admin" do
-    it "should let you set the admin bit" do
-      expect(@user.admin(true)).to eq(true)
+  describe "boolean fields" do
+    describe "admin" do
+      it_should_behave_like "boolean fields with no constraints" do
+        let(:method) { :admin }
+      end
+
+      it "should default to false" do
+        expect(@user.admin).to eq(false)
+      end
     end
 
-    it "should return the current admin value" do
-      @user.admin true
-      expect(@user.admin).to eq(true)
-    end
-
-    it "should default to false" do
-      expect(@user.admin).to eq(false)
-    end
-
-    it "should throw an ArgumentError if you feed it anything but true or false" do
-      expect { @user.name Hash.new }.to raise_error(ArgumentError)
-    end
-  end
-
-  describe "public_key" do
-    it "should let you set the public key" do
-      expect(@user.public_key("super public")).to eq("super public")
-    end
-
-    it "should return the current public key" do
-      @user.public_key("super public")
-      expect(@user.public_key).to eq("super public")
-    end
-
-    it "should throw an ArgumentError if you feed it something lame" do
-      expect { @user.public_key Hash.new }.to raise_error(ArgumentError)
+    describe "create_key" do
+      it_should_behave_like "boolean fields with no constraints" do
+        let(:method) { :create_key }
+      end
     end
   end
 
-  describe "private_key" do
-    it "should let you set the private key" do
-      expect(@user.private_key("super private")).to eq("super private")
+  describe "string fields" do
+    describe "public_key" do
+      it_should_behave_like "string fields with no contraints" do
+        let(:method) { :public_key }
+      end
     end
 
-    it "should return the private key" do
-      @user.private_key("super private")
-      expect(@user.private_key).to eq("super private")
+    describe "private_key" do
+      it_should_behave_like "string fields with no contraints" do
+        let(:method) { :private_key }
+      end
     end
 
-    it "should throw an ArgumentError if you feed it something lame" do
-      expect { @user.private_key Hash.new }.to raise_error(ArgumentError)
+    describe "display_name" do
+      it_should_behave_like "string fields with no contraints" do
+        let(:method) { :display_name }
+      end
+    end
+
+    describe "first_name" do
+      it_should_behave_like "string fields with no contraints" do
+        let(:method) { :first_name }
+      end
+    end
+
+    describe "middle_name" do
+      it_should_behave_like "string fields with no contraints" do
+        let(:method) { :middle_name }
+      end
+    end
+
+    describe "last_name" do
+      it_should_behave_like "string fields with no contraints" do
+        let(:method) { :last_name }
+      end
+    end
+
+    describe "email" do
+      it_should_behave_like "string fields with no contraints" do
+        let(:method) { :email }
+      end
+    end
+
+    describe "password" do
+      it_should_behave_like "string fields with no contraints" do
+        let(:method) { :password }
+      end
     end
   end
 
   describe "when serializing to JSON" do
     before(:each) do
-      @user.name("black")
-      @user.public_key("crowes")
+      @user.username("black")
       @json = @user.to_json
     end
 
@@ -125,16 +173,66 @@ describe Chef::User do
       expect(@json).to match(/^\{.+\}$/)
     end
 
-    it "includes the name value" do
-      expect(@json).to include(%q{"name":"black"})
-    end
-
-    it "includes the public key value" do
-      expect(@json).to include(%{"public_key":"crowes"})
+    it "includes the username value" do
+      expect(@json).to include(%q{"username":"black"})
     end
 
     it "includes the 'admin' flag" do
       expect(@json).to include(%q{"admin":false})
+    end
+
+    it "includes the display name when present" do
+      @user.display_name("get_displayed")
+      expect(@user.to_json).to include(%{"display_name":"get_displayed"})
+    end
+
+    it "does not include the display name if not present" do
+      expect(@json).not_to include("display_name")
+    end
+
+    it "includes the first name when present" do
+      @user.first_name("char")
+      expect(@user.to_json).to include(%{"first_name":"char"})
+    end
+
+    it "does not include the first name if not present" do
+      expect(@json).not_to include("first_name")
+    end
+
+    it "includes the middle name when present" do
+      @user.middle_name("man")
+      expect(@user.to_json).to include(%{"middle_name":"man"})
+    end
+
+    it "does not include the middle name if not present" do
+      expect(@json).not_to include("middle_name")
+    end
+
+    it "includes the last name when present" do
+      @user.last_name("der")
+      expect(@user.to_json).to include(%{"last_name":"der"})
+    end
+
+    it "does not include the last name if not present" do
+      expect(@json).not_to include("last_name")
+    end
+
+    it "includes the email when present" do
+      @user.email("charmander@pokemon.poke")
+      expect(@user.to_json).to include(%{"email":"charmander@pokemon.poke"})
+    end
+
+    it "does not include the email if not present" do
+      expect(@json).not_to include("email")
+    end
+
+    it "includes the public key when present" do
+      @user.public_key("crowes")
+      expect(@user.to_json).to include(%{"public_key":"crowes"})
+    end
+
+    it "does not include the public key if not present" do
+      expect(@json).not_to include("public_key")
     end
 
     it "includes the private key when present" do
@@ -162,11 +260,19 @@ describe Chef::User do
 
   describe "when deserializing from JSON" do
     before(:each) do
-      user = { "name" => "mr_spinks",
+      user = {
+        "username" => "mr_spinks",
+        "admin" => true,
+        "display_name" => "displayed",
+        "first_name" => "char",
+        "middle_name" => "man",
+        "last_name" => "der",
+        "email" => "charmander@pokemon.poke",
+        "password" => "password",
         "public_key" => "turtles",
         "private_key" => "pandas",
-        "password" => "password",
-        "admin" => true }
+        "create_key" => true
+      }
       @user = Chef::User.from_json(Chef::JSONCompat.to_json(user))
     end
 
@@ -174,32 +280,192 @@ describe Chef::User do
       expect(@user).to be_a_kind_of(Chef::User)
     end
 
-    it "preserves the name" do
-      expect(@user.name).to eq("mr_spinks")
-    end
-
-    it "preserves the public key" do
-      expect(@user.public_key).to eq("turtles")
+    it "preserves the username" do
+      expect(@user.username).to eq("mr_spinks")
     end
 
     it "preserves the admin status" do
       expect(@user.admin).to be_truthy
     end
 
-    it "includes the private key if present" do
-      expect(@user.private_key).to eq("pandas")
+    it "preserves the display name if present" do
+      expect(@user.display_name).to eq("displayed")
+    end
+
+    it "preserves the first name if present" do
+      expect(@user.first_name).to eq("char")
+    end
+
+    it "preserves the middle name if present" do
+      expect(@user.middle_name).to eq("man")
+    end
+
+    it "preserves the last name if present" do
+      expect(@user.last_name).to eq("der")
+    end
+
+    it "preserves the email if present" do
+      expect(@user.email).to eq("charmander@pokemon.poke")
     end
 
     it "includes the password if present" do
       expect(@user.password).to eq("password")
     end
 
+    it "preserves the public key if present" do
+      expect(@user.public_key).to eq("turtles")
+    end
+
+    it "includes the private key if present" do
+      expect(@user.private_key).to eq("pandas")
+    end
+
+    it "includes the create key status if present" do
+      expect(@user.create_key).to be_truthy
+    end
   end
+
+  describe "Versioned API Interactions" do
+    before (:each) do
+      @user = Chef::User.new
+      allow(@user).to receive(:chef_root_rest_v0).and_return(double('chef rest root v0 object'))
+      allow(@user).to receive(:chef_root_rest_v1).and_return(double('chef rest root v1 object'))
+    end
+
+    describe "create" do
+      let(:payload) {
+        {
+          :username => "some_username",
+          :display_name => "some_display_name",
+          :first_name => "some_first_name",
+          :last_name => "some_last_name",
+          :email => "some_email",
+          :password => "some_password",
+          :admin => true
+        }
+      }
+      before do
+        @user.username "some_username"
+        @user.display_name "some_display_name"
+        @user.first_name "some_first_name"
+        @user.last_name "some_last_name"
+        @user.email "some_email"
+        @user.password "some_password"
+        @user.admin true
+      end
+
+      shared_examples_for "create valid user" do
+        it "creates a new user via the API" do
+          expect(chef_rest_object).to receive(:post).with("users", payload).and_return({})
+          @user.create
+        end
+
+        it "creates a new user via the API with a public_key when it exists" do
+          @user.public_key "some_public_key"
+          expect(chef_rest_object).to receive(:post).with("users", payload.merge({:public_key => "some_public_key"})).and_return({})
+          @user.create
+        end
+
+        it "creates a new user via the API with a middle_name when it exists" do
+          @user.middle_name "some_middle_name"
+          expect(chef_rest_object).to receive(:post).with("users", payload.merge({:middle_name => "some_middle_name"})).and_return({})
+          @user.create
+        end
+      end
+
+      context "when server API V1 is valid on the Chef Server receiving the request" do
+        context "when create_key and public_key are both set" do
+          before do
+            @user.public_key "key"
+            @user.create_key true
+          end
+          it "rasies a Chef::Exceptions::InvalidUserAttribute" do
+            expect { @user.create }.to raise_error(Chef::Exceptions::InvalidUserAttribute)
+          end
+        end
+
+        it_should_behave_like "create valid user" do
+          let(:chef_rest_object) { @user.chef_root_rest_v1 }
+        end
+
+        it "creates a new user via the API with create_key == true when it exists" do
+          @user.create_key true
+          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({:create_key => true})).and_return({})
+          @user.create
+        end
+
+        context "when chef_key is returned by the server" do
+          let(:chef_key) {
+            {
+              "chef_key" => {
+                "public_key" => "some_public_key"
+              }
+            }
+          }
+
+          it "puts the public key into the user returned by create" do
+            expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload).and_return(payload.merge(chef_key))
+            new_user = @user.create
+            expect(new_user.public_key).to eq("some_public_key")
+          end
+
+          context "when private_key is returned in chef_key" do
+            let(:chef_key) {
+              {
+                "chef_key" => {
+                  "public_key" => "some_public_key",
+                  "private_key" => "some_private_key"
+                }
+              }
+            }
+
+            it "puts the private key into the user returned by create" do
+              expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload).and_return(payload.merge(chef_key))
+              new_user = @user.create
+              expect(new_user.private_key).to eq("some_private_key")
+            end
+          end
+
+        end # when chef_key is returned by the server
+      end # when server API V1 is valid on the Chef Server receiving the request
+
+      context "when server API V1 is not valid on the Chef Server receiving the request" do
+        let(:response_406) { OpenStruct.new(:code => '406') }
+        let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
+
+        before do
+          allow(@user.chef_root_rest_v1).to receive(:post).and_raise(exception_406)
+        end
+
+        context "when the server does not support the min or max server API version that Chef::User supports" do
+          before do
+            allow(@user).to receive(:handle_version_http_exception).and_return(false)
+          end
+
+          it "raises the original exception" do
+            expect{ @user.create }.to raise_error(exception_406)
+          end
+        end # when the server does not support the min or max server API version that Chef::User supports
+
+        context "when the server supports API V0" do
+          before do
+            allow(@user).to receive(:handle_version_http_exception).and_return(true)
+            allow(@user.chef_root_rest_v1).to receive(:post).and_raise(exception_406)
+          end
+
+          it_should_behave_like "create valid user" do
+            let(:chef_rest_object) { @user.chef_root_rest_v0 }
+          end
+
+        end # when the server supports API V0
+      end # when server API V1 is not valid on the Chef Server receiving the request
+    end # create
+  end # Versioned API Interactions
 
   describe "API Interactions" do
     before (:each) do
       @user = Chef::User.new
-      @user.name "foobar"
+      @user.username "foobar"
       @http_client = double("Chef::REST mock")
       allow(Chef::REST).to receive(:new).and_return(@http_client)
     end
@@ -214,41 +480,32 @@ describe Chef::User do
       end
 
       it "lists all clients on an OSC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@osc_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@osc_response)
         expect(Chef::User.list).to eq(@osc_response)
       end
 
       it "inflate all clients on an OSC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@osc_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@osc_response)
         expect(Chef::User.list(true)).to eq(@osc_inflated_response)
       end
 
       it "lists all clients on an OHC/OPC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@ohc_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@ohc_response)
         # We expect that Chef::User.list will give a consistent response
         # so OHC API responses should be transformed to OSC-style output.
         expect(Chef::User.list).to eq(@osc_response)
       end
 
       it "inflate all clients on an OHC/OPC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@ohc_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@ohc_response)
         expect(Chef::User.list(true)).to eq(@osc_inflated_response)
       end
     end
-
-    describe "create" do
-      it "creates a new user via the API" do
-        @user.password "password"
-        expect(@http_client).to receive(:post_rest).with("users", {:name => "foobar", :admin => false, :password => "password"}).and_return({})
-        @user.create
-      end
-    end
-
     describe "read" do
       it "loads a named user from the API" do
-        expect(@http_client).to receive(:get_rest).with("users/foobar").and_return({"name" => "foobar", "admin" => true, "public_key" => "pubkey"})
+        expect(@http_client).to receive(:get).with("users/foobar").and_return({"username" => "foobar", "admin" => true, "public_key" => "pubkey"})
         user = Chef::User.load("foobar")
-        expect(user.name).to eq("foobar")
+        expect(user.username).to eq("foobar")
         expect(user.admin).to eq(true)
         expect(user.public_key).to eq("pubkey")
       end
@@ -256,14 +513,14 @@ describe Chef::User do
 
     describe "update" do
       it "updates an existing user on via the API" do
-        expect(@http_client).to receive(:put_rest).with("users/foobar", {:name => "foobar", :admin => false}).and_return({})
+        expect(@http_client).to receive(:put).with("users/foobar", {:username => "foobar", :admin => false}).and_return({})
         @user.update
       end
     end
 
     describe "destroy" do
       it "deletes the specified user via the API" do
-        expect(@http_client).to receive(:delete_rest).with("users/foobar")
+        expect(@http_client).to receive(:delete).with("users/foobar")
         @user.destroy
       end
     end
