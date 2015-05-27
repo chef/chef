@@ -151,7 +151,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
   config.filter_run_excluding :broken => true
 
-  running_platform_arch = `uname -m`.strip
+  running_platform_arch = `uname -m`.strip unless windows?
 
   config.filter_run_excluding :arch => lambda {|target_arch|
     running_platform_arch != target_arch
