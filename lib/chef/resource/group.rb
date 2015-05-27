@@ -27,16 +27,17 @@ class Chef
 
       use_automatic_resource_name
 
+      allowed_actions :create, :remove, :modify, :manage
+      default_action :create
+
       def initialize(name, run_context=nil)
         super
         @group_name = name
         @gid = nil
         @members = []
         @excluded_members = []
-        @action = :create
         @append = false
         @non_unique = false
-        @allowed_actions.push(:create, :remove, :modify, :manage)
       end
 
       def group_name(arg=nil)

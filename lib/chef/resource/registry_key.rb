@@ -27,6 +27,9 @@ class Chef
       identity_attr :key
       state_attrs :values
 
+      default_action :create
+      allowed_actions :create, :create_if_missing, :delete, :delete_key
+
       # Some registry key data types may not be safely reported as json.
       # Example (CHEF-5323):
       #
@@ -60,12 +63,10 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @action = :create
         @architecture = :machine
         @recursive = false
         @key = name
         @values, @unscrubbed_values = [], []
-        @allowed_actions.push(:create, :create_if_missing, :delete, :delete_key)
       end
 
       def key(arg=nil)

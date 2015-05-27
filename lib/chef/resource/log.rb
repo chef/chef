@@ -27,6 +27,8 @@ class Chef
 
       identity_attr :message
 
+      default_action :write
+
       # Sends a string from a recipe to a log provider
       #
       # log "some string to log" do
@@ -50,8 +52,6 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @level = :info
-        @action = :write
-        @allowed_actions.push(:write)
         @message = name
       end
 

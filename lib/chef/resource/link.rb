@@ -31,14 +31,15 @@ class Chef
 
       state_attrs :to, :owner, :group
 
+      default_action :create
+      allowed_actions :create, :delete
+
       def initialize(name, run_context=nil)
         verify_links_supported!
         super
         @to = nil
-        @action = :create
         @link_type = :symbolic
         @target_file = name
-        @allowed_actions.push(:create, :delete)
       end
 
       def to(arg=nil)

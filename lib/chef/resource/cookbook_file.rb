@@ -29,10 +29,11 @@ class Chef
 
       use_automatic_resource_name
 
+      default_action :create
+
       def initialize(name, run_context=nil)
         super
         @provider = Chef::Provider::CookbookFile
-        @action = "create"
         @source = ::File.basename(name)
         @cookbook = nil
       end

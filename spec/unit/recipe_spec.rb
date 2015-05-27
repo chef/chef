@@ -412,7 +412,7 @@ describe Chef::Recipe do
       end
 
       it "does not copy the action from the first resource" do
-        expect(original_resource.action).to eq([:score])
+        expect(original_resource.action).to eq(:score)
         expect(duplicated_resource.action).to eq(:nothing)
       end
 
@@ -508,7 +508,7 @@ describe Chef::Recipe do
       recipe.from_file(File.join(CHEF_SPEC_DATA, "recipes", "test.rb"))
       res = recipe.resources(:file => "/etc/nsswitch.conf")
       expect(res.name).to eql("/etc/nsswitch.conf")
-      expect(res.action).to eql([:create])
+      expect(res.action).to eql(:create)
       expect(res.owner).to eql("root")
       expect(res.group).to eql("root")
       expect(res.mode).to eql(0644)

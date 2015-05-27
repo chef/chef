@@ -6,12 +6,8 @@ describe "Recipe DSL methods" do
   context "With resource class providing 'provider_thingy'" do
     before :context do
       class Chef::Resource::ProviderThingy < Chef::Resource
-        def initialize(*args, &block)
-          super
-          @action = :create
-          @allowed_actions = [ :create ]
-        end
         resource_name :provider_thingy
+        default_action :create
         def to_s
           "provider_thingy resource class"
         end

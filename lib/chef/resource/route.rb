@@ -28,11 +28,12 @@ class Chef
 
       state_attrs :netmask, :gateway
 
+      default_action :add
+      allowed_actions :add, :delete
+
       def initialize(name, run_context=nil)
         super
         @target = name
-        @action = [:add]
-        @allowed_actions.push(:add, :delete)
         @netmask = nil
         @gateway = nil
         @metric = nil

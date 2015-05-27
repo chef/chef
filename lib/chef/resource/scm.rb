@@ -28,6 +28,9 @@ class Chef
 
       state_attrs :revision
 
+      default_action :sync
+      allowed_actions :checkout, :export, :sync, :diff, :log
+
       def initialize(name, run_context=nil)
         super
         @destination = name
@@ -37,8 +40,6 @@ class Chef
         @remote = "origin"
         @ssh_wrapper = nil
         @depth = nil
-        @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
-        @action = [:sync]
         @checkout_branch = "deploy"
         @environment = nil
       end

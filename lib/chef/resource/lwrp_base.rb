@@ -82,42 +82,21 @@ class Chef
           end
         end
 
-        # Sets the default action
-        def default_action(action_name=NULL_ARG)
-          unless action_name.equal?(NULL_ARG)
-            @actions ||= []
-            if action_name.is_a?(Array)
-              action = action_name.map { |arg| arg.to_sym }
-              @actions = actions | action
-              @default_action = action
-            else
-              action = action_name.to_sym
-              @actions.push(action) unless @actions.include?(action)
-              @default_action = [action]
-            end
-          end
-
-          @default_action ||= from_superclass(:default_action)
-        end
-
         # Adds +action_names+ to the list of valid actions for this resource.
+        # Does not include superclass's action list when appending.
         def actions(*action_names)
-          if action_names.empty?
-            defined?(@actions) ? @actions : from_superclass(:actions, []).dup
+          if !action_names.empty? && !@allowed_actions
+            self.allowed_actions = action_names
           else
-            # BC-compat way for checking if actions have already been defined
-            if defined?(@actions)
-              @actions.push(*action_names)
-            else
-              @actions = action_names
-            end
+            allowed_actions(*action_names)
           end
         end
+        alias :actions= :allowed_actions=
 
         # @deprecated
         def valid_actions(*args)
-          Chef::Log.warn("`valid_actions' is deprecated, please use actions `instead'!")
-          actions(*args)
+          Chef::Log.warn("`valid_actions' is deprecated, please use allowed_actions `instead'!")
+          allowed_actions(*args)
         end
 
         # Set the run context on the class. Used to provide access to the node
@@ -148,15 +127,6 @@ class Chef
           return default if superclass == Chef::Resource::LWRPBase
           superclass.respond_to?(m) ? superclass.send(m) : default
         end
-      end
-
-      private
-
-      # Default initializer. Sets the default action and allowed actions.
-      def initialize(*args, &block)
-        super
-        @action = self.class.default_action
-        allowed_actions.push(self.class.actions).flatten!
       end
     end
   end

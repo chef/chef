@@ -24,13 +24,13 @@ class Chef
   class Resource
     class RubyBlock < Chef::Resource
       use_automatic_resource_name
+      default_action :run
+      allowed_actions :create, :run
 
       identity_attr :block_name
 
       def initialize(name, run_context=nil)
         super
-        @action = "run"
-        @allowed_actions << :create << :run
         @block_name = name
       end
 
