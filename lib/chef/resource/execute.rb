@@ -33,11 +33,12 @@ class Chef
       # Only execute resources (and subclasses) can be guard interpreters.
       attr_accessor :is_guard_interpreter
 
+      default_action :run
+
       def initialize(name, run_context=nil)
         super
         @command = name
         @backup = 5
-        @action = "run"
         @creates = nil
         @cwd = nil
         @environment = nil
@@ -46,7 +47,6 @@ class Chef
         @returns = 0
         @timeout = nil
         @user = nil
-        @allowed_actions.push(:run)
         @umask = nil
         @default_guard_interpreter = :execute
         @is_guard_interpreter = false

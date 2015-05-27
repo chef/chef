@@ -32,7 +32,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @action = "create"
         @source = []
         @use_etag = true
         @use_last_modified = true

@@ -26,12 +26,12 @@ class Chef
 
       include Chef::DSL::Powershell
 
+      default_action :run
+
       def initialize(name, run_context)
         super
         @properties = {}
         @resource = nil
-        @allowed_actions.push(:run)
-        @action = :run
       end
 
       def resource(value=nil)

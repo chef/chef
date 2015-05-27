@@ -29,10 +29,11 @@ class Chef
 
       use_automatic_resource_name
 
+      default_action :create
+      allowed_actions :create, :delete
+
       def initialize(name, run_context=nil)
         super
-        @action = :create
-        @allowed_actions.push(:create, :delete)
         @minute = "*"
         @hour = "*"
         @day = "*"

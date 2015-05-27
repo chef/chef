@@ -25,10 +25,10 @@ class Chef
       use_automatic_resource_name
       provides :dsc_script, platform: "windows"
 
+      default_action :run
+
       def initialize(name, run_context=nil)
         super
-        @allowed_actions.push(:run)
-        @action = :run
         @imports = {}
       end
 

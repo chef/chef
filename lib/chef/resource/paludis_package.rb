@@ -26,9 +26,10 @@ class Chef
       use_automatic_resource_name
       provides :paludis_package, os: "linux"
 
+      allowed_actions :install, :remove, :upgrade
+
       def initialize(name, run_context=nil)
         super(name, run_context)
-        @allowed_actions.push(:install, :remove, :upgrade)
         @timeout = 3600
       end
     end
