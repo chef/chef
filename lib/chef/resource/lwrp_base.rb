@@ -95,42 +95,16 @@ class Chef
           end
         end
 
-        # Sets the default action
-        def default_action(action_name=NULL_ARG)
-          unless action_name.equal?(NULL_ARG)
-            @actions ||= []
-            if action_name.is_a?(Array)
-              action = action_name.map { |arg| arg.to_sym }
-              @actions = actions | action
-              @default_action = action
-            else
-              action = action_name.to_sym
-              @actions.push(action) unless @actions.include?(action)
-              @default_action = [action]
-            end
-          end
-
-          @default_action ||= from_superclass(:default_action)
-        end
-
         # Adds +action_names+ to the list of valid actions for this resource.
-        def actions(*action_names)
-          if action_names.empty?
-            defined?(@actions) ? @actions : from_superclass(:actions, []).dup
-          else
-            # BC-compat way for checking if actions have already been defined
-            if defined?(@actions)
-              @actions.push(*action_names)
-            else
-              @actions = action_names
-            end
-          end
+        def actions(*args)
+          allowed_actions(*args).to_a
         end
+        alias :actions= :allowed_actions=
 
         # @deprecated
         def valid_actions(*args)
-          Chef::Log.warn("`valid_actions' is deprecated, please use actions `instead'!")
-          actions(*args)
+          Chef::Log.warn("`valid_actions' is deprecated, please use allowed_actions `instead'!")
+          allowed_actions(*args)
         end
 
         # Set the run context on the class. Used to provide access to the node
@@ -176,8 +150,6 @@ class Chef
         end
 
         @resource_name = self.class.resource_name.to_sym
-        @action = self.class.default_action
-        allowed_actions.push(self.class.actions).flatten!
       end
     end
   end
