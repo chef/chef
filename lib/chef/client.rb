@@ -80,6 +80,9 @@ class Chef
     def node
       run_status.node
     end
+    def node=(value)
+      run_status.node = value
+    end
 
     #
     # The ohai system used by this client.
@@ -503,7 +506,7 @@ class Chef
         Chef::Log.warn("Skipping final node save because override_runlist was given")
       else
         Chef::Log.debug("Saving the current state of node #{node_name}")
-        @node.save
+        node.save
       end
     end
 
@@ -786,7 +789,6 @@ class Chef
     #
 
     include Chef::Mixin::Deprecation
-    deprecated_attr_writer :node, "There is no alternative. Leave node alone!"
     deprecated_attr_writer :ohai, "There is no alternative. Leave ohai alone!"
     deprecated_attr_writer :rest, "There is no alternative. Leave rest alone!"
     deprecated_attr :runner, "There is no alternative. Leave runner alone!"
