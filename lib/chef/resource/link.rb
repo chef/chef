@@ -34,7 +34,6 @@ class Chef
       def initialize(name, run_context=nil)
         verify_links_supported!
         super
-        @resource_name = :link
         @to = nil
         @action = :create
         @link_type = :symbolic

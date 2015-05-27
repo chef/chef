@@ -60,7 +60,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :deploy
         @deploy_to = name
         @environment = nil
         @repository_cache = 'cached-copy'

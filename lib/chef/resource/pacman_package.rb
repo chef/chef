@@ -24,11 +24,6 @@ class Chef
 
       provides :pacman_package, os: "linux"
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :pacman_package
-      end
-
     end
   end
 end

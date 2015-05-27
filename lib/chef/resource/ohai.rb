@@ -28,7 +28,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ohai
         @name = name
         @allowed_actions.push(:reload)
         @action = :reload

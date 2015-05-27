@@ -29,7 +29,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :group
         @group_name = name
         @gid = nil
         @members = []

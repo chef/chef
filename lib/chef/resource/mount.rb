@@ -31,7 +31,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :mount
         @mount_point = name
         @device = nil
         @device_type = :device

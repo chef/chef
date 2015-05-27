@@ -28,7 +28,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :apt_package
         @default_release = nil
       end
 

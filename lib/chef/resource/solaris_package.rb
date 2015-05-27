@@ -31,13 +31,6 @@ class Chef
         node[:platform_version].to_f <= 5.10
       end
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :solaris_package
-      end
-
     end
   end
 end
-
-

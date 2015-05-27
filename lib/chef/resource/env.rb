@@ -29,7 +29,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :env
         @key_name = name
         @value = nil
         @action = :create

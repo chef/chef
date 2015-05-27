@@ -55,6 +55,8 @@ class Chef
     # This lets user code do things like `not_if { shell_out!("command") }`
     include Chef::Mixin::ShellOut
 
+    NULL_ARG = Object.new
+
     #
     # The node the current Chef run is using.
     #
@@ -85,7 +87,6 @@ class Chef
     def resources(*args)
       run_context.resource_collection.find(*args)
     end
-
 
     #
     # Resource User Interface (for users)
@@ -604,7 +605,7 @@ class Chef
     #
 
     def to_s
-      "#{@resource_name}[#{@name}]"
+      "#{resource_name}[#{name}]"
     end
 
     def to_text
@@ -823,23 +824,15 @@ class Chef
     end
 
     #
-    # The DSL name of this resource (e.g. `package` or `yum_package`)
+    # The display name of this resource type, for printing purposes.
     #
-    # @return [String] The DSL name of this resource.
-    def self.dsl_name
-      Chef::Log.deprecation "Resource.dsl_name is deprecated and will be removed in Chef 11.  Use resource.resource_name instead."
-      if name
-        name = self.name.split('::')[-1]
-        convert_to_snake_case(name)
-      end
+    # Will be used to print out the resource in messages, e.g. resource_name[name]
+    #
+    # @return [Symbol] The name of this resource type (e.g. `:execute`).
+    #
+    def resource_name
+      @resource_name || self.class.resource_name
     end
-
-    #
-    # The name of this resource (e.g. `file`)
-    #
-    # @return [String] The name of this resource.
-    #
-    attr_reader :resource_name
 
     #
     # Sets a list of capabilities of the real resource.  For example, `:remount`
@@ -871,23 +864,53 @@ class Chef
       nil
     end
 
-    #
-    # The module where Chef should look for providers for this resource.
-    # The provider for `MyResource` will be looked up using
-    # `provider_base::MyResource`.  Defaults to `Chef::Provider`.
-    #
-    # @param arg [Module] The module containing providers for this resource
-    # @return [Module] The module containing providers for this resource
-    #
-    # @example
-    #   class MyResource < Chef::Resource
-    #     provider_base Chef::Provider::Deploy
-    #     # ...other stuff
-    #   end
-    #
-    def self.provider_base(arg=nil)
-      @provider_base ||= arg
-      @provider_base ||= Chef::Provider
+    # Provider lookup and naming
+    class<<self
+      #
+      # The DSL name of this resource (e.g. `package` or `yum_package`)
+      #
+      # @return [String] The DSL name of this resource.
+      #
+      # @deprecated Use resource_name instead.
+      #
+      def dsl_name
+        Chef::Log.deprecation "Resource.dsl_name is deprecated and will be removed in Chef 11.  Use resource_name instead."
+        if name
+          name = self.name.split('::')[-1]
+          convert_to_snake_case(name)
+        end
+      end
+
+      #
+      # The display name of this resource type, for printing purposes.
+      #
+      # @return [Symbol] The name of this resource type (e.g. `:execute`).
+      #
+      attr_accessor :resource_name
+      def resource_name(value=NULL_ARG)
+        if value != NULL_ARG
+          self.resource_name = value.to_sym
+        end
+        @resource_name
+      end
+
+      #
+      # The module where Chef should look for providers for this resource.
+      # The provider for `MyResource` will be looked up using
+      # `provider_base::MyResource`.  Defaults to `Chef::Provider`.
+      #
+      # @param arg [Module] The module containing providers for this resource
+      # @return [Module] The module containing providers for this resource
+      #
+      # @example
+      #   class MyResource < Chef::Resource
+      #     provider_base Chef::Provider::Deploy
+      #     # ...other stuff
+      #   end
+      #
+      def provider_base(arg=nil)
+        @provider_base ||= arg || Chef::Provider
+      end
     end
 
 
@@ -982,6 +1005,8 @@ class Chef
 
     def self.provides(name, *args, &block)
       result = super
+      # The first time `provides` is called on the class, it is used for resource_name
+      self.resource_name ||= name
       Chef::DSL::Resources.add_resource_dsl(name)
       result
     end
@@ -1160,7 +1185,7 @@ class Chef
 
       def const_missing(class_name)
         if deprecated_constants[class_name.to_sym]
-          Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+          Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
           deprecated_constants[class_name.to_sym]
         else
           raise NameError, "uninitialized constant Chef::Resource::#{class_name}"

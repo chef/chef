@@ -30,7 +30,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ifconfig
         @target = name
         @action = :add
         @allowed_actions.push(:add, :delete, :enable, :disable)

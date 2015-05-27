@@ -336,6 +336,109 @@ describe Chef::Resource do
     end
   end
 
+  describe "self.resource_name" do
+    context "When resource_name is not set" do
+      it "and there is a provides line, it is used for resource_name" do
+        c = Class.new(Chef::Resource) do
+          provides :self_resource_name_test_1
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to eq :self_resource_name_test_1
+        expect(r.resource_name).to eq :self_resource_name_test_1
+        expect(r.declared_type).to eq :d
+      end
+      it "and multiple provides lines, the first line is used for resource_name" do
+        c = Class.new(Chef::Resource) do
+          provides :self_resource_name_test_2
+          provides :self_resource_name_test_3
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to eq :self_resource_name_test_2
+        expect(r.resource_name).to eq :self_resource_name_test_2
+        expect(r.declared_type).to eq :d
+      end
+      it "and there are no provides lines, resource_name is nil" do
+        c = Class.new(Chef::Resource) do
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to be_nil
+        expect(r.declared_type).to eq :d
+      end
+      it "and there are no provides lines, @resource_name is used" do
+        c = Class.new(Chef::Resource) do
+          def initialize(*args, &block)
+            @resource_name = :blah
+            super
+          end
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to eq :blah
+        expect(r.declared_type).to eq :d
+      end
+    end
+
+    it "resource_name without provides is honored" do
+      c = Class.new(Chef::Resource) do
+        resource_name 'blah'
+      end
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "setting class.resource_name with 'resource_name = blah' overrides  and declared_type" do
+      c = Class.new(Chef::Resource) do
+        provides :self_resource_name_test_2
+      end
+      c.resource_name = :blah
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "setting class.resource_name with 'resource_name blah' overrides provides and declared_type" do
+      c = Class.new(Chef::Resource) do
+        resource_name :blah
+        provides :self_resource_name_test_3
+      end
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "setting @resource_name overrides provides and declared_type" do
+      c = Class.new(Chef::Resource) do
+        provides :self_resource_name_test_4
+        def initialize(*args, &block)
+          @resource_name = :blah
+          super
+        end
+      end
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :self_resource_name_test_4
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+  end
+
   describe "is" do
     it "should return the arguments passed with 'is'" do
       zm = Chef::Resource::ZenMaster.new("coffee")

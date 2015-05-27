@@ -29,7 +29,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :http_request
         @message = name
         @url = nil
         @action = :get

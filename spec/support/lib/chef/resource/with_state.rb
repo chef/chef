@@ -22,16 +22,9 @@ require 'chef/json_compat'
 class Chef
   class Resource
     class WithState < Chef::Resource
+      resource_name :with_state
+
       attr_accessor :state
-
-      def initialize(name, run_context=nil)
-        @resource_name = :with_state
-        super
-      end
-
-      def state
-        @state
-      end
     end
   end
 end

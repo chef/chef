@@ -25,7 +25,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :portage_package
         @provider = Chef::Provider::Package::Portage
       end
 

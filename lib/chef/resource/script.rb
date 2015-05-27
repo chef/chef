@@ -30,7 +30,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :script
         # Chef-13: the command variable should be initialized to nil
         @command = name
         @code = nil

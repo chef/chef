@@ -34,7 +34,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :template
         @action = "create"
         @source = "#{::File.basename(name)}.erb"
         @cookbook = nil

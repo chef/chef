@@ -28,7 +28,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :reboot
         @provider = Chef::Provider::Reboot
         @allowed_actions.push(:request_reboot, :reboot_now, :cancel)
 

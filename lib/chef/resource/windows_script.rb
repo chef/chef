@@ -31,8 +31,8 @@ class Chef
       def initialize(name, run_context, resource_name, interpreter_command)
         super(name, run_context)
         @interpreter = interpreter_command
-        @resource_name = resource_name
-        @default_guard_interpreter = resource_name
+        @resource_name = resource_name if resource_name
+        @default_guard_interpreter = self.resource_name
       end
 
       include Chef::Mixin::WindowsArchitectureHelper

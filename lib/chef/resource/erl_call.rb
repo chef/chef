@@ -31,7 +31,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :erl_call
 
         @code = "q()." # your erlang code goes here
         @cookie = nil # cookie of the erlang node

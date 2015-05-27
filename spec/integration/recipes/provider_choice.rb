@@ -10,7 +10,6 @@ describe "Recipe DSL methods" do
           super
           @action = :create
           @allowed_actions = [ :create ]
-          @resource_name = 'provider_thingy'
         end
         provides :provider_thingy
         def to_s

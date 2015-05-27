@@ -27,7 +27,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super(name, run_context)
-        @resource_name = :paludis_package
         @allowed_actions.push(:install, :remove, :upgrade)
         @timeout = 3600
       end
