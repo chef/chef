@@ -28,13 +28,14 @@ class Chef
       use_automatic_resource_name
       provides :env, os: "windows"
 
+      default_action :create
+      allowed_actions :create, :delete, :modify
+
       def initialize(name, run_context=nil)
         super
         @key_name = name
         @value = nil
-        @action = :create
         @delim = nil
-        @allowed_actions.push(:create, :delete, :modify)
       end
 
       def key_name(arg=nil)

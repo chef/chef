@@ -23,13 +23,10 @@ class Chef
   class Resource
     class ZenMaster < Chef::Resource
       use_automatic_resource_name
+      allowed_actions :win, :score
 
       attr_reader :peace
 
-      def initialize(name, run_context=nil)
-        super
-        allowed_actions << :win << :score
-      end
 
       def peace(tf)
         @peace = tf

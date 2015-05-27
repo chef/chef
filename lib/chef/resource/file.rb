@@ -48,13 +48,13 @@ class Chef
       attr_accessor :final_checksum
 
       use_automatic_resource_name
+      default_action :create
+      allowed_actions :create, :delete, :touch, :create_if_missing
 
       def initialize(name, run_context=nil)
         super
         @path = name
         @backup = 5
-        @action = "create"
-        @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @atomic_update = Chef::Config[:file_atomic_update]
         @force_unlink = false
         @manage_symlink_source = nil

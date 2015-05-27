@@ -29,6 +29,9 @@ class Chef
 
       use_automatic_resource_name
 
+      default_action :create
+      allowed_actions :create, :assemble, :stop
+
       def initialize(name, run_context=nil)
         super
 
@@ -39,9 +42,6 @@ class Chef
         @metadata = "0.90"
         @bitmap = nil
         @raid_device = name
-
-        @action = :create
-        @allowed_actions.push(:create, :assemble, :stop)
       end
 
       def chunk(arg=nil)

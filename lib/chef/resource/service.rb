@@ -28,6 +28,9 @@ class Chef
 
       state_attrs :enabled, :running
 
+      default_action :nothing
+      allowed_actions :enable, :disable, :start, :stop, :restart, :reload
+
       def initialize(name, run_context=nil)
         super
         @service_name = name
@@ -43,9 +46,7 @@ class Chef
         @init_command = nil
         @priority = nil
         @timeout = nil
-        @action = "nothing"
         @supports = { :restart => false, :reload => false, :status => false }
-        @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
       end
 
       def service_name(arg=nil)

@@ -29,7 +29,7 @@ describe Chef::Resource::File do
   end
 
   it "should have a default action of 'create'" do
-    expect(@resource.action).to eql("create")
+    expect(@resource.action).to eql(:create)
   end
 
   it "should have a default content of nil" do

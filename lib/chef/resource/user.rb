@@ -28,6 +28,9 @@ class Chef
 
       use_automatic_resource_name
 
+      default_action :create
+      allowed_actions :create, :remove, :modify, :manage, :lock, :unlock
+
       def initialize(name, run_context=nil)
         super
         @username = name
@@ -41,14 +44,12 @@ class Chef
         @manage_home = false
         @force = false
         @non_unique = false
-        @action = :create
         @supports = {
           :manage_home => false,
           :non_unique => false
         }
         @iterations = 27855
         @salt = nil
-        @allowed_actions.push(:create, :remove, :modify, :manage, :lock, :unlock)
       end
 
       def username(arg=nil)

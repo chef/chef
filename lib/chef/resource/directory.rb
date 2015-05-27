@@ -34,12 +34,13 @@ class Chef
 
       use_automatic_resource_name
 
+      default_action :create
+      allowed_actions :create, :delete
+
       def initialize(name, run_context=nil)
         super
         @path = name
-        @action = :create
         @recursive = false
-        @allowed_actions.push(:create, :delete)
       end
 
       def recursive(arg=nil)
