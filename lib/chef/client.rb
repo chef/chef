@@ -640,7 +640,7 @@ class Chef
           events.converge_start(run_context)
           Chef::Log.debug("Converging node #{node_name}")
           @runner = Chef::Runner.new(run_context)
-          runner.converge
+          @runner.converge
           events.converge_complete
         rescue Exception => e
           events.converge_failed(e)
