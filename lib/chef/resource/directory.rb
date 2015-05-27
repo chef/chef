@@ -35,6 +35,9 @@ class Chef
       default_action :create
       allowed_actions :create, :delete
 
+      default_action :create
+      allowed_actions :create, :delete
+
       def initialize(name, run_context=nil)
         super
         @path = name

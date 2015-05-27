@@ -56,6 +56,7 @@ describe "Recipe DSL methods" do
         before(:context) {
 
           class Chef::Resource::BackcompatThingy < Chef::Resource
+            resource_name 'backcompat_thingy'
             default_action :create
           end
           class Chef::Provider::BackcompatThingy < Chef::Provider

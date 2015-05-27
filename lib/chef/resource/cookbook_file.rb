@@ -29,6 +29,8 @@ class Chef
 
       default_action :create
 
+      default_action :create
+
       def initialize(name, run_context=nil)
         super
         @provider = Chef::Provider::CookbookFile
