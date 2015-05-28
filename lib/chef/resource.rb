@@ -874,7 +874,7 @@ class Chef
       # @deprecated Use resource_name instead.
       #
       def dsl_name
-        Chef::Log.deprecation "Resource.dsl_name is deprecated and will be removed in Chef 11.  Use resource_name instead."
+        Chef::Log.deprecation "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead."
         if name
           name = self.name.split('::')[-1]
           convert_to_snake_case(name)
