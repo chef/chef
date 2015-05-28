@@ -121,7 +121,14 @@ class Chef
         # however Invoke-DscResource is not correctly writing to that
         # stream and instead just dumping to stdout
         @converge_description = result.stdout
-        result.return_value[0]["InDesiredState"]
+
+        if result.return_value.is_a?(Array)
+          # WMF Feb 2015 Preview
+          result.return_value[0]["InDesiredState"]
+        else
+          # WMF April 2015 Preview
+          result.return_value["InDesiredState"]
+        end
       end
 
       def set_resource
