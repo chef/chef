@@ -24,7 +24,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Reboot < Chef::Resource
-      provides :reboot
+      resource_name :reboot
 
       def initialize(name, run_context=nil)
         super

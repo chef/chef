@@ -25,6 +25,7 @@ class Chef
       # Until #1773 is resolved, you need to manually specify the windows_service resource
       # to use action :configure_startup and attribute startup_type
 
+      resource_name :windows_service
       provides :windows_service, os: "windows"
       provides :service, os: "windows"
 

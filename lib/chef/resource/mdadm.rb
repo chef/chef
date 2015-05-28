@@ -27,7 +27,7 @@ class Chef
 
       state_attrs :devices, :level, :chunk
 
-      provides :mdadm
+      resource_name :mdadm
 
       def initialize(name, run_context=nil)
         super

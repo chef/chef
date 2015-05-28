@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
-      provides :breakpoint
+      resource_name :breakpoint
 
       def initialize(action="break", *args)
         super(caller.first, *args)

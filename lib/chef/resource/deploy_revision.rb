@@ -23,13 +23,13 @@ class Chef
     # deployment strategy (provider)
     class DeployRevision < Chef::Resource::Deploy
 
-      provides :deploy_revision
+      resource_name :deploy_revision
 
     end
 
     class DeployBranch < Chef::Resource::DeployRevision
 
-      provides :deploy_branch
+      resource_name :deploy_branch
 
     end
 

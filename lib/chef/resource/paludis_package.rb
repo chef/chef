@@ -23,6 +23,7 @@ class Chef
   class Resource
     class PaludisPackage < Chef::Resource::Package
 
+      resource_name :paludis_package
       provides :paludis_package, os: "linux"
 
       def initialize(name, run_context=nil)

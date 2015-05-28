@@ -26,6 +26,7 @@ class Chef
     class WindowsPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 
+      resource_name :windows_package
       provides :windows_package, os: "windows"
       provides :package, os: "windows"
 

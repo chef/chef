@@ -22,7 +22,7 @@ class Chef
   class Resource
     class EasyInstallPackage < Chef::Resource::Package
 
-      provides :easy_install_package
+      resource_name :easy_install_package
 
       def easy_install_binary(arg=nil)
         set_or_return(

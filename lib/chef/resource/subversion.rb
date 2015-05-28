@@ -22,7 +22,7 @@ require "chef/resource/scm"
 class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
-      provides :subversion
+      resource_name :subversion
 
       def initialize(name, run_context=nil)
         super

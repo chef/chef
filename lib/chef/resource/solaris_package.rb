@@ -24,7 +24,7 @@ class Chef
   class Resource
     class SolarisPackage < Chef::Resource::Package
 
-      provides :solaris_package
+      resource_name :solaris_package
       provides :package, os: "solaris2", platform_family: "nexentacore"
       provides :package, os: "solaris2", platform_family: "solaris2" do |node|
         # on >= Solaris 11 we default to IPS packages instead

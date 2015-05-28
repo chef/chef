@@ -884,15 +884,22 @@ class Chef
       #
       # The display name of this resource type, for printing purposes.
       #
+      # This also automatically calls "provides" to provide DSL with the given
+      # name.
+      #
+      # @param value [Symbol] The desired name of this resource type (e.g.
+      #   `execute`).
+      #
       # @return [Symbol] The name of this resource type (e.g. `:execute`).
       #
-      attr_accessor :resource_name
       def resource_name(value=NULL_ARG)
         if value != NULL_ARG
-          self.resource_name = value.to_sym
+          @resource_name = value.to_sym
+          provides self.resource_name
         end
         @resource_name
       end
+      alias :resource_name= :resource_name
 
       #
       # The module where Chef should look for providers for this resource.
@@ -1005,8 +1012,6 @@ class Chef
 
     def self.provides(name, *args, &block)
       result = super
-      # The first time `provides` is called on the class, it is used for resource_name
-      self.resource_name ||= name
       Chef::DSL::Resources.add_resource_dsl(name)
       result
     end

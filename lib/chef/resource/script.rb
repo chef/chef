@@ -23,7 +23,7 @@ require 'chef/provider/script'
 class Chef
   class Resource
     class Script < Chef::Resource::Execute
-      provides :script
+      resource_name :script
 
       # Chef-13: go back to using :name as the identity attr
       identity_attr :command

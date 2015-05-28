@@ -22,7 +22,7 @@ require 'chef/json_compat'
 class Chef
   class Resource
     class ZenMaster < Chef::Resource
-      provides :zen_master
+      resource_name :zen_master
 
       attr_reader :peace
 

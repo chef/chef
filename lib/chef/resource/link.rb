@@ -25,7 +25,7 @@ class Chef
     class Link < Chef::Resource
       include Chef::Mixin::Securable
 
-      provides :link
+      resource_name :link
 
       identity_attr :target_file
 

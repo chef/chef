@@ -23,7 +23,7 @@ class Chef
   class Resource
     class ChefGem < Chef::Resource::Package::GemPackage
 
-      provides :chef_gem
+      resource_name :chef_gem
 
       def initialize(name, run_context=nil)
         super
