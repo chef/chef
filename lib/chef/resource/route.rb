@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Route < Chef::Resource
-      provides :route
+      resource_name :route
 
       identity_attr :target
 

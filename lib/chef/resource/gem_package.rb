@@ -22,7 +22,7 @@ class Chef
   class Resource
     class GemPackage < Chef::Resource::Package
 
-      provides :gem_package
+      resource_name :gem_package
 
       def initialize(name, run_context=nil)
         super

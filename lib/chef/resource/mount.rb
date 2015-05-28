@@ -27,7 +27,7 @@ class Chef
 
       state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
 
-      provides :mount
+      resource_name :mount
 
       def initialize(name, run_context=nil)
         super

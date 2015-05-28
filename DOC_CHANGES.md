@@ -6,15 +6,16 @@ Example Doc Change:
 Description of the required change.
 -->
 
-### Resources must now use `provides` to declare recipe DSL
+### Resources must now use `resource_name` (or `provides`) to declare recipe DSL
 
 Resources declared in `Chef::Resource` namespace will no longer get recipe DSL
-automatically.  Instead, explicit `provides` is required in order to have DSL:
+automatically.  Instead, `resource_name` is required in order to have DSL:
 
 ```ruby
 module MyModule
   class MyResource < Chef::Resource
-    provides :my_resource
+    resource_name :my_resource
+    provides :some_other_name, os: 'linux' # A second resource DSL, only on linux
   end
 end
 ```

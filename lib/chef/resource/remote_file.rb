@@ -28,7 +28,7 @@ class Chef
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      provides :remote_file
+      resource_name :remote_file
 
       def initialize(name, run_context=nil)
         super

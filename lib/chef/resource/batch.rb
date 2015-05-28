@@ -22,6 +22,7 @@ class Chef
   class Resource
     class Batch < Chef::Resource::WindowsScript
 
+      resource_name :batch
       provides :batch, os: "windows"
 
       def initialize(name, run_context=nil)

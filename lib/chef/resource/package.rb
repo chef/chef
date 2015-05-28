@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Package < Chef::Resource
-      provides :package
+      resource_name :package
 
       identity_attr :package_name
 

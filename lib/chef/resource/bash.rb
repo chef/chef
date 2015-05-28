@@ -22,7 +22,7 @@ require 'chef/provider/script'
 class Chef
   class Resource
     class Bash < Chef::Resource::Script
-      provides :bash
+      resource_name :bash
 
       def initialize(name, run_context=nil)
         super

@@ -26,7 +26,7 @@ class Chef
     class RemoteDirectory < Chef::Resource::Directory
       include Chef::Mixin::Securable
 
-      provides :remote_directory
+      resource_name :remote_directory
 
       identity_attr :path
 

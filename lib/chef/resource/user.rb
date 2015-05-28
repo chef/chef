@@ -26,7 +26,7 @@ class Chef
 
       state_attrs :uid, :gid, :home
 
-      provides :user
+      resource_name :user
 
       def initialize(name, run_context=nil)
         super
