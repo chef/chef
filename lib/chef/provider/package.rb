@@ -142,7 +142,7 @@ class Chef
       def action_remove
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of " :  ""
-          converge_by("remove #{description} package #{@current_resource.package_name}") do
+          converge_by("remove #{description}package #{@current_resource.package_name}") do
             remove_package(@current_resource.package_name, @new_resource.version)
             Chef::Log.info("#{@new_resource} removed")
           end
