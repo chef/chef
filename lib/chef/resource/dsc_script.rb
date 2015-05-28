@@ -22,7 +22,7 @@ class Chef
   class Resource
     class DscScript < Chef::Resource
 
-      resource_name :dsc_script
+      use_automatic_resource_name
       provides :dsc_script, platform: "windows"
 
       def initialize(name, run_context=nil)

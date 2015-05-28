@@ -27,7 +27,7 @@ class Chef
 
       state_attrs :minute, :hour, :day, :month, :weekday, :user
 
-      resource_name :cron
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super

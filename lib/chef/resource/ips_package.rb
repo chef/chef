@@ -23,7 +23,7 @@ class Chef
   class Resource
     class IpsPackage < ::Chef::Resource::Package
 
-      resource_name :ips_package
+      use_automatic_resource_name
       provides :ips_package, os: "solaris2"
 
       def initialize(name, run_context = nil)

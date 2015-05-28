@@ -58,7 +58,6 @@ describe "Recipe DSL methods" do
               @allowed_actions = [ :create ]
               @action = :create
             end
-            resource_name 'backcompat_thingy'
           end
           class Chef::Provider::BackcompatThingy < Chef::Provider
             def load_current_resource
@@ -84,6 +83,7 @@ describe "Recipe DSL methods" do
           before(:context) {
 
             class RecipeDSLSpecNamespace::BackcompatThingy < BaseThingy
+              provides :backcompat_thingy
               resource_name :backcompat_thingy
             end
 

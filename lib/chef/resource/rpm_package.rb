@@ -23,7 +23,7 @@ class Chef
   class Resource
     class RpmPackage < Chef::Resource::Package
 
-      resource_name :rpm_package
+      use_automatic_resource_name
       provides :rpm_package, os: [ "linux", "aix" ]
 
       def initialize(name, run_context=nil)

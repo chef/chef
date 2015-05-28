@@ -32,7 +32,7 @@ class Chef
 
       include Chef::Mixin::Securable
 
-      resource_name :directory
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super

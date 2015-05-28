@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Ifconfig < Chef::Resource
-      resource_name :ifconfig
+      use_automatic_resource_name
 
       identity_attr :device
 

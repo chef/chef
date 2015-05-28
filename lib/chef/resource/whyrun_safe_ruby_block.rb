@@ -20,7 +20,7 @@ class Chef
   class Resource
     class WhyrunSafeRubyBlock < Chef::Resource::RubyBlock
 
-      resource_name :whyrun_safe_ruby_block
+      use_automatic_resource_name
 
     end
   end

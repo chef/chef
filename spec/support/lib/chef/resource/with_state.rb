@@ -22,7 +22,7 @@ require 'chef/json_compat'
 class Chef
   class Resource
     class WithState < Chef::Resource
-      resource_name :with_state
+      use_automatic_resource_name
 
       attr_accessor :state
     end

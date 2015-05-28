@@ -53,7 +53,7 @@ class Chef
 
           # We load the class first to give it a chance to set its own name
           resource_class = Class.new(self)
-          resource_class.provides resource_name.to_sym
+          resource_class.resource_name resource_name.to_sym
           resource_class.run_context = run_context
           resource_class.class_from_file(filename)
 

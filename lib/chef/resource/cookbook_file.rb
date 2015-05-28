@@ -27,7 +27,7 @@ class Chef
     class CookbookFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      resource_name :cookbook_file
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super

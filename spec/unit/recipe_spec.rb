@@ -121,6 +121,7 @@ describe Chef::Recipe do
 
         it "locate resource for particular platform" do
           ShaunTheSheep = Class.new(Chef::Resource)
+          ShaunTheSheep.use_automatic_resource_name
           ShaunTheSheep.provides :laughter, :on_platforms => ["television"]
           node.automatic[:platform] = "television"
           node.automatic[:platform_version] = "123"
@@ -131,6 +132,7 @@ describe Chef::Recipe do
 
         it "locate a resource for all platforms" do
           YourMom = Class.new(Chef::Resource)
+          YourMom.use_automatic_resource_name
           YourMom.provides :love_and_caring
           res = recipe.love_and_caring "mommy"
           expect(res.name).to eql("mommy")
@@ -141,8 +143,10 @@ describe Chef::Recipe do
           before do
             node.automatic[:platform] = "nbc_sports"
             Sounders = Class.new(Chef::Resource)
+            Sounders.use_automatic_resource_name
             Sounders.provides :football, platform: "nbc_sports"
             TottenhamHotspur = Class.new(Chef::Resource)
+            TottenhamHotspur.use_automatic_resource_name
             TottenhamHotspur.provides :football, platform: "nbc_sports"
           end
 
