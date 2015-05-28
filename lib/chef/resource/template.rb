@@ -27,7 +27,7 @@ class Chef
     class Template < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      resource_name :template
+      use_automatic_resource_name
 
       attr_reader :inline_helper_blocks
       attr_reader :inline_helper_modules

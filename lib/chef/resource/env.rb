@@ -25,7 +25,7 @@ class Chef
 
       state_attrs :value
 
-      resource_name :env
+      use_automatic_resource_name
       provides :env, os: "windows"
 
       def initialize(name, run_context=nil)

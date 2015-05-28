@@ -23,7 +23,7 @@ require 'chef/provider/log'
 class Chef
   class Resource
     class Log < Chef::Resource
-      resource_name :log
+      use_automatic_resource_name
 
       identity_attr :message
 

@@ -22,7 +22,7 @@ require 'chef/provider/script'
 class Chef
   class Resource
     class Csh < Chef::Resource::Script
-      resource_name :csh
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super

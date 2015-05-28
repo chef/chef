@@ -19,7 +19,7 @@
 class Chef
   class Resource
     class Cat < Chef::Resource
-      resource_name :cat
+      use_automatic_resource_name
 
       attr_accessor :action
 

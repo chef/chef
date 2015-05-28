@@ -25,7 +25,7 @@ class Chef
 
       state_attrs :members
 
-      resource_name :group
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super

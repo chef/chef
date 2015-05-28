@@ -21,7 +21,7 @@ class Chef
   class Resource
     class PowershellScript < Chef::Resource::WindowsScript
 
-      resource_name :powershell_script
+      use_automatic_resource_name
       provides :powershell_script, os: "windows"
 
       def initialize(name, run_context=nil)

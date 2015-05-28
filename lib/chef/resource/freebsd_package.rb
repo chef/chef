@@ -29,7 +29,7 @@ class Chef
     class FreebsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
-      resource_name :freebsd_package
+      use_automatic_resource_name
       provides :package, platform: "freebsd"
 
       def after_created

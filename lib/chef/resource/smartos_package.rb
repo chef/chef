@@ -23,7 +23,7 @@ class Chef
   class Resource
     class SmartosPackage < Chef::Resource::Package
 
-      resource_name :smartos_package
+      use_automatic_resource_name
       provides :package, os: "solaris2", platform_family: "smartos"
 
     end

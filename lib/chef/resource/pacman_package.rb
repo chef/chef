@@ -22,7 +22,7 @@ class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
 
-      resource_name :pacman_package
+      use_automatic_resource_name
       provides :pacman_package, os: "linux"
 
     end

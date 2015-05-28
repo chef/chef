@@ -899,9 +899,29 @@ class Chef
           @resource_name = value.to_sym
           provides self.resource_name
         end
+        # Backcompat: set resource name for classes in Chef::Resource automatically
+        if !@resource_name && self.name
+          chef, resource, class_name, *extra = self.name.split('::')
+          if chef == 'Chef' && resource == 'Resource' && extra.size == 0
+            @resource_name = convert_to_snake_case(self.name.split('::')[-1])
+          end
+        end
         @resource_name
       end
       alias :resource_name= :resource_name
+
+      #
+      # Use the class name as the resource name.
+      #
+      # Munges the last part of the class name from camel case to snake case,
+      # and sets the resource_name to that:
+      #
+      # A::B::BlahDBlah -> blah_d_blah
+      #
+      def use_automatic_resource_name
+        automatic_name = convert_to_snake_case(self.name.split('::')[-1])
+        resource_name automatic_name
+      end
 
       #
       # The module where Chef should look for providers for this resource.
