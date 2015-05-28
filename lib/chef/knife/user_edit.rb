@@ -57,7 +57,6 @@ EOF
         end
 
         original_user = Chef::User.load(@user_name).to_hash
-
         # DEPRECATION NOTE
         # Remove this if statement and corrosponding code post OSC 11 support.
         #
@@ -73,7 +72,7 @@ EOF
             user.update
             ui.msg("Saved #{user}.")
           else
-            ui.msg("User unchaged, not saving.")
+            ui.msg("User unchanged, not saving.")
           end
         end
 
