@@ -21,10 +21,6 @@
 
 require 'spec_helper'
 
-class ResourceTestHarness < Chef::Resource
-  provider_base Chef::Provider::Package
-end
-
 describe Chef::Resource do
   before(:each) do
     @cookbook_repo_path =  File.join(CHEF_SPEC_DATA, 'cookbooks')
@@ -538,8 +534,21 @@ describe Chef::Resource do
       expect(Chef::Resource.provider_base).to eq(Chef::Provider)
     end
 
-    it "allows the base provider to be overriden by a " do
-      expect(ResourceTestHarness.provider_base).to eq(Chef::Provider::Package)
+    it "allows the base provider to be overridden" do
+      Chef::Config.treat_deprecation_warnings_as_errors(false)
+      class OverrideProviderBaseTest < Chef::Resource
+        provider_base Chef::Provider::Package
+      end
+
+      expect(OverrideProviderBaseTest.provider_base).to eq(Chef::Provider::Package)
+    end
+
+    it "warns when setting provider_base" do
+      expect {
+        class OverrideProviderBaseTest2 < Chef::Resource
+          provider_base Chef::Provider::Package
+        end
+      }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
 
   end

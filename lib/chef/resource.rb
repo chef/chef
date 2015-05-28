@@ -935,7 +935,12 @@ class Chef
       #     # ...other stuff
       #   end
       #
+      # @deprecated Use `provides` on the provider, or `provider` on the resource, instead.
+      #
       def provider_base(arg=nil)
+        if arg
+          Chef::Log.deprecation("Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
+        end
         @provider_base ||= arg || Chef::Provider
       end
     end

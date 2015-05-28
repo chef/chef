@@ -52,8 +52,6 @@ class Chef
     class Deploy < Chef::Resource
       use_automatic_resource_name
 
-      provider_base Chef::Provider::Deploy
-
       identity_attr :repository
 
       state_attrs :deploy_to, :revision
@@ -279,6 +277,12 @@ class Chef
           klass,
           :kind_of => [ Class ]
         )
+      end
+
+      # This is to support "provider :revision" without deprecation warnings.
+      # Do NOT copy this.
+      def self.provider_base
+        Chef::Provider::Deploy
       end
 
       def svn_force_export(arg=nil)
