@@ -50,7 +50,6 @@ require 'chef/run_lock'
 require 'chef/policy_builder'
 require 'chef/request_id'
 require 'chef/platform/rebooter'
-require 'chef/client/notification_registry'
 require 'chef/mixin/deprecation'
 require 'ohai'
 require 'rbconfig'
@@ -62,7 +61,6 @@ class Chef
   class Client
     include Chef::Mixin::PathSanity
 
-    extend NotificationRegistry
     extend Chef::Mixin::Deprecation
 
     #
@@ -763,6 +761,89 @@ class Chef
         else
           Chef::Log.debug("chef-client has administrator privileges on node #{node_name}.")
         end
+      end
+    end
+
+    # Notification registration
+    class<<self
+      #
+      # Add a listener for the 'client run started' event.
+      #
+      # @param notification_block The callback (takes |run_status| parameter).
+      # @yieldparam [Chef::RunStatus] run_status The run status.
+      #
+      def when_run_starts(&notification_block)
+        run_start_notifications << notification_block
+      end
+
+      #
+      # Add a listener for the 'client run success' event.
+      #
+      # @param notification_block The callback (takes |run_status| parameter).
+      # @yieldparam [Chef::RunStatus] run_status The run status.
+      #
+      def when_run_completes_successfully(&notification_block)
+        run_completed_successfully_notifications << notification_block
+      end
+
+      #
+      # Add a listener for the 'client run failed' event.
+      #
+      # @param notification_block The callback (takes |run_status| parameter).
+      # @yieldparam [Chef::RunStatus] run_status The run status.
+      #
+      def when_run_fails(&notification_block)
+        run_failed_notifications << notification_block
+      end
+
+      #
+      # Clears all listeners for client run status events.
+      #
+      # Primarily for testing purposes.
+      #
+      # @api private
+      #
+      def clear_notifications
+        @run_start_notifications = nil
+        @run_completed_successfully_notifications = nil
+        @run_failed_notifications = nil
+      end
+
+      #
+      # TODO These seem protected to me.
+      #
+
+      #
+      # Listeners to be run when the client run starts.
+      #
+      # @return [Array<Proc>]
+      #
+      # @api private
+      #
+      def run_start_notifications
+        @run_start_notifications ||= []
+      end
+
+      #
+      # Listeners to be run when the client run completes successfully.
+      #
+      # @return [Array<Proc>]
+      #
+      # @api private
+      #
+      def run_completed_successfully_notifications
+        @run_completed_successfully_notifications ||= []
+      end
+
+      #
+      # Listeners to be run when the client run fails.
+      #
+      # @return [Array<Proc>]
+      #
+      # @api private
+      #
+      def run_failed_notifications
+        @run_failed_notifications ||= []
       end
     end
 
