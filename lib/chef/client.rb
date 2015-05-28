@@ -187,6 +187,12 @@ class Chef
     # 3. Retrieve the node (or create a new one).
     # 4. Merge in json_attribs, Chef::Config.environment, and override_run_list.
     #
+    # @see #run_ohai
+    # @see #load_node
+    # @see #build_node
+    # @see Chef::Config#lockfile
+    # @see Chef::RunLock#acquire
+    #
     # Phase 2: Compile
     # ----------------
     # Decides *what* we plan to converge by compiling recipes.
@@ -199,6 +205,9 @@ class Chef
     # 6. Load recipes in the run list.
     # 7. Load recipes from the command line.
     #
+    # @see #setup_run_context Syncs and compiles cookbooks.
+    # @see Chef::CookbookCompiler#compile
+    #
     # Phase 3: Converge
     # -----------------
     # Brings the system up to date.
@@ -207,20 +216,25 @@ class Chef
     # 2. Save the node.
     # 3. Reboot if we were asked to.
     #
+    # @see #converge_and_save
+    # @see Chef::Runner
+    #
+    # Phase 4: Audit
+    # --------------
+    # Runs 'control_group' audits in recipes.  This entire section can be enabled or disabled with config.
+    #
+    # 1. 'control_group' DSL collects audits during Phase 2
+    # 2. Audits are run using RSpec
+    # 3. Errors are collected and reported using the formatters
+    #
+    # @see #run_audits
+    # @see Chef::Audit::Runner#run
+    #
     # @raise [Chef::Exceptions::RunFailedWrappingError] If converge or audit failed.
     #
-    # @see Chef::Config#lockfile
     # @see Chef::Config#enforce_path_sanity
     # @see Chef::Config#solo
     # @see Chef::Config#audit_mode
-    #
-    # @see Chef::RunLock#acquire
-    # @see #run_ohai
-    # @see #load_node
-    # @see #build_node
-    # @see Chef::CookbookCompiler#compile
-    #
-    # @see #setup_run_context Syncs and compiles cookbooks.
     #
     # @return Always returns true.
     #
