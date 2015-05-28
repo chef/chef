@@ -28,10 +28,11 @@ class Chef
 
       state_attrs :version, :options
 
+      default_action :install
+      allowed_actions :install, :upgrade, :remove, :purge, :reconfig
+
       def initialize(name, run_context=nil)
         super
-        @action = :install
-        @allowed_actions.push(:install, :upgrade, :remove, :purge, :reconfig)
         @candidate_version = nil
         @options = nil
         @package_name = name

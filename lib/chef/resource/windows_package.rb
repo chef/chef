@@ -30,9 +30,10 @@ class Chef
       provides :windows_package, os: "windows"
       provides :package, os: "windows"
 
+      allowed_actions :install, :remove
+
       def initialize(name, run_context=nil)
         super
-        @allowed_actions.push(:install, :remove)
         @source ||= source(@package_name)
 
         # Unique to this resource

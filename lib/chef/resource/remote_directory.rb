@@ -32,12 +32,14 @@ class Chef
 
       state_attrs :files_owner, :files_group, :files_mode
 
+      default_action :create
+      allowed_actions :create, :create_if_missing, :delete
+
       def initialize(name, run_context=nil)
         super
         @path = name
         @source = ::File.basename(name)
         @delete = false
-        @action = :create
         @recursive = true
         @purge = false
         @files_backup = 5
@@ -45,7 +47,6 @@ class Chef
         @files_group = nil
         @files_mode = 0644 unless Chef::Platform.windows?
         @overwrite = true
-        @allowed_actions.push(:create, :create_if_missing, :delete)
         @cookbook = nil
       end
 

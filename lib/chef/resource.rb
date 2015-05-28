@@ -34,6 +34,7 @@ require 'chef/platform'
 require 'chef/resource/resource_notification'
 require 'chef/provider_resolver'
 require 'chef/resource_resolver'
+require 'set'
 
 require 'chef/mixin/deprecation'
 require 'chef/mixin/provides'
@@ -106,8 +107,8 @@ class Chef
       @before = nil
       @params = Hash.new
       @provider = nil
-      @allowed_actions = [ :nothing ]
-      @action = :nothing
+      @allowed_actions = self.class.allowed_actions.to_a
+      @action = self.class.default_action
       @updated = false
       @updated_by_last_action = false
       @supports = {}
@@ -168,19 +169,24 @@ class Chef
     # @param arg [Array[Symbol], Symbol] A list of actions (e.g. `:create`)
     # @return [Array[Symbol]] the list of actions.
     #
+    attr_accessor :action
     def action(arg=nil)
       if arg
-        action_list = arg.kind_of?(Array) ? arg : [ arg ]
-        action_list = action_list.collect { |a| a.to_sym }
-        action_list.each do |action|
+        if arg.is_a?(Array)
+          arg = arg.map { |a| a.to_sym }
+        else
+          arg = arg.to_sym
+        end
+        Array(arg).each do |action|
           validate(
             { action: action },
-            { action: { kind_of: Symbol, equal_to: @allowed_actions } }
+            { action: { kind_of: Symbol, equal_to: allowed_actions } }
           )
         end
-        @action = action_list
+        self.action = arg
       else
-        @action
+        # Pull the action from the class if it's not set
+        @action || self.class.default_action
       end
     end
 
@@ -188,8 +194,7 @@ class Chef
     # Sets up a notification that will run a particular action on another resource
     # if and when *this* resource is updated by an action.
     #
-    # If the action does nothing--does not update this resource, the
-    # notification never triggers.)
+    # If the action does not update this resource, the notification never triggers.
     #
     # Only one resource may be specified per notification.
     #
@@ -766,6 +771,12 @@ class Chef
     #   have.
     #
     attr_accessor :allowed_actions
+    def allowed_actions(value=NULL_ARG)
+      if value != NULL_ARG
+        self.allowed_actions = value
+      end
+      @allowed_actions
+    end
 
     #
     # Whether or not this resource was updated during an action.  If multiple
@@ -943,8 +954,63 @@ class Chef
         end
         @provider_base ||= arg || Chef::Provider
       end
-    end
 
+      #
+      # The list of allowed actions for the resource.
+      #
+      # @param actions [Array<Symbol>] The list of actions to add to allowed_actions.
+      #
+      # @return [Arrau<Symbol>] The list of actions, as symbols.
+      #
+      def allowed_actions(*actions)
+        @allowed_actions ||=
+          if superclass.respond_to?(:allowed_actions)
+            superclass.allowed_actions.dup
+          else
+            [ :nothing ]
+          end
+        @allowed_actions |= actions
+      end
+      def allowed_actions=(value)
+        @allowed_actions = value
+      end
+
+      #
+      # The action that will be run if no other action is specified.
+      #
+      # Setting default_action will automatially add the action to
+      # allowed_actions, if it isn't already there.
+      #
+      # Defaults to :nothing.
+      #
+      # @param action_name [Symbol,Array<Symbol>] The default action (or series
+      #   of actions) to use.
+      #
+      # @return [Symbol,Array<Symbol>] The default actions for the resource.
+      #
+      def default_action(action_name=NULL_ARG)
+        unless action_name.equal?(NULL_ARG)
+          if action_name.is_a?(Array)
+            @default_action = action_name.map { |arg| arg.to_sym }
+          else
+            @default_action = action_name.to_sym
+          end
+
+          self.allowed_actions |= Array(@default_action)
+        end
+
+        if @default_action
+          @default_action
+        elsif superclass.respond_to?(:default_action)
+          superclass.default_action
+        else
+          :nothing
+        end
+      end
+      def default_action=(action_name)
+        default_action action_name
+      end
+    end
 
     #
     # Internal Resource Interface (for Chef)
