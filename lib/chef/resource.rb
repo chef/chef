@@ -38,6 +38,7 @@ require 'chef/resource_resolver'
 require 'chef/mixin/deprecation'
 require 'chef/mixin/provides'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/powershell_out'
 
 class Chef
   class Resource
@@ -54,6 +55,7 @@ class Chef
 
     # This lets user code do things like `not_if { shell_out!("command") }`
     include Chef::Mixin::ShellOut
+    include Chef::Mixin::PowershellOut
 
     #
     # The node the current Chef run is using.
