@@ -42,11 +42,11 @@ describe Chef::User do
   end
 
   shared_examples_for "boolean fields with no constraints" do
-    it "should let you set the admin bit" do
+    it "should let you set the field" do
       expect(@user.send(method, true)).to eq(true)
     end
 
-    it "should return the current admin value" do
+    it "should return the current field value" do
       @user.send(method, true)
       expect(@user.send(method)).to eq(true)
     end
@@ -96,16 +96,6 @@ describe Chef::User do
   end
 
   describe "boolean fields" do
-    describe "admin" do
-      it_should_behave_like "boolean fields with no constraints" do
-        let(:method) { :admin }
-      end
-
-      it "should default to false" do
-        expect(@user.admin).to eq(false)
-      end
-    end
-
     describe "create_key" do
       it_should_behave_like "boolean fields with no constraints" do
         let(:method) { :create_key }
@@ -175,10 +165,6 @@ describe Chef::User do
 
     it "includes the username value" do
       expect(@json).to include(%q{"username":"black"})
-    end
-
-    it "includes the 'admin' flag" do
-      expect(@json).to include(%q{"admin":false})
     end
 
     it "includes the display name when present" do
@@ -262,7 +248,6 @@ describe Chef::User do
     before(:each) do
       user = {
         "username" => "mr_spinks",
-        "admin" => true,
         "display_name" => "displayed",
         "first_name" => "char",
         "middle_name" => "man",
@@ -282,10 +267,6 @@ describe Chef::User do
 
     it "preserves the username" do
       expect(@user.username).to eq("mr_spinks")
-    end
-
-    it "preserves the admin status" do
-      expect(@user.admin).to be_truthy
     end
 
     it "preserves the display name if present" do
@@ -326,11 +307,148 @@ describe Chef::User do
   end
 
   describe "Versioned API Interactions" do
+    let(:response_406) { OpenStruct.new(:code => '406') }
+    let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
+
     before (:each) do
       @user = Chef::User.new
       allow(@user).to receive(:chef_root_rest_v0).and_return(double('chef rest root v0 object'))
       allow(@user).to receive(:chef_root_rest_v1).and_return(double('chef rest root v1 object'))
     end
+
+    shared_examples_for "version handling" do
+      before do
+        allow(@user.chef_root_rest_v1).to receive(http_verb).and_raise(exception_406)
+      end
+
+      context "when the server does not support the min or max server API version that Chef::User supports" do
+        before do
+          allow(@user).to receive(:handle_version_http_exception).and_return(false)
+        end
+
+        it "raises the original exception" do
+          expect{ @user.send(method) }.to raise_error(exception_406)
+        end
+      end # when the server does not support the min or max server API version that Chef::User supports
+    end # version handling
+
+    describe "update" do
+      before do
+        # populate all fields that are valid between V0 and V1
+        @user.username "some_username"
+        @user.display_name "some_display_name"
+        @user.first_name "some_first_name"
+        @user.middle_name "some_middle_name"
+        @user.last_name "some_last_name"
+        @user.email "some_email"
+        @user.password "some_password"
+      end
+
+      let(:payload) {
+        {
+          :username => "some_username",
+          :display_name => "some_display_name",
+          :first_name => "some_first_name",
+          :middle_name => "some_middle_name",
+          :last_name => "some_last_name",
+          :email => "some_email",
+          :password => "some_password"
+        }
+      }
+
+      context "when server API V1 is valid on the Chef Server receiving the request" do
+        context "when the user submits valid data" do
+          it "properly updates the user" do
+            expect(@user.chef_root_rest_v1).to receive(:put).with("users/some_username", payload).and_return({})
+            @user.update
+          end
+        end
+      end
+
+      context "when server API V1 is not valid on the Chef Server receiving the request" do
+        let(:payload) {
+          {
+            :username => "some_username",
+            :display_name => "some_display_name",
+            :first_name => "some_first_name",
+            :middle_name => "some_middle_name",
+            :last_name => "some_last_name",
+            :email => "some_email",
+            :password => "some_password",
+            :public_key => "some_public_key"
+          }
+        }
+
+        before do
+          @user.public_key "some_public_key"
+          allow(@user.chef_root_rest_v1).to receive(:put)
+        end
+
+        context "when the server returns a 400" do
+          let(:response_400) { OpenStruct.new(:code => '400') }
+          let(:exception_400) { Net::HTTPServerException.new("400 Bad Request", response_400) }
+
+          context "when the 400 was due to public / private key fields no longer being supported" do
+            let(:response_body_400) { '{"error":["Since Server API v1, all keys must be updated via the keys endpoint. "]}' }
+
+            before do
+              allow(response_400).to receive(:body).and_return(response_body_400)
+              allow(@user.chef_root_rest_v1).to receive(:put).and_raise(exception_400)
+            end
+
+            it "proceeds with the V0 PUT since it can handle public / private key fields" do
+              expect(@user.chef_root_rest_v0).to receive(:put).with("users/some_username", payload).and_return({})
+              @user.update
+            end
+
+            it "does not call handle_version_http_exception, since we know to proceed with V0 in this case" do
+              expect(@user).to_not receive(:handle_version_http_exception)
+              allow(@user.chef_root_rest_v0).to receive(:put).and_return({})
+              @user.update
+            end
+          end # when the 400 was due to public / private key fields
+
+          context "when the 400 was NOT due to public / private key fields no longer being supported" do
+            let(:response_body_400) { '{"error":["Some other error. "]}' }
+
+            before do
+              allow(response_400).to receive(:body).and_return(response_body_400)
+              allow(@user.chef_root_rest_v1).to receive(:put).and_raise(exception_400)
+            end
+
+            it "will not proceed with the V0 PUT since the original bad request was not key related" do
+              expect(@user.chef_root_rest_v0).to_not receive(:put).with("users/some_username", payload)
+              expect { @user.update }.to raise_error(exception_400)
+            end
+
+            it "raises the original error" do
+              expect { @user.update }.to raise_error(exception_400)
+            end
+
+          end
+        end # when the server returns a 400
+
+        context "when the server returns a 406" do
+          it_should_behave_like "version handling" do
+            let(:method)    { (:update) }
+            let(:http_verb) { (:put) }
+          end
+
+          context "when the server supports API V0" do
+            before do
+              allow(@user).to receive(:handle_version_http_exception).and_return(true)
+              allow(@user.chef_root_rest_v1).to receive(:put).and_raise(exception_406)
+            end
+
+            it "properly updates the user" do
+              expect(@user.chef_root_rest_v0).to receive(:put).with("users/some_username", payload).and_return({})
+              @user.update
+            end
+          end # when the server supports API V0
+        end # when the server returns a 406
+
+      end # when server API V1 is not valid on the Chef Server receiving the request
+    end # update
 
     describe "create" do
       let(:payload) {
@@ -340,8 +458,7 @@ describe Chef::User do
           :first_name => "some_first_name",
           :last_name => "some_last_name",
           :email => "some_email",
-          :password => "some_password",
-          :admin => true
+          :password => "some_password"
         }
       }
       before do
@@ -351,7 +468,6 @@ describe Chef::User do
         @user.last_name "some_last_name"
         @user.email "some_email"
         @user.password "some_password"
-        @user.admin true
       end
 
       shared_examples_for "create valid user" do
@@ -430,22 +546,10 @@ describe Chef::User do
       end # when server API V1 is valid on the Chef Server receiving the request
 
       context "when server API V1 is not valid on the Chef Server receiving the request" do
-        let(:response_406) { OpenStruct.new(:code => '406') }
-        let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
-
-        before do
-          allow(@user.chef_root_rest_v1).to receive(:post).and_raise(exception_406)
+        it_should_behave_like "version handling" do
+          let(:method)    { (:create) }
+          let(:http_verb) { (:post) }
         end
-
-        context "when the server does not support the min or max server API version that Chef::User supports" do
-          before do
-            allow(@user).to receive(:handle_version_http_exception).and_return(false)
-          end
-
-          it "raises the original exception" do
-            expect{ @user.create }.to raise_error(exception_406)
-          end
-        end # when the server does not support the min or max server API version that Chef::User supports
 
         context "when the server supports API V0" do
           before do
@@ -460,6 +564,7 @@ describe Chef::User do
         end # when the server supports API V0
       end # when server API V1 is not valid on the Chef Server receiving the request
     end # create
+
   end # Versioned API Interactions
 
   describe "API Interactions" do
@@ -501,20 +606,13 @@ describe Chef::User do
         expect(Chef::User.list(true)).to eq(@osc_inflated_response)
       end
     end
+
     describe "read" do
       it "loads a named user from the API" do
         expect(@http_client).to receive(:get).with("users/foobar").and_return({"username" => "foobar", "admin" => true, "public_key" => "pubkey"})
         user = Chef::User.load("foobar")
         expect(user.username).to eq("foobar")
-        expect(user.admin).to eq(true)
         expect(user.public_key).to eq("pubkey")
-      end
-    end
-
-    describe "update" do
-      it "updates an existing user on via the API" do
-        expect(@http_client).to receive(:put).with("users/foobar", {:username => "foobar", :admin => false}).and_return({})
-        @user.update
       end
     end
 

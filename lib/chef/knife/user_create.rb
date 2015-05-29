@@ -35,12 +35,6 @@ class Chef
         :long  => "--file FILE",
         :description => "Write the private key to a file, if returned by the server. A private key will be returned when both --user-key and --no-key are NOT passed. In that case, the server will generate a default key for you and return the private key it creates."
 
-      option :admin,
-        :short => "-a",
-        :long  => "--admin",
-        :description => "Create the user as an admin (only relevant for Open Source Chef Server 11).",
-        :boolean => true
-
       option :user_key,
         :long => "--user-key FILENAME",
         :description => "Public key for newly created user. Path to a public key you provide instead of having the server generate one. If --user-key is not passed, the server will create a 'default' key for you, unless you passed --no-key. Note that --user-key cannot be passed with --no-key."
@@ -83,8 +77,6 @@ class Chef
           ui.fatal("You cannot pass --user-key and --no-key")
           exit 1
         end
-
-        user.admin(config[:admin])
 
         unless config[:no_key]
           user.create_key(true)

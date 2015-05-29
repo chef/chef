@@ -47,7 +47,6 @@ class Chef
       @private_key = nil
       @create_key = nil
       @password = nil
-      @admin = false
     end
 
     def chef_rest_v0
@@ -101,11 +100,6 @@ class Chef
                     arg, :kind_of => String)
     end
 
-    def admin(arg=nil)
-      set_or_return(:admin,
-                    arg, :kind_of => [TrueClass, FalseClass])
-    end
-
     def create_key(arg=nil)
       set_or_return(:create_key, arg,
                     :kind_of => [TrueClass, FalseClass])
@@ -128,8 +122,7 @@ class Chef
 
     def to_hash
       result = {
-        "username" => @username,
-        "admin" => @admin
+        "username" => @username
       }
       result["display_name"] = @display_name if @display_name
       result["first_name"] = @first_name if @first_name
@@ -159,8 +152,7 @@ class Chef
           :first_name => @first_name,
           :last_name => @last_name,
           :email => @email,
-          :password => @password,
-          :admin => @admin
+          :password => @password
         }
         payload[:public_key] = @public_key if @public_key
         payload[:create_key] = @create_key if @create_key
@@ -184,8 +176,7 @@ class Chef
           :first_name => @first_name,
           :last_name => @last_name,
           :email => @email,
-          :password => @password,
-          :admin => @admin
+          :password => @password
         }
         payload[:middle_name] = @middle_name if @middle_name
         payload[:public_key] = @public_key if @public_key
@@ -196,10 +187,37 @@ class Chef
     end
 
     def update(new_key=false)
-      payload = {:username => username, :admin => admin}
-      payload[:private_key] = new_key if new_key
-      payload[:password] = password if password
-      updated_user = Chef::REST.new(Chef::Config[:chef_server_url]).put("users/#{username}", payload)
+      begin
+        payload = {:username => username}
+        payload[:display_name] = display_name if display_name
+        payload[:first_name] = first_name if first_name
+        payload[:middle_name] = middle_name if middle_name
+        payload[:last_name] = last_name if last_name
+        payload[:email] = email if email
+        payload[:password] = password if password
+
+        # API V1 will fail if these key fields are defined, and try V0 below if relevant 400 is returned
+        payload[:public_key] = public_key if public_key
+        payload[:private_key] = new_key if new_key
+
+        updated_user = chef_root_rest_v1.put("users/#{username}", payload)
+      rescue Net::HTTPServerException => e
+        if e.response.code == "400"
+          # if a 400 is returned but the error message matches the error related to private / public key fields, try V0
+          # else, raise the 400
+          puts "halp"*100
+          puts e.response.body
+          puts e.response.body.class
+          error = Chef::JSONCompat.from_json(e.response.body)["error"].first
+          error_match = /Since Server API v1, all keys must be updated via the keys endpoint/.match(error)
+          if error_match.nil?
+            raise e
+          end
+        else # for other types of errors, test for API versioning errors right away
+          raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
+        end
+        updated_user = chef_root_rest_v0.put("users/#{username}", payload)
+      end
       Chef::User.from_hash(self.to_hash.merge(updated_user))
     end
 
@@ -217,7 +235,7 @@ class Chef
 
     def reregister
       r = Chef::REST.new(Chef::Config[:chef_server_url])
-      reregistered_self = r.put("users/#{username}", { :username => username, :admin => admin, :private_key => true })
+      reregistered_self = r.put("users/#{username}", { :username => username, :private_key => true })
       private_key(reregistered_self["private_key"])
       self
     end
@@ -227,8 +245,10 @@ class Chef
     end
 
     def inspect
-      "Chef::User username:'#{username}' admin:'#{admin.inspect}'" +
-      "public_key:'#{public_key}' private_key:#{private_key}"
+      inspect_str = "Chef::User username:'#{username}'"
+      inspect_str = "#{inspect_str} public_key:#{public_key}" if public_key
+      inspect_str = "#{inspect_str} private_key:#{private_key}" if private_key
+      inspect_str
     end
 
     # Class Methods
@@ -236,7 +256,6 @@ class Chef
     def self.from_hash(user_hash)
       user = Chef::User.new
       user.username user_hash['username']
-      user.admin user_hash['admin']
       user.display_name user_hash['display_name'] if user_hash.key?('display_name')
       user.first_name user_hash['first_name'] if user_hash.key?('first_name')
       user.middle_name user_hash['middle_name'] if user_hash.key?('middle_name')

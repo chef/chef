@@ -21,17 +21,14 @@ class Chef
     # takes in an http exception, and a min and max supported API version and
     # handles all the versioning cases
     #
-    # it will raise an exception if there was a non-versioning related error
+    # it will return false if there was a non-versioning related error
     # or the server and the client are not compatible
     #
-    # if the server does not support versioning, then it will not raise, and you
+    # if the server does not support versioning, then it will return true, and you
     # can assume API v0 is safe to send
     def handle_version_http_exception(exception, min_client_supported_version, max_client_supported_version)
-
-      # only rescue 406 Unacceptable
-      return false unless exception.response.code == "406" || !exception.response["x-ops-server-api-version"]
-
-      exception.response["x-ops-server-api-version"]
+      # only rescue 406 Unacceptable with proper header
+      return false if exception.response.code != "406" || exception.response["x-ops-server-api-version"].nil?
 
       # if the version header doesn't exist, just assume API v0
       if exception.response["x-ops-server-api-version"]
@@ -42,7 +39,7 @@ class Chef
         # if the min API version the server supports is greater than the min version the client supports
         # and the max API version the server supports is less than the max version the client supports
         if min_server_version > min_client_supported_version || max_server_version < max_client_supported_version
-          # if it had x-ops-server-api-version header, it will error out properly, just raise it
+          # if it had x-ops-server-api-version header, return false
           return false
         end
       end

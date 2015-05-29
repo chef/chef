@@ -149,24 +149,6 @@ describe Chef::Knife::UserCreate do
       end
     end
 
-    context "when --admin is passed" do
-      before do
-        knife.config[:admin] = true
-      end
-
-      it "sets the admin field on the user to true" do
-        knife.run
-        expect(knife.user.admin).to be_truthy
-      end
-    end
-
-    context "when --admin is not passed" do
-      it "does not set the admin field to true" do
-        knife.run
-        expect(knife.user.admin).to be_falsey
-      end
-    end
-
     context "when --no-key is passed" do
       before do
         knife.config[:no_key] = true
