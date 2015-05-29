@@ -49,14 +49,6 @@ class Chef
       @password = nil
     end
 
-    def chef_rest_v0
-      @chef_rest_v0 ||= get_versioned_rest_object(Chef::Config[:chef_server_url], "0")
-    end
-
-    def chef_rest_v1
-      @chef_rest_v1 ||= get_versioned_rest_object(Chef::Config[:chef_server_url], "1")
-    end
-
     def chef_root_rest_v0
       @chef_root_rest_v0 ||= get_versioned_rest_object(Chef::Config[:chef_server_root], "0")
     end
@@ -242,6 +234,7 @@ Please refer to the documentation on how to manage your keys via the key rotatio
 EOH
     end
 
+    # Note: remove after API v0 no longer supported by client (and knife command).
     def reregister
       begin
         payload = self.to_hash.merge({:private_key => true})
@@ -295,11 +288,16 @@ EOH
 
     def self.list(inflate=false)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get('users')
-      users = if response.is_a?(Array)
-        transform_ohc_list_response(response) # OHC/OPC
-      else
-        response # OSC
+      # Gross.  Transforms an API response in the form of:
+      # [ { "user" => { "username" => USERNAME }}, ...]
+      # into the form
+      # { "USERNAME" => "URI" }
+      users = Hash.new
+      response.each do |u|
+        name = u['user']['username']
+        users[name] = Chef::Config[:chef_server_url] + "/users/#{name}"
       end
+
       if inflate
         users.inject({}) do |user_map, (name, _url)|
           user_map[name] = Chef::User.load(name)
@@ -315,19 +313,5 @@ EOH
       Chef::User.from_hash(response)
     end
 
-    # Gross.  Transforms an API response in the form of:
-    # [ { "user" => { "username" => USERNAME }}, ...]
-    # into the form
-    # { "USERNAME" => "URI" }
-    def self.transform_ohc_list_response(response)
-      new_response = Hash.new
-      response.each do |u|
-        name = u['user']['username']
-        new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"
-      end
-      new_response
-    end
-
-    private_class_method :transform_ohc_list_response
   end
 end

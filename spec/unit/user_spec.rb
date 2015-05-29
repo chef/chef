@@ -584,16 +584,6 @@ describe Chef::User do
         @osc_inflated_response = { "admin" => @user }
       end
 
-      it "lists all clients on an OSC server" do
-        allow(@http_client).to receive(:get).with("users").and_return(@osc_response)
-        expect(Chef::User.list).to eq(@osc_response)
-      end
-
-      it "inflate all clients on an OSC server" do
-        allow(@http_client).to receive(:get).with("users").and_return(@osc_response)
-        expect(Chef::User.list(true)).to eq(@osc_inflated_response)
-      end
-
       it "lists all clients on an OHC/OPC server" do
         allow(@http_client).to receive(:get).with("users").and_return(@ohc_response)
         # We expect that Chef::User.list will give a consistent response
