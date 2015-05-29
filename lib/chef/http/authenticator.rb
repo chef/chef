@@ -24,7 +24,7 @@ class Chef
   class HTTP
     class Authenticator
 
-      DEFAULT_SERVER_API_VERSION = "0"
+      DEFAULT_SERVER_API_VERSION = "1"
 
       attr_reader :signing_key_filename
       attr_reader :raw_key
