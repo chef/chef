@@ -23,7 +23,7 @@ describe Chef::Mixin::PowershellOut do
   subject(:object) { shell_out_class.new }
   let(:architecture) { "something"  }
   let(:flags) {
-     "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy RemoteSigned -InputFormat None"
+     "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -InputFormat None"
   }
 
   describe "#powershell_out" do
