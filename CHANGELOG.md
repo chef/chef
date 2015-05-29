@@ -2,6 +2,11 @@
 * [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly): Pass name by
   knife cil attribute [pr#3195](https://github.com/chef/chef/pull/3195)
 
+* [Issue #2247](https://github.com/chef/chef/issues/2247): powershell_script returns 0 for scripts with syntax errors
+* [pr#3080](https://github.com/chef/chef/pull/3080): Issue 2247: powershell_script exit status should be nonzero for syntax errors
+* [pr#3441](https://github.com/chef/chef/pull/3441): Add powershell_out mixin to core chef
+* [pr#3448](https://github.com/chef/chef/pull/3448): Fix dsc_resource to work with wmf5 april preview
+* [pr#3392](https://github.com/chef/chef/pull/3392): Comment up Chef::Client and privatize/deprecate unused things
 * [pr#3419](https://github.com/chef/chef/pull/3419): Fix cli issue with chef_repo_path when ENV variable is unset
 * [pr#3358](https://github.com/chef/chef/pull/3358): Separate audit and converge failures
 * [pr#3431](https://github.com/chef/chef/pull/3431): Fix backups on windows for the file resource
