@@ -233,22 +233,39 @@ class Chef
       end
     end
 
+    def reregister_only_v0_supported_error_msg(max_version, min_version)
+<<-EOH
+The reregister command only supports server API version 0.
+The server that received the request supports a min version of #{min_version} and a max version of #{max_version}.
+User keys are now managed via the key rotation commmands.
+Please refer to the documentation on how to manage your keys via the key rotation commands.
+EOH
+    end
+
     def reregister
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      reregistered_self = r.put("users/#{username}", { :username => username, :private_key => true })
-      private_key(reregistered_self["private_key"])
+      begin
+        payload = self.to_hash.merge({:private_key => true})
+        reregistered_self = chef_root_rest_v0.put("users/#{username}", payload)
+        private_key(reregistered_self["private_key"])
+      # only V0 supported for reregister
+      rescue Net::HTTPServerException => e
+        # if there was a 406 related to versioning, give error explaining that
+        # only API version 0 is supported for reregister command
+        if e.response.code == "406" && e.response["x-ops-server-api-version"]
+          version_header = Chef::JSONCompat.from_json(e.response["x-ops-server-api-version"])
+          min_version = version_header["min_version"]
+          max_version = version_header["max_version"]
+          error_msg = reregister_only_v0_supported_error_msg(max_version, min_version)
+          raise Chef::Exceptions::OnlyApiVersion0SupportedForAction.new(error_msg)
+        else
+          raise e
+        end
+      end
       self
     end
 
     def to_s
       "user[#{@username}]"
-    end
-
-    def inspect
-      inspect_str = "Chef::User username:'#{username}'"
-      inspect_str = "#{inspect_str} public_key:#{public_key}" if public_key
-      inspect_str = "#{inspect_str} private_key:#{private_key}" if private_key
-      inspect_str
     end
 
     # Class Methods
