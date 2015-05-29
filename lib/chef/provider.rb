@@ -22,6 +22,7 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/enforce_ownership_and_permissions'
 require 'chef/mixin/why_run'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/powershell_out'
 require 'chef/mixin/provides'
 require 'chef/platform/service_helpers'
 require 'chef/node_map'
@@ -30,6 +31,7 @@ class Chef
   class Provider
     include Chef::Mixin::WhyRun
     include Chef::Mixin::ShellOut
+    include Chef::Mixin::PowershellOut
     extend Chef::Mixin::Provides
 
     # supports the given resource and action (late binding)
