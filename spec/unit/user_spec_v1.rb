@@ -18,17 +18,17 @@
 
 require 'spec_helper'
 
-require 'chef/user'
+require 'chef/user_v1'
 require 'tempfile'
 
-describe Chef::User do
+describe Chef::UserV1 do
   before(:each) do
-    @user = Chef::User.new
+    @user = Chef::UserV1.new
   end
 
   describe "initialize" do
-    it "should be a Chef::User" do
-      expect(@user).to be_a_kind_of(Chef::User)
+    it "should be a Chef::UserV1" do
+      expect(@user).to be_a_kind_of(Chef::UserV1)
     end
   end
 
@@ -84,21 +84,6 @@ describe Chef::User do
     end
   end
 
-  describe "public_key" do
-    it "should let you set the public key" do
-      expect(@user.public_key("super public")).to eq("super public")
-    end
-
-    it "should return the current public key" do
-      @user.public_key("super public")
-      expect(@user.public_key).to eq("super public")
-    end
-
-    it "should throw an ArgumentError if you feed it something lame" do
-      expect { @user.public_key Hash.new }.to raise_error(ArgumentError)
-    end
-  end
-
   describe "private_key" do
     it "should let you set the private key" do
       expect(@user.private_key("super private")).to eq("super private")
@@ -117,7 +102,6 @@ describe Chef::User do
   describe "when serializing to JSON" do
     before(:each) do
       @user.name("black")
-      @user.public_key("crowes")
       @json = @user.to_json
     end
 
@@ -127,10 +111,6 @@ describe Chef::User do
 
     it "includes the name value" do
       expect(@json).to include(%q{"name":"black"})
-    end
-
-    it "includes the public key value" do
-      expect(@json).to include(%{"public_key":"crowes"})
     end
 
     it "includes the 'admin' flag" do
@@ -162,24 +142,21 @@ describe Chef::User do
 
   describe "when deserializing from JSON" do
     before(:each) do
-      user = { "name" => "mr_spinks",
-        "public_key" => "turtles",
+      user = {
+        "name" => "mr_spinks",
         "private_key" => "pandas",
         "password" => "password",
-        "admin" => true }
-      @user = Chef::User.from_json(Chef::JSONCompat.to_json(user))
+        "admin" => true
+      }
+      @user = Chef::UserV1.from_json(Chef::JSONCompat.to_json(user))
     end
 
-    it "should deserialize to a Chef::User object" do
-      expect(@user).to be_a_kind_of(Chef::User)
+    it "should deserialize to a Chef::UserV1 object" do
+      expect(@user).to be_a_kind_of(Chef::UserV1)
     end
 
     it "preserves the name" do
       expect(@user.name).to eq("mr_spinks")
-    end
-
-    it "preserves the public key" do
-      expect(@user.public_key).to eq("turtles")
     end
 
     it "preserves the admin status" do
@@ -198,7 +175,7 @@ describe Chef::User do
 
   describe "API Interactions" do
     before (:each) do
-      @user = Chef::User.new
+      @user = Chef::UserV1.new
       @user.name "foobar"
       @http_client = double("Chef::REST mock")
       allow(Chef::REST).to receive(:new).and_return(@http_client)
@@ -209,61 +186,151 @@ describe Chef::User do
         Chef::Config[:chef_server_url] = "http://www.example.com"
         @osc_response = { "admin" => "http://www.example.com/users/admin"}
         @ohc_response = [ { "user" => { "username" => "admin" }} ]
-        allow(Chef::User).to receive(:load).with("admin").and_return(@user)
+        allow(Chef::UserV1).to receive(:load).with("admin").and_return(@user)
         @osc_inflated_response = { "admin" => @user }
       end
 
       it "lists all clients on an OSC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@osc_response)
-        expect(Chef::User.list).to eq(@osc_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@osc_response)
+        expect(Chef::UserV1.list).to eq(@osc_response)
       end
 
       it "inflate all clients on an OSC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@osc_response)
-        expect(Chef::User.list(true)).to eq(@osc_inflated_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@osc_response)
+        expect(Chef::UserV1.list(true)).to eq(@osc_inflated_response)
       end
 
       it "lists all clients on an OHC/OPC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@ohc_response)
-        # We expect that Chef::User.list will give a consistent response
+        allow(@http_client).to receive(:get).with("users").and_return(@ohc_response)
+        # We expect that Chef::UserV1.list will give a consistent response
         # so OHC API responses should be transformed to OSC-style output.
-        expect(Chef::User.list).to eq(@osc_response)
+        expect(Chef::UserV1.list).to eq(@osc_response)
       end
 
       it "inflate all clients on an OHC/OPC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@ohc_response)
-        expect(Chef::User.list(true)).to eq(@osc_inflated_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@ohc_response)
+        expect(Chef::UserV1.list(true)).to eq(@osc_inflated_response)
       end
     end
 
     describe "create" do
-      it "creates a new user via the API" do
+      before do
         @user.password "password"
-        expect(@http_client).to receive(:post_rest).with("users", {:name => "foobar", :admin => false, :password => "password"}).and_return({})
+      end
+
+      it "creates a new user via the API" do
+        expect(@http_client).to receive(:post).with("users", {:name => "foobar", :admin => false, :password => "password"}).and_return({})
         @user.create
+      end
+
+      context "when an initial_public_key is passed in and create_key is true" do
+        before do
+          @user.create_key true
+        end
+        it "raises Chef::Exceptions::InvalidUserAttribute" do
+          expect{ @user.create("some_public_key") }.to raise_error(Chef::Exceptions::InvalidUserAttribute)
+        end
+      end
+      context "when initial_public_key isn't passed and create_key isn't set" do
+        it "posts a valid user" do
+          expect(@http_client).to receive(:post).with("users", {:name => "foobar", :admin => false, :password => "password"}).and_return({})
+          @user.create
+        end
+      end
+
+      context "when initial_public_key is passed and create_key isn't set" do
+        let(:public_key_string) { "some_public_key" }
+        let(:returned_key_string) { "returned_public_key" }
+        let(:expected_data) {
+          {
+            "name" => "foobar",
+            "admin" => false,
+            "password" => "password"
+          }
+        }
+        let(:returned_data) {
+          {
+            "name" => "foobar",
+            "admin" => false,
+            "password" => "password",
+            "chef_key" => {
+              "name" => "default",
+              "public_key" => returned_key_string
+            }
+          }
+        }
+        it "posts a valid user" do
+          expect(@http_client).to receive(:post).with("users", {:name => "foobar", :admin => false, :password => "password", :public_key => public_key_string}).and_return({})
+          @user.create(public_key_string)
+        end
+
+        it "properly parses the chef_key returned by the server" do
+          allow(@http_client).to receive(:post).with("users", {:name => "foobar", :admin => false, :password => "password", :public_key => public_key_string}).and_return(returned_data)
+          expect(Chef::UserV1).to receive(:from_hash).with(expected_data)
+          @user.create(public_key_string)
+        end
+      end
+
+      context "when initial_public_key isn't passed and create_key is true" do
+        let(:returned_key_string) { "returned_public_key" }
+        let(:private_key_string) { "private_key" }
+        let(:expected_data) {
+          {
+            "name" => "foobar",
+            "admin" => false,
+            "password" => "password",
+            "private_key" => private_key_string
+          }
+        }
+        let(:returned_data) {
+          {
+            "name" => "foobar",
+            "admin" => false,
+            "password" => "password",
+            "chef_key" => {
+              "name" => "default",
+              "public_key" => returned_key_string,
+              "private_key" => private_key_string
+            }
+          }
+        }
+
+        before do
+          @user.create_key true
+        end
+
+        it "posts a valid user" do
+          expect(@http_client).to receive(:post).with("users", {:name => "foobar", :admin => false, :password => "password", :create_key => true}).and_return({})
+          @user.create
+        end
+
+        it "properly parses the chef_key returned by the server" do
+          allow(@http_client).to receive(:post).with("users", {:name => "foobar", :admin => false, :password => "password", :create_key => true}).and_return(returned_data)
+          expect(Chef::UserV1).to receive(:from_hash).with(expected_data)
+          @user.create
+        end
       end
     end
 
     describe "read" do
       it "loads a named user from the API" do
-        expect(@http_client).to receive(:get_rest).with("users/foobar").and_return({"name" => "foobar", "admin" => true, "public_key" => "pubkey"})
-        user = Chef::User.load("foobar")
+        expect(@http_client).to receive(:get).with("users/foobar").and_return({"name" => "foobar", "admin" => true})
+        user = Chef::UserV1.load("foobar")
         expect(user.name).to eq("foobar")
         expect(user.admin).to eq(true)
-        expect(user.public_key).to eq("pubkey")
       end
     end
 
     describe "update" do
       it "updates an existing user on via the API" do
-        expect(@http_client).to receive(:put_rest).with("users/foobar", {:name => "foobar", :admin => false}).and_return({})
+        expect(@http_client).to receive(:put).with("users/foobar", {:name => "foobar", :admin => false}).and_return({})
         @user.update
       end
     end
 
     describe "destroy" do
       it "deletes the specified user via the API" do
-        expect(@http_client).to receive(:delete_rest).with("users/foobar")
+        expect(@http_client).to receive(:delete).with("users/foobar")
         @user.destroy
       end
     end

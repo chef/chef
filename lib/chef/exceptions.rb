@@ -73,6 +73,8 @@ class Chef
     class KeyCommandInputError < ArgumentError; end
     class InvalidKeyArgument < ArgumentError; end
     class InvalidKeyAttribute < ArgumentError; end
+    class InvalidUserAttribute < ArgumentError; end
+    class InvalidClientAttribute < ArgumentError; end
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookFrozen < ArgumentError; end
@@ -95,6 +97,7 @@ class Chef
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
     class VerificationNotFound < RuntimeError; end
+    class InvalidObjectAPIVersionRequested < ArgumentError; end
 
     # Can't find a Resource of this type that is valid on this platform.
     class NoSuchResourceType < NameError

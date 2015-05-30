@@ -28,7 +28,8 @@ class Chef
 
     JSON_CLASS = "json_class".freeze
 
-    CHEF_APICLIENT          = "Chef::ApiClient".freeze
+    CHEF_APICLIENTV0        = "Chef::ApiClientV0".freeze
+    CHEF_APICLIENTV1        = "Chef::ApiClientV1".freeze
     CHEF_CHECKSUM           = "Chef::Checksum".freeze
     CHEF_COOKBOOKVERSION    = "Chef::CookbookVersion".freeze
     CHEF_DATABAG            = "Chef::DataBag".freeze
@@ -122,8 +123,10 @@ class Chef
       # the world to get json, which would make knife very slow.
       def class_for_json_class(json_class)
         case json_class
-        when CHEF_APICLIENT
-          Chef::ApiClient
+        when CHEF_APICLIENTV0
+          Chef::ApiClientV0
+        when CHEF_APICLIENTV1
+          Chef::ApiClientV1
         when CHEF_CHECKSUM
           Chef::Checksum
         when CHEF_COOKBOOKVERSION

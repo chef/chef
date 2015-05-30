@@ -21,7 +21,7 @@ require 'chef/rest'
 require 'chef/exceptions'
 
 class Chef
-  class ApiClient
+  class ApiClient < BasicObject
 
     # ==Chef::ApiClient::Registration
     # Manages the process of creating or updating a Chef::ApiClient on the
