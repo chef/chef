@@ -34,6 +34,7 @@ class Chef
         @rest_client = rest_client
         # Ruby 1.9.3 and above "enumerate their values in the order that the corresponding keys were inserted."
         @ordered_control_groups = Hash.new
+        @audit_phase_error = nil
       end
 
       def run_context
@@ -59,6 +60,7 @@ class Chef
       # known control groups.
       def audit_phase_failed(error)
         # The stacktrace information has already been logged elsewhere
+        @audit_phase_error = error
         Chef::Log.debug("Audit Reporter failed.")
         ordered_control_groups.each do |name, control_group|
           audit_data.add_control_group(control_group)
@@ -70,7 +72,9 @@ class Chef
       end
 
       def run_failed(error)
-        post_auditing_data(error)
+        # Audit phase errors are captured when audit_phase_failed gets called.
+        # The error passed here isn't relevant to auditing, so we ignore it.
+        post_auditing_data
       end
 
       def control_group_started(name)
@@ -98,7 +102,7 @@ class Chef
 
       private
 
-      def post_auditing_data(error = nil)
+      def post_auditing_data
         unless auditing_enabled?
           Chef::Log.debug("Audit Reports are disabled. Skipping sending reports.")
           return
@@ -116,8 +120,10 @@ class Chef
         Chef::Log.debug("Sending audit report (run-id: #{audit_data.run_id})")
         run_data = audit_data.to_hash
 
-        if error
-          run_data[:error] = "#{error.class.to_s}: #{error.message}\n#{error.backtrace.join("\n")}"
+        if @audit_phase_error
+          error_info = "#{@audit_phase_error.class}: #{@audit_phase_error.message}"
+          error_info << "\n#{@audit_phase_error.backtrace.join("\n")}" if @audit_phase_error.backtrace
+          run_data[:error] = error_info
         end
 
         Chef::Log.debug "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
@@ -163,7 +169,6 @@ class Chef
       def iso8601ify(time)
         time.utc.iso8601.to_s
       end
-
     end
   end
 end

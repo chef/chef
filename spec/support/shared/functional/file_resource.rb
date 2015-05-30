@@ -592,10 +592,6 @@ shared_examples_for "a configured file resource" do
             File.open(path, "wb") { |f| f.write(wrong_content) }
           end
 
-          it "updates the source file content" do
-            skip
-          end
-
           it "marks the resource as updated" do
             resource.run_action(:create)
             expect(resource).to be_updated_by_last_action

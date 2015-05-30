@@ -372,6 +372,11 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     let(:tested_action) { :manage }
 
     describe "when there is no group" do
+      before(:each) do
+        group_resource.run_action(:remove)
+        group_should_not_exist(group_name)
+      end
+
       it "raises an error on modify" do
         expect { group_resource.run_action(:modify) }.to raise_error
       end

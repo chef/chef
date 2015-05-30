@@ -147,7 +147,7 @@ class Chef
                 # some scripts support multiple instances through symlinks such as openvpn.
                 # We should get the service name from rcvar.
                 Chef::Log.debug("name=\"service\" not found at #{init_command}. falling back to rcvar")
-                sn = shell_out!("#{init_command} rcvar").stdout[/(\w+_enable)=/, 1]
+                shell_out!("#{init_command} rcvar").stdout[/(\w+_enable)=/, 1]
               else
                 # for why-run mode when the rcd_script is not there yet
                 new_resource.service_name

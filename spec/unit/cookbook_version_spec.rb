@@ -306,26 +306,6 @@ describe Chef::CookbookVersion do
 
     subject(:cbv) { Chef::CookbookVersion.new("version validation", '/tmp/blah') }
 
-    describe "HTTP Resource behaviors", pending: "will be deprected when CookbookManifest API is stablized" do
-
-      it "errors on #save_url" do
-        expect { cbv.save_url }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-      end
-
-      it "errors on #force_save_url" do
-        expect { cbv.force_save_url }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-      end
-
-      it "errors on #to_hash" do
-        expect { cbv.to_hash }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-      end
-
-      it "errors on #to_json" do
-        expect { cbv.to_json }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-      end
-
-    end
-
     it "errors on #status and #status=" do
       expect { cbv.status = :wat }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
       expect { cbv.status }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)

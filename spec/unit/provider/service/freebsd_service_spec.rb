@@ -189,18 +189,6 @@ PS_SAMPLE
         expect(provider.status_load_success).to be_nil
       end
 
-      context "when ps command is nil" do
-        before do
-          node.automatic_attrs[:command] = {:ps => nil}
-        end
-
-        it "should set running to nil" do
-          pending "superclass raises no conversion of nil to string which seems broken"
-          provider.determine_current_status!
-          expect(current_resource.running).to be_nil
-        end
-      end
-
       context "when ps is empty string" do
         before do
           node.automatic_attrs[:command] = {:ps => ""}

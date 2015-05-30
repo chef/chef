@@ -435,7 +435,7 @@ class Chef
         wrapped_errors.each_with_index do |e,i|
           backtrace << "#{i+1}) #{e.class} -  #{e.message}"
           backtrace += e.backtrace if e.backtrace
-          backtrace << ""
+          backtrace << "" unless i == wrapped_errors.length - 1
         end
         set_backtrace(backtrace)
       end

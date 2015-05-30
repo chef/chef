@@ -1,4 +1,23 @@
 ## Unreleased
+* [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly): Pass name by
+  knife cil attribute [pr#3195](https://github.com/chef/chef/pull/3195)
+* [**Torben Knerr**](https://github.com/tknerr):
+  Allow knife sub-command loader to match platform specific gems. [pr#3281](https://github.com/chef/chef/pull/3281)
+
+* [Issue #2247](https://github.com/chef/chef/issues/2247): powershell_script returns 0 for scripts with syntax errors
+* [pr#3080](https://github.com/chef/chef/pull/3080): Issue 2247: powershell_script exit status should be nonzero for syntax errors
+* [pr#3441](https://github.com/chef/chef/pull/3441): Add powershell_out mixin to core chef
+* [pr#3448](https://github.com/chef/chef/pull/3448): Fix dsc_resource to work with wmf5 april preview
+* [pr#3392](https://github.com/chef/chef/pull/3392): Comment up Chef::Client and privatize/deprecate unused things
+* [pr#3419](https://github.com/chef/chef/pull/3419): Fix cli issue with chef_repo_path when ENV variable is unset
+* [pr#3358](https://github.com/chef/chef/pull/3358): Separate audit and converge failures
+* [pr#3431](https://github.com/chef/chef/pull/3431): Fix backups on windows for the file resource
+* [pr#3397](https://github.com/chef/chef/pull/3397): Validate owner exists in directory resources
+* [pr#3418](https://github.com/chef/chef/pull/3418): Add `shell_out` mixin to Chef::Resource class for use in `not_if`/`only_if` conditionals, etc.
+* [pr#3406](https://github.com/chef/chef/pull/3406): Add wide-char 'Environment' to `broadcast_env_change` mixin for setting windows environment variables
+
+## 12.4.0
+
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   Fix multipackage and architectures
 * [**Igor Shpakov**](https://github.com/Igorshp):
@@ -28,24 +47,24 @@
 * Add an integration test of chef-client with empty ENV. #3321
 * Switch over Windows builds to universal builds. #3278
 * Convert bootstrap template to use sh #2877
-* [Issue #3316](https://github.com/chef/chef/issues/3316) Fix idempotency issues with the `windows_package` resource
+* [Issue #3316](https://github.com/chef/chef/issues/3316): Fix idempotency issues with the `windows_package` resource
 * [pr#3295](https://github.com/chef/chef/pull/3295): Stop mutating `new_resource.checksum` in file providers.  Fixes some ChecksumMismatch exceptions like [issue#3168](https://github.com/chef/chef/issues/3168)
 * [pr#3320] Sanitize non-UTF8 characters in the node data before doing node.save().  Works around many UTF8 exception issues reported on node.save().
 * Implemented X-Ops-Server-API-Version with a API version of 0, as well as error handling when the Chef server does not support the API version that the client supports.
 * [pr#3327](https://github.com/chef/chef/pull/3327): Fix unreliable AIX service group parsing mechanism.
 * [pr#3333](https://github.com/chef/chef/pull/3333): Fix SSL errors when connecting to private Supermarkets
 * [pr#3340](https://github.com/chef/chef/pull/3340): Allow Event dispatch subscribers to be inspected.
-* [Issue #3055](https://github.com/chef/chef/issues/3055) Fix regex parsing for recipe failures on Windows
-* [pr#3345](https://github.com/chef/chef/pull/3345) Windows Event log logger
-* [pr#3336](https://github.com/chef/chef/pull/3336) Remote file understands UNC paths
+* [Issue #3055](https://github.com/chef/chef/issues/3055): Fix regex parsing for recipe failures on Windows
+* [pr#3345](https://github.com/chef/chef/pull/3345): Windows Event log logger
+* [pr#3336](https://github.com/chef/chef/pull/3336): Remote file understands UNC paths
 * [pr#3269](https://github.com/chef/chef/pull/3269): Deprecate automatic recipe DSL for classes in `Chef::Resource`
 * [pr#3360](https://github.com/chef/chef/pull/3360): Add check_resource_semantics! lifecycle method to provider
 * [pr#3344](https://github.com/chef/chef/pull/3344): Rewrite Windows user resouce code to use ffi instead of win32-api
-* [pr#3318](https://github.com/chef/chef/pull/3318) Modify Windows package provider to allow for url source
-* [pr#3381](https://github.com/chef/chef/pull/3381) warn on cookbook self-deps
+* [pr#3318](https://github.com/chef/chef/pull/3318): Modify Windows package provider to allow for url source
+* [pr#3381](https://github.com/chef/chef/pull/3381): warn on cookbook self-deps
 * [pr#2312](https://github.com/chef/chef/pull/2312): fix `node[:recipes]` duplication, add `node[:cookbooks]` and `node[:expanded_run_list]`
-* [pr#3325](https://github.com/chef/chef/pull/3325) enforce passing a node name with validatorless bootstrapping
-* [pr#3398](https://github.com/chef/chef/pull/3398) Allow spaces in files for the `remote_file` resource
+* [pr#3325](https://github.com/chef/chef/pull/3325): enforce passing a node name with validatorless bootstrapping
+* [pr#3398](https://github.com/chef/chef/pull/3398): Allow spaces in files for the `remote_file` resource
 
 ## 12.3.0
 

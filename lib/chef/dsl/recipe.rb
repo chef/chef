@@ -21,6 +21,7 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/exceptions'
 require 'chef/resource_builder'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/powershell_out'
 require 'chef/dsl/resources'
 require 'chef/dsl/definitions'
 
@@ -33,6 +34,7 @@ class Chef
     module Recipe
 
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::PowershellOut
 
       # method_missing must live for backcompat purposes until Chef 13.
       def method_missing(method_symbol, *args, &block)

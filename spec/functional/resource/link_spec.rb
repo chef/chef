@@ -348,8 +348,7 @@ describe Chef::Resource::Link do
           end
           it_behaves_like 'delete errors out'
         end
-        context 'and the link already exists and is not writeable to this user', :skip => true do
-        end
+
         it_behaves_like 'a securable resource without existing target' do
           let(:path) { target_file }
           def allowed_acl(sid, expected_perms)
@@ -360,7 +359,7 @@ describe Chef::Resource::Link do
           end
           def parent_inheritable_acls
             dummy_file_path = File.join(test_file_dir, "dummy_file")
-            dummy_file = FileUtils.touch(dummy_file_path)
+            FileUtils.touch(dummy_file_path)
             dummy_desc = get_security_descriptor(dummy_file_path)
             FileUtils.rm_rf(dummy_file_path)
             dummy_desc
@@ -415,8 +414,6 @@ describe Chef::Resource::Link do
             include_context 'delete is noop'
           end
         end
-      end
-      context "when the link destination is not readable to this user", :skip => true do
       end
       context "when the link destination does not exist" do
         include_context 'create symbolic link succeeds'
@@ -518,8 +515,6 @@ describe Chef::Resource::Link do
           end
           it_behaves_like 'delete errors out'
         end
-        context "and the link already exists and is not writeable to this user", :skip => true do
-        end
         context "and specifies security attributes" do
           before(:each) do
             resource.owner(windows? ? 'Guest' : 'nobody')
@@ -559,10 +554,10 @@ describe Chef::Resource::Link do
           end
           context 'and the link does not yet exist' do
             it 'links to the target file' do
+              skip('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks') if (os_x? or freebsd? or aix?)
               resource.run_action(:create)
               expect(File.exists?(target_file)).to be_truthy
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
-              pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks') if (os_x? or freebsd? or aix?)
               expect(symlink?(target_file)).to be_truthy
               expect(readlink(target_file)).to eq(canonicalize(@other_target))
             end
@@ -578,7 +573,7 @@ describe Chef::Resource::Link do
           end
           context 'and the link does not yet exist' do
             it 'links to the target file' do
-              pending('OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks') if (os_x? or freebsd? or aix?)
+              skip('OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks') if (os_x? or freebsd? or aix?)
               resource.run_action(:create)
               # Windows and Unix have different definitions of exists? here, and that's OK.
               if windows?
@@ -593,8 +588,7 @@ describe Chef::Resource::Link do
           end
         end
       end
-      context "when the link destination is not readable to this user", :skip => true do
-      end
+
       context "when the link destination does not exist" do
         context 'and the link does not yet exist' do
           it 'create errors out' do

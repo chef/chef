@@ -3,9 +3,9 @@ require 'chef/config'
 
 class Chef
   module Formatters
-    #--
-    # TODO: not sold on the name, but the output is similar to what rspec calls
-    # "specdoc"
+
+    # Formatter similar to RSpec's documentation formatter. Uses indentation to
+    # show context.
     class Doc < Formatters::Base
 
       attr_reader :start_time, :end_time, :successful_audits, :failed_audits
@@ -91,6 +91,10 @@ class Chef
       # Default and override attrs from roles have been computed, but not yet applied.
       # Normal attrs from JSON have been added to the node.
       def node_load_completed(node, expanded_run_list, config)
+      end
+
+      def policyfile_loaded(policy)
+        puts_line "Using policy '#{policy["name"]}' at revision '#{policy["revision_id"]}'"
       end
 
       # Called before the cookbook collection is fetched from the server.
@@ -184,8 +188,10 @@ class Chef
         puts_line "Audit phase exception:"
         indent
         puts_line "#{error.message}"
-        error.backtrace.each do |l|
-          puts_line l
+        if error.backtrace
+          error.backtrace.each do |l|
+            puts_line l
+          end
         end
       end
 
