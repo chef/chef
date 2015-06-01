@@ -116,14 +116,15 @@ class Chef
       result = {
         "username" => @username
       }
-      result["display_name"] = @display_name if @display_name
-      result["first_name"] = @first_name if @first_name
-      result["middle_name"] = @middle_name if @middle_name
-      result["last_name"] = @last_name if @last_name
-      result["email"] = @email if @email
-      result["password"] = @password if @password
-      result["public_key"] = @public_key if @public_key
-      result["private_key"] = @private_key if @private_key
+      result["display_name"] = @display_name unless @display_name.nil?
+      result["first_name"] = @first_name unless @first_name.nil?
+      result["middle_name"] = @middle_name unless @middle_name.nil?
+      result["last_name"] = @last_name unless @last_name.nil?
+      result["email"] = @email unless @email.nil?
+      result["password"] = @password unless @password.nil?
+      result["public_key"] = @public_key unless @public_key.nil?
+      result["private_key"] = @private_key unless @private_key.nil?
+      result["create_key"] = @create_key unless @create_key.nil?
       result
     end
 
@@ -146,10 +147,10 @@ class Chef
           :email => @email,
           :password => @password
         }
-        payload[:public_key] = @public_key if @public_key
-        payload[:create_key] = @create_key if @create_key
-        payload[:middle_name] = @middle_name if @middle_name
-        raise Chef::Exceptions::InvalidUserAttribute, "You cannot set both public_key and create_key for create." if @create_key && @public_key
+        payload[:public_key] = @public_key unless @public_key.nil?
+        payload[:create_key] = @create_key unless @create_key.nil?
+        payload[:middle_name] = @middle_name unless @middle_name.nil?
+        raise Chef::Exceptions::InvalidUserAttribute, "You cannot set both public_key and create_key for create." if !@create_key.nil? && !@public_key.nil?
         new_user = chef_root_rest_v1.post("users", payload)
 
         # get the private_key out of the chef_key hash if it exists
@@ -171,8 +172,8 @@ class Chef
           :email => @email,
           :password => @password
         }
-        payload[:middle_name] = @middle_name if @middle_name
-        payload[:public_key] = @public_key if @public_key
+        payload[:middle_name] = @middle_name unless @middle_name.nil?
+        payload[:public_key] = @public_key unless @public_key.nil?
         # under API V0, the server will create a key pair if public_key isn't passed
         new_user = chef_root_rest_v0.post("users", payload)
       end
@@ -183,15 +184,15 @@ class Chef
     def update(new_key=false)
       begin
         payload = {:username => username}
-        payload[:display_name] = display_name if display_name
-        payload[:first_name] = first_name if first_name
-        payload[:middle_name] = middle_name if middle_name
-        payload[:last_name] = last_name if last_name
-        payload[:email] = email if email
-        payload[:password] = password if password
+        payload[:display_name] = display_name unless display_name.nil?
+        payload[:first_name] = first_name unless first_name.nil?
+        payload[:middle_name] = middle_name unless middle_name.nil?
+        payload[:last_name] = last_name unless last_name.nil?
+        payload[:email] = email unless email.nil?
+        payload[:password] = password unless password.nil?
 
         # API V1 will fail if these key fields are defined, and try V0 below if relevant 400 is returned
-        payload[:public_key] = public_key if public_key
+        payload[:public_key] = public_key unless public_key.nil?
         payload[:private_key] = new_key if new_key
 
         updated_user = chef_root_rest_v1.put("users/#{username}", payload)

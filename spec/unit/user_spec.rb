@@ -51,6 +51,11 @@ describe Chef::User do
       expect(@user.send(method)).to eq(true)
     end
 
+    it "should return the false value when false" do
+      @user.send(method, false)
+      expect(@user.send(method)).to eq(false)
+    end
+
     it "should throw an ArgumentError if you feed it anything but true or false" do
       expect { @user.send(method, Hash.new) }.to raise_error(ArgumentError)
     end
@@ -256,7 +261,7 @@ describe Chef::User do
         "password" => "password",
         "public_key" => "turtles",
         "private_key" => "pandas",
-        "create_key" => true
+        "create_key" => false
       }
       @user = Chef::User.from_json(Chef::JSONCompat.to_json(user))
     end
@@ -301,8 +306,8 @@ describe Chef::User do
       expect(@user.private_key).to eq("pandas")
     end
 
-    it "includes the create key status if present" do
-      expect(@user.create_key).to be_truthy
+    it "includes the create key status if not nil" do
+      expect(@user.create_key).to be_falsey
     end
   end
 

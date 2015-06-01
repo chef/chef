@@ -141,9 +141,9 @@ class Chef
         'json_class' => self.class.name,
         "chef_type" => "client"
       }
-      result["private_key"] = @private_key if @private_key
-      result["public_key"] = @public_key if @public_key
-      result["create_key"] = @create_key if @create_key
+      result["private_key"] = @private_key unless @private_key.nil?
+      result["public_key"] = @public_key unless @public_key.nil?
+      result["create_key"] = @create_key unless @create_key.nil?
       result
     end
 
@@ -269,7 +269,7 @@ class Chef
       }
       begin
         # try API V1
-        raise Chef::Exceptions::InvalidClientAttribute, "You cannot set both public_key and create_key for create." if create_key && public_key
+        raise Chef::Exceptions::InvalidClientAttribute, "You cannot set both public_key and create_key for create." if !create_key.nil? && !public_key.nil?
 
         payload[:public_key] = public_key unless public_key.nil?
         payload[:create_key] = create_key unless create_key.nil?
