@@ -28,6 +28,19 @@ Authors of HWRPs need to be aware that in the future all resources and providers
 
 Users are encouraged to declare resources in their own namespaces instead of putting them in the special `Chef::Resource` namespace.
 
+### Resources may now use `allowed_actions` and `default_action`
+
+Instead of overriding `Chef::Resource.initialize` and setting `@allowed_actions` and `@action` in the constructor, you may now use the `allowed_actions` and `default_action` DSL to declare them:
+
+```ruby
+class MyResource < Chef::Resource
+  use_automatic_resource_name
+
+  allowed_actions :create, :delete
+  default_action :create
+end
+```
+
 ### LWRPs are no longer automatically placed in the `Chef::Resource` namespace
 
 Starting with Chef 12.4.0, accessing an LWRP class by name from the `Chef::Resource` namespace will trigger a deprecation warning message. This means that if your cookbook includes the LWRP `mycookbook/resources/myresource.rb`, you will no longer be able to extend or reference `Chef::Resource::MycookbookMyresource` in Ruby code.  LWRP recipe DSL does not change: the LWRP will still be available to recipes as `mycookbook_myresource`.
