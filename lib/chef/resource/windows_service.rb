@@ -29,13 +29,14 @@ class Chef
       provides :windows_service, os: "windows"
       provides :service, os: "windows"
 
+      allowed_actions :configure_startup
+
       identity_attr :service_name
 
       state_attrs :enabled, :running
 
       def initialize(name, run_context=nil)
         super
-        @allowed_actions.push(:configure_startup)
         @startup_type = :automatic
         @run_as_user = ""
         @run_as_password = ""

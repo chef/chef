@@ -6,7 +6,7 @@ Example Doc Change:
 Description of the required change.
 -->
 
-### Resources must now use `resource_name` (or `provides`) to declare recipe DSL
+### Resources must now use `resource_name` to declare recipe DSL
 
 Resources declared in `Chef::Resource` namespace will no longer get recipe DSL
 automatically.  Instead, `resource_name` is required in order to have DSL:
@@ -21,12 +21,25 @@ end
 
 `resource_name :my_resource` may be used to explicitly set the resource name.
 
-`provides :my_resource`, still works, but at least one resource_name *must* be
+`provides :my_resource` still works, but at least one resource_name *must* be
 set for the resource to work.
 
 Authors of HWRPs need to be aware that in the future all resources and providers will be required to include a provides line. Starting with Chef 12.4.0 any HWRPs in the `Chef::Resource` or `Chef::Provider` namespaces that do not have provides lines will trigger deprecation warning messages when called. The LWRPBase code does `provides` automatically so LWRP authors and users who write classes that inherit from LWRPBase do not need to explicitly include provides lines.
 
 Users are encouraged to declare resources in their own namespaces instead of putting them in the special `Chef::Resource` namespace.
+
+### Resources may now use `allowed_actions` and `default_action`
+
+Instead of overriding `Chef::Resource.initialize` and setting `@allowed_actions` and `@action` in the constructor, you may now use the `allowed_actions` and `default_action` DSL to declare them:
+
+```ruby
+class MyResource < Chef::Resource
+  use_automatic_resource_name
+
+  allowed_actions :create, :delete
+  default_action :create
+end
+```
 
 ### LWRPs are no longer automatically placed in the `Chef::Resource` namespace
 

@@ -26,11 +26,11 @@ class Chef
 
       state_attrs :plugin
 
+      default_action :reload
+
       def initialize(name, run_context=nil)
         super
         @name = name
-        @allowed_actions.push(:reload)
-        @action = :reload
         @plugin = nil
       end
 
