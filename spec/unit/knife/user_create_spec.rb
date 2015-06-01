@@ -24,36 +24,21 @@ Chef::Knife::UserCreate.load_deps
 describe Chef::Knife::UserCreate do
   let(:knife) { Chef::Knife::UserCreate.new }
 
+  let(:stderr) {
+    StringIO.new
+  }
+
+  let(:stdout) {
+    StringIO.new
+  }
+
   before(:each) do
-    @stdout = StringIO.new
-    @stderr = StringIO.new
-    allow(knife.ui).to receive(:stdout).and_return(@stdout)
-    allow(knife.ui).to receive(:stderr).and_return(@stderr)
-  end
-
-  shared_examples_for "mandatory field missing" do
-    context "when field is nil" do
-      before do
-        knife.name_args = name_args
-      end
-
-      it "exits 1" do
-        expect { knife.run }.to raise_error(SystemExit)
-      end
-
-      it "prints the usage" do
-        expect(knife).to receive(:show_usage)
-        expect { knife.run }.to raise_error(SystemExit)
-      end
-
-      it "prints a relevant error message" do
-        expect { knife.run }.to raise_error(SystemExit)
-        expect(@stderr.string).to match /You must specify a #{fieldname}/
-      end
-    end
+    allow(knife.ui).to receive(:stdout).and_return(stdout)
+    allow(knife.ui).to receive(:stderr).and_return(stderr)
   end
 
   context "when USERNAME isn't specified" do
+    # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
       let(:name_args) { [] }
       let(:fieldname) { 'username' }
@@ -61,6 +46,7 @@ describe Chef::Knife::UserCreate do
   end
 
   context "when DISPLAY_NAME isn't specified" do
+    # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
       let(:name_args) { ['some_user'] }
       let(:fieldname) { 'display name' }
@@ -68,6 +54,7 @@ describe Chef::Knife::UserCreate do
   end
 
   context "when FIRST_NAME isn't specified" do
+    # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
       let(:name_args) { ['some_user', 'some_display_name'] }
       let(:fieldname) { 'first name' }
@@ -75,6 +62,7 @@ describe Chef::Knife::UserCreate do
   end
 
   context "when LAST_NAME isn't specified" do
+    # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
       let(:name_args) { ['some_user', 'some_display_name', 'some_first_name'] }
       let(:fieldname) { 'last name' }
@@ -82,6 +70,7 @@ describe Chef::Knife::UserCreate do
   end
 
   context "when EMAIL isn't specified" do
+    # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
       let(:name_args) { ['some_user', 'some_display_name', 'some_first_name', 'some_last_name'] }
       let(:fieldname) { 'email' }
@@ -89,6 +78,7 @@ describe Chef::Knife::UserCreate do
   end
 
   context "when PASSWORD isn't specified" do
+    # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
       let(:name_args) { ['some_user', 'some_display_name', 'some_first_name', 'some_last_name', 'some_email'] }
       let(:fieldname) { 'password' }
@@ -117,10 +107,10 @@ describe Chef::Knife::UserCreate do
       expect(knife.user.password).to eq('some_password')
     end
 
-    context "when user_key and no_key are passed" do
+    context "when user_key and prevent_keygen are passed" do
       before do
         knife.config[:user_key] = "some_key"
-        knife.config[:no_key] = true
+        knife.config[:prevent_keygen] = true
       end
       it "prints the usage" do
         expect(knife).to receive(:show_usage)
@@ -129,29 +119,13 @@ describe Chef::Knife::UserCreate do
 
       it "prints a relevant error message" do
         expect { knife.run }.to raise_error(SystemExit)
-        expect(@stderr.string).to match /You cannot pass --user-key and --no-key/
+        expect(stderr.string).to match /You cannot pass --user-key and --prevent-keygen/
       end
     end
 
-    context "when user_key and no_key are passed" do
+    context "when --prevent-keygen is passed" do
       before do
-        knife.config[:user_key] = "some_key"
-        knife.config[:no_key] = true
-      end
-      it "prints the usage" do
-        expect(knife).to receive(:show_usage)
-        expect { knife.run }.to raise_error(SystemExit)
-      end
-
-      it "prints a relevant error message" do
-        expect { knife.run }.to raise_error(SystemExit)
-        expect(@stderr.string).to match /You cannot pass --user-key and --no-key/
-      end
-    end
-
-    context "when --no-key is passed" do
-      before do
-        knife.config[:no_key] = true
+        knife.config[:prevent_keygen] = true
       end
 
       it "does not set user.create_key" do
@@ -160,7 +134,7 @@ describe Chef::Knife::UserCreate do
       end
     end
 
-    context "when --no-key is not passed" do
+    context "when --prevent-keygen is not passed" do
       it "sets user.create_key to true" do
         knife.run
         expect(knife.user.create_key).to be_truthy

@@ -161,6 +161,7 @@ class Chef
           new_user.delete('chef_key')
         end
       rescue Net::HTTPServerException => e
+        # rescue API V0 if 406 and the server supports V0
         raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
         payload = {
           :username => @username,
@@ -172,6 +173,7 @@ class Chef
         }
         payload[:middle_name] = @middle_name if @middle_name
         payload[:public_key] = @public_key if @public_key
+        # under API V0, the server will create a key pair if public_key isn't passed
         new_user = chef_root_rest_v0.post("users", payload)
       end
 
@@ -197,9 +199,6 @@ class Chef
         if e.response.code == "400"
           # if a 400 is returned but the error message matches the error related to private / public key fields, try V0
           # else, raise the 400
-          puts "halp"*100
-          puts e.response.body
-          puts e.response.body.class
           error = Chef::JSONCompat.from_json(e.response.body)["error"].first
           error_match = /Since Server API v1, all keys must be updated via the keys endpoint/.match(error)
           if error_match.nil?

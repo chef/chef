@@ -316,22 +316,6 @@ describe Chef::User do
       allow(@user).to receive(:chef_root_rest_v1).and_return(double('chef rest root v1 object'))
     end
 
-    shared_examples_for "version handling" do
-      before do
-        allow(@user.chef_root_rest_v1).to receive(http_verb).and_raise(exception_406)
-      end
-
-      context "when the server does not support the min or max server API version that Chef::User supports" do
-        before do
-          allow(@user).to receive(:handle_version_http_exception).and_return(false)
-        end
-
-        it "raises the original exception" do
-          expect{ @user.send(method) }.to raise_error(exception_406)
-        end
-      end # when the server does not support the min or max server API version that Chef::User supports
-    end # version handling
-
     describe "update" do
       before do
         # populate all fields that are valid between V0 and V1
@@ -429,9 +413,12 @@ describe Chef::User do
         end # when the server returns a 400
 
         context "when the server returns a 406" do
+          # from spec/support/shared/unit/api_versioning.rb
           it_should_behave_like "version handling" do
-            let(:method)    { (:update) }
-            let(:http_verb) { (:put) }
+            let(:object)    { @user }
+            let(:method)    { :update }
+            let(:http_verb) { :put }
+            let(:rest_v1)   { @user.chef_root_rest_v1 }
           end
 
           context "when the server supports API V0" do
@@ -470,99 +457,46 @@ describe Chef::User do
         @user.password "some_password"
       end
 
-      shared_examples_for "create valid user" do
-        it "creates a new user via the API" do
-          expect(chef_rest_object).to receive(:post).with("users", payload).and_return({})
+      # from spec/support/shared/unit/user_and_client_shared.rb
+      it_should_behave_like "user or client create" do
+        let(:object)  { @user }
+        let(:error)   { Chef::Exceptions::InvalidUserAttribute }
+        let(:rest_v0) { @user.chef_root_rest_v0 }
+        let(:rest_v1) { @user.chef_root_rest_v1 }
+        let(:url)     { "users" }
+      end
+
+      context "when handling API V1" do
+        it "creates a new user via the API with a middle_name when it exists" do
+          @user.middle_name "some_middle_name"
+          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({:middle_name => "some_middle_name"})).and_return({})
           @user.create
         end
+      end # when server API V1 is valid on the Chef Server receiving the request
 
-        it "creates a new user via the API with a public_key when it exists" do
-          @user.public_key "some_public_key"
-          expect(chef_rest_object).to receive(:post).with("users", payload.merge({:public_key => "some_public_key"})).and_return({})
-          @user.create
+      context "when API V1 is not supported by the server" do
+        # from spec/support/shared/unit/api_versioning.rb
+        it_should_behave_like "version handling" do
+          let(:object)    { @user }
+          let(:method)    { :create }
+          let(:http_verb) { :post }
+          let(:rest_v1)   { @user.chef_root_rest_v1 }
+        end
+      end
+
+      context "when handling API V0" do
+        before do
+          allow(@user).to receive(:handle_version_http_exception).and_return(true)
+          allow(@user.chef_root_rest_v1).to receive(:post).and_raise(exception_406)
         end
 
         it "creates a new user via the API with a middle_name when it exists" do
           @user.middle_name "some_middle_name"
-          expect(chef_rest_object).to receive(:post).with("users", payload.merge({:middle_name => "some_middle_name"})).and_return({})
+          expect(@user.chef_root_rest_v0).to receive(:post).with("users", payload.merge({:middle_name => "some_middle_name"})).and_return({})
           @user.create
         end
-      end
-
-      context "when server API V1 is valid on the Chef Server receiving the request" do
-        context "when create_key and public_key are both set" do
-          before do
-            @user.public_key "key"
-            @user.create_key true
-          end
-          it "rasies a Chef::Exceptions::InvalidUserAttribute" do
-            expect { @user.create }.to raise_error(Chef::Exceptions::InvalidUserAttribute)
-          end
-        end
-
-        it_should_behave_like "create valid user" do
-          let(:chef_rest_object) { @user.chef_root_rest_v1 }
-        end
-
-        it "creates a new user via the API with create_key == true when it exists" do
-          @user.create_key true
-          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({:create_key => true})).and_return({})
-          @user.create
-        end
-
-        context "when chef_key is returned by the server" do
-          let(:chef_key) {
-            {
-              "chef_key" => {
-                "public_key" => "some_public_key"
-              }
-            }
-          }
-
-          it "puts the public key into the user returned by create" do
-            expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload).and_return(payload.merge(chef_key))
-            new_user = @user.create
-            expect(new_user.public_key).to eq("some_public_key")
-          end
-
-          context "when private_key is returned in chef_key" do
-            let(:chef_key) {
-              {
-                "chef_key" => {
-                  "public_key" => "some_public_key",
-                  "private_key" => "some_private_key"
-                }
-              }
-            }
-
-            it "puts the private key into the user returned by create" do
-              expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload).and_return(payload.merge(chef_key))
-              new_user = @user.create
-              expect(new_user.private_key).to eq("some_private_key")
-            end
-          end
-
-        end # when chef_key is returned by the server
-      end # when server API V1 is valid on the Chef Server receiving the request
-
-      context "when server API V1 is not valid on the Chef Server receiving the request" do
-        it_should_behave_like "version handling" do
-          let(:method)    { (:create) }
-          let(:http_verb) { (:post) }
-        end
-
-        context "when the server supports API V0" do
-          before do
-            allow(@user).to receive(:handle_version_http_exception).and_return(true)
-            allow(@user.chef_root_rest_v1).to receive(:post).and_raise(exception_406)
-          end
-
-          it_should_behave_like "create valid user" do
-            let(:chef_rest_object) { @user.chef_root_rest_v0 }
-          end
-
-        end # when the server supports API V0
       end # when server API V1 is not valid on the Chef Server receiving the request
+
     end # create
 
   end # Versioned API Interactions

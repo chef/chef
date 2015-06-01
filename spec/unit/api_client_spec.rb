@@ -53,6 +53,20 @@ describe Chef::ApiClient do
     expect { @client.admin(Hash.new) }.to raise_error(ArgumentError)
   end
 
+  it "has an create_key flag attribute" do
+    @client.create_key(true)
+    expect(@client.create_key).to be_truthy
+  end
+
+  it "create_key defaults to false" do
+    expect(@client.create_key).to be_falsey
+  end
+
+  it "allows only boolean values for the create_key flag" do
+    expect { @client.create_key(false) }.not_to raise_error
+    expect { @client.create_key(Hash.new) }.to raise_error(ArgumentError)
+  end
+
   it "has a 'validator' flag attribute" do
     @client.validator(true)
     expect(@client.validator).to be_truthy
@@ -115,6 +129,12 @@ describe Chef::ApiClient do
       expect(@json).to include(%q{"validator":false})
     end
 
+    it "includes the 'create_key' flag when present" do
+      @client.create_key(true)
+      @json = @client.to_json
+      expect(@json).to include(%q{"create_key":true})
+    end
+
     it "includes the private key when present" do
       @client.private_key("monkeypants")
       expect(@client.to_json).to include(%q{"private_key":"monkeypants"})
@@ -131,7 +151,7 @@ describe Chef::ApiClient do
 
   describe "when deserializing from JSON (string) using ApiClient#from_json" do
     let(:client_string) do
-      "{\"name\":\"black\",\"public_key\":\"crowes\",\"private_key\":\"monkeypants\",\"admin\":true,\"validator\":true}"
+      "{\"name\":\"black\",\"public_key\":\"crowes\",\"private_key\":\"monkeypants\",\"admin\":true,\"validator\":true,\"create_key\":true}"
     end
 
     let(:client) do
@@ -158,6 +178,10 @@ describe Chef::ApiClient do
       expect(client.admin).to be_truthy
     end
 
+    it "preserves the create_key status" do
+      expect(client.create_key).to be_truthy
+    end
+
     it "preserves the 'validator' status" do
       expect(client.validator).to be_truthy
     end
@@ -175,6 +199,7 @@ describe Chef::ApiClient do
         "private_key" => "monkeypants",
         "admin" => true,
         "validator" => true,
+        "create_key" => true,
         "json_class" => "Chef::ApiClient"
       }
     end
@@ -199,6 +224,10 @@ describe Chef::ApiClient do
       expect(client.admin).to be_truthy
     end
 
+    it "preserves the create_key status" do
+      expect(client.create_key).to be_truthy
+    end
+
     it "preserves the 'validator' status" do
       expect(client.validator).to be_truthy
     end
@@ -214,14 +243,16 @@ describe Chef::ApiClient do
 
     before(:each) do
       client = {
-      "name" => "black",
-      "clientname" => "black",
-      "public_key" => "crowes",
-      "private_key" => "monkeypants",
-      "admin" => true,
-      "validator" => true,
-      "json_class" => "Chef::ApiClient"
+        "name" => "black",
+        "clientname" => "black",
+        "public_key" => "crowes",
+        "private_key" => "monkeypants",
+        "admin" => true,
+        "create_key" => true,
+        "validator" => true,
+        "json_class" => "Chef::ApiClient"
       }
+
       @http_client = double("Chef::REST mock")
       allow(Chef::REST).to receive(:new).and_return(@http_client)
       expect(@http_client).to receive(:get).with("clients/black").and_return(client)
@@ -242,6 +273,10 @@ describe Chef::ApiClient do
 
     it "preserves the admin status" do
       expect(@client.admin).to be_a_kind_of(TrueClass)
+    end
+
+    it "preserves the create_key status" do
+      expect(@client.create_key).to be_a_kind_of(TrueClass)
     end
 
     it "preserves the 'validator' status" do
@@ -344,5 +379,53 @@ describe Chef::ApiClient do
       end
 
     end
+  end
+
+  describe "Versioned API Interactions" do
+    let(:response_406) { OpenStruct.new(:code => '406') }
+    let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
+
+    before (:each) do
+      @client = Chef::ApiClient.new
+      allow(@client).to receive(:chef_rest_v0).and_return(double('chef rest root v0 object'))
+      allow(@client).to receive(:chef_rest_v1).and_return(double('chef rest root v1 object'))
+    end
+
+    describe "create" do
+      let(:payload)  {
+        {
+          :name => "some_name",
+          :validator => true,
+          :admin => true
+        }
+      }
+
+      before do
+        @client.name "some_name"
+        @client.validator true
+        @client.admin true
+      end
+
+      # from spec/support/shared/unit/user_and_client_shared.rb
+      it_should_behave_like "user or client create" do
+        let(:object)  { @client }
+        let(:error)   { Chef::Exceptions::InvalidClientAttribute }
+        let(:rest_v0) { @client.chef_rest_v0 }
+        let(:rest_v1) { @client.chef_rest_v1 }
+        let(:url)     { "clients" }
+      end
+
+      context "when API V1 is not supported by the server" do
+        # from spec/support/shared/unit/api_versioning.rb
+        it_should_behave_like "version handling" do
+          let(:object)    { @client }
+          let(:method)    { :create }
+          let(:http_verb) { :post }
+          let(:rest_v1)   { @client.chef_rest_v1 }
+        end
+      end
+
+    end # create
+
   end
 end

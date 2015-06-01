@@ -23,12 +23,19 @@ require 'chef/mixin/from_file'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
+require 'chef/exceptions'
+require 'chef/versioned_rest'
+require 'chef/mixin/api_version_request_handling'
 
 class Chef
   class ApiClient
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
+    include Chef::VersionedRest
+    include Chef::ApiVersionRequestHandling
+
+    SUPPORTED_API_VERSIONS = [0,1]
 
     # Create a new Chef::ApiClient object.
     def initialize
@@ -37,6 +44,15 @@ class Chef
       @private_key = nil
       @admin = false
       @validator = false
+      @create_key = nil
+    end
+
+    def chef_rest_v0
+      @chef_rest_v0 ||= get_versioned_rest_object(Chef::Config[:chef_server_url], "0")
+    end
+
+    def chef_rest_v1
+      @chef_rest_v1 ||= get_versioned_rest_object(Chef::Config[:chef_server_url], "1")
     end
 
     # Gets or sets the client name.
@@ -88,7 +104,8 @@ class Chef
       )
     end
 
-    # Gets or sets the private key.
+    # Private key. The server will return it as a string.
+    # Set to true under API V0 to have the server regenerate the default key.
     #
     # @params [Optional String] The string representation of the private key.
     # @return [String] The current value.
@@ -96,7 +113,19 @@ class Chef
       set_or_return(
         :private_key,
         arg,
-        :kind_of => [String, FalseClass]
+        :kind_of => [String, TrueClass, FalseClass]
+      )
+    end
+
+    # Used to ask server to generate key pair under api V1
+    #
+    # @params [Optional True/False] Should be true or false - default is false.
+    # @return [True/False] The current value
+    def create_key(arg=nil)
+      set_or_return(
+        :create_key,
+        arg,
+        :kind_of => [ TrueClass, FalseClass ]
       )
     end
 
@@ -107,13 +136,14 @@ class Chef
     def to_hash
       result = {
         "name" => @name,
-        "public_key" => @public_key,
         "validator" => @validator,
         "admin" => @admin,
         'json_class' => self.class.name,
         "chef_type" => "client"
       }
       result["private_key"] = @private_key if @private_key
+      result["public_key"] = @public_key if @public_key
+      result["create_key"] = @create_key if @create_key
       result
     end
 
@@ -127,10 +157,11 @@ class Chef
     def self.from_hash(o)
       client = Chef::ApiClient.new
       client.name(o["name"] || o["clientname"])
-      client.private_key(o["private_key"]) if o.key?("private_key")
-      client.public_key(o["public_key"])
       client.admin(o["admin"])
       client.validator(o["validator"])
+      client.private_key(o["private_key"]) if o.key?("private_key")
+      client.public_key(o["public_key"]) if o.key?("public_key")
+      client.create_key(o["create_key"]) if o.key?("create_key")
       client
     end
 
@@ -205,7 +236,42 @@ class Chef
 
     # Create the client via the REST API
     def create
-      http_api.post("clients", self)
+      payload = {
+        :name => name,
+        :validator => validator,
+        # this field is ignored in API V1, but left for backwards-compat,
+        # can remove after OSC 11 support is finished?
+        :admin => admin
+      }
+      begin
+        # try API V1
+        raise Chef::Exceptions::InvalidClientAttribute, "You cannot set both public_key and create_key for create." if create_key && public_key
+
+        payload[:public_key] = public_key if public_key
+        payload[:create_key] = create_key if create_key
+
+        new_client = chef_rest_v1.post("clients", payload)
+
+        # get the private_key out of the chef_key hash if it exists
+        if new_client['chef_key']
+          if new_client['chef_key']['private_key']
+            new_client['private_key'] = new_client['chef_key']['private_key']
+          end
+          new_client['public_key'] = new_client['chef_key']['public_key']
+          new_client.delete('chef_key')
+        end
+
+        rescue Net::HTTPServerException => e
+          # rescue API V0 if 406 and the server supports V0
+          raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
+
+          # under API V0, a key pair will always be created unless public_key is
+          # passed on initial POST
+          payload[:public_key] = public_key if public_key
+
+          new_client = chef_rest_v0.post("clients", payload)
+      end
+      Chef::ApiClient.from_hash(self.to_hash.merge(new_client))
     end
 
     # As a string
@@ -213,11 +279,12 @@ class Chef
       "client[#{@name}]"
     end
 
-    def inspect
-      "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' validator:'#{validator}' " +
-      "public_key:'#{public_key}' private_key:'#{private_key}'"
-    end
+    # def inspect
+    #   "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' validator:'#{validator}' " +
+    #   "public_key:'#{public_key}' private_key:'#{private_key}'"
+    # end
 
+    # TODO delete?
     def http_api
       @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end

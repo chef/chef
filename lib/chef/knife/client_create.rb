@@ -28,58 +28,81 @@ class Chef
       end
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the key to a file"
+             :short => "-f FILE",
+             :long  => "--file FILE",
+             :description => "Write the private key to a file if the server generated one."
 
       option :admin,
-        :short => "-a",
-        :long  => "--admin",
-        :description => "Create the client as an admin",
-        :boolean => true
+             :short => "-a",
+             :long  => "--admin",
+             :description => "Open Source Chef 11 only. Create the client as an admin.",
+             :boolean => true
 
       option :validator,
-        :long  => "--validator",
-        :description => "Create the client as a validator",
-        :boolean => true
+             :long  => "--validator",
+             :description => "Create the client as a validator.",
+             :boolean => true
 
-      banner "knife client create CLIENT (options)"
+      option :public_key,
+             :short => "-p FILE",
+             :long  => "--public-key",
+             :description => "Set the initial default key for the client from a file on disk (cannot pass with --create-key)."
+
+      option :prevent_keygen,
+             :short => "-k",
+             :long  => "--prevent-keygen",
+             :description => "API V1 only. Prevent server from generating a default key pair for you. Cannot be passed with --public-key.",
+             :boolean => true
+
+      banner "knife client create CLIENTNAME (options)"
+
+      def client
+        @client_field ||= Chef::ApiClient.new
+      end
+
+      def create_client(client)
+        client.create
+      end
 
       def run
-        @client_name = @name_args[0]
+        test_mandatory_field(@name_args[0], "client name")
+        client.name @name_args[0]
 
-        if @client_name.nil?
+        if config[:public_key] && config[:prevent_keygen]
           show_usage
-          ui.fatal("You must specify a client name")
+          ui.fatal("You cannot pass --public-key and --prevent-keygen")
           exit 1
         end
 
-        client_hash = {
-          "name" => @client_name,
-          "admin" => !!config[:admin],
-          "validator" => !!config[:validator]
-        }
+        unless config[:prevent_keygen]
+          client.create_key(true)
+        end
 
-        output = Chef::ApiClient.from_hash(edit_hash(client_hash))
+        if config[:admin]
+          client.admin(true)
+        end
 
-        # Chef::ApiClient.save will try to create a client and if it
-        # exists will update it instead silently.
-        client = output.save
+        if config[:validator]
+          client.validator(true)
+        end
 
-        # We only get a private_key on client creation, not on client update.
-        if client['private_key']
-          ui.info("Created #{output}")
+        if config[:public_key]
+          client.public_key File.read(File.expand_path(config[:public_key]))
+        end
 
+        output = edit_data(client)
+        final_client = create_client(output)
+        ui.info("Created #{output}")
+
+        # output private_key if one
+        if final_client.private_key
           if config[:file]
             File.open(config[:file], "w") do |f|
-              f.print(client['private_key'])
+              f.print(final_client.private_key)
             end
           else
-            puts client['private_key']
+            puts final_client.private_key
           end
-        else
-          ui.error "Client '#{client['name']}' already exists"
-          exit 1
         end
       end
     end

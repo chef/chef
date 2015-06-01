@@ -33,15 +33,17 @@ class Chef
       option :file,
         :short => "-f FILE",
         :long  => "--file FILE",
-        :description => "Write the private key to a file, if returned by the server. A private key will be returned when both --user-key and --no-key are NOT passed. In that case, the server will generate a default key for you and return the private key it creates."
+        :description => "Write the private key to a file if the server generated one."
 
       option :user_key,
         :long => "--user-key FILENAME",
-        :description => "Public key for newly created user. Path to a public key you provide instead of having the server generate one. If --user-key is not passed, the server will create a 'default' key for you, unless you passed --no-key. Note that --user-key cannot be passed with --no-key."
+        :description =>  "Set the initial default key for the user from a file on disk (cannot pass with --create-key)."
 
-      option :no_key,
-        :long => "--no-key",
-        :description => "Do not create a 'default' public key for this new user. This prevents the server generating a public key by default. Cannot be passed with --user-key (requires server API version 1)."
+      option :prevent_keygen,
+        :short => "-k",
+        :long  => "--prevent-keygen",
+        :description => "API V1 only. Prevent server from generating a default key pair for you. Cannot be passed with --user-key.",
+        :boolean => true
 
       banner "knife user create USERNAME DISPLAY_NAME FIRST_NAME LAST_NAME EMAIL PASSWORD (options)"
 
@@ -72,13 +74,13 @@ class Chef
         test_mandatory_field(@name_args[5], "password")
         user.password @name_args[5]
 
-        if config[:user_key] && config[:no_key]
+        if config[:user_key] && config[:prevent_keygen]
           show_usage
-          ui.fatal("You cannot pass --user-key and --no-key")
+          ui.fatal("You cannot pass --user-key and --prevent-keygen")
           exit 1
         end
 
-        unless config[:no_key]
+        unless config[:prevent_keygen]
           user.create_key(true)
         end
 
