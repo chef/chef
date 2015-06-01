@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Copyright:: Copyright (c) 2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -213,11 +213,11 @@ class Chef
     # Save this client via the REST API, returns a hash including the private key
     def save
       begin
-        http_api.put("clients/#{name}", { :name => self.name, :admin => self.admin, :validator => self.validator})
+        update
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
         if e.response.code == "404"
-          http_api.post("clients", {:name => self.name, :admin => self.admin, :validator => self.validator })
+          create
         else
           raise e
         end
@@ -234,6 +234,30 @@ class Chef
       self
     end
 
+    # Updates the client via the REST API
+    def update
+      # NOTE: API V1 dropped support for updating client keys via update (aka PUT),
+      # but this code never supported key updating in the first place. Since
+      # it was never implemented, we will simply ignore that functionality
+      # as it is being deprecated.
+      # Delete this comment after V0 support is dropped.
+      payload = { :name => name }
+      payload[:validator] = validator unless validator.nil?
+      # this field is ignored in API V1, but left for backwards-compat,
+      # can remove after OSC 11 support is finished?
+      payload[:admin] = admin unless admin.nil?
+
+      begin
+        new_client = chef_rest_v1.put("clients/#{name}", payload)
+      rescue Net::HTTPServerException => e
+        # rescue API V0 if 406 and the server supports V0
+        raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
+        new_client = chef_rest_v0.put("clients/#{name}", payload)
+      end
+
+      new_client
+    end
+
     # Create the client via the REST API
     def create
       payload = {
@@ -247,8 +271,8 @@ class Chef
         # try API V1
         raise Chef::Exceptions::InvalidClientAttribute, "You cannot set both public_key and create_key for create." if create_key && public_key
 
-        payload[:public_key] = public_key if public_key
-        payload[:create_key] = create_key if create_key
+        payload[:public_key] = public_key unless public_key.nil?
+        payload[:create_key] = create_key unless create_key.nil?
 
         new_client = chef_rest_v1.post("clients", payload)
 
@@ -267,7 +291,7 @@ class Chef
 
           # under API V0, a key pair will always be created unless public_key is
           # passed on initial POST
-          payload[:public_key] = public_key if public_key
+          payload[:public_key] = public_key unless public_key.nil?
 
           new_client = chef_rest_v0.post("clients", payload)
       end

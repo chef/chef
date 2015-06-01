@@ -384,27 +384,24 @@ describe Chef::ApiClient do
   describe "Versioned API Interactions" do
     let(:response_406) { OpenStruct.new(:code => '406') }
     let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
+    let(:payload)  {
+      {
+        :name => "some_name",
+        :validator => true,
+        :admin => true
+      }
+    }
 
-    before (:each) do
+    before do
       @client = Chef::ApiClient.new
       allow(@client).to receive(:chef_rest_v0).and_return(double('chef rest root v0 object'))
       allow(@client).to receive(:chef_rest_v1).and_return(double('chef rest root v1 object'))
+      @client.name "some_name"
+      @client.validator true
+      @client.admin true
     end
 
     describe "create" do
-      let(:payload)  {
-        {
-          :name => "some_name",
-          :validator => true,
-          :admin => true
-        }
-      }
-
-      before do
-        @client.name "some_name"
-        @client.validator true
-        @client.admin true
-      end
 
       # from spec/support/shared/unit/user_and_client_shared.rb
       it_should_behave_like "user or client create" do
@@ -426,6 +423,72 @@ describe Chef::ApiClient do
       end
 
     end # create
+
+    describe "update" do
+      context "when a valid client is defined" do
+
+        shared_examples_for "client updating" do
+          it "updates the client" do
+            expect(rest). to receive(:put).with("clients/some_name", payload)
+            @client.update
+          end
+
+          context "when only the name field exists" do
+
+            before do
+              # needed since there is no way to set to nil via code
+              @client.instance_variable_set(:@validator, nil)
+              @client.instance_variable_set(:@admin, nil)
+            end
+
+            after do
+              @client.validator true
+              @client.admin true
+            end
+
+            it "updates the client with only the name" do
+              expect(rest). to receive(:put).with("clients/some_name", {:name => "some_name"})
+              @client.update
+            end
+          end
+
+        end
+
+        context "when API V1 is supported by the server" do
+
+          it_should_behave_like "client updating" do
+            let(:rest) { @client.chef_rest_v1 }
+          end
+
+        end # when API V1 is supported by the server
+
+        context "when API V1 is not supported by the server" do
+          context "when no version is supported" do
+            # from spec/support/shared/unit/api_versioning.rb
+            it_should_behave_like "version handling" do
+              let(:object)    { @client }
+              let(:method)    { :create }
+              let(:http_verb) { :post }
+              let(:rest_v1)   { @client.chef_rest_v1 }
+            end
+          end # when no version is supported
+
+          context "when API V0 is supported" do
+
+            before do
+              allow(@client.chef_rest_v1).to receive(:put).and_raise(exception_406)
+              allow(@client).to receive(:handle_version_http_exception).and_return(true)
+            end
+
+            it_should_behave_like "client updating" do
+              let(:rest) { @client.chef_rest_v0 }
+            end
+
+          end
+
+        end # when API V1 is not supported by the server
+      end # when a valid client is defined
+    end # update
 
   end
 end
