@@ -28,9 +28,6 @@ class Chef
       default_action :create
       allowed_actions :create, :remove, :modify, :manage, :lock, :unlock
 
-      default_action :create
-      allowed_actions :create, :remove, :modify, :manage, :lock, :unlock
-
       def initialize(name, run_context=nil)
         super
         @username = name

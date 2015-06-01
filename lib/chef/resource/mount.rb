@@ -30,9 +30,6 @@ class Chef
       default_action :mount
       allowed_actions :mount, :umount, :remount, :enable, :disable
 
-      default_action :mount
-      allowed_actions :mount, :umount, :remount, :enable, :disable
-
       def initialize(name, run_context=nil)
         super
         @mount_point = name
