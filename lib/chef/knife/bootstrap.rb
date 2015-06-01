@@ -147,7 +147,7 @@ class Chef
         :short => "-j JSON_ATTRIBS",
         :long => "--json-attributes",
         :description => "A JSON string or @file to be added to the first run of chef-client",
-        :proc => lambda { |o| Chef::JSONCompat.parse(o.start_with?('@') ? File.read(o.delete('@')) : o) },
+        :proc => lambda { |o| Chef::JSONCompat.parse(o.start_with?('@') ? File.read(o[1..-1]) : o) },
         :default => {}
 
       option :host_key_verify,
