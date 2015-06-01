@@ -130,7 +130,7 @@ describe "Resource.action" do
   context "With resource 'action_jackson'" do
     before(:context) {
       class ActionJackson < Chef::Resource
-        provides :action_jackson
+        use_automatic_resource_name
         def foo(value=nil)
           @foo = value if value
           @foo
@@ -211,7 +211,7 @@ describe "Resource.action" do
     context "And 'action_jackgrandson' inheriting from ActionJackson and changing nothing" do
       before(:context) {
         class ActionJackgrandson < ActionJackson
-          provides :action_jackgrandson
+          use_automatic_resource_name
         end
       }
 
@@ -223,7 +223,7 @@ describe "Resource.action" do
     context "And 'action_jackalope' inheriting from ActionJackson with an extra attribute and action" do
       before(:context) {
         class ActionJackalope < ActionJackson
-          provides :action_jackalope
+          use_automatic_resource_name
 
           def foo(value=nil)
             @foo = "#{value}alope" if value
@@ -314,7 +314,8 @@ describe "Resource.action" do
   context "With a resource with no actions" do
     before(:context) {
       class NoActionJackson < Chef::Resource
-        provides :no_action_jackson
+        use_automatic_resource_name
+
         def foo(value=nil)
           @foo = value if value
           @foo
