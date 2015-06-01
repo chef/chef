@@ -27,11 +27,10 @@ class Chef
 
       state_attrs :devices, :level, :chunk
 
-      provides :mdadm
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :mdadm
 
         @chunk = 16
         @devices = []

@@ -28,12 +28,8 @@ class Chef
     class OpenbsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
+      use_automatic_resource_name
       provides :package, os: "openbsd"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :openbsd_package
-      end
 
       def after_created
         assign_provider
@@ -48,4 +44,3 @@ class Chef
     end
   end
 end
-

@@ -21,10 +21,7 @@ class Chef
     # Convenience class for using the deploy resource with the timestamped
     # deployment strategy (provider)
     class TimestampedDeploy < Chef::Resource::Deploy
-      provides :timestamped_deploy
-      def initialize(*args, &block)
-        super(*args, &block)
-      end
+      use_automatic_resource_name
     end
   end
 end

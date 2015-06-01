@@ -27,14 +27,13 @@ class Chef
     class Template < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      provides :template
+      use_automatic_resource_name
 
       attr_reader :inline_helper_blocks
       attr_reader :inline_helper_modules
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :template
         @action = "create"
         @source = "#{::File.basename(name)}.erb"
         @cookbook = nil

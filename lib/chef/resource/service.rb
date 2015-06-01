@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Service < Chef::Resource
-      provides :service
+      use_automatic_resource_name
 
       identity_attr :service_name
 
@@ -30,7 +30,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :service
         @service_name = name
         @enabled = nil
         @running = nil

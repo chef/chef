@@ -6,18 +6,23 @@ Example Doc Change:
 Description of the required change.
 -->
 
-### Resources must now use `provides` to declare recipe DSL
+### Resources must now use `resource_name` (or `provides`) to declare recipe DSL
 
 Resources declared in `Chef::Resource` namespace will no longer get recipe DSL
-automatically.  Instead, explicit `provides` is required in order to have DSL:
+automatically.  Instead, `resource_name` is required in order to have DSL:
 
 ```ruby
 module MyModule
   class MyResource < Chef::Resource
-    provides :my_resource
+    use_automatic_resource_name # Names the resource "my_resource"
   end
 end
 ```
+
+`resource_name :my_resource` may be used to explicitly set the resource name.
+
+`provides :my_resource`, still works, but at least one resource_name *must* be
+set for the resource to work.
 
 Authors of HWRPs need to be aware that in the future all resources and providers will be required to include a provides line. Starting with Chef 12.4.0 any HWRPs in the `Chef::Resource` or `Chef::Provider` namespaces that do not have provides lines will trigger deprecation warning messages when called. The LWRPBase code does `provides` automatically so LWRP authors and users who write classes that inherit from LWRPBase do not need to explicitly include provides lines.
 

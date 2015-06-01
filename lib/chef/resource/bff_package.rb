@@ -22,13 +22,7 @@ require 'chef/provider/package/aix'
 class Chef
   class Resource
     class BffPackage < Chef::Resource::Package
-      provides :bff_package
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :bff_package
-      end
-
+      use_automatic_resource_name
     end
   end
 end

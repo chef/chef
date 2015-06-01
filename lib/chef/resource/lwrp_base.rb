@@ -35,8 +35,6 @@ class Chef
     # so attributes, default action, etc. can be defined with pleasing syntax.
     class LWRPBase < Resource
 
-      NULL_ARG = Object.new
-
       # Class methods
       class <<self
 
@@ -55,12 +53,11 @@ class Chef
 
           # We load the class first to give it a chance to set its own name
           resource_class = Class.new(self)
-          resource_class.resource_name = resource_name
+          resource_class.resource_name resource_name.to_sym
           resource_class.run_context = run_context
-          resource_class.provides resource_name.to_sym
           resource_class.class_from_file(filename)
 
-          # Respect resource_name set inside the LWRP
+          # Make a useful string for the class (rather than <Class:312894723894>)
           resource_class.instance_eval do
             define_singleton_method(:to_s) do
               "LWRP resource #{resource_name} from cookbook #{cookbook_name}"
@@ -76,16 +73,6 @@ class Chef
 
           resource_class
         end
-
-        def resource_name(arg = NULL_ARG)
-          if arg.equal?(NULL_ARG)
-            @resource_name
-          else
-            @resource_name = arg
-          end
-        end
-
-        alias_method :resource_name=, :resource_name
 
         # Define an attribute on this resource, including optional validation
         # parameters.
@@ -166,16 +153,8 @@ class Chef
       private
 
       # Default initializer. Sets the default action and allowed actions.
-      def initialize(name, run_context=nil)
-        super(name, run_context)
-
-        # Raise an exception if the resource_name was not defined
-        if self.class.resource_name.nil?
-          raise Chef::Exceptions::InvalidResourceSpecification,
-            "You must specify `resource_name'!"
-        end
-
-        @resource_name = self.class.resource_name.to_sym
+      def initialize(*args, &block)
+        super
         @action = self.class.default_action
         allowed_actions.push(self.class.actions).flatten!
       end

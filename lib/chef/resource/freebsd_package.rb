@@ -29,12 +29,8 @@ class Chef
     class FreebsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
+      use_automatic_resource_name
       provides :package, platform: "freebsd"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :freebsd_package
-      end
 
       def after_created
         assign_provider

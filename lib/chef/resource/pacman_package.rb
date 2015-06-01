@@ -22,12 +22,8 @@ class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
 
+      use_automatic_resource_name
       provides :pacman_package, os: "linux"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :pacman_package
-      end
 
     end
   end

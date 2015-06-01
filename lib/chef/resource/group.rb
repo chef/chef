@@ -25,11 +25,10 @@ class Chef
 
       state_attrs :members
 
-      provides :group
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :group
         @group_name = name
         @gid = nil
         @members = []

@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Package < Chef::Resource
-      provides :package
+      use_automatic_resource_name
 
       identity_attr :package_name
 
@@ -35,7 +35,6 @@ class Chef
         @candidate_version = nil
         @options = nil
         @package_name = name
-        @resource_name = :package
         @response_file = nil
         @response_file_variables = Hash.new
         @source = nil

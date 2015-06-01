@@ -26,13 +26,13 @@ class Chef
     class WindowsPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 
-      provides :package, os: "windows"
+      use_automatic_resource_name
       provides :windows_package, os: "windows"
+      provides :package, os: "windows"
 
       def initialize(name, run_context=nil)
         super
         @allowed_actions.push(:install, :remove)
-        @resource_name = :windows_package
         @source ||= source(@package_name)
 
         # Unique to this resource

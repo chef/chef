@@ -21,6 +21,7 @@ class Chef
   class Resource
     class DscResource < Chef::Resource
 
+      use_automatic_resource_name
       provides :dsc_resource, os: "windows"
 
       include Chef::DSL::Powershell
@@ -28,7 +29,6 @@ class Chef
       def initialize(name, run_context)
         super
         @properties = {}
-        @resource_name = :dsc_resource
         @resource = nil
         @allowed_actions.push(:run)
         @action = :run

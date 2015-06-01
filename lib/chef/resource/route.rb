@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Route < Chef::Resource
-      provides :route
+      use_automatic_resource_name
 
       identity_attr :target
 
@@ -30,7 +30,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :route
         @target = name
         @action = [:add]
         @allowed_actions.push(:add, :delete)

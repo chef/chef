@@ -22,14 +22,12 @@ require 'chef/resource'
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
-      provides :breakpoint
+      use_automatic_resource_name
 
       def initialize(action="break", *args)
-        @name = caller.first
-        super(@name, *args)
+        super(caller.first, *args)
         @action = "break"
         @allowed_actions << :break
-        @resource_name = :breakpoint
       end
     end
   end

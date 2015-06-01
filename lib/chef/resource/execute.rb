@@ -23,7 +23,7 @@ require 'chef/provider/execute'
 class Chef
   class Resource
     class Execute < Chef::Resource
-      provides :execute
+      use_automatic_resource_name
 
       identity_attr :command
 
@@ -35,7 +35,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :execute
         @command = name
         @backup = 5
         @action = "run"

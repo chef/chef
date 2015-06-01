@@ -21,10 +21,11 @@ class Chef
   class Resource
     class PowershellScript < Chef::Resource::WindowsScript
 
+      use_automatic_resource_name
       provides :powershell_script, os: "windows"
 
       def initialize(name, run_context=nil)
-        super(name, run_context, :powershell_script, "powershell.exe")
+        super(name, run_context, nil, "powershell.exe")
         @convert_boolean_return = false
       end
 

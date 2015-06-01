@@ -23,14 +23,13 @@ require 'chef/provider/script'
 class Chef
   class Resource
     class Script < Chef::Resource::Execute
-      provides :script
+      use_automatic_resource_name
 
       # Chef-13: go back to using :name as the identity attr
       identity_attr :command
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :script
         # Chef-13: the command variable should be initialized to nil
         @command = name
         @code = nil

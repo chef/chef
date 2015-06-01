@@ -50,9 +50,7 @@ class Chef
     # release directory. Callback files can contain chef code (resources, etc.)
     #
     class Deploy < Chef::Resource
-      provides :deploy
-
-      provider_base Chef::Provider::Deploy
+      use_automatic_resource_name
 
       identity_attr :repository
 
@@ -60,7 +58,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :deploy
         @deploy_to = name
         @environment = nil
         @repository_cache = 'cached-copy'
@@ -280,6 +277,12 @@ class Chef
           klass,
           :kind_of => [ Class ]
         )
+      end
+
+      # This is to support "provider :revision" without deprecation warnings.
+      # Do NOT copy this.
+      def self.provider_base
+        Chef::Provider::Deploy
       end
 
       def svn_force_export(arg=nil)

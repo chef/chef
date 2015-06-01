@@ -26,7 +26,7 @@ class Chef
     class RemoteDirectory < Chef::Resource::Directory
       include Chef::Mixin::Securable
 
-      provides :remote_directory
+      use_automatic_resource_name
 
       identity_attr :path
 
@@ -34,7 +34,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :remote_directory
         @path = name
         @source = ::File.basename(name)
         @delete = false

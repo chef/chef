@@ -21,10 +21,6 @@
 
 require 'spec_helper'
 
-class ResourceTestHarness < Chef::Resource
-  provider_base Chef::Provider::Package
-end
-
 describe Chef::Resource do
   before(:each) do
     @cookbook_repo_path =  File.join(CHEF_SPEC_DATA, 'cookbooks')
@@ -336,6 +332,85 @@ describe Chef::Resource do
     end
   end
 
+  describe "self.resource_name" do
+    context "When resource_name is not set" do
+      it "and there are no provides lines, resource_name is nil" do
+        c = Class.new(Chef::Resource) do
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to be_nil
+        expect(r.declared_type).to eq :d
+      end
+      it "and there are no provides lines, @resource_name is used" do
+        c = Class.new(Chef::Resource) do
+          def initialize(*args, &block)
+            @resource_name = :blah
+            super
+          end
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to eq :blah
+        expect(r.declared_type).to eq :d
+      end
+    end
+
+    it "resource_name without provides is honored" do
+      c = Class.new(Chef::Resource) do
+        resource_name 'blah'
+      end
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "setting class.resource_name with 'resource_name = blah' overrides declared_type" do
+      c = Class.new(Chef::Resource) do
+        provides :self_resource_name_test_2
+      end
+      c.resource_name = :blah
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "setting class.resource_name with 'resource_name blah' overrides declared_type" do
+      c = Class.new(Chef::Resource) do
+        resource_name :blah
+        provides :self_resource_name_test_3
+      end
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "use_automatic_resource_name yields a resource name from the class name" do
+      class SelfResourceNameTestBlahDBlah4 < Chef::Resource
+        use_automatic_resource_name
+      end
+
+      c = SelfResourceNameTestBlahDBlah4
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :self_resource_name_test_blah_d_blah4
+      expect(r.resource_name).to eq :self_resource_name_test_blah_d_blah4
+      expect(r.declared_type).to eq :d
+
+    end
+  end
+
   describe "is" do
     it "should return the arguments passed with 'is'" do
       zm = Chef::Resource::ZenMaster.new("coffee")
@@ -459,8 +534,21 @@ describe Chef::Resource do
       expect(Chef::Resource.provider_base).to eq(Chef::Provider)
     end
 
-    it "allows the base provider to be overriden by a " do
-      expect(ResourceTestHarness.provider_base).to eq(Chef::Provider::Package)
+    it "allows the base provider to be overridden" do
+      Chef::Config.treat_deprecation_warnings_as_errors(false)
+      class OverrideProviderBaseTest < Chef::Resource
+        provider_base Chef::Provider::Package
+      end
+
+      expect(OverrideProviderBaseTest.provider_base).to eq(Chef::Provider::Package)
+    end
+
+    it "warns when setting provider_base" do
+      expect {
+        class OverrideProviderBaseTest2 < Chef::Resource
+          provider_base Chef::Provider::Package
+        end
+      }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
 
   end

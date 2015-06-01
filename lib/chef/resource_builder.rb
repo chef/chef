@@ -18,6 +18,10 @@
 
 # NOTE: this was extracted from the Recipe DSL mixin, relevant specs are in spec/unit/recipe_spec.rb
 
+require 'chef/exceptions'
+require 'chef/resource'
+require 'chef/log'
+
 class Chef
   class ResourceBuilder
     attr_reader :type
@@ -46,6 +50,9 @@ class Chef
       raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
 
       @resource = resource_class.new(name, run_context)
+      if resource.resource_name.nil?
+        raise Chef::Exceptions::InvalidResourceSpecification, "#{resource}.resource_name is `nil`!  Did you forget to put `provides :blah` or `resource_name :blah` in your resource class?"
+      end
       resource.source_line = created_at
       resource.declared_type = type
 

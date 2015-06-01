@@ -25,11 +25,11 @@ class Chef
 
       state_attrs :value
 
+      use_automatic_resource_name
       provides :env, os: "windows"
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :env
         @key_name = name
         @value = nil
         @action = :create

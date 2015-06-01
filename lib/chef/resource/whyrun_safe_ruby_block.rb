@@ -19,12 +19,8 @@
 class Chef
   class Resource
     class WhyrunSafeRubyBlock < Chef::Resource::RubyBlock
-      provides :whyrun_safe_ruby_block
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :whyrun_safe_ruby_block
-      end
+      use_automatic_resource_name
 
     end
   end

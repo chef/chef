@@ -22,8 +22,9 @@ class Chef
   class Resource
     class MacosxService < Chef::Resource::Service
 
-      provides :service, os: "darwin"
+      use_automatic_resource_name
       provides :macosx_service, os: "darwin"
+      provides :service, os: "darwin"
 
       identity_attr :service_name
 
@@ -31,7 +32,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :macosx_service
         @plist = nil
         @session_type = nil
       end

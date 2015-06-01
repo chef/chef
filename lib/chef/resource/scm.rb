@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Scm < Chef::Resource
-      provides :scm
+      use_automatic_resource_name
 
       identity_attr :destination
 
@@ -31,7 +31,6 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @destination = name
-        @resource_name = :scm
         @enable_submodules = false
         @enable_checkout = true
         @revision = "HEAD"

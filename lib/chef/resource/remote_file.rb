@@ -28,11 +28,10 @@ class Chef
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      provides :remote_file
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :remote_file
         @action = "create"
         @source = []
         @use_etag = true

@@ -22,10 +22,11 @@ class Chef
   class Resource
     class Batch < Chef::Resource::WindowsScript
 
+      use_automatic_resource_name
       provides :batch, os: "windows"
 
       def initialize(name, run_context=nil)
-        super(name, run_context, :batch, "cmd.exe")
+        super(name, run_context, nil, "cmd.exe")
       end
 
     end

@@ -23,13 +23,12 @@ require 'chef/provider/http_request'
 class Chef
   class Resource
     class HttpRequest < Chef::Resource
-      provides :http_request
+      use_automatic_resource_name
 
       identity_attr :url
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :http_request
         @message = name
         @url = nil
         @action = :get

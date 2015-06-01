@@ -26,11 +26,10 @@ class Chef
 
       state_attrs :uid, :gid, :home
 
-      provides :user
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :user
         @username = name
         @comment = nil
         @uid = nil

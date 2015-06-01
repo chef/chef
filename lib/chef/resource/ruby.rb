@@ -22,11 +22,10 @@ require 'chef/provider/script'
 class Chef
   class Resource
     class Ruby < Chef::Resource::Script
-      provides :ruby
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ruby
         @interpreter = "ruby"
       end
 

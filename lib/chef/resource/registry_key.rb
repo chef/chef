@@ -22,7 +22,7 @@ require 'chef/digester'
 class Chef
   class Resource
     class RegistryKey < Chef::Resource
-      provides :registry_key
+      use_automatic_resource_name
 
       identity_attr :key
       state_attrs :values
@@ -60,7 +60,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :registry_key
         @action = :create
         @architecture = :machine
         @recursive = false

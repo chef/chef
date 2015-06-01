@@ -229,14 +229,6 @@ describe "LWRP" do
         expect(klass.resource_name).to eq(:foo)
       end
 
-      context "when creating a new instance" do
-        it "raises an exception if resource_name is nil" do
-          expect {
-            klass.new('blah')
-          }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
-        end
-      end
-
       context "lazy default values" do
         let(:klass) do
           Class.new(Chef::Resource::LWRPBase) do

@@ -19,12 +19,11 @@
 class Chef
   class Resource
     class Cat < Chef::Resource
-      provides :cat
+      use_automatic_resource_name
 
       attr_accessor :action
 
       def initialize(name, run_context=nil)
-        @resource_name = :cat
         super
         @action = "sell"
       end

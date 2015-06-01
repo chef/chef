@@ -23,7 +23,7 @@ require 'chef/provider/erl_call'
 class Chef
   class Resource
     class ErlCall < Chef::Resource
-      provides :erl_call
+      use_automatic_resource_name
 
       # erl_call : http://erlang.org/doc/man/erl_call.html
 
@@ -31,7 +31,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :erl_call
 
         @code = "q()." # your erlang code goes here
         @cookie = nil # cookie of the erlang node

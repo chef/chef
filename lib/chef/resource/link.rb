@@ -25,7 +25,7 @@ class Chef
     class Link < Chef::Resource
       include Chef::Mixin::Securable
 
-      provides :link
+      use_automatic_resource_name
 
       identity_attr :target_file
 
@@ -34,7 +34,6 @@ class Chef
       def initialize(name, run_context=nil)
         verify_links_supported!
         super
-        @resource_name = :link
         @to = nil
         @action = :create
         @link_type = :symbolic

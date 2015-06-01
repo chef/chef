@@ -9,10 +9,11 @@ describe "Recipe DSL methods" do
       class BaseThingy < Chef::Resource
         def initialize(*args, &block)
           super
-          @resource_name = 'base_thingy'
           @allowed_actions = [ :create ]
           @action = :create
         end
+
+        resource_name 'base_thingy'
 
         class<<self
           attr_accessor :created_resource
@@ -54,7 +55,6 @@ describe "Recipe DSL methods" do
           class Chef::Resource::BackcompatThingy < Chef::Resource
             def initialize(*args, &block)
               super
-              @resource_name = 'backcompat_thingy'
               @allowed_actions = [ :create ]
               @action = :create
             end
@@ -84,6 +84,7 @@ describe "Recipe DSL methods" do
 
             class RecipeDSLSpecNamespace::BackcompatThingy < BaseThingy
               provides :backcompat_thingy
+              resource_name :backcompat_thingy
             end
 
           }
@@ -118,7 +119,7 @@ describe "Recipe DSL methods" do
         before(:context) {
 
           class RecipeDSLSpecNamespace::MySupplier < BaseThingy
-            provides :hemlock
+            resource_name :hemlock
           end
 
         }
@@ -141,7 +142,7 @@ describe "Recipe DSL methods" do
         before(:context) {
 
           class RecipeDSLSpecNamespace::Thingy3 < BaseThingy
-            provides :thingy3
+            resource_name :thingy3
           end
 
         }
@@ -157,7 +158,7 @@ describe "Recipe DSL methods" do
           before(:context) {
 
             class RecipeDSLSpecNamespace::Thingy4 < Chef::Resource
-              provides :thingy3
+              resource_name :thingy3
             end
 
           }
@@ -182,7 +183,7 @@ describe "Recipe DSL methods" do
         before(:context) {
 
           class RecipeDSLSpecNamespace::Thingy5 < BaseThingy
-            provides :thingy5
+            resource_name :thingy5
             provides :twizzle
             provides :twizzle2
           end
@@ -214,10 +215,12 @@ describe "Recipe DSL methods" do
       context "With platform-specific resources 'my_super_thingy_foo' and 'my_super_thingy_bar'" do
         before(:context) {
           class MySuperThingyFoo < BaseThingy
+            resource_name :my_super_thingy_foo
             provides :my_super_thingy, platform: 'foo'
           end
 
           class MySuperThingyBar < BaseThingy
+            resource_name :my_super_thingy_bar
             provides :my_super_thingy, platform: 'bar'
           end
         }

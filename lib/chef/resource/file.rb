@@ -47,11 +47,10 @@ class Chef
       # @returns [String] Checksum of the file we actually rendered
       attr_accessor :final_checksum
 
-      provides :file
+      use_automatic_resource_name
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :file
         @path = name
         @backup = 5
         @action = "create"

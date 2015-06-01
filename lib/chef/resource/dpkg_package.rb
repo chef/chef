@@ -23,12 +23,8 @@ class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
 
+      use_automatic_resource_name
       provides :dpkg_package, os: "linux"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :dpkg_package
-      end
 
     end
   end

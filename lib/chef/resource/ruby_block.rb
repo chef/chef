@@ -23,13 +23,12 @@ require 'chef/provider/ruby_block'
 class Chef
   class Resource
     class RubyBlock < Chef::Resource
-      provides :ruby_block
+      use_automatic_resource_name
 
       identity_attr :block_name
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ruby_block
         @action = "run"
         @allowed_actions << :create << :run
         @block_name = name
