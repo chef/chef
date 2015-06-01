@@ -146,8 +146,15 @@ class Chef
       option :first_boot_attributes,
         :short => "-j JSON_ATTRIBS",
         :long => "--json-attributes",
-        :description => "A JSON string to be added to the first run of chef-client",
-        :proc => lambda { |o| Chef::JSONCompat.parse(o) },
+        :description => "A JSON string or file to be added to the first run of chef-client",
+        :proc => lambda { |o|
+          begin
+            Chef::JSONCompat.parse(o)
+          rescue Chef::Exceptions::JSON::ParseError => e
+            return Chef::JSONCompat.parse(File.read(o)) if File.exists?(o)
+            raise Chef::Exceptions::JSON::ParseError, "No such file `#{o}` and #{e.message}"
+          end
+        },
         :default => {}
 
       option :host_key_verify,
