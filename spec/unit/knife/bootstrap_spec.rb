@@ -235,9 +235,20 @@ describe Chef::Knife::Bootstrap do
       expect(knife.render_template).to eq('{"run_list":["role[base]","recipe[cupcakes]"]}')
     end
 
-    it "should have foo => {bar => baz} in the first_boot" do
+    it "should have foo => {bar => baz} in the first_boot from string" do
       knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
       knife.merge_configs
+      expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
+      actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
+      expect(actual_hash).to eq(expected_hash)
+    end
+
+    it "should have foo => {bar => baz} in the first_boot from file" do
+      file = Tempfile.new (['node', '.json'])
+      File.open(file.path, "w") {|f| f.puts '{"foo":{"bar":"baz"}}' }
+      knife.parse_options(["-j", file.path])
+      knife.merge_configs
+      file.close
       expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
       actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
       expect(actual_hash).to eq(expected_hash)
