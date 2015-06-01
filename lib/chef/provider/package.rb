@@ -509,10 +509,9 @@ class Chef
 
       Chef.set_provider_priority_array :package, [ Homebrew, Macports ], os: "darwin"
 
-      Chef.set_provider_priority_array :package,  Dpkg,     os: "linux"
-      Chef.set_provider_priority_array :package,  Apt,      platform: %w(ubuntu gcel linaro raspbian linuxmint debian)
-      Chef.set_provider_priority_array :package,  Yum,      platform: %w(xenserver xcp centos amazon scientific fedora oracle redhat ibm_powerkvm cloudlinux parallels)
-      Chef.set_provider_priority_array :package,  Zypper,   platform: %w(opensuse suse)
+      Chef.set_provider_priority_array :package,  Apt,      platform_family: "debian"
+      Chef.set_provider_priority_array :package,  Yum,      platform_family: %w(rhel fedora)
+      Chef.set_provider_priority_array :package,  Zypper,   platform_family: "suse"
       Chef.set_provider_priority_array :package,  Portage,  platform: %w(gentoo)
       Chef.set_provider_priority_array :package,  Pacman,   platform: %w(arch)
       Chef.set_provider_priority_array :package,  Ips,      platform: %w(openindiana opensolaris omnios solaris2)

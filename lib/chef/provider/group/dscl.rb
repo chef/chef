@@ -21,7 +21,7 @@ class Chef
     class Group
       class Dscl < Chef::Provider::Group
 
-        provides :group, os: "darwin"
+        provides :group, os: 'darwin'
 
         def dscl(*args)
           host = "."

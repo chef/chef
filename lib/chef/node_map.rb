@@ -45,14 +45,18 @@ class Chef
       # anything more specific (see `priority_of`) and is preferred over older
       # values of the same specificity.  (So all other things being equal,
       # newest wins.)
-      insert_at = 0
+      insert_at = nil
       @map[key].each_with_index do |matcher, index|
         if specificity(new_matcher) >= specificity(matcher)
           insert_at = index
           break
         end
       end
-      @map[key].insert(insert_at, new_matcher)
+      if insert_at
+        @map[key].insert(insert_at, new_matcher)
+      else
+        @map[key] << new_matcher
+      end
       self
     end
 

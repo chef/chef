@@ -22,7 +22,7 @@ class Chef
   class Provider
     class Group
       class Gpasswd < Chef::Provider::Group::Groupadd
-        provides :group, platform: %w(suse default)
+        provides :group
 
         def load_current_resource
           super

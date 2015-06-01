@@ -534,13 +534,6 @@ describe Chef::ProviderResolver do
     )
   end
 
-  on_platform "some_other_linux", os: "linux" do
-    expect_providers(
-      package: Chef::Provider::Package::Dpkg,
-      dpkg_package: Chef::Provider::Package::Dpkg
-    )
-  end
-
   on_platform "gentoo", os: "linux" do
     expect_providers(
       package: Chef::Provider::Package::Portage,
