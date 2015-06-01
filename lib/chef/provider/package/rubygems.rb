@@ -32,14 +32,7 @@ require 'rubygems/version'
 require 'rubygems/dependency'
 require 'rubygems/spec_fetcher'
 require 'rubygems/platform'
-
-# Compatibility note: Rubygems 2.0 removes rubygems/format in favor of
-# rubygems/package.
-begin
-  require 'rubygems/format'
-rescue LoadError
-  require 'rubygems/package'
-end
+require 'rubygems/package'
 require 'rubygems/dependency_installer'
 require 'rubygems/uninstaller'
 require 'rubygems/specification'
