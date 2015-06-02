@@ -273,17 +273,12 @@ class Chef::Application::Client < Chef::Application
     verify_no_pid_file_lockfile_match
     set_specific_recipes
     update_chef_server_url
-    update_chef_repo_path if undefined_local_paths?
+    update_chef_repo_path
     handle_recipe_url if recipe_url
     update_chef_zero
     update_interval_and_splay
     verify_forked_interval
     verify_audit_mode unless audit_mode == :disabled
-
-    if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
-      Chef::Config.delete(:chef_repo_path)
-      Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
-    end
   end
 
   def load_config_file
@@ -417,7 +412,19 @@ class Chef::Application::Client < Chef::Application
   end
 
   def update_chef_repo_path
-    Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+    reset_chef_repo_path if empty_chef_repo_path?
+    Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd) if
+      undefined_local_paths?
+  end
+
+  def reset_chef_repo_path
+    Chef::Config.delete(:chef_repo_path)
+    Chef::Log.warn("chef_repo_path was set in a config file but was empty. " \
+                     "Assuming #{Chef::Config.chef_repo_path}")
+  end
+
+  def empty_chef_repo_path?
+    Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
   end
 
   def undefined_local_paths?
