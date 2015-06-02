@@ -265,79 +265,25 @@ class Chef::Application::Client < Chef::Application
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
-  attr_reader :chef_client_json
-
   # Reconfigure the chef client
   # Re-open the JSON attributes and load them into the node
   def reconfigure
     super
 
-    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
-
+    verify_no_pid_file_lockfile_match
     set_specific_recipes
-
-    Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
-
-    Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
-
-    if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
-      Chef::Config.delete(:chef_repo_path)
-      Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
-    end
-
-    if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
-      Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
-    end
-
-    if !Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
-      Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
-    elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
-      Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
-      FileUtils.mkdir_p(Chef::Config.chef_repo_path)
-      tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
-      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
-      Chef::Log.debug "#{result.stdout}"
-    end
-
-    Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
-    Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
-
-    if Chef::Config[:daemonize]
-      Chef::Config[:interval] ||= 1800
-    end
-
-    if Chef::Config[:once]
-      Chef::Config[:interval] = nil
-      Chef::Config[:splay] = nil
-    end
-
-    if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
-      Chef::Application.fatal!(unforked_interval_error_message)
-    end
-
-    if Chef::Config[:json_attribs]
-      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
-      @chef_client_json = config_fetcher.fetch_json
-    end
-
-    if mode = config[:audit_mode] || Chef::Config[:audit_mode]
-      expected_modes = [:enabled, :disabled, :audit_only]
-      unless expected_modes.include?(mode)
-        Chef::Application.fatal!(unrecognized_audit_mode(mode))
-      end
-
-      unless mode == :disabled
-        # This should be removed when audit-mode is enabled by default/no longer
-        # an experimental feature.
-        Chef::Log.warn(audit_mode_experimental_message)
-      end
-    end
+    update_chef_server_url
+    update_chef_repo_path
+    handle_recipe_url if recipe_url
+    update_chef_zero
+    update_interval_and_splay
+    verify_forked_interval
+    verify_audit_mode unless audit_mode == :disabled
   end
 
   def load_config_file
     if !config.has_key?(:config_file) && !config[:disable_config]
-      if config[:local_mode]
+      if local_mode?
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
@@ -389,7 +335,134 @@ class Chef::Application::Client < Chef::Application
     end
   end
 
+  def chef_client_json
+    json = Chef::Config.json_attribs
+
+    @chef_client_json ||= Chef::ConfigFetcher.new(json).fetch_json if json
+  end
+
   private
+
+  def verify_audit_mode
+    if %i(enabled audit_only).include?(audit_mode)
+      # TODO: remove this when audit-mode is enabled by default/no longer
+      # an experimental feature.
+      Chef::Log.warn(audit_mode_experimental_message)
+    else
+      handle_unrecognized_audit_mode
+    end
+  end
+
+  def verify_forked_interval
+    Chef::Application.fatal!(unforked_interval_error_message) if
+      !Chef::Config.client_fork && Chef::Config.interval &&
+      !Chef::Platform.windows?
+  end
+
+  def update_interval_and_splay
+    Chef::Config.interval ||= 1800 if Chef::Config.daemonize
+
+    if Chef::Config.once
+      Chef::Config.interval = nil
+      Chef::Config.splay = nil
+    end
+  end
+
+  def update_chef_zero
+    host = config[:chef_zero_host]
+    port = config[:chef_zero_port]
+
+    Chef::Config.chef_zero.host = host if host
+    Chef::Config.chef_zero.port = port if port
+  end
+
+  def handle_recipe_url
+    if local_mode?
+      load_remote_recipes
+    else
+      Chef::Application
+        .fatal!('chef-client recipe-url can be used only in local-mode', 1)
+    end
+  end
+
+  def load_remote_recipes
+    create_recipe_path
+    fetch_recipe_tarball
+    extract_recipe_tarball
+  end
+
+  def extract_recipe_tarball
+    result = shell_out!(
+      "tar zxvf #{recipe_tarball_path} -C #{Chef::Config.chef_repo_path}"
+    )
+
+    Chef::Log.debug(result.stdout)
+  end
+
+  def create_recipe_path
+    recipe_path = Chef::Config.chef_repo_path
+
+    Chef::Log.debug("Creating path #{recipe_path} to extract recipes into")
+    FileUtils.mkdir_p(recipe_path)
+  end
+
+  def recipe_tarball_path
+    @recipe_tarball_path ||=
+      File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
+  end
+
+  def update_chef_repo_path
+    reset_chef_repo_path if empty_chef_repo_path?
+    Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd) if
+      undefined_local_paths?
+  end
+
+  def reset_chef_repo_path
+    Chef::Config.delete(:chef_repo_path)
+    Chef::Log.warn("chef_repo_path was set in a config file but was empty. " \
+                     "Assuming #{Chef::Config.chef_repo_path}")
+  end
+
+  def empty_chef_repo_path?
+    Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
+  end
+
+  def undefined_local_paths?
+    local_mode? && !(
+      Chef::Config.has_key?(:cookbook_path) ||
+      Chef::Config.has_key?(:chef_repo_path)
+    )
+  end
+
+  def local_mode?
+    @local_mode ||= if config.has_key?(:local_mode)
+                      Chef::Config.local_mode = config[:local_mode]
+                    else
+                      Chef::Config.local_mode
+                    end
+  end
+
+  def update_chef_server_url
+    Chef::Config.chef_server_url = config[:chef_server_url] if
+      config.has_key?(:chef_server_url)
+  end
+
+  def verify_no_pid_file_lockfile_match
+    pid_file = Chef::Config.pid_file || ''
+    lockfile = Chef::Config.lockfile || ''
+
+    fail(Chef::Exceptions::PIDFileLockfileMatch) if
+      Chef::Util::PathHelper.paths_eql?(pid_file, lockfile)
+  end
+
+  def audit_mode
+    @audit_mode ||= config[:audit_mode] || Chef::Config[:audit_mode]
+  end
+
+  def recipe_url
+    @recipe_url ||= Chef::Config.recipe_url
+  end
+
   def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
@@ -461,12 +534,15 @@ class Chef::Application::Client < Chef::Application
     "\nAudit mode is disabled by default."
   end
 
-  def unrecognized_audit_mode(mode)
-    "Unrecognized setting #{mode} for audit mode." + audit_mode_settings_explaination
+  def handle_unrecognized_audit_mode
+    Chef::Application.fatal!(
+      "Unrecognized setting #{audit_mode} for audit mode." +
+        audit_mode_settings_explaination
+    )
   end
 
   def audit_mode_experimental_message
-    msg = if Chef::Config[:audit_mode] == :audit_only
+    msg = if audit_mode == :audit_only
       "Chef-client has been configured to skip converge and only audit."
     else
       "Chef-client has been configured to audit after it converges."
@@ -476,12 +552,14 @@ class Chef::Application::Client < Chef::Application
     return msg
   end
 
-  def fetch_recipe_tarball(url, path)
-    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
-    File.open(path, 'wb') do |f|
-      open(url) do |r|
-        f.write(r.read)
-      end
-    end
+  def fetch_recipe_tarball
+    Chef::Log.debug(
+      "Download recipes tarball from #{recipe_url} to #{recipe_tarball_path}"
+    )
+    File.open(recipe_tarball_path, 'wb') { |file| write_tarball_to_file(file) }
+  end
+
+  def write_tarball_to_file(file)
+    open(recipe_url) { |open_url| file.write(open_url.read) }
   end
 end
