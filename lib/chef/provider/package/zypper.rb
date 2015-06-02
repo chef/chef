@@ -30,6 +30,7 @@ class Chef
       class Zypper < Chef::Provider::Package
 
         def load_current_resource
+          # FIXME: zypper needs a Chef::Resource::ZypperPackage wired up to :zypper_package
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
@@ -38,7 +39,7 @@ class Chef
           version=''
           oud_version=''
           Chef::Log.debug("#{@new_resource} checking zypper")
-          status = shell_out("zypper --non-interactive info #{@new_resource.package_name}")
+          status = shell_out_with_timeout("zypper --non-interactive info #{@new_resource.package_name}")
           status.stdout.each_line do |line|
             case line
             when /^Version: (.+)$/
@@ -104,9 +105,9 @@ class Chef
         def zypper_package(command, pkgname, version)
           version = "=#{version}" unless version.nil? || version.empty?
           if zypper_version < 1.0
-            shell_out!("zypper#{gpg_checks} #{command} -y #{pkgname}")
+            shell_out_with_timeout!("zypper#{gpg_checks} #{command} -y #{pkgname}")
           else
-            shell_out!("zypper --non-interactive#{gpg_checks} "+
+            shell_out_with_timeout!("zypper --non-interactive#{gpg_checks} "+
                       "#{command} #{pkgname}#{version}")
           end
         end

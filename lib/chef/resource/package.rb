@@ -40,7 +40,7 @@ class Chef
         @response_file_variables = Hash.new
         @source = nil
         @version = nil
-        @timeout = 900
+        @timeout = nil
       end
 
       def package_name(arg=nil)

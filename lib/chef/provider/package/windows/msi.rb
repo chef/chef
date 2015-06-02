@@ -56,7 +56,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} installing MSI package '#{@new_resource.source}'")
             shell_out!("msiexec /qn /i \"#{@new_resource.source}\" #{expand_options(@new_resource.options)}", {:timeout => @new_resource.timeout, :returns => @new_resource.returns})
           end
-  
+
           def remove_package(name, version)
             # We could use MsiConfigureProduct here, but we'll start off with msiexec
             Chef::Log.debug("#{@new_resource} removing MSI package '#{@new_resource.source}'")

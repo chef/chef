@@ -521,6 +521,30 @@ class Chef
       Chef.set_provider_priority_array :package,  SmartOS,  platform: "smartos"
       Chef.set_provider_priority_array :package,  Aix,      platform: "aix"
       Chef.set_provider_priority_array :package,  Paludis,  platform: "exherbo"
+
+      private
+
+      def shell_out_with_timeout(*command_args)
+        shell_out(*add_timeout_option(command_args))
+      end
+
+      def shell_out_with_timeout!(*command_args)
+        shell_out!(*add_timeout_option(command_args))
+      end
+
+      def add_timeout_option(command_args)
+        args = command_args.dup
+        if args.last.is_a?(Hash)
+          options = args.pop.dup
+          options[:timeout] = new_resource.timeout if new_resource.timeout
+          options[:timeout] = 900 unless options.has_key?(:timeout)
+          args << options
+        else
+          args << { :timeout => new_resource.timeout ? new_resource.timeout : 900 }
+        end
+        args
+      end
+
     end
   end
 end

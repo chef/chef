@@ -125,7 +125,8 @@ class Chef
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
           Chef::Log.debug "Executing '#{command}' as user '#{homebrew_user.name}'"
-          output = shell_out!(command, :timeout => 1800, :user => homebrew_uid, :environment => { 'HOME' => homebrew_user.dir, 'RUBYOPT' => nil })
+          # FIXME: this 1800 second default timeout should be deprecated
+          output = shell_out_with_timeout!(command, :timeout => 1800, :user => homebrew_uid, :environment => { 'HOME' => homebrew_user.dir, 'RUBYOPT' => nil })
           output.stdout.chomp
         end
 
