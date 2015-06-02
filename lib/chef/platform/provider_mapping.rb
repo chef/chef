@@ -39,7 +39,7 @@ class Chef
 
         name_sym = name
         if name.kind_of?(String)
-          name.downcase!
+          name = name.downcase
           name.gsub!(/\s/, "_")
           name_sym = name.to_sym
         end

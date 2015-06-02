@@ -84,7 +84,7 @@ describe Chef::ProviderResolver do
 
   def self.expect_providers(**providers)
     providers.each do |name, provider|
-      describe "for #{name}" do
+      describe name.to_s do
         let(:resource_name) { name }
         if provider
           it "resolves to a #{provider}" do
@@ -417,7 +417,7 @@ describe Chef::ProviderResolver do
       end
     end
 
-    on_platform %w(freebsd netbsd), platform_version: '10.0-RELEASE' do
+    on_platform %w(freebsd netbsd), platform_version: '3.1.4' do
       it "returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
         stub_service_providers
         stub_service_configs(:usr_local_etc_rcd)
@@ -453,153 +453,374 @@ describe Chef::ProviderResolver do
 
   end
 
-  on_platform %w(mac_os_x mac_os_x_server), os: "darwin", platform_family:  "mac_os_x", platform_version: "10.9.2" do
-    expect_providers(
-      package: Chef::Provider::Package::Homebrew,
-      user:    Chef::Provider::User::Dscl,
-      group:   Chef::Provider::Group::Dscl
-    )
-  end
+  PROVIDERS =
+  {
+    bash: Chef::Provider::Script,
+    breakpoint: Chef::Provider::Breakpoint,
+    chef_gem: Chef::Provider::Package::Rubygems,
+    cookbook_file: Chef::Provider::CookbookFile,
+    csh: Chef::Provider::Script,
+    deploy: Chef::Provider::Deploy::Timestamped,
+    deploy_revision: Chef::Provider::Deploy::Revision,
+    directory: Chef::Provider::Directory,
+    easy_install_package: Chef::Provider::Package::EasyInstall,
+    erl_call: Chef::Provider::ErlCall,
+    execute: Chef::Provider::Execute,
+    file: Chef::Provider::File,
+    gem_package: Chef::Provider::Package::Rubygems,
+    git: Chef::Provider::Git,
+    group: Chef::Provider::Group::Gpasswd,
+    homebrew_package: Chef::Provider::Package::Homebrew,
+    http_request: Chef::Provider::HttpRequest,
+    ifconfig: Chef::Provider::Ifconfig,
+    link: Chef::Provider::Link,
+    log: Chef::Provider::Log::ChefLog,
+    macports_package: Chef::Provider::Package::Macports,
+    mdadm: Chef::Provider::Mdadm,
+    mount: Chef::Provider::Mount::Mount,
+    perl: Chef::Provider::Script,
+    portage_package: Chef::Provider::Package::Portage,
+    python: Chef::Provider::Script,
+    remote_directory: Chef::Provider::RemoteDirectory,
+    route: Chef::Provider::Route,
+    rpm_package: Chef::Provider::Package::Rpm,
+    ruby: Chef::Provider::Script,
+    ruby_block: Chef::Provider::RubyBlock,
+    script: Chef::Provider::Script,
+    subversion: Chef::Provider::Subversion,
+    template: Chef::Provider::Template,
+    timestamped_deploy: Chef::Provider::Deploy::Timestamped,
+    user: Chef::Provider::User::Useradd,
+    whyrun_safe_ruby_block: Chef::Provider::WhyrunSafeRubyBlock,
 
-  on_platform %w(mswin mingw32 windows), platform_family: "windows", platform_version: "10.9.2" do
-    expect_providers(
-      env:   Chef::Provider::Env::Windows,
-      user:  Chef::Provider::User::Windows,
+    # We want to check that these are unsupported:
+    apt_package: nil,
+    bff_package: nil,
+    dsc_script: nil,
+    dpkg_package: nil,
+    ips_package: nil,
+    pacman_package: nil,
+    paludis_package: nil,
+    rpm_package: nil,
+    smartos_package: nil,
+    solaris_package: nil,
+    yum_package: nil,
+    windows_package: nil,
+    windows_service: nil,
+
+    "linux" => {
+      apt_package: Chef::Provider::Package::Apt,
+      dpkg_package: Chef::Provider::Package::Dpkg,
+      pacman_package: Chef::Provider::Package::Pacman,
+      paludis_package: Chef::Provider::Package::Paludis,
+      rpm_package: Chef::Provider::Package::Rpm,
+      yum_package: Chef::Provider::Package::Yum,
+
+      "debian" => {
+        ifconfig: Chef::Provider::Ifconfig::Debian,
+        package: Chef::Provider::Package::Apt,
+#        service: Chef::Provider::Service::Debian,
+
+        "debian" => {
+          "7.0" => {
+          },
+          "6.0" => {
+            ifconfig: Chef::Provider::Ifconfig,
+#            service: Chef::Provider::Service::Insserv,
+          },
+          "5.0" => {
+            ifconfig: Chef::Provider::Ifconfig,
+          },
+        },
+        "gcel" => {
+          "3.1.4" => {
+            ifconfig: Chef::Provider::Ifconfig,
+          },
+        },
+        "linaro" => {
+          "3.1.4" => {
+            ifconfig: Chef::Provider::Ifconfig,
+          },
+        },
+        "linuxmint" => {
+          "3.1.4" => {
+            ifconfig: Chef::Provider::Ifconfig,
+#            service: Chef::Provider::Service::Upstart,
+          },
+        },
+        "raspbian" => {
+          "3.1.4" => {
+            ifconfig: Chef::Provider::Ifconfig,
+          },
+        },
+        "ubuntu" => {
+          "11.10" => {
+          },
+          "10.04" => {
+            ifconfig: Chef::Provider::Ifconfig,
+          },
+        },
+      },
+
+      "arch" => {
+        package: Chef::Provider::Package::Pacman,
+
+        "arch" => {
+          "3.1.4" => {
+          }
+        },
+      },
+
+      "freebsd" => {
+        group: Chef::Provider::Group::Pw,
+        user: Chef::Provider::User::Pw,
+
+        "freebsd" => {
+          "3.1.4" => {
+          },
+        },
+      },
+      "suse" => {
+        group: Chef::Provider::Group::Gpasswd,
+        "suse" => {
+          "12.0" => {
+          },
+          %w(11.1 11.2 11.3) => {
+            group: Chef::Provider::Group::Suse,
+          },
+        },
+        "opensuse" => {
+#          service: Chef::Provider::Service::Redhat,
+          package: Chef::Provider::Package::Zypper,
+          group: Chef::Provider::Group::Usermod,
+          "12.3" => {
+          },
+          "12.2" => {
+            group: Chef::Provider::Group::Suse,
+          },
+        },
+      },
+
+      "gentoo" => {
+        package: Chef::Provider::Package::Portage,
+        portage_package: Chef::Provider::Package::Portage,
+#        service: Chef::Provider::Service::Gentoo,
+
+        "gentoo" => {
+          "3.1.4" => {
+          },
+        },
+      },
+
+      "rhel" => {
+#        service: Chef::Provider::Service::Systemd,
+        package: Chef::Provider::Package::Yum,
+        ifconfig: Chef::Provider::Ifconfig::Redhat,
+
+        %w(amazon xcp xenserver ibm_powerkvm cloudlinux parallels) => {
+          "3.1.4" => {
+#            service: Chef::Provider::Service::Redhat,
+          },
+        },
+        %w(redhat centos scientific oracle) => {
+          "7.0" => {
+          },
+          "6.0" => {
+#            service: Chef::Provider::Service::Redhat,
+          },
+        },
+        "fedora" => {
+          "15.0" => {
+          },
+          "14.0" => {
+#            service: Chef::Provider::Service::Redhat,
+          },
+        },
+      },
+
+    },
+
+    "darwin" => {
+      %w(mac_os_x mac_os_x_server) => {
+        group:   Chef::Provider::Group::Dscl,
+        package: Chef::Provider::Package::Homebrew,
+        user:    Chef::Provider::User::Dscl,
+
+        "mac_os_x" => {
+          "10.9.2" => {
+          },
+        },
+      },
+    },
+
+    "windows" => {
+      batch: Chef::Provider::Batch,
+      dsc_script: Chef::Provider::DscScript,
+      env: Chef::Provider::Env::Windows,
       group: Chef::Provider::Group::Windows,
       mount: Chef::Provider::Mount::Windows,
-      batch: Chef::Provider::Batch,
       package: Chef::Provider::Package::Windows,
+      powershell_script: Chef::Provider::PowershellScript,
       service: Chef::Provider::Service::Windows,
-      dsc_script: Chef::Provider::DscScript,
+      user: Chef::Provider::User::Windows,
       windows_package: Chef::Provider::Package::Windows,
       windows_service: Chef::Provider::Service::Windows,
-      powershell_script: Chef::Provider::PowershellScript
-    )
-  end
 
-  on_platform "aix", platform_version: "5.6" do
-    expect_providers(
+      "windows" => {
+        %w(mswin mingw32 windows) => {
+          "10.9.2" => {
+          },
+        },
+      },
+    },
+
+    "aix" => {
+      bff_package: Chef::Provider::Package::Aix,
       cron: Chef::Provider::Cron::Aix,
-      bff_package: Chef::Provider::Package::Aix
-    )
-  end
+      group: Chef::Provider::Group::Aix,
+      ifconfig: Chef::Provider::Ifconfig::Aix,
+      mount: Chef::Provider::Mount::Aix,
+      package: Chef::Provider::Package::Aix,
+      rpm_package: Chef::Provider::Package::Rpm,
+      user: Chef::Provider::User::Aix,
+#      service: Chef::Provider::Service::Aix,
 
-  on_platform "netbsd", platform_version: "10.0-RELEASE" do
-    expect_providers(
-      group: Chef::Provider::Group::Groupmod
-    )
-  end
+      "aix" => {
+        "aix" => {
+          "5.6" => {
+          },
+        },
+      },
+    },
 
-  on_platform "openbsd", platform_version: "10.0-RELEASE" do
-    expect_providers(
+    "hpux" => {
+      "hpux" => {
+        "hpux" => {
+          "3.1.4" => {
+            group: Chef::Provider::Group::Usermod
+          }
+        }
+      }
+    },
+
+    "netbsd" => {
+      "netbsd" => {
+        "netbsd" => {
+          "3.1.4" => {
+            group: Chef::Provider::Group::Groupmod,
+          },
+        },
+      },
+    },
+
+    "openbsd" => {
       group: Chef::Provider::Group::Usermod,
-      package: Chef::Provider::Package::Openbsd
-    )
-  end
+      package: Chef::Provider::Package::Openbsd,
 
-  on_platform "solaris2", platform_version: "5.9" do
-    expect_providers(
-      package: Chef::Provider::Package::Solaris,
-      solaris_package: Chef::Provider::Package::Solaris
-    )
-  end
+      "openbsd" => {
+        "openbsd" => {
+          "3.1.4" => {
+          },
+        },
+      },
+    },
 
-  on_platform "solaris2", platform_version: "5.11" do
-    expect_providers(
+    "solaris2" => {
+      group: Chef::Provider::Group::Usermod,
+      ips_package: Chef::Provider::Package::Ips,
       package: Chef::Provider::Package::Ips,
-      ips_package: Chef::Provider::Package::Ips
-    )
-  end
+      mount: Chef::Provider::Mount::Solaris,
+      solaris_package: Chef::Provider::Package::Solaris,
 
-  on_platform %w(openindiana opensolaris), os: "solaris2" do
-    expect_providers(
-      package: Chef::Provider::Package::Ips,
-      ips_package: Chef::Provider::Package::Ips
-    )
-  end
+      "smartos" => {
+        smartos_package: Chef::Provider::Package::SmartOS,
+        package: Chef::Provider::Package::SmartOS,
 
-  on_platform "suse", platform_version: %w(11.1 11.2 11.3) do
-    expect_providers(
-      group: Chef::Provider::Group::Suse
-      # service is now handled by direct support? checking
-      # service: Chef::Provider::Service::Redhat
-    )
-  end
+        "smartos" => {
+          "3.1.4" => {
+          },
+        },
+      },
 
-  on_platform "suse", platform_version: "12.0" do
-    expect_providers(
-      group: Chef::Provider::Group::Gpasswd
-      # service is now handled by direct support? checking
-      # service: Chef::Provider::Service::Systemd
-    )
-  end
+      "solaris2" => {
+        "nexentacore" => {
+          "3.1.4" => {
+            package: Chef::Provider::Package::Solaris,
+          },
+        },
+        "omnios" => {
+          "3.1.4" => {
+            user: Chef::Provider::User::Solaris,
+          }
+        },
+        "openindiana" => {
+          "3.1.4" => {
+          },
+        },
+        "opensolaris" => {
+          "3.1.4" => {
+          },
+        },
+        "solaris2" => {
+          user: Chef::Provider::User::Solaris,
+          "5.11" => {
+          },
+          "5.9" => {
+            package: Chef::Provider::Package::Solaris,
+          },
+        },
+      },
 
-  on_platform "gentoo", os: "linux" do
-    expect_providers(
-      package: Chef::Provider::Package::Portage,
-      portage_package: Chef::Provider::Package::Portage
-    )
-  end
+    },
 
-  on_platform "smartos", os: "solaris2" do
-    expect_providers(
-      package: Chef::Provider::Package::SmartOS,
-      smartos_package: Chef::Provider::Package::SmartOS
-    )
-  end
+    "solaris" => {
+      "solaris" => {
+        "solaris" => {
+          "3.1.4" => {
+          },
+        },
+      },
+    },
 
-  describe "resolving static providers" do
-    on_platform "ubuntu", os: "linux", platform_family: "debian", platform_version: "14.04" do
-      expect_providers(
-        apt_package:  Chef::Provider::Package::Apt,
-        bash: Chef::Provider::Script,
-        breakpoint:  Chef::Provider::Breakpoint,
-        chef_gem: Chef::Provider::Package::Rubygems,
-        cookbook_file:  Chef::Provider::CookbookFile,
-        csh:  Chef::Provider::Script,
-        deploy:   Chef::Provider::Deploy::Timestamped,
-        deploy_revision:  Chef::Provider::Deploy::Revision,
-        directory:  Chef::Provider::Directory,
-        dpkg_package: Chef::Provider::Package::Dpkg,
-        easy_install_package:  Chef::Provider::Package::EasyInstall,
-        erl_call: Chef::Provider::ErlCall,
-        execute:  Chef::Provider::Execute,
-        file: Chef::Provider::File,
-        gem_package: Chef::Provider::Package::Rubygems,
-        git:  Chef::Provider::Git,
-        homebrew_package: Chef::Provider::Package::Homebrew,
-        http_request: Chef::Provider::HttpRequest,
-        link:  Chef::Provider::Link,
-        log:  Chef::Provider::Log::ChefLog,
-        macports_package:  Chef::Provider::Package::Macports,
-        mdadm:  Chef::Provider::Mdadm,
-        pacman_package: Chef::Provider::Package::Pacman,
-        paludis_package: Chef::Provider::Package::Paludis,
-        perl: Chef::Provider::Script,
-        portage_package: Chef::Provider::Package::Portage,
-        python: Chef::Provider::Script,
-        remote_directory: Chef::Provider::RemoteDirectory,
-        route:  Chef::Provider::Route,
-        rpm_package:  Chef::Provider::Package::Rpm,
-        ruby:  Chef::Provider::Script,
-        ruby_block:   Chef::Provider::RubyBlock,
-        script:   Chef::Provider::Script,
-        subversion:   Chef::Provider::Subversion,
-        template:   Chef::Provider::Template,
-        timestamped_deploy:  Chef::Provider::Deploy::Timestamped,
-        whyrun_safe_ruby_block:  Chef::Provider::WhyrunSafeRubyBlock,
-        yum_package:  Chef::Provider::Package::Yum,
-        # We want to check that these are unsupported:
-        bff_package: nil,
-        dsc_script: nil,
-        ips_package: nil,
-        smartos_package: nil,
-        solaris_package: nil,
-        windows_package: nil,
-        windows_service: nil
-      )
+    "exherbo" => {
+      "exherbo" => {
+        "exherbo" => {
+          "3.1.4" => {
+            package: Chef::Provider::Package::Paludis
+          }
+        }
+      }
+    }
+  }
+
+  def self.create_provider_tests(providers, test, expected, filter)
+    expected = expected.merge(providers.select { |key, value| key.is_a?(Symbol) })
+    providers.each do |key, value|
+      if !key.is_a?(Symbol)
+        next_test = test.merge({ filter => key })
+        next_filter =
+          case filter
+          when :os
+            :platform_family
+          when :platform_family
+            :platform
+          when :platform
+            :platform_version
+          when :platform_version
+            nil
+          else
+            raise "Hash too deep; only os, platform_family, platform and platform_version supported"
+          end
+        create_provider_tests(value, next_test, expected, next_filter)
+      end
+    end
+    # If there is no filter, we're as deep as we need to go
+    if !filter
+      on_platform test.delete(:platform), test do
+        expect_providers(expected)
+      end
     end
   end
-end
 
-#end
+  create_provider_tests(PROVIDERS, {}, {}, :os)
+end

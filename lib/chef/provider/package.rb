@@ -512,15 +512,15 @@ class Chef
       Chef.set_provider_priority_array :package,  Apt,      platform_family: "debian"
       Chef.set_provider_priority_array :package,  Yum,      platform_family: %w(rhel fedora)
       Chef.set_provider_priority_array :package,  Zypper,   platform_family: "suse"
-      Chef.set_provider_priority_array :package,  Portage,  platform: %w(gentoo)
-      Chef.set_provider_priority_array :package,  Pacman,   platform: %w(arch)
+      Chef.set_provider_priority_array :package,  Portage,  platform: "gentoo"
+      Chef.set_provider_priority_array :package,  Pacman,   platform: "arch"
       Chef.set_provider_priority_array :package,  Ips,      platform: %w(openindiana opensolaris omnios solaris2)
-      Chef.set_provider_priority_array :package,  Solaris,  platform: %w(nexentacore)
-      Chef.set_provider_priority_array :package,  Solaris,  platform: %w(solaris2), platform_version: '< 5.11'
+      Chef.set_provider_priority_array :package,  Solaris,  platform: "nexentacore"
+      Chef.set_provider_priority_array :package,  Solaris,  platform: "solaris2", platform_version: '< 5.11'
 
-      Chef.set_provider_priority_array :package,  SmartOS,  platform: %w(smartos)
-      Chef.set_provider_priority_array :package,  Aix,      platform: %w(aix)
-      Chef.set_provider_priority_array :package,  Paludis,  platform: %w(exherbo)
+      Chef.set_provider_priority_array :package,  SmartOS,  platform: "smartos"
+      Chef.set_provider_priority_array :package,  Aix,      platform: "aix"
+      Chef.set_provider_priority_array :package,  Paludis,  platform: "exherbo"
     end
   end
 end
