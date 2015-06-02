@@ -23,4 +23,3 @@ class Chef
     PathHelper = ChefConfig::PathHelper
   end
 end
-

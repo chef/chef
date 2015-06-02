@@ -1,32 +1,24 @@
+require 'singleton'
+
 class Chef
   class Platform
     class ResourcePriorityMap
       include Singleton
 
-      def initialize
-        load_default_map
-      end
-
       def get_priority_array(node, resource_name)
         priority_map.get(node, resource_name.to_sym)
       end
 
-      def set_priority_array(resource_name, priority_array, *filter)
-        priority resource_name.to_sym, priority_array.to_a, *filter
+      def set_priority_array(resource_name, priority_array, *filter, &block)
+        priority_map.set(resource_name.to_sym, Array(priority_array), *filter, &block)
       end
 
-      def priority(*args)
-        priority_map.set(*args)
+      # @api private
+      def list_handlers(*args)
+        priority_map.list(*args).flatten(1).uniq
       end
 
       private
-
-      def load_default_map
-        require 'chef/resources'
-
-        # MacOSX
-        priority :package, Chef::Resource::HomebrewPackage, os: "darwin"
-      end
 
       def priority_map
         require 'chef/node_map'

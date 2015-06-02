@@ -134,6 +134,10 @@ describe Chef::NodeMap do
   end
 
   describe "resource back-compat testing" do
+    before :each do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
     it "should handle :on_platforms => :all" do
       node_map.set(:chef_gem, :foo, :on_platforms => :all)
       allow(node).to receive(:[]).with(:platform).and_return("windows")
@@ -152,4 +156,3 @@ describe Chef::NodeMap do
   end
 
 end
-

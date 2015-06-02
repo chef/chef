@@ -22,6 +22,7 @@ class Chef
   class Provider
     class Ifconfig
       class Redhat < Chef::Provider::Ifconfig
+        provides :ifconfig, platform_family: %w(fedora rhel)
 
         def initialize(new_resource, run_context)
           super(new_resource, run_context)
