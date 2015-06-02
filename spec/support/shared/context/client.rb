@@ -215,8 +215,9 @@ shared_context "audit phase failed with error" do
 
   def stub_for_audit
     expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+    expect(Chef::Audit::Logger).to receive(:read_buffer).and_return("Audit mode output!")
     expect(audit_runner).to receive(:run).and_raise(audit_error)
-    expect(client.events).to receive(:audit_phase_failed).with(audit_error)
+    expect(client.events).to receive(:audit_phase_failed).with(audit_error, "Audit mode output!")
   end
 end
 
@@ -232,11 +233,12 @@ shared_context "audit phase completed with failed controls" do
 
   def stub_for_audit
     expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+    expect(Chef::Audit::Logger).to receive(:read_buffer).and_return("Audit mode output!")
     expect(audit_runner).to receive(:run)
     expect(Chef::Exceptions::AuditsFailed).to receive(:new).with(
       audit_runner.num_failed, audit_runner.num_total
     ).and_return(audit_error)
-    expect(client.events).to receive(:audit_phase_failed).with(audit_error)
+    expect(client.events).to receive(:audit_phase_failed).with(audit_error, "Audit mode output!")
   end
 end
 

@@ -244,13 +244,13 @@ class Chef
       end
 
       # Called when audit phase successfully finishes
-      def audit_phase_complete
+      def audit_phase_complete(audit_output)
       end
 
       # Called if there is an uncaught exception during the audit phase.  The audit runner should
       # be catching and handling errors from the examples, so this is only uncaught errors (like
       # bugs in our handling code)
-      def audit_phase_failed(exception)
+      def audit_phase_failed(exception, audit_output)
       end
 
       # Signifies the start of a `control_group` block with a defined name
