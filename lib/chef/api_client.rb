@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright (c) 2008, 2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,10 +54,12 @@ class Chef
       @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "1"})
     end
 
+    # will default to the current version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
     def http_api
       @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
+    # will default to the current version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
     def self.http_api
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
@@ -304,15 +306,15 @@ class Chef
           new_client.delete('chef_key')
         end
 
-        rescue Net::HTTPServerException => e
-          # rescue API V0 if 406 and the server supports V0
-          raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
+      rescue Net::HTTPServerException => e
+        # rescue API V0 if 406 and the server supports V0
+        raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
 
-          # under API V0, a key pair will always be created unless public_key is
-          # passed on initial POST
-          payload[:public_key] = public_key unless public_key.nil?
+        # under API V0, a key pair will always be created unless public_key is
+        # passed on initial POST
+        payload[:public_key] = public_key unless public_key.nil?
 
-          new_client = chef_rest_v0.post("clients", payload)
+        new_client = chef_rest_v0.post("clients", payload)
       end
       Chef::ApiClient.from_hash(self.to_hash.merge(new_client))
     end
@@ -321,11 +323,6 @@ class Chef
     def to_s
       "client[#{@name}]"
     end
-
-    # def inspect
-    #   "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' validator:'#{validator}' " +
-    #   "public_key:'#{public_key}' private_key:'#{private_key}'"
-    # end
 
   end
 end

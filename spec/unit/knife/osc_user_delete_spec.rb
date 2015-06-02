@@ -19,10 +19,9 @@
 require 'spec_helper'
 
 # DEPRECATION NOTE
-# This code only remains to support users still	operating with
-# Open Source Chef Server 11 and should	  be removed once support
-# for OSC 11 ends. New development should occur in the Chef Server 12
-# version of this file.
+# This code only remains to support users still operating with
+# Open Source Chef Server 11 and should be removed once support
+# for OSC 11 ends. New development should occur in user_delete_spec.rb.
 
 describe Chef::Knife::OscUserDelete do
   before(:each) do

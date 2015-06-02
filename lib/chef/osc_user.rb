@@ -26,7 +26,7 @@ require 'chef/search/query'
 # DEPRECATION NOTE
 # This class was previously Chef::User. It is the code to support the User object
 # corrosponding to the Open Source Chef Server 11 and only still exists to support
-# users still on OSC 11. 
+# users still on OSC 11.
 #
 # Chef::User now supports Chef Server 12.
 #

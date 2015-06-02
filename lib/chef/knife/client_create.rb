@@ -46,7 +46,7 @@ class Chef
       option :public_key,
              :short => "-p FILE",
              :long  => "--public-key",
-             :description => "Set the initial default key for the client from a file on disk (cannot pass with --create-key)."
+             :description => "Set the initial default key for the client from a file on disk (cannot pass with --prevent-keygen)."
 
       option :prevent_keygen,
              :short => "-k",
@@ -61,7 +61,8 @@ class Chef
       end
 
       def create_client(client)
-        client.create
+        # should not be using save :( bad behavior
+        client.save
       end
 
       def run
@@ -74,7 +75,7 @@ class Chef
           exit 1
         end
 
-        unless config[:prevent_keygen]
+        if !config[:prevent_keygen] && !config[:public_key]
           client.create_key(true)
         end
 

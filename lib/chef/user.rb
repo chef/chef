@@ -25,6 +25,12 @@ require 'chef/mixin/api_version_request_handling'
 require 'chef/exceptions'
 require 'chef/server_api'
 
+# OSC 11 BACKWARDS COMPATIBILITY NOTE (remove after OSC 11 support ends)
+#
+# In general, Chef::User is no longer expected to support Open Source Chef 11 Server requests.
+# The object that handles those requests has been moved to the Chef::OscUser namespace.
+#
+# Exception: self.list is backwards compatible with OSC 11
 class Chef
   class User
 
@@ -132,6 +138,7 @@ class Chef
     end
 
     def destroy
+      # will default to the current API version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
       Chef::REST.new(Chef::Config[:chef_server_url]).delete("users/#{@username}")
     end
 
@@ -278,15 +285,17 @@ class Chef
 
     def self.list(inflate=false)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get('users')
-      # Gross.  Transforms an API response in the form of:
-      # [ { "user" => { "username" => USERNAME }}, ...]
-      # into the form
-      # { "USERNAME" => "URI" }
-      users = Hash.new
-      response.each do |u|
-        name = u['user']['username']
-        users[name] = Chef::Config[:chef_server_url] + "/users/#{name}"
-      end
+      users = if response.is_a?(Array)
+                # EC 11 / CS 12 V0, V1
+                #   GET /organizations/<org>/users
+                transform_list_response(response)
+              else
+                # OSC 11
+                #  GET /users
+                # EC 11 / CS 12 V0, V1
+                #  GET /users
+                response # OSC
+              end
 
       if inflate
         users.inject({}) do |user_map, (name, _url)|
@@ -299,9 +308,25 @@ class Chef
     end
 
     def self.load(username)
+      # will default to the current API version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get("users/#{username}")
       Chef::User.from_hash(response)
     end
+
+    # Gross.  Transforms an API response in the form of:
+    # [ { "user" => { "username" => USERNAME }}, ...]
+    # into the form
+    # { "USERNAME" => "URI" }
+    def self.transform_list_response(response)
+      new_response = Hash.new
+      response.each do |u|
+        name = u['user']['username']
+        new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"
+      end
+      new_response
+    end
+
+    private_class_method :transform_list_response
 
   end
 end
