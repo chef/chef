@@ -115,6 +115,66 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
 
       end
 
+      context "and the target file has null dacl and sacl" do
+
+        before do
+          allow(target_file_security_descriptor).to receive(:dacl_present?).and_return(true)
+          allow(target_file_security_descriptor).to receive(:dacl).and_return(nil)
+          allow(target_file_security_descriptor).to receive(:dacl_inherits?).and_return(false)
+
+          allow(target_file_security_descriptor).to receive(:sacl_present?).and_return(true)
+          allow(target_file_security_descriptor).to receive(:sacl).and_return(nil)
+          allow(target_file_security_descriptor).to receive(:sacl_inherits?).and_return(false)
+
+          expect(updated_target_security_object).to receive(:set_dacl).with(nil, false)
+          expect(updated_target_security_object).to receive(:set_sacl).with(nil, false)
+        end
+
+
+        it "fixes up permissions and moves the file into place" do
+          content_deployer.deploy(staging_file_path, target_file_path)
+        end
+
+      end
+
+      context "and the target has an empty dacl and sacl" do
+        let(:original_target_file_dacl) { [] }
+        let(:original_target_file_sacl) { [] }
+
+        let(:empty_dacl) { double("Windows ACL with no dacl ACEs") }
+        let(:empty_sacl) { double("Windows ACL with no sacl ACEs") }
+
+        before do
+          allow(target_file_security_descriptor).to receive(:dacl_present?).and_return(true)
+          allow(target_file_security_descriptor).to receive(:dacl_inherits?).and_return(false)
+
+          allow(target_file_security_descriptor).to receive(:dacl).and_return(original_target_file_dacl)
+          expect(Chef::ReservedNames::Win32::Security::ACL).
+            to receive(:create).
+            with([]).
+            and_return(empty_dacl)
+
+
+          allow(target_file_security_descriptor).to receive(:sacl_present?).and_return(true)
+          allow(target_file_security_descriptor).to receive(:sacl_inherits?).and_return(false)
+
+          allow(target_file_security_descriptor).to receive(:sacl).and_return(original_target_file_sacl)
+          expect(Chef::ReservedNames::Win32::Security::ACL).
+            to receive(:create).
+            with([]).
+            and_return(empty_sacl)
+
+
+          expect(updated_target_security_object).to receive(:set_dacl).with(empty_dacl, false)
+          expect(updated_target_security_object).to receive(:set_sacl).with(empty_sacl, false)
+        end
+
+
+        it "fixes up permissions and moves the file into place" do
+          content_deployer.deploy(staging_file_path, target_file_path)
+        end
+      end
+
       context "and the target has a dacl and sacl" do
         let(:inherited_dacl_ace) { double("Windows dacl ace (inherited)", :inherited? => true) }
         let(:not_inherited_dacl_ace) { double("Windows dacl ace (not inherited)", :inherited? => false) }
