@@ -3,6 +3,8 @@
   knife cil attribute [pr#3195](https://github.com/chef/chef/pull/3195)
 * [**Torben Knerr**](https://github.com/tknerr):
   Allow knife sub-command loader to match platform specific gems. [pr#3281](https://github.com/chef/chef/pull/3281)
+* [**Steve Lowe**](https://github.com/SteveLowe):
+  Fix copying ntfs dacl and sacl when they are nil. [pr#3066](https://github.com/chef/chef/pull/3066)
 
 * [Issue #2247](https://github.com/chef/chef/issues/2247): powershell_script returns 0 for scripts with syntax errors
 * [pr#3080](https://github.com/chef/chef/pull/3080): Issue 2247: powershell_script exit status should be nonzero for syntax errors
