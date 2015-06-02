@@ -1274,31 +1274,48 @@ class Chef
       end
     end
 
-    # Implement deprecated LWRP class
-    module DeprecatedLWRPClass
-      # @api private
-      def register_deprecated_lwrp_class(resource_class, class_name)
-        if Chef::Resource.const_defined?(class_name, false)
-          Chef::Log.warn "#{class_name} already exists!  Cannot create deprecation class for #{resource_class}"
-        else
-          deprecated_constants[class_name.to_sym] = resource_class
+    # @api private
+    def self.register_deprecated_lwrp_class(resource_class, class_name)
+      if Chef::Resource.const_defined?(class_name, false)
+        Chef::Log.warn "#{class_name} already exists!  Deprecation class overwrites #{resource_class}"
+        Chef::Resource.send(:remove_const, class_name)
+      end
+      resource_subclass = class_eval <<-EOM, __FILE__, __LINE__+1
+        class Chef::Resource::#{class_name} < resource_class
+          def initialize(*args, &block)
+            Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+            super
+          end
+          self
+        end
+      EOM
+      # Make case, is_a and kind_of work with the new subclass, for backcompat
+      # Any subclass of Chef::Resource::ResourceClass is already a subclass of resource_class
+      # Any subclass of resource_class is considered a subclass of Chef::Resource::ResourceClass
+      resource_class.class_eval do
+        define_method(:is_a?) do |other|
+          other.is_a?(Module) && other === self
+        end
+        define_method(:kind_of?) do |other|
+          other.is_a?(Module) && other === self
         end
       end
-
-      def const_missing(class_name)
-        if deprecated_constants[class_name.to_sym]
+      resource_subclass.class_eval do
+        define_singleton_method(:===) do |other|
           Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
-          deprecated_constants[class_name.to_sym]
-        else
-          raise NameError, "uninitialized constant Chef::Resource::#{class_name}"
+          # resource_subclass is a superclass of all resource_class descendants.
+          if self == resource_subclass && other.class <= resource_class
+            return true
+          end
+          super(other)
         end
       end
-
-      def deprecated_constants
-        @deprecated_constants ||= {}
-      end
+      deprecated_constants[class_name.to_sym] = resource_subclass
     end
-    extend DeprecatedLWRPClass
+
+    def self.deprecated_constants
+      @deprecated_constants ||= {}
+    end
 
     # @api private
     def lookup_provider_constant(name, action=:nothing)
