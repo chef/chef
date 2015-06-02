@@ -111,4 +111,5 @@ shared_examples_for "user or client create" do
     end # when the server supports API V0
   end # when server API V1 is not valid on the Chef Server receiving the request
 
-end
+end # user or client create
+

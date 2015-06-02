@@ -504,6 +504,35 @@ describe Chef::User do
 
     end # create
 
+    # DEPRECATION
+    # This can be removed after API V0 support is gone
+    describe "reregister" do
+      let(:payload) {
+        {
+          "username" => "some_username",
+        }
+      }
+
+      before do
+        @user.username "some_username"
+      end
+
+      context "when server API V0 is valid on the Chef Server receiving the request" do
+        it "creates a new object via the API" do
+          expect(@user.chef_root_rest_v0).to receive(:put).with("users/#{@user.username}", payload.merge({"private_key" => true})).and_return({})
+          @user.reregister
+        end
+      end # when server API V0 is valid on the Chef Server receiving the request
+
+      context "when server API V0 is not supported by the Chef Server" do
+        # from spec/support/shared/unit/api_versioning.rb
+        it_should_behave_like "user and client reregister" do
+          let(:object)    { @user }
+          let(:rest_v0)   { @user.chef_root_rest_v0 }
+        end
+      end # when server API V0 is not supported by the Chef Server
+    end # reregister
+
   end # Versioned API Interactions
 
   describe "API Interactions" do

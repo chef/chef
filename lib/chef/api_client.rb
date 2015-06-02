@@ -55,6 +55,14 @@ class Chef
       @chef_rest_v1 ||= get_versioned_rest_object(Chef::Config[:chef_server_url], "1")
     end
 
+    def http_api
+      @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+
+    def self.http_api
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+
     # Gets or sets the client name.
     #
     # @params [Optional String] The name must be alpha-numeric plus - and _.
@@ -173,10 +181,6 @@ class Chef
       from_hash(Chef::JSONCompat.parse(j))
     end
 
-    def self.http_api
-      Chef::REST.new(Chef::Config[:chef_server_url])
-    end
-
     def self.reregister(name)
       api_client = load(name)
       api_client.reregister
@@ -225,13 +229,27 @@ class Chef
     end
 
     def reregister
-      reregistered_self = http_api.put("clients/#{name}", { :name => name, :admin => admin, :validator => validator, :private_key => true })
+      # Try API V0 and if it fails due to V0 not being supported, raise the proper error message.
+      # reregister only supported in API V0 or lesser.
+      reregistered_self = chef_rest_v0.put("clients/#{name}", { :name => name, :admin => admin, :validator => validator, :private_key => true })
       if reregistered_self.respond_to?(:[])
         private_key(reregistered_self["private_key"])
       else
         private_key(reregistered_self.private_key)
       end
       self
+    rescue Net::HTTPServerException => e
+      # if there was a 406 related to versioning, give error explaining that
+      # only API version 0 is supported for reregister command
+      if e.response.code == "406" && e.response["x-ops-server-api-version"]
+        version_header = Chef::JSONCompat.from_json(e.response["x-ops-server-api-version"])
+        min_version = version_header["min_version"]
+        max_version = version_header["max_version"]
+        error_msg = reregister_only_v0_supported_error_msg(max_version, min_version)
+        raise Chef::Exceptions::OnlyApiVersion0SupportedForAction.new(error_msg)
+      else
+        raise e
+      end
     end
 
     # Updates the client via the REST API
@@ -243,8 +261,10 @@ class Chef
       # Delete this comment after V0 support is dropped.
       payload = { :name => name }
       payload[:validator] = validator unless validator.nil?
-      # this field is ignored in API V1, but left for backwards-compat,
-      # can remove after OSC 11 support is finished?
+
+      # DEPRECATION
+      # This field is ignored in API V1, but left for backwards-compat,
+      # can remove after API V0 is no longer supported.
       payload[:admin] = admin unless admin.nil?
 
       begin
@@ -307,11 +327,6 @@ class Chef
     #   "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' validator:'#{validator}' " +
     #   "public_key:'#{public_key}' private_key:'#{private_key}'"
     # end
-
-    # TODO delete?
-    def http_api
-      @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
-    end
 
   end
 end

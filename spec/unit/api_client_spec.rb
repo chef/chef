@@ -490,5 +490,24 @@ describe Chef::ApiClient do
       end # when a valid client is defined
     end # update
 
+    # DEPRECATION
+    # This can be removed after API V0 support is gone
+    describe "reregister" do
+      context "when server API V0 is valid on the Chef Server receiving the request" do
+        it "creates a new object via the API" do
+          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({:private_key => true})).and_return({})
+          @client.reregister
+        end
+      end # when server API V0 is valid on the Chef Server receiving the request
+
+      context "when server API V0 is not supported by the Chef Server" do
+        # from spec/support/shared/unit/api_versioning.rb
+        it_should_behave_like "user and client reregister" do
+          let(:object)    { @client }
+          let(:rest_v0)   { @client.chef_rest_v0 }
+        end
+      end # when server API V0 is not supported by the Chef Server
+    end # reregister
+
   end
 end
