@@ -42,3 +42,5 @@ class Chef
     use Chef::HTTP::RemoteRequestID
   end
 end
+
+require 'chef/config'
