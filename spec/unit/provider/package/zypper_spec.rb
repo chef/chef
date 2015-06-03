@@ -19,9 +19,9 @@
 require 'spec_helper'
 
 describe Chef::Provider::Package::Zypper do
-  let!(:new_resource) { Chef::Resource::Package.new("cups") }
+  let!(:new_resource) { Chef::Resource::ZypperPackage.new("cups") }
 
-  let!(:current_resource) { Chef::Resource::Package.new("cups") }
+  let!(:current_resource) { Chef::Resource::ZypperPackage.new("cups") }
 
   let(:provider) do
     node = Chef::Node.new
