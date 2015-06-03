@@ -72,7 +72,7 @@ describe "Chef::Resource.property validation" do
     end
   end
 
-  def self.validation_test(validation, success_values, failure_values)
+  def self.validation_test(validation, success_values, failure_values, getter_values=[])
     with_property ":x, #{validation}" do
       success_values.each do |v|
         it "value #{v.inspect} is valid" do
@@ -80,17 +80,16 @@ describe "Chef::Resource.property validation" do
         end
       end
       failure_values.each do |v|
-        if v.nil?
-          it "setting value to #{v.inspect} does not change the value" do
-            Chef::Config[:treat_deprecation_warnings_as_errors] = false
-            resource.x success_values.first
-            expect(resource.x v).to eq success_values.first
-            expect(resource.x).to eq success_values.first
-          end
-        else
-          it "value #{v.inspect} is invalid" do
-            expect { resource.x v }.to raise_error Chef::Exceptions::ValidationFailed
-          end
+        it "value #{v.inspect} is invalid" do
+          expect { resource.x v }.to raise_error Chef::Exceptions::ValidationFailed
+        end
+      end
+      getter_values.each do |v|
+        it "setting value to #{v.inspect} does not change the value" do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          resource.x success_values.first
+          expect(resource.x v).to eq success_values.first
+          expect(resource.x).to eq success_values.first
         end
       end
     end
@@ -132,7 +131,7 @@ describe "Chef::Resource.property validation" do
 
     validation_test '[]',
       [],
-      [ :a ]
+      [ :a, nil ]
   end
 
   # is
@@ -193,14 +192,15 @@ describe "Chef::Resource.property validation" do
 
     validation_test 'is: []',
       [],
-      [ :a ]
+      [ :a, nil ]
   end
 
   # Combination
   context "combination" do
     validation_test 'kind_of: String, equal_to: "a"',
       [ 'a' ],
-      [ 'b', nil ]
+      [ 'b' ],
+      [ nil ]
   end
 
   # equal_to
@@ -208,15 +208,18 @@ describe "Chef::Resource.property validation" do
     # Value
     validation_test 'equal_to: :a',
       [ :a ],
-      [ :b, nil ]
+      [ :b ],
+      [ nil ]
 
     validation_test 'equal_to: [ :a, :b ]',
       [ :a, :b ],
-      [ [ :a, :b ], nil ]
+      [ [ :a, :b ] ],
+      [ nil ]
 
     validation_test 'equal_to: [ [ :a, :b ] ]',
       [ [ :a, :b ] ],
-      [ :a, :b, nil ]
+      [ :a, :b ],
+      [ nil ]
 
     validation_test 'equal_to: nil',
       [ nil ],
@@ -232,22 +235,26 @@ describe "Chef::Resource.property validation" do
 
     validation_test 'equal_to: []',
       [],
-      [ :a ]
+      [ :a ],
+      [ nil ]
   end
 
   # kind_of
   context "kind_of" do
     validation_test 'kind_of: String',
       [ 'a' ],
-      [ :b, nil ]
+      [ :b ],
+      [ nil ]
 
     validation_test 'kind_of: [ String, Symbol ]',
       [ 'a', :b ],
-      [ 1, nil ]
+      [ 1 ],
+      [ nil ]
 
     validation_test 'kind_of: [ Symbol, String ]',
       [ 'a', :b ],
-      [ 1, nil ]
+      [ 1 ],
+      [ nil ]
 
     validation_test 'kind_of: NilClass',
       [ nil ],
@@ -259,34 +266,41 @@ describe "Chef::Resource.property validation" do
 
     validation_test 'kind_of: []',
       [],
-      [ :a ]
+      [ :a ],
+      [ nil ]
 
     validation_test 'kind_of: nil',
-    [],
-    [ :a ]
+      [],
+      [ :a ],
+      [ nil ]
   end
 
   # regex
   context "regex" do
     validation_test 'regex: /abc/',
       [ 'xabcy' ],
-      [ 'gbh', 123, nil ]
+      [ 'gbh', 123 ],
+      [ nil ]
 
     validation_test 'regex: [ /abc/, /z/ ]',
       [ 'xabcy', 'aza' ],
-      [ 'gbh', 123, nil ]
+      [ 'gbh', 123 ],
+      [ nil ]
 
     validation_test 'regex: [ /z/, /abc/ ]',
       [ 'xabcy', 'aza' ],
-      [ 'gbh', 123, nil ]
+      [ 'gbh', 123 ],
+      [ nil ]
 
     validation_test 'regex: []',
       [],
-      [ :a ]
+      [ :a ],
+      [ nil ]
 
     validation_test 'regex: nil',
       [],
-      [ :a ]
+      [ :a ],
+      [ nil ]
   end
 
   # callbacks
@@ -305,38 +319,46 @@ describe "Chef::Resource.property validation" do
 
     validation_test 'callbacks: {}',
       [ :a ],
-      []
+      [],
+      [ nil ]
   end
 
   # respond_to
   context "respond_to" do
     validation_test 'respond_to: :split',
       [ 'hi' ],
-      [ 1, nil ]
+      [ 1 ],
+      [ nil ]
 
     validation_test 'respond_to: "split"',
       [ 'hi' ],
-      [ 1, nil ]
+      [ 1 ],
+      [ nil ]
 
     validation_test 'respond_to: [ :split, :to_s ]',
       [ 'hi' ],
-      [ 1, nil ]
+      [ 1 ],
+      [ nil ]
 
     validation_test 'respond_to: %w(split to_s)',
       [ 'hi' ],
-      [ 1, nil ]
+      [ 1 ],
+      [ nil ]
 
     validation_test 'respond_to: [ :to_s, :split ]',
       [ 'hi' ],
-      [ 1, nil ]
+      [ 1, ],
+      [ nil ]
 
     validation_test 'respond_to: []',
       [ :a ],
-      []
+      [],
+      [ nil ]
 
     validation_test 'respond_to: nil',
       [ :a ],
-      []
+      [],
+      [ nil ]
   end
 
   context "cannot_be" do
@@ -350,27 +372,34 @@ describe "Chef::Resource.property validation" do
 
     validation_test 'cannot_be: [ :empty, :nil ]',
       [ 1, [1,2], { a: 10 } ],
-      [ [], nil ]
+      [ [], nil ],
+      [ nil ]
 
     validation_test 'cannot_be: [ "empty", "nil" ]',
       [ 1, [1,2], { a: 10 } ],
-      [ [], nil ]
+      [ [], nil ],
+      [ nil ]
 
     validation_test 'cannot_be: [ :nil, :empty ]',
       [ 1, [1,2], { a: 10 } ],
-      [ [], nil ]
+      [ [], nil ],
+      [ nil ]
 
     validation_test 'cannot_be: [ :empty, :nil, :blahblah ]',
       [ 1, [1,2], { a: 10 } ],
-      [ [], nil ]
+      [ [], nil ],
+      [ nil ]
 
     validation_test 'cannot_be: []',
       [ :a ],
-      []
+      [],
+      [ nil ]
 
     validation_test 'cannot_be: nil',
       [ :a ],
-      []
+      [],
+      [ nil ]
+
   end
 
   context "required" do
@@ -388,8 +417,7 @@ describe "Chef::Resource.property validation" do
       end
     end
 
-    # with_property ':x, [String, nil], required: true' do
-    with_property ':x, kind_of: [String, NilClass], required: true' do
+    with_property ':x, [String, nil], required: true' do
       it "if x is not specified, retrieval fails" do
         expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
       end
@@ -411,9 +439,9 @@ describe "Chef::Resource.property validation" do
       it "if x is not specified, retrieval fails" do
         expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
       end
-      # it "value nil is invalid" do
-      #   expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
-      # end
+      it "value nil is invalid" do
+        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+      end
       it "value 1 is valid" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
@@ -425,9 +453,9 @@ describe "Chef::Resource.property validation" do
       it "if x is not specified, retrieval fails" do
         expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
       end
-      # it "value nil is invalid" do
-      #   expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
-      # end
+      it "value nil is invalid" do
+        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+      end
       it "value 1 is valid" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
@@ -467,10 +495,10 @@ describe "Chef::Resource.property validation" do
           expect { resource.x '1' }.to raise_error Chef::Exceptions::ValidationFailed
         end
 
-        # it "value nil is invalid" do
-        #   Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        #   expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
-        # end
+        it "value nil is invalid" do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+        end
       end
     end
 
@@ -495,9 +523,9 @@ describe "Chef::Resource.property validation" do
           expect { resource.x '1' }.to raise_error Chef::Exceptions::ValidationFailed
         end
 
-        # it "value nil is invalid" do
-        #   expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
-        # end
+        it "value nil is invalid" do
+          expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+        end
       end
     end
   end

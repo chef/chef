@@ -245,19 +245,16 @@ class Chef
       # Compare the way "case" would (i.e. `===`)
       def _pv_is(opts, key, to_be)
         value = _pv_opts_lookup(opts, key)
-        unless value.nil?
-          passes = false
-          to_be = Array(to_be)
-          to_be.each do |tb|
-            if tb.is_a?(Proc)
-              return if instance_exec(value, &tb)
-            else
-              return if tb === value
-            end
+        to_be = [ to_be ].flatten(1)
+        to_be.each do |tb|
+          if tb.is_a?(Proc)
+            return if instance_exec(value, &tb)
+          else
+            return if tb === value
           end
-
-          raise Exceptions::ValidationFailed, "Option #{key} must be one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
         end
+
+        raise Exceptions::ValidationFailed, "Option #{key} must be one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
       end
     end
   end
