@@ -712,6 +712,64 @@ class Chef
       provider(arg)
     end
 
+    #
+    # Create a property on this resource class.
+    #
+    # If a superclass has this property, or if this property has already been
+    # defined by this resource, this will *override* the previous value.
+    #
+    # @param name [Symbol] The name of the property.
+    # @param options [Hash<Symbol,Object>] Validation options.
+    #   @option options [Object,Array] :equal_to An object, or list
+    #     of objects, that must be equal to the value using Ruby's `==`
+    #     operator (`options[:is].any? { |v| v == value }`)
+    #   @option options [Regexp,Array<Regexp>] :regex An object, or
+    #     list of objects, that must match the value with `regex.match(value)`.
+    #   @option options [Class,Array<Class>] :kind_of A class, or
+    #     list of classes, that the value must be an instance of.
+    #   @option options [Hash<String,Proc>] :callbacks A hash of
+    #     messages -> procs, all of which match the value. The proc must
+    #     return a truthy or falsey value (true means it matches).
+    #   @option options [Symbol,Array<Symbol>] :respond_to A method
+    #     name, or list of method names, the value must respond to.
+    #   @option options [Symbol,Array<Symbol>] :cannot_be A property,
+    #     or a list of properties, that the value cannot have (such as `:nil` or
+    #     `:empty`). The method with a questionmark at the end is called on the
+    #     value (e.g. `value.empty?`). If the value does not have this method,
+    #     it is considered valid (i.e. if you don't respond to `empty?` we
+    #     assume you are not empty).
+    #   @option options [Proc] :coerce A proc which will be called to
+    #     transform the user input to canonical form. The value is passed in,
+    #     and the transformed value returned as output. Lazy values will *not*
+    #     be passed to this method until after they are evaluated. Called in the
+    #     context of the resource (meaning you can access other properties).
+    #   @option options [Boolean] :required `true` if this property
+    #     must be present; `false` otherwise. This is checked after the resource
+    #     is fully initialized.
+    #   @option options [Boolean] :name_property `true` if this
+    #     property defaults to the same value as `name`. Equivalent to
+    #     `default: lazy { name }`, except that #property_is_set? will
+    #     return `true` if the property is set *or* if `name` is set.
+    #   @option options [Boolean] :name_attribute Same as `name_property`.
+    #   @option options [Object] :default The value this property
+    #     will return if the user does not set one. If this is `lazy`, it will
+    #     be run in the context of the instance (and able to access other
+    #     properties).
+    #
+    # @return [Chef::Resource::PropertyType] The property type.
+    #
+    # @example With nothing
+    #   property :x
+    #
+    # @example With options
+    #   property :x, default: 'hi'
+    #
+    def self.property(name, **options)
+      define_method(name) do |arg=nil|
+        set_or_return(name.to_sym, arg, options)
+      end
+    end
+
     # Set or return the list of "state attributes" implemented by the Resource
     # subclass. State attributes are attributes that describe the desired state
     # of the system, such as file permissions or ownership. In general, state

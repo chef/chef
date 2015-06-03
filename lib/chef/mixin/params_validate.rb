@@ -136,7 +136,8 @@ class Chef
           value = _pv_opts_lookup(opts, key)
           unless value.nil?
             passes = false
-            Array(to_be).each do |tb|
+            to_be = Array(to_be)
+            to_be.each do |tb|
               passes = true if value == tb
             end
             unless passes
@@ -150,7 +151,8 @@ class Chef
           value = _pv_opts_lookup(opts, key)
           unless value.nil?
             passes = false
-            Array(to_be).each do |tb|
+            to_be = Array(to_be)
+            to_be.each do |tb|
               passes = true if value.kind_of?(tb)
             end
             unless passes
@@ -177,14 +179,16 @@ class Chef
         #
         # Note, this will *PASS* if the object doesn't respond to the method.
         # So, to make sure a value is not nil and not blank, you need to do
-        # both :cannot_be => :blank *and* :cannot_be => :nil (or :required => true)
+        # both :cannot_be => [ :blank, :nil ]
         def _pv_cannot_be(opts, key, predicate_method_base_name)
           value = _pv_opts_lookup(opts, key)
-          predicate_method = (predicate_method_base_name.to_s + "?").to_sym
+          Array(predicate_method_base_name).each do |method_name|
+            predicate_method = :"#{method_name}?"
 
-          if value.respond_to?(predicate_method)
-            if value.send(predicate_method)
-              raise Exceptions::ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
+            if value.respond_to?(predicate_method)
+              if value.send(predicate_method)
+                raise Exceptions::ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
+              end
             end
           end
         end
@@ -202,7 +206,7 @@ class Chef
           value = _pv_opts_lookup(opts, key)
           if value != nil
             passes = false
-            [ regex ].flatten.each do |r|
+            Array(regex).each do |r|
               if value != nil
                 if r.match(value.to_s)
                   passes = true
@@ -239,4 +243,3 @@ class Chef
     end
   end
 end
-
