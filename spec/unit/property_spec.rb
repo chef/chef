@@ -87,20 +87,20 @@ describe "Chef::Resource.property" do
       expect(resource.bare_property 20).to eq 20
       expect(resource.bare_property).to eq 20
     end
-    # it "can be set with =" do
-    #   expect(resource.bare_property 10).to eq 10
-    #   expect(resource.bare_property).to eq 10
-    # end
+    it "can be set with =" do
+      expect(resource.bare_property 10).to eq 10
+      expect(resource.bare_property).to eq 10
+    end
     # it "can be set to nil with =" do
     #   expect(resource.bare_property 10).to eq 10
     #   expect(resource.bare_property = nil).to be_nil
     #   expect(resource.bare_property).to be_nil
     # end
-    # it "can be updated with =" do
-    #   expect(resource.bare_property 10).to eq 10
-    #   expect(resource.bare_property = 20).to eq 20
-    #   expect(resource.bare_property).to eq 20
-    # end
+    it "can be updated with =" do
+      expect(resource.bare_property 10).to eq 10
+      expect(resource.bare_property = 20).to eq 20
+      expect(resource.bare_property).to eq 20
+    end
   end
 
   with_property ":x, Integer" do
@@ -118,8 +118,8 @@ describe "Chef::Resource.property" do
       it "x is inherited" do
         expect(subresource.x 10).to eq 10
         expect(subresource.x).to eq 10
-        # expect(subresource.x = 20).to eq 20
-        # expect(subresource.x).to eq 20
+        expect(subresource.x = 20).to eq 20
+        expect(subresource.x).to eq 20
         # expect(subresource_class.properties[:x]).not_to be_nil
       end
 
@@ -137,15 +137,15 @@ describe "Chef::Resource.property" do
         it "x is still there" do
           expect(subresource.x 10).to eq 10
           expect(subresource.x).to eq 10
-          # expect(subresource.x = 20).to eq 20
-          # expect(subresource.x).to eq 20
+          expect(subresource.x = 20).to eq 20
+          expect(subresource.x).to eq 20
           # expect(subresource_class.properties[:x]).not_to be_nil
         end
         it "y is there" do
           expect(subresource.y 10).to eq 10
           expect(subresource.y).to eq 10
-          # expect(subresource.y = 20).to eq 20
-          # expect(subresource.y).to eq 20
+          expect(subresource.y = 20).to eq 20
+          expect(subresource.y).to eq 20
           # expect(subresource_class.properties[:y]).not_to be_nil
         end
         it "y is not on the superclass" do
@@ -164,8 +164,8 @@ describe "Chef::Resource.property" do
         it "x is still there" do
           expect(subresource.x 10).to eq 10
           expect(subresource.x).to eq 10
-          # expect(subresource.x = 20).to eq 20
-          # expect(subresource.x).to eq 20
+          expect(subresource.x = 20).to eq 20
+          expect(subresource.x).to eq 20
           # expect(subresource_class.properties[:x]).not_to be_nil
           # expect(subresource_class.properties[:x]).not_to eq resource_class.properties[:x]
         end
@@ -190,8 +190,8 @@ describe "Chef::Resource.property" do
         it "x is still there" do
           expect(subresource.x "10").to eq "10"
           expect(subresource.x).to eq "10"
-          # expect(subresource.x = "20").to eq "20"
-          # expect(subresource.x).to eq "20"
+          expect(subresource.x = "20").to eq "20"
+          expect(subresource.x).to eq "20"
           # expect(subresource_class.properties[:x]).not_to be_nil
           # expect(subresource_class.properties[:x]).not_to eq resource_class.properties[:x]
         end

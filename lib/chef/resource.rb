@@ -774,6 +774,8 @@ class Chef
     #   property :x, String, default: 'hi'
     #
     def self.property(name, type=NULL_ARG, **options)
+      name = name.to_sym
+
       if type != NULL_ARG
         if options[:is]
           options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
@@ -781,8 +783,12 @@ class Chef
           options[:is] = type
         end
       end
-      define_method(name) do |arg=nil|
-        set_or_return(name.to_sym, arg, options)
+
+      define_method(name) do |value=nil|
+        set_or_return(name, value, options)
+      end
+      define_method("#{name}=") do |value|
+        set_or_return(name, value, options)
       end
     end
 
