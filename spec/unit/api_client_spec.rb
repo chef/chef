@@ -332,24 +332,34 @@ describe Chef::ApiClient do
     end
 
     context "and the client exists" do
+      let(:chef_rest_v0_mock) { double('chef rest root v0 object') }
+      let(:payload) {
+        {:name => "lost-my-key", :admin => false, :validator => false, :private_key => true}
+      }
+
       before do
         @api_client_without_key = Chef::ApiClient.new
         @api_client_without_key.name("lost-my-key")
-        expect(@http_client).to receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
-      end
+        allow(@api_client_without_key).to receive(:chef_rest_v0).and_return(chef_rest_v0_mock)
+        #allow(@api_client_with_key).to receive(:http_api).and_return(_api_mock)
 
+        allow(chef_rest_v0_mock).to receive(:put).with("clients/lost-my-key", payload).and_return(@api_client_with_key)
+        allow(chef_rest_v0_mock).to receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
+        allow(@http_client).to receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
+      end
 
       context "and the client exists on a Chef 11-like server" do
         before do
           @api_client_with_key = Chef::ApiClient.new
           @api_client_with_key.name("lost-my-key")
           @api_client_with_key.private_key("the new private key")
-          expect(@http_client).to receive(:put).
-            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
-            and_return(@api_client_with_key)
+          allow(@api_client_with_key).to receive(:chef_rest_v0).and_return(chef_rest_v0_mock)
         end
 
         it "returns an ApiClient with a private key" do
+          expect(chef_rest_v0_mock).to receive(:put).with("clients/lost-my-key", payload).
+                                        and_return(@api_client_with_key)
+
           response = Chef::ApiClient.reregister("lost-my-key")
           # no sane == method for ApiClient :'(
           expect(response).to eq(@api_client_without_key)
@@ -362,7 +372,7 @@ describe Chef::ApiClient do
       context "and the client exists on a Chef 10-like server" do
         before do
           @api_client_with_key = {"name" => "lost-my-key", "private_key" => "the new private key"}
-          expect(@http_client).to receive(:put).
+          expect(chef_rest_v0_mock).to receive(:put).
             with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
             and_return(@api_client_with_key)
         end

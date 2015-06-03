@@ -21,16 +21,15 @@ require 'chef/mixin/from_file'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
-require 'chef/versioned_rest'
 require 'chef/mixin/api_version_request_handling'
 require 'chef/exceptions'
+require 'chef/server_api'
 
 class Chef
   class User
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::VersionedRest
     include Chef::ApiVersionRequestHandling
 
     SUPPORTED_API_VERSIONS = [0,1]
@@ -50,11 +49,11 @@ class Chef
     end
 
     def chef_root_rest_v0
-      @chef_root_rest_v0 ||= get_versioned_rest_object(Chef::Config[:chef_server_root], "0")
+      @chef_root_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], {:api_version => "0"})
     end
 
     def chef_root_rest_v1
-      @chef_root_rest_v1 ||= get_versioned_rest_object(Chef::Config[:chef_server_root], "1")
+      @chef_root_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], {:api_version => "1"})
     end
 
     def username(arg=nil)
