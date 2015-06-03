@@ -1280,6 +1280,19 @@ class Chef
         Chef::Log.warn "#{class_name} already exists!  Deprecation class overwrites #{resource_class}"
         Chef::Resource.send(:remove_const, class_name)
       end
+
+      # In order to generate deprecation warnings when you use Chef::Resource::MyLwrp,
+      # we make a special subclass (identical in nearly all respects) of the
+      # actual LWRP.  When you say any of these, a deprecation warning will be
+      # generated:
+      #
+      # - Chef::Resource::MyLwrp.new(...)
+      # - resource.is_a?(Chef::Resource::MyLwrp)
+      # - resource.kind_of?(Chef::Resource::MyLwrp)
+      # - case resource
+      #   when Chef::Resource::MyLwrp
+      #   end
+      #
       resource_subclass = class_eval <<-EOM, __FILE__, __LINE__+1
         class Chef::Resource::#{class_name} < resource_class
           def initialize(*args, &block)
@@ -1289,7 +1302,7 @@ class Chef
           self
         end
       EOM
-      # Make case, is_a and kind_of work with the new subclass, for backcompat
+      # Make case, is_a and kind_of work with the new subclass, for backcompat.
       # Any subclass of Chef::Resource::ResourceClass is already a subclass of resource_class
       # Any subclass of resource_class is considered a subclass of Chef::Resource::ResourceClass
       resource_class.class_eval do

@@ -58,10 +58,7 @@ class Chef
           resource_class.class_from_file(filename)
 
           # Make a useful string for the class (rather than <Class:312894723894>)
-          resource_class.class_eval do
-            define_method(:kind_of?)      { |other| other.class <= resource_class }
-            define_method(:is_a?)         { |other| other.class <= resource_class }
-
+          resource_class.instance_eval do
             define_singleton_method(:to_s) do
               "LWRP resource #{resource_name} from cookbook #{cookbook_name}"
             end
@@ -73,7 +70,7 @@ class Chef
           LWRPBase.loaded_lwrps[filename] = true
 
           # Create the deprecated Chef::Resource::LwrpFoo class
-          resource_subclass = Chef::Resource.register_deprecated_lwrp_class(resource_class, convert_to_class_name(resource_name))
+          Chef::Resource.register_deprecated_lwrp_class(resource_class, convert_to_class_name(resource_name))
           resource_class
         end
 
