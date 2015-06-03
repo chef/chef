@@ -792,6 +792,17 @@ class Chef
       end
     end
 
+    #
+    # Create a lazy value for assignment to a default value.
+    #
+    # @param block The block to run when the value is retrieved.
+    #
+    # @return [Chef::DelayedEvaluator] The lazy value
+    #
+    def self.lazy(&block)
+      DelayedEvaluator.new(&block)
+    end
+
     # Set or return the list of "state attributes" implemented by the Resource
     # subclass. State attributes are attributes that describe the desired state
     # of the system, such as file permissions or ownership. In general, state

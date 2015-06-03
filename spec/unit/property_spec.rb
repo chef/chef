@@ -368,8 +368,7 @@ describe "Chef::Resource.property" do
         end
       end
 
-      # with_property ':x, default: lazy { {} }' do
-      with_property ':x, default: Chef::DelayedEvaluator.new { {} }' do
+      with_property ':x, default: lazy { {} }' do
         it "when x is not set, it returns {}" do
           expect(resource.x).to eq({})
         end
@@ -396,8 +395,7 @@ describe "Chef::Resource.property" do
         end
       end
 
-      # with_property ':x, default: lazy { blah }' do
-      with_property ':x, default: Chef::DelayedEvaluator.new { blah }' do
+      with_property ':x, default: lazy { blah }' do
         # it "x is run in context of the instance" do
         #   expect(resource.x).to eq "blah1"
         # end
@@ -411,8 +409,7 @@ describe "Chef::Resource.property" do
         end
       end
 
-      # with_property ':x, default: lazy { |x| "#{blah}#{x.blah}" }' do
-      with_property ':x, default: Chef::DelayedEvaluator.new { |x| "#{blah}#{x.blah}" }' do
+      with_property ':x, default: lazy { |x| "#{blah}#{x.blah}" }' do
         it "x is run in context of the class (where it was defined) and passed the instance" do
           expect(resource.x).to eq "classblah1"
         end
@@ -438,8 +435,7 @@ describe "Chef::Resource.property" do
         end
       end
 
-      # with_property ":x, String, default: lazy { Namer.next_index }" do
-      with_property ":x, String, default: Chef::DelayedEvaluator.new { Namer.next_index }" do
+      with_property ":x, String, default: lazy { Namer.next_index }" do
         it "when the resource is created, no error is raised" do
           resource
         end
