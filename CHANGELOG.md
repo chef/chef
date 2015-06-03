@@ -6,8 +6,8 @@
 * [**Steve Lowe**](https://github.com/SteveLowe):
   Fix copying ntfs dacl and sacl when they are nil. [pr#3066](https://github.com/chef/chef/pull/3066)
 
-* [Issue #2247](https://github.com/chef/chef/issues/2247): powershell_script returns 0 for scripts with syntax errors
-* [pr#3080](https://github.com/chef/chef/pull/3080): Issue 2247: powershell_script exit status should be nonzero for syntax errors
+* [Issue #2247](https://github.com/chef/chef/issues/2247): `powershell_script` returns 0 for scripts with syntax errors
+* [pr#3080](https://github.com/chef/chef/pull/3080): Issue 2247: `powershell_script` exit status should be nonzero for syntax errors
 * [pr#3441](https://github.com/chef/chef/pull/3441): Add `powershell_out` mixin to core chef
 * [pr#3448](https://github.com/chef/chef/pull/3448): Fix `dsc_resource` to work with wmf5 april preview
 * [pr#3392](https://github.com/chef/chef/pull/3392): Comment up `Chef::Client` and privatize/deprecate unused things
@@ -20,6 +20,7 @@
 * [pr#3442](https://github.com/chef/chef/pull/3442): Add `resource_name` to top-level Resource class to make defining resources easier.  `use_automatic_resource_name` also added, to support convention-based resource naming.
 * [pr#3447](https://github.com/chef/chef/pull/3447): Add `allowed_actions` and `default_action` to top-level Resource class.
 * [pr#3475](https://github.com/chef/chef/pull/3475): Fix `shell_out` timeouts in all package providers to respect timeout property on the resource.
+* [pr#3477](https://github.com/chef/chef/pull/3477): Update `zypper_package` to look like the rest of our package classes.
 
 ## 12.4.0
 
