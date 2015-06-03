@@ -97,43 +97,43 @@ describe "Chef::Resource.property validation" do
   end
 
   # Bare types
-  # context "bare types" do
-  #   validation_test 'String',
-  #     [ 'hi' ],
-  #     [ 10, nil ]
-  #
-  #   validation_test ':a',
-  #     [ :a ],
-  #     [ :b, nil ]
-  #
-  #   validation_test ':a, is: :b',
-  #     [ :a, :b ],
-  #     [ :c, nil ]
-  #
-  #   validation_test ':a, is: [ :b, :c ]',
-  #     [ :a, :b, :c ],
-  #     [ :d, nil ]
-  #
-  #   validation_test '[ :a, :b ], is: :c',
-  #     [ :a, :b, :c ],
-  #     [ :d, nil ]
-  #
-  #   validation_test '[ :a, :b ], is: [ :c, :d ]',
-  #     [ :a, :b, :c, :d ],
-  #     [ :e, nil ]
-  #
-  #   validation_test 'nil',
-  #     [ nil ],
-  #     [ :a ]
-  #
-  #   validation_test '[ nil ]',
-  #     [ nil ],
-  #     [ :a ]
-  #
-  #   validation_test '[]',
-  #     [ :a ],
-  #     []
-  # end
+  context "bare types" do
+    validation_test 'String',
+      [ 'hi' ],
+      [ 10, nil ]
+
+    validation_test ':a',
+      [ :a ],
+      [ :b, nil ]
+
+    validation_test ':a, is: :b',
+      [ :a, :b ],
+      [ :c, nil ]
+
+    validation_test ':a, is: [ :b, :c ]',
+      [ :a, :b, :c ],
+      [ :d, nil ]
+
+    validation_test '[ :a, :b ], is: :c',
+      [ :a, :b, :c ],
+      [ :d, nil ]
+
+    validation_test '[ :a, :b ], is: [ :c, :d ]',
+      [ :a, :b, :c, :d ],
+      [ :e, nil ]
+
+    validation_test 'nil',
+      [ nil ],
+      [ :a ]
+
+    validation_test '[ nil ]',
+      [ nil ],
+      [ :a ]
+
+    validation_test '[]',
+      [],
+      [ :a ]
+  end
 
   # is
   context "is" do
@@ -190,6 +190,10 @@ describe "Chef::Resource.property validation" do
     validation_test 'is: [ String, nil ]',
       [ 'a', nil ],
       [ :b ]
+
+    validation_test 'is: []',
+      [],
+      [ :a ]
   end
 
   # Combination
@@ -225,6 +229,10 @@ describe "Chef::Resource.property validation" do
     validation_test 'equal_to: [ nil, "a" ]',
       [ 'a', nil ],
       [ 'b' ]
+
+    validation_test 'equal_to: []',
+      [],
+      [ :a ]
   end
 
   # kind_of
@@ -248,6 +256,14 @@ describe "Chef::Resource.property validation" do
     validation_test 'kind_of: [ NilClass, String ]',
       [ nil, 'a' ],
       [ :a ]
+
+    validation_test 'kind_of: []',
+      [],
+      [ :a ]
+
+    validation_test 'kind_of: nil',
+    [],
+    [ :a ]
   end
 
   # regex
@@ -263,6 +279,14 @@ describe "Chef::Resource.property validation" do
     validation_test 'regex: [ /z/, /abc/ ]',
       [ 'xabcy', 'aza' ],
       [ 'gbh', 123, nil ]
+
+    validation_test 'regex: []',
+      [],
+      [ :a ]
+
+    validation_test 'regex: nil',
+      [],
+      [ :a ]
   end
 
   # callbacks
@@ -278,6 +302,10 @@ describe "Chef::Resource.property validation" do
     validation_test 'callbacks: { "a" => proc { |x| x.nil? } }',
       [ nil ],
       [ 'a' ]
+
+    validation_test 'callbacks: {}',
+      [ :a ],
+      []
   end
 
   # respond_to
@@ -301,6 +329,14 @@ describe "Chef::Resource.property validation" do
     validation_test 'respond_to: [ :to_s, :split ]',
       [ 'hi' ],
       [ 1, nil ]
+
+    validation_test 'respond_to: []',
+      [ :a ],
+      []
+
+    validation_test 'respond_to: nil',
+      [ :a ],
+      []
   end
 
   context "cannot_be" do
@@ -327,6 +363,14 @@ describe "Chef::Resource.property validation" do
     validation_test 'cannot_be: [ :empty, :nil, :blahblah ]',
       [ 1, [1,2], { a: 10 } ],
       [ [], nil ]
+
+    validation_test 'cannot_be: []',
+      [ :a ],
+      []
+
+    validation_test 'cannot_be: nil',
+      [ :a ],
+      []
   end
 
   context "required" do

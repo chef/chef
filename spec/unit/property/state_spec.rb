@@ -143,8 +143,7 @@ describe "Chef::Resource#identity and #state" do
           #   end
           # end
 
-          # with_property ":y, String" do
-          with_property ":y, kind_of: String" do
+          with_property ":y, String" do
             context "With identity_attr :y on the subclass" do
               before do
                 subresource_class.class_eval do

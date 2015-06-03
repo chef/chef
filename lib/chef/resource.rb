@@ -719,6 +719,8 @@ class Chef
     # defined by this resource, this will *override* the previous value.
     #
     # @param name [Symbol] The name of the property.
+    # @param type [Object,Array<Object>] The type(s) of this property.
+    #   If present, this is prepended to the `is` validation option.
     # @param options [Hash<Symbol,Object>] Validation options.
     #   @option options [Object,Array] :is An object, or list of
     #     objects, that must match the value using Ruby's `===` operator
@@ -759,15 +761,26 @@ class Chef
     #     be run in the context of the instance (and able to access other
     #     properties).
     #
-    # @return [Chef::Resource::PropertyType] The property type.
-    #
-    # @example With nothing
+    # @example Bare property
     #   property :x
     #
-    # @example With options
+    # @example With just a type
+    #   property :x, String
+    #
+    # @example With just options
     #   property :x, default: 'hi'
     #
-    def self.property(name, **options)
+    # @example With type and options
+    #   property :x, String, default: 'hi'
+    #
+    def self.property(name, type=NULL_ARG, **options)
+      if type != NULL_ARG
+        if options[:is]
+          options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
+        else
+          options[:is] = type
+        end
+      end
       define_method(name) do |arg=nil|
         set_or_return(name.to_sym, arg, options)
       end

@@ -103,8 +103,7 @@ describe "Chef::Resource.property" do
     # end
   end
 
-  # with_property ":x, Integer"
-  with_property ':x, kind_of: Integer' do
+  with_property ":x, Integer" do
     context "and subclass" do
       let(:subresource_class) do
         new_resource_name = self.class.new_resource_name
@@ -181,12 +180,10 @@ describe "Chef::Resource.property" do
         end
       end
 
-      # context "with property :x, String on the subclass" do
-      context "with property :x, kind_of: String on the subclass" do
+      context "with property :x, String on the subclass" do
         before do
           subresource_class.class_eval do
-            # property :x, String
-            property :x, kind_of: String
+            property :x, String
           end
         end
 
@@ -428,8 +425,7 @@ describe "Chef::Resource.property" do
     end
 
     context "validation of defaults" do
-      #with_property ':x, String, default: 10' do
-      with_property ':x, default: 10, kind_of: String' do
+      with_property ':x, String, default: 10' do
         it "when the resource is created, no error is raised" do
           resource
         end
@@ -443,7 +439,7 @@ describe "Chef::Resource.property" do
       end
 
       # with_property ":x, String, default: lazy { Namer.next_index }" do
-      with_property ":x, default: Chef::DelayedEvaluator.new { Namer.next_index }, kind_of: String" do
+      with_property ":x, String, default: Chef::DelayedEvaluator.new { Namer.next_index }" do
         it "when the resource is created, no error is raised" do
           resource
         end
@@ -639,8 +635,7 @@ describe "Chef::Resource.property" do
     #   end
     # end
 
-    # with_property ':x, String' do
-    with_property ':x, kind_of: String' do
+    with_property ':x, String' do
       it "lazy values are not validated on set" do
         resource.x lazy { Namer.next_index }
         expect(Namer.current_index).to eq 0
