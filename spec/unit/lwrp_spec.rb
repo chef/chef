@@ -160,8 +160,8 @@ describe "LWRP" do
       end
     end
 
-    it "should load the resource into a properly-named class and emit a warning about deprecation when accessing it" do
-      expect { Chef::Resource::LwrpFoo }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+    it "should load the resource into a properly-named class and emit a warning when it is initialized" do
+      expect { Chef::Resource::LwrpFoo.new('hi') }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
 
     it "should be resolvable with Chef::ResourceResolver.resolve(:lwrp_foo)" do
@@ -209,6 +209,127 @@ describe "LWRP" do
       expect(cls.node).to be_kind_of(Chef::Node)
       expect(cls.run_context).to be_kind_of(Chef::RunContext)
       expect(cls.node[:penguin_name]).to eql("jackass")
+    end
+
+    context "resource class created" do
+      before do
+        @old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      end
+      after do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = @old_treat_deprecation_warnings_as_errors
+      end
+
+      it "should load the resource into a properly-named class" do
+        expect(Chef::Resource::LwrpFoo).to be_kind_of(Class)
+        expect(Chef::Resource::LwrpFoo <= Chef::Resource::LWRPBase).to be_truthy
+      end
+
+      it "get_lwrp(:lwrp_foo).new is a Chef::Resource::LwrpFoo" do
+        lwrp = get_lwrp(:lwrp_foo).new('hi')
+        expect(lwrp.kind_of?(Chef::Resource::LwrpFoo)).to be_truthy
+        expect(lwrp.is_a?(Chef::Resource::LwrpFoo)).to be_truthy
+        expect(get_lwrp(:lwrp_foo) === lwrp).to be_truthy
+        expect(Chef::Resource::LwrpFoo === lwrp).to be_truthy
+      end
+
+      it "Chef::Resource::LwrpFoo.new is a get_lwrp(:lwrp_foo)" do
+        lwrp = Chef::Resource::LwrpFoo.new('hi')
+        expect(lwrp.kind_of?(get_lwrp(:lwrp_foo))).to be_truthy
+        expect(lwrp.is_a?(get_lwrp(:lwrp_foo))).to be_truthy
+        expect(get_lwrp(:lwrp_foo) === lwrp).to be_truthy
+        expect(Chef::Resource::LwrpFoo === lwrp).to be_truthy
+      end
+
+      it "works even if LwrpFoo exists in the top level" do
+        module ::LwrpFoo
+        end
+        expect(Chef::Resource::LwrpFoo).not_to eq(::LwrpFoo)
+      end
+
+      context "with a subclass of get_lwrp(:lwrp_foo)" do
+        let(:subclass) do
+          Class.new(get_lwrp(:lwrp_foo))
+        end
+
+        it "subclass.new is a subclass" do
+          lwrp = subclass.new('hi')
+          expect(lwrp.kind_of?(subclass)).to be_truthy
+          expect(lwrp.is_a?(subclass)).to be_truthy
+          expect(subclass === lwrp).to be_truthy
+          expect(lwrp.class === subclass)
+        end
+        it "subclass.new is a Chef::Resource::LwrpFoo" do
+          lwrp = subclass.new('hi')
+          expect(lwrp.kind_of?(Chef::Resource::LwrpFoo)).to be_truthy
+          expect(lwrp.is_a?(Chef::Resource::LwrpFoo)).to be_truthy
+          expect(Chef::Resource::LwrpFoo === lwrp).to be_truthy
+          expect(lwrp.class === Chef::Resource::LwrpFoo)
+        end
+        it "subclass.new is a get_lwrp(:lwrp_foo)" do
+          lwrp = subclass.new('hi')
+          expect(lwrp.kind_of?(get_lwrp(:lwrp_foo))).to be_truthy
+          expect(lwrp.is_a?(get_lwrp(:lwrp_foo))).to be_truthy
+          expect(get_lwrp(:lwrp_foo) === lwrp).to be_truthy
+          expect(lwrp.class === get_lwrp(:lwrp_foo))
+        end
+        it "Chef::Resource::LwrpFoo.new is *not* a subclass" do
+          lwrp = Chef::Resource::LwrpFoo.new('hi')
+          expect(lwrp.kind_of?(subclass)).to be_falsey
+          expect(lwrp.is_a?(subclass)).to be_falsey
+          expect(subclass === lwrp.class).to be_falsey
+          expect(subclass === Chef::Resource::LwrpFoo).to be_falsey
+        end
+        it "get_lwrp(:lwrp_foo).new is *not* a subclass" do
+          lwrp = get_lwrp(:lwrp_foo).new('hi')
+          expect(lwrp.kind_of?(subclass)).to be_falsey
+          expect(lwrp.is_a?(subclass)).to be_falsey
+          expect(subclass === lwrp.class).to be_falsey
+          expect(subclass === get_lwrp(:lwrp_foo)).to be_falsey
+        end
+      end
+
+      context "with a subclass of Chef::Resource::LwrpFoo" do
+        let(:subclass) do
+          Class.new(Chef::Resource::LwrpFoo)
+        end
+
+        it "subclass.new is a subclass" do
+          lwrp = subclass.new('hi')
+          expect(lwrp.kind_of?(subclass)).to be_truthy
+          expect(lwrp.is_a?(subclass)).to be_truthy
+          expect(subclass === lwrp).to be_truthy
+          expect(lwrp.class === subclass)
+        end
+        it "subclass.new is a Chef::Resource::LwrpFoo" do
+          lwrp = subclass.new('hi')
+          expect(lwrp.kind_of?(Chef::Resource::LwrpFoo)).to be_truthy
+          expect(lwrp.is_a?(Chef::Resource::LwrpFoo)).to be_truthy
+          expect(Chef::Resource::LwrpFoo === lwrp).to be_truthy
+          expect(lwrp.class === Chef::Resource::LwrpFoo)
+        end
+        it "subclass.new is a get_lwrp(:lwrp_foo)" do
+          lwrp = subclass.new('hi')
+          expect(lwrp.kind_of?(get_lwrp(:lwrp_foo))).to be_truthy
+          expect(lwrp.is_a?(get_lwrp(:lwrp_foo))).to be_truthy
+          expect(get_lwrp(:lwrp_foo) === lwrp).to be_truthy
+          expect(lwrp.class === get_lwrp(:lwrp_foo))
+        end
+        it "Chef::Resource::LwrpFoo.new is *not* a subclass" do
+          lwrp = Chef::Resource::LwrpFoo.new('hi')
+          expect(lwrp.kind_of?(subclass)).to be_falsey
+          expect(lwrp.is_a?(subclass)).to be_falsey
+          expect(subclass === lwrp.class).to be_falsey
+          expect(subclass === Chef::Resource::LwrpFoo).to be_falsey
+        end
+        it "get_lwrp(:lwrp_foo).new is *not* a subclass" do
+          lwrp = get_lwrp(:lwrp_foo).new('hi')
+          expect(lwrp.kind_of?(subclass)).to be_falsey
+          expect(lwrp.is_a?(subclass)).to be_falsey
+          expect(subclass === lwrp.class).to be_falsey
+          expect(subclass === get_lwrp(:lwrp_foo)).to be_falsey
+        end
+      end
     end
 
     context "resource_name" do
@@ -355,7 +476,7 @@ describe "LWRP" do
       provider.action_twiddle_thumbs
     end
 
-    context "resource class created" do
+    context "provider class created" do
       before do
         @old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
