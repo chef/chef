@@ -8,17 +8,18 @@
 
 * [Issue #2247](https://github.com/chef/chef/issues/2247): powershell_script returns 0 for scripts with syntax errors
 * [pr#3080](https://github.com/chef/chef/pull/3080): Issue 2247: powershell_script exit status should be nonzero for syntax errors
-* [pr#3441](https://github.com/chef/chef/pull/3441): Add powershell_out mixin to core chef
-* [pr#3448](https://github.com/chef/chef/pull/3448): Fix dsc_resource to work with wmf5 april preview
-* [pr#3392](https://github.com/chef/chef/pull/3392): Comment up Chef::Client and privatize/deprecate unused things
-* [pr#3419](https://github.com/chef/chef/pull/3419): Fix cli issue with chef_repo_path when ENV variable is unset
+* [pr#3441](https://github.com/chef/chef/pull/3441): Add `powershell_out` mixin to core chef
+* [pr#3448](https://github.com/chef/chef/pull/3448): Fix `dsc_resource` to work with wmf5 april preview
+* [pr#3392](https://github.com/chef/chef/pull/3392): Comment up `Chef::Client` and privatize/deprecate unused things
+* [pr#3419](https://github.com/chef/chef/pull/3419): Fix cli issue with `chef_repo_path` when ENV variable is unset
 * [pr#3358](https://github.com/chef/chef/pull/3358): Separate audit and converge failures
 * [pr#3431](https://github.com/chef/chef/pull/3431): Fix backups on windows for the file resource
 * [pr#3397](https://github.com/chef/chef/pull/3397): Validate owner exists in directory resources
 * [pr#3418](https://github.com/chef/chef/pull/3418): Add `shell_out` mixin to Chef::Resource class for use in `not_if`/`only_if` conditionals, etc.
 * [pr#3406](https://github.com/chef/chef/pull/3406): Add wide-char 'Environment' to `broadcast_env_change` mixin for setting windows environment variables
-* [pr#3442](https://github.com/chef/chef/pull/3442): Add resource_name to top-level Resource class to make defining resources easier.  `use_automatic_resource_name` also added, to support convention-based resource naming.
-* [pr#3447](https://github.com/chef/chef/pull/3447): Add allowed_actions and default_action to top-level Resource class.
+* [pr#3442](https://github.com/chef/chef/pull/3442): Add `resource_name` to top-level Resource class to make defining resources easier.  `use_automatic_resource_name` also added, to support convention-based resource naming.
+* [pr#3447](https://github.com/chef/chef/pull/3447): Add `allowed_actions` and `default_action` to top-level Resource class.
+* [pr#3475](https://github.com/chef/chef/pull/3475): Fix `shell_out` timeouts in all package providers to respect timeout property on the resource.
 
 ## 12.4.0
 

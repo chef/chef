@@ -51,7 +51,7 @@ ERR
     end
 
     it "should run pacman query with the package name" do
-      expect(@provider).to receive(:shell_out).with("pacman -Qi #{@new_resource.package_name}").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("pacman -Qi #{@new_resource.package_name}", {timeout: 900}).and_return(@status)
       @provider.load_current_resource
     end
 
@@ -152,12 +152,12 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "install_package" do
     it "should run pacman install with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano", {timeout: 900})
       @provider.install_package("nano", "1.0")
     end
 
     it "should run pacman install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano", {timeout: 900})
       allow(@new_resource).to receive(:options).and_return("--debug")
 
       @provider.install_package("nano", "1.0")
@@ -173,12 +173,12 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "remove_package" do
     it "should run pacman remove with the package name" do
-      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar nano", {timeout: 900})
       @provider.remove_package("nano", "1.0")
     end
 
     it "should run pacman remove with the package name and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar --debug nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar --debug nano", {timeout: 900})
       allow(@new_resource).to receive(:options).and_return("--debug")
 
       @provider.remove_package("nano", "1.0")

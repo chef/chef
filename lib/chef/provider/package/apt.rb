@@ -62,7 +62,7 @@ class Chef
           installed_version  = nil
           candidate_version  = nil
 
-          shell_out!("apt-cache#{expand_options(default_release_options)} policy #{pkg}", {:timeout=>900}).stdout.each_line do |line|
+          shell_out_with_timeout!("apt-cache#{expand_options(default_release_options)} policy #{pkg}").stdout.each_line do |line|
             case line
             when /^\s{2}Installed: (.+)$/
               installed_version = $1
@@ -78,7 +78,7 @@ class Chef
               if candidate_version == '(none)'
                 # This may not be an appropriate assumption, but it shouldn't break anything that already worked -- btm
                 is_virtual_package = true
-                showpkg = shell_out!("apt-cache showpkg #{pkg}", {:timeout => 900}).stdout
+                showpkg = shell_out_with_timeout!("apt-cache showpkg #{pkg}").stdout
                 providers = Hash.new
                 showpkg.rpartition(/Reverse Provides: ?#{$/}/)[2].each_line do |line|
                   provider, version = line.split
@@ -175,7 +175,7 @@ class Chef
         # interactive prompts. Command is run with default localization rather
         # than forcing locale to "C", so command output may not be stable.
         def run_noninteractive(command)
-          shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil }, :timeout => @new_resource.timeout)
+          shell_out_with_timeout!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
         end
 
       end
