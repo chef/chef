@@ -7,6 +7,7 @@ driver:
   region: "us-west-2"
   availability_zone: "us-west-2a"
   security_group_ids: ["travis-ci"]
+  instance_type: "m3.medium"
 
 provisioner:
   name: chef_github
