@@ -652,8 +652,7 @@ describe "Chef::Resource.property" do
       end
     end
 
-    # with_property ':x, is: proc { |v| Namer.next_index; true }' do
-    with_property ':x, callbacks: { "a" => proc { |v| Namer.next_index; true } }' do
+    with_property ':x, is: proc { |v| Namer.next_index; true }' do
       it "lazy values are validated on each access" do
         resource.x lazy { Namer.next_index }
         expect(resource.x).to eq 1
@@ -730,8 +729,7 @@ describe "Chef::Resource.property" do
   # end
 
   context "Chef::Resource::PropertyType validation" do
-    # with_property ':x, is: proc { |v| Namer.next_index; v.is_a?(Integer) }' do
-    with_property ':x, callbacks: { "a" => proc { |v| Namer.next_index; v.is_a?(Integer) } }' do
+    with_property ':x, is: proc { |v| Namer.next_index; v.is_a?(Integer) }' do
       it "validation runs on set" do
         expect(resource.x 10).to eq 10
         expect(Namer.current_index).to eq 1

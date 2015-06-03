@@ -720,6 +720,9 @@ class Chef
     #
     # @param name [Symbol] The name of the property.
     # @param options [Hash<Symbol,Object>] Validation options.
+    #   @option options [Object,Array] :is An object, or list of
+    #     objects, that must match the value using Ruby's `===` operator
+    #     (`options[:is].any? { |v| v === value }`).
     #   @option options [Object,Array] :equal_to An object, or list
     #     of objects, that must be equal to the value using Ruby's `==`
     #     operator (`options[:is].any? { |v| v == value }`)

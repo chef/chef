@@ -136,61 +136,61 @@ describe "Chef::Resource.property validation" do
   # end
 
   # is
-  # context "is" do
-  #   # Class
-  #   validation_test 'is: String',
-  #     [ 'a', '' ],
-  #     [ nil, :a, 1 ]
-  #
-  #   # Value
-  #   validation_test 'is: :a',
-  #     [ :a ],
-  #     [ :b, nil ]
-  #
-  #   validation_test 'is: [ :a, :b ]',
-  #     [ :a, :b ],
-  #     [ [ :a, :b ], nil ]
-  #
-  #   validation_test 'is: [ [ :a, :b ] ]',
-  #     [ [ :a, :b ] ],
-  #     [ :a, :b, nil ]
-  #
-  #   # Regex
-  #   validation_test 'is: /abc/',
-  #     [ 'abc', 'wowabcwow' ],
-  #     [ '', 'abac', nil ]
-  #
-  #   # PropertyType
-  #   validation_test 'is: PropertyType.new(is: :a)',
-  #     [ :a ],
-  #     [ :b, nil ]
-  #
-  #   # RSpec Matcher
-  #   class Globalses
-  #     extend RSpec::Matchers
-  #   end
-  #
-  #   validation_test "is: Globalses.eq(10)",
-  #     [ 10 ],
-  #     [ 1, nil ]
-  #
-  #   # Proc
-  #   validation_test 'is: proc { |x| x }',
-  #     [ true, 1 ],
-  #     [ false, nil ]
-  #
-  #   validation_test 'is: proc { |x| x > blah }',
-  #     [ 10 ],
-  #     [ -1 ]
-  #
-  #   validation_test 'is: nil',
-  #     [ nil ],
-  #     [ 'a' ]
-  #
-  #   validation_test 'is: [ String, nil ]',
-  #     [ 'a', nil ],
-  #     [ :b ]
-  # end
+  context "is" do
+    # Class
+    validation_test 'is: String',
+      [ 'a', '' ],
+      [ nil, :a, 1 ]
+
+    # Value
+    validation_test 'is: :a',
+      [ :a ],
+      [ :b, nil ]
+
+    validation_test 'is: [ :a, :b ]',
+      [ :a, :b ],
+      [ [ :a, :b ], nil ]
+
+    validation_test 'is: [ [ :a, :b ] ]',
+      [ [ :a, :b ] ],
+      [ :a, :b, nil ]
+
+    # Regex
+    validation_test 'is: /abc/',
+      [ 'abc', 'wowabcwow' ],
+      [ '', 'abac', nil ]
+
+    # PropertyType
+    # validation_test 'is: PropertyType.new(is: :a)',
+    #   [ :a ],
+    #   [ :b, nil ]
+
+    # RSpec Matcher
+    class Globalses
+      extend RSpec::Matchers
+    end
+
+    validation_test "is: Globalses.eq(10)",
+      [ 10 ],
+      [ 1, nil ]
+
+    # Proc
+    validation_test 'is: proc { |x| x }',
+      [ true, 1 ],
+      [ false, nil ]
+
+    validation_test 'is: proc { |x| x > blah }',
+      [ 10 ],
+      [ -1 ]
+
+    validation_test 'is: nil',
+      [ nil ],
+      [ 'a' ]
+
+    validation_test 'is: [ String, nil ]',
+      [ 'a', nil ],
+      [ :b ]
+  end
 
   # Combination
   context "combination" do
