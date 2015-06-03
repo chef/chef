@@ -407,7 +407,7 @@ describe "Chef::Resource.property validation" do
     end
 
     # with_property ':x, name_property: true, required: true' do
-    with_property ':x, required: true, name_attribute: true' do
+    with_property ':x, required: true, name_property: true' do
       it "if x is not specified, retrieval fails" do
         expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
       end

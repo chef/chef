@@ -750,8 +750,7 @@ describe "Chef::Resource.property" do
     end
   end
 
-  # [ 'name_attribute', 'name_property' ].each do |name|
-  name = 'name_attribute'
+  [ 'name_attribute', 'name_property' ].each do |name|
     context "Chef::Resource::PropertyType##{name}" do
       with_property ":x, #{name}: true" do
         it "defaults x to resource.name" do
@@ -783,5 +782,5 @@ describe "Chef::Resource.property" do
       #   end
       # end
     end
-  # end
+  end
 end

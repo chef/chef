@@ -83,7 +83,7 @@ class Chef
 
       def set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
-        if arg == nil && self.instance_variable_defined?(iv_symbol) == true
+        if arg.nil? && self.instance_variable_defined?(iv_symbol) == true
           ivar = self.instance_variable_get(iv_symbol)
           if(ivar.is_a?(DelayedEvaluator))
             validate({ symbol => ivar.call }, { symbol => validation })[symbol]
@@ -196,7 +196,7 @@ class Chef
       # Assign a default value to a parameter.
       def _pv_default(opts, key, default_value)
         value = _pv_opts_lookup(opts, key)
-        if value == nil
+        if value.nil?
           opts[key] = default_value
         end
       end
@@ -204,7 +204,7 @@ class Chef
       # Check a parameter against a regular expression.
       def _pv_regex(opts, key, regex)
         value = _pv_opts_lookup(opts, key)
-        if value != nil
+        if !value.nil?
           passes = false
           Array(regex).each do |r|
             if value != nil
@@ -233,13 +233,14 @@ class Chef
       end
 
       # Allow a parameter to default to @name
-      def _pv_name_attribute(opts, key, is_name_attribute=true)
-        if is_name_attribute
-          if opts[key] == nil
+      def _pv_name_property(opts, key, is_name_property=true)
+        if is_name_property
+          if opts[key].nil?
             opts[key] = self.instance_variable_get("@name")
           end
         end
       end
+      alias :_pv_name_attribute :_pv_name_property
 
       # Compare the way "case" would (i.e. `===`)
       def _pv_is(opts, key, to_be)
