@@ -319,6 +319,10 @@ describe "Chef::Resource.property" do
       it "when x is not set, it is not included in state" do
         expect(resource.state).to eq({})
       end
+      it "when x is set to nil, it returns nil" do
+        resource.instance_eval { @x = nil }
+        expect(resource.x).to be_nil
+      end
 
       context "With a subclass" do
         let(:subresource_class) do

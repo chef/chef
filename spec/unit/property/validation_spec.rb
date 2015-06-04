@@ -84,8 +84,8 @@ describe "Chef::Resource.property validation" do
       failure_values.each do |v|
         it "value #{v.inspect} is invalid" do
           expect { resource.x v }.to raise_error Chef::Exceptions::ValidationFailed
-          # resource.instance_eval { @x = 'default' }
-          # expect { resource.x v }.to raise_error Chef::Exceptions::ValidationFailed
+          resource.instance_eval { @x = 'default' }
+          expect { resource.x v }.to raise_error Chef::Exceptions::ValidationFailed
         end
       end
       getter_values.each do |v|
@@ -180,32 +180,37 @@ describe "Chef::Resource.property validation" do
   context "bare types" do
     validation_test 'String',
       [ 'hi' ],
-      [ 10, nil ]
+      [ 10 ],
+      [ nil ]
 
     validation_test ':a',
       [ :a ],
-      [ :b, nil ]
+      [ :b ],
+      [ nil ]
 
     validation_test ':a, is: :b',
       [ :a, :b ],
-      [ :c, nil ]
+      [ :c ],
+      [ nil ]
 
     validation_test ':a, is: [ :b, :c ]',
       [ :a, :b, :c ],
-      [ :d, nil ]
+      [ :d ],
+      [ nil ]
 
     validation_test '[ :a, :b ], is: :c',
       [ :a, :b, :c ],
-      [ :d, nil ]
+      [ :d ],
+      [ nil ]
 
     validation_test '[ :a, :b ], is: [ :c, :d ]',
       [ :a, :b, :c, :d ],
-      [ :e, nil ]
+      [ :e ],
+      [ nil ]
 
     validation_test 'nil',
       [ nil ],
-      [ :a ],
-      []
+      [ :a ]
 
     validation_test '[ nil ]',
       [ nil ],
@@ -213,7 +218,8 @@ describe "Chef::Resource.property validation" do
 
     validation_test '[]',
       [],
-      [ :a, nil ]
+      [ :a ],
+      [ nil ]
   end
 
   # is
@@ -221,25 +227,30 @@ describe "Chef::Resource.property validation" do
     # Class
     validation_test 'is: String',
       [ 'a', '' ],
-      [ nil, :a, 1 ]
+      [ :a, 1 ],
+      [ nil ]
 
     # Value
     validation_test 'is: :a',
       [ :a ],
-      [ :b, nil ]
+      [ :b ],
+      [ nil ]
 
     validation_test 'is: [ :a, :b ]',
       [ :a, :b ],
-      [ [ :a, :b ], nil ]
+      [ [ :a, :b ] ],
+      [ nil ]
 
     validation_test 'is: [ [ :a, :b ] ]',
       [ [ :a, :b ] ],
-      [ :a, :b, nil ]
+      [ :a, :b ],
+      [ nil ]
 
     # Regex
     validation_test 'is: /abc/',
       [ 'abc', 'wowabcwow' ],
-      [ '', 'abac', nil ]
+      [ '', 'abac' ],
+      [ nil ]
 
     # PropertyType
     # validation_test 'is: PropertyType.new(is: :a)',
@@ -253,12 +264,14 @@ describe "Chef::Resource.property validation" do
 
     validation_test "is: Globalses.eq(10)",
       [ 10 ],
-      [ 1, nil ]
+      [ 1 ],
+      [ nil ]
 
     # Proc
     validation_test 'is: proc { |x| x }',
       [ true, 1 ],
-      [ false, nil ]
+      [ false ],
+      [ nil ]
 
     validation_test 'is: proc { |x| x > blah }',
       [ 10 ],
@@ -274,7 +287,8 @@ describe "Chef::Resource.property validation" do
 
     validation_test 'is: []',
       [],
-      [ :a, nil ]
+      [ :a ],
+      [ nil ]
   end
 
   # Combination

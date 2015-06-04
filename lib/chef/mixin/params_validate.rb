@@ -87,34 +87,39 @@ class Chef
         iv_symbol = "@#{symbol.to_s}".to_sym
 
         # If the user passed NOT_PASSED, or passed nil, then this is a get.
-        case value
-        when NOT_PASSED
-          is_get = true
-          value = nil
-        when nil
-          is_get = true unless explicitly_allows_nil?(symbol, validation)
-        end
+        if value == NOT_PASSED || (value.nil? && !explicitly_allows_nil?(symbol, validation))
 
-        if self.instance_variable_defined?(iv_symbol) && is_get
-          value = self.instance_variable_get(iv_symbol)
-          if value.is_a?(DelayedEvaluator)
-            validate({ symbol => value.call }, { symbol => validation })[symbol]
+          # Get the value if there is one
+          if self.instance_variable_defined?(iv_symbol)
+            value = self.instance_variable_get(iv_symbol)
+            if value.is_a?(DelayedEvaluator)
+              value = validate({ symbol => value.call }, { symbol => validation })[symbol]
+            end
+
+          # Get the default value
           else
-            value
-          end
-        else
-          if !value.is_a?(DelayedEvaluator)
-            value = validate({ symbol => value }, { symbol => validation })[symbol]
-
+            value = validate({}, { symbol => validation })[symbol]
             # Handle the case where the "default" was a DelayedEvaluator. In
             # this case, the block yields an optional parameter of +self+,
             # which is the equivalent of "new_resource"
             if value.is_a?(DelayedEvaluator)
               value = value.call(self)
             end
+
+            # Defaults are presently "stickily" set on the instance
+            self.instance_variable_set(iv_symbol, value)
           end
+
+        # Set the value
+        else
+          unless value.is_a?(DelayedEvaluator)
+            value = validate({ symbol => value }, { symbol => validation })[symbol]
+          end
+
           self.instance_variable_set(iv_symbol, value)
         end
+
+        value
       end
 
       private
