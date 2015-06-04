@@ -252,6 +252,7 @@ class Chef
 
       # Compare the way "case" would (i.e. `===`)
       def _pv_is(opts, key, to_be, raise_error: true)
+        return true if !opts.has_key?(key.to_s) && !opts.has_key?(key.to_sym)
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)
         to_be.each do |tb|

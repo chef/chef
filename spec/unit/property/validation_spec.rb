@@ -74,6 +74,9 @@ describe "Chef::Resource.property validation" do
 
   def self.validation_test(validation, success_values, failure_values, getter_values=[], *tags)
     with_property ":x, #{validation}", *tags do
+      it "gets nil when retrieving the initial (non-set) value" do
+        expect(resource.x).to be_nil
+      end
       success_values.each do |v|
         it "value #{v.inspect} is valid" do
           resource.instance_eval { @x = 'default' }
