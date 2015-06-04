@@ -617,24 +617,24 @@ describe "Chef::Resource.property" do
       end
     end
 
-    # with_property ':x, coerce: proc { |v| "#{v}#{Namer.next_index}" }' do
-    #   it "lazy values are not coerced on set" do
-    #     resource.x lazy { Namer.next_index }
-    #     expect(Namer.current_index).to eq 0
-    #   end
-    #   it "lazy values are coerced on get" do
-    #     resource.x lazy { Namer.next_index }
-    #     expect(resource.x).to eq "12"
-    #     expect(Namer.current_index).to eq 2
-    #   end
-    #   it "lazy values are coerced on each access" do
-    #     resource.x lazy { Namer.next_index }
-    #     expect(resource.x).to eq "12"
-    #     expect(Namer.current_index).to eq 2
-    #     expect(resource.x).to eq "34"
-    #     expect(Namer.current_index).to eq 4
-    #   end
-    # end
+    with_property ':x, coerce: proc { |v| "#{v}#{Namer.next_index}" }' do
+      it "lazy values are not coerced on set" do
+        resource.x lazy { Namer.next_index }
+        expect(Namer.current_index).to eq 0
+      end
+      it "lazy values are coerced on get" do
+        resource.x lazy { Namer.next_index }
+        expect(resource.x).to eq "12"
+        expect(Namer.current_index).to eq 2
+      end
+      it "lazy values are coerced on each access" do
+        resource.x lazy { Namer.next_index }
+        expect(resource.x).to eq "12"
+        expect(Namer.current_index).to eq 2
+        expect(resource.x).to eq "34"
+        expect(Namer.current_index).to eq 4
+      end
+    end
 
     with_property ':x, String' do
       it "lazy values are not validated on set" do
@@ -658,71 +658,71 @@ describe "Chef::Resource.property" do
       end
     end
 
-    # with_property ':x, Integer, coerce: proc { |v| "#{v}#{Namer.next_index}" }' do
-    #   it "lazy values are not validated or coerced on set" do
-    #     resource.x lazy { Namer.next_index }
-    #     expect(Namer.current_index).to eq 0
-    #   end
-    #   it "lazy values are coerced before being validated, which fails" do
-    #     resource.x lazy { Namer.next_index }
-    #     expect(Namer.current_index).to eq 0
-    #     expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
-    #     expect(Namer.current_index).to eq 2
-    #   end
-    # end
-    #
-    # with_property ':x, coerce: proc { |v| "#{v}#{Namer.next_index}" }, is: proc { |v| Namer.next_index; true }' do
-    #   it "lazy values are coerced and validated exactly once" do
-    #     resource.x lazy { Namer.next_index }
-    #     expect(resource.x).to eq "12"
-    #     expect(Namer.current_index).to eq 3
-    #     expect(resource.x).to eq "45"
-    #     expect(Namer.current_index).to eq 6
-    #   end
-    # end
-    #
-    # with_property ':x, String, coerce: proc { |v| "#{v}#{Namer.next_index}" }' do
-    #   it "lazy values are coerced before being validated, which succeeds" do
-    #     resource.x lazy { Namer.next_index }
-    #     expect(resource.x).to eq "12"
-    #     expect(Namer.current_index).to eq 2
-    #   end
-    # end
+    with_property ':x, Integer, coerce: proc { |v| "#{v}#{Namer.next_index}" }' do
+      it "lazy values are not validated or coerced on set" do
+        resource.x lazy { Namer.next_index }
+        expect(Namer.current_index).to eq 0
+      end
+      it "lazy values are coerced before being validated, which fails" do
+        resource.x lazy { Namer.next_index }
+        expect(Namer.current_index).to eq 0
+        expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+        expect(Namer.current_index).to eq 2
+      end
+    end
+
+    with_property ':x, coerce: proc { |v| "#{v}#{Namer.next_index}" }, is: proc { |v| Namer.next_index; true }' do
+      it "lazy values are coerced and validated exactly once" do
+        resource.x lazy { Namer.next_index }
+        expect(resource.x).to eq "12"
+        expect(Namer.current_index).to eq 3
+        expect(resource.x).to eq "45"
+        expect(Namer.current_index).to eq 6
+      end
+    end
+
+    with_property ':x, String, coerce: proc { |v| "#{v}#{Namer.next_index}" }' do
+      it "lazy values are coerced before being validated, which succeeds" do
+        resource.x lazy { Namer.next_index }
+        expect(resource.x).to eq "12"
+        expect(Namer.current_index).to eq 2
+      end
+    end
   end
 
-  # context "Chef::Resource::PropertyType#coerce" do
-  #   with_property ':x, coerce: proc { |v| "#{v}#{Namer.next_index}" }' do
-  #     it "coercion runs on set" do
-  #       expect(resource.x 10).to eq "101"
-  #       expect(Namer.current_index).to eq 1
-  #     end
-  #     it "coercion sets the value (and coercion does not run on get)" do
-  #       expect(resource.x 10).to eq "101"
-  #       expect(resource.x).to eq "101"
-  #       expect(Namer.current_index).to eq 1
-  #     end
-  #     it "coercion runs each time set happens" do
-  #       expect(resource.x 10).to eq "101"
-  #       expect(Namer.current_index).to eq 1
-  #       expect(resource.x 10).to eq "102"
-  #       expect(Namer.current_index).to eq 2
-  #     end
-  #   end
-  #   with_property ':x, coerce: proc { |x| Namer.next_index; raise "hi" if x == 10; x }, is: proc { |x| Namer.next_index; x != 10 }' do
-  #     it "failed coercion fails to set the value" do
-  #       resource.x 20
-  #       expect(resource.x).to eq 20
-  #       expect(Namer.current_index).to eq 2
-  #       expect { resource.x 10 }.to raise_error 'hi'
-  #       expect(resource.x).to eq 20
-  #       expect(Namer.current_index).to eq 3
-  #     end
-  #     it "validation does not run if coercion fails" do
-  #       expect { resource.x 10 }.to raise_error 'hi'
-  #       expect(Namer.current_index).to eq 1
-  #     end
-  #   end
-  # end
+  context "Chef::Resource::PropertyType#coerce" do
+    with_property ':x, coerce: proc { |v| "#{v}#{Namer.next_index}" }' do
+      it "coercion runs on set" do
+        expect(resource.x 10).to eq "101"
+        expect(Namer.current_index).to eq 1
+      end
+      it "coercion sets the value (and coercion does not run on get)" do
+        expect(resource.x 10).to eq "101"
+        expect(resource.x).to eq "101"
+        expect(Namer.current_index).to eq 1
+      end
+      it "coercion runs each time set happens" do
+        expect(resource.x 10).to eq "101"
+        expect(Namer.current_index).to eq 1
+        expect(resource.x 10).to eq "102"
+        expect(Namer.current_index).to eq 2
+      end
+    end
+    with_property ':x, coerce: proc { |x| Namer.next_index; raise "hi" if x == 10; x }, is: proc { |x| Namer.next_index; x != 10 }' do
+      it "failed coercion fails to set the value" do
+        resource.x 20
+        expect(resource.x).to eq 20
+        expect(Namer.current_index).to eq 2
+        expect { resource.x 10 }.to raise_error 'hi'
+        expect(resource.x).to eq 20
+        expect(Namer.current_index).to eq 3
+      end
+      it "validation does not run if coercion fails" do
+        expect { resource.x 10 }.to raise_error 'hi'
+        expect(Namer.current_index).to eq 1
+      end
+    end
+  end
 
   context "Chef::Resource::PropertyType validation" do
     with_property ':x, is: proc { |v| Namer.next_index; v.is_a?(Integer) }' do

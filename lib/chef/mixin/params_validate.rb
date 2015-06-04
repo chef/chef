@@ -276,6 +276,14 @@ class Chef
           false
         end
       end
+
+      def _pv_coerce(opts, key, coercer)
+        if opts.has_key?(key.to_s)
+          opts[key.to_s] = instance_exec(opts[key], &coercer)
+        elsif opts.has_key?(key.to_sym)
+          opts[key.to_sym] = instance_exec(opts[key], &coercer)          
+        end
+      end
     end
   end
 end
