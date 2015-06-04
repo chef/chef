@@ -76,12 +76,13 @@ describe "Chef::Resource.property" do
       expect(resource.bare_property).to eq 10
     end
     # it "emits a deprecation warning and does a get, if set to nil" do
-    #   expect(resource.bare_property 10).to eq 10
-    #   expect { resource.bare_property nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-    #   Chef::Config[:treat_deprecation_warnings_as_errors] = false
-    #   expect(resource.bare_property nil).to eq 10
-    #   expect(resource.bare_property).to eq 10
-    # end
+    it "emits a deprecation warning and does a get, if set to nil" do
+      expect(resource.bare_property 10).to eq 10
+      # expect { resource.bare_property nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
+      # Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      expect(resource.bare_property nil).to eq 10
+      expect(resource.bare_property).to eq 10
+    end
     it "can be updated" do
       expect(resource.bare_property 10).to eq 10
       expect(resource.bare_property 20).to eq 20

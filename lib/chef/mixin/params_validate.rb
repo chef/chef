@@ -16,6 +16,8 @@
 # limitations under the License.
 
 class Chef
+  NOT_PASSED = Object.new
+
   class DelayedEvaluator < Proc
   end
   module Mixin
@@ -81,33 +83,45 @@ class Chef
         DelayedEvaluator.new(&block)
       end
 
-      def set_or_return(symbol, arg, validation)
+      def set_or_return(symbol, value, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
-        if arg.nil? && self.instance_variable_defined?(iv_symbol) == true
-          ivar = self.instance_variable_get(iv_symbol)
-          if(ivar.is_a?(DelayedEvaluator))
-            validate({ symbol => ivar.call }, { symbol => validation })[symbol]
+
+        # If the user passed NOT_PASSED, or passed nil, then this is a get.
+        case value
+        when NOT_PASSED
+          is_get = true
+          value = nil
+        when nil
+          is_get = true unless explicitly_allows_nil?(symbol, validation)
+        end
+
+        if self.instance_variable_defined?(iv_symbol) && is_get
+          value = self.instance_variable_get(iv_symbol)
+          if value.is_a?(DelayedEvaluator)
+            validate({ symbol => value.call }, { symbol => validation })[symbol]
           else
-            ivar
+            value
           end
         else
-          if(arg.is_a?(DelayedEvaluator))
-            val = arg
-          else
-            val = validate({ symbol => arg }, { symbol => validation })[symbol]
+          if !value.is_a?(DelayedEvaluator)
+            value = validate({ symbol => value }, { symbol => validation })[symbol]
 
             # Handle the case where the "default" was a DelayedEvaluator. In
             # this case, the block yields an optional parameter of +self+,
             # which is the equivalent of "new_resource"
-            if val.is_a?(DelayedEvaluator)
-              val = val.call(self)
+            if value.is_a?(DelayedEvaluator)
+              value = value.call(self)
             end
           end
-          self.instance_variable_set(iv_symbol, val)
+          self.instance_variable_set(iv_symbol, value)
         end
       end
 
       private
+
+      def explicitly_allows_nil?(key, validation)
+        validation.has_key?(:is) && _pv_is({ key => nil }, key, validation[:is], raise_error: false)
+      end
 
       # Return the value of a parameter, or nil if it doesn't exist.
       def _pv_opts_lookup(opts, key)
@@ -135,14 +149,11 @@ class Chef
       def _pv_equal_to(opts, key, to_be)
         value = _pv_opts_lookup(opts, key)
         unless value.nil?
-          passes = false
           to_be = Array(to_be)
           to_be.each do |tb|
-            passes = true if value == tb
+            return true if value == tb
           end
-          unless passes
-            raise Exceptions::ValidationFailed, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
-          end
+          raise Exceptions::ValidationFailed, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
         end
       end
 
@@ -150,14 +161,11 @@ class Chef
       def _pv_kind_of(opts, key, to_be)
         value = _pv_opts_lookup(opts, key)
         unless value.nil?
-          passes = false
           to_be = Array(to_be)
           to_be.each do |tb|
-            passes = true if value.kind_of?(tb)
+            return true if value.kind_of?(tb)
           end
-          unless passes
-            raise Exceptions::ValidationFailed, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
-          end
+          raise Exceptions::ValidationFailed, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
         end
       end
 
@@ -182,12 +190,14 @@ class Chef
       # both :cannot_be => [ :blank, :nil ]
       def _pv_cannot_be(opts, key, predicate_method_base_name)
         value = _pv_opts_lookup(opts, key)
-        Array(predicate_method_base_name).each do |method_name|
-          predicate_method = :"#{method_name}?"
+        if !value.nil?
+          Array(predicate_method_base_name).each do |method_name|
+            predicate_method = :"#{method_name}?"
 
-          if value.respond_to?(predicate_method)
-            if value.send(predicate_method)
-              raise Exceptions::ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
+            if value.respond_to?(predicate_method)
+              if value.send(predicate_method)
+                raise Exceptions::ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
+              end
             end
           end
         end
@@ -205,17 +215,10 @@ class Chef
       def _pv_regex(opts, key, regex)
         value = _pv_opts_lookup(opts, key)
         if !value.nil?
-          passes = false
           Array(regex).each do |r|
-            if value != nil
-              if r.match(value.to_s)
-                passes = true
-              end
-            end
+            return true if r.match(value.to_s)
           end
-          unless passes
-            raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}"
-          end
+          raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}"
         end
       end
 
@@ -223,7 +226,7 @@ class Chef
       def _pv_callbacks(opts, key, callbacks)
         raise ArgumentError, "Callback list must be a hash!" unless callbacks.kind_of?(Hash)
         value = _pv_opts_lookup(opts, key)
-        if value != nil
+        if !value.nil?
           callbacks.each do |message, zeproc|
             if zeproc.call(value) != true
               raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} #{message}!"
@@ -243,18 +246,22 @@ class Chef
       alias :_pv_name_attribute :_pv_name_property
 
       # Compare the way "case" would (i.e. `===`)
-      def _pv_is(opts, key, to_be)
+      def _pv_is(opts, key, to_be, raise_error: true)
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)
         to_be.each do |tb|
           if tb.is_a?(Proc)
-            return if instance_exec(value, &tb)
+            return true if instance_exec(value, &tb)
           else
-            return if tb === value
+            return true if tb === value
           end
         end
 
-        raise Exceptions::ValidationFailed, "Option #{key} must be one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+        if raise_error
+          raise Exceptions::ValidationFailed, "Option #{key} must be one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+        else
+          false
+        end
       end
     end
   end
