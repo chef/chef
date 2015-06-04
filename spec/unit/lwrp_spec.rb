@@ -464,6 +464,10 @@ describe "LWRP" do
 
     let(:lwrp_cookbok_name) { "lwrp" }
 
+    before do
+      Chef::Provider::LWRPBase.class_eval { @loaded_lwrps = {} }
+    end
+
     before(:each) do
       Dir[File.expand_path(File.expand_path("../../data/lwrp/resources/*", __FILE__))].each do |file|
         Chef::Resource::LWRPBase.build_from_file(lwrp_cookbok_name, file, run_context)
@@ -505,10 +509,37 @@ describe "LWRP" do
 
       it "sets itself as a provider for a resource of the same name" do
         found_providers = Chef::Platform::ProviderPriorityMap.instance.list_handlers(node, :lwrp_buck_passer)
-        expect(found_providers.size).to eq(1)
+        # we bypass the per-file loading to get the file to load each time,
+        # which creates the LWRP class repeatedly. New things get prepended to
+        # the list of providers.
         expect(found_providers.first).to eq(get_lwrp_provider(:lwrp_buck_passer))
       end
 
+      context "with a cookbook with an underscore in the name" do
+
+        let(:lwrp_cookbok_name) { "l_w_r_p" }
+
+        it "sets itself as a provider for a resource of the same name" do
+          found_providers = Chef::Platform::ProviderPriorityMap.instance.list_handlers(node, :l_w_r_p_buck_passer)
+          expect(found_providers.size).to eq(1)
+          expect(found_providers.last).to eq(get_lwrp_provider(:l_w_r_p_buck_passer))
+        end
+      end
+
+      context "with a cookbook with a hypen in the name" do
+
+        let(:lwrp_cookbok_name) { "l-w-r-p" }
+
+        it "sets itself as a provider for a resource of the same name" do
+          pp Chef::Platform::ProviderPriorityMap.instance.send(:priority_map)
+
+          incorrect_providers = Chef::Platform::ProviderPriorityMap.instance.list_handlers(node, :'l-w-r-p_buck_passer')
+          expect(incorrect_providers).to eq([])
+
+          found_providers = Chef::Platform::ProviderPriorityMap.instance.list_handlers(node, :l_w_r_p_buck_passer)
+          expect(found_providers.first).to eq(get_lwrp_provider(:l_w_r_p_buck_passer))
+        end
+      end
     end
 
     it "should insert resources embedded in the provider into the middle of the resource collection" do
