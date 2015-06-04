@@ -401,16 +401,13 @@ describe "Chef::Resource.property" do
       end
 
       with_property ':x, default: lazy { blah }' do
-        # it "x is run in context of the instance" do
-        #   expect(resource.x).to eq "blah1"
-        # end
-        # it "x is run in the context of each instance it is run in" do
-        #   expect(resource.x).to eq "blah1"
-        #   expect(resource_class.new('another').x).to eq "another2"
-        #   expect(resource.x).to eq "blah3"
-        # end
-        it "x is run outside the instance" do
-          expect(resource.x).to eq "class"
+        it "x is run in context of the instance" do
+          expect(resource.x).to eq "blah1"
+        end
+        it "x is run in the context of each instance it is run in" do
+          expect(resource.x).to eq "blah1"
+          expect(resource_class.new('another').x).to eq "another2"
+          # expect(resource.x).to eq "blah3"
         end
       end
 
@@ -584,10 +581,6 @@ describe "Chef::Resource.property" do
         def blah
           "example"
         end
-        it "retrieving lazy { blah } gets the caller's blah" do
-          resource.x lazy { blah }
-          expect(resource.x).to eq "example"
-        end
         # it "retrieving lazy { blah } gets the instance variable" do
         #   resource.x lazy { blah }
         #   expect(resource.x).to eq "blah1"
@@ -601,19 +594,19 @@ describe "Chef::Resource.property" do
         #   expect(resource.x).to eq "blah2"
         #   expect(resource2.x).to eq "another3"
         # end
-        # it 'retrieving lazy { |x| "#{blah}#{x.blah}" } gets the example and instance variables' do
-        #   resource.x lazy { |x| "#{blah}#{x.blah}" }
-        #   expect(resource.x).to eq "exampleblah1"
-        # end
-        # it 'retrieving lazy { |x| "#{blah}#{x.blah}" } from two different instances gets two different instance variables' do
-        #   resource2 = resource_class.new("another")
-        #   l = lazy { |x| "#{blah}#{x.blah}" }
-        #   resource2.x l
-        #   resource.x l
-        #   expect(resource2.x).to eq "exampleanother1"
-        #   expect(resource.x).to eq "exampleblah2"
-        #   expect(resource2.x).to eq "exampleanother3"
-        # end
+        it 'retrieving lazy { |x| "#{blah}#{x.blah}" } gets the example and instance variables' do
+          resource.x lazy { |x| "#{blah}#{x.blah}" }
+          expect(resource.x).to eq "exampleblah1"
+        end
+        it 'retrieving lazy { |x| "#{blah}#{x.blah}" } from two different instances gets two different instance variables' do
+          resource2 = resource_class.new("another")
+          l = lazy { |x| "#{blah}#{x.blah}" }
+          resource2.x l
+          resource.x l
+          expect(resource2.x).to eq "exampleanother1"
+          expect(resource.x).to eq "exampleblah2"
+          expect(resource2.x).to eq "exampleanother3"
+        end
       end
     end
 

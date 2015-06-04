@@ -94,7 +94,9 @@ class Chef
           if self.instance_variable_defined?(iv_symbol)
             value = self.instance_variable_get(iv_symbol)
             if value.is_a?(DelayedEvaluator)
-              value = validate({ symbol => value.call }, { symbol => validation })[symbol]
+              # Pass optional first parameter of self
+              value = value.call(self)
+              value = validate({ symbol => value }, { symbol => validation })[symbol]
             end
 
           # Get the default value
@@ -107,7 +109,11 @@ class Chef
               # this case, the block yields an optional parameter of +self+,
               # which is the equivalent of "new_resource"
               if value.is_a?(DelayedEvaluator)
-                value = value.call(self)
+                if value.arity >= 1
+                  value = value.call(self)
+                else
+                  value = instance_eval(&value)
+                end
               end
 
               # Defaults are presently "stickily" set on the instance
@@ -281,7 +287,7 @@ class Chef
         if opts.has_key?(key.to_s)
           opts[key.to_s] = instance_exec(opts[key], &coercer)
         elsif opts.has_key?(key.to_sym)
-          opts[key.to_sym] = instance_exec(opts[key], &coercer)          
+          opts[key.to_sym] = instance_exec(opts[key], &coercer)
         end
       end
     end
