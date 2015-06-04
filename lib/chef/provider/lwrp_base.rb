@@ -19,6 +19,7 @@
 #
 
 require 'chef/provider'
+require 'chef/dsl/include_recipe'
 
 class Chef
   class Provider
@@ -76,6 +77,9 @@ class Chef
       # they may be used in existing LWRPs.
       include Chef::DSL::PlatformIntrospection
       include Chef::DSL::DataQuery
+
+      # Allow include_recipe from within LWRP provider code
+      include Chef::DSL::IncludeRecipe
 
       # no-op `load_current_resource`. Allows simple LWRP providers to work
       # without defining this method explicitly (silences

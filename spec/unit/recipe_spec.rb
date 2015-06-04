@@ -578,6 +578,36 @@ describe Chef::Recipe do
       expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
       openldap_recipe.include_recipe "::default"
     end
+
+    it "will not load a recipe twice when called first from an LWRP provider" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "::default"
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+    end
+
+    it "will not load a recipe twice when called last from an LWRP provider" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "::default"
+    end
+
+    it "will not load a recipe twice when called both times from an LWRP provider" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+    end
   end
 
   describe "tags" do
