@@ -27,7 +27,8 @@ platforms:
   - name: ubuntu-12.04
     driver:
       # http://cloud-images.ubuntu.com/locator/ec2/
-      image_id: ami-c15379f1
+      # 12.04 amd64 us-west-2 hvm:ssd
+      image_id: ami-f3635fc3
   - name: rhel-6
     driver:
       # https://github.com/chef/releng-chef-repo/blob/master/script/ci#L93-L96
