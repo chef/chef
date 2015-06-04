@@ -122,6 +122,23 @@ describe "LWRP" do
 
   end
 
+  context "When an LWRP resource in cookbook l-w-r-p is loaded" do
+    before do
+      @tmpdir = Dir.mktmpdir("lwrp_test")
+      resource_path = File.join(@tmpdir, "foo.rb")
+      IO.write(resource_path, "default_action :create")
+      provider_path = File.join(@tmpdir, "foo.rb")
+      IO.write(provider_path, <<-EOM)
+        action :create do
+          raise "hi"
+        end
+      EOM
+    end
+
+    it "Can find the resource at l_w_r_p_foo" do
+    end
+  end
+
   context "When an LWRP resource lwrp_foo is loaded" do
     before do
       @tmpdir = Dir.mktmpdir("lwrp_test")
@@ -531,8 +548,6 @@ describe "LWRP" do
         let(:lwrp_cookbok_name) { "l-w-r-p" }
 
         it "sets itself as a provider for a resource of the same name" do
-          pp Chef::Platform::ProviderPriorityMap.instance.send(:priority_map)
-
           incorrect_providers = Chef::Platform::ProviderPriorityMap.instance.list_handlers(node, :'l-w-r-p_buck_passer')
           expect(incorrect_providers).to eq([])
 
