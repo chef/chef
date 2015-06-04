@@ -122,6 +122,23 @@ describe "LWRP" do
 
   end
 
+  context "When an LWRP resource in cookbook l-w-r-p is loaded" do
+    before do
+      @tmpdir = Dir.mktmpdir("lwrp_test")
+      resource_path = File.join(@tmpdir, "foo.rb")
+      IO.write(resource_path, "default_action :create")
+      provider_path = File.join(@tmpdir, "foo.rb")
+      IO.write(provider_path, <<-EOM)
+        action :create do
+          raise "hi"
+        end
+      EOM
+    end
+
+    it "Can find the resource at l_w_r_p_foo" do
+    end
+  end
+
   context "When an LWRP resource lwrp_foo is loaded" do
     before do
       @tmpdir = Dir.mktmpdir("lwrp_test")
@@ -448,27 +465,38 @@ describe "LWRP" do
   end
 
   describe "Lightweight Chef::Provider" do
+
+    let(:node) do
+      Chef::Node.new.tap do |n|
+        n.automatic[:platform] = :ubuntu
+        n.automatic[:platform_version] = '8.10'
+      end
+    end
+
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+
+    let(:run_context) { Chef::RunContext.new(node, Chef::CookbookCollection.new({}), events) }
+
+    let(:runner) { Chef::Runner.new(run_context) }
+
+    let(:lwrp_cookbok_name) { "lwrp" }
+
     before do
-      @node = Chef::Node.new
-      @node.automatic[:platform] = :ubuntu
-      @node.automatic[:platform_version] = '8.10'
-      @events = Chef::EventDispatch::Dispatcher.new
-      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}), @events)
-      @runner = Chef::Runner.new(@run_context)
+      Chef::Provider::LWRPBase.class_eval { @loaded_lwrps = {} }
     end
 
     before(:each) do
       Dir[File.expand_path(File.expand_path("../../data/lwrp/resources/*", __FILE__))].each do |file|
-        Chef::Resource::LWRPBase.build_from_file("lwrp", file, @run_context)
+        Chef::Resource::LWRPBase.build_from_file(lwrp_cookbok_name, file, run_context)
       end
 
       Dir[File.expand_path(File.expand_path("../../data/lwrp/providers/*", __FILE__))].each do |file|
-        Chef::Provider::LWRPBase.build_from_file("lwrp", file, @run_context)
+        Chef::Provider::LWRPBase.build_from_file(lwrp_cookbok_name, file, run_context)
       end
     end
 
     it "should properly handle a new_resource reference" do
-      resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
+      resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
       resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
 
@@ -481,6 +509,7 @@ describe "LWRP" do
         @old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
       end
+
       after do
         Chef::Config[:treat_deprecation_warnings_as_errors] = @old_treat_deprecation_warnings_as_errors
       end
@@ -494,54 +523,86 @@ describe "LWRP" do
         expect(get_lwrp_provider(:lwrp_buck_passer).instance_methods).to include(:action_pass_buck)
         expect(get_lwrp_provider(:lwrp_thumb_twiddler).instance_methods).to include(:action_twiddle_thumbs)
       end
+
+      it "sets itself as a provider for a resource of the same name" do
+        found_providers = Chef::Platform::ProviderPriorityMap.instance.list_handlers(node, :lwrp_buck_passer)
+        # we bypass the per-file loading to get the file to load each time,
+        # which creates the LWRP class repeatedly. New things get prepended to
+        # the list of providers.
+        expect(found_providers.first).to eq(get_lwrp_provider(:lwrp_buck_passer))
+      end
+
+      context "with a cookbook with an underscore in the name" do
+
+        let(:lwrp_cookbok_name) { "l_w_r_p" }
+
+        it "sets itself as a provider for a resource of the same name" do
+          found_providers = Chef::Platform::ProviderPriorityMap.instance.list_handlers(node, :l_w_r_p_buck_passer)
+          expect(found_providers.size).to eq(1)
+          expect(found_providers.last).to eq(get_lwrp_provider(:l_w_r_p_buck_passer))
+        end
+      end
+
+      context "with a cookbook with a hypen in the name" do
+
+        let(:lwrp_cookbok_name) { "l-w-r-p" }
+
+        it "sets itself as a provider for a resource of the same name" do
+          incorrect_providers = Chef::Platform::ProviderPriorityMap.instance.list_handlers(node, :'l-w-r-p_buck_passer')
+          expect(incorrect_providers).to eq([])
+
+          found_providers = Chef::Platform::ProviderPriorityMap.instance.list_handlers(node, :l_w_r_p_buck_passer)
+          expect(found_providers.first).to eq(get_lwrp_provider(:l_w_r_p_buck_passer))
+        end
+      end
     end
 
     it "should insert resources embedded in the provider into the middle of the resource collection" do
-      injector = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
+      injector = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       injector.action(:pass_buck)
       injector.provider(get_lwrp_provider(:lwrp_buck_passer))
-      dummy = Chef::Resource::ZenMaster.new("keanu reeves", @run_context)
+      dummy = Chef::Resource::ZenMaster.new("keanu reeves", run_context)
       dummy.provider(Chef::Provider::Easy)
-      @run_context.resource_collection.insert(injector)
-      @run_context.resource_collection.insert(dummy)
+      run_context.resource_collection.insert(injector)
+      run_context.resource_collection.insert(dummy)
 
-      Chef::Runner.new(@run_context).converge
+      Chef::Runner.new(run_context).converge
 
-      expect(@run_context.resource_collection[0]).to eql(injector)
-      expect(@run_context.resource_collection[1].name).to eql('prepared_thumbs')
-      expect(@run_context.resource_collection[2].name).to eql('twiddled_thumbs')
-      expect(@run_context.resource_collection[3]).to eql(dummy)
+      expect(run_context.resource_collection[0]).to eql(injector)
+      expect(run_context.resource_collection[1].name).to eql('prepared_thumbs')
+      expect(run_context.resource_collection[2].name).to eql('twiddled_thumbs')
+      expect(run_context.resource_collection[3]).to eql(dummy)
     end
 
     it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
-      injector = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
+      injector = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       injector.action(:pass_buck)
       injector.provider(get_lwrp_provider(:lwrp_buck_passer))
 
-      injector2 = get_lwrp(:lwrp_bar).new("tank", @run_context)
+      injector2 = get_lwrp(:lwrp_bar).new("tank", run_context)
       injector2.action(:pass_buck)
       injector2.provider(get_lwrp_provider(:lwrp_buck_passer_2))
 
-      dummy = Chef::Resource::ZenMaster.new("keanu reeves", @run_context)
+      dummy = Chef::Resource::ZenMaster.new("keanu reeves", run_context)
       dummy.provider(Chef::Provider::Easy)
 
-      @run_context.resource_collection.insert(injector)
-      @run_context.resource_collection.insert(dummy)
-      @run_context.resource_collection.insert(injector2)
+      run_context.resource_collection.insert(injector)
+      run_context.resource_collection.insert(dummy)
+      run_context.resource_collection.insert(injector2)
 
-      Chef::Runner.new(@run_context).converge
+      Chef::Runner.new(run_context).converge
 
-      expect(@run_context.resource_collection[0]).to eql(injector)
-      expect(@run_context.resource_collection[1].name).to eql('prepared_thumbs')
-      expect(@run_context.resource_collection[2].name).to eql('twiddled_thumbs')
-      expect(@run_context.resource_collection[3]).to eql(dummy)
-      expect(@run_context.resource_collection[4]).to eql(injector2)
-      expect(@run_context.resource_collection[5].name).to eql('prepared_eyes')
-      expect(@run_context.resource_collection[6].name).to eql('dried_paint_watched')
+      expect(run_context.resource_collection[0]).to eql(injector)
+      expect(run_context.resource_collection[1].name).to eql('prepared_thumbs')
+      expect(run_context.resource_collection[2].name).to eql('twiddled_thumbs')
+      expect(run_context.resource_collection[3]).to eql(dummy)
+      expect(run_context.resource_collection[4]).to eql(injector2)
+      expect(run_context.resource_collection[5].name).to eql('prepared_eyes')
+      expect(run_context.resource_collection[6].name).to eql('dried_paint_watched')
     end
 
     it "should properly handle a new_resource reference" do
-      resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
+      resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
       resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
 
@@ -552,7 +613,7 @@ describe "LWRP" do
     end
 
     it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
-      resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
+      resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
       resource.provider(get_lwrp_provider(:lwrp_embedded_resource_accesses_providers_scope))
 
@@ -571,7 +632,7 @@ describe "LWRP" do
         # Side effect of lwrp_inline_compiler provider for testing notifications.
         $interior_ruby_block_2 = nil
         # resource type doesn't matter, so make an existing resource type work with provider.
-        @resource = get_lwrp(:lwrp_foo).new("morpheus", @run_context)
+        @resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
         @resource.allowed_actions << :test
         @resource.action(:test)
         @resource.provider(get_lwrp_provider(:lwrp_inline_compiler))
@@ -579,7 +640,7 @@ describe "LWRP" do
 
       it "does not add interior resources to the exterior resource collection" do
         @resource.run_action(:test)
-        expect(@run_context.resource_collection).to be_empty
+        expect(run_context.resource_collection).to be_empty
       end
 
       context "when interior resources are updated" do
