@@ -194,45 +194,39 @@ describe "Chef::Resource#identity and #state" do
       before do
         resource_class.class_eval do
           def custom_property
-            @blarghle*3
+            @blarghle ? @blarghle*3 : nil
           end
           def custom_property=(x)
             @blarghle = x*2
           end
         end
+      end
 
-        context "And identity_attr :custom_property" do
-          before do
-            resource_class.class_eval do
-              identity_attr :custom_property
-            end
+      context "And identity_attr :custom_property" do
+        before do
+          resource_class.class_eval do
+            identity_attr :custom_property
           end
+        end
 
-          it "identity_attr comes back as :custom_property" do
-            # expect(resource_class.properties[:custom_property].identity?).to be_truthy
-            expect(resource_class.identity_attr).to eq :custom_property
-          end
-          it "custom_property becomes part of desired_state" do
-            # expect(resource_class.properties[:custom_property].desired_state?).to be_truthy
-            expect(resource_class.state_attrs).to eq [ :custom_property ]
-          end
-          it "identity_attr does not change custom_property's getter or setter" do
-            expect(resource.custom_property = 1).to eq 2
-            expect(resource.custom_property).to eq 6
-          end
-          it "custom_property is returned as the identity" do
-            expect(resource_class.identity_attr).to
-            expect(resource.identity).to be_nil
-            resource.custom_property = 1
-            expect(resource.identity).to eq 6
-          end
-          it "custom_property is part of desired state" do
-            resource.custom_property = 1
-            expect(resource.state).to eq({ custom_property: 6 })
-          end
-          it "property_is_set?(:custom_property) returns true even if it hasn't been set" do
-            expect(resource.property_is_set?(:custom_property)).to be_truthy
-          end
+        it "identity_attr comes back as :custom_property" do
+          # expect(resource_class.properties[:custom_property].identity?).to be_truthy
+          expect(resource_class.identity_attr).to eq :custom_property
+        end
+        # it "custom_property becomes part of desired_state" do
+        #   resource.custom_property = 1
+        #   expect(resource.state).to eq({ custom_property: 6 })
+        #   expect(resource_class.properties[:custom_property].desired_state?).to be_truthy
+        #   expect(resource_class.state_attrs).to eq [ :custom_property ]
+        # end
+        it "identity_attr does not change custom_property's getter or setter" do
+          resource.custom_property = 1
+          expect(resource.custom_property).to eq 6
+        end
+        it "custom_property is returned as the identity" do
+          expect(resource.identity).to be_nil
+          resource.custom_property = 1
+          expect(resource.identity).to eq 6
         end
       end
     end

@@ -791,6 +791,15 @@ class Chef
     end
 
     #
+    # Whether this property has been set (or whether it has a default that has
+    # been retrieved).
+    #
+    def property_is_set?(name)
+      name = name.to_sym
+      instance_variable_defined?("@#{name}")
+    end
+
+    #
     # Create a lazy value for assignment to a default value.
     #
     # @param block The block to run when the value is retrieved.

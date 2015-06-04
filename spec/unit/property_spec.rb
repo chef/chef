@@ -212,105 +212,105 @@ describe "Chef::Resource.property" do
     end
   end
 
-  # context "Chef::Resource::PropertyType#property_is_set?" do
-  #   it "when a resource is newly created, property_is_set?(:name) is true" do
-  #     expect(resource.property_is_set?(:name)).to be_truthy
-  #   end
-  #
-  #   it "when referencing an undefined property, property_is_set?(:x) raises an error" do
-  #     expect { resource.property_is_set?(:x) }.to raise_error(ArgumentError)
-  #   end
-  #
-  #   with_property ':x' do
-  #     it "when the resource is newly created, property_is_set?(:x) is false" do
-  #       expect(resource.property_is_set?(:x)).to be_falsey
-  #     end
-  #     it "when x is set, property_is_set?(:x) is true" do
-  #       resource.x 10
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is set with =, property_is_set?(:x) is true" do
-  #       resource.x = 10
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is set to a lazy value, property_is_set?(:x) is true" do
-  #       resource.x lazy { 10 }
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is retrieved, property_is_set?(:x) is false" do
-  #       resource.x
-  #       expect(resource.property_is_set?(:x)).to be_falsey
-  #     end
-  #   end
-  #
-  #   with_property ':x, default: 10' do
-  #     it "when the resource is newly created, property_is_set?(:x) is false" do
-  #       expect(resource.property_is_set?(:x)).to be_falsey
-  #     end
-  #     it "when x is set, property_is_set?(:x) is true" do
-  #       resource.x 10
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is set with =, property_is_set?(:x) is true" do
-  #       resource.x = 10
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is set to a lazy value, property_is_set?(:x) is true" do
-  #       resource.x lazy { 10 }
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is retrieved, property_is_set?(:x) is true" do
-  #       resource.x
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #   end
-  #
-  #   with_property ':x, default: nil' do
-  #     it "when the resource is newly created, property_is_set?(:x) is false" do
-  #       expect(resource.property_is_set?(:x)).to be_falsey
-  #     end
-  #     it "when x is set, property_is_set?(:x) is true" do
-  #       resource.x 10
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is set with =, property_is_set?(:x) is true" do
-  #       resource.x = 10
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is set to a lazy value, property_is_set?(:x) is true" do
-  #       resource.x lazy { 10 }
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is retrieved, property_is_set?(:x) is true" do
-  #       resource.x
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #   end
-  #
-  #   with_property ':x, default: lazy { 10 }' do
-  #     it "when the resource is newly created, property_is_set?(:x) is false" do
-  #       expect(resource.property_is_set?(:x)).to be_falsey
-  #     end
-  #     it "when x is set, property_is_set?(:x) is true" do
-  #       resource.x 10
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is set with =, property_is_set?(:x) is true" do
-  #       resource.x = 10
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #     it "when x is retrieved, property_is_set?(:x) is true" do
-  #       resource.x
-  #       expect(resource.property_is_set?(:x)).to be_truthy
-  #     end
-  #   end
-  # end
+  context "Chef::Resource::PropertyType#property_is_set?" do
+    it "when a resource is newly created, property_is_set?(:name) is true" do
+      expect(resource.property_is_set?(:name)).to be_truthy
+    end
+
+    # it "when referencing an undefined property, property_is_set?(:x) raises an error" do
+    #   expect { resource.property_is_set?(:x) }.to raise_error(ArgumentError)
+    # end
+
+    with_property ':x' do
+      it "when the resource is newly created, property_is_set?(:x) is false" do
+        expect(resource.property_is_set?(:x)).to be_falsey
+      end
+      it "when x is set, property_is_set?(:x) is true" do
+        resource.x 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is set with =, property_is_set?(:x) is true" do
+        resource.x = 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is set to a lazy value, property_is_set?(:x) is true" do
+        resource.x lazy { 10 }
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is retrieved, property_is_set?(:x) is false" do
+        resource.x
+        expect(resource.property_is_set?(:x)).to be_falsey
+      end
+    end
+
+    with_property ':x, default: 10' do
+      it "when the resource is newly created, property_is_set?(:x) is false" do
+        expect(resource.property_is_set?(:x)).to be_falsey
+      end
+      it "when x is set, property_is_set?(:x) is true" do
+        resource.x 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is set with =, property_is_set?(:x) is true" do
+        resource.x = 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is set to a lazy value, property_is_set?(:x) is true" do
+        resource.x lazy { 10 }
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is retrieved, property_is_set?(:x) is true" do
+        resource.x
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+    end
+
+    with_property ':x, default: nil' do
+      it "when the resource is newly created, property_is_set?(:x) is false" do
+        expect(resource.property_is_set?(:x)).to be_falsey
+      end
+      it "when x is set, property_is_set?(:x) is true" do
+        resource.x 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is set with =, property_is_set?(:x) is true" do
+        resource.x = 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is set to a lazy value, property_is_set?(:x) is true" do
+        resource.x lazy { 10 }
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is retrieved, property_is_set?(:x) is true" do
+        resource.x
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+    end
+
+    with_property ':x, default: lazy { 10 }' do
+      it "when the resource is newly created, property_is_set?(:x) is false" do
+        expect(resource.property_is_set?(:x)).to be_falsey
+      end
+      it "when x is set, property_is_set?(:x) is true" do
+        resource.x 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is set with =, property_is_set?(:x) is true" do
+        resource.x = 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+      it "when x is retrieved, property_is_set?(:x) is true" do
+        resource.x
+        expect(resource.property_is_set?(:x)).to be_truthy
+      end
+    end
+  end
 
   context "Chef::Resource::PropertyType#default" do
     with_property ':x, default: 10' do
       it "when x is set, it returns its value" do
         expect(resource.x 20).to eq 20
-        # expect(resource.property_is_set?(:x)).to be_truthy
+        expect(resource.property_is_set?(:x)).to be_truthy
         expect(resource.x).to eq 20
       end
       it "when x is not set, it returns 10" do

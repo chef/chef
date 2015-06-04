@@ -84,7 +84,8 @@ class Chef
       end
 
       def set_or_return(symbol, value, validation)
-        iv_symbol = "@#{symbol.to_s}".to_sym
+        symbol = symbol.to_sym
+        iv_symbol = :"@#{symbol}"
 
         # If the user passed NOT_PASSED, or passed nil, then this is a get.
         if value == NOT_PASSED || (value.nil? && !explicitly_allows_nil?(symbol, validation))
@@ -98,16 +99,22 @@ class Chef
 
           # Get the default value
           else
-            value = validate({}, { symbol => validation })[symbol]
-            # Handle the case where the "default" was a DelayedEvaluator. In
-            # this case, the block yields an optional parameter of +self+,
-            # which is the equivalent of "new_resource"
-            if value.is_a?(DelayedEvaluator)
-              value = value.call(self)
-            end
+            validated = validate({}, { symbol => validation })
+            if validated.has_key?(symbol)
+              value = validated[symbol]
 
-            # Defaults are presently "stickily" set on the instance
-            self.instance_variable_set(iv_symbol, value)
+              # Handle the case where the "default" was a DelayedEvaluator. In
+              # this case, the block yields an optional parameter of +self+,
+              # which is the equivalent of "new_resource"
+              if value.is_a?(DelayedEvaluator)
+                value = value.call(self)
+              end
+
+              # Defaults are presently "stickily" set on the instance
+              self.instance_variable_set(iv_symbol, value)
+            else
+              value = nil
+            end
           end
 
         # Set the value
