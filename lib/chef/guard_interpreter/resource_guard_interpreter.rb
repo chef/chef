@@ -92,8 +92,11 @@ class Chef
           raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Execute resource"
         end
 
+        # Duplicate the node below because the new RunContext
+        # overwrites the state of Node instances passed to it.
+        # See https://github.com/chef/chef/issues/3485.
         empty_events = Chef::EventDispatch::Dispatcher.new
-        anonymous_run_context = Chef::RunContext.new(parent_resource.node, {}, empty_events)
+        anonymous_run_context = Chef::RunContext.new(parent_resource.node.dup, {}, empty_events)
         interpreter_resource = resource_class.new('Guard resource', anonymous_run_context)
         interpreter_resource.is_guard_interpreter = true
 
