@@ -93,7 +93,7 @@ shared_examples_for "user or client create" do
 
     context "when the server supports API V0" do
       before do
-        allow(object).to receive(:handle_version_http_exception).and_return(true)
+        allow(object).to receive(:server_client_api_version_intersection).and_return([0])
         allow(rest_v1).to receive(:post).and_raise(exception_406)
       end
 

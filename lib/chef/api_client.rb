@@ -32,7 +32,7 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::ApiVersionRequestHandling
+    include Chef::Mixin::ApiVersionRequestHandling
 
     SUPPORTED_API_VERSIONS = [0,1]
 
@@ -272,7 +272,8 @@ class Chef
         new_client = chef_rest_v1.put("clients/#{name}", payload)
       rescue Net::HTTPServerException => e
         # rescue API V0 if 406 and the server supports V0
-        raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
+        supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
+        raise e unless supported_versions && supported_versions.include?(0)
         new_client = chef_rest_v0.put("clients/#{name}", payload)
       end
 
@@ -308,7 +309,8 @@ class Chef
 
       rescue Net::HTTPServerException => e
         # rescue API V0 if 406 and the server supports V0
-        raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
+        supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
+        raise e unless supported_versions && supported_versions.include?(0)
 
         # under API V0, a key pair will always be created unless public_key is
         # passed on initial POST

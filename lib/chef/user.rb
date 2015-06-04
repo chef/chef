@@ -36,7 +36,7 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::ApiVersionRequestHandling
+    include Chef::Mixin::ApiVersionRequestHandling
 
     SUPPORTED_API_VERSIONS = [0,1]
 
@@ -169,7 +169,8 @@ class Chef
         end
       rescue Net::HTTPServerException => e
         # rescue API V0 if 406 and the server supports V0
-        raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
+        supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
+        raise e unless supported_versions && supported_versions.include?(0)
         payload = {
           :username => @username,
           :display_name => @display_name,
@@ -212,7 +213,8 @@ class Chef
             raise e
           end
         else # for other types of errors, test for API versioning errors right away
-          raise e unless handle_version_http_exception(e, SUPPORTED_API_VERSIONS[0], SUPPORTED_API_VERSIONS[-1])
+          supported_versions = server_client_api_version_intersection(e, SUPPORTED_API_VERSIONS)
+          raise e unless supported_versions && supported_versions.include?(0)
         end
         updated_user = chef_root_rest_v0.put("users/#{username}", payload)
       end

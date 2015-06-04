@@ -487,7 +487,7 @@ describe Chef::ApiClient do
 
             before do
               allow(@client.chef_rest_v1).to receive(:put).and_raise(exception_406)
-              allow(@client).to receive(:handle_version_http_exception).and_return(true)
+              allow(@client).to receive(:server_client_api_version_intersection).and_return([0])
             end
 
             it_should_behave_like "client updating" do

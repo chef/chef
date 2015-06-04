@@ -390,8 +390,8 @@ describe Chef::User do
               @user.update
             end
 
-            it "does not call handle_version_http_exception, since we know to proceed with V0 in this case" do
-              expect(@user).to_not receive(:handle_version_http_exception)
+            it "does not call server_client_api_version_intersection, since we know to proceed with V0 in this case" do
+              expect(@user).to_not receive(:server_client_api_version_intersection)
               allow(@user.chef_root_rest_v0).to receive(:put).and_return({})
               @user.update
             end
@@ -428,7 +428,7 @@ describe Chef::User do
 
           context "when the server supports API V0" do
             before do
-              allow(@user).to receive(:handle_version_http_exception).and_return(true)
+              allow(@user).to receive(:server_client_api_version_intersection).and_return([0])
               allow(@user.chef_root_rest_v1).to receive(:put).and_raise(exception_406)
             end
 
@@ -491,7 +491,7 @@ describe Chef::User do
 
       context "when handling API V0" do
         before do
-          allow(@user).to receive(:handle_version_http_exception).and_return(true)
+          allow(@user).to receive(:server_client_api_version_intersection).and_return([0])
           allow(@user.chef_root_rest_v1).to receive(:post).and_raise(exception_406)
         end
 

@@ -28,7 +28,7 @@ shared_examples_for "version handling" do
 
   context "when the server does not support the min or max server API version that Chef::User supports" do
     before do
-      allow(object).to receive(:handle_version_http_exception).and_return(false)
+      allow(object).to receive(:server_client_api_version_intersection).and_return([])
     end
 
     it "raises the original exception" do

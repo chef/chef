@@ -78,11 +78,13 @@ knife user create for Open Source 11 Server is being deprecated.
 Open Source 11 Server user commands now live under the knife osc_user namespace.
 For backwards compatibility, we will forward this request to knife osc_user create.
 If you are using an Open Source 11 Server, please use that command to avoid this warning.
-If you are not using an Open Source Chef 11 Server install, please read knife user create --help for proper usage.
 EOF
       end
 
       def run_osc_11_user_create
+        # run osc_user_create with our input
+        ARGV.delete("user")
+        ARGV.unshift("osc_user")
         Chef::Knife.run(ARGV, Chef::Application::Knife.options)
       end
 
@@ -93,12 +95,7 @@ EOF
         # If only 1 arg is passed, assume OSC 11 case.
         if @name_args.length == 1
           ui.warn(osc_11_warning)
-
-          # run osc_user_create with our input
-          ARGV.delete("user")
-          ARGV.unshift("osc_user")
           run_osc_11_user_create
-
         else # EC / CS 12 user create
 
           test_mandatory_field(@name_args[0], "username")

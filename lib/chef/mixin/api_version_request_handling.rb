@@ -17,43 +17,50 @@
 #
 
 class Chef
-  module ApiVersionRequestHandling
-    # takes in an http exception, and a min and max supported API version and
-    # handles all the versioning cases
-    #
-    # it will return false if there was a non-versioning related error
-    # or the server and the client are not compatible
-    #
-    # if the server does not support versioning, then it will return true, and you
-    # can assume API v0 is safe to send
-    def handle_version_http_exception(exception, min_client_supported_version, max_client_supported_version)
-      # only rescue 406 Unacceptable with proper header
-      return false if exception.response.code != "406" || exception.response["x-ops-server-api-version"].nil?
+  module Mixin
+    module ApiVersionRequestHandling
+      # Input:
+      # exeception:
+      #   Net::HTTPServerException that may or may not contain the x-ops-server-api-version header
+      # supported_client_versions:
+      #  An array of Integers that represent the API versions the client supports.
+      #
+      # Output:
+      # nil:
+      #  If the execption was not a 406 or the server does not support versioning
+      # Array of length zero:
+      #  If there was no intersection between supported client versions and supported server versions
+      # Arrary of Integers:
+      #  If there was an intersection of supported versions, the array returns will contain that intersection
+      def server_client_api_version_intersection(exception, supported_client_versions)
+        # return empty array unless 406 Unacceptable with proper header
+        return nil if exception.response.code != "406" || exception.response["x-ops-server-api-version"].nil?
 
-      # if the version header doesn't exist, just assume API v0
-      if exception.response["x-ops-server-api-version"]
+        # intersection of versions the server and client support, will be of length zero if no intersection
+        server_supported_client_versions = Array.new
+
         header = Chef::JSONCompat.from_json(exception.response["x-ops-server-api-version"])
         min_server_version = Integer(header["min_version"])
         max_server_version = Integer(header["max_version"])
 
-        # if the min API version the server supports is greater than the min version the client supports
-        # and the max API version the server supports is less than the max version the client supports
-        if min_server_version > min_client_supported_version || max_server_version < max_client_supported_version
-          # if it had x-ops-server-api-version header, return false
-          return false
+        supported_client_versions.each do |version|
+          if version >= min_server_version && version <= max_server_version
+            server_supported_client_versions.push(version)
+          end
         end
+        server_supported_client_versions
       end
-      true
-    end
 
-    def reregister_only_v0_supported_error_msg(max_version, min_version)
-<<-EOH
+      def reregister_only_v0_supported_error_msg(max_version, min_version)
+        <<-EOH
 The reregister command only supports server API version 0.
 The server that received the request supports a min version of #{min_version} and a max version of #{max_version}.
 User keys are now managed via the key rotation commmands.
-Please refer to the documentation on how to manage your keys via the key rotation commands.
+Please refer to the documentation on how to manage your keys via the key rotation commands:
+https://docs.chef.io/server_security.html#key-rotation
 EOH
-    end
+      end
 
+    end
   end
 end

@@ -41,6 +41,9 @@ EOF
       end
 
       def run_osc_11_user_delete
+        # run osc_user_delete with our input
+        ARGV.delete("user")
+        ARGV.unshift("osc_user")
         Chef::Knife.run(ARGV, Chef::Application::Knife.options)
       end
 
@@ -82,12 +85,7 @@ EOF
         # OSC 11 case
         if object.username.nil?
           ui.warn(osc_11_warning)
-
-          # run osc_user_delete with our input
-          ARGV.delete("user")
-          ARGV.unshift("osc_user")
           run_osc_11_user_delete
-
         else # proceed with EC / CS delete
           delete_object(@user_name)
         end

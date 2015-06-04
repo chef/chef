@@ -43,6 +43,9 @@ EOF
       end
 
       def run_osc_11_user_show
+        # run osc_user_edit with our input
+        ARGV.delete("user")
+        ARGV.unshift("osc_user")
         Chef::Knife.run(ARGV, Chef::Application::Knife.options)
       end
 
@@ -64,10 +67,6 @@ EOF
         # forward to deprecated command
         if user.username.nil?
           ui.warn(osc_11_warning)
-
-          # run osc_user_edit with our input
-          ARGV.delete("user")
-          ARGV.unshift("osc_user")
           run_osc_11_user_show
         else
           output(format_for_display(user))
