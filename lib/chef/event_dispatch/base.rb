@@ -282,7 +282,7 @@ class Chef
       # 4. Check if why-run safe
       #    - resource_bypassed: (goto 7) if not why-run safe
       # 5. During processing:
-      #    - resource_update_applied: For each actual change
+      #    - resource_update_applied: For each actual change (many per action)
       # 6. Processing complete status:
       #    - resource_failed if the resource threw an exception while running
       #    - resource_failed_retriable: (goto 3) if resource failed and will be retried

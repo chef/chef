@@ -185,13 +185,18 @@ class Chef
 
     #
     # Include attributes, public and protected methods from this Resource in
-    # the provider.  Will delegate to
+    # the provider.
+    #
+    # If this is set to true, delegate methods are included in the provider so
+    # that you can call (for example) `attrname` and it will call
+    # `new_resource.attrname`.
     #
     # The actual include does not happen until the first time the Provider
     # is instantiated (so that we don't have to worry about load order issues).
     #
     # @param include_resource_dsl [Boolean] Whether to include resource DSL or
     #   not (defaults to `false`).
+    #
     def self.include_resource_dsl(include_resource_dsl)
       @include_resource_dsl = include_resource_dsl
     end
