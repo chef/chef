@@ -164,6 +164,17 @@ class Chef
         end
       end
 
+      #
+      # List of things values must be equal to.
+      #
+      # Uses Ruby's `==` to evaluate (equal_to == value).  At least one must
+      # match for the value to be valid.
+      #
+      # `nil` passes this validation automatically.
+      #
+      # @return [Array,nil] List of things values must be equal to, or nil if
+      #   equal_to is unspecified.
+      #
       def _pv_equal_to(opts, key, to_be)
         value = _pv_opts_lookup(opts, key)
         unless value.nil?
@@ -175,7 +186,14 @@ class Chef
         end
       end
 
-      # Raise an exception if the parameter is not a kind_of?(to_be)
+      #
+      # List of things values must be instances of.
+      #
+      # Uses value.kind_of?(kind_of) to evaluate. At least one must match for
+      # the value to be valid.
+      #
+      # `nil` automatically passes this validation.
+      #
       def _pv_kind_of(opts, key, to_be)
         value = _pv_opts_lookup(opts, key)
         unless value.nil?
@@ -187,7 +205,12 @@ class Chef
         end
       end
 
-      # Raise an exception if the parameter does not respond to a given set of methods.
+      #
+      # List of method names values must respond to.
+      #
+      # Uses value.respond_to?(respond_to) to evaluate. At least one must match
+      # for the value to be valid.
+      #
       def _pv_respond_to(opts, key, method_name_list)
         value = _pv_opts_lookup(opts, key)
         unless value.nil?
@@ -199,13 +222,24 @@ class Chef
         end
       end
 
-      # Assert that parameter returns false when passed a predicate method.
-      # For example, :cannot_be => :blank will raise a Exceptions::ValidationFailed
-      # error value.blank? returns a 'truthy' (not nil or false) value.
       #
-      # Note, this will *PASS* if the object doesn't respond to the method.
-      # So, to make sure a value is not nil and not blank, you need to do
-      # both :cannot_be => [ :blank, :nil ]
+      # List of things that must not be true about the value.
+      #
+      # Calls `value.<thing>?` All responses must be false for the value to be
+      # valid.
+      # Values which do not respond to <thing>? are considered valid (because if
+      # a value doesn't respond to `:readable?`, then it probably isn't
+      # readable.)
+      #
+      # @example
+      #   ```ruby
+      #   property :x, cannot_be: [ :nil, :empty ]
+      #   x [ 1, 2 ] #=> valid
+      #   x 1        #=> valid
+      #   x []       #=> invalid
+      #   x nil      #=> invalid
+      #   ```
+      #
       def _pv_cannot_be(opts, key, predicate_method_base_name)
         value = _pv_opts_lookup(opts, key)
         if !value.nil?
@@ -221,7 +255,32 @@ class Chef
         end
       end
 
-      # Assign a default value to a parameter.
+      #
+      # The default value for a property.
+      #
+      # When the property is not assigned, this will be used.
+      #
+      # If this is a lazy value, it will either be passed the resource as a value,
+      # or if the lazy proc does not take parameters, it will be run in the
+      # context of the instance with instance_eval.
+      #
+      # @example
+      #   ```ruby
+      #   property :x, default: 10
+      #   ```
+      #
+      # @example
+      #   ```ruby
+      #   property :x
+      #   property :y, default: lazy { x+2 }
+      #   ```
+      #
+      # @example
+      #   ```ruby
+      #   property :x
+      #   property :y, default: lazy { |r| r.x+2 }
+      #   ```
+      #
       def _pv_default(opts, key, default_value)
         value = _pv_opts_lookup(opts, key)
         if value.nil?
@@ -229,7 +288,19 @@ class Chef
         end
       end
 
-      # Check a parameter against a regular expression.
+      #
+      # List of regexes values that must match.
+      #
+      # Uses regex.match() to evaluate. At least one must match for the value to
+      # be valid.
+      #
+      # `nil` passes regex validation automatically.
+      #
+      # @example
+      #   ```ruby
+      #   property :x, regex: [ /abc/, /xyz/ ]
+      #   ```
+      #
       def _pv_regex(opts, key, regex)
         value = _pv_opts_lookup(opts, key)
         if !value.nil?
@@ -240,7 +311,18 @@ class Chef
         end
       end
 
-      # Check a parameter against a hash of proc's.
+      #
+      # List of procs we pass the value to.
+      #
+      # All procs must return true for the value to be valid. If any procs do
+      # not return true, the key will be used for the message: `"Property x's
+      # value :y <message>"`.
+      #
+      # @example
+      #   ```ruby
+      #   property :x, callbacks: { "is bigger than 10" => proc { |v| v <= 10 }, "is not awesome" => proc { |v| !v.awesome }}
+      #   ```
+      #
       def _pv_callbacks(opts, key, callbacks)
         raise ArgumentError, "Callback list must be a hash!" unless callbacks.kind_of?(Hash)
         value = _pv_opts_lookup(opts, key)
@@ -253,7 +335,14 @@ class Chef
         end
       end
 
-      # Allow a parameter to default to @name
+      #
+      # Allows a parameter to default to the value of the resource name.
+      #
+      # @example
+      #   ```ruby
+      #    property :x, name_property: true
+      #   ```
+      #
       def _pv_name_property(opts, key, is_name_property=true)
         if is_name_property
           if opts[key].nil?
@@ -263,7 +352,63 @@ class Chef
       end
       alias :_pv_name_attribute :_pv_name_property
 
-      # Compare the way "case" would (i.e. `===`)
+      #
+      # List of valid things values can be.
+      #
+      # Uses Ruby's `===` to evaluate (is === value).  At least one must match
+      # for the value to be valid.
+      #
+      # If a proc is passed, it is instance_eval'd in the resource, passed the
+      # value, and must return a truthy or falsey value.
+      #
+      # @example Class
+      #   ```ruby
+      #   property :x, String
+      #   x 'valid' #=> valid
+      #   x 1       #=> invalid
+      #   x nil     #=> invalid
+      #
+      # @example Value
+      #   ```ruby
+      #   property :x, [ :a, :b, :c, nil ]
+      #   x :a  #=> valid
+      #   x nil #=> valid
+      #   ```
+      #
+      # @example Regex
+      #   ```ruby
+      #   property :x, /bar/
+      #   x 'foobar' #=> valid
+      #   x 'foo'    #=> invalid
+      #   x nil      #=> invalid
+      #   ```
+      #
+      # @example Proc
+      #   ```ruby
+      #   property :x, proc { |x| x > y }
+      #   property :y, default: 2
+      #   x 3 #=> valid
+      #   x 1 #=> invalid
+      #   ```
+      #
+      # @example PropertyType
+      #   ```ruby
+      #   type = PropertyType.new(is: String)
+      #   property :x, type
+      #   x 'foo' #=> valid
+      #   x 1     #=> invalid
+      #   x nil   #=> invalid
+      #   ```
+      #
+      # @example RSpec Matcher
+      #   ```ruby
+      #   include RSpec::Matchers
+      #   property :x, a_string_matching /bar/
+      #   x 'foobar' #=> valid
+      #   x 'foo'    #=> invalid
+      #   x nil      #=> invalid
+      #   ```
+      #
       def _pv_is(opts, key, to_be, raise_error: true)
         return true if !opts.has_key?(key.to_s) && !opts.has_key?(key.to_sym)
         value = _pv_opts_lookup(opts, key)
@@ -283,6 +428,21 @@ class Chef
         end
       end
 
+      #
+      # Method to mess with a value before it is validated and stored.
+      #
+      # Allows you to transform values into a canonical form that is easy to
+      # work with.
+      #
+      # This is passed the value to transform, and is run in the context of the
+      # instance (so it has access to other resource properties). It must return
+      # the value that will be stored in the instance.
+      #
+      # @example
+      #   ```ruby
+      #   property :x, Integer, coerce: { |v| v.to_i }
+      #   ```
+      #
       def _pv_coerce(opts, key, coercer)
         if opts.has_key?(key.to_s)
           opts[key.to_s] = instance_exec(opts[key], &coercer)
