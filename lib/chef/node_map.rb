@@ -102,10 +102,10 @@ class Chef
     # Seriously, don't use this, it's nearly certain to change on you
     # @return remaining
     # @api private
-    def delete_canonical(key)
+    def delete_canonical(key, value)
       remaining = @map[key]
       if remaining
-        remaining.delete_if { |matcher| matcher[:canonical] }
+        remaining.delete_if { |matcher| matcher[:canonical] && Array(matcher[:value]) == Array(value) }
         if remaining.empty?
           @map.delete(key)
           remaining = nil

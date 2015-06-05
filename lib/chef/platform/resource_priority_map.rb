@@ -14,8 +14,8 @@ class Chef
       end
 
       # @api private
-      def delete_canonical(resource_name)
-        priority_map.delete_canonical(resource_name)
+      def delete_canonical(resource_name, resource_class)
+        priority_map.delete_canonical(resource_name, resource_class)
       end
 
       # @api private

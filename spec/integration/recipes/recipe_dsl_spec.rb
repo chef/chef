@@ -3,6 +3,14 @@ require 'support/shared/integration/integration_helper'
 describe "Recipe DSL methods" do
   include IntegrationSupport
 
+  module Namer
+    extend self
+    attr_accessor :current_index
+  end
+
+  before(:all) { Namer.current_index = 1 }
+  before { Namer.current_index += 1 }
+
   context "With resource 'base_thingy' declared as BaseThingy" do
     before(:context) {
 
@@ -401,6 +409,106 @@ describe "Recipe DSL methods" do
               run_context.node.automatic[:os] = 'linux'
               another_thingy_name8 'blah' do; end
             }.to raise_error(NoMethodError)
+          end
+        end
+
+        context "With a resource TwoClassesOneDsl" do
+          let(:class_name) { "TwoClassesOneDsl#{Namer.current_index}" }
+          let(:dsl_method) { "two_classes_one_dsl#{Namer.current_index}" }
+
+          before {
+            eval <<-EOM, nil, __FILE__, __LINE__+1
+              class #{class_name} < BaseThingy
+              end
+            EOM
+          }
+          context "And resource BlahModule::TwoClassesOneDsl" do
+            before {
+              eval <<-EOM, nil, __FILE__, __LINE__+1
+                module BlahModule
+                  class #{class_name} < BaseThingy
+                  end
+                end
+              EOM
+            }
+            it "two_classes_one_dsl resolves to BlahModule::TwoClassesOneDsl (last declared)" do
+              dsl_method = self.dsl_method
+              recipe = converge {
+                instance_eval("#{dsl_method} 'blah' do; end")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_resource).to eq eval("BlahModule::#{class_name}")
+            end
+          end
+          context "And resource BlahModule::TwoClassesOneDsl with resource_name nil" do
+            before {
+              eval <<-EOM, nil, __FILE__, __LINE__+1
+                module BlahModule
+                  class BlahModule::#{class_name} < BaseThingy
+                    resource_name nil
+                  end
+                end
+              EOM
+            }
+            it "two_classes_one_dsl resolves to ::TwoClassesOneDsl" do
+              dsl_method = self.dsl_method
+              recipe = converge {
+                instance_eval("#{dsl_method} 'blah' do; end")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_resource).to eq eval("::#{class_name}")
+            end
+          end
+          context "And resource BlahModule::TwoClassesOneDsl with resource_name :argh" do
+            before {
+              eval <<-EOM, nil, __FILE__, __LINE__+1
+                module BlahModule
+                  class BlahModule::#{class_name} < BaseThingy
+                    resource_name :argh
+                  end
+                end
+              EOM
+            }
+            it "two_classes_one_dsl resolves to ::TwoClassesOneDsl" do
+              dsl_method = self.dsl_method
+              recipe = converge {
+                instance_eval("#{dsl_method} 'blah' do; end")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_resource).to eq eval("::#{class_name}")
+            end
+          end
+          context "And resource BlahModule::TwoClassesOneDsl with provides :two_classes_one_dsl, os: 'blarghle'" do
+            before {
+              eval <<-EOM, nil, __FILE__, __LINE__+1
+                module BlahModule
+                  class BlahModule::#{class_name} < BaseThingy
+                    provides #{dsl_method.inspect}, os: 'blarghle'
+                  end
+                end
+              EOM
+            }
+            it "and os = blarghle, two_classes_one_dsl resolves to BlahModule::TwoClassesOneDsl" do
+              dsl_method = self.dsl_method
+              recipe = converge {
+                # this is an ugly way to test, make Cheffish expose node attrs
+                run_context.node.automatic[:os] = 'blarghle'
+                instance_eval("#{dsl_method} 'blah' do; end")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_resource).to eq eval("BlahModule::#{class_name}")
+            end
+
+            it "and os = linux, two_classes_one_dsl resolves to BlahModule::TwoClassesOneDsl" do
+              dsl_method = self.dsl_method
+              recipe = converge {
+                # this is an ugly way to test, make Cheffish expose node attrs
+                run_context.node.automatic[:os] = 'linux'
+                instance_eval("#{dsl_method} 'blah' do; end")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_resource).to eq eval("::#{class_name}")
+            end
           end
         end
       end

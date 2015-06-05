@@ -911,10 +911,11 @@ class Chef
     def self.resource_name(name=NULL_ARG)
       # Setter
       if name != NULL_ARG
+        remove_canonical_dsl
+
         # Set the resource_name and call provides
         if name
           name = name.to_sym
-          remove_canonical_dsl
           # If our class is not already providing this name, provide it.
           if !Chef::ResourceResolver.list(name).include?(self)
             provides name, canonical: true
@@ -1327,9 +1328,17 @@ class Chef
       #
       resource_subclass = class_eval <<-EOM, __FILE__, __LINE__+1
         class Chef::Resource::#{class_name} < resource_class
+          resource_name nil # we do not actually provide anything
           def initialize(*args, &block)
             Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
             super
+          end
+          def self.resource_name(*args)
+            if args.empty?
+              @resource_name ||= superclass.resource_name
+            else
+              super
+            end
           end
           self
         end
@@ -1379,7 +1388,7 @@ class Chef
 
     def self.remove_canonical_dsl
       if @resource_name
-        remaining = Chef.resource_priority_map.delete_canonical(@resource_name)
+        remaining = Chef.resource_priority_map.delete_canonical(@resource_name, self)
         if !remaining
           Chef::DSL::Resources.remove_resource_dsl(@resource_name)
         end
