@@ -13,7 +13,33 @@ module Gem
   # Override user_dir to live inside of ~/.chefdk
 
   def self.user_dir
-    parts = [Gem.user_home, '.chefdk', 'gem', ruby_engine]
+    chefdk_home_set = !([nil, ''].include? ENV['CHEFDK_HOME'])
+    default_home = if RUBY_PLATFORM =~ /mswin|mingw|windows/
+                     File.join(ENV['LOCALAPPDATA'], 'chefdk')
+                   else
+                     File.join(Gem.user_home, '.chefdk')
+                   end
+
+    chefdk_home = if chefdk_home_set
+      ENV['CHEFDK_HOME']
+    else
+      old_home = File.join(Gem.user_home, '.chefdk')
+      if RUBY_PLATFORM =~ /mswin|mingw|windows/ && File.exists?(old_home)
+        Gem.ui.say <<-EOF
+        Warning:
+        ChefDK now defaults to using #{default_home} instead of #{old_home}.
+        Since #{old_home} exists on your machine, ChefDK will continue
+        to make use of it. Please set the environment variable CHEFDK_HOME
+        to #{old_home} to remove this warning. This warning will be removed
+        in the next major version bump of ChefDK.
+        EOF
+        old_home
+      else
+        default_home
+      end
+    end
+
+    parts = [chefdk_home, 'gem', ruby_engine]
     parts << RbConfig::CONFIG['ruby_version'] unless RbConfig::CONFIG['ruby_version'].empty?
     File.join parts
   end
@@ -34,3 +60,4 @@ Gem.pre_install do |gem_installer|
   end
 end
 # :DK-END:
+
