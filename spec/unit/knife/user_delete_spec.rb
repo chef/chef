@@ -19,21 +19,47 @@
 require 'spec_helper'
 
 describe Chef::Knife::UserDelete do
+  let(:knife) { Chef::Knife::UserDelete.new }
+  let(:user) { double('user_object') }
+  let(:stdout) { StringIO.new }
+
   before(:each) do
     Chef::Knife::UserDelete.load_deps
-    @knife = Chef::Knife::UserDelete.new
-    @knife.name_args = [ 'my_user' ]
+    knife.name_args = [ 'my_user' ]
+    allow(Chef::User).to receive(:load).and_return(user)
+    allow(user).to receive(:username).and_return('my_user')
+    allow(knife.ui).to receive(:stderr).and_return(stdout)
+    allow(knife.ui).to receive(:stdout).and_return(stdout)
+  end
+
+  # delete this once OSC11 support is gone
+  context "when the username field is not supported by the server" do
+    before do
+      allow(knife).to receive(:run_osc_11_user_delete).and_raise(SystemExit)
+      allow(user).to receive(:username).and_return(nil)
+    end
+
+    it "displays the osc warning" do
+      expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
+      expect{ knife.run }.to raise_error(SystemExit)
+    end
+
+    it "forwards the command to knife osc_user edit" do
+      expect(knife).to receive(:run_osc_11_user_delete)
+      expect{ knife.run }.to raise_error(SystemExit)
+    end
   end
 
   it 'deletes the user' do
-    expect(@knife).to receive(:delete_object).with(Chef::User, 'my_user')
-    @knife.run
+    #expect(knife).to receive(:delete_object).with(Chef::User, 'my_user')
+    expect(knife).to receive(:delete_object).with('my_user')
+    knife.run
   end
 
   it 'prints usage and exits when a user name is not provided' do
-    @knife.name_args = []
-    expect(@knife).to receive(:show_usage)
-    expect(@knife.ui).to receive(:fatal)
-    expect { @knife.run }.to raise_error(SystemExit)
+    knife.name_args = []
+    expect(knife).to receive(:show_usage)
+    expect(knife.ui).to receive(:fatal)
+    expect { knife.run }.to raise_error(SystemExit)
   end
 end

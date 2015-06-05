@@ -18,26 +18,32 @@
 
 require 'chef/knife'
 
-# NOTE: only knife user command that is backwards compatible with OSC 11,
-# so no deprecation warnings are necessary.
+# DEPRECATION NOTE
+# This code only remains to support users still operating with
+# Open Source Chef Server 11 and should be removed once support
+# for OSC 11 ends. New development should occur in the user_delete.rb.
+
 class Chef
   class Knife
-    class UserList < Knife
+    class OscUserDelete < Knife
 
       deps do
-        require 'chef/user'
+        require 'chef/osc_user'
         require 'chef/json_compat'
       end
 
-      banner "knife user list (options)"
-
-      option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+      banner "knife osc_user delete USER (options)"
 
       def run
-        output(format_list_for_display(Chef::User.list))
+        @user_name = @name_args[0]
+
+        if @user_name.nil?
+          show_usage
+          ui.fatal("You must specify a user name")
+          exit 1
+        end
+
+        delete_object(Chef::OscUser, @user_name)
       end
 
     end

@@ -140,7 +140,7 @@ describe Chef::Knife do
                     'X-Chef-Version' => Chef::VERSION,
                     "Host"=>"api.opscode.piab",
                     "X-REMOTE-REQUEST-ID"=>request_id,
-                    'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::SERVER_API_VERSION}}
+                    'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION}}
 
     let(:request_id) {"1234"}
 
@@ -399,11 +399,17 @@ describe Chef::Knife do
     it "formats 406s (non-supported API version error) nicely" do
       response = Net::HTTPNotAcceptable.new("1.1", "406", "Not Acceptable")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone", :min_version => "0", :max_version => "1"))
+
+      # set the header
+      response["x-ops-server-api-version"] = Chef::JSONCompat.to_json(:min_version => "0", :max_version => "1", :request_version => "10000000")
+
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
+
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to include('The version of Chef that Knife is using is not supported by the Chef server you sent this request to')
-      expect(stderr.string).to include("This version of Chef requires a server API version of #{Chef::HTTP::Authenticator::SERVER_API_VERSION}")
+      expect(stderr.string).to include('The request that Knife sent was using API version 10000000')
+      expect(stderr.string).to include('The Chef server you sent the request to supports a min API verson of 0 and a max API version of 1')
+      expect(stderr.string).to include('Please either update your Chef client or server to be a compatible set')
     end
 
     it "formats 500s nicely" do

@@ -18,18 +18,21 @@
 
 require 'chef/knife'
 
-# NOTE: only knife user command that is backwards compatible with OSC 11,
-# so no deprecation warnings are necessary.
+# DEPRECATION NOTE
+# This code only remains to support users still operating with
+# Open Source Chef Server 11 and should be removed once support
+# for OSC 11 ends. New development should occur in user_list.rb.
+
 class Chef
   class Knife
-    class UserList < Knife
+    class OscUserList < Knife
 
       deps do
-        require 'chef/user'
+        require 'chef/osc_user'
         require 'chef/json_compat'
       end
 
-      banner "knife user list (options)"
+      banner "knife osc_user list (options)"
 
       option :with_uri,
         :short => "-w",
@@ -37,9 +40,8 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        output(format_list_for_display(Chef::User.list))
+        output(format_list_for_display(Chef::OscUser.list))
       end
-
     end
   end
 end

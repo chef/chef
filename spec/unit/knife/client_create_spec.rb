@@ -22,6 +22,8 @@ Chef::Knife::ClientCreate.load_deps
 
 describe Chef::Knife::ClientCreate do
   let(:stderr) { StringIO.new }
+  let(:stdout) { StringIO.new }
+
 
   let(:default_client_hash) do
     {
@@ -32,19 +34,22 @@ describe Chef::Knife::ClientCreate do
   end
 
   let(:client) do
-    c = double("Chef::ApiClient")
-    allow(c).to receive(:save).and_return({"private_key" => ""})
-    allow(c).to receive(:to_s).and_return("client[adam]")
-    c
+    Chef::ApiClient.new
   end
 
   let(:knife) do
     k = Chef::Knife::ClientCreate.new
-    k.name_args = [ "adam" ]
-    k.ui.config[:disable_editing] = true
+    k.name_args = []
+    allow(k).to receive(:client).and_return(client)
+    allow(k).to receive(:edit_data).with(client).and_return(client)
     allow(k.ui).to receive(:stderr).and_return(stderr)
-    allow(k.ui).to receive(:stdout).and_return(stderr)
+    allow(k.ui).to receive(:stdout).and_return(stdout)
     k
+  end
+
+  before do
+    allow(client).to receive(:to_s).and_return("client[adam]")
+    allow(knife).to receive(:create_client).and_return(client)
   end
 
   before(:each) do
@@ -52,64 +57,130 @@ describe Chef::Knife::ClientCreate do
   end
 
   describe "run" do
-    it "should create and save the ApiClient" do
-      expect(Chef::ApiClient).to receive(:from_hash).and_return(client)
-      expect(client).to receive(:save)
-      knife.run
-    end
-
-    it "should print a message upon creation" do
-      expect(Chef::ApiClient).to receive(:from_hash).and_return(client)
-      expect(client).to receive(:save)
-      knife.run
-      expect(stderr.string).to match /Created client.*adam/i
-    end
-
-    it "should set the Client name" do
-      expect(Chef::ApiClient).to receive(:from_hash).with(hash_including("name" => "adam")).and_return(client)
-      knife.run
-    end
-
-    it "by default it is not an admin" do
-      expect(Chef::ApiClient).to receive(:from_hash).with(hash_including("admin" => false)).and_return(client)
-      knife.run
-    end
-
-    it "by default it is not a validator" do
-      expect(Chef::ApiClient).to receive(:from_hash).with(hash_including("validator" => false)).and_return(client)
-      knife.run
-    end
-
-    it "should allow you to edit the data" do
-      expect(knife).to receive(:edit_hash).with(default_client_hash).and_return(default_client_hash)
-      allow(Chef::ApiClient).to receive(:from_hash).and_return(client)
-      knife.run
-    end
-
-    describe "with -f or --file" do
-      it "should write the private key to a file" do
-        knife.config[:file] = "/tmp/monkeypants"
-        allow_any_instance_of(Chef::ApiClient).to receive(:save).and_return({ 'private_key' => "woot" })
-        filehandle = double("Filehandle")
-        expect(filehandle).to receive(:print).with('woot')
-        expect(File).to receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)
-        knife.run
+    context "when nothing is passed" do
+      # from spec/support/shared/unit/knife_shared.rb
+      it_should_behave_like "mandatory field missing" do
+        let(:name_args) { [] }
+        let(:fieldname) { 'client name' }
       end
     end
 
-    describe "with -a or --admin" do
-      it "should create an admin client" do
-        knife.config[:admin] = true
-        expect(Chef::ApiClient).to receive(:from_hash).with(hash_including("admin" => true)).and_return(client)
+    context "when clientname is passed" do
+      before do
+        knife.name_args = ['adam']
+      end
+
+      context "when public_key and prevent_keygen are passed" do
+        before do
+          knife.config[:public_key] = "some_key"
+          knife.config[:prevent_keygen] = true
+        end
+
+        it "prints the usage" do
+          expect(knife).to receive(:show_usage)
+          expect { knife.run }.to raise_error(SystemExit)
+        end
+
+        it "prints a relevant error message" do
+          expect { knife.run }.to raise_error(SystemExit)
+          expect(stderr.string).to match /You cannot pass --public-key and --prevent-keygen/
+        end
+      end
+
+      it "should create the ApiClient" do
+        expect(knife).to receive(:create_client)
         knife.run
       end
-    end
 
-    describe "with --validator" do
-      it "should create an validator client" do
-        knife.config[:validator] = true
-        expect(Chef::ApiClient).to receive(:from_hash).with(hash_including("validator" => true)).and_return(client)
+      it "should print a message upon creation" do
+        expect(knife).to receive(:create_client)
         knife.run
+        expect(stderr.string).to match /Created client.*adam/i
+      end
+
+      it "should set the Client name" do
+        knife.run
+        expect(client.name).to eq("adam")
+      end
+
+      it "by default it is not an admin" do
+        knife.run
+        expect(client.admin).to be_falsey
+      end
+
+      it "by default it is not a validator" do
+        knife.run
+        expect(client.admin).to be_falsey
+      end
+
+      it "by default it should set create_key to true" do
+        knife.run
+        expect(client.create_key).to be_truthy
+      end
+
+      it "should allow you to edit the data" do
+        expect(knife).to receive(:edit_data).with(client).and_return(client)
+        knife.run
+      end
+
+      describe "with -f or --file" do
+        before do
+          client.private_key "woot"
+        end
+
+        it "should write the private key to a file" do
+          knife.config[:file] = "/tmp/monkeypants"
+          filehandle = double("Filehandle")
+          expect(filehandle).to receive(:print).with('woot')
+          expect(File).to receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)
+          knife.run
+        end
+      end
+
+      describe "with -a or --admin" do
+        before do
+          knife.config[:admin] = true
+        end
+
+        it "should create an admin client" do
+          knife.run
+          expect(client.admin).to be_truthy
+        end
+      end
+
+      describe "with -p or --public-key" do
+        before do
+          knife.config[:public_key] = 'some_key'
+          allow(File).to receive(:read).and_return('some_key')
+          allow(File).to receive(:expand_path)
+        end
+
+        it "sets the public key" do
+          knife.run
+          expect(client.public_key).to eq('some_key')
+        end
+      end
+
+      describe "with -k or --prevent-keygen" do
+        before do
+          knife.config[:prevent_keygen] = true
+        end
+
+        it "does not set create_key" do
+          knife.run
+          expect(client.create_key).to be_falsey
+        end
+      end
+
+      describe "with --validator" do
+        before do
+          knife.config[:validator] = true
+        end
+
+        it "should create an validator client" do
+          knife.run
+          expect(client.validator).to be_truthy
+        end
       end
     end
   end

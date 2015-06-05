@@ -18,19 +18,20 @@
 
 require 'spec_helper'
 
-describe Chef::Knife::UserList do
-  let(:knife) { Chef::Knife::UserList.new }
-  let(:stdout) { StringIO.new }
+# DEPRECATION NOTE
+# This code only remains to support users still operating with
+# Open Source Chef Server 11 and should be removed once support
+# for OSC 11 ends. New development should occur in user_list_spec.rb.
 
+describe Chef::Knife::OscUserList do
   before(:each) do
-    Chef::Knife::UserList.load_deps
-    allow(knife.ui).to receive(:stderr).and_return(stdout)
-    allow(knife.ui).to receive(:stdout).and_return(stdout)
+    Chef::Knife::OscUserList.load_deps
+    @knife = Chef::Knife::OscUserList.new
   end
 
   it 'lists the users' do
-    expect(Chef::User).to receive(:list)
-    expect(knife).to receive(:format_list_for_display)
-    knife.run
+    expect(Chef::OscUser).to receive(:list)
+    expect(@knife).to receive(:format_list_for_display)
+    @knife.run
   end
 end
