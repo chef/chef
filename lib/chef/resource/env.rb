@@ -25,7 +25,6 @@ class Chef
 
       state_attrs :value
 
-      use_automatic_resource_name
       provides :env, os: "windows"
 
       default_action :create

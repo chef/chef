@@ -116,10 +116,10 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "With a resource named Chef::Resource::NoNameThingy with resource_name nil" do
+      context "With a resource named NoNameThingy with resource_name nil" do
         before(:context) {
 
-          class Chef::Resource::NoNameThingy < BaseThingy
+          class NoNameThingy < BaseThingy
             resource_name nil
           end
 
@@ -132,10 +132,10 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "With a resource named Chef::Resource::AnotherNoNameThingy with resource_name :another_thingy_name" do
+      context "With a resource named AnotherNoNameThingy with resource_name :another_thingy_name" do
         before(:context) {
 
-          class Chef::Resource::AnotherNoNameThingy < BaseThingy
+          class AnotherNoNameThingy < BaseThingy
             resource_name :another_thingy_name
           end
 
@@ -152,38 +152,256 @@ describe "Recipe DSL methods" do
             another_thingy_name 'blah' do; end
           }
           expect(recipe.logged_warnings).to eq ''
-          expect(BaseThingy.created_resource).to eq(Chef::Resource::AnotherNoNameThingy)
+          expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy)
         end
       end
 
-      context "With a resource named Chef::Resource::YetAnotherNoNameThingy with resource_name :yet_another_thingy_name; resource_name :yet_another_thingy_name_2" do
+      context "With a resource named AnotherNoNameThingy2 with resource_name :another_thingy_name2; resource_name :another_thingy_name3" do
         before(:context) {
 
-          class Chef::Resource::YetAnotherNoNameThingy < BaseThingy
-            resource_name :yet_another_thingy_name
-            resource_name :yet_another_thingy_name_2
+          class AnotherNoNameThingy2 < BaseThingy
+            resource_name :another_thingy_name2
+            resource_name :another_thingy_name3
           end
 
         }
 
-        it "yet_another_no_name_thingy does not work" do
+        it "another_no_name_thingy does not work" do
           expect_converge {
-            yet_another_no_name_thingy 'blah' do; end
+            another_no_name_thingy2 'blah' do; end
           }.to raise_error(NoMethodError)
         end
 
-        it "yet_another_thingy_name does not work" do
+        it "another_thingy_name2 does not work" do
           expect_converge {
-            yet_another_thingy_name 'blah' do; end
+            another_thingy_name2 'blah' do; end
           }.to raise_error(NoMethodError)
         end
 
-        it "yet_another_thingy_name_2 works" do
+        it "yet_another_thingy_name3 works" do
           recipe = converge {
-            yet_another_thingy_name_2 'blah' do; end
+            another_thingy_name3 'blah' do; end
           }
           expect(recipe.logged_warnings).to eq ''
-          expect(BaseThingy.created_resource).to eq(Chef::Resource::YetAnotherNoNameThingy)
+          expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy2)
+        end
+      end
+
+      context "provides overriding resource_name" do
+        context "With a resource named AnotherNoNameThingy3 with provides :another_no_name_thingy3, os: 'blarghle'" do
+          before(:context) {
+
+            class AnotherNoNameThingy3 < BaseThingy
+              provides :another_no_name_thingy3, os: 'blarghle'
+            end
+
+          }
+
+          it "and os = linux, another_no_name_thingy3 does not work" do
+            expect_converge {
+              # TODO this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'linux'
+              another_no_name_thingy3 'blah' do; end
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+          end
+
+          it "and os = blarghle, another_no_name_thingy3 works" do
+            recipe = converge {
+              # TODO this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'blarghle'
+              another_no_name_thingy3 'blah' do; end
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy3)
+          end
+        end
+
+        context "With a resource named AnotherNoNameThingy4 with two provides" do
+          before(:context) {
+
+            class AnotherNoNameThingy4 < BaseThingy
+              provides :another_no_name_thingy4, os: 'blarghle'
+              provides :another_no_name_thingy4, platform_family: 'foo'
+            end
+
+          }
+
+          it "and os = linux, another_no_name_thingy4 does not work" do
+            expect_converge {
+              # TODO this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'linux'
+              another_no_name_thingy4 'blah' do; end
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+          end
+
+          it "and os = blarghle, another_no_name_thingy4 works" do
+            recipe = converge {
+              # TODO this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'blarghle'
+              another_no_name_thingy4 'blah' do; end
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy4)
+          end
+
+          it "and platform_family = foo, another_no_name_thingy4 works" do
+            recipe = converge {
+              # TODO this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:platform_family] = 'foo'
+              another_no_name_thingy4 'blah' do; end
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy4)
+          end
+        end
+
+        context "With a resource named AnotherNoNameThingy5, a different resource_name, and a provides with the original resource_name" do
+          before(:context) {
+
+            class AnotherNoNameThingy5 < BaseThingy
+              resource_name :another_thingy_name_for_another_no_name_thingy5
+              provides :another_no_name_thingy5, os: 'blarghle'
+            end
+
+          }
+
+          it "and os = linux, another_no_name_thingy5 does not work" do
+            expect_converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'linux'
+              another_no_name_thingy5 'blah' do; end
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+          end
+
+          it "and os = blarghle, another_no_name_thingy5 works" do
+            recipe = converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'blarghle'
+              another_no_name_thingy5 'blah' do; end
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy5)
+          end
+
+          it "the new resource name can be used in a recipe" do
+            recipe = converge {
+              another_thingy_name_for_another_no_name_thingy5 'blah' do; end
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy5)
+          end
+        end
+
+        context "With a resource named AnotherNoNameThingy6, a provides with the original resource name, and a different resource_name" do
+          before(:context) {
+
+            class AnotherNoNameThingy6 < BaseThingy
+              provides :another_no_name_thingy6, os: 'blarghle'
+              resource_name :another_thingy_name_for_another_no_name_thingy6
+            end
+
+          }
+
+          it "and os = linux, another_no_name_thingy6 does not work" do
+            expect_converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'linux'
+              another_no_name_thingy6 'blah' do; end
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+          end
+
+          it "and os = blarghle, another_no_name_thingy6 works" do
+            recipe = converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'blarghle'
+              another_no_name_thingy6 'blah' do; end
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy6)
+          end
+
+          it "the new resource name can be used in a recipe" do
+            recipe = converge {
+              another_thingy_name_for_another_no_name_thingy6 'blah' do; end
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy6)
+          end
+        end
+
+        context "With a resource named AnotherNoNameThingy7, a new resource_name, and provides with that new resource name" do
+          before(:context) {
+
+            class AnotherNoNameThingy7 < BaseThingy
+              resource_name :another_thingy_name_for_another_no_name_thingy7
+              provides :another_thingy_name_for_another_no_name_thingy7, os: 'blarghle'
+            end
+
+          }
+
+          it "and os = linux, another_thingy_name_for_another_no_name_thingy7 does not work" do
+            expect_converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'linux'
+              another_thingy_name_for_another_no_name_thingy7 'blah' do; end
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+          end
+
+          it "and os = blarghle, another_thingy_name_for_another_no_name_thingy7 works" do
+            recipe = converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'blarghle'
+              another_thingy_name_for_another_no_name_thingy7 'blah' do; end
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy7)
+          end
+
+          it "the old resource name does not work" do
+            expect_converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'linux'
+              another_no_name_thingy_7 'blah' do; end
+            }.to raise_error(NoMethodError)
+          end
+        end
+
+        # opposite order from the previous test (provides, then resource_name)
+        context "With a resource named AnotherNoNameThingy8, a provides with a new resource name, and resource_name with that new resource name" do
+          before(:context) {
+
+            class AnotherNoNameThingy8 < BaseThingy
+              provides :another_thingy_name_for_another_no_name_thingy8, os: 'blarghle'
+              resource_name :another_thingy_name_for_another_no_name_thingy8
+            end
+
+          }
+
+          it "and os = linux, another_thingy_name_for_another_no_name_thingy8 does not work" do
+            expect_converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'linux'
+              another_thingy_name_for_another_no_name_thingy8 'blah' do; end
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+          end
+
+          it "and os = blarghle, another_thingy_name_for_another_no_name_thingy8 works" do
+            recipe = converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'blarghle'
+              another_thingy_name_for_another_no_name_thingy8 'blah' do; end
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy8)
+          end
+
+          it "the old resource name does not work" do
+            expect_converge {
+              # this is an ugly way to test, make Cheffish expose node attrs
+              run_context.node.automatic[:os] = 'linux'
+              another_thingy_name8 'blah' do; end
+            }.to raise_error(NoMethodError)
+          end
         end
       end
     end

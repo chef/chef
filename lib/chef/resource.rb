@@ -908,24 +908,18 @@ class Chef
     #
     # @return [Symbol] The name of this resource type (e.g. `:execute`).
     #
-    def self.resource_name(value=NULL_ARG)
-
+    def self.resource_name(name=NULL_ARG)
       # Setter
-      if value != NULL_ARG
-        # Get rid of any current provides
-        if @resource_name
-          Chef.delete_resource_priority_array(@resource_name) do |matcher|
-            Array(matcher[:value]) == [ self ] && matcher[:canonical]
-          end
-          if Chef.get_resource_priority_array(@resource_name).nil?
-            Chef::DSL::Resources.remove_resource_dsl(@resource_name)
-          end
-        end
-
+      if name != NULL_ARG
         # Set the resource_name and call provides
-        if value
-          @resource_name = value.to_sym
-          provides @resource_name, canonical: true
+        if name
+          name = name.to_sym
+          remove_canonical_dsl
+          # If our class is not already providing this name, provide it.
+          if !Chef::ResourceResolver.list(name).include?(self)
+            provides name, canonical: true
+          end
+          @resource_name = name
         else
           @resource_name = nil
         end
@@ -938,26 +932,13 @@ class Chef
 
       @resource_name
     end
-    def self.resource_name=(value)
-      resource_name(value)
+    def self.resource_name=(name)
+      resource_name(name)
     end
 
     def self.inherited(child)
       super
       child.resource_name
-    end
-
-    #
-    # Use the class name as the resource name.
-    #
-    # Munges the last part of the class name from camel case to snake case,
-    # and sets the resource_name to that:
-    #
-    # A::B::BlahDBlah -> blah_d_blah
-    #
-    def self.use_automatic_resource_name
-      automatic_name = convert_to_snake_case(self.name.split('::')[-1])
-      resource_name automatic_name
     end
 
     #
@@ -1148,8 +1129,24 @@ class Chef
       end
     end
 
-    def self.provides(name, opts={}, &block)
-      result = Chef.set_resource_priority_array(name, self, opts, &block)
+    #
+    # Mark this resource as providing particular DSL.
+    #
+    # Resources have an automatic DSL based on their resource_name, equivalent to
+    # `provides :resource_name` (providing the resource on all OS's).  If you
+    # declare a `provides` with the given resource_name, it *replaces* that
+    # provides (so that you can provide your resource DSL only on certain OS's).
+    #
+    def self.provides(name, **options, &block)
+      name = name.to_sym
+
+      # `provides :resource_name, os: 'linux'`) needs to remove the old
+      # canonical DSL before adding the new one.
+      if @resource_name && name == @resource_name
+        remove_canonical_dsl
+      end
+
+      result = Chef.set_resource_priority_array(name, self, options, &block)
       Chef::DSL::Resources.add_resource_dsl(name)
       result
     end
@@ -1374,6 +1371,17 @@ class Chef
           raise ArgumentError, "No provider found to match '#{name}'"
         else
           raise e
+        end
+      end
+    end
+
+    private
+
+    def self.remove_canonical_dsl
+      if @resource_name
+        remaining = Chef.resource_priority_map.delete_canonical(@resource_name)
+        if !remaining
+          Chef::DSL::Resources.remove_resource_dsl(@resource_name)
         end
       end
     end

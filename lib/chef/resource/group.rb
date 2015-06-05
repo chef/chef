@@ -25,8 +25,6 @@ class Chef
 
       state_attrs :members
 
-      use_automatic_resource_name
-
       allowed_actions :create, :remove, :modify, :manage
       default_action :create
 

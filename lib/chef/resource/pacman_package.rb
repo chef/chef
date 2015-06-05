@@ -21,10 +21,7 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
-
-      use_automatic_resource_name
       provides :pacman_package, os: "linux"
-
     end
   end
 end

@@ -22,8 +22,6 @@ require 'chef/provider/package/paludis'
 class Chef
   class Resource
     class PaludisPackage < Chef::Resource::Package
-
-      use_automatic_resource_name
       provides :paludis_package, os: "linux"
 
       allowed_actions :install, :remove, :upgrade

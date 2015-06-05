@@ -22,8 +22,6 @@ require 'chef/resource'
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
-      use_automatic_resource_name
-
       default_action :break
 
       def initialize(action="break", *args)

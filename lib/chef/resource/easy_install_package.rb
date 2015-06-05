@@ -22,8 +22,6 @@ class Chef
   class Resource
     class EasyInstallPackage < Chef::Resource::Package
 
-      use_automatic_resource_name
-
       def easy_install_binary(arg=nil)
         set_or_return(
           :easy_install_binary,

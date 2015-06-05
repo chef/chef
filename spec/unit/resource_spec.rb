@@ -395,20 +395,6 @@ describe Chef::Resource do
       expect(r.resource_name).to eq :blah
       expect(r.declared_type).to eq :d
     end
-    it "use_automatic_resource_name yields a resource name from the class name" do
-      class SelfResourceNameTestBlahDBlah4 < Chef::Resource
-        use_automatic_resource_name
-      end
-
-      c = SelfResourceNameTestBlahDBlah4
-
-      r = c.new('hi')
-      r.declared_type = :d
-      expect(c.resource_name).to eq :self_resource_name_test_blah_d_blah4
-      expect(r.resource_name).to eq :self_resource_name_test_blah_d_blah4
-      expect(r.declared_type).to eq :d
-
-    end
   end
 
   describe "is" do

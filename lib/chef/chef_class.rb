@@ -162,22 +162,14 @@ class Chef
       @resource_priority_map = nil
     end
 
-    #
-    # Removes a resource
-    #
     # @api private
-    def delete_resource_priority_array(name, &filter)
-      resource_priority_map.delete_priority_array(name, &filter)
-    end
-
-    private
-
     def provider_priority_map
       @provider_priority_map ||= begin
         # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
         Chef::Platform::ProviderPriorityMap.instance
       end
     end
+    # @api private
     def resource_priority_map
       @resource_priority_map ||= begin
         Chef::Platform::ResourcePriorityMap.instance

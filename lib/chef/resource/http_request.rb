@@ -23,7 +23,6 @@ require 'chef/provider/http_request'
 class Chef
   class Resource
     class HttpRequest < Chef::Resource
-      use_automatic_resource_name
 
       identity_attr :url
 

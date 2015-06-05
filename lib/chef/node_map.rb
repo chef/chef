@@ -68,14 +68,13 @@ class Chef
     # Get a value from the NodeMap via applying the node to the filters that
     # were set on the key.
     #
-    # @param node [Chef::Node] The Chef::Node object for the run
+    # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
+    #   ignore all filters.
     # @param key [Object] Key to look up
-    # @param canonical [Boolean] Whether to look up only the canonically provided
-    #   DSL (i.e. look up resource_name)
     #
     # @return [Object] Value
     #
-    def get(node, key, canonical: nil)
+    def get(node, key)
       # FIXME: real exception
       raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
       list(node, key, canonical: canonical).first
@@ -85,26 +84,34 @@ class Chef
     # List all matches for the given node and key from the NodeMap, from
     # most-recently added to oldest.
     #
-    # @param node [Chef::Node] The Chef::Node object for the run
+    # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
+    #   ignore all filters.
     # @param key [Object] Key to look up
-    # @param canonical [Boolean] Whether to look up only the canonically provided
-    #   DSL (i.e. look up resource_name)
     #
     # @return [Object] Value
     #
-    def list(node, key, canonical: nil)
+    def list(node, key)
       # FIXME: real exception
       raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
       return [] unless @map.has_key?(key)
       @map[key].select do |matcher|
-        filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block]) &&
-          (!canonical || matcher[:canonical])
+        !node || (filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block]))
       end.map { |matcher| matcher[:value] }
     end
 
+    # Seriously, don't use this, it's nearly certain to change on you
+    # @return remaining
     # @api private
-    def delete_if(key, &block)
-      @map[key].delete_if(&block)
+    def delete_canonical(key)
+      remaining = @map[key]
+      if remaining
+        remaining.delete_if { |matcher| matcher[:canonical] }
+        if remaining.empty?
+          @map.delete(key)
+          remaining = nil
+        end
+      end
+      remaining
     end
 
     private
@@ -142,7 +149,7 @@ class Chef
       # spend any time here.
       return true if !filters[attribute]
       filter_values = Array(filters[attribute])
-      value = node ? node[attribute] : nil
+      value = node[attribute]
 
       # Split the blacklist and whitelist
       blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?('!') }
@@ -159,7 +166,7 @@ class Chef
       # spend any time here.
       return true if !filters[attribute]
       filter_values = Array(filters[attribute])
-      value = node ? node[attribute] : nil
+      value = node[attribute]
 
       filter_values.empty? ||
       Array(filter_values).any? do |v|

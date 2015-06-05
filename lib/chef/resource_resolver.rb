@@ -28,10 +28,9 @@ class Chef
     attr_reader :action
     attr_reader :canonical
 
-    def initialize(node, resource, canonical: nil)
+    def initialize(node, resource)
       @node = node
       @resource = resource.to_sym
-      @canonical = canonical
     end
 
     def resolve
@@ -49,6 +48,12 @@ class Chef
       handler
     end
 
+    def list
+      Chef::Log.debug "Resources for generic #{resource} resource enabled on node include: #{enabled_handlers}"
+      Chef::Log.debug "Resources for #{resource}: #{prioritized_handlers}"
+      prioritized_handlers
+    end
+
     def provided_by?(resource_class)
       !prioritized_handlers.include?(resource_class)
     end
@@ -56,14 +61,24 @@ class Chef
     #
     # Resolve a resource by name.
     #
-    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`)
+    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`).
     # @param node [Chef::Node] The node on which the resource will run. If not
     #   passed, will return the first match.
-    # @param canonical [Boolean] Whether to restrict the search to the canonical
-    #   name (the one set by `resource_name`)
     #
-    def self.resolve(resource_name, node: Chef.node, canonical: false)
-      new(node, resource_name, canonical: canonical).resolve
+    def self.resolve(resource_name, node: nil)
+      new(node, resource_name).resolve
+    end
+
+    #
+    # Resolve a list of all resources that implement the given DSL (in order of
+    # preference).
+    #
+    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`).
+    # @param node [Chef::Node] The node on which the resource will run. If not
+    #   passed, will return all resources (ignoring filters).
+    #
+    def self.list(resource_name, node: nil)
+      new(node, resource_name).list
     end
 
     protected
@@ -74,7 +89,7 @@ class Chef
 
     def prioritized_handlers
       @prioritized_handlers ||=
-        priority_map.list_handlers(node, resource, canonical: nil)
+        priority_map.list_handlers(node, resource)
     end
 
     module Deprecated

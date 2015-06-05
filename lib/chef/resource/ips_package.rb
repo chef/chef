@@ -23,7 +23,6 @@ class Chef
   class Resource
     class IpsPackage < ::Chef::Resource::Package
 
-      use_automatic_resource_name
       provides :ips_package, os: "solaris2"
 
       allowed_actions :install, :remove, :upgrade

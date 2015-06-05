@@ -22,8 +22,6 @@ require 'chef/resource'
 class Chef
   class Resource
     class Service < Chef::Resource
-      use_automatic_resource_name
-
       identity_attr :service_name
 
       state_attrs :enabled, :running

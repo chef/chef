@@ -19,7 +19,6 @@
 class Chef
   class Resource
     class OneTwoThreeFour < Chef::Resource
-      use_automatic_resource_name
 
       attr_reader :i_can_count
 

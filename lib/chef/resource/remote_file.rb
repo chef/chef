@@ -28,8 +28,6 @@ class Chef
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      use_automatic_resource_name
-
       def initialize(name, run_context=nil)
         super
         @source = []

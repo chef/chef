@@ -19,8 +19,6 @@
 class Chef
   class Resource
     class MacportsPackage < Chef::Resource::Package
-
-      use_automatic_resource_name
       provides :package, os: "darwin"
     end
   end

@@ -22,7 +22,6 @@ class Chef
   class Resource
     class DscScript < Chef::Resource
 
-      use_automatic_resource_name
       provides :dsc_script, platform: "windows"
 
       default_action :run

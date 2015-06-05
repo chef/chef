@@ -21,8 +21,6 @@ require 'chef/provider/script'
 class Chef
   class Resource
     class Python < Chef::Resource::Script
-      use_automatic_resource_name
-
       def initialize(name, run_context=nil)
         super
         @interpreter = "python"

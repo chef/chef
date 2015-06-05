@@ -20,8 +20,6 @@ require 'chef/resource/windows_script'
 class Chef
   class Resource
     class PowershellScript < Chef::Resource::WindowsScript
-
-      use_automatic_resource_name
       provides :powershell_script, os: "windows"
 
       def initialize(name, run_context=nil)

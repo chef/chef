@@ -27,8 +27,6 @@ class Chef
 
       state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
 
-      use_automatic_resource_name
-
       default_action :mount
       allowed_actions :mount, :umount, :remount, :enable, :disable
 

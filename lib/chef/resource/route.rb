@@ -22,8 +22,6 @@ require 'chef/resource'
 class Chef
   class Resource
     class Route < Chef::Resource
-      use_automatic_resource_name
-
       identity_attr :target
 
       state_attrs :netmask, :gateway

@@ -23,7 +23,6 @@ require 'chef/provider/erl_call'
 class Chef
   class Resource
     class ErlCall < Chef::Resource
-      use_automatic_resource_name
 
       # erl_call : http://erlang.org/doc/man/erl_call.html
 

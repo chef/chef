@@ -22,15 +22,9 @@ class Chef
     # Convenience class for using the deploy resource with the revision
     # deployment strategy (provider)
     class DeployRevision < Chef::Resource::Deploy
-
-      use_automatic_resource_name
-
     end
 
     class DeployBranch < Chef::Resource::DeployRevision
-
-      use_automatic_resource_name
-
     end
 
   end

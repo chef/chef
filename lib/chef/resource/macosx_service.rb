@@ -22,7 +22,6 @@ class Chef
   class Resource
     class MacosxService < Chef::Resource::Service
 
-      use_automatic_resource_name
       provides :macosx_service, os: "darwin"
       provides :service, os: "darwin"
 

@@ -20,7 +20,6 @@
 class Chef
   class Resource
     class OpenldapIncluder < Chef::Resource::LWRPBase
-      use_automatic_resource_name
       allowed_actions :run
       default_action :run
     end

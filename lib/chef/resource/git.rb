@@ -22,8 +22,6 @@ class Chef
   class Resource
     class Git < Chef::Resource::Scm
 
-      use_automatic_resource_name
-
       def initialize(name, run_context=nil)
         super
         @additional_remotes = Hash[]
