@@ -34,15 +34,6 @@ dependency "kitchen-vagrant"
 dependency "chef"
 dependency "openssl-customization"
 
-# Delivery CLI is *nix only ATM
-unless windows?
-  # Delivery CLI
-  dependency "delivery-cli"
-  # We treat Rust as a build-time dep only. See the software definition for
-  # more details.
-  dependency "rust-uninstall"
-end
-
 # The devkit has to be installed after rubygems-customization so the
 # file it installs gets patched.
 dependency "ruby-windows-devkit" if windows?
