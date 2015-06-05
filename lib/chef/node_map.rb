@@ -19,27 +19,31 @@
 class Chef
   class NodeMap
 
+    #
     # Create a new NodeMap
     #
     def initialize
       @map = {}
     end
 
+    #
     # Set a key/value pair on the map with a filter.  The filter must be true
     # when applied to the node in order to retrieve the value.
     #
     # @param key [Object] Key to store
     # @param value [Object] Value associated with the key
     # @param filters [Hash] Node filter options to apply to key retrieval
+    #
     # @yield [node] Arbitrary node filter as a block which takes a node argument
+    #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, &block)
+    def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, canonical: nil, &block)
       Chef::Log.deprecation "The on_platform option to node_map has been deprecated" if on_platform
       Chef::Log.deprecation "The on_platforms option to node_map has been deprecated" if on_platforms
       platform ||= on_platform || on_platforms
       filters = { platform: platform, platform_version: platform_version, platform_family: platform_family, os: os }
-      new_matcher = { filters: filters, block: block, value: value }
+      new_matcher = { filters: filters, block: block, value: value, canonical: canonical }
       @map[key] ||= []
       # Decide where to insert the matcher; the new value is preferred over
       # anything more specific (see `priority_of`) and is preferred over older
@@ -60,33 +64,47 @@ class Chef
       self
     end
 
+    #
     # Get a value from the NodeMap via applying the node to the filters that
     # were set on the key.
     #
     # @param node [Chef::Node] The Chef::Node object for the run
     # @param key [Object] Key to look up
+    # @param canonical [Boolean] Whether to look up only the canonically provided
+    #   DSL (i.e. look up resource_name)
+    #
     # @return [Object] Value
     #
-    def get(node, key)
+    def get(node, key, canonical: nil)
       # FIXME: real exception
-      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node)
-      list(node, key).first
+      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
+      list(node, key, canonical: canonical).first
     end
 
+    #
     # List all matches for the given node and key from the NodeMap, from
     # most-recently added to oldest.
     #
     # @param node [Chef::Node] The Chef::Node object for the run
     # @param key [Object] Key to look up
+    # @param canonical [Boolean] Whether to look up only the canonically provided
+    #   DSL (i.e. look up resource_name)
+    #
     # @return [Object] Value
     #
-    def list(node, key)
+    def list(node, key, canonical: nil)
       # FIXME: real exception
-      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node)
+      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
       return [] unless @map.has_key?(key)
       @map[key].select do |matcher|
-        filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block])
+        filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block]) &&
+          (!canonical || matcher[:canonical])
       end.map { |matcher| matcher[:value] }
+    end
+
+    # @api private
+    def delete_if(key, &block)
+      @map[key].delete_if(&block)
     end
 
     private
@@ -124,7 +142,7 @@ class Chef
       # spend any time here.
       return true if !filters[attribute]
       filter_values = Array(filters[attribute])
-      value = node[attribute]
+      value = node ? node[attribute] : nil
 
       # Split the blacklist and whitelist
       blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?('!') }
@@ -141,7 +159,7 @@ class Chef
       # spend any time here.
       return true if !filters[attribute]
       filter_values = Array(filters[attribute])
-      value = node[attribute]
+      value = node ? node[attribute] : nil
 
       filter_values.empty? ||
       Array(filter_values).any? do |v|

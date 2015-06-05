@@ -26,35 +26,15 @@ class Chef
     attr_reader :node
     attr_reader :resource
     attr_reader :action
+    attr_reader :canonical
 
-    def initialize(node, resource)
+    def initialize(node, resource, canonical: nil)
       @node = node
       @resource = resource.to_sym
+      @canonical = canonical
     end
 
     def resolve
-      maybe_dynamic_resource_resolution ||
-        maybe_chef_platform_lookup
-    end
-
-    def provided_by?(resource_class)
-      !prioritized_handlers.include?(resource_class)
-    end
-
-    #
-    # Resolve a resource by name.
-    #
-    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`)
-    # @param node [Chef::Node] The node on which the resource will run.
-    #
-    def self.resolve(resource_name, node: Chef.node)
-      new(node, resource_name).resolve
-    end
-
-    protected
-
-    # try dynamically finding a resource based on querying the resources to see what they support
-    def maybe_dynamic_resource_resolution
       # log this so we know what resources will work for the generic resource on the node (early cut)
       Chef::Log.debug "Resources for generic #{resource} resource enabled on node include: #{enabled_handlers}"
 
@@ -69,17 +49,32 @@ class Chef
       handler
     end
 
-    # try the old static lookup of resources by mangling name to resource klass
-    def maybe_chef_platform_lookup
-      Chef::Resource.resource_matching_short_name(resource)
+    def provided_by?(resource_class)
+      !prioritized_handlers.include?(resource_class)
     end
+
+    #
+    # Resolve a resource by name.
+    #
+    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`)
+    # @param node [Chef::Node] The node on which the resource will run. If not
+    #   passed, will return the first match.
+    # @param canonical [Boolean] Whether to restrict the search to the canonical
+    #   name (the one set by `resource_name`)
+    #
+    def self.resolve(resource_name, node: Chef.node, canonical: false)
+      new(node, resource_name, canonical: canonical).resolve
+    end
+
+    protected
 
     def priority_map
       Chef::Platform::ResourcePriorityMap.instance
     end
 
     def prioritized_handlers
-      @prioritized_handlers ||= priority_map.list_handlers(node, resource)
+      @prioritized_handlers ||=
+        priority_map.list_handlers(node, resource, canonical: nil)
     end
 
     module Deprecated

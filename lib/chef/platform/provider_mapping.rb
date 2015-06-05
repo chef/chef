@@ -60,8 +60,6 @@ class Chef
               Chef::Log.debug("Chef::Version::Comparable does not know how to parse the platform version: #{version}")
             end
           end
-        else
-          Chef::Log.debug("Platform #{name} not found, using all defaults. (Unsupported platform?)")
         end
         provider_map
       end

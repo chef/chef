@@ -74,7 +74,7 @@ describe "Recipe DSL methods" do
           recipe = converge {
             backcompat_thingy 'blah' do; end
           }
-          expect(recipe.logged_warnings).to match(/Class Chef::Resource::BackcompatThingy does not declare 'provides :backcompat_thingy'/i)
+          # expect(recipe.logged_warnings).to match(/Class Chef::Resource::BackcompatThingy does not declare 'provides :backcompat_thingy'/i)
           expect(BaseThingy.created_resource).to eq Chef::Resource::BackcompatThingy
           expect(BaseThingy.created_provider).to eq Chef::Provider::BackcompatThingy
         end
@@ -102,14 +102,88 @@ describe "Recipe DSL methods" do
       context "With a resource named RecipeDSLSpecNamespace::Bar::Thingy" do
         before(:context) {
 
-          class RecipeDSLSpecNamespace::Bar::Thingy < BaseThingy; end
+          class RecipeDSLSpecNamespace::Bar::BarThingy < BaseThingy
+          end
 
         }
 
-        it "thingy does not work" do
+        it "bar_thingy works" do
+          recipe = converge {
+            bar_thingy 'blah' do; end
+          }
+          expect(recipe.logged_warnings).to eq ''
+          expect(BaseThingy.created_resource).to eq(RecipeDSLSpecNamespace::Bar::BarThingy)
+        end
+      end
+
+      context "With a resource named Chef::Resource::NoNameThingy with resource_name nil" do
+        before(:context) {
+
+          class Chef::Resource::NoNameThingy < BaseThingy
+            resource_name nil
+          end
+
+        }
+
+        it "no_name_thingy does not work" do
           expect_converge {
             thingy 'blah' do; end
           }.to raise_error(NoMethodError)
+        end
+      end
+
+      context "With a resource named Chef::Resource::AnotherNoNameThingy with resource_name :another_thingy_name" do
+        before(:context) {
+
+          class Chef::Resource::AnotherNoNameThingy < BaseThingy
+            resource_name :another_thingy_name
+          end
+
+        }
+
+        it "another_no_name_thingy does not work" do
+          expect_converge {
+            another_no_name_thingy 'blah' do; end
+          }.to raise_error(NoMethodError)
+        end
+
+        it "another_thingy_name works" do
+          recipe = converge {
+            another_thingy_name 'blah' do; end
+          }
+          expect(recipe.logged_warnings).to eq ''
+          expect(BaseThingy.created_resource).to eq(Chef::Resource::AnotherNoNameThingy)
+        end
+      end
+
+      context "With a resource named Chef::Resource::YetAnotherNoNameThingy with resource_name :yet_another_thingy_name; resource_name :yet_another_thingy_name_2" do
+        before(:context) {
+
+          class Chef::Resource::YetAnotherNoNameThingy < BaseThingy
+            resource_name :yet_another_thingy_name
+            resource_name :yet_another_thingy_name_2
+          end
+
+        }
+
+        it "yet_another_no_name_thingy does not work" do
+          expect_converge {
+            yet_another_no_name_thingy 'blah' do; end
+          }.to raise_error(NoMethodError)
+        end
+
+        it "yet_another_thingy_name does not work" do
+          expect_converge {
+            yet_another_thingy_name 'blah' do; end
+          }.to raise_error(NoMethodError)
+        end
+
+        it "yet_another_thingy_name_2 works" do
+          recipe = converge {
+            yet_another_thingy_name_2 'blah' do; end
+          }
+          expect(recipe.logged_warnings).to eq ''
+          expect(BaseThingy.created_resource).to eq(Chef::Resource::YetAnotherNoNameThingy)
         end
       end
     end
