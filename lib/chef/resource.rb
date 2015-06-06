@@ -1088,9 +1088,29 @@ class Chef
       # NOTE: that we do not support unregistering classes as descendents like
       # we used to for LWRP unloading because that was horrible and removed in
       # Chef-12.
+      # @deprecated
+      # @api private
       alias :resource_classes :descendants
+      # @deprecated
+      # @api private
       alias :find_subclass_by_name :find_descendants_by_name
     end
+
+    # @deprecated
+    # @api private
+    # We memoize a sorted version of descendants so that resource lookups don't
+    # have to sort all the things, all the time.
+    # This was causing performance issues in test runs, and probably in real
+    # life as well.
+    @@sorted_descendants = nil
+    def self.sorted_descendants
+      @@sorted_descendants ||= descendants.sort_by { |x| x.to_s }
+    end
+    def self.inherited(other)
+      super
+      @@sorted_descendants = nil
+    end
+
 
     # If an unknown method is invoked, determine whether the enclosing Provider's
     # lexical scope can fulfill the request. E.g. This happens when the Resource's

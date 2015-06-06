@@ -79,35 +79,36 @@ class Chef
     end
 
     def prioritized_handlers
-      @prioritized_handlers ||=
-        priority_map.list_handlers(node, resource)
+      @prioritized_handlers ||= priority_map.list_handlers(node, resource)
     end
 
     module Deprecated
       # return a deterministically sorted list of Chef::Resource subclasses
+      # @deprecated Now prioritized_handlers does its own work (more efficiently)
       def resources
-        @resources ||= Chef::Resource.descendants
+        Chef::Resource.sorted_descendants
       end
 
-      # this cut looks at if the resource can handle the resource type on the node
+      # A list of all handlers
+      # @deprecated Now prioritized_handlers does its own work
       def enabled_handlers
-        @enabled_handlers ||=
-          resources.select do |klass|
-            klass.provides?(node, resource)
-          end.sort {|a,b| a.to_s <=> b.to_s }
+        resources.select { |klass| klass.provides?(node, resource) }
       end
 
       protected
 
       # If there are no providers for a DSL, we search through the
       def prioritized_handlers
-        @prioritized_handlers ||= super || begin
-          if !enabled_handlers.empty?
-            Chef::Log.deprecation("#{resource} is marked as providing DSL #{resource}, but provides #{resource.inspect} was never called!")
-            Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+        @prioritized_handlers ||= super ||
+          resources.select do |klass|
+            # Don't bother calling provides? unless it's overriden. We already
+            # know prioritized_handlers
+            if klass.method(:provides?).owner != Chef::Resource && klass.provides?(node, resource)
+              Chef::Log.deprecation("Resources #{provided.join(", ")} are marked as providing DSL #{resource}, but provides #{resource.inspect} was never called!")
+              Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+              true
+            end
           end
-          enabled_handlers
-        end
       end
     end
     prepend Deprecated
