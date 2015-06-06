@@ -2,15 +2,15 @@
 * [**Ranjib Dey**](https://github.com/ranjib):
   [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
 * [**John Kerry**](https://github.com/jkerry):
-  [pr#3539](https://github.com/chef/chef/pull/3539) Fix issue: registry_key resource is case sensitive in chef but not on windows
+  [pr#3539](https://github.com/chef/chef/pull/3539) Fix issue: registry\_key resource is case sensitive in chef but not on windows
 * [**David Eddy**](https://github.com/bahamas10):
   [pr#3443](https://github.com/chef/chef/pull/3443) remove extraneous space
 
 
-* [pr#3455](https://github.com/chef/chef/pull/3455) powershell_script: do not allow suppression of syntax errors
+* [pr#3455](https://github.com/chef/chef/pull/3455) powershell\_script: do not allow suppression of syntax errors
 * [pr#3519](https://github.com/chef/chef/pull/3519) The wording seemed odd.
 * [pr#3208](https://github.com/chef/chef/pull/3208) Missing require (require what you use).
-* [pr#3449](https://github.com/chef/chef/pull/3449) correcting minor typo in user_edit knife action
+* [pr#3449](https://github.com/chef/chef/pull/3449) correcting minor typo in user\_edit knife action
 * [pr#3572](https://github.com/chef/chef/pull/3572) Use windows paths without case-sensitivity.
 * [pr#3666](https://github.com/chef/chef/pull/3666) Support SNI in `knife ssl check`.
 * [pr#3667](https://github.com/chef/chef/pull/3667) Change chef service to start as 'Automatic delayed start'.
@@ -18,6 +18,7 @@
 * [pr#3698](https://github.com/chef/chef/pull/3698) Add ability to specify dependencies in chef-service-manager.
 * [pr#3728](https://github.com/chef/chef/pull/3728) Rewrite NetLocalGroup things to use FFI
 * [pr#3754](https://github.com/chef/chef/pull/3754) Fix functional tests for group resource - fix #3728
+* [pr#3498](https://github.com/chef/chef/pull/3498) Use dpkg-deb directly rather than regex
 
 ## 12.4.1
 

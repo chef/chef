@@ -25,8 +25,6 @@ class Chef
   class Provider
     class Package
       class Dpkg < Chef::Provider::Package
-        # http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
-        DPKG_INFO = /([a-z\d\-\+\.]+)\t([\w\d.~:-]+)/
         DPKG_INSTALLED = /^Status: install ok installed/
         DPKG_VERSION = /^Version: (.+)$/
 
@@ -54,26 +52,22 @@ class Chef
           @source_exists = true
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-          @new_resource.version(nil)
 
           if @new_resource.source
             @source_exists = ::File.exists?(@new_resource.source)
             if @source_exists
               # Get information from the package if supplied
               Chef::Log.debug("#{@new_resource} checking dpkg status")
-
-              shell_out_with_timeout("dpkg-deb -W #{@new_resource.source}").stdout.each_line do |line|
-                if pkginfo = DPKG_INFO.match(line)
-                  @current_resource.package_name(pkginfo[1])
-                  @new_resource.version(pkginfo[2])
-                  @candidate_version = pkginfo[2]
-                end
+              status = shell_out_with_timeout("dpkg-deb -W #{@new_resource.source}")
+              pkginfo = status.stdout.split("\t")
+              unless pkginfo.empty?
+                @current_resource.package_name(pkginfo[0])
+                @candidate_version = pkginfo[1].strip
               end
             else
               # Source provided but not valid means we can't safely do further processing
               return
             end
-
           end
 
           # Check to see if it is installed
