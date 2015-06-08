@@ -1309,8 +1309,7 @@ class Chef
     end
 
     def provider_for_action(action)
-      provider_class = self.class.action_provider_class
-      provider_class ||= Chef::ProviderResolver.new(node, self, action).resolve
+      provider_class = Chef::ProviderResolver.new(node, self, action).resolve
       provider = provider_class.new(self, run_context)
       provider.action = action
       provider
