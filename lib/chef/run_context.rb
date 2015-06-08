@@ -144,7 +144,7 @@ class Chef
       @reboot_info = {}
       @cookbook_compiler = nil
 
-      initialize_non_shared_state
+      initialize_child_state
     end
 
     #
@@ -161,7 +161,7 @@ class Chef
     #
     # Initialize state that applies to both Chef::RunContext and Chef::ChildRunContext
     #
-    def initialize_non_shared_state
+    def initialize_child_state
       @audits = {}
       @resource_collection = Chef::ResourceCollection.new
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
@@ -527,7 +527,7 @@ ERROR_MESSAGE
       ChildRunContext.new(self)
     end
 
-    private
+    protected
 
     attr_reader :cookbook_compiler
     attr_reader :loaded_attributes_hash
@@ -560,14 +560,69 @@ ERROR_MESSAGE
     #
     class ChildRunContext < RunContext
       extend Forwardable
-      def_delegators :parent_run_context, :node, :cookbook_collection, :definitions, :events, :reboot_info, :reboot_info=, :cookbook_compiler
+      def_delegators :parent_run_context, *%w(
+        cancel_reboot
+        config
+        cookbook_collection
+        cookbook_compiler
+        definitions
+        events
+        has_cookbook_file_in_cookbook?
+        has_template_in_cookbook?
+        include_recipe
+        load
+        load_recipe
+        load_recipe_file
+        loaded_attribute
+        loaded_attributes
+        loaded_attributes_hash
+        loaded_fully_qualified_attribute?
+        loaded_fully_qualified_recipe?
+        loaded_recipe
+        loaded_recipe?
+        loaded_recipes
+        loaded_recipes_hash
+        node
+        open_stream
+        reboot_info
+        reboot_info=
+        reboot_requested?
+        request_reboot
+        resolve_attribute
+        unreachable_cookbook?
+      )
 
       def initialize(parent_run_context)
+        @parent_run_context = parent_run_context
+
         # We don't call super, because we don't bother initializing stuff we're
         # going to delegate to the parent anyway.  Just initialize things that
         # every instance needs.
-        initialize_non_shared_state
-        @parent_run_context = parent_run_context
+        initialize_child_state
+      end
+
+      CHILD_STATE = %w(
+        audits
+        audits=
+        create_child
+        delayed_notification_collection
+        delayed_notification_collection=
+        delayed_notifications
+        immediate_notification_collection
+        immediate_notification_collection=
+        immediate_notifications
+        initialize_child_state
+        notifies_immediately
+        notifies_delayed
+        parent_run_context
+        resource_collection
+        resource_collection=
+      ).map { |x| x.to_sym }
+
+      # Verify that we didn't miss any methods
+      missing_methods = superclass.instance_methods(false) - instance_methods(false) - CHILD_STATE
+      if !missing_methods.empty?
+        raise "ERROR: not all methods of RunContext accounted for in ChildRunContext! All methods must be marked as child methods with CHILD_STATE or delegated to the parent_run_context. Missing #{missing_methods.join(", ")}."
       end
     end
   end

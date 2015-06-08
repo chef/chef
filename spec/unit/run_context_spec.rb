@@ -84,6 +84,10 @@ describe Chef::RunContext do
     )
   end
 
+  it "has a nil parent_run_context" do
+    expect(run_context.parent_run_context).to be_nil
+  end
+
   describe "loading cookbooks for a run list" do
     before do
 
