@@ -176,12 +176,8 @@ class Chef
     def notifies_immediately(notification)
       nr = notification.notifying_resource
       if nr.instance_of?(Chef::Resource)
-        # TODO is there any point at all to keying on name?  Do we really want
-        # to categorize notifications from execute[do it] with file[do it]
-        # and directory[do it]?
         immediate_notification_collection[nr.name] << notification
       else
-        # TODO this is only declared on Chef::Resource.  Does it even run?
         immediate_notification_collection[nr.declared_key] << notification
       end
     end
@@ -194,7 +190,6 @@ class Chef
     def notifies_delayed(notification)
       nr = notification.notifying_resource
       if nr.instance_of?(Chef::Resource)
-        # TODO this seems odd and possibly even wrong.
         delayed_notification_collection[nr.name] << notification
       else
         delayed_notification_collection[nr.declared_key] << notification
