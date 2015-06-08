@@ -123,6 +123,7 @@ class Chef
                                  :binary_path_name => cmd,
                                  :service_start_name => @service_start_name,
                                  :password => @password,
+                                 :delayed_start => true,
                                  )
             puts "Service '#{@service_name}' has successfully been installed."
           end
