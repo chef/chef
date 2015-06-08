@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class Chef
-  NOT_PASSED = Object.new
+require 'chef/constants'
+require 'chef/property_type'
+require 'chef/delayed_evaluator'
 
-  class DelayedEvaluator < Proc
-  end
+class Chef
   module Mixin
     module ParamsValidate
 
@@ -34,20 +34,55 @@ class Chef
       # Would raise an exception if the value of :one above is not a kind_of? string.  Valid
       # map options are:
       #
-      # :default:: Sets the default value for this parameter.
-      # :callbacks:: Takes a hash of Procs, which should return true if the argument is valid.
-      #              The key will be inserted into the error message if the Proc does not return true:
-      #                 "Option #{key}'s value #{value} #{message}!"
-      # :kind_of:: Ensure that the value is a kind_of?(Whatever).  If passed an array, it will ensure
-      #            that the value is one of those types.
-      # :respond_to:: Ensure that the value has a given method.  Takes one method name or an array of
-      #               method names.
-      # :required:: Raise an exception if this parameter is missing. Valid values are true or false,
-      #             by default, options are not required.
-      # :regex:: Match the value of the parameter against a regular expression.
-      # :equal_to:: Match the value of the parameter with ==.  An array means it can be equal to any
-      #             of the values.
+      # @param opts [Hash<Symbol,Object>] Validation opts.
+      #   @option opts [Object,Array] :is An object, or list of
+      #     objects, that must match the value using Ruby's `===` operator
+      #     (`opts[:is].any? { |v| v === value }`). (See #_pv_is.)
+      #   @option opts [Object,Array] :equal_to An object, or list
+      #     of objects, that must be equal to the value using Ruby's `==`
+      #     operator (`opts[:is].any? { |v| v == value }`)  (See #_pv_equal_to.)
+      #   @option opts [Regexp,Array<Regexp>] :regex An object, or
+      #     list of objects, that must match the value with `regex.match(value)`.
+      #     (See #_pv_regex)
+      #   @option opts [Class,Array<Class>] :kind_of A class, or
+      #     list of classes, that the value must be an instance of.  (See
+      #     #_pv_kind_of.)
+      #   @option opts [Hash<String,Proc>] :callbacks A hash of
+      #     messages -> procs, all of which match the value. The proc must
+      #     return a truthy or falsey value (true means it matches).  (See
+      #     #_pv_callbacks.)
+      #   @option opts [Symbol,Array<Symbol>] :respond_to A method
+      #     name, or list of method names, the value must respond to.  (See
+      #     #_pv_respond_to.)
+      #   @option opts [Symbol,Array<Symbol>] :cannot_be A property,
+      #     or a list of properties, that the value cannot have (such as `:nil` or
+      #     `:empty`). The method with a questionmark at the end is called on the
+      #     value (e.g. `value.empty?`). If the value does not have this method,
+      #     it is considered valid (i.e. if you don't respond to `empty?` we
+      #     assume you are not empty).  (See #_pv_cannot_be.)
+      #   @option opts [Proc] :coerce A proc which will be called to
+      #     transform the user input to canonical form. The value is passed in,
+      #     and the transformed value returned as output. Lazy values will *not*
+      #     be passed to this method until after they are evaluated. Called in the
+      #     context of the resource (meaning you can access other properties).
+      #     (See #_pv_coerce.) (See #_pv_coerce.)
+      #   @option opts [Boolean] :required `true` if this property
+      #     must be present and not `nil`; `false` otherwise. This is checked
+      #     after the resource is fully initialized. (See #_pv_required.)
+      #   @option opts [Boolean] :name_property `true` if this
+      #     property defaults to the same value as `name`. Equivalent to
+      #     `default: lazy { name }`, except that #property_is_set? will
+      #     return `true` if the property is set *or* if `name` is set. (See
+      #     #_pv_name_property.)
+      #   @option opts [Boolean] :name_attribute Same as `name_property`.
+      #   @option opts [Object] :default The value this property
+      #     will return if the user does not set one. If this is `lazy`, it will
+      #     be run in the context of the instance (and able to access other
+      #     properties).  (See #_pv_default.)
+      #
       def validate(opts, map)
+        map = map.validation_options if map.is_a?(PropertyType)
+
         #--
         # validate works by taking the keys in the validation map, assuming it's a hash, and
         # looking for _pv_:symbol as methods.  Assuming it find them, it calls the right
@@ -86,6 +121,7 @@ class Chef
       def set_or_return(symbol, value, validation)
         symbol = symbol.to_sym
         iv_symbol = :"@#{symbol}"
+        validation = validation.validation_options if validation.is_a?(PropertyType)
 
         # Steal default, coerce, name_property and required from validation
         # so that we can handle the order in which they are applied
@@ -193,8 +229,9 @@ class Chef
         if is_required
           return true if opts.has_key?(key.to_s) && (explicitly_allows_nil || !opts[key.to_s].nil?)
           return true if opts.has_key?(key.to_sym) && (explicitly_allows_nil || !opts[key.to_sym].nil?)
-          raise Exceptions::ValidationFailed, "Required argument #{key} is missing!"
+          raise Exceptions::ValidationFailed, "Required argument #{key.inspect} is missing!"
         end
+        true
       end
 
       #

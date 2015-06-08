@@ -58,11 +58,15 @@ describe "Chef::Resource.property" do
     else
       tags = []
     end
-    properties = properties.map { |property| "property #{property}" }
-    context "With properties #{english_join(properties)}", *tags do
+    if properties.size == 1
+      description = "With property #{properties.first}"
+    else
+      description = "With properties #{english_join(properties.map { |property| "#{property.inspect}" })}"
+    end
+    context description, *tags do
       before do
         properties.each do |property_str|
-          resource_class.class_eval(property_str, __FILE__, __LINE__)
+          resource_class.class_eval("property #{property_str}", __FILE__, __LINE__)
         end
       end
       instance_eval(&block)
@@ -121,7 +125,7 @@ describe "Chef::Resource.property" do
         expect(subresource.x).to eq 10
         expect(subresource.x = 20).to eq 20
         expect(subresource.x).to eq 20
-        # expect(subresource_class.properties[:x]).not_to be_nil
+        expect(subresource_class.properties[:x]).not_to be_nil
       end
 
       it "x's validation is inherited" do
@@ -140,18 +144,18 @@ describe "Chef::Resource.property" do
           expect(subresource.x).to eq 10
           expect(subresource.x = 20).to eq 20
           expect(subresource.x).to eq 20
-          # expect(subresource_class.properties[:x]).not_to be_nil
+          expect(subresource_class.properties[:x]).not_to be_nil
         end
         it "y is there" do
           expect(subresource.y 10).to eq 10
           expect(subresource.y).to eq 10
           expect(subresource.y = 20).to eq 20
           expect(subresource.y).to eq 20
-          # expect(subresource_class.properties[:y]).not_to be_nil
+          expect(subresource_class.properties[:y]).not_to be_nil
         end
         it "y is not on the superclass" do
           expect { resource_class.y 10 }.to raise_error
-          # expect(resource_class.properties[:y]).to be_nil
+          expect(resource_class.properties[:y]).to be_nil
         end
       end
 
@@ -167,8 +171,8 @@ describe "Chef::Resource.property" do
           expect(subresource.x).to eq 10
           expect(subresource.x = 20).to eq 20
           expect(subresource.x).to eq 20
-          # expect(subresource_class.properties[:x]).not_to be_nil
-          # expect(subresource_class.properties[:x]).not_to eq resource_class.properties[:x]
+          expect(subresource_class.properties[:x]).not_to be_nil
+          expect(subresource_class.properties[:x]).not_to eq resource_class.properties[:x]
         end
 
         it "x's validation is overwritten" do
@@ -193,8 +197,8 @@ describe "Chef::Resource.property" do
           expect(subresource.x).to eq "10"
           expect(subresource.x = "20").to eq "20"
           expect(subresource.x).to eq "20"
-          # expect(subresource_class.properties[:x]).not_to be_nil
-          # expect(subresource_class.properties[:x]).not_to eq resource_class.properties[:x]
+          expect(subresource_class.properties[:x]).not_to be_nil
+          expect(subresource_class.properties[:x]).not_to eq resource_class.properties[:x]
         end
 
         it "x's validation is overwritten" do

@@ -782,17 +782,58 @@ class Chef
         end
       end
 
-      define_method(name) do |value=NOT_PASSED|
-        set_or_return(name, value, options)
+      properties(false)[name] = PropertyType.new(options)
+
+      begin
+        class_eval <<-EOM, __FILE__, __LINE__+1
+          def #{name}(value=NOT_PASSED)
+            set_or_return(#{name.inspect}, value, self.class.properties[#{name.inspect}])
+          end
+          def #{name}=(value)
+            set_or_return(#{name.inspect}, value, self.class.properties[#{name.inspect}])
+          end
+        EOM
+      rescue SyntaxError
+        puts ""
+        define_method(name) do |value=NOT_PASSED|
+          set_or_return(name, value, options)
+        end
+        define_method("#{name}=") do |value|
+          set_or_return(name, value, options)
+        end
       end
-      define_method("#{name}=") do |value|
-        set_or_return(name, value, options)
+    end
+
+    #
+    # The list of properties defined on this resource.
+    #
+    # Everything defined with `property` is in this list.
+    #
+    # @param include_superclass [Boolean] `true` to include properties defined
+    #   on superclasses; `false` or `nil` to return the list of properties
+    #   directly on this class.
+    #
+    # @return [Hash<Symbol,PropertyType>] The list of property names and types.
+    #
+    def self.properties(include_superclass=true)
+      @properties ||= {}
+      if include_superclass
+        if superclass.respond_to?(:properties)
+          superclass.properties.merge(@properties)
+        else
+          @properties.dup
+        end
+      else
+        @properties
       end
     end
 
     #
     # Whether this property has been set (or whether it has a default that has
     # been retrieved).
+    #
+    # @param name [Symbol] The name of the property.
+    # @return [Boolean] `true` if the property has been set.
     #
     def property_is_set?(name)
       name = name.to_sym
