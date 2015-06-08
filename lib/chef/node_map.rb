@@ -75,9 +75,8 @@ class Chef
     # @return [Object] Value
     #
     def get(node, key)
-      # FIXME: real exception
-      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
-      list(node, key, canonical: canonical).first
+      raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
+      list(node, key).first
     end
 
     #
@@ -91,8 +90,7 @@ class Chef
     # @return [Object] Value
     #
     def list(node, key)
-      # FIXME: real exception
-      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
+      raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
       return [] unless @map.has_key?(key)
       @map[key].select do |matcher|
         !node || (filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block]))
