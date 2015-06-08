@@ -1059,7 +1059,7 @@ class Chef
     #
     def self.action(action, &recipe_block)
       action = action.to_sym
-      create_action_provider_class.action(action, &recipe_block)
+      new_action_provider_class.action(action, &recipe_block)
       self.allowed_actions += [ action ]
       default_action action if default_action == :nothing
     end
@@ -1082,7 +1082,7 @@ class Chef
       @action_provider_class ||
         # If the superclass needed one, then we need one as well.
         if superclass.respond_to?(:action_provider_class) && superclass.action_provider_class
-          create_action_provider_class
+          new_action_provider_class
         end
     end
 
@@ -1091,7 +1091,7 @@ class Chef
     # when the user does `action :x do ... end`.
     #
     # @api private
-    def self.create_action_provider_class
+    def self.new_action_provider_class
       return @action_provider_class if @action_provider_class
 
       if superclass.respond_to?(:action_provider_class)
