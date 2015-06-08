@@ -71,12 +71,14 @@ class Chef
     # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
     #   ignore all filters.
     # @param key [Object] Key to look up
+    # @param canonical [Boolean] `true` or `false` to match canonical or
+    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
     #
     # @return [Object] Value
     #
-    def get(node, key)
+    def get(node, key, canonical: nil)
       raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
-      list(node, key).first
+      list(node, key, canonical: canonical).first
     end
 
     #
@@ -86,14 +88,16 @@ class Chef
     # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
     #   ignore all filters.
     # @param key [Object] Key to look up
+    # @param canonical [Boolean] `true` or `false` to match canonical or
+    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
     #
     # @return [Object] Value
     #
-    def list(node, key)
+    def list(node, key, canonical: nil)
       raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
       return [] unless @map.has_key?(key)
       @map[key].select do |matcher|
-        !node || (filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block]))
+        node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
       end.map { |matcher| matcher[:value] }
     end
 
@@ -182,6 +186,16 @@ class Chef
     def block_matches?(node, block)
       return true if block.nil?
       block.call node
+    end
+
+    def node_matches?(node, matcher)
+      return true if !node
+      filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block])
+    end
+
+    def canonical_matches?(canonical, matcher)
+      return true if canonical.nil?
+      !!canonical == !!matcher[:canonical]
     end
   end
 end

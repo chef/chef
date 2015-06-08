@@ -937,11 +937,6 @@ class Chef
       resource_name(name)
     end
 
-    def self.inherited(child)
-      super
-      child.resource_name
-    end
-
     #
     # The module where Chef should look for providers for this resource.
     # The provider for `MyResource` will be looked up using
@@ -1018,7 +1013,7 @@ class Chef
       end
     end
     def self.default_action=(action_name)
-      default_action action_name
+      default_action(action_name)
     end
 
     #
@@ -1113,9 +1108,10 @@ class Chef
     def self.sorted_descendants
       @@sorted_descendants ||= descendants.sort_by { |x| x.to_s }
     end
-    def self.inherited(other)
+    def self.inherited(child)
       super
-      @@sorted_descendants = nil
+      @sorted_descendants = nil
+      child.resource_name
     end
 
 
@@ -1153,7 +1149,7 @@ class Chef
     end
 
     def self.provides?(node, resource)
-      Chef::ResourceResolver.new(node, resource).provided_by?(self)
+      Chef::ResourceResolver.resolve(resource, node: node).provided_by?(self)
     end
 
     # Helper for #notifies
@@ -1285,15 +1281,13 @@ class Chef
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_for_node(short_name, node)
-      klass = Chef::ResourceResolver.new(node, short_name).resolve
+      klass = Chef::ResourceResolver.resolve(short_name, node: node)
       raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
       klass
     end
 
     #
-    # Returns the class of a Chef::Resource based on the short name
-    # Only returns the *canonical* class with the given name, not the one that
-    # would be picked by the ResourceResolver.
+    # Returns the class with the given resource_name.
     #
     # ==== Parameters
     # short_name<Symbol>:: short_name of the resource (ie :directory)
@@ -1301,10 +1295,8 @@ class Chef
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     #
-    # @deprecated Chef::Resource::FooBar will no longer mean anything special in
-    #   Chef 13.  Use `resource_for_node` instead.
     def self.resource_matching_short_name(short_name)
-      Chef::ResourceResolver.get(short_name, canonical: true)
+      Chef::ResourceResolver.resolve(short_name, canonical: true)
     end
 
     # @api private

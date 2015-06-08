@@ -86,7 +86,7 @@ describe "Recipe DSL methods" do
           expect(BaseThingy.created_provider).to eq Chef::Provider::BackcompatThingy
         end
 
-        context "And another resource 'backcompat_thingy' in BackcompatThingy with 'provides'" do
+        context "and another resource 'backcompat_thingy' in BackcompatThingy with 'provides'" do
           before(:context) {
 
             class RecipeDSLSpecNamespace::BackcompatThingy < BaseThingy
@@ -106,7 +106,7 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "With a resource named RecipeDSLSpecNamespace::Bar::Thingy" do
+      context "With a resource named RecipeDSLSpecNamespace::Bar::BarThingy" do
         before(:context) {
 
           class RecipeDSLSpecNamespace::Bar::BarThingy < BaseThingy
@@ -413,7 +413,7 @@ describe "Recipe DSL methods" do
 
         context "With a resource TwoClassesOneDsl" do
           let(:class_name) { "TwoClassesOneDsl#{Namer.current_index}" }
-          let(:dsl_method) { "two_classes_one_dsl#{Namer.current_index}" }
+          let(:dsl_method) { :"two_classes_one_dsl#{Namer.current_index}" }
 
           before {
             eval <<-EOM, nil, __FILE__, __LINE__+1
@@ -421,7 +421,7 @@ describe "Recipe DSL methods" do
               end
             EOM
           }
-          context "And resource BlahModule::TwoClassesOneDsl" do
+          context "and resource BlahModule::TwoClassesOneDsl" do
             before {
               eval <<-EOM, nil, __FILE__, __LINE__+1
                 module BlahModule
@@ -438,8 +438,11 @@ describe "Recipe DSL methods" do
               expect(recipe.logged_warnings).to eq ''
               expect(BaseThingy.created_resource).to eq eval("BlahModule::#{class_name}")
             end
+            it "resource_matching_short_name returns BlahModule::TwoClassesOneDsl" do
+              expect(Chef::Resource.resource_matching_short_name(dsl_method)).to eq eval("BlahModule::#{class_name}")
+            end
           end
-          context "And resource BlahModule::TwoClassesOneDsl with resource_name nil" do
+          context "and resource BlahModule::TwoClassesOneDsl with resource_name nil" do
             before {
               eval <<-EOM, nil, __FILE__, __LINE__+1
                 module BlahModule
@@ -457,8 +460,11 @@ describe "Recipe DSL methods" do
               expect(recipe.logged_warnings).to eq ''
               expect(BaseThingy.created_resource).to eq eval("::#{class_name}")
             end
+            it "resource_matching_short_name returns ::TwoClassesOneDsl" do
+              expect(Chef::Resource.resource_matching_short_name(dsl_method)).to eq eval("::#{class_name}")
+            end
           end
-          context "And resource BlahModule::TwoClassesOneDsl with resource_name :argh" do
+          context "and resource BlahModule::TwoClassesOneDsl with resource_name :argh" do
             before {
               eval <<-EOM, nil, __FILE__, __LINE__+1
                 module BlahModule
@@ -476,8 +482,11 @@ describe "Recipe DSL methods" do
               expect(recipe.logged_warnings).to eq ''
               expect(BaseThingy.created_resource).to eq eval("::#{class_name}")
             end
+            it "resource_matching_short_name returns ::TwoClassesOneDsl" do
+              expect(Chef::Resource.resource_matching_short_name(dsl_method)).to eq eval("::#{class_name}")
+            end
           end
-          context "And resource BlahModule::TwoClassesOneDsl with provides :two_classes_one_dsl, os: 'blarghle'" do
+          context "and resource BlahModule::TwoClassesOneDsl with provides :two_classes_one_dsl, os: 'blarghle'" do
             before {
               eval <<-EOM, nil, __FILE__, __LINE__+1
                 module BlahModule
@@ -487,6 +496,7 @@ describe "Recipe DSL methods" do
                 end
               EOM
             }
+
             it "and os = blarghle, two_classes_one_dsl resolves to BlahModule::TwoClassesOneDsl" do
               dsl_method = self.dsl_method
               recipe = converge {
@@ -498,7 +508,7 @@ describe "Recipe DSL methods" do
               expect(BaseThingy.created_resource).to eq eval("BlahModule::#{class_name}")
             end
 
-            it "and os = linux, two_classes_one_dsl resolves to BlahModule::TwoClassesOneDsl" do
+            it "and os = linux, two_classes_one_dsl resolves to ::TwoClassesOneDsl" do
               dsl_method = self.dsl_method
               recipe = converge {
                 # this is an ugly way to test, make Cheffish expose node attrs
@@ -514,7 +524,7 @@ describe "Recipe DSL methods" do
     end
 
     context "provides" do
-      context "When MySupplier provides :hemlock" do
+      context "when MySupplier provides :hemlock" do
         before(:context) {
 
           class RecipeDSLSpecNamespace::MySupplier < BaseThingy
@@ -537,7 +547,7 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "When Thingy3 provides :thingy3" do
+      context "when Thingy3 has resource_name :thingy3" do
         before(:context) {
 
           class RecipeDSLSpecNamespace::Thingy3 < BaseThingy
@@ -553,7 +563,7 @@ describe "Recipe DSL methods" do
           expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy3
         end
 
-        context "And Thingy4 provides :thingy3" do
+        context "and Thingy4 has resource_name :thingy3" do
           before(:context) {
 
             class RecipeDSLSpecNamespace::Thingy4 < BaseThingy
@@ -574,10 +584,97 @@ describe "Recipe DSL methods" do
               thingy4 'blah' do; end
             }.to raise_error(NoMethodError)
           end
+
+          it "resource_matching_short_name returns Thingy4" do
+            expect(Chef::Resource.resource_matching_short_name(:thingy3)).to eq RecipeDSLSpecNamespace::Thingy4
+          end
         end
       end
 
-      context "When Thingy5 provides :thingy5, :twizzle and :twizzle2" do
+      context "when Thingy5 has resource_name :thingy5" do
+        before(:context) {
+
+          class RecipeDSLSpecNamespace::Thingy5 < BaseThingy
+            resource_name :thingy5
+          end
+
+        }
+
+        it "thingy5 works in a recipe" do
+          expect_recipe {
+            thingy5 'blah' do; end
+          }.to emit_no_warnings_or_errors
+          expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy5
+        end
+
+        context "and Thingy6 provides :thingy5" do
+          before(:context) {
+
+            class RecipeDSLSpecNamespace::Thingy6 < BaseThingy
+              provides :thingy5
+            end
+
+          }
+
+          it "thingy6 works in a recipe and yields Thingy6" do
+            recipe = converge {
+              thingy6 'blah' do; end
+            }
+            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy6
+          end
+
+          it "thingy5 works in a recipe and yields Foo::Thingy6 (the later one)" do
+            recipe = converge {
+              thingy5 'blah' do; end
+            }
+            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy6
+          end
+
+          it "resource_matching_short_name returns Thingy5" do
+            expect(Chef::Resource.resource_matching_short_name(:thingy5)).to eq RecipeDSLSpecNamespace::Thingy5
+          end
+        end
+      end
+
+      context "when Thingy7 provides :thingy8" do
+        before(:context) {
+
+          class RecipeDSLSpecNamespace::Thingy7 < BaseThingy
+            provides :thingy8
+          end
+
+        }
+
+        context "and Thingy8 has resource_name :thingy8" do
+          before(:context) {
+
+            class RecipeDSLSpecNamespace::Thingy8 < BaseThingy
+              resource_name :thingy8
+            end
+
+          }
+
+          it "thingy7 works in a recipe and yields Thingy7" do
+            recipe = converge {
+              thingy7 'blah' do; end
+            }
+            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy7
+          end
+
+          it "thingy8 works in a recipe and yields Thingy8 (the later one)" do
+            recipe = converge {
+              thingy8 'blah' do; end
+            }
+            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy8
+          end
+
+          it "resource_matching_short_name returns Thingy8" do
+            expect(Chef::Resource.resource_matching_short_name(:thingy8)).to eq RecipeDSLSpecNamespace::Thingy8
+          end
+        end
+      end
+
+      context "when Thingy5 provides :thingy5, :twizzle and :twizzle2" do
         before(:context) {
 
           class RecipeDSLSpecNamespace::Thingy5 < BaseThingy
