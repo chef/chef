@@ -1183,7 +1183,7 @@ class Chef
 
     class << self
       # back-compat
-      # NOTE: that we do not support unregistering classes as descendents like
+      # NOTE: that we do not support unregistering classes as descendants like
       # we used to for LWRP unloading because that was horrible and removed in
       # Chef-12.
       # @deprecated

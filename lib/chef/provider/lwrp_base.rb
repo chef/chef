@@ -31,7 +31,7 @@ class Chef
       include Chef::DSL::Recipe
 
       # These were previously provided by Chef::Mixin::RecipeDefinitionDSLCore.
-      # They are not included by its replacment, Chef::DSL::Recipe, but
+      # They are not included by its replacement, Chef::DSL::Recipe, but
       # they may be used in existing LWRPs.
       include Chef::DSL::PlatformIntrospection
       include Chef::DSL::DataQuery

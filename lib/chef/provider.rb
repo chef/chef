@@ -295,7 +295,7 @@ class Chef
       end
 
       require 'chef/dsl/recipe'
-      include Chef::DSL::Recipe::Everything
+      include Chef::DSL::Recipe::FullDSL
     end
 
     protected
