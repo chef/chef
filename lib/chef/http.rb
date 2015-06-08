@@ -27,7 +27,6 @@ require 'uri'
 require 'chef/http/basic_client'
 require 'chef/http/socketless_chef_zero_client'
 require 'chef/monkey_patches/net_http'
-require 'chef/config'
 require 'chef/platform/query_helpers'
 require 'chef/exceptions'
 
@@ -84,6 +83,7 @@ class Chef
     def initialize(url, options={})
       @url = url
       @default_headers = options[:headers] || {}
+      @config = options[:config] if options.key?(:config)
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
@@ -297,7 +297,7 @@ class Chef
           http_attempts += 1
           response, request, return_value = yield
           # handle HTTP 50X Error
-          if response.kind_of?(Net::HTTPServerError) && !Chef::Config.local_mode
+          if response.kind_of?(Net::HTTPServerError) && !local_mode
             if http_retry_count - http_attempts + 1 > 0
               sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
               Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
@@ -333,16 +333,29 @@ class Chef
     end
 
     def http_retry_delay
-      config[:http_retry_delay]
+      @http_retry_delay ||= config[:http_retry_delay]
     end
+    attr_writer :http_retry_delay
 
     def http_retry_count
-      config[:http_retry_count]
+      @http_retry_count ||= config[:http_retry_count]
     end
+    attr_writer :http_retry_count
+
+    def local_mode
+      @local_mode ||= config[:local_mode]
+    end
+    attr_writer :local_mode
+
+    def custom_http_headers
+      @custom_http_headers ||= config[:custom_http_headers]
+    end
+    attr_writer :custom_http_headers
 
     def config
-      Chef::Config
+      @config ||= Chef::Config
     end
+    attr_writer :config
 
     def follow_redirect
       raise Chef::Exceptions::RedirectLimitExceeded if @redirects_followed >= redirect_limit
@@ -371,7 +384,7 @@ class Chef
     def build_headers(method, url, headers={}, json_body=false)
       headers                 = @default_headers.merge(headers)
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
-      headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
+      headers.merge!(custom_http_headers) if custom_http_headers
       headers
     end
 
@@ -412,3 +425,5 @@ class Chef
 
   end
 end
+
+require 'chef/config'
