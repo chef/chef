@@ -190,4 +190,45 @@ describe Chef::RunContext do
       expect(run_context.reboot_requested?).to be_falsey
     end
   end
+
+  describe "notifications" do
+    let(:notification) { Chef::Resource::Notification.new(nil, nil, notifying_resource) }
+
+    shared_context "notifying resource is a Chef::Resource" do
+      let(:notifying_resource)  { Chef::Resource.new("gerbil") }
+
+      it "should be keyed off the resource name" do
+        run_context.send(setter, notification)
+        expect(run_context.send(getter, notifying_resource)).to eq([notification])
+      end
+    end
+
+    shared_context "notifying resource is a subclass of Chef::Resource" do
+      let(:declared_type) { :alpaca }
+      let(:notifying_resource)  {
+        r = Class.new(Chef::Resource).new("guinea pig")
+        r.declared_type = declared_type
+        r
+      }
+
+      it "should be keyed off the resource declared key" do
+        run_context.send(setter, notification)
+        expect(run_context.send(getter, notifying_resource)).to eq([notification])
+      end
+    end
+
+    describe "of the immediate kind" do
+      let(:setter) { :notifies_immediately }
+      let(:getter) { :immediate_notifications }
+      include_context "notifying resource is a Chef::Resource"
+      include_context "notifying resource is a subclass of Chef::Resource"
+    end
+
+    describe "of the delayed kind" do
+      let(:setter) { :notifies_delayed }
+      let(:getter) { :delayed_notifications }
+      include_context "notifying resource is a Chef::Resource"
+      include_context "notifying resource is a subclass of Chef::Resource"
+    end
+  end
 end
