@@ -84,6 +84,14 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
       expect(guard_interpreter.evaluate).to eq(true)
     end
 
+    it "does not corrupt the run_context of the node" do
+      node_run_context_before_guard_execution = parent_resource.run_context
+      expect(node_run_context_before_guard_execution.object_id).to eq(parent_resource.node.run_context.object_id)
+      guard_interpreter.evaluate
+      node_run_context_after_guard_execution = parent_resource.run_context
+      expect(node_run_context_after_guard_execution.object_id).to eq(parent_resource.node.run_context.object_id)
+    end
+
     describe "script command opts switch" do
       let(:command_opts) { {} }
       let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "exit 0", command_opts) }

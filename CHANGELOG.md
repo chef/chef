@@ -1,4 +1,5 @@
 ## Unreleased
+* [pr#3497](https://github.com/chef/chef/pull/3497): Issue 3485: Corruption of node's run\_context when non-default guard\_interpreter is evaluated
 * [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly): Pass name by
   knife cil attribute [pr#3195](https://github.com/chef/chef/pull/3195)
 * [**Torben Knerr**](https://github.com/tknerr):
