@@ -197,6 +197,7 @@ class Chef
     def self.property(name, type=NOT_PASSED, **options)
       name = name.to_sym
 
+      # Combine the type with "is"
       if type != NOT_PASSED
         if options[:is]
           options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
@@ -206,7 +207,13 @@ class Chef
       end
 
       local_properties = properties(false)
-      local_properties[name] = Property.new(name: name, declared_in: self, **options)
+
+      # Inherit from the current / parent property if type is not passed
+      if type == NOT_PASSED && properties[name]
+        local_properties[name] = properties[name].specialize(declared_in: self, **options)
+      else
+        local_properties[name] = Property.new(name: name, declared_in: self, **options)
+      end
 
       begin
         class_eval <<-EOM, __FILE__, __LINE__+1

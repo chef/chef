@@ -175,13 +175,33 @@ describe "Chef::Resource.property" do
           expect(subresource_class.properties[:x]).not_to eq resource_class.properties[:x]
         end
 
-        it "x's validation is overwritten" do
-          expect(subresource.x 'ohno').to eq 'ohno'
-          expect(subresource.x).to eq 'ohno'
+        it "x's validation is inherited" do
+          expect { subresource.x 'ohno' }.to raise_error Chef::Exceptions::ValidationFailed
+        end
+      end
+
+      context "with property :x, default: 80 on the subclass" do
+        before do
+          subresource_class.class_eval do
+            property :x, default: 80
+          end
         end
 
-        it "the superclass's validation for x is still there" do
-          expect { resource.x 'ohno' }.to raise_error Chef::Exceptions::ValidationFailed
+        it "x is still there" do
+          expect(subresource.x 10).to eq 10
+          expect(subresource.x).to eq 10
+          expect(subresource.x = 20).to eq 20
+          expect(subresource.x).to eq 20
+          expect(subresource_class.properties[:x]).not_to be_nil
+          expect(subresource_class.properties[:x]).not_to eq resource_class.properties[:x]
+        end
+
+        it "x defaults to 80" do
+          expect(subresource.x).to eq 80
+        end
+
+        it "x's validation is inherited" do
+          expect { subresource.x 'ohno' }.to raise_error Chef::Exceptions::ValidationFailed
         end
       end
 
@@ -241,9 +261,9 @@ describe "Chef::Resource.property" do
         resource.x lazy { 10 }
         expect(resource.property_is_set?(:x)).to be_truthy
       end
-      it "when x is retrieved, property_is_set?(:x) is false" do
+      it "when x is retrieved, property_is_set?(:x) is true" do
         resource.x
-        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.property_is_set?(:x)).to be_truthy
       end
     end
 
