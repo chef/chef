@@ -30,14 +30,14 @@
 * [**Steve Lowe**](https://github.com/SteveLowe):
   Fix copying ntfs dacl and sacl when they are nil. [pr#3066](https://github.com/chef/chef/pull/3066)
 
-* [pr#3720](https://github.com/chef/chef/pull/3270): Extract chef's
-  configuration to a separate gem. Code stays in the Chef git repo.
-* Add an integration test of chef-client with empty ENV. #3321
-* Switch over Windows builds to universal builds. #3278
-* Convert bootstrap template to use sh #2877
+* [pr#3339](https://github.com/chef/chef/pull/3339): Powershell command wrappers to make argument passing to knife/chef-client etc. easier.
+* [pr#3720](https://github.com/chef/chef/pull/3270): Extract chef's configuration to a separate gem. Code stays in the Chef git repo.
+* [pr#3321](https://github.com/chef/chef/pull/3321): Add an integration test of chef-client with empty ENV.
+* [pr#3278](https://github.com/chef/chef/pull/3278): Switch over Windows builds to universal builds.
+* [pr#2877](https://github.com/chef/chef/pull/2877): Convert bootstrap template to use sh.
 * [Issue #3316](https://github.com/chef/chef/issues/3316): Fix idempotency issues with the `windows_package` resource
 * [pr#3295](https://github.com/chef/chef/pull/3295): Stop mutating `new_resource.checksum` in file providers.  Fixes some ChecksumMismatch exceptions like [issue#3168](https://github.com/chef/chef/issues/3168)
-* [pr#3320] Sanitize non-UTF8 characters in the node data before doing node.save().  Works around many UTF8 exception issues reported on node.save().
+* [pr#3320](https://github.com/chef/chef/pull/3320): Sanitize non-UTF8 characters in the node data before doing node.save().  Works around many UTF8 exception issues reported on node.save().
 * Implemented X-Ops-Server-API-Version with a API version of 0, as well as error handling when the Chef server does not support the API version that the client supports.
 * [pr#3327](https://github.com/chef/chef/pull/3327): Fix unreliable AIX service group parsing mechanism.
 * [pr#3333](https://github.com/chef/chef/pull/3333): Fix SSL errors when connecting to private Supermarkets
