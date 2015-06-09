@@ -1,4 +1,4 @@
-# Chef Client Release Notes <unreleased>:
+# Chef Client Release Notes 12.4.0:
 
 ## Knife Key Management Commands for Users and Clients
 
@@ -11,10 +11,23 @@ for a full list of subcommands and their usage.
 
 ## System Loggers
 
+You can now have all Chef logs sent to a logging system of your choice.
+
+### Syslog Logger
+
+Syslog can be used by adding the following line to your chef config
+file:
+
+```ruby
+log_location Chef::Log::Syslog.new("chef-client", ::Syslog::LOG_DAEMON)
+```
+
+THis will write to the `daemon` facility with the originator set as
+`chef-client`.
+
 ### Windows Event Logger
 
-You can now have all Chef logs sent to the Windows Event Logger. The logger can be
-used by adding the following line to your chef config file:
+The logger can be used by adding the following line to your chef config file:
 
 ```ruby
 log_location Chef::Log::WinEvt.new

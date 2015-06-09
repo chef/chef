@@ -1,33 +1,3 @@
-## Unreleased
-* [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly): Pass name by
-  knife cil attribute [pr#3195](https://github.com/chef/chef/pull/3195)
-* [**Torben Knerr**](https://github.com/tknerr):
-  Allow knife sub-command loader to match platform specific gems. [pr#3281](https://github.com/chef/chef/pull/3281)
-* [**Steve Lowe**](https://github.com/SteveLowe):
-  Fix copying ntfs dacl and sacl when they are nil. [pr#3066](https://github.com/chef/chef/pull/3066)
-* [Issue #3010](https://github.com/chef/chef/issues/3010) Fixed `knife user` for use with current and future versions of Chef Server 12, with continued backwards compatible support for use with Open Source Server 11.
-* [pr#3438](https://github.com/chef/chef/pull/3438) Server API V1 support. Vast improvements to and testing expansion for Chef::User, Chef::ApiClient, and related knife commands. Deprecated Open Source Server 11 user support to the Chef::OscUser and knife osc_user namespace, but with backwards compatible support via knife user.
-
-* [Issue #2247](https://github.com/chef/chef/issues/2247): `powershell_script` returns 0 for scripts with syntax errors
-* [pr#3080](https://github.com/chef/chef/pull/3080): Issue 2247: `powershell_script` exit status should be nonzero for syntax errors
-* [pr#3441](https://github.com/chef/chef/pull/3441): Add `powershell_out` mixin to core chef
-* [pr#3448](https://github.com/chef/chef/pull/3448): Fix `dsc_resource` to work with wmf5 april preview
-* [pr#3392](https://github.com/chef/chef/pull/3392): Comment up `Chef::Client` and privatize/deprecate unused things
-* [pr#3419](https://github.com/chef/chef/pull/3419): Fix cli issue with `chef_repo_path` when ENV variable is unset
-* [pr#3358](https://github.com/chef/chef/pull/3358): Separate audit and converge failures
-* [pr#3431](https://github.com/chef/chef/pull/3431): Fix backups on windows for the file resource
-* [pr#3397](https://github.com/chef/chef/pull/3397): Validate owner exists in directory resources
-* [pr#3418](https://github.com/chef/chef/pull/3418): Add `shell_out` mixin to Chef::Resource class for use in `not_if`/`only_if` conditionals, etc.
-* [pr#3406](https://github.com/chef/chef/pull/3406): Add wide-char 'Environment' to `broadcast_env_change` mixin for setting windows environment variables
-* [pr#3442](https://github.com/chef/chef/pull/3442): Add `resource_name` to top-level Resource class to make defining resources easier.
-* [pr#3447](https://github.com/chef/chef/pull/3447): Add `allowed_actions` and `default_action` to top-level Resource class.
-* [pr#3475](https://github.com/chef/chef/pull/3475): Fix `shell_out` timeouts in all package providers to respect timeout property on the resource.
-* [pr#3477](https://github.com/chef/chef/pull/3477): Update `zypper_package` to look like the rest of our package classes.
-* [pr#3483](https://github.com/chef/chef/pull/3483): Allow `include_recipe` from LWRP providers.
-* [pr#3495](https://github.com/chef/chef/pull/3495): Make resource name automatically determined from class name, and provide DSL for it.
-* [pr#3497](https://github.com/chef/chef/pull/3497): Issue 3485: Corruption of node's run\_context when non-default guard\_interpreter is evaluated
-* [pr#3299](https://github.com/chef/chef/pull/3299): Remove experimental warning on audit mode
-
 ## 12.4.0
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
@@ -53,6 +23,12 @@
   Ensure LWRP and HWRP @action variable is consistent #3156
 * [**Dan Bjorge**](https://github.com/dbjorge):
   Fix bad Windows securable\_resource functional spec assumptions for default file owners/groups #3266
+* [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly): Pass name by
+  knife cil attribute [pr#3195](https://github.com/chef/chef/pull/3195)
+* [**Torben Knerr**](https://github.com/tknerr):
+  Allow knife sub-command loader to match platform specific gems. [pr#3281](https://github.com/chef/chef/pull/3281)
+* [**Steve Lowe**](https://github.com/SteveLowe):
+  Fix copying ntfs dacl and sacl when they are nil. [pr#3066](https://github.com/chef/chef/pull/3066)
 
 * [pr#3720](https://github.com/chef/chef/pull/3270): Extract chef's
   configuration to a separate gem. Code stays in the Chef git repo.
@@ -77,6 +53,27 @@
 * [pr#2312](https://github.com/chef/chef/pull/2312): fix `node[:recipes]` duplication, add `node[:cookbooks]` and `node[:expanded_run_list]`
 * [pr#3325](https://github.com/chef/chef/pull/3325): enforce passing a node name with validatorless bootstrapping
 * [pr#3398](https://github.com/chef/chef/pull/3398): Allow spaces in files for the `remote_file` resource
+* [Issue #3010](https://github.com/chef/chef/issues/3010) Fixed `knife user` for use with current and future versions of Chef Server 12, with continued backwards compatible support for use with Open Source Server 11.
+* [pr#3438](https://github.com/chef/chef/pull/3438) Server API V1 support. Vast improvements to and testing expansion for Chef::User, Chef::ApiClient, and related knife commands. Deprecated Open Source Server 11 user support to the Chef::OscUser and knife osc_user namespace, but with backwards compatible support via knife user.
+* [Issue #2247](https://github.com/chef/chef/issues/2247): `powershell_script` returns 0 for scripts with syntax errors
+* [pr#3080](https://github.com/chef/chef/pull/3080): Issue 2247: `powershell_script` exit status should be nonzero for syntax errors
+* [pr#3441](https://github.com/chef/chef/pull/3441): Add `powershell_out` mixin to core chef
+* [pr#3448](https://github.com/chef/chef/pull/3448): Fix `dsc_resource` to work with wmf5 april preview
+* [pr#3392](https://github.com/chef/chef/pull/3392): Comment up `Chef::Client` and privatize/deprecate unused things
+* [pr#3419](https://github.com/chef/chef/pull/3419): Fix cli issue with `chef_repo_path` when ENV variable is unset
+* [pr#3358](https://github.com/chef/chef/pull/3358): Separate audit and converge failures
+* [pr#3431](https://github.com/chef/chef/pull/3431): Fix backups on windows for the file resource
+* [pr#3397](https://github.com/chef/chef/pull/3397): Validate owner exists in directory resources
+* [pr#3418](https://github.com/chef/chef/pull/3418): Add `shell_out` mixin to Chef::Resource class for use in `not_if`/`only_if` conditionals, etc.
+* [pr#3406](https://github.com/chef/chef/pull/3406): Add wide-char 'Environment' to `broadcast_env_change` mixin for setting windows environment variables
+* [pr#3442](https://github.com/chef/chef/pull/3442): Add `resource_name` to top-level Resource class to make defining resources easier.
+* [pr#3447](https://github.com/chef/chef/pull/3447): Add `allowed_actions` and `default_action` to top-level Resource class.
+* [pr#3475](https://github.com/chef/chef/pull/3475): Fix `shell_out` timeouts in all package providers to respect timeout property on the resource.
+* [pr#3477](https://github.com/chef/chef/pull/3477): Update `zypper_package` to look like the rest of our package classes.
+* [pr#3483](https://github.com/chef/chef/pull/3483): Allow `include_recipe` from LWRP providers.
+* [pr#3495](https://github.com/chef/chef/pull/3495): Make resource name automatically determined from class name, and provide DSL for it.
+* [pr#3497](https://github.com/chef/chef/pull/3497): Issue 3485: Corruption of node's run\_context when non-default guard\_interpreter is evaluated
+* [pr#3299](https://github.com/chef/chef/pull/3299): Remove experimental warning on audit mode
 
 ## 12.3.0
 
