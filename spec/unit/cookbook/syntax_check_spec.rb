@@ -54,6 +54,8 @@ describe Chef::Cookbook::SyntaxCheck do
     basenames = %w{ helpers_via_partial_test.erb
                     helper_test.erb
                     openldap_stuff.conf.erb
+                    nested_openldap_partials.erb
+                    nested_partial.erb
                     openldap_variable_stuff.conf.erb
                     test.erb
                     some_windows_line_endings.erb

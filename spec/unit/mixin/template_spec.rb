@@ -150,6 +150,11 @@ describe Chef::Mixin::Template, "render_template" do
       output == "before {super secret is candy} after"
     end
 
+    it "should pass the template finder to the partials" do
+      output = @template_context.render_template_from_string("before {<%= render 'nested_openldap_partials.erb', :variables => {:hello => 'Hello World!' } %>} after")
+      output == "before {Hello World!} after"
+    end
+
     it "should pass variables to partials" do
       output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'whatever' } %>} after")
       expect(output).to eq("before {super secret is whatever} after")
@@ -266,4 +271,3 @@ describe Chef::Mixin::Template, "render_template" do
     end
   end
 end
-
