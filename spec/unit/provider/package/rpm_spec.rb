@@ -142,6 +142,26 @@ describe Chef::Provider::Package::Rpm do
           provider.load_current_resource
           expect(provider.current_resource.version).to eq("6.5.4.7-7.el6_5")
         end
+
+        context "when the package name contains a tilde (chef#3503)" do
+
+          let(:package_name) { "supermarket" }
+
+          let(:package_source) { "/tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm" }
+
+          let(:rpm_qp_stdout) { "supermarket 1.10.1~alpha.0-1.el5" }
+          let(:rpm_q_stdout) { "supermarket 1.10.1~alpha.0-1.el5" }
+
+          let(:rpm_qp_exitstatus) { 0 }
+          let(:rpm_q_exitstatus) { 0 }
+
+          it "should correctly determine the candidate version and installed version" do
+            provider.load_current_resource
+            expect(provider.current_resource.package_name).to eq("supermarket")
+            expect(provider.new_resource.version).to eq("1.10.1~alpha.0-1.el5")
+          end
+        end
+
       end
 
       context "when the source is given as an URI" do
@@ -200,6 +220,24 @@ describe Chef::Provider::Package::Rpm do
         provider.load_current_resource
         expect(provider.current_resource.version).to be_nil
       end
+
+      context "when the package name contains a tilde (chef#3503)" do
+
+        let(:package_name) { "supermarket" }
+
+        let(:package_source) { "/tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm" }
+
+        let(:rpm_qp_stdout) { "supermarket 1.10.1~alpha.0-1.el5" }
+        let(:rpm_q_stdout) { "package supermarket is not installed" }
+
+        let(:rpm_qp_exitstatus) { 0 }
+        let(:rpm_q_exitstatus) { 0 }
+
+        it "should correctly determine the candidate version" do
+          provider.load_current_resource
+          expect(provider.new_resource.version).to eq("1.10.1~alpha.0-1.el5")
+        end
+      end
     end
   end
 
@@ -228,6 +266,27 @@ describe Chef::Provider::Package::Rpm do
         current_resource.version("ImageMagick-c++")
         expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
         provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
+      end
+
+      context "when the package name contains a tilde (chef#3503)" do
+
+        let(:package_name) { "supermarket" }
+
+        let(:package_source) { "/tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm" }
+
+        it "should run rpm -i with the package source to install" do
+          expect(provider).to receive(:shell_out!).with("rpm  -i /tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm", timeout: 900)
+          provider.install_package("supermarket", "1.10.1~alpha.0-1.el5")
+        end
+
+        it "should run rpm -U with the package source to upgrade" do
+          provider.current_resource.version("1.10.0~alpha.0-1.el5")
+          new_resource.version("1.10.1~alpha.0-1.el5")
+
+          expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm", timeout: 900)
+          provider.upgrade_package("supermarket", "1.10.1~alpha.0-1.el5")
+        end
+
       end
 
       describe "allowing downgrade" do
@@ -297,121 +356,3 @@ describe Chef::Provider::Package::Rpm do
   end
 end
 
-# adding tests for #3503
-describe Chef::Provider::Package::Rpm do
-
-  subject(:provider) { Chef::Provider::Package::Rpm.new(new_resource, run_context) }
-
-  let(:node) { Chef::Node.new }
-  let(:events) { Chef::EventDispatch::Dispatcher.new }
-  let(:run_context) { Chef::RunContext.new(node, {}, events) }
-
-  let(:package_source) { "/tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm" }
-
-  let(:new_resource) do
-    Chef::Resource::Package.new("supermarket").tap do |resource|
-      resource.source(package_source)
-    end
-  end
-
-  # `rpm -qp [stuff] $source`
-  let(:rpm_qp_status) { double('Process::Status', exitstatus: rpm_qp_exitstatus, stdout: rpm_qp_stdout) }
-
-  # `rpm -q [stuff] $package_name`
-  let(:rpm_q_status) { double('Process::Status', exitstatus: rpm_q_exitstatus, stdout: rpm_q_stdout) }
-
-  before(:each) do
-    allow(::File).to receive(:exists?).with("PLEASE STUB File.exists? EXACTLY").and_return(true)
-    allow(::File).to receive(:exists?).with(package_source).and_return(true)
-
-    # Ensure all shell out usage is stubbed with exact arguments
-    allow(provider).to receive(:shell_out!).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)
-    allow(provider).to receive(:shell_out).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)
-  end
-
-  describe "when determining the current state of the package with a tilde (~) character in the version" do
-
-    before do
-      expect(provider).to receive(:shell_out!).
-        with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm", timeout: 900).
-        and_return(rpm_qp_status)
-
-      expect(provider).to receive(:shell_out).
-        with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' supermarket", timeout: 900).
-        and_return(rpm_q_status)
-    end
-
-    context "when rpm fails to query package install state" do
-
-      let(:rpm_qp_stdout) { "" }
-      let(:rpm_q_stdout) { "" }
-
-      let(:rpm_qp_exitstatus) { 0 }
-      let(:rpm_q_exitstatus) { -1 }
-
-      it "should not attempt an rpm installation" do
-        expected_message = "Unable to determine current version due to RPM failure."
-        expect { provider.run_action(:install) }.to raise_error do |error|
-          expect(error).to be_a_kind_of(Chef::Exceptions::Package)
-          expect(error.to_s).to include(expected_message)
-        end
-      end
-
-      it "should not attempt an rpm upgrade" do
-        expected_message = "Unable to determine current version due to RPM failure."
-        expect { provider.run_action(:upgrade) }.to raise_error do |error|
-          expect(error).to be_a_kind_of(Chef::Exceptions::Package)
-          expect(error.to_s).to include(expected_message)
-        end
-      end
-
-    end
-
-    context "when the package is not installed" do
-
-      let(:rpm_qp_stdout) { "supermarket 1.10.1~alpha.0-1.el5" }
-      let(:rpm_q_stdout) { "" }
-
-      let(:rpm_qp_exitstatus) { 0 }
-      let(:rpm_q_exitstatus) { 0 }
-
-      describe "new package installation" do
-        it "should run rpm -i with the package source to install" do
-          provider.load_current_resource
-          expect(provider.new_resource.version).to eq("1.10.1~alpha.0-1.el5")
-          expect(provider).to receive(:shell_out!).with("rpm  -i /tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm", timeout: 900)
-          provider.install_package("supermarket", "1.10.1~alpha.0-1.el5")
-        end
-      end
-
-    end
-
-    context "when the package is installed" do
-
-      let(:rpm_qp_stdout) { "supermarket 1.10.1~alpha.0-1.el5" }
-      let(:rpm_q_stdout) { "supermarket 1.10.1~alpha.0-1.el5" }
-
-      let(:rpm_qp_exitstatus) { 0 }
-      let(:rpm_q_exitstatus) { 0 }
-
-      it "should get the source package version from rpm if provided" do
-        provider.load_current_resource
-        expect(provider.current_resource.package_name).to eq("supermarket")
-        expect(provider.new_resource.version).to eq("1.10.1~alpha.0-1.el5")
-      end
-
-      describe "package upgrade" do
-        it "should run rpm -U with the package source to upgrade" do
-          provider.load_current_resource
-          provider.current_resource.version("1.10.0~alpha.0-1.el5")
-          expect(provider.new_resource.version).to eq("1.10.1~alpha.0-1.el5")
-          expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm", timeout: 900)
-          provider.upgrade_package("supermarket", "1.10.1~alpha.0-1.el5")
-        end
-
-      end
-
-    end
-
-  end
-end
