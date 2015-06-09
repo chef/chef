@@ -1,5 +1,4 @@
 ## Unreleased
-* [pr#3497](https://github.com/chef/chef/pull/3497): Issue 3485: Corruption of node's run\_context when non-default guard\_interpreter is evaluated
 * [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly): Pass name by
   knife cil attribute [pr#3195](https://github.com/chef/chef/pull/3195)
 * [**Torben Knerr**](https://github.com/tknerr):
@@ -26,6 +25,8 @@
 * [pr#3477](https://github.com/chef/chef/pull/3477): Update `zypper_package` to look like the rest of our package classes.
 * [pr#3483](https://github.com/chef/chef/pull/3483): Allow `include_recipe` from LWRP providers.
 * [pr#3495](https://github.com/chef/chef/pull/3495): Make resource name automatically determined from class name, and provide DSL for it.
+* [pr#3497](https://github.com/chef/chef/pull/3497): Issue 3485: Corruption of node's run\_context when non-default guard\_interpreter is evaluated
+* [pr#3299](https://github.com/chef/chef/pull/3299): Remove experimental warning on audit mode
 
 ## 12.4.0
 
