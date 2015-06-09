@@ -125,23 +125,118 @@ describe Chef::Provider::Package::Rpm do
       let(:rpm_qp_exitstatus) { 0 }
       let(:rpm_q_exitstatus) { 0 }
 
+      let(:action) { :install }
+
       context "when the source is a file system path" do
 
         before do
           allow(::File).to receive(:exists?).with(package_source).and_return(true)
+
+          provider.action = action
+
+          provider.load_current_resource
+          provider.define_resource_requirements
+          provider.process_resource_requirements
         end
 
-
         it "should get the source package version from rpm if provided" do
-          provider.load_current_resource
           expect(provider.current_resource.package_name).to eq("ImageMagick-c++")
           expect(provider.new_resource.version).to eq("6.5.4.7-7.el6_5")
         end
 
         it "should return the current version installed if found by rpm" do
-          provider.load_current_resource
           expect(provider.current_resource.version).to eq("6.5.4.7-7.el6_5")
         end
+
+        describe "action install" do
+
+          context "when at the desired version already" do
+            it "does nothing when the correct version is installed" do
+              expect(provider).to_not receive(:shell_out!).with("rpm  -i /tmp/imagemagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+
+              provider.action_install
+            end
+          end
+
+          context "when a newer version is desired" do
+
+            let(:rpm_q_stdout) { "imagemagick-c++ 0.5.4.7-7.el6_5" }
+
+            it "runs rpm -u with the package source to upgrade" do
+              expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              provider.action_install
+            end
+          end
+
+          context "when an older version is desired" do
+            let(:new_resource) do
+              Chef::Resource::RpmPackage.new(package_name).tap do |r|
+                r.source(package_source)
+                r.allow_downgrade(true)
+              end
+            end
+
+            let(:rpm_q_stdout) { "imagemagick-c++ 21.4-19.el6_5" }
+
+            it "should run rpm -u --oldpackage with the package source to downgrade" do
+              expect(provider).to receive(:shell_out!).with("rpm  -U --oldpackage /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              provider.action_install
+            end
+
+          end
+
+        end
+
+        describe "action upgrade" do
+
+          let(:action) { :upgrade }
+
+          context "when at the desired version already" do
+            it "does nothing when the correct version is installed" do
+              expect(provider).to_not receive(:shell_out!).with("rpm  -i /tmp/imagemagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+
+              provider.action_upgrade
+            end
+          end
+
+          context "when a newer version is desired" do
+
+            let(:rpm_q_stdout) { "imagemagick-c++ 0.5.4.7-7.el6_5" }
+
+            it "runs rpm -u with the package source to upgrade" do
+              expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              provider.action_upgrade
+            end
+          end
+
+          context "when an older version is desired" do
+            let(:new_resource) do
+              Chef::Resource::RpmPackage.new(package_name).tap do |r|
+                r.source(package_source)
+                r.allow_downgrade(true)
+              end
+            end
+
+            let(:rpm_q_stdout) { "imagemagick-c++ 21.4-19.el6_5" }
+
+            it "should run rpm -u --oldpackage with the package source to downgrade" do
+              expect(provider).to receive(:shell_out!).with("rpm  -U --oldpackage /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+              provider.action_upgrade
+            end
+
+          end
+        end
+
+        describe "action :remove" do
+
+          let(:action) { :remove }
+
+          it "should remove the package" do
+            expect(provider).to receive(:shell_out!).with("rpm  -e ImageMagick-c++-6.5.4.7-7.el6_5", timeout: 900)
+            provider.action_remove
+          end
+        end
+
 
         context "when the package name contains a tilde (chef#3503)" do
 
@@ -156,7 +251,6 @@ describe Chef::Provider::Package::Rpm do
           let(:rpm_q_exitstatus) { 0 }
 
           it "should correctly determine the candidate version and installed version" do
-            provider.load_current_resource
             expect(provider.current_resource.package_name).to eq("supermarket")
             expect(provider.new_resource.version).to eq("1.10.1~alpha.0-1.el5")
           end
@@ -167,6 +261,12 @@ describe Chef::Provider::Package::Rpm do
       context "when the source is given as an URI" do
         before(:each) do
           allow(::File).to receive(:exists?).with(package_source).and_return(false)
+
+          provider.action = action
+
+          provider.load_current_resource
+          provider.define_resource_requirements
+          provider.process_resource_requirements
         end
 
         %w(http HTTP https HTTPS ftp FTP file FILE).each do |scheme|
@@ -175,21 +275,12 @@ describe Chef::Provider::Package::Rpm do
 
             let(:package_source) { "#{scheme}://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm" }
 
-            it "should accept uri formed source (#{scheme})" do
-              # verify our nested let bindings are setup right
-              expect(new_resource.source).to eq(package_source)
-              new_resource.source "#{scheme}://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
-              expect(provider.load_current_resource).not_to be_nil
-            end
-
             it "should get the source package version from rpm if provided" do
-              provider.load_current_resource
               expect(provider.current_resource.package_name).to eq("ImageMagick-c++")
               expect(provider.new_resource.version).to eq("6.5.4.7-7.el6_5")
             end
 
             it "should return the current version installed if found by rpm" do
-              provider.load_current_resource
               expect(provider.current_resource.version).to eq("6.5.4.7-7.el6_5")
             end
 
@@ -212,12 +303,19 @@ describe Chef::Provider::Package::Rpm do
       let(:rpm_qp_exitstatus) { 0 }
       let(:rpm_q_exitstatus) { 0 }
 
+      let(:action) { :install }
+
       before do
         allow(File).to receive(:exists?).with(package_source).and_return(true)
+
+        provider.action = action
+
+        provider.load_current_resource
+        provider.define_resource_requirements
+        provider.process_resource_requirements
       end
 
       it "should not detect the package name as version when not installed" do
-        provider.load_current_resource
         expect(provider.current_resource.version).to be_nil
       end
 
@@ -234,125 +332,85 @@ describe Chef::Provider::Package::Rpm do
         let(:rpm_q_exitstatus) { 0 }
 
         it "should correctly determine the candidate version" do
-          provider.load_current_resource
           expect(provider.new_resource.version).to eq("1.10.1~alpha.0-1.el5")
         end
       end
-    end
-  end
 
-  describe "after the current resource is loaded" do
-    let(:current_resource) { Chef::Resource::Package.new(package_name) }
+      describe "managing the package" do
 
-    let(:provider) do
-      Chef::Provider::Package::Rpm.new(new_resource, run_context).tap do |provider|
-        provider.current_resource = current_resource
-      end
-    end
+        describe "action install" do
 
-    describe "when installing or upgrading" do
-      it "should run rpm -i with the package source to install" do
-        expect(provider).to receive(:shell_out!).with("rpm  -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
-        provider.install_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
-      end
+          it "installs the package" do
+            expect(provider).to receive(:shell_out!).with("rpm  -i #{package_source}", timeout: 900)
 
-      it "should run rpm -U with the package source to upgrade" do
-        current_resource.version("21.4-19.el5")
-        expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
-        provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
-      end
+            provider.action_install
+          end
 
-      it "should install package if missing and set to upgrade" do
-        current_resource.version("ImageMagick-c++")
-        expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
-        provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
-      end
-
-      context "when the package name contains a tilde (chef#3503)" do
-
-        let(:package_name) { "supermarket" }
-
-        let(:package_source) { "/tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm" }
-
-        it "should run rpm -i with the package source to install" do
-          expect(provider).to receive(:shell_out!).with("rpm  -i /tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm", timeout: 900)
-          provider.install_package("supermarket", "1.10.1~alpha.0-1.el5")
-        end
-
-        it "should run rpm -U with the package source to upgrade" do
-          provider.current_resource.version("1.10.0~alpha.0-1.el5")
-          new_resource.version("1.10.1~alpha.0-1.el5")
-
-          expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm", timeout: 900)
-          provider.upgrade_package("supermarket", "1.10.1~alpha.0-1.el5")
-        end
-
-      end
-
-      describe "allowing downgrade" do
-
-        let(:new_resource) do
-          Chef::Resource::RpmPackage.new(package_name).tap do |r|
-            r.source(package_source)
-            r.allow_downgrade(true)
+          context "when custom resource options are given" do
+            it "installs with custom options specified in the resource" do
+              new_resource.options("--dbpath /var/lib/rpm")
+              expect(provider).to receive(:shell_out!).with("rpm --dbpath /var/lib/rpm -i #{package_source}", timeout: 900)
+              provider.action_install
+            end
           end
         end
 
-        let(:current_resource) do
-          Chef::Resource::RpmPackage.new("ImageMagick-c++").tap do |r|
-            r.version("21.4-19.el5")
+        describe "action upgrade" do
+
+          let(:action) { :upgrade }
+
+          it "installs the package" do
+            expect(provider).to receive(:shell_out!).with("rpm  -i #{package_source}", timeout: 900)
+
+            provider.action_upgrade
           end
         end
 
-        it "should run rpm -U --oldpackage with the package source to downgrade" do
-          expect(provider).to receive(:shell_out!).with("rpm  -U --oldpackage /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
-          provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
-        end
-      end
+        describe "when removing the package" do
 
-      context "when the resource name is the path to the package" do
+          let(:action) { :remove }
 
-        let(:new_resource) do
-          # When we pass a source in as the name, then #initialize in the
-          # provider will call File.exists?. Because of the ordering in our
-          # let() bindings and such, we have to set the stub here and not in a
-          # before block.
-          allow(::File).to receive(:exists?).with(package_source).and_return(true)
-          Chef::Resource::Package.new("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
+          it "should do nothing" do
+            expect(provider).to_not receive(:shell_out!).with("rpm  -e ImageMagick-c++-6.5.4.7-7.el6_5", timeout: 900)
+            provider.action_remove
+          end
         end
 
-        let(:current_resource) { Chef::Resource::Package.new("ImageMagick-c++") }
-
-        it "should install from a path when the package is a path and the source is nil" do
-          expect(new_resource.source).to eq("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
-          provider.current_resource = current_resource
-          expect(provider).to receive(:shell_out!).with("rpm  -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
-          provider.install_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
-        end
-
-        it "should uprgrade from a path when the package is a path and the source is nil" do
-          expect(new_resource.source).to eq("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
-          current_resource.version("21.4-19.el5")
-          provider.current_resource = current_resource
-          expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
-          provider.upgrade_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
-        end
       end
 
-      it "installs with custom options specified in the resource" do
-        provider.candidate_version = '11'
-        new_resource.options("--dbpath /var/lib/rpm")
-        expect(provider).to receive(:shell_out!).with("rpm --dbpath /var/lib/rpm -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
-        provider.install_package(new_resource.name, provider.candidate_version)
-      end
-    end
 
-    describe "when removing the package" do
-      it "should run rpm -e to remove the package" do
-        expect(provider).to receive(:shell_out!).with("rpm  -e ImageMagick-c++-6.5.4.7-7.el6_5", timeout: 900)
-        provider.remove_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
-      end
     end
   end
+
+  context "when the resource name is the path to the package" do
+
+    let(:new_resource) do
+      # When we pass a source in as the name, then #initialize in the
+      # provider will call File.exists?. Because of the ordering in our
+      # let() bindings and such, we have to set the stub here and not in a
+      # before block.
+      allow(::File).to receive(:exists?).with(package_source).and_return(true)
+      Chef::Resource::Package.new("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
+    end
+
+    let(:current_resource) { Chef::Resource::Package.new("ImageMagick-c++") }
+
+    it "should install from a path when the package is a path and the source is nil" do
+      expect(new_resource.source).to eq("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
+      provider.current_resource = current_resource
+      expect(provider).to receive(:shell_out!).with("rpm  -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+      provider.install_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
+    end
+
+    it "should uprgrade from a path when the package is a path and the source is nil" do
+      expect(new_resource.source).to eq("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
+      current_resource.version("21.4-19.el5")
+      provider.current_resource = current_resource
+      expect(provider).to receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
+      provider.upgrade_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
+    end
+  end
+
+
 end
 
