@@ -255,8 +255,8 @@ describe "Chef::Resource.property validation" do
       [ '', 'abac' ],
       [ nil ]
 
-    # PropertyType
-    # validation_test 'is: PropertyType.new(is: :a)',
+    # Property
+    # validation_test 'is: Property.new(is: :a)',
     #   [ :a ],
     #   [ :b, nil ]
 

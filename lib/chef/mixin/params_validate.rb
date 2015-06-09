@@ -16,7 +16,7 @@
 # limitations under the License.
 
 require 'chef/constants'
-require 'chef/property_type'
+require 'chef/property'
 require 'chef/delayed_evaluator'
 
 class Chef
@@ -81,7 +81,7 @@ class Chef
       #     properties).  (See #_pv_default.)
       #
       def validate(opts, map)
-        map = map.validation_options if map.is_a?(PropertyType)
+        map = map.validation_options if map.is_a?(Property)
 
         #--
         # validate works by taking the keys in the validation map, assuming it's a hash, and
@@ -121,7 +121,7 @@ class Chef
       def set_or_return(symbol, value, validation)
         symbol = symbol.to_sym
         iv_symbol = :"@#{symbol}"
-        validation = validation.validation_options if validation.is_a?(PropertyType)
+        validation = validation.validation_options if validation.is_a?(Property)
 
         # Steal default, coerce, name_property and required from validation
         # so that we can handle the order in which they are applied
@@ -462,9 +462,9 @@ class Chef
       #   x 1 #=> invalid
       #   ```
       #
-      # @example PropertyType
+      # @example Property
       #   ```ruby
-      #   type = PropertyType.new(is: String)
+      #   type = Property.new(is: String)
       #   property :x, type
       #   x 'foo' #=> valid
       #   x 1     #=> invalid

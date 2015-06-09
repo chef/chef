@@ -98,6 +98,7 @@ class Chef
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
     class VerificationNotFound < RuntimeError; end
+    class MultipleIdentityError < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
     class NoSuchResourceType < NameError

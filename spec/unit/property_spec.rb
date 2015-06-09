@@ -216,7 +216,7 @@ describe "Chef::Resource.property" do
     end
   end
 
-  context "Chef::Resource::PropertyType#property_is_set?" do
+  context "Chef::Resource::Property#property_is_set?" do
     it "when a resource is newly created, property_is_set?(:name) is true" do
       expect(resource.property_is_set?(:name)).to be_truthy
     end
@@ -310,7 +310,7 @@ describe "Chef::Resource.property" do
     end
   end
 
-  context "Chef::Resource::PropertyType#default" do
+  context "Chef::Resource::Property#default" do
     with_property ':x, default: 10' do
       it "when x is set, it returns its value" do
         expect(resource.x 20).to eq 20
@@ -321,7 +321,7 @@ describe "Chef::Resource.property" do
         expect(resource.x).to eq 10
       end
       it "when x is not set, it is not included in state" do
-        expect(resource.state).to eq({})
+        expect(resource.state_for_resource_reporter).to eq(name: 'blah')
       end
       it "when x is set to nil, it returns nil" do
         resource.instance_eval { @x = nil }
@@ -343,8 +343,15 @@ describe "Chef::Resource.property" do
     end
 
     with_property ':x, default: 10, identity: true' do
-      it "when x is not set, it is not included in identity" do
-        expect(resource.state).to eq({})
+      it "when x is not set, it is included in identity" do
+        expect(resource.identity).to eq(10)
+      end
+    end
+
+    with_property ':x, default: 1, identity: true', ':y, default: 2, identity: true' do
+      it "when x is not set, it is still included in identity" do
+        resource.y 20
+        expect(resource.identity).to eq(x: 1, y: 20)
       end
     end
 
@@ -710,7 +717,7 @@ describe "Chef::Resource.property" do
     end
   end
 
-  context "Chef::Resource::PropertyType#coerce" do
+  context "Chef::Resource::Property#coerce" do
     with_property ':x, coerce: proc { |v| "#{v}#{Namer.next_index}" }' do
       it "coercion runs on set" do
         expect(resource.x 10).to eq "101"
@@ -744,7 +751,7 @@ describe "Chef::Resource.property" do
     end
   end
 
-  context "Chef::Resource::PropertyType validation" do
+  context "Chef::Resource::Property validation" do
     with_property ':x, is: proc { |v| Namer.next_index; v.is_a?(Integer) }' do
       it "validation runs on set" do
         expect(resource.x 10).to eq 10
@@ -772,7 +779,7 @@ describe "Chef::Resource.property" do
   end
 
   [ 'name_attribute', 'name_property' ].each do |name|
-    context "Chef::Resource::PropertyType##{name}" do
+    context "Chef::Resource::Property##{name}" do
       with_property ":x, #{name}: true" do
         it "defaults x to resource.name" do
           expect(resource.x).to eq 'blah'
