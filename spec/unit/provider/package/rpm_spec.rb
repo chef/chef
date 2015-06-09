@@ -23,106 +23,180 @@ describe Chef::Provider::Package::Rpm do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
+
+  let(:package_source) { "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm" }
+
+  let(:package_name) { "ImageMagick-c++" }
+
   let(:new_resource) do
-    Chef::Resource::Package.new("ImageMagick-c++").tap do |resource|
-      resource.source "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
+    Chef::Resource::Package.new(package_name).tap do |resource|
+      resource.source(package_source)
     end
   end
-  let(:exitstatus) { 0 }
-  let(:stdout) { String.new('') }
-  let(:status) { double('Process::Status', exitstatus: exitstatus, stdout: stdout) }
+
+  # `rpm -qp [stuff] $source`
+  let(:rpm_qp_status) { instance_double('Mixlib::ShellOut', exitstatus: rpm_qp_exitstatus, stdout: rpm_qp_stdout) }
+
+  # `rpm -q [stuff] $package_name`
+  let(:rpm_q_status) { instance_double('Mixlib::ShellOut', exitstatus: rpm_q_exitstatus, stdout: rpm_q_stdout) }
 
   before(:each) do
-    allow(::File).to receive(:exists?).and_return(true)
-    allow(provider).to receive(:shell_out!).and_return(status)
+    allow(::File).to receive(:exists?).with("PLEASE STUB File.exists? EXACTLY").and_return(true)
+
+    # Ensure all shell out usage is stubbed with exact arguments
+    allow(provider).to receive(:shell_out!).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)
+    allow(provider).to receive(:shell_out).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)
   end
 
-  describe "when determining the current state of the package" do
-    it "should create a current resource with the name of new_resource" do
-      provider.load_current_resource
-      expect(provider.current_resource.name).to eq("ImageMagick-c++")
-    end
+  describe "when the package source is not valid" do
 
-    it "should set the current reource package name to the new resource package name" do
-      provider.load_current_resource
-      expect(provider.current_resource.package_name).to eq('ImageMagick-c++')
-    end
+    context "when source is not defiend" do
+      let(:new_resource) { Chef::Resource::Package.new("ImageMagick-c++") }
 
-    it "should raise an exception if a source is supplied but not found" do
-      allow(::File).to receive(:exists?).and_return(false)
-      expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
-    end
-
-    context "installation exists" do
-      let(:stdout) { "ImageMagick-c++ 6.5.4.7-7.el6_5" }
-
-      it "should get the source package version from rpm if provided" do
-        expect(provider).to receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900).and_return(status)
-        expect(provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++", timeout: 900).and_return(status)
-        provider.load_current_resource
-        expect(provider.current_resource.package_name).to eq("ImageMagick-c++")
-        expect(provider.new_resource.version).to eq("6.5.4.7-7.el6_5")
-      end
-
-      it "should return the current version installed if found by rpm" do
-        expect(provider).to receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900).and_return(status)
-        expect(provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++", timeout: 900).and_return(status)
-        provider.load_current_resource
-        expect(provider.current_resource.version).to eq("6.5.4.7-7.el6_5")
+      it "should raise an exception when attempting any action" do
+        expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
       end
     end
 
-    context "source is uri formed" do
-      before(:each) do
-        allow(::File).to receive(:exists?).and_return(false)
-      end
+    context "when the source is a file that doesn't exist" do
 
-      %w(http HTTP https HTTPS ftp FTP).each do |scheme|
-        it "should accept uri formed source (#{scheme})" do
-          new_resource.source "#{scheme}://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
-          expect(provider.load_current_resource).not_to be_nil
-        end
+      it "should raise an exception when attempting any action" do
+        allow(::File).to receive(:exists?).with(package_source).and_return(false)
+        expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
       end
+    end
 
-      %w(file FILE).each do |scheme|
-        it "should accept uri formed source (#{scheme})" do
-          new_resource.source "#{scheme}:///ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
-          expect(provider.load_current_resource).not_to be_nil
-        end
-      end
+    context "when the source is an unsupported URI scheme" do
+
+      let(:package_source) { "foobar://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm" }
 
       it "should raise an exception if an uri formed source is non-supported scheme" do
-        new_resource.source "foobar://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
+        allow(::File).to receive(:exists?).with(package_source).and_return(false)
+
+        # verify let bindings are as we expect
+        expect(new_resource.source).to eq("foobar://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
         expect(provider.load_current_resource).to be_nil
         expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
       end
     end
 
-    context "source is not defiend" do
-      let(:new_resource) { Chef::Resource::Package.new("ImageMagick-c++") }
+  end
 
-      it "should raise an exception if the source is not set but we are installing" do
-        expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
+  describe "when the package source is valid" do
+
+    before do
+      expect(provider).to receive(:shell_out!).
+        with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{package_source}", timeout: 900).
+        and_return(rpm_qp_status)
+
+      expect(provider).to receive(:shell_out).
+        with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{package_name}", timeout: 900).
+        and_return(rpm_q_status)
+    end
+
+    context "when rpm fails when querying package installed state" do
+
+      before do
+        allow(::File).to receive(:exists?).with(package_source).and_return(true)
+      end
+
+      let(:rpm_qp_stdout) { "ImageMagick-c++ 6.5.4.7-7.el6_5" }
+      let(:rpm_q_stdout) { "" }
+
+      let(:rpm_qp_exitstatus) { 0 }
+      let(:rpm_q_exitstatus) { -1 }
+
+      it "raises an exception when attempting any action" do
+        expected_message = "Unable to determine current version due to RPM failure."
+
+        expect { provider.run_action(:install) }.to raise_error do |error|
+          expect(error).to be_a_kind_of(Chef::Exceptions::Package)
+          expect(error.to_s).to include(expected_message)
+        end
       end
     end
 
-    context "installation does not exist" do
-      let(:stdout) { String.new("package openssh-askpass is not installed") }
-      let(:exitstatus) { -1 }
-      let(:new_resource) do
-        Chef::Resource::Package.new("openssh-askpass").tap do |resource|
-          resource.source "openssh-askpass"
+
+    context "when the package is installed" do
+
+      let(:rpm_qp_stdout) { "ImageMagick-c++ 6.5.4.7-7.el6_5" }
+      let(:rpm_q_stdout) { "ImageMagick-c++ 6.5.4.7-7.el6_5" }
+
+      let(:rpm_qp_exitstatus) { 0 }
+      let(:rpm_q_exitstatus) { 0 }
+
+      context "when the source is a file system path" do
+
+        before do
+          allow(::File).to receive(:exists?).with(package_source).and_return(true)
+        end
+
+
+        it "should get the source package version from rpm if provided" do
+          provider.load_current_resource
+          expect(provider.current_resource.package_name).to eq("ImageMagick-c++")
+          expect(provider.new_resource.version).to eq("6.5.4.7-7.el6_5")
+        end
+
+        it "should return the current version installed if found by rpm" do
+          provider.load_current_resource
+          expect(provider.current_resource.version).to eq("6.5.4.7-7.el6_5")
         end
       end
 
-      it "should raise an exception if rpm fails to run" do
-        allow(provider).to receive(:shell_out).and_return(status)
-        expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
+      context "when the source is given as an URI" do
+        before(:each) do
+          allow(::File).to receive(:exists?).with(package_source).and_return(false)
+        end
+
+        %w(http HTTP https HTTPS ftp FTP file FILE).each do |scheme|
+
+          context "when the source URI uses protocol scheme '#{scheme}'" do
+
+            let(:package_source) { "#{scheme}://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm" }
+
+            it "should accept uri formed source (#{scheme})" do
+              # verify our nested let bindings are setup right
+              expect(new_resource.source).to eq(package_source)
+              new_resource.source "#{scheme}://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
+              expect(provider.load_current_resource).not_to be_nil
+            end
+
+            it "should get the source package version from rpm if provided" do
+              provider.load_current_resource
+              expect(provider.current_resource.package_name).to eq("ImageMagick-c++")
+              expect(provider.new_resource.version).to eq("6.5.4.7-7.el6_5")
+            end
+
+            it "should return the current version installed if found by rpm" do
+              provider.load_current_resource
+              expect(provider.current_resource.version).to eq("6.5.4.7-7.el6_5")
+            end
+
+          end
+        end
+
+      end
+
+    end
+
+    context "when the package is not installed" do
+
+      let(:package_name) { "openssh-askpass" }
+
+      let(:package_source) { "/tmp/openssh-askpass-1.2.3-4.el6_5.x86_64.rpm" }
+
+      let(:rpm_qp_stdout) { "openssh-askpass 1.2.3-4.el6_5" }
+      let(:rpm_q_stdout) { "package openssh-askpass is not installed" }
+
+      let(:rpm_qp_exitstatus) { 0 }
+      let(:rpm_q_exitstatus) { 0 }
+
+      before do
+        allow(File).to receive(:exists?).with(package_source).and_return(true)
       end
 
       it "should not detect the package name as version when not installed" do
-        expect(provider).to receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass", timeout: 900).and_return(status)
-        expect(provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass", timeout: 900).and_return(status)
         provider.load_current_resource
         expect(provider.current_resource.version).to be_nil
       end
@@ -130,7 +204,8 @@ describe Chef::Provider::Package::Rpm do
   end
 
   describe "after the current resource is loaded" do
-    let(:current_resource) { Chef::Resource::Package.new("ImageMagick-c++") }
+    let(:current_resource) { Chef::Resource::Package.new(package_name) }
+
     let(:provider) do
       Chef::Provider::Package::Rpm.new(new_resource, run_context).tap do |provider|
         provider.current_resource = current_resource
@@ -155,20 +230,38 @@ describe Chef::Provider::Package::Rpm do
         provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
       end
 
-      context "allowing downgrade" do
-        let(:new_resource) { Chef::Resource::RpmPackage.new("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm") }
-        let(:current_resource) { Chef::Resource::RpmPackage.new("ImageMagick-c++") }
+      describe "allowing downgrade" do
+
+        let(:new_resource) do
+          Chef::Resource::RpmPackage.new(package_name).tap do |r|
+            r.source(package_source)
+            r.allow_downgrade(true)
+          end
+        end
+
+        let(:current_resource) do
+          Chef::Resource::RpmPackage.new("ImageMagick-c++").tap do |r|
+            r.version("21.4-19.el5")
+          end
+        end
 
         it "should run rpm -U --oldpackage with the package source to downgrade" do
-          new_resource.allow_downgrade(true)
-          current_resource.version("21.4-19.el5")
           expect(provider).to receive(:shell_out!).with("rpm  -U --oldpackage /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", timeout: 900)
           provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
         end
       end
 
-      context "installing when the name is a path" do
-        let(:new_resource) { Chef::Resource::Package.new("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm") }
+      context "when the resource name is the path to the package" do
+
+        let(:new_resource) do
+          # When we pass a source in as the name, then #initialize in the
+          # provider will call File.exists?. Because of the ordering in our
+          # let() bindings and such, we have to set the stub here and not in a
+          # before block.
+          allow(::File).to receive(:exists?).with(package_source).and_return(true)
+          Chef::Resource::Package.new("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
+        end
+
         let(:current_resource) { Chef::Resource::Package.new("ImageMagick-c++") }
 
         it "should install from a path when the package is a path and the source is nil" do
@@ -212,9 +305,12 @@ describe Chef::Provider::Package::Rpm do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
+
+  let(:package_source) { "/tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm" }
+
   let(:new_resource) do
     Chef::Resource::Package.new("supermarket").tap do |resource|
-      resource.source "/tmp/supermarket-1.10.1~alpha.0-1.el5.x86_64.rpm"
+      resource.source(package_source)
     end
   end
 
@@ -225,7 +321,8 @@ describe Chef::Provider::Package::Rpm do
   let(:rpm_q_status) { double('Process::Status', exitstatus: rpm_q_exitstatus, stdout: rpm_q_stdout) }
 
   before(:each) do
-    allow(::File).to receive(:exists?).and_return(true)
+    allow(::File).to receive(:exists?).with("PLEASE STUB File.exists? EXACTLY").and_return(true)
+    allow(::File).to receive(:exists?).with(package_source).and_return(true)
 
     # Ensure all shell out usage is stubbed with exact arguments
     allow(provider).to receive(:shell_out!).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)
