@@ -67,7 +67,7 @@ class Chef
             true
           when Hash
             validation.each do |check, carg|
-              check_method = "_pv_#{check.to_s}"
+              check_method = "_pv_#{check}"
               if self.respond_to?(check_method, true)
                 self.send(check_method, opts, key, carg)
               else
@@ -87,52 +87,87 @@ class Chef
         symbol = symbol.to_sym
         iv_symbol = :"@#{symbol}"
 
+        # Steal default, coerce, name_property and required from validation
+        # so that we can handle the order in which they are applied
+        validation = validation.dup
+        if validation.has_key?(:default)
+          default = validation.delete(:default)
+        elsif validation.has_key?('default')
+          default = validation.delete('default')
+        else
+          default = NOT_PASSED
+        end
+        coerce    = validation.delete(:coerce)
+        coerce  ||= validation.delete('coerce')
+        name_property   = validation.delete(:name_property)
+        name_property ||= validation.delete('name_property')
+        name_property ||= validation.delete(:name_attribute)
+        name_property ||= validation.delete('name_attribute')
+        required   = validation.delete(:required)
+        required ||= validation.delete('required')
+
+        opts = {}
         # If the user passed NOT_PASSED, or passed nil, then this is a get.
         if value == NOT_PASSED || (value.nil? && !explicitly_allows_nil?(symbol, validation))
 
           # Get the value if there is one
           if self.instance_variable_defined?(iv_symbol)
-            value = self.instance_variable_get(iv_symbol)
-            if value.is_a?(DelayedEvaluator)
-              # Pass optional first parameter of self
-              value = value.call(self)
-              value = validate({ symbol => value }, { symbol => validation })[symbol]
+            opts[symbol] = self.instance_variable_get(iv_symbol)
+
+            # Handle lazy values
+            if opts[symbol].is_a?(DelayedEvaluator)
+              if opts[symbol].arity >= 1
+                opts[symbol] = opts[symbol].call(self)
+              else
+                opts[symbol] = opts[symbol].call
+              end
+
+              # Coerce and validate the default value
+              _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
+              _pv_coerce(opts, symbol, coerce) if coerce
+              validate(opts, { symbol => validation })
             end
 
           # Get the default value
           else
-            validated = validate({}, { symbol => validation })
-            if validated.has_key?(symbol)
-              value = validated[symbol]
+            _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
+            _pv_default(opts, symbol, default) unless default == NOT_PASSED
+            _pv_name_property(opts, symbol, name_property)
 
-              # Handle the case where the "default" was a DelayedEvaluator. In
-              # this case, the block yields an optional parameter of +self+,
-              # which is the equivalent of "new_resource"
-              if value.is_a?(DelayedEvaluator)
-                if value.arity >= 1
-                  value = value.call(self)
+            if opts.has_key?(symbol)
+              # Handle lazy defaults.
+              if opts[symbol].is_a?(DelayedEvaluator)
+                if opts[symbol].arity >= 1
+                  opts[symbol] = opts[symbol].call(self)
                 else
-                  value = instance_eval(&value)
+                  opts[symbol] = instance_eval(&opts[symbol])
                 end
               end
 
+              # Coerce and validate the default value
+              _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
+              _pv_coerce(opts, symbol, coerce) if coerce
+              validate(opts, { symbol => validation })
+
               # Defaults are presently "stickily" set on the instance
-              self.instance_variable_set(iv_symbol, value)
-            else
-              value = nil
+              self.instance_variable_set(iv_symbol, opts[symbol])
             end
           end
 
         # Set the value
         else
-          unless value.is_a?(DelayedEvaluator)
-            value = validate({ symbol => value }, { symbol => validation })[symbol]
+          opts[symbol] = value
+          unless opts[symbol].is_a?(DelayedEvaluator)
+            # Coerce and validate the value
+            _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
+            _pv_coerce(opts, symbol, coerce) if coerce
+            validate(opts, { symbol => validation })
           end
 
-          self.instance_variable_set(iv_symbol, value)
+          self.instance_variable_set(iv_symbol, opts[symbol])
         end
 
-        value
+        opts[symbol]
       end
 
       private
@@ -153,14 +188,11 @@ class Chef
       end
 
       # Raise an exception if the parameter is not found.
-      def _pv_required(opts, key, is_required=true)
+      def _pv_required(opts, key, is_required=true, explicitly_allows_nil=false)
         if is_required
-          if (opts.has_key?(key.to_s) && !opts[key.to_s].nil?) ||
-              (opts.has_key?(key.to_sym) && !opts[key.to_sym].nil?)
-            true
-          else
-            raise Exceptions::ValidationFailed, "Required argument #{key} is missing!"
-          end
+          return true if opts.has_key?(key.to_s) && (explicitly_allows_nil || !opts[key.to_s].nil?)
+          return true if opts.has_key?(key.to_sym) && (explicitly_allows_nil || !opts[key.to_sym].nil?)
+          raise Exceptions::ValidationFailed, "Required argument #{key} is missing!"
         end
       end
 

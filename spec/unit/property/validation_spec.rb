@@ -3,7 +3,7 @@ require 'support/shared/integration/integration_helper'
 describe "Chef::Resource.property validation" do
   include IntegrationSupport
 
-  class Namer
+  module Namer
     @i = 0
     def self.next_resource_name
       "chef_resource_property_spec_#{@i += 1}"
@@ -519,12 +519,14 @@ describe "Chef::Resource.property validation" do
       it "if x is not specified, retrieval fails" do
         expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
       end
-      it "value nil is invalid" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
-      end
       it "value 1 is valid" do
         expect(resource.x 1).to eq 1
+        expect(resource.x).to eq 1
+      end
+      it "value nil does a get" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+        resource.x 1
+        resource.x nil
         expect(resource.x).to eq 1
       end
     end
@@ -533,10 +535,10 @@ describe "Chef::Resource.property validation" do
       it "if x is not specified, retrieval fails" do
         expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
       end
-      # it "value nil is valid" do
-      #   expect(resource.x nil).to be_nil
-      #   expect(resource.x).to be_nil
-      # end
+      it "value nil is valid" do
+        expect(resource.x nil).to be_nil
+        expect(resource.x).to be_nil
+      end
       it "value '1' is valid" do
         expect(resource.x '1').to eq '1'
         expect(resource.x).to eq '1'
@@ -546,30 +548,32 @@ describe "Chef::Resource.property validation" do
       end
     end
 
-    # with_property ':x, name_property: true, required: true' do
-    with_property ':x, required: true, name_property: true' do
+    with_property ':x, name_property: true, required: true' do
       it "if x is not specified, retrieval fails" do
         expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
-      end
-      it "value nil is invalid" do
-        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
       end
       it "value 1 is valid" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
       end
+      it "value nil does a get" do
+        resource.x 1
+        resource.x nil
+        expect(resource.x).to eq 1
+      end
     end
 
-    # with_property ':x, default: 10, required: true' do
-    with_property ':x, required: true, default: 10' do
+    with_property ':x, default: 10, required: true' do
       it "if x is not specified, retrieval fails" do
         expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
       end
-      it "value nil is invalid" do
-        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
-      end
       it "value 1 is valid" do
         expect(resource.x 1).to eq 1
+        expect(resource.x).to eq 1
+      end
+      it "value nil does a get" do
+        resource.x 1
+        resource.x nil
         expect(resource.x).to eq 1
       end
     end
@@ -607,9 +611,11 @@ describe "Chef::Resource.property validation" do
           expect { resource.x '1' }.to raise_error Chef::Exceptions::ValidationFailed
         end
 
-        it "value nil is invalid" do
+        it "value nil does a get" do
           Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+          resource.x 1
+          resource.x nil
+          expect(resource.x).to eq 1
         end
       end
     end
@@ -635,8 +641,10 @@ describe "Chef::Resource.property validation" do
           expect { resource.x '1' }.to raise_error Chef::Exceptions::ValidationFailed
         end
 
-        it "value nil is invalid" do
-          expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+        it "value nil does a get" do
+          resource.x 1
+          resource.x nil
+          expect(resource.x).to eq 1
         end
       end
     end
