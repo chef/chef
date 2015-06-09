@@ -22,8 +22,6 @@ require 'chef/provider/package/rpm'
 class Chef
   class Resource
     class RpmPackage < Chef::Resource::Package
-
-      use_automatic_resource_name
       provides :rpm_package, os: [ "linux", "aix" ]
 
       def initialize(name, run_context=nil)

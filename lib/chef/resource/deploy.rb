@@ -50,7 +50,6 @@ class Chef
     # release directory. Callback files can contain chef code (resources, etc.)
     #
     class Deploy < Chef::Resource
-      use_automatic_resource_name
 
       identity_attr :repository
 

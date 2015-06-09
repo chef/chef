@@ -21,7 +21,6 @@ class Chef
   class Resource
     class DscResource < Chef::Resource
 
-      use_automatic_resource_name
       provides :dsc_resource, os: "windows"
 
       include Chef::DSL::Powershell

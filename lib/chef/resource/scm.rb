@@ -22,8 +22,6 @@ require 'chef/resource'
 class Chef
   class Resource
     class Scm < Chef::Resource
-      use_automatic_resource_name
-
       identity_attr :destination
 
       state_attrs :revision

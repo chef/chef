@@ -6,27 +6,61 @@ Example Doc Change:
 Description of the required change.
 -->
 
-### Resources must now use `resource_name` to declare recipe DSL
+### Resources now *all* get automatic DSL
 
-Resources declared in `Chef::Resource` namespace will no longer get recipe DSL
-automatically.  Instead, `resource_name` is required in order to have DSL:
+When you declare a resource (no matter where) you now get automatic DSL for it, based on your class name:
 
 ```ruby
 module MyModule
   class MyResource < Chef::Resource
-    use_automatic_resource_name # Names the resource "my_resource"
+    # Names the resource "my_resource"
   end
 end
 ```
 
-`resource_name :my_resource` may be used to explicitly set the resource name.
+When this happens, the resource can be used in a recipe:
 
-`provides :my_resource` still works, but at least one resource_name *must* be
-set for the resource to work.
+```ruby
+my_resource 'blah' do
+end
+```
 
-Authors of HWRPs need to be aware that in the future all resources and providers will be required to include a provides line. Starting with Chef 12.4.0 any HWRPs in the `Chef::Resource` or `Chef::Provider` namespaces that do not have provides lines will trigger deprecation warning messages when called. The LWRPBase code does `provides` automatically so LWRP authors and users who write classes that inherit from LWRPBase do not need to explicitly include provides lines.
+If you have an abstract class that should *not* have DSL, set `resource_name` to `nil`:
 
-Users are encouraged to declare resources in their own namespaces instead of putting them in the special `Chef::Resource` namespace.
+```ruby
+module MyModule
+  # This will not have DSL
+  class MyBaseResource < Chef::Resource
+    resource_name nil
+  end
+  # This will have DSL `my_resource`
+  class MyResource < MyBaseResource
+  end
+end
+```
+
+When you do this, `my_base_resource` will not work in a recipe (but `my_resource` will).
+
+You can still use `provides` to provide other DSL names:
+
+```ruby
+module MyModule
+  class MyResource < Chef::Resource
+    provides :super_resource
+  end
+end
+```
+
+Which enables this recipe:
+
+```ruby
+super_resource 'wowzers' do  
+end
+```
+
+(Note that when you use provides in this manner, resource_name will be `my_resource` and declared_type will be `super_resource`. This won't affect most people, but it is worth noting as a matter of explanation.)
+
+Users are encouraged to declare resources in their own namespaces instead of putting them in the `Chef::Resource` namespace.
 
 ### Resources may now use `allowed_actions` and `default_action`
 
@@ -34,8 +68,6 @@ Instead of overriding `Chef::Resource.initialize` and setting `@allowed_actions`
 
 ```ruby
 class MyResource < Chef::Resource
-  use_automatic_resource_name
-
   allowed_actions :create, :delete
   default_action :create
 end

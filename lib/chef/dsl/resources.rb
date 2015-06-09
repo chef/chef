@@ -15,6 +15,7 @@ class Chef
             end
           EOM
         rescue SyntaxError
+          # Handle the case where dsl_name has spaces, etc.
           define_method(dsl_name.to_sym) do |name=nil, created_at=nil, &block|
             declare_resource(dsl_name, name, created_at || caller[0], &block)
           end

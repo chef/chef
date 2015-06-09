@@ -27,8 +27,6 @@ class Chef
 
       state_attrs :minute, :hour, :day, :month, :weekday, :user
 
-      use_automatic_resource_name
-
       default_action :create
       allowed_actions :create, :delete
 

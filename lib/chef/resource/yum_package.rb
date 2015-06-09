@@ -22,8 +22,6 @@ require 'chef/provider/package/yum'
 class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
-
-      use_automatic_resource_name
       provides :package, os: "linux", platform_family: [ "rhel", "fedora" ]
 
       def initialize(name, run_context=nil)

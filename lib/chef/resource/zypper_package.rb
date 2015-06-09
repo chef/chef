@@ -21,11 +21,7 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class ZypperPackage < Chef::Resource::Package
-
       provides :package, platform_family: "suse"
-
-      use_automatic_resource_name
-
     end
   end
 end

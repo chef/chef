@@ -19,9 +19,6 @@
 class Chef
   class Resource
     class WhyrunSafeRubyBlock < Chef::Resource::RubyBlock
-
-      use_automatic_resource_name
-
     end
   end
 end

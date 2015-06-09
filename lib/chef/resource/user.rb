@@ -21,12 +21,9 @@ require 'chef/resource'
 class Chef
   class Resource
     class User < Chef::Resource
-
       identity_attr :username
 
       state_attrs :uid, :gid, :home
-
-      use_automatic_resource_name
 
       default_action :create
       allowed_actions :create, :remove, :modify, :manage, :lock, :unlock

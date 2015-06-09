@@ -32,8 +32,6 @@ class Chef
 
       include Chef::Mixin::Securable
 
-      use_automatic_resource_name
-
       default_action :create
       allowed_actions :create, :delete
 

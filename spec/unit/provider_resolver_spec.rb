@@ -113,7 +113,6 @@ describe Chef::ProviderResolver do
     end
 
     before do
-      expect(provider_resolver).not_to receive(:maybe_chef_platform_lookup)
       allow(resource).to receive(:service_name).and_return("ntp")
     end
 

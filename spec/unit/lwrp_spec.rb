@@ -38,7 +38,7 @@ describe "LWRP" do
   end
 
   def get_lwrp(name)
-    Chef::Resource.resource_for_node(name, Chef::Node.new)
+    Chef::ResourceResolver.resolve(name)
   end
 
   def get_lwrp_provider(name)
@@ -146,7 +146,7 @@ describe "LWRP" do
       content = IO.read(File.expand_path("../../data/lwrp/resources/foo.rb", __FILE__))
       IO.write(@lwrp_path, content)
       Chef::Resource::LWRPBase.build_from_file("lwrp", @lwrp_path, nil)
-      @original_resource = Chef::Resource.resource_for_node(:lwrp_foo, Chef::Node.new)
+      @original_resource = Chef::ResourceResolver.resolve(:lwrp_foo)
     end
 
     after do
@@ -161,7 +161,7 @@ describe "LWRP" do
       end
 
       it "Should load the old content, and not the new" do
-        resource = Chef::Resource.resource_for_node(:lwrp_foo, Chef::Node.new)
+        resource = Chef::ResourceResolver.resolve(:lwrp_foo)
         expect(resource).to eq @original_resource
         expect(resource.default_action).to eq(:pass_buck)
         expect(Chef.method_defined?(:method_created_by_override_lwrp_foo)).to be_falsey

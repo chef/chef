@@ -19,27 +19,31 @@
 class Chef
   class NodeMap
 
+    #
     # Create a new NodeMap
     #
     def initialize
       @map = {}
     end
 
+    #
     # Set a key/value pair on the map with a filter.  The filter must be true
     # when applied to the node in order to retrieve the value.
     #
     # @param key [Object] Key to store
     # @param value [Object] Value associated with the key
     # @param filters [Hash] Node filter options to apply to key retrieval
+    #
     # @yield [node] Arbitrary node filter as a block which takes a node argument
+    #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, &block)
+    def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, canonical: nil, &block)
       Chef::Log.deprecation "The on_platform option to node_map has been deprecated" if on_platform
       Chef::Log.deprecation "The on_platforms option to node_map has been deprecated" if on_platforms
       platform ||= on_platform || on_platforms
       filters = { platform: platform, platform_version: platform_version, platform_family: platform_family, os: os }
-      new_matcher = { filters: filters, block: block, value: value }
+      new_matcher = { filters: filters, block: block, value: value, canonical: canonical }
       @map[key] ||= []
       # Decide where to insert the matcher; the new value is preferred over
       # anything more specific (see `priority_of`) and is preferred over older
@@ -60,33 +64,56 @@ class Chef
       self
     end
 
+    #
     # Get a value from the NodeMap via applying the node to the filters that
     # were set on the key.
     #
-    # @param node [Chef::Node] The Chef::Node object for the run
+    # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
+    #   ignore all filters.
     # @param key [Object] Key to look up
+    # @param canonical [Boolean] `true` or `false` to match canonical or
+    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
+    #
     # @return [Object] Value
     #
-    def get(node, key)
-      # FIXME: real exception
-      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node)
-      list(node, key).first
+    def get(node, key, canonical: nil)
+      raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
+      list(node, key, canonical: canonical).first
     end
 
+    #
     # List all matches for the given node and key from the NodeMap, from
     # most-recently added to oldest.
     #
-    # @param node [Chef::Node] The Chef::Node object for the run
+    # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
+    #   ignore all filters.
     # @param key [Object] Key to look up
+    # @param canonical [Boolean] `true` or `false` to match canonical or
+    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
+    #
     # @return [Object] Value
     #
-    def list(node, key)
-      # FIXME: real exception
-      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node)
+    def list(node, key, canonical: nil)
+      raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
       return [] unless @map.has_key?(key)
       @map[key].select do |matcher|
-        filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block])
+        node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
       end.map { |matcher| matcher[:value] }
+    end
+
+    # Seriously, don't use this, it's nearly certain to change on you
+    # @return remaining
+    # @api private
+    def delete_canonical(key, value)
+      remaining = @map[key]
+      if remaining
+        remaining.delete_if { |matcher| matcher[:canonical] && Array(matcher[:value]) == Array(value) }
+        if remaining.empty?
+          @map.delete(key)
+          remaining = nil
+        end
+      end
+      remaining
     end
 
     private
@@ -159,6 +186,16 @@ class Chef
     def block_matches?(node, block)
       return true if block.nil?
       block.call node
+    end
+
+    def node_matches?(node, matcher)
+      return true if !node
+      filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block])
+    end
+
+    def canonical_matches?(canonical, matcher)
+      return true if canonical.nil?
+      !!canonical == !!matcher[:canonical]
     end
   end
 end

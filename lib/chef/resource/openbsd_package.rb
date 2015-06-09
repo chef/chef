@@ -28,7 +28,6 @@ class Chef
     class OpenbsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
-      use_automatic_resource_name
       provides :package, os: "openbsd"
 
       def after_created

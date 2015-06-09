@@ -23,7 +23,6 @@ class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
 
-      use_automatic_resource_name
       provides :dpkg_package, os: "linux"
 
     end

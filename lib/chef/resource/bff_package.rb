@@ -22,7 +22,6 @@ require 'chef/provider/package/aix'
 class Chef
   class Resource
     class BffPackage < Chef::Resource::Package
-      use_automatic_resource_name
     end
   end
 end

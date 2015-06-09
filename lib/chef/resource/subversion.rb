@@ -22,7 +22,6 @@ require "chef/resource/scm"
 class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
-      use_automatic_resource_name
       allowed_actions :force_export
 
       def initialize(name, run_context=nil)

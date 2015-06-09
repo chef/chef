@@ -47,7 +47,6 @@ class Chef
       # @returns [String] Checksum of the file we actually rendered
       attr_accessor :final_checksum
 
-      use_automatic_resource_name
       default_action :create
       allowed_actions :create, :delete, :touch, :create_if_missing
 

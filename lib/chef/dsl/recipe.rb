@@ -162,7 +162,7 @@ class Chef
         # Chef::Resource::Blah = <resource>, a deprecation warning will be
         # emitted and the DSL method 'blah' will be added to the DSL.
         #
-        resource_class = Chef::ResourceResolver.new(run_context ? run_context.node : nil, method_symbol).resolve
+        resource_class = Chef::ResourceResolver.resolve(method_symbol, node: run_context ? run_context.node : nil)
         if resource_class
           Chef::DSL::Resources.add_resource_dsl(method_symbol)
           return send(method_symbol, *args, &block)

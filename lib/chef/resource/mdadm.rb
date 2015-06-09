@@ -27,8 +27,6 @@ class Chef
 
       state_attrs :devices, :level, :chunk
 
-      use_automatic_resource_name
-
       default_action :create
       allowed_actions :create, :assemble, :stop
 

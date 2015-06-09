@@ -21,7 +21,6 @@ require 'chef/json_compat'
 class Chef
   class Resource
     class ZenFollower < Chef::Resource
-      use_automatic_resource_name
 
       provides :follower, platform: "zen"
 
