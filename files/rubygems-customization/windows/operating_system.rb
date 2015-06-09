@@ -39,6 +39,9 @@ module Gem
       end
     end
 
+    # Prevents multiple warnings
+    ENV['CHEFDK_HOME'] = chefdk_home
+
     parts = [chefdk_home, 'gem', ruby_engine]
     parts << RbConfig::CONFIG['ruby_version'] unless RbConfig::CONFIG['ruby_version'].empty?
     File.join parts
