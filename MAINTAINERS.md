@@ -94,6 +94,7 @@ The specific components of Chef related to a given platform - including (but not
 ### Maintainers
 
 * [Jay Mundrawala](https://github.com/jdmundrawala)
+* [Kartik Cating-Subramanian](https://github.com/ksubrama)
 * [Steven Murawski](https://github.com/smurawski)
 
 ## Solaris
