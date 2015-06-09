@@ -31,15 +31,16 @@ class Chef
     # Configures SSL behavior on an HTTP object via visitor pattern.
     class DefaultSSLPolicy
 
-      def self.apply_to(http_client)
-        new(http_client).apply
+      def self.apply_to(http_client, opts = {})
+        new(http_client, opts).apply
         http_client
       end
 
       attr_reader :http_client
 
-      def initialize(http_client)
+      def initialize(http_client, opts = {})
         @http_client = http_client
+        @config = opts[:config] if opts.key?(:config)
       end
 
       def apply
@@ -102,7 +103,11 @@ class Chef
       end
 
       def config
-        Chef::Config
+        @config ||=
+          begin
+            Thread.exclusive { require 'chef/config' unless defined?(Chef::Config) }
+            Chef::Config
+          end
       end
 
       private

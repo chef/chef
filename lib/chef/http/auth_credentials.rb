@@ -28,8 +28,9 @@ class Chef
     class AuthCredentials
       attr_reader :client_name, :key
 
-      def initialize(client_name=nil, key=nil)
+      def initialize(client_name=nil, key=nil, opts={})
         @client_name, @key = client_name, key
+        @config = opts[:config] if opts.key?(:config)
       end
 
       def sign_requests?
@@ -44,12 +45,20 @@ class Chef
         request_params                 = request_params.dup
         request_params[:timestamp]     = Time.now.utc.iso8601
         request_params[:user_id]       = client_name
-        request_params[:proto_version] = Chef::Config[:authentication_protocol_version]
+        request_params[:proto_version] = config[:authentication_protocol_version]
         host = request_params.delete(:host) || "localhost"
 
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
         signed =  sign_obj.sign(key).merge({:host => host})
         signed.inject({}){|memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1];memo}
+      end
+
+      def config
+        @config ||=
+          begin
+            Thread.exclusive { require 'chef/config' unless defined?(Chef::Config) }
+            Chef::Config
+          end
       end
 
     end

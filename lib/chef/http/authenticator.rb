@@ -38,7 +38,7 @@ class Chef
         @sign_request = true
         @signing_key_filename = opts[:signing_key_filename]
         @key = load_signing_key(opts[:signing_key_filename], opts[:raw_key])
-        @auth_credentials = AuthCredentials.new(opts[:client_name], @key)
+        @auth_credentials = AuthCredentials.new(opts[:client_name], @key, opts)
         if opts[:api_version]
           @api_version = opts[:api_version]
         else

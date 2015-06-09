@@ -34,6 +34,7 @@ class Chef
       attr_reader :url
       attr_reader :http_client
       attr_reader :ssl_policy
+      attr_reader :opts
 
       # Instantiate a BasicClient.
       # === Arguments:
@@ -44,6 +45,8 @@ class Chef
         @url = url
         @ssl_policy = opts[:ssl_policy] || DefaultSSLPolicy
         @http_client = build_http_client
+        @opts = opts
+        @config = opts[:config] if opts.key?(:config)
       end
 
       def host
@@ -55,7 +58,7 @@ class Chef
       end
 
       def request(method, url, req_body, base_headers={})
-        http_request = HTTPRequest.new(method, url, req_body, base_headers).http_request
+        http_request = HTTPRequest.new(method, url, req_body, base_headers, opts).http_request
         Chef::Log.debug("Initiating #{method} to #{url}")
         Chef::Log.debug("---- HTTP Request Header Data: ----")
         base_headers.each do |name, value|
@@ -97,7 +100,7 @@ class Chef
 
       #adapted from buildr/lib/buildr/core/transports.rb
       def proxy_uri
-        proxy = Chef::Config["#{url.scheme}_proxy"] ||
+        proxy = config["#{url.scheme}_proxy"] ||
                 env["#{url.scheme.upcase}_PROXY"] || env["#{url.scheme}_proxy"]
 
         # Check if the proxy string contains a scheme. If not, add the url's scheme to the
@@ -108,10 +111,10 @@ class Chef
            proxy = URI.parse(proxy.strip)
           else
            proxy = URI.parse("#{url.scheme}://#{proxy.strip}")
-          end 
+          end
         end
-        
-        no_proxy = Chef::Config[:no_proxy] || env['NO_PROXY'] || env['no_proxy']
+
+        no_proxy = config[:no_proxy] || env['NO_PROXY'] || env['no_proxy']
         excludes = no_proxy.to_s.split(/\s*,\s*/).compact
         excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
         return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
@@ -130,7 +133,11 @@ class Chef
       end
 
       def config
-        Chef::Config
+        @config ||=
+          begin
+            Thread.exclusive { require 'chef/config' unless defined?(Chef::Config) }
+            Chef::Config
+          end
       end
 
       def env
@@ -150,18 +157,18 @@ class Chef
       end
 
       def http_proxy_user(http_proxy)
-        http_proxy.user || Chef::Config["#{url.scheme}_proxy_user"] ||
+        http_proxy.user || config["#{url.scheme}_proxy_user"] ||
         env["#{url.scheme.upcase}_PROXY_USER"] || env["#{url.scheme}_proxy_user"]
       end
 
       def http_proxy_pass(http_proxy)
-        http_proxy.password || Chef::Config["#{url.scheme}_proxy_pass"] ||
+        http_proxy.password || config["#{url.scheme}_proxy_pass"] ||
         env["#{url.scheme.upcase}_PROXY_PASS"] || env["#{url.scheme}_proxy_pass"]
       end
 
       def configure_ssl(http_client)
         http_client.use_ssl = true
-        ssl_policy.apply_to(http_client)
+        ssl_policy.apply_to(http_client, opts)
       end
 
     end

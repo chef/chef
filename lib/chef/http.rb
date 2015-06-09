@@ -332,30 +332,34 @@ class Chef
       end
     end
 
+    attr_writer :http_retry_delay
     def http_retry_delay
       @http_retry_delay ||= config[:http_retry_delay]
     end
-    attr_writer :http_retry_delay
 
+    attr_writer :http_retry_count
     def http_retry_count
       @http_retry_count ||= config[:http_retry_count]
     end
-    attr_writer :http_retry_count
 
+    attr_writer :local_mode
     def local_mode
       @local_mode ||= config[:local_mode]
     end
-    attr_writer :local_mode
 
+    attr_writer :custom_http_headers
     def custom_http_headers
       @custom_http_headers ||= config[:custom_http_headers]
     end
-    attr_writer :custom_http_headers
 
-    def config
-      @config ||= Chef::Config
-    end
     attr_writer :config
+    def config
+      @config ||=
+        begin
+          Thread.exclusive { require 'chef/config' unless defined?(Chef::Config) }
+          Chef::Config
+        end
+    end
 
     def follow_redirect
       raise Chef::Exceptions::RedirectLimitExceeded if @redirects_followed >= redirect_limit
@@ -425,5 +429,3 @@ class Chef
 
   end
 end
-
-require 'chef/config'

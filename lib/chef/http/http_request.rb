@@ -72,9 +72,10 @@ class Chef
 
       attr_reader :method, :url, :headers, :http_client, :http_request
 
-      def initialize(method, url, req_body, base_headers={})
+      def initialize(method, url, req_body, base_headers={}, opts = {})
         @method, @url = method, url
         @request_body = nil
+        @config = opts[:config] if opts.key?(:config)
         build_headers(base_headers)
         configure_http_request(req_body)
       end
@@ -110,7 +111,11 @@ class Chef
       end
 
       def config
-        Chef::Config
+        @config ||=
+          begin
+            Thread.exclusive { require 'chef/config' unless defined?(Chef::Config) }
+            Chef::Config
+          end
       end
 
       # DEPRECATED. Call request on an HTTP client object instead.
