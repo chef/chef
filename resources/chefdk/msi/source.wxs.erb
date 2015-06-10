@@ -32,15 +32,27 @@
 
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="WindowsVolume">
-        <!-- Service needs chef directory to be present. -->
         <Directory Id="INSTALLLOCATION" Name="opscode">
           <Directory Id="PROJECTLOCATION" Name="chefdk" >
+            <Directory Id="PROJECTLOCATIONBIN" Name="bin" >
+              <Component Id="ChefDkPath" Guid="{AEA5727E-DAD2-48CC-ADB8-38DD0EB46C62}" >
+                <Environment Id="Environment"
+                             Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATIONBIN]" />
+              </Component>
+            </Directory>
+            <Directory Id="PSMODULES" Name="modules" >
+              <Directory Id="PSMODULESCHEF" Name="chef" >
+                <Component Id="ChefPSModuleFile" Guid="{B7C7CE44-4BC0-4DA5-A4EB-659172CA15A6}" >
+                  <File Id="chef.psm1" Source="$(var.ProjectSourceDir)\embedded\apps\chef\distro\powershell\chef\chef.psm1" KeyPath="yes" />
+                </Component>
+              </Directory>
+              <Component Id="ChefPSModulePath" Guid="{DCD34ACB-7DAF-481F-B36F-8CD27AB5028D}" >
+                <Environment Id="ChefPSModulePathEnvironment"
+                             Name="PSModulePath" Action="set" Part="last" System="yes" Value="[PSMODULES]" />
+              </Component>
+            </Directory>
             <Directory Id="EMBEDDED" Name="embedded" >
               <Directory Id="EMBEDDEDBIN" Name="bin" >
-                <Component Id="ChefDkPath" Guid="{AEA5727E-DAD2-48CC-ADB8-38DD0EB46C62}" >
-                  <Environment Id="Environment"
-                               Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATION]bin" />
-                </Component>
               </Directory>
             </Directory>
           </Directory>
@@ -52,6 +64,11 @@
     <Feature Id="ChefDkFeature" Title="!(loc.FeatureMainName)" Absent="disallow" AllowAdvertise="no" Level="1" ConfigurableDirectory="INSTALLLOCATION">
       <ComponentGroupRef Id="ProjectDir" />
       <ComponentRef Id="ChefDkPath" />
+    </Feature>
+
+    <Feature Id="ChefPSModuleFeature" Title="!(loc.FeaturePSModuleName)" Level="1000" AllowAdvertise="no">
+      <ComponentRef Id="ChefPSModuleFile" />
+      <ComponentRef Id="ChefPSModulePath" />
     </Feature>
 
     <!--
