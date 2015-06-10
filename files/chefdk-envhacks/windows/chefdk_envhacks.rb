@@ -20,7 +20,7 @@ if !ENV['HOME'] || !File.exists?(ENV['HOME'])
   end
 
   STDERR.puts <<-EOF
-The HOME environment variable (#{old_home}) was not set to a valid value.
+The HOME (#{old_home}) environment variable was not set to a valid value.
 
   EOF
 
@@ -31,7 +31,7 @@ to use another directory as HOME, please set the HOME environment variable.
     EOF
   else
     STDERR.puts <<-EOF
-Could note find a suitable HOME directory. Tried:
+Could not find a suitable HOME directory. Tried:
 #{alternate_homes.join("\n")}
 
 Some Ruby binaries may not function correctly. You can set the HOME 
