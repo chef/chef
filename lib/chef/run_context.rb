@@ -564,10 +564,7 @@ ERROR_MESSAGE
         events
         has_cookbook_file_in_cookbook?
         has_template_in_cookbook?
-        include_recipe
         load
-        load_recipe
-        load_recipe_file
         loaded_attribute
         loaded_attributes
         loaded_attributes_hash
@@ -606,7 +603,10 @@ ERROR_MESSAGE
         immediate_notification_collection
         immediate_notification_collection=
         immediate_notifications
+        include_recipe
         initialize_child_state
+        load_recipe
+        load_recipe_file
         notifies_immediately
         notifies_delayed
         parent_run_context

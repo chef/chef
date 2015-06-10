@@ -101,6 +101,33 @@ describe Chef::RunContext::ChildRunContext do
         c = child.create_child
         expect(c.parent_run_context).to eq child
       end
+
+      context "after load('include::default')" do
+        before do
+          run_list = Chef::RunList.new('include::default').expand('_default')
+          # TODO not sure why we had to do this to get everything to work ...
+          node.automatic_attrs[:recipes] = []
+          child.load(run_list)
+        end
+
+        it "load_recipe loads into the child" do
+          expect(child.resource_collection).to be_empty
+          child.load_recipe("include::includee")
+          expect(child.resource_collection).not_to be_empty
+        end
+
+        it "include_recipe loads into the child" do
+          expect(child.resource_collection).to be_empty
+          child.include_recipe("include::includee")
+          expect(child.resource_collection).not_to be_empty
+        end
+
+        it "load_recipe_file loads into the child" do
+          expect(child.resource_collection).to be_empty
+          child.load_recipe_file(File.expand_path("include/recipes/includee.rb", chef_repo_path))
+          expect(child.resource_collection).not_to be_empty
+        end
+      end
     end
   end
 end

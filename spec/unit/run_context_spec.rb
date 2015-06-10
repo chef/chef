@@ -68,6 +68,9 @@ describe Chef::RunContext do
         "dependency2" => {
           "version" => "0.0.0",
         },
+        "include" => {
+          "version" => "0.0.0",
+        },
         "no-default-attr" => {
           "version" => "0.0.0",
         },
