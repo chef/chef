@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["adam@chef.io"]
 
   spec.summary       = %q{Chef's default configuration and config loading}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.homepage      = "https://github.com/chef/chef"
   spec.license       = "Apache-2.0"
 
   spec.require_paths = ["lib"]
