@@ -17,15 +17,15 @@
 
 # This is a windows only dependency
 
-name "chefdk-envhacks"
+name "chefdk-env-customization"
 
 source path: "#{project.files_path}/#{name}"
 
 dependency "ruby-windows"
 
 build do
-  block "Add chefdk_envhacks file" do
-    source_customization_file = "#{project_dir}/windows/chefdk_envhacks.rb"
+  block "Add chefdk_env_customization file" do
+    source_customization_file = "#{project_dir}/windows/chefdk_env_customization.rb"
 
     site_ruby = Bundler.with_clean_env do
       ruby = windows_safe_path("#{install_dir}/embedded/bin/ruby")

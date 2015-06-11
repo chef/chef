@@ -4,12 +4,14 @@
 # for this directory to exist and be available, so we are introducing logic
 # here to pick a working HOME
 #
-# You can find this file the repo at https://github.com/chef/omnibus-chef
+# You can find this file in the repo at https://github.com/chef/omnibus-chef
 
 if !ENV['HOME'] || !File.exists?(ENV['HOME'])
   old_home = ENV['HOME']
   found = false
-  alternate_homes = ["#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}", ENV['USERPROFILE']]
+  alternate_homes = []
+  alternate_homes << "#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}" if ENV['HOMEDRIVE']
+  alternate_homes << "#{ENV['USERPROFILE']}" if ENV['USERPROFILE']
 
   alternate_homes.each do |path|
     if File.exists?(path)
@@ -42,7 +44,7 @@ environment variable to a directory that exists to try to solve this.
   STDERR.puts <<-EOF
 
 If you would not like ChefDK to try to fix the HOME environment variable,
-check the RUBYOPT environment variable. Removing "-rchefdk_envhacks" will
+check the RUBYOPT environment variable. Removing "-rchefdk_env_customizations" will
 prevent this modification to your HOME environment variable.
 
   EOF

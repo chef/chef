@@ -37,7 +37,7 @@ dependency "openssl-customization"
 # The devkit has to be installed after rubygems-customization so the
 # file it installs gets patched.
 dependency "ruby-windows-devkit" if windows?
-dependency "chefdk-envhacks" if windows?
+dependency "chefdk-env-customization" if windows?
 
 build do
   env = with_standard_compiler_flags(with_embedded_path).merge(
