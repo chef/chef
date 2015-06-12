@@ -22,7 +22,10 @@ if !ENV['HOME'] || !File.exists?(ENV['HOME'])
   end
 
   STDERR.puts <<-EOF
-The HOME (#{old_home}) environment variable was not set to a valid value.
+The HOME (#{old_home}) environment variable was not set, or was set to
+an inaccessible location. Because this can prevent you from running many
+of the programs included with ChefDK, we will attempt to find another
+suitable location.
 
   EOF
 
@@ -44,7 +47,7 @@ environment variable to a directory that exists to try to solve this.
   STDERR.puts <<-EOF
 
 If you would not like ChefDK to try to fix the HOME environment variable,
-check the RUBYOPT environment variable. Removing "-rchefdk_env_customizations" will
+check the CHEFDK_ENV_FIX environment variable. Setting this value to 0
 prevent this modification to your HOME environment variable.
 
   EOF
