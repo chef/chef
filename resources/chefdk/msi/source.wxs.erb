@@ -55,7 +55,7 @@
               <Directory Id="EMBEDDEDBIN" Name="bin" >
                 <Component Id="ChefDkEnvHacks" Guid="{830aa603-a412-437f-87c6-d0cb88ebdd40}" >
                   <Environment Id="EnvHacksEnvironment"
-                               Name="RUBYOPT" Action="set" System="yes" Value="-rchefdk_envhacks" />
+                               Name="CHEFDK_ENV_FIX" Action="set" System="yes" Value="1" />
                 </Component>
               </Directory>
             </Directory>
