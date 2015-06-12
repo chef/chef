@@ -115,6 +115,8 @@ The specific components of Chef related to a given platform - including (but not
       [Org.Components.Subsystems.Solaris]
         title = "Solaris"
 
+        lieutenant = "thommay"
+
         maintainers = [
           "lamont-granquist"
         ]
@@ -135,6 +137,36 @@ The specific components of Chef related to a given platform - including (but not
           "tyler-ball"
         ]
 
+      [Org.Components.Subsystems.Debian]
+        title = "Debian"
+
+        lieutenant = "thommay"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+    [Org.Components.Subsystems.Fedora]
+        title = "Fedora"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+      [Org.Components.Subsystems.openSUSE]
+        title = "openSUSE"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+      [Org.Components.Subsystems."SUSE Enterprise Linux"]
+        title = "SUSE Enterprise Linux Server"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
       [Org.Components.Subsystems.FreeBSD]
         title = "FreeBSD"
 
@@ -149,6 +181,13 @@ The specific components of Chef related to a given platform - including (but not
         title = "OpenBSD"
 
         lieutenant = "joemiller"
+
+    [Org.Components.Subsystems.Gentoo]
+        title = "Gentoo"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
 
 [people]
   [people.adamhjk]
