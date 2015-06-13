@@ -184,110 +184,19 @@ class Chef
       @attributes
     end
 
+    attr_accessor :attributes
     alias :attribute :attributes
     alias :construct_attributes :attributes
 
-    # Return an attribute of this node.  Returns nil if the attribute is not found.
-    def [](attrib)
-      attributes[attrib]
-    end
+    def_delegators :attributes, :[], :normal, :default, :override
+    def_delegators :attributes, :normal_unless, :default_unless, :override_unless
 
-    # Set a normal attribute of this node, but auto-vivify any Mashes that
-    # might be missing
-    def normal
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.normal
-    end
+    def_delegators :attributes, :set, :set_unless
 
-    alias_method :set, :normal
+    def_delegators :attributes, :default_attrs, :normal_attrs, :override_attrs, :automatic_attrs
+    def_delegators :attributes, :default_attrs=, :normal_attrs=, :override_attrs=, :automatic_attrs=
 
-    # Set a normal attribute of this node, auto-vivifying any mashes that are
-    # missing, but if the final value already exists, don't set it
-    def normal_unless
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = true
-      attributes.normal
-    end
-
-    alias_method :set_unless, :normal_unless
-
-    # Set a default of this node, but auto-vivify any Mashes that might
-    # be missing
-    def default
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.default
-    end
-
-    # Set a default attribute of this node, auto-vivifying any mashes that are
-    # missing, but if the final value already exists, don't set it
-    def default_unless
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = true
-      attributes.default
-    end
-
-    # Set an override attribute of this node, but auto-vivify any Mashes that
-    # might be missing
-    def override
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.override
-    end
-
-    # Set an override attribute of this node, auto-vivifying any mashes that
-    # are missing, but if the final value already exists, don't set it
-    def override_unless
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = true
-      attributes.override
-    end
-
-    alias :override_attrs :override
-    alias :default_attrs :default
-    alias :normal_attrs :normal
-
-    def override_attrs=(new_values)
-      attributes.override = new_values
-    end
-
-    def default_attrs=(new_values)
-      attributes.default = new_values
-    end
-
-    def normal_attrs=(new_values)
-      attributes.normal = new_values
-    end
-
-    def automatic_attrs
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.automatic
-    end
-
-    def automatic_attrs=(new_values)
-      attributes.automatic = new_values
-    end
-
-    # Return true if this Node has a given attribute, false if not.  Takes either a symbol or
-    # a string.
-    #
-    # Only works on the top level. Preferred way is to use the normal [] style
-    # lookup and call attribute?()
-    def attribute?(attrib)
-      attributes.attribute?(attrib)
-    end
-
-    # Yield each key of the top level to the block.
-    def each(&block)
-      attributes.each(&block)
-    end
-
-    # Iterates over each attribute, passing the attribute and value to the block.
-    def each_attribute(&block)
-      attributes.each_attribute(&block)
-    end
+    def_delegators :attributes, :attribute?, :each, :each_attribute
 
     # Only works for attribute fetches, setting is no longer supported
     def method_missing(symbol, *args)

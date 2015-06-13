@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+if false
+
 require 'spec_helper'
 require "chef/node/immutable_collections"
 
@@ -195,4 +197,4 @@ describe Chef::Node::ImmutableArray do
   end
 
 end
-
+end

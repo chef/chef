@@ -262,7 +262,7 @@ describe Chef::Node::Attribute do
     end
 
     it "gives the value at each level of precedence for a path spec" do
-      expected = [["set_unless_enabled?", false],
+      expected = [
         ["default", "default"],
         ["env_default", "env_default"],
         ["role_default", "role_default"],
@@ -462,9 +462,13 @@ describe Chef::Node::Attribute do
     end
 
     it "should optionally skip setting the value if one already exists" do
-      @attributes.set_unless_value_present = true
-      @attributes.normal["hostname"] = "bar"
+      @attributes.normal_unless["hostname"] = "bar"
       expect(@attributes["hostname"]).to eq("latte")
+    end
+
+    it "should set a key through set_unless if it does not exist" do
+      @attributes.normal_unless["megan"] = "rapinoe"
+      expect(@attributes["megan"]).to eq("rapinoe")
     end
 
     it "does not support ||= when setting" do
@@ -506,7 +510,6 @@ describe Chef::Node::Attribute do
     end
 
     it "mutating strings should not mutate the attributes" do
-      pending "this is a bug that should be fixed"
       @attributes.default['foo']['bar']['baz'] = 'fizz'
       hash = @attributes['foo'].to_hash
       expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
@@ -1096,6 +1099,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should falsely inform you that it is a Mash" do
+      pending "should i fix this?"
       expect(@attributes).to be_a_kind_of(Mash)
     end
 
@@ -1154,25 +1158,25 @@ describe Chef::Node::Attribute do
     it "converts the input in to a VividMash tree (default)" do
       @attributes.default = {}
       @attributes.default.foo = "bar"
-      expect(@attributes.merged_attributes[:foo]).to eq("bar")
+      expect(@attributes[:foo]).to eq("bar")
     end
 
     it "converts the input in to a VividMash tree (normal)" do
       @attributes.normal = {}
       @attributes.normal.foo = "bar"
-      expect(@attributes.merged_attributes[:foo]).to eq("bar")
+      expect(@attributes[:foo]).to eq("bar")
     end
 
     it "converts the input in to a VividMash tree (override)" do
       @attributes.override = {}
       @attributes.override.foo = "bar"
-      expect(@attributes.merged_attributes[:foo]).to eq("bar")
+      expect(@attributes[:foo]).to eq("bar")
     end
 
     it "converts the input in to a VividMash tree (automatic)" do
       @attributes.automatic = {}
       @attributes.automatic.foo = "bar"
-      expect(@attributes.merged_attributes[:foo]).to eq("bar")
+      expect(@attributes[:foo]).to eq("bar")
     end
   end
 
@@ -1180,7 +1184,7 @@ describe Chef::Node::Attribute do
     it "correctly deep merges hashes and preserves the original contents" do
       @attributes.default = { "arglebargle" => { "foo" => "bar" } }
       @attributes.override = { "arglebargle" => { "fizz" => "buzz" } }
-      expect(@attributes.merged_attributes[:arglebargle]).to eq({ "foo" => "bar", "fizz" => "buzz" })
+      expect(@attributes[:arglebargle]).to eq({ "foo" => "bar", "fizz" => "buzz" })
       expect(@attributes.default[:arglebargle]).to eq({ "foo" => "bar" })
       expect(@attributes.override[:arglebargle]).to eq({ "fizz" => "buzz" })
     end
@@ -1188,7 +1192,7 @@ describe Chef::Node::Attribute do
     it "does not deep merge arrays, and preserves the original contents" do
       @attributes.default = { "arglebargle" => [ 1, 2, 3 ] }
       @attributes.override = { "arglebargle" => [ 4, 5, 6 ] }
-      expect(@attributes.merged_attributes[:arglebargle]).to eq([ 4, 5, 6 ])
+      expect(@attributes[:arglebargle]).to eq([ 4, 5, 6 ])
       expect(@attributes.default[:arglebargle]).to eq([ 1, 2, 3 ])
       expect(@attributes.override[:arglebargle]).to eq([ 4, 5, 6 ])
     end
@@ -1196,7 +1200,7 @@ describe Chef::Node::Attribute do
     it "correctly deep merges hashes and preserves the original contents when merging default and role_default" do
       @attributes.default = { "arglebargle" => { "foo" => "bar" } }
       @attributes.role_default = { "arglebargle" => { "fizz" => "buzz" } }
-      expect(@attributes.merged_attributes[:arglebargle]).to eq({ "foo" => "bar", "fizz" => "buzz" })
+      expect(@attributes[:arglebargle]).to eq({ "foo" => "bar", "fizz" => "buzz" })
       expect(@attributes.default[:arglebargle]).to eq({ "foo" => "bar" })
       expect(@attributes.role_default[:arglebargle]).to eq({ "fizz" => "buzz" })
     end
@@ -1204,7 +1208,7 @@ describe Chef::Node::Attribute do
     it "correctly deep merges arrays, and preserves the original contents when merging default and role_default" do
       @attributes.default = { "arglebargle" => [ 1, 2, 3 ] }
       @attributes.role_default = { "arglebargle" => [ 4, 5, 6 ] }
-      expect(@attributes.merged_attributes[:arglebargle]).to eq([ 1, 2, 3, 4, 5, 6 ])
+      expect(@attributes[:arglebargle]).to eq([ 1, 2, 3, 4, 5, 6 ])
       expect(@attributes.default[:arglebargle]).to eq([ 1, 2, 3 ])
       expect(@attributes.role_default[:arglebargle]).to eq([ 4, 5, 6 ])
     end
@@ -1218,7 +1222,27 @@ describe Chef::Node::Attribute do
     it "raises an error when using `attr=value`" do
       expect { @attributes.new_key = "new value" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
-
   end
 
+  describe "lack of autovivification" do
+    it "returns nil for a key that does not exist" do
+      expect( @attributes[:new_key] ).to be nil
+    end
+
+    it "returns nil for a key that does not exist as a string" do
+      expect( @attributes['new_key'] ).to be nil
+    end
+
+    it "suffers an early trackwreck when we try to use method notation" do
+      expect{ @attributes.new_key }.to raise_error(NoMethodError)
+    end
+
+    it "suffers a trainwreck when we try to past the nil" do
+      expect{ @attributes[:new_key][:trainwreck] }.to raise_error(NoMethodError)
+    end
+
+    it "suffers a trainwreck when we try to past the nil, using method notation" do
+      expect{ @attributes.new_key.trainwreck }.to raise_error(NoMethodError)
+    end
+  end
 end
