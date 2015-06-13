@@ -281,7 +281,7 @@ class Chef
     # @param name [Object] The name to set, typically a String or Array
     # @return [String] The name of this Resource.
     #
-    property :name, String, coerce: proc { |v| v.is_a?(Array) ? v.join(', ') : v.to_s }
+    property :name, String, coerce: proc { |v| v.is_a?(Array) ? v.join(', ') : v.to_s }, desired_state: false
 
     #
     # The action or actions that will be taken when this resource is run.
@@ -886,9 +886,6 @@ class Chef
     # This list is used by the Chef client auditing system to extract
     # information from resources to describe changes made to the system.
     #
-    # Properties marked as identity are always part of desired state and will be
-    # automatically included.
-    #
     # This method is unnecessary when declaring properties with `property`;
     # properties are added to state_properties by default, and can be turned off
     # with `desired_state: false`.
@@ -905,7 +902,7 @@ class Chef
     #
     def self.state_properties(*names)
       if !names.empty?
-        names = names.map { |name| name.to_sym }
+        names = names.map { |name| name.to_sym }.uniq
 
         local_properties = properties(false)
         # Add new properties to the list.
@@ -921,7 +918,7 @@ class Chef
         # If state_attrs *excludes* something which is currently desired state,
         # mark it as desired_state: false.
         local_properties.each do |name,property|
-          if property.desired_state? && !property.identity? && !names.include?(name)
+          if property.desired_state? && !names.include?(name)
             local_properties[name] = property.specialize(declared_in: self, desired_state: false)
           end
         end

@@ -341,7 +341,7 @@ describe "Chef::Resource.property" do
         expect(resource.x).to eq 10
       end
       it "when x is not set, it is not included in state" do
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah')
+        expect(resource.state_for_resource_reporter).to eq({})
       end
       it "when x is set to nil, it returns nil" do
         resource.instance_eval { @x = nil }

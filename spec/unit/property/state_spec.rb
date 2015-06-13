@@ -90,11 +90,10 @@ describe "Chef::Resource#identity and #state" do
             resource.x 'foo'
             resource.y 'bar'
             expect(resource_class.state_properties).to eq [
-              Chef::Resource.properties[:name],
               resource_class.properties[:x],
               resource_class.properties[:y]
             ]
-            expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 'foo', y: 'bar')
+            expect(resource.state_for_resource_reporter).to eq(x: 'foo', y: 'bar')
           end
         end
       end
@@ -160,9 +159,8 @@ describe "Chef::Resource#identity and #state" do
               it "y is part of state" do
                 subresource.x 'foo'
                 subresource.y 'bar'
-                expect(subresource.state_for_resource_reporter).to eq(name: 'sub', x: 'foo', y: 'bar')
+                expect(subresource.state_for_resource_reporter).to eq(x: 'foo', y: 'bar')
                 expect(subresource_class.state_properties).to eq [
-                  Chef::Resource.properties[:name],
                   subresource_class.properties[:x],
                   subresource_class.properties[:y]
                 ]
@@ -191,16 +189,13 @@ describe "Chef::Resource#identity and #state" do
     end
 
     with_property ":x, desired_state: false" do
-      it "identity_properties flips on desired_state" do
+      it "identity_properties does not change desired_state" do
         resource_class.identity_properties :x
         resource.x 'hi'
         expect(resource.identity).to eq 'hi'
-        expect(resource_class.properties[:x].desired_state?).to be_truthy
-        expect(resource_class.state_properties).to eq [
-          Chef::Resource.properties[:name],
-          resource_class.properties[:x]
-        ]
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 'hi')
+        expect(resource_class.properties[:x].desired_state?).to be_falsey
+        expect(resource_class.state_properties).to eq []
+        expect(resource.state_for_resource_reporter).to eq({})
       end
     end
 
@@ -229,10 +224,9 @@ describe "Chef::Resource#identity and #state" do
         end
         it "custom_property becomes part of desired_state" do
           resource.custom_property = 1
-          expect(resource.state_for_resource_reporter).to eq(name: 'blah', custom_property: 6)
+          expect(resource.state_for_resource_reporter).to eq(custom_property: 6)
           expect(resource_class.properties[:custom_property].desired_state?).to be_truthy
           expect(resource_class.state_properties).to eq [
-            Chef::Resource.properties[:name],
             resource_class.properties[:custom_property]
           ]
         end
@@ -290,21 +284,16 @@ describe "Chef::Resource#identity and #state" do
         expect(resource.identity).to eq 'blah'
       end
       it "state when x is not defined returns the value of x" do
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 'blah')
+        expect(resource.state_for_resource_reporter).to eq(x: 'blah')
       end
     end
   end
 
   # state_properties
   context "Chef::Resource#state_properties" do
-    it "name is part of state_properties by default" do
-      expect(Chef::Resource.state_properties).to eq [
-        Chef::Resource.properties[:name]
-      ]
-      expect(resource_class.state_properties).to eq [
-        Chef::Resource.properties[:name],
-      ]
-      expect(resource.state_for_resource_reporter).to eq(name: 'blah')
+    it "state_properties is empty by default" do
+      expect(Chef::Resource.state_properties).to eq []
+      expect(resource.state_for_resource_reporter).to eq({})
     end
 
     with_property ":x", ":y", ":z" do
@@ -313,16 +302,15 @@ describe "Chef::Resource#identity and #state" do
         resource.y 2
         resource.z 3
         expect(resource_class.state_properties).to eq [
-          Chef::Resource.properties[:name],
           resource_class.properties[:x],
           resource_class.properties[:y],
           resource_class.properties[:z]
         ]
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 1, y: 2, z: 3)
+        expect(resource.state_for_resource_reporter).to eq(x: 1, y: 2, z: 3)
       end
       it "values that are not set are not included in state" do
         resource.x 1
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 1)
+        expect(resource.state_for_resource_reporter).to eq(x: 1)
       end
       it "when no values are set, nothing is included in state" do
       end
@@ -334,31 +322,30 @@ describe "Chef::Resource#identity and #state" do
         resource.y 2
         resource.z 3
         expect(resource_class.state_properties).to eq [
-          Chef::Resource.properties[:name],
           resource_class.properties[:x],
           resource_class.properties[:z]
         ]
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 1, z: 3)
+        expect(resource.state_for_resource_reporter).to eq(x: 1, z: 3)
       end
     end
 
     with_property ":x, name_property: true" do
-      it "Unset values with name_property are included in state" do
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah')
-      end
+      # it "Unset values with name_property are not included in state" do
+      #   expect(resource.state_for_resource_reporter).to eq({ x: 'blah' })
+      # end
       it "Set values with name_property are included in state" do
         resource.x 1
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 1)
+        expect(resource.state_for_resource_reporter).to eq(x: 1)
       end
     end
 
     with_property ":x, default: 1" do
       it "Unset values with defaults are not included in state" do
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah')
+        expect(resource.state_for_resource_reporter).to eq({})
       end
       it "Set values with defaults are included in state" do
         resource.x 1
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 1)
+        expect(resource.state_for_resource_reporter).to eq(x: 1)
       end
     end
 
@@ -378,7 +365,7 @@ describe "Chef::Resource#identity and #state" do
         resource.x = 1
 
         expect(resource.x).to eq 6
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 6)
+        expect(resource.state_for_resource_reporter).to eq(x: 6)
       end
     end
 
@@ -389,10 +376,9 @@ describe "Chef::Resource#identity and #state" do
 
         expect(resource_class.properties[:x].desired_state?).to be_truthy
         expect(resource_class.state_properties).to eq [
-          Chef::Resource.properties[:name],
           resource_class.properties[:x]
         ]
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 10)
+        expect(resource.state_for_resource_reporter).to eq(x: 10)
       end
       it "state_properties(:x) does not turn off validation" do
         resource_class.state_properties(:x)
@@ -418,25 +404,36 @@ describe "Chef::Resource#identity and #state" do
       end
 
       it "state_properties(:x) leaves x identical" do
-        old_value = resource_class.properties[:x]
+        old_value = resource_class.properties[:y]
         resource_class.state_properties(:x)
-        expect(resource_class.properties[:x].object_id).to eq old_value.object_id
+        resource.x 10
+
+        expect(resource_class.properties[:y].object_id).to eq old_value.object_id
+
+        expect(resource_class.properties[:x].desired_state?).to be_truthy
+        expect(resource_class.properties[:x].identity?).to be_truthy
+        expect(resource_class.identity_properties).to eq [
+          resource_class.properties[:x]
+        ]
+        expect(resource.identity).to eq(10)
+        expect(resource_class.state_properties).to eq [
+          resource_class.properties[:x]
+        ]
+        expect(resource.state_for_resource_reporter).to eq(x: 10)
       end
 
-      it "state_properties(:y) adds y to desired state but does not remove x" do
+      it "state_properties(:y) adds y to desired state" do
         old_value = resource_class.properties[:x]
         resource_class.state_properties(:y)
         resource.x 10
 
         expect(resource_class.properties[:x].object_id).to eq old_value.object_id
-        expect(resource_class.properties[:x].desired_state?).to be_truthy
+        expect(resource_class.properties[:x].desired_state?).to be_falsey
         expect(resource_class.properties[:y].desired_state?).to be_truthy
         expect(resource_class.state_properties).to eq [
-          Chef::Resource.properties[:name],
-          resource_class.properties[:x],
           resource_class.properties[:y]
         ]
-        expect(resource.state_for_resource_reporter).to eq(name: 'blah', x: 10, y: 20)
+        expect(resource.state_for_resource_reporter).to eq(y: 20)
       end
 
       context "With a subclassed resource" do
@@ -450,13 +447,26 @@ describe "Chef::Resource#identity and #state" do
           subresource_class.new('blah')
         end
 
-        it "state_properties(:x) leaves x identical" do
-          old_value = resource_class.properties[:x]
+        it "state_properties(:x) adds x to desired state" do
+          old_value = resource_class.properties[:y]
           subresource_class.state_properties(:x)
-          expect(subresource_class.properties[:x].object_id).to eq old_value.object_id
+          subresource.x 10
+
+          expect(subresource_class.properties[:y].object_id).to eq old_value.object_id
+
+          expect(subresource_class.properties[:x].desired_state?).to be_truthy
+          expect(subresource_class.properties[:x].identity?).to be_truthy
+          expect(subresource_class.identity_properties).to eq [
+            subresource_class.properties[:x]
+          ]
+          expect(subresource.identity).to eq(10)
+          expect(subresource_class.state_properties).to eq [
+            subresource_class.properties[:x]
+          ]
+          expect(subresource.state_for_resource_reporter).to eq(x: 10)
         end
 
-        it "state_properties(:y) adds y to desired state but does not remove x (because it is an identity value)" do
+        it "state_properties(:y) adds y to desired state" do
           old_value = resource_class.properties[:x]
           subresource_class.state_properties(:y)
           subresource.x 10
@@ -464,11 +474,15 @@ describe "Chef::Resource#identity and #state" do
           expect(subresource_class.properties[:x].object_id).to eq old_value.object_id
           expect(subresource_class.properties[:y].desired_state?).to be_truthy
           expect(subresource_class.state_properties).to eq [
-            Chef::Resource.properties[:name],
-            resource_class.properties[:x],
             subresource_class.properties[:y]
           ]
-          expect(subresource.state_for_resource_reporter).to eq(name: 'blah', x: 10, y: 20)
+          expect(subresource.state_for_resource_reporter).to eq(y: 20)
+
+          expect(subresource_class.properties[:x].identity?).to be_truthy
+          expect(subresource_class.identity_properties).to eq [
+            subresource_class.properties[:x]
+          ]
+          expect(subresource.identity).to eq(10)
         end
       end
     end

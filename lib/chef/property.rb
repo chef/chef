@@ -31,8 +31,7 @@ class Chef
     #     `nil` means the property is opaque and not tied to a specific instance
     #     variable.
     #   @option options [Boolean] :desired_state `true` if this property is part of desired
-    #     state. Defaults to `true`. If `identity` is true, `desired_state` will
-    #     also be true.
+    #     state. Defaults to `true`.
     #   @option options [Boolean] :identity `true` if this property is part of object
     #     identity. Defaults to `false`.
     #   @option options [Boolean] :name_property `true` if this
@@ -42,7 +41,10 @@ class Chef
     #   @option options [Object] :default The value this property
     #     will return if the user does not set one. If this is `lazy`, it will
     #     be run in the context of the instance (and able to access other
-    #     properties).
+    #     properties) and cached. If not, the value will be frozen with Object#freeze.
+    #   @option options [Proc] :computed The value this property will return if
+    #     the user does not set one. If this is `lazy`, it will be run in the
+    #     context of the instance (and able to access other properties).
     #   @option options [Proc] :coerce A proc which will be called to
     #     transform the user input to canonical form. The value is passed in,
     #     and the transformed value returned as output. Lazy values will *not*
@@ -57,6 +59,7 @@ class Chef
       options[:name_property] = options.delete(:name_attribute) unless options.has_key?(:name_property)
       @options = options
 
+      options[:default] = options[:default].freeze if options.has_key?(:default)
       options[:name] = options[:name].to_sym if options[:name]
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
     end
@@ -108,14 +111,11 @@ class Chef
     #
     # Defaults to true.
     #
-    # identity implies desired state: if identity? is true, desired_state? will
-    # be true as well.
-    #
     # @return [Boolean]
     #
     def desired_state?
       return true if !options.has_key?(:desired_state)
-      options[:desired_state] || identity?
+      options[:desired_state]
     end
 
     #
@@ -134,6 +134,15 @@ class Chef
     #
     def has_default?
       options.has_key?(:default)
+    end
+
+    #
+    # Whether this property has a computed default value.
+    #
+    # @return [Boolean]
+    #
+    def has_computed?
+      options.has_key?(:computed)
     end
 
     #
@@ -229,6 +238,7 @@ class Chef
       else
         raise Chef::Exceptions::ValidationFailed, "#{name} is required" if required?
         set(resource, default(resource)) if has_default? || name_property?
+        default(resource) if has_computed?
 
       end
     end
@@ -263,9 +273,6 @@ class Chef
     #   validated and returned.
     # - Otherwise, `nil` is returned.
     #
-    # This differs from `get` in that it will *not* store the default value in
-    # the given resource.
-    #
     # If resource and name are not passed, the default is returned without
     # evaluation, coercion or validation, and name_property is not honored.
     #
@@ -278,6 +285,7 @@ class Chef
     #
     def default(resource=nil)
       return delazify(resource, options[:default]) if options.has_key?(:default)
+      return exec_in_resource(resource, options[:computed]) if options.has_key?(:computed)
       return coerce(resource, resource.name) if name_property? && resource && name != :name
       nil
     end
