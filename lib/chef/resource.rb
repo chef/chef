@@ -218,18 +218,18 @@ class Chef
       begin
         class_eval <<-EOM, __FILE__, __LINE__+1
           def #{name}(value=NOT_PASSED)
-            set_or_return(#{name.inspect}, value, self.class.properties[#{name.inspect}])
+            self.class.properties[#{name.inspect}].call(self, value)
           end
           def #{name}=(value)
-            set_or_return(#{name.inspect}, value, self.class.properties[#{name.inspect}])
+            self.class.properties[#{name.inspect}].set(self, value)
           end
         EOM
       rescue SyntaxError
         define_method(name) do |value=NOT_PASSED|
-          set_or_return(name, value, options)
+          self.class.properties[name].call(self, value)
         end
         define_method("#{name}=") do |value|
-          set_or_return(name, value, options)
+          self.class.properties[name].set(self, value)
         end
       end
     end
