@@ -857,6 +857,19 @@ class Chef
     end
 
     #
+    # Clear this property as if it had never been set. It will thereafter return
+    # the default.
+    # been retrieved).
+    #
+    # @param name [Symbol] The name of the property.
+    #
+    def reset_property(name)
+      property = self.class.properties[name.to_sym]
+      raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+      property.reset(self)
+    end
+
+    #
     # Create a lazy value for assignment to a default value.
     #
     # @param block The block to run when the value is retrieved.

@@ -235,6 +235,81 @@ describe "Chef::Resource.property" do
     end
   end
 
+  context "Chef::Resource::Property#reset_property" do
+    it "when a resource is newly created, reset_property(:name) sets property to nil" do
+      expect(resource.property_is_set?(:name)).to be_truthy
+      resource.reset_property(:name)
+      expect(resource.property_is_set?(:name)).to be_falsey
+      expect(resource.name).to be_nil
+    end
+
+    it "when referencing an undefined property, reset_property(:x) raises an error" do
+      expect { resource.reset_property(:x) }.to raise_error(ArgumentError)
+    end
+
+    with_property ':x' do
+      it "when the resource is newly created, reset_property(:x) does nothing" do
+        expect(resource.property_is_set?(:x)).to be_falsey
+        resource.reset_property(:x)
+        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.x).to be_nil
+      end
+      it "when x is set, reset_property resets it" do
+        resource.x 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+        resource.reset_property(:x)
+        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.x).to be_nil
+      end
+    end
+
+    with_property ':x, Integer' do
+      it "when the resource is newly created, reset_property(:x) does nothing" do
+        expect(resource.property_is_set?(:x)).to be_falsey
+        resource.reset_property(:x)
+        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.x).to be_nil
+      end
+      it "when x is set, reset_property resets it even though `nil` is technically invalid" do
+        resource.x 10
+        expect(resource.property_is_set?(:x)).to be_truthy
+        resource.reset_property(:x)
+        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.x).to be_nil
+      end
+    end
+
+    with_property ':x, default: 10' do
+      it "when the resource is newly created, reset_property(:x) does nothing" do
+        expect(resource.property_is_set?(:x)).to be_falsey
+        resource.reset_property(:x)
+        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.x).to eq 10
+      end
+      it "when x is set, reset_property resets it and it returns the default" do
+        resource.x 20
+        resource.reset_property(:x)
+        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.x).to eq 10
+      end
+    end
+
+    with_property ':x, default: lazy { 10 }' do
+      it "when the resource is newly created, reset_property(:x) does nothing" do
+        expect(resource.property_is_set?(:x)).to be_falsey
+        resource.reset_property(:x)
+        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.x).to eq 10
+      end
+      it "when x is set, reset_property resets it and it returns the default" do
+        resource.x 20
+        resource.reset_property(:x)
+        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.x).to eq 10
+      end
+    end
+  end
+
   context "Chef::Resource::Property#property_is_set?" do
     it "when a resource is newly created, property_is_set?(:name) is true" do
       expect(resource.property_is_set?(:name)).to be_truthy

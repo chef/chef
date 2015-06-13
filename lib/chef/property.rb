@@ -313,6 +313,16 @@ class Chef
     end
 
     #
+    # Reset the value of this property so that is_set? will return false and the
+    # default will be returned in the future.
+    #
+    # @param resource [Chef::Resource] The resource to get the property from.
+    #
+    def reset(resource)
+      reset_value(resource)
+    end
+
+    #
     # Coerce an input value into canonical form for the property, validating
     # it in the process.
     #
@@ -424,6 +434,16 @@ class Chef
         resource.send(:instance_variable_defined?, instance_variable_name)
       else
         true
+      end
+    end
+
+    def reset_value(resource)
+      if instance_variable_name
+        if value_is_set?(resource)
+          resource.send(:remove_instance_variable, instance_variable_name)
+        end
+      else
+        raise ArgumentError, "Property #{name} has no instance variable defined and cannot be reset"
       end
     end
 
