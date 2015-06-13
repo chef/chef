@@ -111,32 +111,38 @@ describe "Chef::Resource.property validation" do
         it "get succeeds" do
           expect(resource.x).to eq 'default'
         end
-        it "set(nil) = get" do
-          expect(resource.x nil).to eq 'default'
-          expect(resource.x).to eq 'default'
-        end
         it "set to valid value succeeds" do
           expect(resource.x 'str').to eq 'str'
           expect(resource.x).to eq 'str'
         end
         it "set to invalid value raises ValidationFailed" do
           expect { resource.x 10 }.to raise_error Chef::Exceptions::ValidationFailed
+        end
+        it "set to nil emits a deprecation warning and does a get" do
+          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          resource.x 'str'
+          expect(resource.x nil).to eq 'str'
+          expect(resource.x).to eq 'str'
         end
       end
       context "when the variable does not have an initial value" do
         it "get succeeds" do
           expect(resource.x).to be_nil
         end
-        it "set(nil) = get" do
-          expect(resource.x nil).to be_nil
-          expect(resource.x).to be_nil
-        end
         it "set to valid value succeeds" do
           expect(resource.x 'str').to eq 'str'
           expect(resource.x).to eq 'str'
         end
         it "set to invalid value raises ValidationFailed" do
           expect { resource.x 10 }.to raise_error Chef::Exceptions::ValidationFailed
+        end
+        it "set to nil emits a deprecation warning and does a get" do
+          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          resource.x 'str'
+          expect(resource.x nil).to eq 'str'
+          expect(resource.x).to eq 'str'
         end
       end
     end
@@ -256,9 +262,9 @@ describe "Chef::Resource.property validation" do
       [ nil ]
 
     # Property
-    # validation_test 'is: Property.new(is: :a)',
-    #   [ :a ],
-    #   [ :b, nil ]
+    validation_test 'is: Chef::Property.new(is: :a)',
+      [ :a ],
+      [ :b, nil ]
 
     # RSpec Matcher
     class Globalses
@@ -523,10 +529,11 @@ describe "Chef::Resource.property validation" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
       end
-      it "value nil does a get" do
+      it "value nil emits a deprecation warning and does a get" do
+        expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         resource.x 1
-        resource.x nil
+        expect(resource.x nil).to eq 1
         expect(resource.x).to eq 1
       end
     end
@@ -556,9 +563,11 @@ describe "Chef::Resource.property validation" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
       end
-      it "value nil does a get" do
+      it "value nil emits a deprecation warning and does a get" do
+        expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         resource.x 1
-        resource.x nil
+        expect(resource.x nil).to eq 1
         expect(resource.x).to eq 1
       end
     end
@@ -571,10 +580,9 @@ describe "Chef::Resource.property validation" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
       end
-      it "value nil does a get" do
-        resource.x 1
-        resource.x nil
-        expect(resource.x).to eq 1
+      it "value nil is invalid" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
       end
     end
   end
@@ -595,11 +603,6 @@ describe "Chef::Resource.property validation" do
             end
           end
         end
-
-        # it "getting the value causes a deprecation warning" do
-        #   Chef::Config[:treat_deprecation_warnings_as_errors] = true
-        #   expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-        # end
 
         it "value 1 is valid" do
           expect(resource.x 1).to eq 1

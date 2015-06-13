@@ -119,7 +119,7 @@ class Chef
       end
 
       def set_or_return(symbol, value, validation)
-        property = Property.new(name: symbol, **validation)
+        property = Property::NonDeprecatedNilGetter.new(name: symbol, **validation)
         property.call(self, value)
       end
 
@@ -401,8 +401,12 @@ class Chef
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)
         to_be.each do |tb|
-          if tb.is_a?(Proc)
+          case tb
+          when Proc
             return true if instance_exec(value, &tb)
+          when Property
+            validate(opts, { key => tb.validation_options })
+            return true
           else
             return true if tb === value
           end

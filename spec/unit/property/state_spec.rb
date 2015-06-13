@@ -330,7 +330,7 @@ describe "Chef::Resource#identity and #state" do
     end
 
     with_property ":x, name_property: true" do
-      # it "Unset values with name_property are not included in state" do
+      # it "Unset values with name_property are included in state" do
       #   expect(resource.state_for_resource_reporter).to eq({ x: 'blah' })
       # end
       it "Set values with name_property are included in state" do

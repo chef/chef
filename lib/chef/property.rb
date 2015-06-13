@@ -161,7 +161,8 @@ class Chef
     #
     def validation_options
       @validation_options ||= options.reject { |k,v|
-        [:declared_in,:name,:desired_state,:identity,:instance_variable_name,:default,:name_property,:coerce,:required].include?(k) }
+        [:declared_in,:name,:instance_variable_name,:desired_state,:identity,:default,:name_property,:coerce,:required].include?(k)
+      }
     end
 
     #
@@ -196,7 +197,7 @@ class Chef
       if value.nil? && !explicitly_accepts_nil?(resource)
         # If you say "my_property nil" and the property explicitly accepts
         # nil values, we consider this a get.
-        # Chef::Log.deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
+        Chef::Log.deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
         return get(resource)
       end
 
@@ -449,5 +450,18 @@ class Chef
     end
 
     attr_reader :options
+
+    # Used by #set_or_return to avoid emitting a deprecation warning for
+    # "value nil"
+    # @api private
+    class NonDeprecatedNilGetter < Property
+      def call(resource, value=NOT_PASSED)
+        if value.nil? && !explicitly_accepts_nil?(resource)
+          get(resource)
+        else
+          super
+        end
+      end
+    end
   end
 end

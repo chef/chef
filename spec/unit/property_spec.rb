@@ -79,11 +79,10 @@ describe "Chef::Resource.property" do
       expect(resource.bare_property 10).to eq 10
       expect(resource.bare_property).to eq 10
     end
-    # it "emits a deprecation warning and does a get, if set to nil" do
     it "emits a deprecation warning and does a get, if set to nil" do
       expect(resource.bare_property 10).to eq 10
-      # expect { resource.bare_property nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-      # Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      expect { resource.bare_property nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       expect(resource.bare_property nil).to eq 10
       expect(resource.bare_property).to eq 10
     end
@@ -96,11 +95,11 @@ describe "Chef::Resource.property" do
       expect(resource.bare_property 10).to eq 10
       expect(resource.bare_property).to eq 10
     end
-    # it "can be set to nil with =" do
-    #   expect(resource.bare_property 10).to eq 10
-    #   expect(resource.bare_property = nil).to be_nil
-    #   expect(resource.bare_property).to be_nil
-    # end
+    it "can be set to nil with =" do
+      expect(resource.bare_property 10).to eq 10
+      expect(resource.bare_property = nil).to be_nil
+      expect(resource.bare_property).to be_nil
+    end
     it "can be updated with =" do
       expect(resource.bare_property 10).to eq 10
       expect(resource.bare_property = 20).to eq 20
@@ -241,9 +240,9 @@ describe "Chef::Resource.property" do
       expect(resource.property_is_set?(:name)).to be_truthy
     end
 
-    # it "when referencing an undefined property, property_is_set?(:x) raises an error" do
-    #   expect { resource.property_is_set?(:x) }.to raise_error(ArgumentError)
-    # end
+    it "when referencing an undefined property, property_is_set?(:x) raises an error" do
+      expect { resource.property_is_set?(:x) }.to raise_error(ArgumentError)
+    end
 
     with_property ':x' do
       it "when the resource is newly created, property_is_set?(:x) is false" do

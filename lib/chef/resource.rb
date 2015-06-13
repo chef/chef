@@ -101,7 +101,7 @@ class Chef
     # @param run_context The context of the Chef run. Corresponds to #run_context.
     #
     def initialize(name, run_context=nil)
-      name(name)
+      name(name) unless name.nil?
       @run_context = run_context
       @noop = nil
       @before = nil
@@ -851,13 +851,9 @@ class Chef
     # @return [Boolean] `true` if the property has been set.
     #
     def property_is_set?(name)
-      name = name.to_sym
       property = self.class.properties[name.to_sym]
-      if property
-        property.is_set?(self)
-      else
-        true
-      end
+      raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+      property.is_set?(self)
     end
 
     #
