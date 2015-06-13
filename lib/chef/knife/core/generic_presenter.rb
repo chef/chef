@@ -181,7 +181,7 @@ class Chef
             # Must check :[] before attr because spec can include
             #   `keys` - want the key named `keys`, not a list of
             #   available keys.
-            elsif data.respond_to?(:[])
+            elsif data.respond_to?(:[])  && data.has_key?(attr)
               data = data[attr]
             elsif data.respond_to?(attr.to_sym)
               data = data.send(attr.to_sym)

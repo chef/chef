@@ -51,15 +51,15 @@ class Chef
     #
     class Deploy < Chef::Resource
 
-      provider_base Chef::Provider::Deploy
-
       identity_attr :repository
 
       state_attrs :deploy_to, :revision
 
+      default_action :deploy
+      allowed_actions :force_deploy, :deploy, :rollback
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :deploy
         @deploy_to = name
         @environment = nil
         @repository_cache = 'cached-copy'
@@ -69,7 +69,6 @@ class Chef
         @symlink_before_migrate = {"config/database.yml" => "config/database.yml"}
         @symlinks = {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
         @revision = 'HEAD'
-        @action = :deploy
         @migrate = false
         @rollback_on_error = false
         @remote = "origin"
@@ -77,7 +76,6 @@ class Chef
         @shallow_clone = false
         @scm_provider = Chef::Provider::Git
         @svn_force_export = false
-        @allowed_actions.push(:force_deploy, :deploy, :rollback)
         @additional_remotes = Hash[]
         @keep_releases = 5
         @enable_checkout = true
@@ -279,6 +277,12 @@ class Chef
           klass,
           :kind_of => [ Class ]
         )
+      end
+
+      # This is to support "provider :revision" without deprecation warnings.
+      # Do NOT copy this.
+      def self.provider_base
+        Chef::Provider::Deploy
       end
 
       def svn_force_export(arg=nil)

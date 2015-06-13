@@ -286,9 +286,13 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def depends(cookbook, *version_args)
-        version = new_args_format(:depends, cookbook, version_args)
-        constraint = validate_version_constraint(:depends, cookbook, version)
-        @dependencies[cookbook] = constraint.to_s
+        if cookbook == name
+          Chef::Log.warn "Ignoring self-dependency in cookbook #{name}, please remove it (in the future this will be fatal)."
+        else
+          version = new_args_format(:depends, cookbook, version_args)
+          constraint = validate_version_constraint(:depends, cookbook, version)
+          @dependencies[cookbook] = constraint.to_s
+        end
         @dependencies[cookbook]
       end
 
@@ -603,7 +607,7 @@ class Chef
           msg=<<-OBSOLETED
 The dependency specification syntax you are using is no longer valid. You may not
 specify more than one version constraint for a particular cookbook.
-Consult http://wiki.opscode.com/display/chef/Metadata for the updated syntax.
+Consult https://docs.chef.io/config_rb_metadata.html for the updated syntax.
 
 Called by: #{caller_name} '#{dep_name}', #{version_constraints.map {|vc| vc.inspect}.join(", ")}
 Called from:
@@ -622,7 +626,7 @@ OBSOLETED
 The version constraint syntax you are using is not valid. If you recently
 upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
 'less than' and 'greater than'; use '<' and '>' instead.
-Consult http://wiki.opscode.com/display/chef/Metadata for more information.
+Consult https://docs.chef.io/config_rb_metadata.html for more information.
 
 Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
 Called from:

@@ -32,14 +32,7 @@ require 'rubygems/version'
 require 'rubygems/dependency'
 require 'rubygems/spec_fetcher'
 require 'rubygems/platform'
-
-# Compatibility note: Rubygems 2.0 removes rubygems/format in favor of
-# rubygems/package.
-begin
-  require 'rubygems/format'
-rescue LoadError
-  require 'rubygems/package'
-end
+require 'rubygems/package'
 require 'rubygems/dependency_installer'
 require 'rubygems/uninstaller'
 require 'rubygems/specification'
@@ -545,9 +538,9 @@ class Chef
             src = @new_resource.source && " --source=#{@new_resource.source} --source=https://rubygems.org"
           end
           if !version.nil? && version.length > 0
-            shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
           else
-            shell_out!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)
           end
         end
 
@@ -571,9 +564,9 @@ class Chef
 
         def uninstall_via_gem_command(name, version)
           if version
-            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", :env=>nil)
           else
-            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", :env=>nil)
           end
         end
 

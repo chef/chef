@@ -25,26 +25,45 @@ describe Chef::Provider::RemoteFile::LocalFile do
   let(:new_resource) { Chef::Resource::RemoteFile.new("local file backend test (new_resource)") }
   let(:current_resource) { Chef::Resource::RemoteFile.new("local file backend test (current_resource)") }
   subject(:fetcher) { Chef::Provider::RemoteFile::LocalFile.new(uri, new_resource, current_resource) }
-  
-  context "when parsing source path" do
+
+  context "when parsing source path on windows" do
+
+    before do
+      allow(Chef::Platform).to receive(:windows?).and_return(true)
+    end
+
     describe "when given local unix path" do
       let(:uri) { URI.parse("file:///nyan_cat.png") }
       it "returns a correct unix path" do
-        expect(fetcher.fix_windows_path(uri.path)).to eq("/nyan_cat.png")
+        expect(fetcher.source_path).to eq("/nyan_cat.png")
       end
     end
 
     describe "when given local windows path" do
       let(:uri) { URI.parse("file:///z:/windows/path/file.txt") }
       it "returns a valid windows local path" do
-        expect(fetcher.fix_windows_path(uri.path)).to eq("z:/windows/path/file.txt")
+        expect(fetcher.source_path).to eq("z:/windows/path/file.txt")
+      end
+    end
+
+    describe "when given local windows path with spaces" do
+      let(:uri) { URI.parse(URI.escape("file:///z:/windows/path/foo & bar.txt")) }
+      it "returns a valid windows local path" do
+        expect(fetcher.source_path).to eq("z:/windows/path/foo & bar.txt")
       end
     end
 
     describe "when given unc windows path" do
       let(:uri) { URI.parse("file:////server/share/windows/path/file.txt") }
       it "returns a valid windows unc path" do
-        expect(fetcher.fix_windows_path(uri.path)).to eq("//server/share/windows/path/file.txt")
+        expect(fetcher.source_path).to eq("//server/share/windows/path/file.txt")
+      end
+    end
+
+    describe "when given unc windows path with spaces" do
+      let(:uri) { URI.parse(URI.escape("file:////server/share/windows/path/foo & bar.txt")) }
+      it "returns a valid windows unc path" do
+        expect(fetcher.source_path).to eq("//server/share/windows/path/foo & bar.txt")
       end
     end
   end
@@ -73,7 +92,7 @@ describe Chef::Provider::RemoteFile::LocalFile do
     it "stages the local file to a temporary file" do
       expect(Chef::FileContentManagement::Tempfile).to receive(:new).with(new_resource).and_return(chef_tempfile)
       expect(::FileUtils).to receive(:cp).with(uri.path, tempfile.path)
-      expect(tempfile).to receive(:close)            
+      expect(tempfile).to receive(:close)
 
       result = fetcher.fetch
       expect(result).to eq(tempfile)

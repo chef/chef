@@ -22,13 +22,12 @@ require 'chef/provider/package/paludis'
 class Chef
   class Resource
     class PaludisPackage < Chef::Resource::Package
-
       provides :paludis_package, os: "linux"
+
+      allowed_actions :install, :remove, :upgrade
 
       def initialize(name, run_context=nil)
         super(name, run_context)
-        @resource_name = :paludis_package
-        @allowed_actions.push(:install, :remove, :upgrade)
         @timeout = 3600
       end
     end

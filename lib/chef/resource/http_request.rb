@@ -26,14 +26,14 @@ class Chef
 
       identity_attr :url
 
+      default_action :get
+      allowed_actions :get, :put, :post, :delete, :head, :options
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :http_request
         @message = name
         @url = nil
-        @action = :get
         @headers = {}
-        @allowed_actions.push(:get, :put, :post, :delete, :head, :options)
       end
 
       def url(args=nil)

@@ -5,7 +5,7 @@ describe "LWRPs with inline resources" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
+  let(:chef_dir) { File.expand_path("../../../../bin", __FILE__) }
 
   # Invoke `chef-client` as `ruby PATH/TO/chef-client`. This ensures the
   # following constraints are satisfied:

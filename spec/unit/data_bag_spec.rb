@@ -22,7 +22,7 @@ require 'chef/data_bag'
 describe Chef::DataBag do
   before(:each) do
     @data_bag = Chef::DataBag.new
-    allow(Chef::Platform)::to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
   end
 
   describe "initialize" do

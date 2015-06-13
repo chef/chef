@@ -25,7 +25,6 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
-
   provides :service, os: "windows"
   provides :windows_service, os: "windows"
 

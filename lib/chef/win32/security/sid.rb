@@ -203,6 +203,23 @@ class Chef
           SID.from_account("#{::ENV['USERDOMAIN']}\\#{::ENV['USERNAME']}")
         end
 
+        # See https://technet.microsoft.com/en-us/library/cc961992.aspx
+        # In practice, this is SID.Administrators if the current_user is an admin (even if not
+        # running elevated), and is current_user otherwise. On win2k3, it technically can be
+        # current_user in all cases if a certain group policy is set.
+        def self.default_security_object_owner
+          token = Chef::ReservedNames::Win32::Security.open_current_process_token
+          Chef::ReservedNames::Win32::Security.get_token_information_owner(token)
+        end
+
+        # See https://technet.microsoft.com/en-us/library/cc961996.aspx
+        # In practice, this seems to be SID.current_user for Microsoft Accounts, the current
+        # user's Domain Users group for domain accounts, and SID.None otherwise.
+        def self.default_security_object_group
+          token = Chef::ReservedNames::Win32::Security.open_current_process_token
+          Chef::ReservedNames::Win32::Security.get_token_information_primary_group(token)
+        end
+
         def self.admin_account_name
           @admin_account_name ||= begin
             admin_account_name = nil

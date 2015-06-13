@@ -25,11 +25,6 @@ class Chef
 
       provides :dpkg_package, os: "linux"
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :dpkg_package
-      end
-
     end
   end
 end

@@ -22,13 +22,12 @@ require "chef/resource/scm"
 class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
+      allowed_actions :force_export
 
       def initialize(name, run_context=nil)
         super
         @svn_arguments = '--no-auth-cache'
         @svn_info_args = '--no-auth-cache'
-        @resource_name = :subversion
-        allowed_actions << :force_export
       end
 
       # Override exception to strip password if any, so it won't appear in logs and different Chef notifications

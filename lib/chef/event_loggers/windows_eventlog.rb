@@ -18,17 +18,7 @@
 
 require 'chef/event_loggers/base'
 require 'chef/platform/query_helpers'
-
-if Chef::Platform::windows? and not Chef::Platform::windows_server_2003?
-  if defined? Windows::Constants
-    [:INFINITE, :WAIT_FAILED, :FORMAT_MESSAGE_IGNORE_INSERTS, :ERROR_INSUFFICIENT_BUFFER].each do |c|
-      # These are redefined in 'win32/eventlog'
-      Windows::Constants.send(:remove_const, c) if Windows::Constants.const_defined? c
-    end
-  end
-
-  require 'win32/eventlog'
-end
+require 'chef/win32/eventlog'
 
 class Chef
   module EventLoggers
@@ -88,15 +78,21 @@ class Chef
       #Exception message: %4
       #Exception backtrace: %5
       def run_failed(e)
+        data =
+          if @run_status
+            [@run_status.run_id,
+             @run_status.elapsed_time.to_s]
+          else
+            ["UNKNOWN", "UNKNOWN"]
+          end
+
         @eventlog.report_event(
           :event_type => ::Win32::EventLog::ERROR_TYPE,
           :source => SOURCE,
           :event_id => RUN_FAILED_EVENT_ID,
-          :data => [@run_status.run_id,
-                    @run_status.elapsed_time.to_s,
-                    e.class.name,
-                    e.message,
-                    e.backtrace.join("\n")]
+          :data => data + [e.class.name,
+                           e.message,
+                           e.backtrace.join("\n")]
         )
       end
 

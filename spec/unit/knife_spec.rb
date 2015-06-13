@@ -30,10 +30,19 @@ describe Chef::Knife do
 
   let(:knife) { Chef::Knife.new }
 
+  let(:config_location) { File.expand_path("~/.chef/config.rb") }
+
+  let(:config_loader) do
+    instance_double("WorkstationConfigLoader", load: nil, no_config_found?: false, config_location: config_location)
+  end
+
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
+
+    allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
+    allow(config_loader).to receive(:explicit_config_file=)
 
     # Prevent gratuitous code reloading:
     allow(Chef::Knife).to receive(:load_commands)
@@ -130,7 +139,8 @@ describe Chef::Knife do
                     "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
                     'X-Chef-Version' => Chef::VERSION,
                     "Host"=>"api.opscode.piab",
-                    "X-REMOTE-REQUEST-ID"=>request_id}}
+                    "X-REMOTE-REQUEST-ID"=>request_id,
+                    'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION}}
 
     let(:request_id) {"1234"}
 
@@ -249,6 +259,18 @@ describe Chef::Knife do
         KnifeSpecs::TestYourself.option(:opt_with_default,
                                         :short => "-D VALUE",
                                         :default => "default-value")
+      end
+
+      it "sets the default log_location to STDERR for Chef::Log warnings" do
+        knife_command = KnifeSpecs::TestYourself.new([])
+        knife_command.configure_chef
+        expect(Chef::Config[:log_location]).to eq(STDERR)
+      end
+
+      it "sets the default log_level to warn so we can issue Chef::Log.warn" do
+        knife_command = KnifeSpecs::TestYourself.new([])
+        knife_command.configure_chef
+        expect(Chef::Config[:log_level]).to eql(:warn)
       end
 
       it "prefers the default value if no config or command line value is present" do
@@ -372,6 +394,22 @@ describe Chef::Knife do
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r[ERROR: The object you are looking for could not be found])
       expect(stderr.string).to match(%r[Response: nothing to see here])
+    end
+
+    it "formats 406s (non-supported API version error) nicely" do
+      response = Net::HTTPNotAcceptable.new("1.1", "406", "Not Acceptable")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+
+      # set the header
+      response["x-ops-server-api-version"] = Chef::JSONCompat.to_json(:min_version => "0", :max_version => "1", :request_version => "10000000")
+
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
+
+      knife.run_with_pretty_exceptions
+      expect(stderr.string).to include('The request that Knife sent was using API version 10000000')
+      expect(stderr.string).to include('The Chef server you sent the request to supports a min API verson of 0 and a max API version of 1')
+      expect(stderr.string).to include('Please either update your Chef client or server to be a compatible set')
     end
 
     it "formats 500s nicely" do

@@ -30,11 +30,6 @@ class Chef
 
       provides :package, os: "openbsd"
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :openbsd_package
-      end
-
       def after_created
         assign_provider
       end
@@ -48,4 +43,3 @@ class Chef
     end
   end
 end
-

@@ -24,6 +24,8 @@ class Chef
     class Mount
       class Mount < Chef::Provider::Mount
 
+        provides :mount
+
         def initialize(new_resource, run_context)
           super
           @real_device = nil

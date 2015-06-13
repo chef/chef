@@ -19,12 +19,8 @@
 class Chef
   class Resource
     class OneTwoThreeFour < Chef::Resource
-      attr_reader :i_can_count
 
-      def initialize(name, run_context)
-        @resource_name = :one_two_three_four
-        super
-      end
+      attr_reader :i_can_count
 
       def i_can_count(tf)
         @i_can_count = tf

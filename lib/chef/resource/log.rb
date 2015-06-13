@@ -26,6 +26,8 @@ class Chef
 
       identity_attr :message
 
+      default_action :write
+
       # Sends a string from a recipe to a log provider
       #
       # log "some string to log" do
@@ -48,10 +50,7 @@ class Chef
       # node<Chef::Node>:: Node where resource will be used
       def initialize(name, run_context=nil)
         super
-        @resource_name = :log
         @level = :info
-        @action = :write
-        @allowed_actions.push(:write)
         @message = name
       end
 
@@ -75,5 +74,3 @@ class Chef
     end
   end
 end
-
-

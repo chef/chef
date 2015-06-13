@@ -3,13 +3,17 @@ gemspec :name => "chef"
 
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
+gem 'chef-config', path: "chef-config"
+
 group(:docgen) do
+  gem "tomlrb"
   gem "yard"
 end
 
 group(:development, :test) do
   gem "simplecov"
   gem 'rack', "~> 1.5.1"
+  gem 'cheffish', "~> 1.2"
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 end

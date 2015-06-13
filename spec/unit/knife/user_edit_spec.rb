@@ -19,29 +19,48 @@
 require 'spec_helper'
 
 describe Chef::Knife::UserEdit do
+  let(:knife) { Chef::Knife::UserEdit.new }
+
   before(:each) do
     @stderr = StringIO.new
     @stdout = StringIO.new
 
     Chef::Knife::UserEdit.load_deps
-    @knife = Chef::Knife::UserEdit.new
-    allow(@knife.ui).to receive(:stderr).and_return(@stderr)
-    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
-    @knife.name_args = [ 'my_user' ]
-    @knife.config[:disable_editing] = true
+    allow(knife.ui).to receive(:stderr).and_return(@stderr)
+    allow(knife.ui).to receive(:stdout).and_return(@stdout)
+    knife.name_args = [ 'my_user' ]
+    knife.config[:disable_editing] = true
+  end
+
+  # delete this once OSC11 support is gone
+  context "when the username field is not supported by the server" do
+    before do
+      allow(knife).to receive(:run_osc_11_user_edit).and_raise(SystemExit)
+      allow(Chef::User).to receive(:load).and_return({"username" => nil})
+    end
+
+    it "displays the osc warning" do
+      expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
+      expect{ knife.run }.to raise_error(SystemExit)
+    end
+
+    it "forwards the command to knife osc_user edit" do
+      expect(knife).to receive(:run_osc_11_user_edit)
+      expect{ knife.run }.to raise_error(SystemExit)
+    end
   end
 
   it 'loads and edits the user' do
-    data = { :name => "my_user" }
+    data = { "username" => "my_user" }
     allow(Chef::User).to receive(:load).with("my_user").and_return(data)
-    expect(@knife).to receive(:edit_data).with(data).and_return(data)
-    @knife.run
+    expect(knife).to receive(:edit_data).with(data).and_return(data)
+    knife.run
   end
 
   it 'prints usage and exits when a user name is not provided' do
-    @knife.name_args = []
-    expect(@knife).to receive(:show_usage)
-    expect(@knife.ui).to receive(:fatal)
-    expect { @knife.run }.to raise_error(SystemExit)
+    knife.name_args = []
+    expect(knife).to receive(:show_usage)
+    expect(knife.ui).to receive(:fatal)
+    expect { knife.run }.to raise_error(SystemExit)
   end
 end

@@ -279,6 +279,12 @@ class Chef::Application::Client < Chef::Application
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 
     Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+
+    if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
+      Chef::Config.delete(:chef_repo_path)
+      Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
+    end
+
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
@@ -319,12 +325,6 @@ class Chef::Application::Client < Chef::Application
       expected_modes = [:enabled, :disabled, :audit_only]
       unless expected_modes.include?(mode)
         Chef::Application.fatal!(unrecognized_audit_mode(mode))
-      end
-
-      unless mode == :disabled
-        # This should be removed when audit-mode is enabled by default/no longer
-        # an experimental feature.
-        Chef::Log.warn(audit_mode_experimental_message)
       end
     end
   end
@@ -448,7 +448,7 @@ class Chef::Application::Client < Chef::Application
     "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 
-  def audit_mode_settings_explaination
+  def audit_mode_settings_explanation
     "\n* To enable audit mode after converge, use command line option `--audit-mode enabled` or set `:audit_mode = :enabled` in your config file." +
     "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `:audit_mode = :disabled` in your config file." +
     "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `:audit_mode = :audit_only` in your config file." +
@@ -456,18 +456,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def unrecognized_audit_mode(mode)
-    "Unrecognized setting #{mode} for audit mode." + audit_mode_settings_explaination
-  end
-
-  def audit_mode_experimental_message
-    msg = if Chef::Config[:audit_mode] == :audit_only
-      "Chef-client has been configured to skip converge and only audit."
-    else
-      "Chef-client has been configured to audit after it converges."
-    end
-    msg += " Audit mode is an experimental feature currently under development. API changes may occur. Use at your own risk."
-    msg += audit_mode_settings_explaination
-    return msg
+    "Unrecognized setting #{mode} for audit mode." + audit_mode_settings_explanation
   end
 
   def fetch_recipe_tarball(url, path)

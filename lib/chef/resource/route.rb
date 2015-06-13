@@ -22,17 +22,16 @@ require 'chef/resource'
 class Chef
   class Resource
     class Route < Chef::Resource
-
       identity_attr :target
 
       state_attrs :netmask, :gateway
 
+      default_action :add
+      allowed_actions :add, :delete
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :route
         @target = name
-        @action = [:add]
-        @allowed_actions.push(:add, :delete)
         @netmask = nil
         @gateway = nil
         @metric = nil
@@ -136,5 +135,3 @@ class Chef
     end
   end
 end
-
-

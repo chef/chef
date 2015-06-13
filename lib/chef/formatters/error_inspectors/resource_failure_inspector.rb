@@ -63,7 +63,7 @@ class Chef
         def recipe_snippet
           return nil if dynamic_resource?
           @snippet ||= begin
-            if file = resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/,1] and line = resource.source_line[/^#{file}:([\d]+)/,1].to_i
+            if file = parse_source and line = parse_line(file)
               return nil unless ::File.exists?(file)
               lines = IO.readlines(file)
 
@@ -110,6 +110,16 @@ class Chef
           line_nr_string = (line_nr + 1).to_s.rjust(3) + ": "
           line_nr_string + line
         end
+
+        def parse_source
+          resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/,1]
+        end
+
+        def parse_line(source)
+          resource.source_line[/^#{Regexp.escape(source)}:([\d]+)/,1].to_i
+        end
+
+
 
       end
     end

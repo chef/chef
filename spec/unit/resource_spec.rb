@@ -21,10 +21,6 @@
 
 require 'spec_helper'
 
-class ResourceTestHarness < Chef::Resource
-  provider_base Chef::Provider::Package
-end
-
 describe Chef::Resource do
   before(:each) do
     @cookbook_repo_path =  File.join(CHEF_SPEC_DATA, 'cookbooks')
@@ -33,6 +29,18 @@ describe Chef::Resource do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
     @resource = Chef::Resource.new("funk", @run_context)
+  end
+
+  it "should mixin shell_out" do
+    expect(@resource.respond_to?(:shell_out)).to be true
+  end
+
+  it "should mixin shell_out!" do
+    expect(@resource.respond_to?(:shell_out!)).to be true
+  end
+
+  it "should mixin shell_out_with_systems_locale" do
+    expect(@resource.respond_to?(:shell_out_with_systems_locale)).to be true
   end
 
   describe "when inherited" do
@@ -324,6 +332,71 @@ describe Chef::Resource do
     end
   end
 
+  describe "self.resource_name" do
+    context "When resource_name is not set" do
+      it "and there are no provides lines, resource_name is nil" do
+        c = Class.new(Chef::Resource) do
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to be_nil
+        expect(r.declared_type).to eq :d
+      end
+      it "and there are no provides lines, @resource_name is used" do
+        c = Class.new(Chef::Resource) do
+          def initialize(*args, &block)
+            @resource_name = :blah
+            super
+          end
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to eq :blah
+        expect(r.declared_type).to eq :d
+      end
+    end
+
+    it "resource_name without provides is honored" do
+      c = Class.new(Chef::Resource) do
+        resource_name 'blah'
+      end
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "setting class.resource_name with 'resource_name = blah' overrides declared_type" do
+      c = Class.new(Chef::Resource) do
+        provides :self_resource_name_test_2
+      end
+      c.resource_name = :blah
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "setting class.resource_name with 'resource_name blah' overrides declared_type" do
+      c = Class.new(Chef::Resource) do
+        resource_name :blah
+        provides :self_resource_name_test_3
+      end
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+  end
+
   describe "is" do
     it "should return the arguments passed with 'is'" do
       zm = Chef::Resource::ZenMaster.new("coffee")
@@ -447,8 +520,21 @@ describe Chef::Resource do
       expect(Chef::Resource.provider_base).to eq(Chef::Provider)
     end
 
-    it "allows the base provider to be overriden by a " do
-      expect(ResourceTestHarness.provider_base).to eq(Chef::Provider::Package)
+    it "allows the base provider to be overridden" do
+      Chef::Config.treat_deprecation_warnings_as_errors(false)
+      class OverrideProviderBaseTest < Chef::Resource
+        provider_base Chef::Provider::Package
+      end
+
+      expect(OverrideProviderBaseTest.provider_base).to eq(Chef::Provider::Package)
+    end
+
+    it "warns when setting provider_base" do
+      expect {
+        class OverrideProviderBaseTest2 < Chef::Resource
+          provider_base Chef::Provider::Package
+        end
+      }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
 
   end
@@ -709,57 +795,73 @@ describe Chef::Resource do
     end
 
     it 'adds mappings for a single platform' do
-      expect(Chef::Resource::Klz.node_map).to receive(:set).with(
-        :dinobot, true, { platform: ['autobots'] }
+      expect(Chef).to receive(:set_resource_priority_array).with(
+        :dinobot, Chef::Resource::Klz, { platform: ['autobots'] }
       )
       klz.provides :dinobot, platform: ['autobots']
     end
 
     it 'adds mappings for multiple platforms' do
-      expect(Chef::Resource::Klz.node_map).to receive(:set).with(
-        :energy, true, { platform: ['autobots', 'decepticons']}
+      expect(Chef).to receive(:set_resource_priority_array).with(
+        :energy, Chef::Resource::Klz, { platform: ['autobots', 'decepticons']}
       )
       klz.provides :energy, platform: ['autobots', 'decepticons']
     end
 
     it 'adds mappings for all platforms' do
-      expect(Chef::Resource::Klz.node_map).to receive(:set).with(
-        :tape_deck, true, {}
+      expect(Chef).to receive(:set_resource_priority_array).with(
+        :tape_deck, Chef::Resource::Klz, {}
       )
       klz.provides :tape_deck
     end
 
   end
 
-  describe "lookups from the platform map" do
-    let(:klz1) { Class.new(Chef::Resource) }
-    let(:klz2) { Class.new(Chef::Resource) }
+  describe "resource_for_node" do
+    describe "lookups from the platform map" do
+      let(:klz1) { Class.new(Chef::Resource) }
 
-    before(:each) do
-      Chef::Resource::Klz1 = klz1
-      Chef::Resource::Klz2 = klz2
-      @node = Chef::Node.new
-      @node.name("bumblebee")
-      @node.automatic[:platform] = "autobots"
-      @node.automatic[:platform_version] = "6.1"
-      Object.const_set('Soundwave', klz1)
-      klz2.provides :dinobot, :on_platforms => ['autobots']
-      Object.const_set('Grimlock', klz2)
-    end
-
-    after(:each) do
-      Object.send(:remove_const, :Soundwave)
-      Object.send(:remove_const, :Grimlock)
-      Chef::Resource.send(:remove_const, :Klz1)
-      Chef::Resource.send(:remove_const, :Klz2)
-    end
-
-    describe "resource_for_node" do
-      it "returns a resource by short_name and node" do
-        expect(Chef::Resource.resource_for_node(:dinobot, @node)).to eql(Grimlock)
+      before(:each) do
+        Chef::Resource::Klz1 = klz1
+        @node = Chef::Node.new
+        @node.name("bumblebee")
+        @node.automatic[:platform] = "autobots"
+        @node.automatic[:platform_version] = "6.1"
+        Object.const_set('Soundwave', klz1)
+        klz1.provides :soundwave
       end
+
+      after(:each) do
+        Object.send(:remove_const, :Soundwave)
+        Chef::Resource.send(:remove_const, :Klz1)
+      end
+
       it "returns a resource by short_name if nothing else matches" do
-        expect(Chef::Resource.resource_for_node(:soundwave, @node)).to eql(Soundwave)
+        expect(Chef::Resource.resource_for_node(:soundwave, @node)).to eql(klz1)
+      end
+    end
+
+    describe "lookups from the platform map" do
+      let(:klz2) { Class.new(Chef::Resource) }
+
+      before(:each) do
+        Chef::Resource::Klz2 = klz2
+        @node = Chef::Node.new
+        @node.name("bumblebee")
+        @node.automatic[:platform] = "autobots"
+        @node.automatic[:platform_version] = "6.1"
+        klz2.provides :dinobot, :platform => ['autobots']
+        Object.const_set('Grimlock', klz2)
+        klz2.provides :grimlock
+      end
+
+      after(:each) do
+        Object.send(:remove_const, :Grimlock)
+        Chef::Resource.send(:remove_const, :Klz2)
+      end
+
+      it "returns a resource by short_name and node" do
+        expect(Chef::Resource.resource_for_node(:dinobot, @node)).to eql(klz2)
       end
     end
 

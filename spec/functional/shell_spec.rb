@@ -29,6 +29,8 @@ describe Shell do
   describe "smoke tests", :unix_only => true do
     include Chef::Mixin::Command::Unix
 
+    TIMEOUT=300
+
     def read_until(io, expected_value)
       start = Time.new
       buffer = ""
@@ -38,13 +40,28 @@ describe Shell do
         rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EIO, EOFError
           sleep 0.01
         end
-        if Time.new - start > 30
-          STDERR.puts "did not read expected value `#{expected_value}' within 15s"
-          STDERR.puts "Buffer so far: `#{buffer}'"
-          break
+        if Time.new - start > TIMEOUT
+          raise "did not read expected value `#{expected_value}' within #{TIMEOUT}s\n" +
+                "Buffer so far: `#{buffer}'"
         end
       end
       buffer
+    end
+
+    def flush_output(io)
+      start = Time.new
+      loop do
+        begin
+          io.read_nonblock(1)
+        rescue Errno::EWOULDBLOCK, Errno::EAGAIN
+          sleep 0.01
+        rescue EOFError, Errno::EIO
+          break
+        end
+        if Time.new - start > TIMEOUT
+          raise "timed out after #{TIMEOUT}s waiting for output to end"
+        end
+      end
     end
 
     def wait_or_die(pid)
@@ -67,12 +84,12 @@ describe Shell do
         path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
         output = ''
         status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
-          read_until(stdout, "chef >")
+          read_until(stdout, "chef (#{Chef::VERSION})>")
           yield stdout, stdin if block_given?
           stdin.write("'done'\n")
           output = read_until(stdout, '=> "done"')
           stdin.print("exit\n")
-          read_until(stdout, "\n")
+          flush_output(stdout)
         end
 
         [output, status.exitstatus]
@@ -84,14 +101,12 @@ describe Shell do
           config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
           path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
           reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
-          read_until(reader, "chef >")
+          read_until(reader, "chef (#{Chef::VERSION})>")
           yield reader, writer if block_given?
           writer.puts('"done"')
           output = read_until(reader, '=> "done"')
           writer.print("exit\n")
-          read_until(reader, "exit")
-          read_until(reader, "\n")
-          read_until(reader, "\n")
+          flush_output(reader)
           writer.close
 
           exitstatus = wait_or_die(pid)

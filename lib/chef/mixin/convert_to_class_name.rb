@@ -23,9 +23,7 @@ class Chef
       extend self
 
       def convert_to_class_name(str)
-        str = str.dup
-        str.gsub!(/[^A-Za-z0-9_]/,'_')
-        str.gsub!(/^(_+)?/,'')
+        str = normalize_snake_case_name(str)
         rname = nil
         regexp = %r{^(.+?)(_(.+))?$}
 
@@ -51,6 +49,13 @@ class Chef
         str
       end
 
+      def normalize_snake_case_name(str)
+        str = str.dup
+        str.gsub!(/[^A-Za-z0-9_]/,'_')
+        str.gsub!(/^(_+)?/,'')
+        str
+      end
+
       def snake_case_basename(str)
         with_namespace = convert_to_snake_case(str)
         with_namespace.split("::").last.sub(/^_/, '')
@@ -58,7 +63,8 @@ class Chef
 
       def filename_to_qualified_string(base, filename)
         file_base = File.basename(filename, ".rb")
-        base.to_s + (file_base == 'default' ? '' : "_#{file_base}")
+        str = base.to_s + (file_base == 'default' ? '' : "_#{file_base}")
+        normalize_snake_case_name(str)
       end
 
       # Copied from rails activesupport.  In ruby >= 2.0 const_get will just do this, so this can

@@ -46,21 +46,11 @@ describe Chef::Audit::Runner do
     RSpec::Core::Sandbox.sandboxed { ex.run }
   end
 
-  before do
-    Chef::Config[:log_location] = stdout
-  end
-  
   describe "#run" do
 
     let(:audits) { {} }
     let(:run_context) { instance_double(Chef::RunContext, :events => events, :audits => audits) }
     let(:control_group_name) { "control_group_name" }
-
-    it "Correctly runs an empty controls block" do
-      in_sub_process do
-        runner.run
-      end
-    end
 
     shared_context "passing audit" do
       let(:audits) do
@@ -84,50 +74,40 @@ describe Chef::Audit::Runner do
       end
     end
 
-    context "there is a single successful control" do
-      include_context "passing audit"
-      it "correctly runs" do
-        in_sub_process do
-          runner.run
-
-          expect(stdout.string).to match(/1 example, 0 failures/)
-        end
-      end
-    end
-
-    context "there is a single failing control" do
-      include_context "failing audit"
-      it "correctly runs" do
-        in_sub_process do
-          runner.run
-
-          expect(stdout.string).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
-          expect(stdout.string).to match(/1 example, 1 failure/)
-          expect(stdout.string).to match(/# control_group_name should fail/)
-        end
-      end
-    end
-
-    describe "log location is a file" do
-      let(:tmpfile) { Tempfile.new("audit") }
+    describe "log location is stdout" do
       before do
-        Chef::Config[:log_location] = tmpfile.path
+        allow(Chef::Log).to receive(:info) do |msg|
+          stdout.puts(msg)
+        end
       end
 
-      after do
-        tmpfile.close
-        tmpfile.unlink
-      end
-
-      include_context "failing audit"
-      it "correctly runs" do
+      it "Correctly runs an empty controls block" do
         in_sub_process do
           runner.run
+        end
+      end
 
-          contents = tmpfile.read
-          expect(contents).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
-          expect(contents).to match(/1 example, 1 failure/)
-          expect(contents).to match(/# control_group_name should fail/)
+      context "there is a single successful control" do
+        include_context "passing audit"
+        it "correctly runs" do
+          in_sub_process do
+            runner.run
+
+            expect(stdout.string).to match(/1 example, 0 failures/)
+          end
+        end
+      end
+
+      context "there is a single failing control" do
+        include_context "failing audit"
+        it "correctly runs" do
+          in_sub_process do
+            runner.run
+
+            expect(stdout.string).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
+            expect(stdout.string).to match(/1 example, 1 failure/)
+            expect(stdout.string).to match(/# control_group_name should fail/)
+          end
         end
       end
     end

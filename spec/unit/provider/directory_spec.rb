@@ -16,173 +16,237 @@
 # limitations under the License.
 #
 
-require 'ostruct'
-
 require 'spec_helper'
 require 'tmpdir'
 
 describe Chef::Provider::Directory do
-  before(:each) do
-    @new_resource = Chef::Resource::Directory.new(Dir.tmpdir)
-    if !windows?
-      @new_resource.owner(500)
-      @new_resource.group(500)
-      @new_resource.mode(0644)
-    end
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
+  let(:tmp_dir) { Dir.mktmpdir }
+  let(:new_resource) { Chef::Resource::Directory.new(tmp_dir) }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:directory) { Chef::Provider::Directory.new(new_resource, run_context) }
 
-    @directory = Chef::Provider::Directory.new(@new_resource, @run_context)
-  end
+  describe "#load_current_resource" do
+    describe "scanning file security metadata"
+    describe "on unix", unix_only: true do
+      describe "when the directory exists" do
+        let(:dir_stat) { File::Stat.new(tmp_dir) }
+        let(:expected_uid) { dir_stat.uid }
+        let(:expected_gid) { dir_stat.gid }
+        let(:expected_mode) { "0%o" % ( dir_stat.mode & 007777 ) }
+        let(:expected_pwnam) { Etc.getpwuid(expected_uid).name }
+        let(:expected_grnam) { Etc.getgrgid(expected_gid).name }
 
+        it "describes the access mode as a String of octal integers" do
+          directory.load_current_resource
+          expect(directory.current_resource.mode).to eq(expected_mode)
+        end
 
-  describe "scanning file security metadata on windows" do
-    before do
-    end
+        it "when the new_resource.owner is numeric, describes the owner as a numeric uid" do
+          new_resource.owner(500)
+          directory.load_current_resource
+          expect(directory.current_resource.owner).to eql(expected_uid)
+        end
 
-    it "describes the directory's access rights" do
-      skip
-    end
-  end
+        it "when the new_resource.group is numeric, describes the group as a numeric gid" do
+          new_resource.group(500)
+          directory.load_current_resource
+          expect(directory.current_resource.group).to eql(expected_gid)
+        end
 
-  describe "scanning file security metadata on unix" do
-    before do
-      allow(Chef::Platform).to receive(:windows?).and_return(false)
-    end
-    let(:mock_stat) do
-      cstats = double("stats")
-      allow(cstats).to receive(:uid).and_return(500)
-      allow(cstats).to receive(:gid).and_return(500)
-      allow(cstats).to receive(:mode).and_return(0755)
-      cstats
-    end
+        it "when the new_resource.owner is a string, describes the owner as a string" do
+          new_resource.owner("foo")
+          directory.load_current_resource
+          expect(directory.current_resource.owner).to eql(expected_pwnam)
+        end
 
-    it "describes the access mode as a String of octal integers" do
-      allow(File).to receive(:exists?).and_return(true)
-      expect(File).to receive(:stat).and_return(mock_stat)
-      @directory.load_current_resource
-      expect(@directory.current_resource.mode).to eq("0755")
-    end
-
-    context "when user and group are specified with UID/GID" do
-      it "describes the current owner and group as UID and GID" do
-        allow(File).to receive(:exists?).and_return(true)
-        expect(File).to receive(:stat).and_return(mock_stat)
-        @directory.load_current_resource
-        expect(@directory.current_resource.path).to eql(@new_resource.path)
-        expect(@directory.current_resource.owner).to eql(500)
-        expect(@directory.current_resource.group).to eql(500)
+        it "when the new_resource.group is a string, describes the group as a string" do
+          new_resource.group("bar")
+          directory.load_current_resource
+          expect(directory.current_resource.group).to eql(expected_grnam)
+        end
       end
     end
 
-    context "when user/group are specified with user/group names" do
+    describe "on windows", windows_only: true do
+      describe "when the directory exists" do
+        it "the mode is always nil" do
+          directory.load_current_resource
+          expect(directory.current_resource.mode).to be nil
+        end
+
+        it "the owner is always nil" do
+          directory.load_current_resource
+          expect(directory.current_resource.owner).to be nil
+        end
+
+        it "the group is always nil" do
+          directory.load_current_resource
+          expect(directory.current_resource.group).to be nil
+        end
+
+        it "rights are always nil (incorrectly)" do
+          directory.load_current_resource
+          expect(directory.current_resource.rights).to be nil
+        end
+
+        it "inherits is always nil (incorrectly)" do
+          directory.load_current_resource
+          expect(directory.current_resource.inherits).to be nil
+        end
+      end
+    end
+
+    describe "when the directory does not exist" do
+      before do
+        FileUtils.rmdir tmp_dir
+      end
+
+      it "sets the mode, group and owner to nil" do
+        directory.load_current_resource
+        expect(directory.current_resource.mode).to eq(nil)
+        expect(directory.current_resource.group).to eq(nil)
+        expect(directory.current_resource.owner).to eq(nil)
+      end
+    end
+
+  end
+
+  describe "#define_resource_requirements" do
+    describe "on unix", unix_only: true do
+      it "raises an exception if the user does not exist" do
+        new_resource.owner("arglebargle_iv")
+        expect(Etc).to receive(:getpwnam).with("arglebargle_iv").and_raise(ArgumentError)
+        directory.action = :create
+        directory.load_current_resource
+        expect(directory.access_controls).to receive(:define_resource_requirements).and_call_original
+        directory.define_resource_requirements
+        expect { directory.process_resource_requirements }.to raise_error(ArgumentError)
+      end
+
+      it "raises an exception if the group does not exist" do
+        new_resource.group("arglebargle_iv")
+        expect(Etc).to receive(:getgrnam).with("arglebargle_iv").and_raise(ArgumentError)
+        directory.action = :create
+        directory.load_current_resource
+        expect(directory.access_controls).to receive(:define_resource_requirements).and_call_original
+        directory.define_resource_requirements
+        expect { directory.process_resource_requirements }.to raise_error(ArgumentError)
+      end
     end
   end
 
-  # Unix only for now. While file security attribute reporting for windows is
-  # disabled, unix and windows differ in the number of exists? calls that are
-  # made by the provider.
-  it "should create a new directory on create, setting updated to true", :unix_only do
-    @new_resource.path "/tmp/foo"
+  describe "#run_action(:create)" do
+    describe "when the directory exists" do
+      it "does not create the directory" do
+        expect(Dir).not_to receive(:mkdir).with(new_resource.path)
+        directory.run_action(:create)
+      end
 
-    expect(File).to receive(:exists?).at_least(:once).and_return(false)
-    expect(File).to receive(:directory?).with("/tmp").and_return(true)
-    expect(Dir).to receive(:mkdir).with(@new_resource.path).once.and_return(true)
+      it "should not set the resource as updated" do
+        directory.run_action(:create)
+        expect(new_resource).not_to be_updated
+      end
+    end
 
-    expect(@directory).to receive(:do_acl_changes)
-    allow(@directory).to receive(:do_selinux)
-    @directory.run_action(:create)
-    expect(@directory.new_resource).to be_updated
+    describe "when the directory does not exist" do
+      before do
+        FileUtils.rmdir tmp_dir
+      end
+
+      it "creates the directory" do
+        directory.run_action(:create)
+        expect(File.exist?(tmp_dir)).to be true
+      end
+
+      it "sets the new resource as updated" do
+        directory.run_action(:create)
+        expect(new_resource).to be_updated
+      end
+    end
+
+    describe "when the parent directory does not exist" do
+      before do
+        new_resource.path "#{tmp_dir}/foobar"
+        FileUtils.rmdir tmp_dir
+      end
+
+      it "raises an exception when recursive is false" do
+        new_resource.recursive false
+        expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+      end
+
+      it "creates the directories when recursive is true" do
+        new_resource.recursive true
+        directory.run_action(:create)
+        expect(new_resource).to be_updated
+        expect(File.exist?("#{tmp_dir}/foobar")).to be true
+      end
+
+      it "raises an exception when the parent directory is a file and recursive is true" do
+        FileUtils.touch tmp_dir
+        new_resource.recursive true
+        expect { directory.run_action(:create) }.to raise_error
+      end
+
+      it "raises the right exception when the parent directory is a file and recursive is true" do
+        pending "this seems to return the wrong error"  # FIXME
+        FileUtils.touch tmp_dir
+        new_resource.recursive true
+        expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+      end
+    end
   end
 
-  it "should raise an exception if the parent directory does not exist and recursive is false" do
-    @new_resource.path "/tmp/some/dir"
-    @new_resource.recursive false
-    expect { @directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
-  end
+  describe "#run_action(:create)" do
+    describe "when the directory exists" do
+      it "deletes the directory" do
+        directory.run_action(:delete)
+        expect(File.exist?(tmp_dir)).to be false
+      end
 
-  # Unix only for now. While file security attribute reporting for windows is
-  # disabled, unix and windows differ in the number of exists? calls that are
-  # made by the provider.
-  it "should create a new directory when parent directory does not exist if recursive is true and permissions are correct", :unix_only do
-    @new_resource.path "/path/to/dir"
-    @new_resource.recursive true
-    expect(File).to receive(:exists?).with(@new_resource.path).ordered.and_return(false)
+      it "sets the new resource as updated" do
+        directory.run_action(:delete)
+        expect(new_resource).to be_updated
+      end
+    end
 
-    expect(File).to receive(:exists?).with('/path/to').ordered.and_return(false)
-    expect(File).to receive(:exists?).with('/path').ordered.and_return(true)
-    expect(Chef::FileAccessControl).to receive(:writable?).with('/path').ordered.and_return(true)
-    expect(File).to receive(:exists?).with(@new_resource.path).ordered.and_return(false)
+    describe "when the directory does not exist" do
+      before do
+        FileUtils.rmdir tmp_dir
+      end
 
-    expect(FileUtils).to receive(:mkdir_p).with(@new_resource.path).and_return(true)
-    expect(@directory).to receive(:do_acl_changes)
-    allow(@directory).to receive(:do_selinux)
-    @directory.run_action(:create)
-    expect(@new_resource).to be_updated
-  end
+      it "does not delete the directory" do
+        expect(Dir).not_to receive(:delete).with(new_resource.path)
+        directory.run_action(:delete)
+      end
 
+      it "sets the new resource as updated" do
+        directory.run_action(:delete)
+        expect(new_resource).not_to be_updated
+      end
+    end
 
-  it "should raise an error when creating a directory when parent directory is a file" do
-    expect(File).to receive(:directory?).and_return(false)
-    expect(Dir).not_to receive(:mkdir).with(@new_resource.path)
-    expect { @directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
-    expect(@directory.new_resource).not_to be_updated
-  end
+    describe "when the directory is not writable" do
+      before do
+        allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
+      end
 
-  # Unix only for now. While file security attribute reporting for windows is
-  # disabled, unix and windows differ in the number of exists? calls that are
-  # made by the provider.
-  it "should not create the directory if it already exists", :unix_only do
-    stub_file_cstats
-    @new_resource.path "/tmp/foo"
-    expect(File).to receive(:directory?).at_least(:once).and_return(true)
-    expect(Chef::FileAccessControl).to receive(:writable?).with("/tmp").and_return(true)
-    expect(File).to receive(:exists?).at_least(:once).and_return(true)
-    expect(Dir).not_to receive(:mkdir).with(@new_resource.path)
-    expect(@directory).to receive(:do_acl_changes)
-    @directory.run_action(:create)
-  end
+      it "cannot delete it and raises an exception" do
+        expect {  directory.run_action(:delete) }.to raise_error(RuntimeError)
+      end
+    end
 
-  it "should delete the directory if it exists, and is writable with action_delete" do
-    expect(File).to receive(:directory?).and_return(true)
-    expect(Chef::FileAccessControl).to receive(:writable?).once.and_return(true)
-    expect(Dir).to receive(:delete).with(@new_resource.path).once.and_return(true)
-    @directory.run_action(:delete)
-  end
+    describe "when the target directory is a file" do
+      before do
+        FileUtils.rmdir tmp_dir
+        FileUtils.touch tmp_dir
+      end
 
-  it "should raise an exception if it cannot delete the directory due to bad permissions" do
-    allow(File).to receive(:exists?).and_return(true)
-    allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
-    expect {  @directory.run_action(:delete) }.to raise_error(RuntimeError)
-  end
-
-  it "should take no action when deleting a target directory that does not exist" do
-    @new_resource.path "/an/invalid/path"
-    allow(File).to receive(:exists?).and_return(false)
-    expect(Dir).not_to receive(:delete).with(@new_resource.path)
-    @directory.run_action(:delete)
-    expect(@directory.new_resource).not_to be_updated
-  end
-
-  it "should raise an exception when deleting a directory when target directory is a file" do
-    stub_file_cstats
-    @new_resource.path "/an/invalid/path"
-    allow(File).to receive(:exists?).and_return(true)
-    expect(File).to receive(:directory?).and_return(false)
-    expect(Dir).not_to receive(:delete).with(@new_resource.path)
-    expect { @directory.run_action(:delete) }.to raise_error(RuntimeError)
-    expect(@directory.new_resource).not_to be_updated
-  end
-
-  def stub_file_cstats
-    cstats = double("stats")
-    allow(cstats).to receive(:uid).and_return(500)
-    allow(cstats).to receive(:gid).and_return(500)
-    allow(cstats).to receive(:mode).and_return(0755)
-    # File.stat is called in:
-    # - Chef::Provider::File.load_current_resource_attrs
-    # - Chef::ScanAccessControl via Chef::Provider::File.setup_acl
-    allow(File).to receive(:stat).and_return(cstats)
+      it "cannot delete it and raises an exception" do
+        expect {  directory.run_action(:delete) }.to raise_error(RuntimeError)
+      end
+    end
   end
 end

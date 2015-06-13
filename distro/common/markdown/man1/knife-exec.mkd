@@ -39,4 +39,4 @@ description of the commands available.
 
 ## CHEF
 
-   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+   Knife is distributed with Chef. <http://docs.chef.io>

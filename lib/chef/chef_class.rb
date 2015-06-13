@@ -26,6 +26,9 @@
 # injected" into this class by other objects and do not reference the class symbols in those files
 # directly and we do not need to require those files here.
 
+require 'chef/platform/provider_priority_map'
+require 'chef/platform/resource_priority_map'
+
 class Chef
   class << self
 
@@ -33,17 +36,21 @@ class Chef
     # Public API
     #
 
+    #
     # Get the node object
     #
     # @return [Chef::Node] node object of the chef-client run
+    #
     attr_reader :node
 
+    #
     # Get the run context
     #
     # @return [Chef::RunContext] run_context of the chef-client run
+    #
     attr_reader :run_context
 
-    # Adds an event handler with user defined block
+    # Register an event handler with user specified block
     def event_handler(&block)
       dsl = Chef::EventDispatch::DSL.new
       dsl.instance_eval(&block)
@@ -52,37 +59,56 @@ class Chef
     # Get the array of providers associated with a resource_name for the current node
     #
     # @param resource_name [Symbol] name of the resource as a symbol
+    #
     # @return [Array<Class>] Priority Array of Provider Classes to use for the resource_name on the node
+    #
     def get_provider_priority_array(resource_name)
-      @provider_priority_map.get_priority_array(node, resource_name).dup
+      result = provider_priority_map.get_priority_array(node, resource_name)
+      result = result.dup if result
+      result
     end
 
+    #
     # Get the array of resources associated with a resource_name for the current node
     #
     # @param resource_name [Symbol] name of the resource as a symbol
+    #
     # @return [Array<Class>] Priority Array of Resource Classes to use for the resource_name on the node
+    #
     def get_resource_priority_array(resource_name)
-      @resource_priority_map.get_priority_array(node, resource_name).dup
+      result = resource_priority_map.get_priority_array(node, resource_name)
+      result = result.dup if result
+      result
     end
 
+    #
     # Set the array of providers associated with a resource_name for the current node
     #
     # @param resource_name [Symbol] name of the resource as a symbol
-    # @param priority_array [Array<Class>] Array of Classes to set as the priority for resource_name on the node
+    # @param priority_array [Class, Array<Class>] Class or Array of Classes to set as the priority for resource_name on the node
     # @param filter [Hash] Chef::Nodearray-style filter
+    #
     # @return [Array<Class>] Modified Priority Array of Provider Classes to use for the resource_name on the node
-    def set_provider_priority_array(resource_name, priority_array, *filter)
-      @provider_priority_map.set_priority_array(resource_name, priority_array, *filter).dup
+    #
+    def set_provider_priority_array(resource_name, priority_array, *filter, &block)
+      result = provider_priority_map.set_priority_array(resource_name, priority_array, *filter, &block)
+      result = result.dup if result
+      result
     end
 
+    #
     # Get the array of resources associated with a resource_name for the current node
     #
     # @param resource_name [Symbol] name of the resource as a symbol
-    # @param priority_array [Array<Class>] Array of Classes to set as the priority for resource_name on the node
+    # @param priority_array [Class, Array<Class>] Class or Array of Classes to set as the priority for resource_name on the node
     # @param filter [Hash] Chef::Nodearray-style filter
+    #
     # @return [Array<Class>] Modified Priority Array of Resource Classes to use for the resource_name on the node
-    def set_resource_priority_array(resource_name, priority_array, *filter)
-      @resource_priority_map.set_priority_array(resource_name, priority_array, *filter).dup
+    #
+    def set_resource_priority_array(resource_name, priority_array, *filter, &block)
+      result = resource_priority_map.set_priority_array(resource_name, priority_array, *filter, &block)
+      result = result.dup if result
+      result
     end
 
     #
@@ -91,22 +117,27 @@ class Chef
     #   *NOT* for public consumption ]
     #
 
+    #
     # Sets the resource_priority_map
     #
-    # @api private
     # @param resource_priority_map [Chef::Platform::ResourcePriorityMap]
+    #
+    # @api private
     def set_resource_priority_map(resource_priority_map)
       @resource_priority_map = resource_priority_map
     end
 
+    #
     # Sets the provider_priority_map
     #
-    # @api private
     # @param provider_priority_map [Chef::Platform::providerPriorityMap]
+    #
+    # @api private
     def set_provider_priority_map(provider_priority_map)
       @provider_priority_map = provider_priority_map
     end
 
+    #
     # Sets the node object
     #
     # @api private
@@ -115,14 +146,17 @@ class Chef
       @node = node
     end
 
+    #
     # Sets the run_context object
     #
-    # @api private
     # @param run_context [Chef::RunContext]
+    #
+    # @api private
     def set_run_context(run_context)
       @run_context = run_context
     end
 
+    #
     # Resets the internal state
     #
     # @api private
@@ -132,5 +166,21 @@ class Chef
       @provider_priority_map = nil
       @resource_priority_map = nil
     end
+
+    # @api private
+    def provider_priority_map
+      @provider_priority_map ||= begin
+        # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
+        Chef::Platform::ProviderPriorityMap.instance
+      end
+    end
+    # @api private
+    def resource_priority_map
+      @resource_priority_map ||= begin
+        Chef::Platform::ResourcePriorityMap.instance
+      end
+    end
   end
+
+  reset!
 end

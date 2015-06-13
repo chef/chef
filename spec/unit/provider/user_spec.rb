@@ -143,8 +143,8 @@ describe Chef::Provider::User do
         begin
           require 'rubygems'
           require 'shadow'
-        rescue LoadError => e
-          pending "ruby-shadow gem not installed for dynamic load test"
+        rescue LoadError
+          skip "ruby-shadow gem not installed for dynamic load test"
           true
         else
           false
@@ -161,7 +161,7 @@ describe Chef::Provider::User do
 
       unless shadow_lib_unavail?
         context "and we have the ruby-shadow gem" do
-          pending "and we are not root (rerun this again as root)", :requires_unprivileged_user => true
+          skip "and we are not root (rerun this again as root)", :requires_unprivileged_user => true
 
           context "and we are root", :requires_root => true do
             it "should pass assertions when ruby-shadow can be loaded" do

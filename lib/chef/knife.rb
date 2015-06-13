@@ -27,6 +27,7 @@ require 'chef/knife/core/subcommand_loader'
 require 'chef/knife/core/ui'
 require 'chef/local_mode'
 require 'chef/rest'
+require 'chef/http/authenticator'
 require 'pp'
 
 class Chef
@@ -358,7 +359,7 @@ class Chef
 
       case Chef::Config[:verbosity]
       when 0, nil
-        Chef::Config[:log_level] = :error
+        Chef::Config[:log_level] = :warn
       when 1
         Chef::Config[:log_level] = :info
       else
@@ -400,6 +401,8 @@ class Chef
     end
 
     def configure_chef
+      # knife needs to send logger output to STDERR by default
+      Chef::Config[:log_location] = STDERR
       config_loader = self.class.load_config(config[:config_file])
       config[:config_file] = config_loader.config_location
 
@@ -483,6 +486,15 @@ class Chef
       when Net::HTTPServiceUnavailable
         ui.error "Service temporarily unavailable"
         ui.info "Response: #{format_rest_error(response)}"
+      when Net::HTTPNotAcceptable
+        version_header = Chef::JSONCompat.from_json(response["x-ops-server-api-version"])
+        client_api_version = version_header["request_version"]
+        min_server_version = version_header["min_version"]
+        max_server_version = version_header["max_version"]
+        ui.error "The version of Chef that Knife is using is not supported by the Chef server you sent this request to"
+        ui.info "The request that Knife sent was using API version #{client_api_version}"
+        ui.info "The Chef server you sent the request to supports a min API verson of #{min_server_version} and a max API version of #{max_server_version}"
+        ui.info "Please either update your Chef client or server to be a compatible set"
       else
         ui.error response.message
         ui.info "Response: #{format_rest_error(response)}"
@@ -537,6 +549,16 @@ class Chef
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
       self.msg("Deleted #{obj_name}")
+    end
+
+    # helper method for testing if a field exists
+    # and returning the usage and proper error if not
+    def test_mandatory_field(field, fieldname)
+      if field.nil?
+        show_usage
+        ui.fatal("You must specify a #{fieldname}")
+        exit 1
+      end
     end
 
     def rest

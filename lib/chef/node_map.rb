@@ -19,128 +19,183 @@
 class Chef
   class NodeMap
 
-    VALID_OPTS = [
-      :on_platform,
-      :on_platforms,
-      :platform,
-      :os,
-      :platform_family,
-    ]
-
-    DEPRECATED_OPTS = [
-      :on_platform,
-      :on_platforms,
-    ]
-
+    #
     # Create a new NodeMap
     #
     def initialize
       @map = {}
     end
 
+    #
     # Set a key/value pair on the map with a filter.  The filter must be true
     # when applied to the node in order to retrieve the value.
     #
     # @param key [Object] Key to store
     # @param value [Object] Value associated with the key
     # @param filters [Hash] Node filter options to apply to key retrieval
+    #
     # @yield [node] Arbitrary node filter as a block which takes a node argument
+    #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, value, filters = {}, &block)
-      validate_filter!(filters)
-      deprecate_filter!(filters)
+    def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, canonical: nil, &block)
+      Chef::Log.deprecation "The on_platform option to node_map has been deprecated" if on_platform
+      Chef::Log.deprecation "The on_platforms option to node_map has been deprecated" if on_platforms
+      platform ||= on_platform || on_platforms
+      filters = { platform: platform, platform_version: platform_version, platform_family: platform_family, os: os }
+      new_matcher = { filters: filters, block: block, value: value, canonical: canonical }
       @map[key] ||= []
-      # we match on the first value we find, so we want to unshift so that the
-      # last setter wins
-      # FIXME: need a test for this behavior
-      @map[key].unshift({ filters: filters, block: block, value: value })
+      # Decide where to insert the matcher; the new value is preferred over
+      # anything more specific (see `priority_of`) and is preferred over older
+      # values of the same specificity.  (So all other things being equal,
+      # newest wins.)
+      insert_at = nil
+      @map[key].each_with_index do |matcher, index|
+        if specificity(new_matcher) >= specificity(matcher)
+          insert_at = index
+          break
+        end
+      end
+      if insert_at
+        @map[key].insert(insert_at, new_matcher)
+      else
+        @map[key] << new_matcher
+      end
       self
     end
 
+    #
     # Get a value from the NodeMap via applying the node to the filters that
     # were set on the key.
     #
-    # @param node [Chef::Node] The Chef::Node object for the run
+    # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
+    #   ignore all filters.
     # @param key [Object] Key to look up
+    # @param canonical [Boolean] `true` or `false` to match canonical or
+    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
+    #
     # @return [Object] Value
     #
-    def get(node, key)
-      # FIXME: real exception
-      raise "first argument must be a Chef::Node" unless node.is_a?(Chef::Node)
-      return nil unless @map.has_key?(key)
-      @map[key].each do |matcher|
-        if filters_match?(node, matcher[:filters]) &&
-          block_matches?(node, matcher[:block])
-          return matcher[:value]
+    def get(node, key, canonical: nil)
+      raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
+      list(node, key, canonical: canonical).first
+    end
+
+    #
+    # List all matches for the given node and key from the NodeMap, from
+    # most-recently added to oldest.
+    #
+    # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
+    #   ignore all filters.
+    # @param key [Object] Key to look up
+    # @param canonical [Boolean] `true` or `false` to match canonical or
+    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
+    #
+    # @return [Object] Value
+    #
+    def list(node, key, canonical: nil)
+      raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
+      return [] unless @map.has_key?(key)
+      @map[key].select do |matcher|
+        node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
+      end.map { |matcher| matcher[:value] }
+    end
+
+    # Seriously, don't use this, it's nearly certain to change on you
+    # @return remaining
+    # @api private
+    def delete_canonical(key, value)
+      remaining = @map[key]
+      if remaining
+        remaining.delete_if { |matcher| matcher[:canonical] && Array(matcher[:value]) == Array(value) }
+        if remaining.empty?
+          @map.delete(key)
+          remaining = nil
         end
       end
-      nil
+      remaining
     end
 
     private
 
-    # only allow valid filter options
-    def validate_filter!(filters)
-      filters.each_key do |key|
-        # FIXME: real exception
-        raise "Bad key #{key} in Chef::NodeMap filter expression" unless VALID_OPTS.include?(key)
+    #
+    # Gives a value for "how specific" the matcher is.
+    # Things which specify more specific filters get a higher number
+    # (platform_version > platform > platform_family > os); things
+    # with a block have higher specificity than similar things without
+    # a block.
+    #
+    def specificity(matcher)
+      if matcher[:filters][:platform_version]
+        specificity = 8
+      elsif matcher[:filters][:platform]
+        specificity = 6
+      elsif matcher[:filters][:platform_family]
+        specificity = 4
+      elsif matcher[:filters][:os]
+        specificity = 2
+      else
+        specificity = 0
       end
+      specificity += 1 if matcher[:block]
+      specificity
     end
 
-    # warn on deprecated filter options
-    def deprecate_filter!(filters)
-      filters.each_key do |key|
-        Chef::Log.warn "The #{key} option to node_map has been deprecated" if DEPRECATED_OPTS.include?(key)
-      end
+    #
+    # Succeeds if:
+    # - no negative matches (!value)
+    # - at least one positive match (value or :all), or no positive filters
+    #
+    def matches_black_white_list?(node, filters, attribute)
+      # It's super common for the filter to be nil.  Catch that so we don't
+      # spend any time here.
+      return true if !filters[attribute]
+      filter_values = Array(filters[attribute])
+      value = node[attribute]
+
+      # Split the blacklist and whitelist
+      blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?('!') }
+
+      # If any blacklist value matches, we don't match
+      return false if blacklist.any? { |v| v[1..-1] == value }
+
+      # If the whitelist is empty, or anything matches, we match.
+      whitelist.empty? || whitelist.any? { |v| v == :all || v == value }
     end
 
-    # @todo: this works fine, but is probably hard to understand
-    def negative_match(filter, param)
-      # We support strings prefaced by '!' to mean 'not'.  In particular, this is most useful
-      # for os matching on '!windows'.
-      negative_matches = filter.select { |f| f[0] == '!' }
-      return true if !negative_matches.empty? && negative_matches.include?('!' + param)
+    def matches_version_list?(node, filters, attribute)
+      # It's super common for the filter to be nil.  Catch that so we don't
+      # spend any time here.
+      return true if !filters[attribute]
+      filter_values = Array(filters[attribute])
+      value = node[attribute]
 
-      # We support the symbol :all to match everything, for backcompat, but this can and should
-      # simply be ommitted.
-      positive_matches = filter.reject { |f| f[0] == '!' || f == :all }
-      return true if !positive_matches.empty? && !positive_matches.include?(param)
-
-      # sorry double-negative: this means we pass this filter.
-      false
+      filter_values.empty? ||
+      Array(filter_values).any? do |v|
+        Chef::VersionConstraint::Platform.new(v).include?(value)
+      end
     end
 
     def filters_match?(node, filters)
-      return true if filters.empty?
-
-      # each filter is applied in turn.  if any fail, then it shortcuts and returns false.
-      # if it passes or does not exist it succeeds and continues on.  so multiple filters are
-      # effectively joined by 'and'.  all filters can be single strings, or arrays which are
-      # effectively joined by 'or'.
-
-      os_filter = [ filters[:os] ].flatten.compact
-      unless os_filter.empty?
-        return false if negative_match(os_filter, node[:os])
-      end
-
-      platform_family_filter = [ filters[:platform_family] ].flatten.compact
-      unless platform_family_filter.empty?
-        return false if negative_match(platform_family_filter, node[:platform_family])
-      end
-
-      # :on_platform and :on_platforms here are synonyms which are deprecated
-      platform_filter = [ filters[:platform] || filters[:on_platform] || filters[:on_platforms] ].flatten.compact
-      unless platform_filter.empty?
-        return false if negative_match(platform_filter, node[:platform])
-      end
-
-      return true
+      matches_black_white_list?(node, filters, :os) &&
+      matches_black_white_list?(node, filters, :platform_family) &&
+      matches_black_white_list?(node, filters, :platform) &&
+      matches_version_list?(node, filters, :platform_version)
     end
 
     def block_matches?(node, block)
       return true if block.nil?
       block.call node
+    end
+
+    def node_matches?(node, matcher)
+      return true if !node
+      filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block])
+    end
+
+    def canonical_matches?(canonical, matcher)
+      return true if canonical.nil?
+      !!canonical == !!matcher[:canonical]
     end
   end
 end

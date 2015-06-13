@@ -54,6 +54,9 @@ Dir['lib/chef/knife/**/*.rb'].
   map {|f| f.gsub(%r[\.rb$], '') }.
   each {|f| require f }
 
+require 'chef/resource_resolver'
+require 'chef/provider_resolver'
+
 require 'chef/mixins'
 require 'chef/dsl'
 require 'chef/application'
@@ -112,7 +115,8 @@ RSpec.configure do |config|
   config.filter_run_excluding :volatile_on_solaris => true if solaris?
   config.filter_run_excluding :volatile_from_verify => false
 
-  # Add jruby filters here
+  config.filter_run_excluding :skip_appveyor => true if ENV["APPVEYOR"]
+
   config.filter_run_excluding :windows_only => true unless windows?
   config.filter_run_excluding :not_supported_on_mac_osx_106 => true if mac_osx_106?
   config.filter_run_excluding :not_supported_on_mac_osx=> true if mac_osx?
@@ -126,6 +130,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :windows_powershell_dsc_only => true unless windows_powershell_dsc?
   config.filter_run_excluding :windows_powershell_no_dsc_only => true unless ! windows_powershell_dsc?
   config.filter_run_excluding :windows_domain_joined_only => true unless windows_domain_joined?
+  config.filter_run_excluding :windows_not_domain_joined_only => true if windows_domain_joined?
   config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
@@ -146,7 +151,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
   config.filter_run_excluding :broken => true
 
-  running_platform_arch = `uname -m`.strip
+  running_platform_arch = `uname -m`.strip unless windows?
 
   config.filter_run_excluding :arch => lambda {|target_arch|
     running_platform_arch != target_arch

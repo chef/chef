@@ -119,6 +119,7 @@ class Chef
 
         @node = Chef::Node.find_or_create(node_name)
         validate_policyfile
+        events.policyfile_loaded(policy)
         node
       rescue Exception => e
         events.node_load_failed(node_name, e, Chef::Config)

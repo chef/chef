@@ -21,11 +21,7 @@ class Chef
 
     class << self
       def windows?
-        if RUBY_PLATFORM =~ /mswin|mingw|windows/
-          true
-        else
-          false
-        end
+        ChefConfig.windows?
       end
 
       def windows_server_2003?
@@ -41,6 +37,11 @@ class Chef
         is_server_2003 = (host['version'] && host['version'].start_with?("5.2"))
 
         is_server_2003
+      end
+
+      def supports_powershell_execution_bypass?(node)
+        node[:languages] && node[:languages][:powershell] &&
+          node[:languages][:powershell][:version].to_i >= 3
       end
 
       def supports_dsc?(node)

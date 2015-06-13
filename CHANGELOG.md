@@ -1,4 +1,81 @@
-## Unreleased
+## 12.4.0
+
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix multipackage and architectures
+* [**Igor Shpakov**](https://github.com/Igorshp):
+  Always run exception handlers
+  Prioritise manual ssh attribute over automatic ones for knife
+* [**Noah Kantrowitz**](https://github.com/coderanger):
+  Cache service\_resource\_providers for the duration of the run. #2953
+* [**Slava Kardakov**](https://github.com/ojab):
+  Fix installation of yum packages with version constraints #3155
+* [**Dave Eddy**](https://github.com/bahamas10):
+  fix smartos\_package for new "pkgin" output, fixes #3112 #3165
+* [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly):
+  Show Chef version on chef shell prompt
+* [**Jacob Minshall**](https://github.com/minshallj):
+  Ensure suid bit is preserved if group or owner changes
+* [**Tim Smith**](https://github.com/tas50):
+  Convert wiki links to point to docs.chef.io
+* [**SAWANOBORI Yukihiko**](https://github.com/sawanoboly):
+  Add Chef::Log::Syslog class for integrating sending logs to syslog
+* [**Pavel Yudin**](https://github.com/Kasen):
+  Ensure LWRP and HWRP @action variable is consistent #3156
+* [**Dan Bjorge**](https://github.com/dbjorge):
+  Fix bad Windows securable\_resource functional spec assumptions for default file owners/groups #3266
+* [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly): Pass name by
+  knife cil attribute [pr#3195](https://github.com/chef/chef/pull/3195)
+* [**Torben Knerr**](https://github.com/tknerr):
+  Allow knife sub-command loader to match platform specific gems. [pr#3281](https://github.com/chef/chef/pull/3281)
+* [**Steve Lowe**](https://github.com/SteveLowe):
+  Fix copying ntfs dacl and sacl when they are nil. [pr#3066](https://github.com/chef/chef/pull/3066)
+
+* [pr#3339](https://github.com/chef/chef/pull/3339): Powershell command wrappers to make argument passing to knife/chef-client etc. easier.
+* [pr#3720](https://github.com/chef/chef/pull/3270): Extract chef's configuration to a separate gem. Code stays in the Chef git repo.
+* [pr#3321](https://github.com/chef/chef/pull/3321): Add an integration test of chef-client with empty ENV.
+* [pr#3278](https://github.com/chef/chef/pull/3278): Switch over Windows builds to universal builds.
+* [pr#2877](https://github.com/chef/chef/pull/2877): Convert bootstrap template to use sh.
+* [Issue #3316](https://github.com/chef/chef/issues/3316): Fix idempotency issues with the `windows_package` resource
+* [pr#3295](https://github.com/chef/chef/pull/3295): Stop mutating `new_resource.checksum` in file providers.  Fixes some ChecksumMismatch exceptions like [issue#3168](https://github.com/chef/chef/issues/3168)
+* [pr#3320](https://github.com/chef/chef/pull/3320): Sanitize non-UTF8 characters in the node data before doing node.save().  Works around many UTF8 exception issues reported on node.save().
+* Implemented X-Ops-Server-API-Version with a API version of 0, as well as error handling when the Chef server does not support the API version that the client supports.
+* [pr#3327](https://github.com/chef/chef/pull/3327): Fix unreliable AIX service group parsing mechanism.
+* [pr#3333](https://github.com/chef/chef/pull/3333): Fix SSL errors when connecting to private Supermarkets
+* [pr#3340](https://github.com/chef/chef/pull/3340): Allow Event dispatch subscribers to be inspected.
+* [Issue #3055](https://github.com/chef/chef/issues/3055): Fix regex parsing for recipe failures on Windows
+* [pr#3345](https://github.com/chef/chef/pull/3345): Windows Event log logger
+* [pr#3336](https://github.com/chef/chef/pull/3336): Remote file understands UNC paths
+* [pr#3269](https://github.com/chef/chef/pull/3269): Deprecate automatic recipe DSL for classes in `Chef::Resource`
+* [pr#3360](https://github.com/chef/chef/pull/3360): Add check_resource_semantics! lifecycle method to provider
+* [pr#3344](https://github.com/chef/chef/pull/3344): Rewrite Windows user resouce code to use ffi instead of win32-api
+* [pr#3318](https://github.com/chef/chef/pull/3318): Modify Windows package provider to allow for url source
+* [pr#3381](https://github.com/chef/chef/pull/3381): warn on cookbook self-deps
+* [pr#2312](https://github.com/chef/chef/pull/2312): fix `node[:recipes]` duplication, add `node[:cookbooks]` and `node[:expanded_run_list]`
+* [pr#3325](https://github.com/chef/chef/pull/3325): enforce passing a node name with validatorless bootstrapping
+* [pr#3398](https://github.com/chef/chef/pull/3398): Allow spaces in files for the `remote_file` resource
+* [Issue #3010](https://github.com/chef/chef/issues/3010) Fixed `knife user` for use with current and future versions of Chef Server 12, with continued backwards compatible support for use with Open Source Server 11.
+* [pr#3438](https://github.com/chef/chef/pull/3438) Server API V1 support. Vast improvements to and testing expansion for Chef::User, Chef::ApiClient, and related knife commands. Deprecated Open Source Server 11 user support to the Chef::OscUser and knife osc_user namespace, but with backwards compatible support via knife user.
+* [Issue #2247](https://github.com/chef/chef/issues/2247): `powershell_script` returns 0 for scripts with syntax errors
+* [pr#3080](https://github.com/chef/chef/pull/3080): Issue 2247: `powershell_script` exit status should be nonzero for syntax errors
+* [pr#3441](https://github.com/chef/chef/pull/3441): Add `powershell_out` mixin to core chef
+* [pr#3448](https://github.com/chef/chef/pull/3448): Fix `dsc_resource` to work with wmf5 april preview
+* [pr#3392](https://github.com/chef/chef/pull/3392): Comment up `Chef::Client` and privatize/deprecate unused things
+* [pr#3419](https://github.com/chef/chef/pull/3419): Fix cli issue with `chef_repo_path` when ENV variable is unset
+* [pr#3358](https://github.com/chef/chef/pull/3358): Separate audit and converge failures
+* [pr#3431](https://github.com/chef/chef/pull/3431): Fix backups on windows for the file resource
+* [pr#3397](https://github.com/chef/chef/pull/3397): Validate owner exists in directory resources
+* [pr#3418](https://github.com/chef/chef/pull/3418): Add `shell_out` mixin to Chef::Resource class for use in `not_if`/`only_if` conditionals, etc.
+* [pr#3406](https://github.com/chef/chef/pull/3406): Add wide-char 'Environment' to `broadcast_env_change` mixin for setting windows environment variables
+* [pr#3442](https://github.com/chef/chef/pull/3442): Add `resource_name` to top-level Resource class to make defining resources easier.
+* [pr#3447](https://github.com/chef/chef/pull/3447): Add `allowed_actions` and `default_action` to top-level Resource class.
+* [pr#3475](https://github.com/chef/chef/pull/3475): Fix `shell_out` timeouts in all package providers to respect timeout property on the resource.
+* [pr#3477](https://github.com/chef/chef/pull/3477): Update `zypper_package` to look like the rest of our package classes.
+* [pr#3483](https://github.com/chef/chef/pull/3483): Allow `include_recipe` from LWRP providers.
+* [pr#3495](https://github.com/chef/chef/pull/3495): Make resource name automatically determined from class name, and provide DSL for it.
+* [pr#3497](https://github.com/chef/chef/pull/3497): Issue 3485: Corruption of node's run\_context when non-default guard\_interpreter is evaluated
+* [pr#3299](https://github.com/chef/chef/pull/3299): Remove experimental warning on audit mode
+
+## 12.3.0
 
 * [pr#3160](https://github.com/chef/chef/pull/3160): Use Chef Zero in
   socketless mode for local mode, add `--no-listen` flag to disable port
@@ -9,16 +86,24 @@
   Reset $HOME to user running chef-client when running via sudo
 * [**Torben Knerr**](https://github.com/tknerr):
   Allow for the chef gem installation to succeed without elevated privileges #3126
+* [**Mike Dodge**](https://github.com/mikedodge04)
+  MacOSX services: Load LaunchAgents as console user, adding plist and
+  session_type options.
+* [**Eric Herot**](https://github.com/eherot)
+  Ensure knife ssh doesn't use a non-existant field for hostname #3131
+* [**Tom Hughes**](https://github.com/tomhughes)
+  Ensure searches progress in the face of incomplete responses #3135
+
 * [pr#3162](https://github.com/chef/chef/pull/3162): Add
   `--minimal-ohai` flag to client/solo/apply; restricts ohai to only the
   bare minimum of plugins.
 * Ensure link's path attribute works with delayed #3130
 * gem_package, chef_gem should not shell out to using https://rubygems.org #2867
-* [**Mike Dodge**](https://github.com/mikedodge04)
-  MacOSX services: Load LaunchAgents as console user, adding plist and
-  session_type options.
 * Add dynamic resource resolution similar to dynamic provider resolution
 * Add Chef class fascade to internal structures
+* Fix nil pointer for windows event logger #3200
+* Use partial search for knife status
+* Ensure chef/knife properly honours proxy config
 
 ## 12.2.1
 * [Issue 3153](https://github.com/chef/chef/issues/3153): Fix bug where unset HOME would cause chef to crash
@@ -34,14 +119,14 @@
 
 ## 12.1.2
 * [Issue 3022](https://github.com/chef/chef/issues/3022): Homebrew Cask install fails
-  FIXME (remove on 12.2.0 release): 3022 was only merged to 12-stable and #3077 or its descendant should fix this 
+  FIXME (remove on 12.2.0 release): 3022 was only merged to 12-stable and #3077 or its descendant should fix this
 * [Issue 3059](https://github.com/chef/chef/issues/3059): Chef 12.1.1 yum_package silently fails
 * [Issue 3078](https://github.com/chef/chef/issues/3078): Compat break in audit-mode changes
 
 ## 12.1.1
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   [Issue 3008](https://github.com/chef/chef/issues/3008) Allow people to pass in `source` to package
-* [Issue 3011](https://github.com/chef/chef/issues/3011) `package` provider base should include 
+* [Issue 3011](https://github.com/chef/chef/issues/3011) `package` provider base should include
   `Chef::Mixin::Command` as there are still providers that use it.
 * [**Ranjib Dey**](https://github.com/ranjib):
   [Issue 3019](https://github.com/chef/chef/issues/3019) Fix data fetching when explicit attributes are passed

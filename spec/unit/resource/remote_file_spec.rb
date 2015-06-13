@@ -39,6 +39,11 @@ describe Chef::Resource::RemoteFile do
     expect(Chef::Platform.find_provider(:noplatform, 'noversion', @resource)).to eq(Chef::Provider::RemoteFile)
   end
 
+  it "says its provider is RemoteFile when the source is a network share" do
+    @resource.source("\\\\fakey\\fakerton\\fake.txt")
+    expect(@resource.provider).to eq(Chef::Provider::RemoteFile)
+    expect(Chef::Platform.find_provider(:noplatform, 'noversion', @resource)).to eq(Chef::Provider::RemoteFile)
+  end
 
   describe "source" do
     it "does not have a default value for 'source'" do
@@ -48,6 +53,16 @@ describe Chef::Resource::RemoteFile do
     it "should accept a URI for the remote file source" do
       @resource.source "http://opscode.com/"
       expect(@resource.source).to eql([ "http://opscode.com/" ])
+    end
+
+    it "should accept a windows network share source" do
+      @resource.source "\\\\fakey\\fakerton\\fake.txt"
+      expect(@resource.source).to eql([ "\\\\fakey\\fakerton\\fake.txt" ])
+    end
+
+    it 'should accept file URIs with spaces' do
+      @resource.source("file:///C:/foo bar")
+      expect(@resource.source).to eql(["file:///C:/foo bar"])
     end
 
     it "should accept a delayed evalutator (string) for the remote file source" do

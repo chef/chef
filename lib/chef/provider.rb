@@ -22,14 +22,19 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/enforce_ownership_and_permissions'
 require 'chef/mixin/why_run'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/powershell_out'
 require 'chef/mixin/provides'
 require 'chef/platform/service_helpers'
 require 'chef/node_map'
 
 class Chef
   class Provider
+    require 'chef/mixin/why_run'
+    require 'chef/mixin/shell_out'
+    require 'chef/mixin/provides'
     include Chef::Mixin::WhyRun
     include Chef::Mixin::ShellOut
+    include Chef::Mixin::PowershellOut
     extend Chef::Mixin::Provides
 
     # supports the given resource and action (late binding)
@@ -83,6 +88,9 @@ class Chef
       new_resource.cookbook_name
     end
 
+    def check_resource_semantics!
+    end
+
     def load_current_resource
       raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
     end
@@ -107,6 +115,8 @@ class Chef
 
       # TODO: it would be preferable to get the action to be executed in the
       # constructor...
+
+      check_resource_semantics!
 
       # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
       if !whyrun_mode? || whyrun_supported?
@@ -165,6 +175,14 @@ class Chef
       converge_actions.add_action(descriptions, &block)
     end
 
+    def self.provides(short_name, opts={}, &block)
+      Chef.set_provider_priority_array(short_name, self, opts, &block)
+    end
+
+    def self.provides?(node, resource)
+      Chef::ProviderResolver.new(node, resource, :nothing).provided_by?(self)
+    end
+
     protected
 
     def converge_actions
@@ -191,5 +209,39 @@ class Chef
       end
     end
 
+    module DeprecatedLWRPClass
+      def const_missing(class_name)
+        if deprecated_constants[class_name.to_sym]
+          Chef::Log.deprecation("Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
+          deprecated_constants[class_name.to_sym]
+        else
+          raise NameError, "uninitialized constant Chef::Provider::#{class_name}"
+        end
+      end
+
+      # @api private
+      def register_deprecated_lwrp_class(provider_class, class_name)
+        # Register Chef::Provider::MyProvider with deprecation warnings if you
+        # try to access it
+        if Chef::Provider.const_defined?(class_name, false)
+          Chef::Log.warn "Chef::Provider::#{class_name} already exists!  Cannot create deprecation class for #{provider_class}"
+        else
+          deprecated_constants[class_name.to_sym] = provider_class
+        end
+      end
+
+      private
+
+      def deprecated_constants
+        @deprecated_constants ||= {}
+      end
+    end
+    extend DeprecatedLWRPClass
   end
 end
+
+# Requiring things at the bottom breaks cycles
+require 'chef/chef_class'
+require 'chef/mixin/why_run'
+require 'chef/resource_collection'
+require 'chef/runner'

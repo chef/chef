@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/uris'
 require 'chef/resource/package'
 require 'chef/provider/package/windows'
 require 'chef/win32/error' if RUBY_PLATFORM =~ /mswin|mingw|windows/
@@ -23,14 +24,15 @@ require 'chef/win32/error' if RUBY_PLATFORM =~ /mswin|mingw|windows/
 class Chef
   class Resource
     class WindowsPackage < Chef::Resource::Package
+      include Chef::Mixin::Uris
 
-      provides :package, os: "windows"
       provides :windows_package, os: "windows"
+      provides :package, os: "windows"
+
+      allowed_actions :install, :remove
 
       def initialize(name, run_context=nil)
         super
-        @allowed_actions.push(:install, :remove)
-        @resource_name = :windows_package
         @source ||= source(@package_name)
 
         # Unique to this resource
@@ -69,10 +71,30 @@ class Chef
           @source
         else
           raise ArgumentError, "Bad type for WindowsPackage resource, use a String" unless arg.is_a?(String)
-          Chef::Log.debug("#{package_name}: sanitizing source path '#{arg}'")
-          @source = ::File.absolute_path(arg).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
+          if uri_scheme?(arg)
+            @source = arg
+          else
+            @source = Chef::Util::PathHelper.canonical_path(arg, false)
+          end
         end
       end
+
+      def checksum(arg=nil)
+        set_or_return(
+          :checksum,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def remote_file_attributes(arg=nil)
+        set_or_return(
+          :remote_file_attributes,
+          arg,
+          :kind_of => [ Hash ]
+        )
+      end
+
     end
   end
 end

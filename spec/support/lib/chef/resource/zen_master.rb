@@ -22,13 +22,10 @@ require 'chef/json_compat'
 class Chef
   class Resource
     class ZenMaster < Chef::Resource
+      allowed_actions :win, :score
+
       attr_reader :peace
 
-      def initialize(name, run_context=nil)
-        @resource_name = :zen_master
-        super
-        allowed_actions << :win << :score
-      end
 
       def peace(tf)
         @peace = tf

@@ -23,7 +23,7 @@ require 'net/ssh'
 
 describe Chef::Knife::Bootstrap do
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
   end
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)
@@ -531,6 +531,7 @@ describe Chef::Knife::Bootstrap do
   describe "when running the bootstrap" do
     let(:knife_ssh) do
       knife.name_args = ["foo.example.com"]
+      knife.config[:chef_node_name] = "foo.example.com"
       knife.config[:ssh_user]      = "rooty"
       knife.config[:identity_file] = "~/.ssh/me.rsa"
       allow(knife).to receive(:render_template).and_return("")
@@ -590,6 +591,12 @@ describe Chef::Knife::Bootstrap do
         expect(knife.chef_vault_handler).not_to receive(:run).with(node_name: knife.config[:chef_node_name])
         knife.run
       end
+
+      it "raises an exception if the config[:chef_node_name] is not present" do
+        knife.config[:chef_node_name] = nil
+
+        expect { knife.run }.to raise_error(SystemExit)
+      end
     end
 
     context "when the validation key is not present" do
@@ -603,6 +610,12 @@ describe Chef::Knife::Bootstrap do
         expect(knife.client_builder).to receive(:run)
         expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
         knife.run
+      end
+
+      it "raises an exception if the config[:chef_node_name] is not present" do
+        knife.config[:chef_node_name] = nil
+
+        expect { knife.run }.to raise_error(SystemExit)
       end
     end
 

@@ -22,6 +22,7 @@ require 'chef/provider'
 class Chef
   class Provider
     class Reboot < Chef::Provider
+      provides :reboot
 
       def whyrun_supported?
         true

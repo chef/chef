@@ -166,12 +166,16 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     before do
-      # TODO: agree on this name and logic.
+      Chef::Config[:policy_document_native_api] = false
       Chef::Config[:deployment_group] = "example-policy-stage"
       allow(policy_builder).to receive(:http_api).and_return(http_api)
     end
 
     describe "when using compatibility mode (policy_document_native_api == false)" do
+
+      before do
+        Chef::Config[:deployment_group] = "example-policy-stage"
+      end
 
       context "when the deployment group cannot be loaded" do
         let(:error404) { Net::HTTPServerException.new("404 message", :body) }
@@ -389,8 +393,8 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:example1_cookbook_data) { double("CookbookVersion Hash for example1 cookbook") }
         let(:example2_cookbook_data) { double("CookbookVersion Hash for example2 cookbook") }
 
-        let(:example1_cookbook_object) { double("Chef::CookbookVersion for example1 cookbook") }
-        let(:example2_cookbook_object) { double("Chef::CookbookVersion for example2 cookbook") }
+        let(:example1_cookbook_object) { double("Chef::CookbookVersion for example1 cookbook", version: "0.1.2") }
+        let(:example2_cookbook_object) { double("Chef::CookbookVersion for example2 cookbook", version: "1.2.3") }
 
         let(:expected_cookbook_hash) do
           { "example1" => example1_cookbook_object, "example2" => example2_cookbook_object }

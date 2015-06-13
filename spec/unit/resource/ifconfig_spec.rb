@@ -47,21 +47,23 @@ describe Chef::Resource::Ifconfig do
     end
   end
 
-  shared_examples "being a platform using the default ifconfig provider" do |platform, version|
+  shared_examples "being a platform based on an old Debian" do |platform, version|
     before do
+      @node.automatic_attrs[:os] = 'linux'
+      @node.automatic_attrs[:platform_family] = 'debian'
       @node.automatic_attrs[:platform] = platform
       @node.automatic_attrs[:platform_version] = version
     end
 
     it "should use an ordinary Provider::Ifconfig as a provider for #{platform} #{version}" do
-      expect(@resource.provider_for_action(:add)).to be_a_kind_of(Chef::Provider::Ifconfig)
-      expect(@resource.provider_for_action(:add)).not_to be_a_kind_of(Chef::Provider::Ifconfig::Debian)
-      expect(@resource.provider_for_action(:add)).not_to be_a_kind_of(Chef::Provider::Ifconfig::Redhat)
+      expect(@resource.provider_for_action(:add).class).to eq(Chef::Provider::Ifconfig)
     end
   end
 
   shared_examples "being a platform based on RedHat" do |platform, version|
     before do
+      @node.automatic_attrs[:os] = 'linux'
+      @node.automatic_attrs[:platform_family] = 'rhel'
       @node.automatic_attrs[:platform] = platform
       @node.automatic_attrs[:platform_version] = version
     end
@@ -73,6 +75,8 @@ describe Chef::Resource::Ifconfig do
 
   shared_examples "being a platform based on a recent Debian" do |platform, version|
     before do
+      @node.automatic_attrs[:os] = 'linux'
+      @node.automatic_attrs[:platform_family] = 'debian'
       @node.automatic_attrs[:platform] = platform
       @node.automatic_attrs[:platform_version] = version
     end
@@ -87,7 +91,7 @@ describe Chef::Resource::Ifconfig do
   end
 
   describe "when it is an old Debian platform" do
-    it_should_behave_like "being a platform using the default ifconfig provider", "debian", "6.0"
+    it_should_behave_like "being a platform based on an old Debian", "debian", "6.0"
   end
 
   describe "when it is a new Debian platform" do
@@ -95,7 +99,7 @@ describe Chef::Resource::Ifconfig do
   end
 
   describe "when it is an old Ubuntu platform" do
-    it_should_behave_like "being a platform using the default ifconfig provider", "ubuntu", "11.04"
+    it_should_behave_like "being a platform based on an old Debian", "ubuntu", "11.04"
   end
 
   describe "when it is a new Ubuntu platform" do

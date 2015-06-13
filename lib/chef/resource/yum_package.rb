@@ -22,13 +22,10 @@ require 'chef/provider/package/yum'
 class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
-
-      provides :yum_package
       provides :package, os: "linux", platform_family: [ "rhel", "fedora" ]
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :yum_package
         @flush_cache = { :before => false, :after => false }
         @allow_downgrade = false
       end
@@ -38,7 +35,7 @@ class Chef
         set_or_return(
           :arch,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, Array ]
         )
       end
 

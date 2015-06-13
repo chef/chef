@@ -1,45 +1,87 @@
-# Chef Client Release Notes 12.3.0:
+# Chef Client Release Notes 12.4.0:
 
-## Socketless Chef Zero Local Mode
-All requests to the Chef Zero server in local mode use Chef Zero's new
-socketless request mechanism. By default, Chef Zero will still bind to a
-port and accept HTTP requests on localhost; this can be disabled with
-the `--no-listen` CLI flag or by adding `listen false` to the relevant
-configuration file.
+## Knife Key Management Commands for Users and Clients
 
-## Minimal Ohai Flag
+`knife user` and `knife client` now have a suite of subcommands that live under
+the `key` subcommand. These subcommands allow you to list, show, create, delete
+and edit keys for a given user or client. They can be used to implement
+key rotation with multiple expiring keys for a single actor or just
+for basic key management. See `knife user key` and `knife client key`
+for a full list of subcommands and their usage.
 
-Chef Client, Solo, and Apply all now support a `--minimal-ohai` flag.
-When set, Chef will only run the bare minimum Ohai plugins necessary to
-support node name detection and resource/provider selection. The primary
-motivation for this feature is to speed up Chef's integration tests
-which run `chef-client` (and solo) many times in various contexts,
-however advanced users may find it useful in certain use cases. Any
-cookbook that relies on other ohai data will absolutely not work in this
-mode unless the user implements workarounds such as running the ohai
-resource during the compile phase.
+## System Loggers
 
-## Dynamic Resource Resolution and Chef Class Fascade
+You can now have all Chef logs sent to a logging system of your choice.
 
-Resolution of Resources is now dynamic and similar to Providers and handles
-multiple resources having the same provides line on a given platform.  When
-the user types a resource like 'package' into the DSL that is resolved via
-the provides lines, and if multiple classes provide the same resource (like
-Homebrew and MacPorts package resources on Mac) then which one is selected
-is governed by the Chef::Platform::ResourcePriorityMap.
+### Syslog Logger
 
-In order to change the priorities in both the ResourcePriorityMap and
-ProviderPriorityMap a helper API has been constructed off of the Chef class:
+Syslog can be used by adding the following line to your chef config
+file:
 
-* `Chef.get_provider_priority_array(resource_name)`
-* `Chef.get_resource_priority_array(resource_name)`
-* `Chef.set_provider_priority_array(resource_name, Array<Class>, *filter)`
-* `Chef.set_resoruce_priority_array(resource_name, Array<Class>, *filter)`
+```ruby
+log_location Chef::Log::Syslog.new("chef-client", ::Syslog::LOG_DAEMON)
+```
 
-In order to change the `package` resource globally on MacOSX to the MacPorts provider:
+THis will write to the `daemon` facility with the originator set as
+`chef-client`.
 
-`Chef.set_resource_priority_array(:package, [ Chef::Resource::MacportsPackage ], os: 'darwin')`
+### Windows Event Logger
 
-That line can be placed into a library file in a cookbook so that it is applied before
-any recipes are compiled.
+The logger can be used by adding the following line to your chef config file:
 
+```ruby
+log_location Chef::Log::WinEvt.new
+```
+
+This will write to the Application log with the source set as Chef.
+
+## RemoteFile resource supports UNC paths on Windows
+
+You can now use UNC paths with `remote_file` on Windows machines. For
+example, you can get `Foo.tar.gz` off of `fooshare` on `foohost` using
+the following resource:
+
+```ruby
+remote_file 'C:\Foo.tar.gz' do
+  source "\\\\foohost\\fooshare\\Foo.tar.gz"
+end
+```
+
+## WindowsPackage resource supports URLs
+
+The `windows_package` resource now allows specifying URLs for the source
+attribute. For example, you could install 7zip with the following resource:
+
+```ruby
+windows_package '7zip' do
+  source "http://www.7-zip.org/a/7z938-x64.msi"
+end
+```
+
+Internally, this is done by using a `remote_file` resource to download the
+contents at the specified url. If needed, you can modify the attributes of
+the `remote_file` resource using the `remote_file_attributes` attribute. 
+The `remote_file_attributes` accepts a hash of attributes that will be set
+on the underlying remote_file. For example, the checksum of the contents can 
+be verified using
+
+```ruby
+windows_package '7zip' do
+  source "http://www.7-zip.org/a/7z938-x64.msi"
+  remote_file_attributes {
+    :path => "C:\\7zip.msi",
+    :checksum => '7c8e873991c82ad9cfcdbdf45254ea6101e9a645e12977dcd518979e50fdedf3'
+  }
+end
+```
+
+To make the transition easier from the Windows cookbook, `windows_package` also 
+accepts the `checksum` attribute, and the previous resource could be rewritten
+as:
+
+```ruby
+windows_package '7zip' do
+  source "http://www.7-zip.org/a/7z938-x64.msi"
+  checksum '7c8e873991c82ad9cfcdbdf45254ea6101e9a645e12977dcd518979e50fdedf3'
+end
+```

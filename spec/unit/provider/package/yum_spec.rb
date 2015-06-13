@@ -17,6 +17,7 @@
 #
 
 require 'spec_helper'
+require 'securerandom'
 
 describe Chef::Provider::Package::Yum do
   before(:each) do
@@ -120,6 +121,26 @@ describe Chef::Provider::Package::Yum do
         expect(@provider.new_resource.package_name).to eq("testing.more")
         expect(@provider.new_resource.arch).to eq("noarch")
         expect(@provider.arch).to eq("noarch")
+      end
+
+      describe "when version constraint in package_name" do
+        it "should set package_version if no existing package_name is found and new_package_name is available" do
+          @new_resource = Chef::Resource::Package.new('cups = 1.2.4-11.18.el5_2.3')
+          @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+          allow(@yum_cache).to receive(:package_available?) { |pkg| pkg == 'cups' ? true : false }
+          allow(@yum_cache).to receive(:packages_from_require) do |pkg|
+            [Chef::Provider::Package::Yum::RPMDbPackage.new("cups", "1.2.4-11.18.el5_2.3", "noarch", [], false, true, "base"),
+            Chef::Provider::Package::Yum::RPMDbPackage.new("cups", "1.2.4-11.18.el5_2.2", "noarch", [], false, true, "base"),]
+          end
+          expect(Chef::Log).to receive(:debug).exactly(1).times.with(%r{checking yum info})
+          expect(Chef::Log).to receive(:debug).exactly(1).times.with(%r{installed version})
+          expect(Chef::Log).to receive(:debug).exactly(1).times.with(%r{matched 2 packages,})
+          @provider.load_current_resource
+          expect(@provider.new_resource.package_name).to eq("cups")
+          expect(@provider.new_resource.version).to eq("1.2.4-11.18.el5_2.3")
+          expect(@provider.send(:new_version_array)).to eq(["1.2.4-11.18.el5_2.3"])
+          expect(@provider.send(:package_name_array)).to eq(["cups"])
+        end
       end
 
       it "should not set the arch when an existing package_name is found" do
@@ -1659,6 +1680,14 @@ describe Chef::Provider::Package::Yum::YumCache do
     end
   end
 
+  let(:yum_exe) {
+    StringIO.new("#!/usr/bin/python\n\naldsjfa\ldsajflkdsjf\lajsdfj")
+  }
+
+  let(:bin_exe) {
+    StringIO.new(SecureRandom.random_bytes)
+  }
+
   before(:each) do
     @stdin = double("STDIN", :nil_object => true)
     @stdout = double("STDOUT", :nil_object => true)
@@ -1704,12 +1733,19 @@ file: file://///etc/yum.repos.d/CentOS-Base.repo, line: 12
 'qeqwewe\n'
 EOF
     @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_good, :stderr => @stderr)
-
     # new singleton each time
     Chef::Provider::Package::Yum::YumCache.reset_instance
     @yc = Chef::Provider::Package::Yum::YumCache.instance
     # load valid data
     allow(@yc).to receive(:shell_out!).and_return(@status)
+    allow_any_instance_of(described_class).to receive(:which).with("yum").and_return("/usr/bin/yum")
+    allow(::File).to receive(:open).with("/usr/bin/yum", "r") do |&block|
+      res = block.call(yum_exe)
+      # a bit of a hack. rewind this since it seem that no matter what
+      # I do, we get the same StringIO objects on multiple calls to
+      # ::File.open
+      yum_exe.rewind; res
+    end
   end
 
   describe "initialize" do
@@ -1723,6 +1759,24 @@ EOF
         expect(b).not_to be_nil
       end
       @yc = Chef::Provider::Package::Yum::YumCache.instance
+    end
+  end
+
+  describe "python_bin" do
+    it "should return the default python if an error occurs" do
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r").and_raise(StandardError)
+      expect(@yc.python_bin).to eq("/usr/bin/python")
+    end
+
+    it "should return the default python if the yum-executable doesn't start with #!" do
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(bin_exe); bin_exe.rewind; r}
+      expect(@yc.python_bin).to eq("/usr/bin/python")
+    end
+
+    it "should return the interpreter for yum" do
+      other = StringIO.new("#!/usr/bin/super_python\n\nlasjdfdsaljf\nlasdjfs")
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(other); other.rewind; r}
+      expect(@yc.python_bin).to eq("/usr/bin/super_python")
     end
   end
 
@@ -2041,6 +2095,36 @@ describe "Chef::Provider::Package::Yum - Multi" do
     it "should return the current resouce" do
       expect(@provider.load_current_resource).to eql(@provider.current_resource)
     end
+
+    describe "when version constraint in package_name" do
+      it "should set package_version if no existing package_name is found and new_package_name is available" do
+        @new_resource = Chef::Resource::Package.new(['cups = 1.2.4-11.18.el5_2.3', 'emacs = 24.4'])
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        allow(@yum_cache).to receive(:package_available?) { |pkg| %w(cups emacs).include?(pkg) ? true : false }
+        allow(@yum_cache).to receive(:candidate_version) do |pkg|
+          if pkg == 'cups'
+            "1.2.4-11.18.el5_2.3"
+          elsif pkg == 'emacs'
+            "24.4"
+          end
+        end
+        allow(@yum_cache).to receive(:packages_from_require) do |pkg|
+          if pkg.name == 'cups'
+            [Chef::Provider::Package::Yum::RPMDbPackage.new("cups", "1.2.4-11.18.el5_2.3", "noarch", [], false, true, "base")]
+          elsif pkg.name == 'emacs'
+            [Chef::Provider::Package::Yum::RPMDbPackage.new("emacs", "24.4", "noarch", [], false, true, "base")]
+          end
+        end
+        expect(Chef::Log).to receive(:debug).exactly(2).times.with(%r{matched 1 package,})
+        expect(Chef::Log).to receive(:debug).exactly(1).times.with(%r{candidate version: \["1.2.4-11.18.el5_2.3", "24.4"\]})
+        expect(Chef::Log).to receive(:debug).at_least(2).times.with(%r{checking yum info})
+        @provider.load_current_resource
+        expect(@provider.new_resource.package_name).to eq(["cups", "emacs"])
+        expect(@provider.new_resource.version).to eq(["1.2.4-11.18.el5_2.3", "24.4"])
+        expect(@provider.send(:package_name_array)).to eq(["cups", "emacs"])
+        expect(@provider.send(:new_version_array)).to eq(["1.2.4-11.18.el5_2.3", "24.4"])
+      end
+    end
   end
 
   describe "when installing a package" do
@@ -2076,5 +2160,31 @@ describe "Chef::Provider::Package::Yum - Multi" do
       allow(@new_resource).to receive(:options).and_return("--disablerepo epmd")
       @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", '1.0'])
     end
+
+    it "should run yum install with the package name and version when name has arch" do
+      @new_resource = Chef::Resource::Package.new(['cups.x86_64', 'vim'])
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+
+      # Inside of load_current_resource() we'll call parse_arch for cups,
+      # and we need to craft the right response. The default mock setup above
+      # will just return valid versions all the time which won't work for this
+      # test.
+      allow(@yum_cache).to receive(:installed_version).with('cups', 'x86_64').and_return('XXXX')
+      allow(@yum_cache).to receive(:candidate_version).with('cups', 'x86_64').and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('cups.x86_64').and_return(nil)
+      allow(@yum_cache).to receive(:candidate_version).with('cups.x86_64').and_return(nil)
+
+      # Normal mock's for the idempotency check
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('0.9')
+
+      @provider.load_current_resource
+      expect(@provider).to receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5.x86_64 vim-1.0"
+      )
+      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", '1.0'])
+    end
+
   end
 end

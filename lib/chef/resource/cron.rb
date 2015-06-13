@@ -27,13 +27,11 @@ class Chef
 
       state_attrs :minute, :hour, :day, :month, :weekday, :user
 
-      provides :cron
+      default_action :create
+      allowed_actions :create, :delete
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :cron
-        @action = :create
-        @allowed_actions.push(:create, :delete)
         @minute = "*"
         @hour = "*"
         @day = "*"

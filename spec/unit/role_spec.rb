@@ -21,7 +21,7 @@ require 'chef/role'
 
 describe Chef::Role do
   before(:each) do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
     @role = Chef::Role.new
     @role.name("ops_master")
   end

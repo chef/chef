@@ -92,8 +92,8 @@ and use the run_list from ~/node.json.
 
 ## SEE ALSO
 
-Full documentation for Chef and  chef-solo  is  located  on  the  Chef  wiki,
-http://wiki.opscode.com/display/chef/Home.
+Full documentation for Chef and  chef-solo  is  located  on  the  Chef  docs site,
+http://docs.chef.io/.
 
 ## AUTHOR
 

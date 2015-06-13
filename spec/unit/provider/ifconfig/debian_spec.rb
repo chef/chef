@@ -144,11 +144,6 @@ EOF
           expect(IO.read(tempfile.path)).to eq(expected_string)
         end
 
-        it "should not mark the resource as updated" do
-          provider.run_action(:add)
-          pending "superclass ifconfig provider is not idempotent"
-          expect(new_resource.updated_by_last_action?).to be_falsey
-        end
       end
 
       context "when the /etc/network/interfaces file does not have the source line" do
@@ -280,11 +275,6 @@ another line
             expect(IO.read(tempfile.path)).to eq(expected_string)
           end
 
-          it "should not mark the resource as updated" do
-            provider.run_action(:add)
-            pending "superclass ifconfig provider is not idempotent"
-            expect(new_resource.updated_by_last_action?).to be_falsey
-          end
         end
 
         context "when the /etc/network/interfaces file does not have the source line" do

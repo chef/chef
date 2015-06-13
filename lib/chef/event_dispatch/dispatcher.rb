@@ -9,6 +9,8 @@ class Chef
     # the registered subscribers.
     class Dispatcher < Base
 
+      attr_reader :subscribers
+
       def initialize(*subscribers)
         @subscribers = subscribers
       end

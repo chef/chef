@@ -157,7 +157,7 @@ describe Chef::ChefFS::FilePattern do
     end
   end
 
-  context 'with simple pattern "a\*\b"', :pending => (Chef::Platform.windows?) do
+  context 'with simple pattern "a\*\b"', :skip => (Chef::Platform.windows?) do
     let(:pattern) { Chef::ChefFS::FilePattern.new('a\*\b') }
     it 'match?' do
       expect(pattern.match?('a*b')).to be_truthy
@@ -264,7 +264,7 @@ describe Chef::ChefFS::FilePattern do
     end
   end
 
-  context 'with star pattern "/abc/d[a-z][0-9]f/ghi"', :pending => (Chef::Platform.windows?) do
+  context 'with star pattern "/abc/d[a-z][0-9]f/ghi"', :skip => (Chef::Platform.windows?) do
     let(:pattern) { Chef::ChefFS::FilePattern.new('/abc/d[a-z][0-9]f/ghi') }
     it 'match?' do
       expect(pattern.match?('/abc/de1f/ghi')).to be_truthy
@@ -352,11 +352,7 @@ describe Chef::ChefFS::FilePattern do
       expect(pattern.could_match_children?('/abc/def/ghi')).to be_truthy
       expect(pattern.could_match_children?('abc')).to be_falsey
     end
-    it 'could_match_children? /abc** returns false for /xyz' do
-      pending 'Make could_match_children? more rigorous'
-      # At the moment, we return false for this, but in the end it would be nice to return true:
-      expect(pattern.could_match_children?('/xyz')).to be_falsey
-    end
+
     it 'exact_child_name_under' do
       expect(pattern.exact_child_name_under('/')).to eq(nil)
       expect(pattern.exact_child_name_under('/abc')).to eq(nil)
@@ -439,14 +435,6 @@ describe Chef::ChefFS::FilePattern do
       expect(p('/.').normalized_pattern).to eq('/')
       expect(p('/.').exact_path).to eq('/')
       expect(p('/.').match?('/')).to be_truthy
-    end
-    it 'handles dot by itself', :pending => "decide what to do with dot by itself" do
-      expect(p('.').normalized_pattern).to eq('.')
-      expect(p('.').exact_path).to eq('.')
-      expect(p('.').match?('.')).to be_truthy
-      expect(p('./').normalized_pattern).to eq('.')
-      expect(p('./').exact_path).to eq('.')
-      expect(p('./').match?('.')).to be_truthy
     end
     it 'handles dotdot' do
       expect(p('abc/../def').normalized_pattern).to eq('def')

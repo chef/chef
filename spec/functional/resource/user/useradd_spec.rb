@@ -65,8 +65,12 @@ describe Chef::Provider::User::Useradd, metadata do
     end
   end
 
-  def supports_quote_in_username?
-    OHAI_SYSTEM["platform_family"] == "debian"
+  def self.quote_in_username_unsupported?
+    if OHAI_SYSTEM["platform_family"] == "debian"
+      false
+    else
+      "Only debian family systems support quotes in username"
+    end
   end
 
   def password_should_be_set
@@ -108,7 +112,7 @@ describe Chef::Provider::User::Useradd, metadata do
         break if status.exitstatus != 8
 
         sleep 1
-        max_retries = max_retries -1
+        max_retries = max_retries - 1
       rescue UserNotFound
         break
       end
@@ -162,15 +166,10 @@ describe Chef::Provider::User::Useradd, metadata do
     end
   end
 
-  let(:skip) { false }
-
   describe "action :create" do
 
     context "when the user does not exist beforehand" do
       before do
-        if reason = skip
-          pending(reason)
-        end
         user_resource.run_action(:create)
         expect(user_resource).to be_updated_by_last_action
       end
@@ -186,14 +185,7 @@ describe Chef::Provider::User::Useradd, metadata do
       #  tabulation: '\t', etc.). Note that using a slash ('/') may break the
       #  default algorithm for the definition of the user's home directory.
 
-      context "and the username contains a single quote" do
-        let(:skip) do
-          if supports_quote_in_username?
-            false
-          else
-            "Platform #{OHAI_SYSTEM["platform"]} not expected to support username w/ quote"
-          end
-        end
+      context "and the username contains a single quote", skip: quote_in_username_unsupported? do
 
         let(:username) { "t'bilisi" }
 
@@ -342,7 +334,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
       before do
         if reason = skip
-          pending(reason)
+          skip(reason)
         end
         existing_user.run_action(:create)
         expect(existing_user).to be_updated_by_last_action
@@ -535,7 +527,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
     def aix_user_lock_status
       lock_info = shell_out!("lsuser -a account_locked #{username}")
-      status = /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)[1]
+      /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)[1]
     end
 
     def user_account_should_be_locked

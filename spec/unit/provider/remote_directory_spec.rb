@@ -194,8 +194,8 @@ describe Chef::Provider::RemoteDirectory do
 
             expect(::File.exist?(symlinked_dir_path)).to be_falsey
             expect(::File.exist?(tmp_dir)).to be_truthy
-          rescue Chef::Exceptions::Win32APIError => e
-            pending "This must be run as an Administrator to create symlinks"
+          rescue Chef::Exceptions::Win32APIError
+            skip "This must be run as an Administrator to create symlinks"
           end
         end
       end

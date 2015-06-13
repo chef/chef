@@ -22,6 +22,7 @@ class Chef
   class Provider
     class Mount
       class Aix < Chef::Provider::Mount::Mount
+        provides :mount, platform: %w(aix)
 
         # Override for aix specific handling
         def initialize(new_resource, run_context)

@@ -24,11 +24,11 @@ require 'chef/resource'
 class Chef
   class Resource
     class Reboot < Chef::Resource
+      allowed_actions :request_reboot, :reboot_now, :cancel
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :reboot
         @provider = Chef::Provider::Reboot
-        @allowed_actions.push(:request_reboot, :reboot_now, :cancel)
 
         @reason = "Reboot by Chef"
         @delay_mins = 0

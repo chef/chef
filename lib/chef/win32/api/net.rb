@@ -32,8 +32,24 @@ class Chef
 
         MAX_PREFERRED_LENGTH                = 0xFFFF
 
-        NERR_Success                        = 0
-        NERR_UserNotFound                   = 2221
+        DOMAIN_GROUP_RID_USERS = 0x00000201
+
+        UF_SCRIPT              = 0x000001
+        UF_ACCOUNTDISABLE      = 0x000002
+        UF_PASSWD_CANT_CHANGE  = 0x000040
+        UF_NORMAL_ACCOUNT      = 0x000200
+        UF_DONT_EXPIRE_PASSWD  = 0x010000
+
+        NERR_Success = 0
+        NERR_InvalidComputer = 2351
+        NERR_NotPrimary = 2226
+        NERR_SpeGroupOp = 2234
+        NERR_LastAdmin = 2452
+        NERR_BadUsername = 2202
+        NERR_BadPassword = 2203
+        NERR_PasswordTooShort = 2245
+        NERR_UserNotFound = 2221
+        ERROR_ACCESS_DENIED = 5
 
         ffi_lib "netapi32"
 
@@ -67,6 +83,57 @@ class Chef
             :usri3_profile, :LPWSTR,
             :usri3_home_dir_drive, :LPWSTR,
             :usri3_password_expired, :DWORD
+
+          def set(key, val)
+            val = if val.is_a? String
+              encoded = if val.encoding == Encoding::UTF_16LE
+                val
+              else
+                val.to_wstring
+              end
+              FFI::MemoryPointer.from_string(encoded)
+            else
+              val
+            end
+            self[key] = val
+          end
+
+          def get(key)
+            if respond_to? key
+             send(key)
+            else
+              val = self[key]
+              if val.is_a? FFI::Pointer
+                if val.null?
+                  nil
+                else
+                  val.read_wstring
+                end
+              else
+                val
+              end
+            end
+          end
+
+          def usri3_logon_hours
+            val = self[:usri3_logon_hours]
+            if !val.nil? && !val.null?
+              val.read_bytes(21)
+            else
+              nil
+            end
+          end
+
+          def as_ruby
+            members.inject({}) do |memo, key|
+              memo[key] = get(key)
+              memo
+            end
+          end
+        end
+
+        class LOCALGROUP_MEMBERS_INFO_3 < FFI::Struct
+          layout :lgrmi3_domainandname, :LPWSTR
         end
 
 # NET_API_STATUS NetUserEnum(
@@ -85,6 +152,52 @@ class Chef
 #   _In_  LPVOID Buffer
 # );
         safe_attach_function :NetApiBufferFree, [ :LPVOID ], :DWORD
+
+#NET_API_STATUS NetUserAdd(
+  #_In_  LMSTR   servername,
+  #_In_  DWORD   level,
+  #_In_  LPBYTE  buf,
+  #_Out_ LPDWORD parm_err
+#);
+        safe_attach_function :NetUserAdd, [:LMSTR, :DWORD, :LPBYTE, :LPDWORD ], :DWORD
+
+#NET_API_STATUS NetLocalGroupAddMembers(
+#  _In_ LPCWSTR servername,
+#  _In_ LPCWSTR groupname,
+#  _In_ DWORD   level,
+#  _In_ LPBYTE  buf,
+#  _In_ DWORD   totalentries
+#);
+        safe_attach_function :NetLocalGroupAddMembers, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD ], :DWORD
+
+#NET_API_STATUS NetUserGetInfo(
+#  _In_  LPCWSTR servername,
+#  _In_  LPCWSTR username,
+#  _In_  DWORD   level,
+#  _Out_ LPBYTE  *bufptr
+#);
+        safe_attach_function :NetUserGetInfo, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE], :DWORD
+
+#NET_API_STATUS NetApiBufferFree(
+#  _In_ LPVOID Buffer
+#);
+        safe_attach_function :NetApiBufferFree, [:LPVOID], :DWORD
+
+#NET_API_STATUS NetUserSetInfo(
+#  _In_  LPCWSTR servername,
+#  _In_  LPCWSTR username,
+#  _In_  DWORD   level,
+#  _In_  LPBYTE  buf,
+#  _Out_ LPDWORD parm_err
+#);
+        safe_attach_function :NetUserSetInfo, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
+
+#NET_API_STATUS NetUserDel(
+#  _In_ LPCWSTR servername,
+#  _In_ LPCWSTR username
+#);
+        safe_attach_function :NetUserDel, [:LPCWSTR, :LPCWSTR], :DWORD
+
       end
     end
   end

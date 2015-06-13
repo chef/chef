@@ -21,6 +21,8 @@ require 'logger'
 require 'chef/monologger'
 require 'chef/exceptions'
 require 'mixlib/log'
+require 'chef/log/syslog' unless (RUBY_PLATFORM =~ /mswin|mingw|windows/)
+require 'chef/log/winevt'
 
 class Chef
   class Log

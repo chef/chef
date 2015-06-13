@@ -37,6 +37,12 @@ describe Chef::Provider::Package do
       allow(@provider).to receive(:install_package).and_return(true)
     end
 
+    it "raises a Chef::Exceptions::InvalidResourceSpecification if both multipackage and source are provided" do
+      @new_resource.package_name(['a', 'b'])
+      @new_resource.source('foo')
+      expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+    end
+
     it "should raise a Chef::Exceptions::Package if no version is specified, and no candidate is available" do
       @provider.candidate_version = nil
       expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
@@ -696,6 +702,40 @@ describe "Chef::Provider::Package - Multi" do
       allow(@current_resource).to receive(:version).and_return(nil)
       @provider.run_action(:purge)
       expect(@new_resource).not_to be_updated_by_last_action
+    end
+  end
+
+  describe "shell_out helpers" do
+    [ :shell_out_with_timeout, :shell_out_with_timeout! ].each do |method|
+      stubbed_method = method == :shell_out_with_timeout! ? :shell_out! : :shell_out
+      [ %w{command arg1 arg2}, "command arg1 arg2" ].each do |command|
+        it "#{method} defaults to 900 seconds" do
+          expect(@provider).to receive(stubbed_method).with(*command, timeout: 900)
+          @provider.send(method, *command)
+        end
+        it "#{method} overrides the default timeout with its options" do
+          expect(@provider).to receive(stubbed_method).with(*command, timeout: 1)
+          @provider.send(method, *command, timeout: 1)
+        end
+        it "#{method} overrides both timeouts with the new_resource.timeout" do
+          @new_resource.timeout(99)
+          expect(@provider).to receive(stubbed_method).with(*command, timeout: 99)
+          @provider.send(method, *command, timeout: 1)
+        end
+        it "#{method} defaults to 900 seconds and preserves options" do
+          expect(@provider).to receive(stubbed_method).with(*command, env: nil, timeout: 900)
+          @provider.send(method, *command, env: nil)
+        end
+        it "#{method} overrides the default timeout with its options and preserves options" do
+          expect(@provider).to receive(stubbed_method).with(*command, timeout: 1, env: nil)
+          @provider.send(method, *command, timeout: 1, env: nil)
+        end
+        it "#{method} overrides both timeouts with the new_resource.timeout and preseves options" do
+          @new_resource.timeout(99)
+          expect(@provider).to receive(stubbed_method).with(*command, timeout: 99, env: nil)
+          @provider.send(method, *command, timeout: 1, env: nil)
+        end
+      end
     end
   end
 end

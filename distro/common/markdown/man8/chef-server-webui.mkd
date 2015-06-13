@@ -106,7 +106,7 @@ The default credentials are:
 ## SEE ALSO
 
 Full documentation for Chef and chef-server-webui (Management Console)
-is located on the Chef wiki, http://wiki.opscode.com/display/chef/Home.
+is located on the Chef docs site, http://docs.chef.io/.
 
 ## AUTHOR
 

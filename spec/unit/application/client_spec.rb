@@ -60,7 +60,7 @@ describe Chef::Application::Client, "reconfigure" do
     context "when interval is given" do
       before do
         Chef::Config[:interval] = 600
-        allow(Chef::Platform).to receive(:windows?).and_return(false)
+        allow(ChefConfig).to receive(:windows?).and_return(false)
       end
 
       it "should terminate with message" do
@@ -77,7 +77,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     context "when interval is given on windows" do
       before do
         Chef::Config[:interval] = 600
-        allow(Chef::Platform).to receive(:windows?).and_return(true)
+        allow(ChefConfig).to receive(:windows?).and_return(true)
       end
 
       it "should not terminate" do
@@ -164,11 +164,6 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     shared_examples "experimental feature" do
       before do
         allow(Chef::Log).to receive(:warn)
-      end
-
-      it "emits a warning that audit mode is an experimental feature" do
-        expect(Chef::Log).to receive(:warn).with(/Audit mode is an experimental feature/)
-        app.reconfigure
       end
     end
 

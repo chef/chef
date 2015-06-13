@@ -22,14 +22,15 @@ require 'chef/resource'
 class Chef
   class Resource
     class Service < Chef::Resource
-
       identity_attr :service_name
 
       state_attrs :enabled, :running
 
+      default_action :nothing
+      allowed_actions :enable, :disable, :start, :stop, :restart, :reload
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :service
         @service_name = name
         @enabled = nil
         @running = nil
@@ -43,9 +44,7 @@ class Chef
         @init_command = nil
         @priority = nil
         @timeout = nil
-        @action = "nothing"
         @supports = { :restart => false, :reload => false, :status => false }
-        @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
       end
 
       def service_name(arg=nil)

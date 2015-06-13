@@ -163,9 +163,6 @@ shared_examples_for "a securable resource with existing target" do
     let(:desired_gid) { 1337 }
     let(:expected_gid) { 1337 }
 
-    skip "should set an owner (Rerun specs under root)", :requires_unprivileged_user => true
-    skip "should set a group (Rerun specs under root)",  :requires_unprivileged_user => true
-
     describe "when setting the owner", :requires_root do
       before do
         resource.owner expected_user_name
@@ -205,11 +202,6 @@ shared_examples_for "a securable resource with existing target" do
         resource.run_action(:create)
       end
 
-      it "should set permissions as specified" do
-        pending("Linux does not support lchmod")
-        expect{ File.lstat(path).mode & 007777 }.to eq(@mode_string.oct & 007777)
-      end
-
       it "is marked as updated only if changes are made" do
         expect(resource.updated_by_last_action?).to eq(expect_updated?)
       end
@@ -222,13 +214,26 @@ shared_examples_for "a securable resource with existing target" do
         resource.run_action(:create)
       end
 
-      it "should set permissions in numeric form as a ruby-interpreted octal" do
-        pending('Linux does not support lchmod')
-        expect{ File.lstat(path).mode & 007777 }.to eq(@mode_integer & 007777)
-      end
-
       it "is marked as updated only if changes are made" do
         expect(resource.updated_by_last_action?).to eq(expect_updated?)
+      end
+    end
+
+    describe "when setting the suid bit", :requires_root do
+      before do
+        @suid_mode = 04776
+        resource.mode @suid_mode
+        resource.run_action(:create)
+      end
+
+      it "should set the suid bit" do
+        expect(File.lstat(path).mode & 007777).to eq(@suid_mode & 007777)
+      end
+
+      it "should retain the suid bit when updating the user" do
+        resource.user 1338
+        resource.run_action(:create)
+        expect(File.lstat(path).mode & 007777).to eq(@suid_mode & 007777)
       end
     end
   end
@@ -288,17 +293,13 @@ shared_examples_for "a securable resource without existing target" do
 
   include_context "diff disabled"
 
-  context "on Unix", :unix_only do
-    skip "if we need any securable resource tests on Unix without existing target resource."
-  end
-
   context "on Windows", :windows_only do
     include_context "use Windows permissions"
 
-    it "sets owner to Administrators on create if owner is not specified" do
+    it "leaves owner as system default on create if owner is not specified" do
       expect(File.exist?(path)).to eq(false)
       resource.run_action(:create)
-      expect(descriptor.owner).to eq(SID.Administrators)
+      expect(descriptor.owner).to eq(SID.default_security_object_owner)
     end
 
     it "sets owner when owner is specified" do
@@ -318,22 +319,24 @@ shared_examples_for "a securable resource without existing target" do
     end
 
     it "leaves owner alone if owner is not specified and resource already exists" do
-      # Set owner to Guest so it's not the same as the current user (which is the default on create)
-      resource.owner 'Guest'
+      arbitrary_non_default_owner = SID.Guest
+      expect(arbitrary_non_default_owner).not_to eq(SID.default_security_object_owner)
+
+      resource.owner 'Guest' # Change to arbitrary_non_default_owner once issue #1508 is fixed
       resource.run_action(:create)
-      expect(descriptor.owner).to eq(SID.Guest)
+      expect(descriptor.owner).to eq(arbitrary_non_default_owner)
 
       new_resource = create_resource
       expect(new_resource.owner).to eq(nil)
       new_resource.run_action(:create)
-      expect(descriptor.owner).to eq(SID.Guest)
+      expect(descriptor.owner).to eq(arbitrary_non_default_owner)
     end
 
-    it "sets group to None on create if group is not specified" do
+    it "leaves group as system default on create if group is not specified" do
       expect(resource.group).to eq(nil)
       expect(File.exist?(path)).to eq(false)
       resource.run_action(:create)
-      expect(descriptor.group).to eq(SID.None)
+      expect(descriptor.group).to eq(SID.default_security_object_group)
     end
 
     it "sets group when group is specified" do
@@ -346,23 +349,18 @@ shared_examples_for "a securable resource without existing target" do
       expect { resource.group 'Lance "The Nose" Glindenberry III' }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
-    it "sets group when group is specified with a \\" do
-      pending("Need to find a group containing a backslash that is on most peoples' machines")
-      resource.group "#{ENV['COMPUTERNAME']}\\Administrators"
-      resource.run_action(:create)
-      expect{ descriptor.group }.to eq(SID.Everyone)
-    end
-
     it "leaves group alone if group is not specified and resource already exists" do
-      # Set group to Everyone so it's not the default (None)
-      resource.group 'Everyone'
+      arbitrary_non_default_group = SID.Everyone
+      expect(arbitrary_non_default_group).not_to eq(SID.default_security_object_group)
+
+      resource.group 'Everyone' # Change to arbitrary_non_default_group once issue #1508 is fixed
       resource.run_action(:create)
-      expect(descriptor.group).to eq(SID.Everyone)
+      expect(descriptor.group).to eq(arbitrary_non_default_group)
 
       new_resource = create_resource
       expect(new_resource.group).to eq(nil)
       new_resource.run_action(:create)
-      expect(descriptor.group).to eq(SID.Everyone)
+      expect(descriptor.group).to eq(arbitrary_non_default_group)
     end
 
     describe "with rights and deny_rights attributes" do

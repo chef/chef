@@ -20,6 +20,7 @@
 require 'uri'
 require 'tempfile'
 require 'chef/file_content_management/content_base'
+require 'chef/mixin/uris'
 
 class Chef
   class Provider
@@ -27,6 +28,8 @@ class Chef
       class Content < Chef::FileContentManagement::ContentBase
 
         private
+
+        include Chef::Mixin::Uris
 
         def file_for_provider
           Chef::Log.debug("#{@new_resource} checking for changes")
@@ -45,7 +48,11 @@ class Chef
           sources = sources.dup
           source = sources.shift
           begin
-            uri = URI.parse(source)
+            uri = if Chef::Provider::RemoteFile::Fetcher.network_share?(source)
+              source
+            else
+              as_uri(source)
+            end
             raw_file = grab_file_from_uri(uri)
           rescue SocketError, Errno::ECONNREFUSED, Errno::ENOENT, Errno::EACCES, Timeout::Error, Net::HTTPServerException, Net::HTTPFatalError, Net::FTPError => e
             Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e.to_s}")

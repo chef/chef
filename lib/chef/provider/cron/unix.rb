@@ -20,6 +20,7 @@
 
 require 'chef/log'
 require 'chef/provider'
+require 'chef/provider/cron'
 
 class Chef
   class Provider

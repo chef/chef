@@ -21,6 +21,10 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/exceptions'
 require 'chef/resource_builder'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/powershell_out'
+require 'chef/dsl/resources'
+require 'chef/dsl/definitions'
+require 'chef/resource'
 
 class Chef
   module DSL
@@ -31,48 +35,10 @@ class Chef
     module Recipe
 
       include Chef::Mixin::ShellOut
-      include Chef::Mixin::ConvertToClassName
+      include Chef::Mixin::PowershellOut
 
-      def method_missing(method_symbol, *args, &block)
-        # If we have a definition that matches, we want to use that instead.  This should
-        # let you do some really crazy over-riding of "native" types, if you really want
-        # to.
-        if has_resource_definition?(method_symbol)
-          evaluate_resource_definition(method_symbol, *args, &block)
-        elsif have_resource_class_for?(method_symbol)
-          # Otherwise, we're rocking the regular resource call route.
-          declare_resource(method_symbol, args[0], caller[0], &block)
-        else
-          begin
-            super
-          rescue NoMethodError
-            raise NoMethodError, "No resource or method named `#{method_symbol}' for #{describe_self_for_error}"
-          rescue NameError
-            raise NameError, "No resource, method, or local variable named `#{method_symbol}' for #{describe_self_for_error}"
-          end
-        end
-      end
-
-      def has_resource_definition?(name)
-        run_context.definitions.has_key?(name)
-      end
-
-      # Processes the arguments and block as a resource definition.
-      def evaluate_resource_definition(definition_name, *args, &block)
-
-        # This dupes the high level object, but we still need to dup the params
-        new_def = run_context.definitions[definition_name].dup
-
-        new_def.params = new_def.params.dup
-        new_def.node = run_context.node
-        # This sets up the parameter overrides
-        new_def.instance_eval(&block) if block
-
-        new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, run_context)
-        new_recipe.params = new_def.params
-        new_recipe.params[:name] = args[0]
-        new_recipe.instance_eval(&new_def.recipe)
-      end
+      include Chef::DSL::Resources
+      include Chef::DSL::Definitions
 
       #
       # Instantiates a resource (via #build_resource), then adds it to the
@@ -168,13 +134,51 @@ class Chef
         raise Chef::Exceptions::ResourceNotFound, "exec was called, but you probably meant to use an execute resource.  If not, please call Kernel#exec explicitly.  The exec block called was \"#{args}\""
       end
 
+      # DEPRECATED:
+      # method_missing must live for backcompat purposes until Chef 13.
+      def method_missing(method_symbol, *args, &block)
+        #
+        # If there is already DSL for this, someone must have called
+        # method_missing manually. Not a fan. Not. A. Fan.
+        #
+        if respond_to?(method_symbol)
+          Chef::Log.deprecation("Calling method_missing(#{method_symbol.inspect}) directly is deprecated in Chef 12 and will be removed in Chef 13.")
+          Chef::Log.deprecation("Use public_send() or send() instead.")
+          return send(method_symbol, *args, &block)
+        end
+
+        #
+        # If a definition exists, then Chef::DSL::Definitions.add_definition was
+        # never called.  DEPRECATED.
+        #
+        if run_context.definitions.has_key?(method_symbol.to_sym)
+          Chef::Log.deprecation("Definition #{method_symbol} (#{run_context.definitions[method_symbol.to_sym]}) was added to the run_context without calling Chef::DSL::Definitions.add_definition(#{method_symbol.to_sym.inspect}).  This will become required in Chef 13.")
+          Chef::DSL::Definitions.add_definition(method_symbol)
+          return send(method_symbol, *args, &block)
+        end
+
+        #
+        # See if the resource exists anyway.  If the user had set
+        # Chef::Resource::Blah = <resource>, a deprecation warning will be
+        # emitted and the DSL method 'blah' will be added to the DSL.
+        #
+        resource_class = Chef::ResourceResolver.resolve(method_symbol, node: run_context ? run_context.node : nil)
+        if resource_class
+          Chef::DSL::Resources.add_resource_dsl(method_symbol)
+          return send(method_symbol, *args, &block)
+        end
+
+        begin
+          super
+        rescue NoMethodError
+          raise NoMethodError, "No resource or method named `#{method_symbol}' for #{describe_self_for_error}"
+        rescue NameError
+          raise NameError, "No resource, method, or local variable named `#{method_symbol}' for #{describe_self_for_error}"
+        end
+      end
     end
   end
 end
-
-# We require this at the BOTTOM of this file to avoid circular requires (it is used
-# at runtime but not load time)
-require 'chef/resource'
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/recipe_definition_dsl_core. Load the file to activate the deprecation code.

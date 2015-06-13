@@ -21,7 +21,7 @@ require "chef/cookbook/syntax_check"
 
 describe Chef::Cookbook::SyntaxCheck do
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
   end
 
   let(:cookbook_path) { File.join(CHEF_SPEC_DATA, 'cookbooks', 'openldap') }

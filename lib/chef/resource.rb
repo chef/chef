@@ -22,6 +22,7 @@ require 'chef/dsl/platform_introspection'
 require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/dsl/reboot_pending'
+require 'chef/dsl/resources'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
@@ -31,9 +32,14 @@ require 'chef/node_map'
 require 'chef/node'
 require 'chef/platform'
 require 'chef/resource/resource_notification'
+require 'chef/provider_resolver'
+require 'chef/resource_resolver'
+require 'set'
 
 require 'chef/mixin/deprecation'
 require 'chef/mixin/provides'
+require 'chef/mixin/shell_out'
+require 'chef/mixin/powershell_out'
 
 class Chef
   class Resource
@@ -47,6 +53,12 @@ class Chef
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
     extend Chef::Mixin::Provides
+
+    # This lets user code do things like `not_if { shell_out!("command") }`
+    include Chef::Mixin::ShellOut
+    include Chef::Mixin::PowershellOut
+
+    NULL_ARG = Object.new
 
     #
     # The node the current Chef run is using.
@@ -79,7 +91,6 @@ class Chef
       run_context.resource_collection.find(*args)
     end
 
-
     #
     # Resource User Interface (for users)
     #
@@ -98,8 +109,8 @@ class Chef
       @before = nil
       @params = Hash.new
       @provider = nil
-      @allowed_actions = [ :nothing ]
-      @action = :nothing
+      @allowed_actions = self.class.allowed_actions.to_a
+      @action = self.class.default_action
       @updated = false
       @updated_by_last_action = false
       @supports = {}
@@ -160,19 +171,24 @@ class Chef
     # @param arg [Array[Symbol], Symbol] A list of actions (e.g. `:create`)
     # @return [Array[Symbol]] the list of actions.
     #
+    attr_accessor :action
     def action(arg=nil)
       if arg
-        action_list = arg.kind_of?(Array) ? arg : [ arg ]
-        action_list = action_list.collect { |a| a.to_sym }
-        action_list.each do |action|
+        if arg.is_a?(Array)
+          arg = arg.map { |a| a.to_sym }
+        else
+          arg = arg.to_sym
+        end
+        Array(arg).each do |action|
           validate(
             { action: action },
-            { action: { kind_of: Symbol, equal_to: @allowed_actions } }
+            { action: { kind_of: Symbol, equal_to: allowed_actions } }
           )
         end
-        @action = action_list
+        self.action = arg
       else
-        @action
+        # Pull the action from the class if it's not set
+        @action || self.class.default_action
       end
     end
 
@@ -180,8 +196,7 @@ class Chef
     # Sets up a notification that will run a particular action on another resource
     # if and when *this* resource is updated by an action.
     #
-    # If the action does nothing--does not update this resource, the
-    # notification never triggers.)
+    # If the action does not update this resource, the notification never triggers.
     #
     # Only one resource may be specified per notification.
     #
@@ -467,12 +482,21 @@ class Chef
     #
     # @return [Hash{Symbol => Object}] A Hash of attribute => value for the
     #   Resource class's `state_attrs`.
-    def state
+    def state_for_resource_reporter
       self.class.state_attrs.inject({}) do |state_attrs, attr_name|
         state_attrs[attr_name] = send(attr_name)
         state_attrs
       end
     end
+
+    #
+    # Since there are collisions with LWRP parameters named 'state' this
+    # method is not used by the resource_reporter and is most likely unused.
+    # It certainly cannot be relied upon and cannot be fixed.
+    #
+    # @deprecated
+    #
+    alias_method :state, :state_for_resource_reporter
 
     #
     # The value of the identity attribute, if declared. Falls back to #name if
@@ -588,14 +612,14 @@ class Chef
     #
 
     def to_s
-      "#{@resource_name}[#{@name}]"
+      "#{resource_name}[#{name}]"
     end
 
     def to_text
       return "suppressed sensitive resource output" if sensitive
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       text = "# Declared in #{@source_line}\n\n"
-      text << self.class.dsl_name + "(\"#{name}\") do\n"
+      text << "#{resource_name}(\"#{name}\") do\n"
       ivars.each do |ivar|
         if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
           value_string = value.respond_to?(:to_text) ? value.to_text : value.inspect
@@ -749,6 +773,12 @@ class Chef
     #   have.
     #
     attr_accessor :allowed_actions
+    def allowed_actions(value=NULL_ARG)
+      if value != NULL_ARG
+        self.allowed_actions = value
+      end
+      @allowed_actions
+    end
 
     #
     # Whether or not this resource was updated during an action.  If multiple
@@ -807,19 +837,15 @@ class Chef
     end
 
     #
-    # The DSL name of this resource (e.g. `package` or `yum_package`)
+    # The display name of this resource type, for printing purposes.
     #
-    # @return [String] The DSL name of this resource.
-    def self.dsl_name
-      convert_to_snake_case(name, 'Chef::Resource')
+    # Will be used to print out the resource in messages, e.g. resource_name[name]
+    #
+    # @return [Symbol] The name of this resource type (e.g. `:execute`).
+    #
+    def resource_name
+      @resource_name || self.class.resource_name
     end
-
-    #
-    # The name of this resource (e.g. `file`)
-    #
-    # @return [String] The name of this resource.
-    #
-    attr_reader :resource_name
 
     #
     # Sets a list of capabilities of the real resource.  For example, `:remount`
@@ -852,6 +878,66 @@ class Chef
     end
 
     #
+    # The DSL name of this resource (e.g. `package` or `yum_package`)
+    #
+    # @return [String] The DSL name of this resource.
+    #
+    # @deprecated Use resource_name instead.
+    #
+    def self.dsl_name
+      Chef::Log.deprecation "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead."
+      if name
+        name = self.name.split('::')[-1]
+        convert_to_snake_case(name)
+      end
+    end
+
+    #
+    # The display name of this resource type, for printing purposes.
+    #
+    # This also automatically calls "provides" to provide DSL with the given
+    # name.
+    #
+    # resource_name defaults to your class name.
+    #
+    # Call `resource_name nil` to remove the resource name (and any
+    # corresponding DSL).
+    #
+    # @param value [Symbol] The desired name of this resource type (e.g.
+    #   `execute`), or `nil` if this class is abstract and has no resource_name.
+    #
+    # @return [Symbol] The name of this resource type (e.g. `:execute`).
+    #
+    def self.resource_name(name=NULL_ARG)
+      # Setter
+      if name != NULL_ARG
+        remove_canonical_dsl
+
+        # Set the resource_name and call provides
+        if name
+          name = name.to_sym
+          # If our class is not already providing this name, provide it.
+          if !Chef::ResourceResolver.list(name).include?(self)
+            provides name, canonical: true
+          end
+          @resource_name = name
+        else
+          @resource_name = nil
+        end
+      else
+        # set resource_name automatically if it's not set
+        if !instance_variable_defined?(:@resource_name) && self.name
+          resource_name convert_to_snake_case(self.name.split('::')[-1])
+        end
+      end
+
+      @resource_name
+    end
+    def self.resource_name=(name)
+      resource_name(name)
+    end
+
+    #
     # The module where Chef should look for providers for this resource.
     # The provider for `MyResource` will be looked up using
     # `provider_base::MyResource`.  Defaults to `Chef::Provider`.
@@ -865,11 +951,70 @@ class Chef
     #     # ...other stuff
     #   end
     #
+    # @deprecated Use `provides` on the provider, or `provider` on the resource, instead.
+    #
     def self.provider_base(arg=nil)
-      @provider_base ||= arg
-      @provider_base ||= Chef::Provider
+      if arg
+        Chef::Log.deprecation("Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
+      end
+      @provider_base ||= arg || Chef::Provider
     end
 
+    #
+    # The list of allowed actions for the resource.
+    #
+    # @param actions [Array<Symbol>] The list of actions to add to allowed_actions.
+    #
+    # @return [Arrau<Symbol>] The list of actions, as symbols.
+    #
+    def self.allowed_actions(*actions)
+      @allowed_actions ||=
+        if superclass.respond_to?(:allowed_actions)
+          superclass.allowed_actions.dup
+        else
+          [ :nothing ]
+        end
+      @allowed_actions |= actions
+    end
+    def self.allowed_actions=(value)
+      @allowed_actions = value
+    end
+
+    #
+    # The action that will be run if no other action is specified.
+    #
+    # Setting default_action will automatially add the action to
+    # allowed_actions, if it isn't already there.
+    #
+    # Defaults to :nothing.
+    #
+    # @param action_name [Symbol,Array<Symbol>] The default action (or series
+    #   of actions) to use.
+    #
+    # @return [Symbol,Array<Symbol>] The default actions for the resource.
+    #
+    def self.default_action(action_name=NULL_ARG)
+      unless action_name.equal?(NULL_ARG)
+        if action_name.is_a?(Array)
+          @default_action = action_name.map { |arg| arg.to_sym }
+        else
+          @default_action = action_name.to_sym
+        end
+
+        self.allowed_actions |= Array(@default_action)
+      end
+
+      if @default_action
+        @default_action
+      elsif superclass.respond_to?(:default_action)
+        superclass.default_action
+      else
+        :nothing
+      end
+    end
+    def self.default_action=(action_name)
+      default_action(action_name)
+    end
 
     #
     # Internal Resource Interface (for Chef)
@@ -945,9 +1090,30 @@ class Chef
       # NOTE: that we do not support unregistering classes as descendents like
       # we used to for LWRP unloading because that was horrible and removed in
       # Chef-12.
+      # @deprecated
+      # @api private
       alias :resource_classes :descendants
+      # @deprecated
+      # @api private
       alias :find_subclass_by_name :find_descendants_by_name
     end
+
+    # @deprecated
+    # @api private
+    # We memoize a sorted version of descendants so that resource lookups don't
+    # have to sort all the things, all the time.
+    # This was causing performance issues in test runs, and probably in real
+    # life as well.
+    @@sorted_descendants = nil
+    def self.sorted_descendants
+      @@sorted_descendants ||= descendants.sort_by { |x| x.to_s }
+    end
+    def self.inherited(child)
+      super
+      @sorted_descendants = nil
+      child.resource_name
+    end
+
 
     # If an unknown method is invoked, determine whether the enclosing Provider's
     # lexical scope can fulfill the request. E.g. This happens when the Resource's
@@ -958,6 +1124,32 @@ class Chef
       else
         raise NoMethodError, "undefined method `#{method_symbol.to_s}' for #{self.class.to_s}"
       end
+    end
+
+    #
+    # Mark this resource as providing particular DSL.
+    #
+    # Resources have an automatic DSL based on their resource_name, equivalent to
+    # `provides :resource_name` (providing the resource on all OS's).  If you
+    # declare a `provides` with the given resource_name, it *replaces* that
+    # provides (so that you can provide your resource DSL only on certain OS's).
+    #
+    def self.provides(name, **options, &block)
+      name = name.to_sym
+
+      # `provides :resource_name, os: 'linux'`) needs to remove the old
+      # canonical DSL before adding the new one.
+      if @resource_name && name == @resource_name
+        remove_canonical_dsl
+      end
+
+      result = Chef.set_resource_priority_array(name, self, options, &block)
+      Chef::DSL::Resources.add_resource_dsl(name)
+      result
+    end
+
+    def self.provides?(node, resource)
+      Chef::ResourceResolver.resolve(resource, node: node).provided_by?(self)
     end
 
     # Helper for #notifies
@@ -1016,7 +1208,6 @@ class Chef
     end
 
     def provider_for_action(action)
-      require 'chef/provider_resolver'
       provider = Chef::ProviderResolver.new(node, self, action).resolve.new(self, run_context)
       provider.action = action
       provider
@@ -1090,30 +1281,90 @@ class Chef
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_for_node(short_name, node)
-      require 'chef/resource_resolver'
-      klass = Chef::ResourceResolver.new(node, short_name).resolve
+      klass = Chef::ResourceResolver.resolve(short_name, node: node)
       raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
       klass
     end
 
-    # Returns the class of a Chef::Resource based on the short name
+    #
+    # Returns the class with the given resource_name.
+    #
     # ==== Parameters
     # short_name<Symbol>:: short_name of the resource (ie :directory)
     #
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
+    #
     def self.resource_matching_short_name(short_name)
-      begin
-        rname = convert_to_class_name(short_name.to_s)
-        Chef::Resource.const_get(rname)
-      rescue NameError
-        nil
-      end
+      Chef::ResourceResolver.resolve(short_name, canonical: true)
     end
 
-    private
+    # @api private
+    def self.register_deprecated_lwrp_class(resource_class, class_name)
+      if Chef::Resource.const_defined?(class_name, false)
+        Chef::Log.warn "#{class_name} already exists!  Deprecation class overwrites #{resource_class}"
+        Chef::Resource.send(:remove_const, class_name)
+      end
 
-    def lookup_provider_constant(name)
+      # In order to generate deprecation warnings when you use Chef::Resource::MyLwrp,
+      # we make a special subclass (identical in nearly all respects) of the
+      # actual LWRP.  When you say any of these, a deprecation warning will be
+      # generated:
+      #
+      # - Chef::Resource::MyLwrp.new(...)
+      # - resource.is_a?(Chef::Resource::MyLwrp)
+      # - resource.kind_of?(Chef::Resource::MyLwrp)
+      # - case resource
+      #   when Chef::Resource::MyLwrp
+      #   end
+      #
+      resource_subclass = class_eval <<-EOM, __FILE__, __LINE__+1
+        class Chef::Resource::#{class_name} < resource_class
+          resource_name nil # we do not actually provide anything
+          def initialize(*args, &block)
+            Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+            super
+          end
+          def self.resource_name(*args)
+            if args.empty?
+              @resource_name ||= superclass.resource_name
+            else
+              super
+            end
+          end
+          self
+        end
+      EOM
+      # Make case, is_a and kind_of work with the new subclass, for backcompat.
+      # Any subclass of Chef::Resource::ResourceClass is already a subclass of resource_class
+      # Any subclass of resource_class is considered a subclass of Chef::Resource::ResourceClass
+      resource_class.class_eval do
+        define_method(:is_a?) do |other|
+          other.is_a?(Module) && other === self
+        end
+        define_method(:kind_of?) do |other|
+          other.is_a?(Module) && other === self
+        end
+      end
+      resource_subclass.class_eval do
+        define_singleton_method(:===) do |other|
+          Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+          # resource_subclass is a superclass of all resource_class descendants.
+          if self == resource_subclass && other.class <= resource_class
+            return true
+          end
+          super(other)
+        end
+      end
+      deprecated_constants[class_name.to_sym] = resource_subclass
+    end
+
+    def self.deprecated_constants
+      @deprecated_constants ||= {}
+    end
+
+    # @api private
+    def lookup_provider_constant(name, action=:nothing)
       begin
         self.class.provider_base.const_get(convert_to_class_name(name.to_s))
       rescue NameError => e
@@ -1124,5 +1375,19 @@ class Chef
         end
       end
     end
+
+    private
+
+    def self.remove_canonical_dsl
+      if @resource_name
+        remaining = Chef.resource_priority_map.delete_canonical(@resource_name, self)
+        if !remaining
+          Chef::DSL::Resources.remove_resource_dsl(@resource_name)
+        end
+      end
+    end
   end
 end
+
+# Requiring things at the bottom breaks cycles
+require 'chef/chef_class'

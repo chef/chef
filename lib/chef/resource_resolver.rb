@@ -21,81 +21,137 @@ require 'chef/platform/resource_priority_map'
 
 class Chef
   class ResourceResolver
+    #
+    # Resolve a resource by name.
+    #
+    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`).
+    # @param node [Chef::Node] The node against which to resolve. `nil` causes
+    #   platform filters to be ignored.
+    #
+    def self.resolve(resource_name, node: nil, canonical: nil)
+      new(node, resource_name, canonical: canonical).resolve
+    end
 
+    #
+    # Resolve a list of all resources that implement the given DSL (in order of
+    # preference).
+    #
+    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`).
+    # @param node [Chef::Node] The node against which to resolve. `nil` causes
+    #   platform filters to be ignored.
+    # @param canonical [Boolean] `true` or `false` to match canonical or
+    #   non-canonical values only. `nil` to ignore canonicality.
+    #
+    def self.list(resource_name, node: nil, canonical: nil)
+      new(node, resource_name, canonical: canonical).list
+    end
+
+
+    include Chef::Mixin::ConvertToClassName
+
+    # @api private
     attr_reader :node
-    attr_reader :resource
+    # @api private
+    attr_reader :resource_name
+    # @api private
+    def resource
+      Chef::Log.deprecation("Chef::ResourceResolver.resource deprecated.  Use resource_name instead.")
+      resource_name
+    end
+    # @api private
     attr_reader :action
+    # @api private
+    attr_reader :canonical
 
-    def initialize(node, resource)
+    #
+    # Create a resolver.
+    #
+    # @param node [Chef::Node] The node against which to resolve. `nil` causes
+    #   platform filters to be ignored.
+    # @param resource_name [Symbol] The resource DSL name (e.g. `:file`).
+    # @param canonical [Boolean] `true` or `false` to match canonical or
+    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
+    #
+    # @api private use Chef::ResourceResolver.resolve or .list instead.
+    def initialize(node, resource_name, canonical: nil)
       @node = node
-      @resource = resource
+      @resource_name = resource_name.to_sym
+      @canonical = canonical
     end
 
-    # return a deterministically sorted list of Chef::Resource subclasses
-    def resources
-      @resources ||= Chef::Resource.descendants
-    end
-
+    # @api private use Chef::ResourceResolver.resolve instead.
     def resolve
-      maybe_dynamic_resource_resolution(resource) ||
-        maybe_chef_platform_lookup(resource)
-    end
-
-    # this cut looks at if the resource can handle the resource type on the node
-    def enabled_handlers
-      @enabled_handlers ||=
-        resources.select do |klass|
-          klass.provides?(node, resource)
-        end.sort {|a,b| a.to_s <=> b.to_s }
-      @enabled_handlers
-    end
-
-    private
-
-    # try dynamically finding a resource based on querying the resources to see what they support
-    def maybe_dynamic_resource_resolution(resource)
       # log this so we know what resources will work for the generic resource on the node (early cut)
-      Chef::Log.debug "resources for generic #{resource} resource enabled on node include: #{enabled_handlers}"
+      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
 
-      # if none of the resources specifically support the resource, we still need to pick one of the resources that are
-      # enabled on the node to handle the why-run use case.
-      handlers = enabled_handlers
+      handler = prioritized_handlers.first
 
-      if handlers.count >= 2
-        # this magic stack ranks the resources by where they appear in the resource_priority_map
-        priority_list = [ get_priority_array(node, resource) ].flatten.compact
-        handlers = handlers.sort_by { |x| i = priority_list.index x; i.nil? ? Float::INFINITY : i }
-        if priority_list.index(handlers.first).nil?
-          # if we had more than one and we picked one with a precidence of infinity that means that the resource_priority_map
-          # entry for this resource is missing -- we should probably raise here and force resolution of the ambiguity.
-          Chef::Log.warn "Ambiguous resource precedence: #{handlers}, please use Chef.set_resource_priority_array to provide determinism"
-        end
-        handlers = [ handlers.first ]
+      if handler
+        Chef::Log.debug "Resource for #{resource_name} is #{handler}"
+      else
+        Chef::Log.debug "Dynamic resource resolver FAILED to resolve a resource for #{resource_name}"
       end
 
-      Chef::Log.debug "resources that survived replacement include: #{handlers}"
-
-      raise Chef::Exceptions::AmbiguousResourceResolution.new(resource, handlers) if handlers.count >= 2
-
-      Chef::Log.debug "dynamic resource resolver FAILED to resolve a resouce" if handlers.empty?
-
-      return nil if handlers.empty?
-
-      handlers[0]
+      handler
     end
 
-    # try the old static lookup of resources by mangling name to resource klass
-    def maybe_chef_platform_lookup(resource)
-      Chef::Resource.resource_matching_short_name(resource)
+    # @api private
+    def list
+      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
+      prioritized_handlers
     end
 
-    # dep injection hooks
-    def get_priority_array(node, resource_name)
-      resource_priority_map.get_priority_array(node, resource_name)
+    #
+    # Whether this DSL is provided by the given resource_class.
+    #
+    # @api private
+    def provided_by?(resource_class)
+      !prioritized_handlers.include?(resource_class)
     end
 
-    def resource_priority_map
+    protected
+
+    def priority_map
       Chef::Platform::ResourcePriorityMap.instance
     end
+
+    def prioritized_handlers
+      @prioritized_handlers ||=
+        priority_map.list_handlers(node, resource_name, canonical: canonical)
+    end
+
+    module Deprecated
+      # return a deterministically sorted list of Chef::Resource subclasses
+      # @deprecated Now prioritized_handlers does its own work (more efficiently)
+      def resources
+        Chef::Resource.sorted_descendants
+      end
+
+      # A list of all handlers
+      # @deprecated Now prioritized_handlers does its own work
+      def enabled_handlers
+        Chef::Log.deprecation("enabled_handlers is deprecated.  If you are implementing a ResourceResolver, use provided_handlers.  If you are not, use Chef::ResourceResolver.list(#{resource_name.inspect}, node: <node>)")
+        resources.select { |klass| klass.provides?(node, resource_name) }
+      end
+
+      protected
+
+      # A list of all handlers for the given DSL.  If there are no handlers in
+      # the map, we still check all descendants of Chef::Resource for backwards
+      # compatibility purposes.
+      def prioritized_handlers
+        @prioritized_handlers ||= super ||
+          resources.select do |klass|
+            # Don't bother calling provides? unless it's overridden. We already
+            # know prioritized_handlers
+            if klass.method(:provides?).owner != Chef::Resource && klass.provides?(node, resource_name)
+              Chef::Log.deprecation("Resources #{provided.join(", ")} are marked as providing DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
+              Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+              true
+            end
+          end
+      end
+    end
+    prepend Deprecated
   end
 end

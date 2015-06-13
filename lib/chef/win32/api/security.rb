@@ -193,6 +193,20 @@ class Chef
 
         MAXDWORD = 0xffffffff
 
+        # LOGON32 constants for LogonUser
+        LOGON32_LOGON_INTERACTIVE = 2;
+        LOGON32_LOGON_NETWORK = 3;
+        LOGON32_LOGON_BATCH = 4;
+        LOGON32_LOGON_SERVICE = 5;
+        LOGON32_LOGON_UNLOCK = 7;
+        LOGON32_LOGON_NETWORK_CLEARTEXT = 8;
+        LOGON32_LOGON_NEW_CREDENTIALS = 9;
+
+        LOGON32_PROVIDER_DEFAULT = 0;
+        LOGON32_PROVIDER_WINNT35 = 1;
+        LOGON32_PROVIDER_WINNT40 = 2;
+        LOGON32_PROVIDER_WINNT50 = 3;
+
         ###############################################
         # Win32 API Bindings
         ###############################################
@@ -269,6 +283,14 @@ class Chef
              :TokenIsRestricted,
              :MaxTokenInfoClass
         ]
+
+        class TOKEN_OWNER < FFI::Struct
+          layout :Owner, :pointer
+        end
+
+        class TOKEN_PRIMARY_GROUP < FFI::Struct
+          layout :PrimaryGroup, :pointer
+        end
 
         # https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572%28v=vs.85%29.aspx
         SECURITY_IMPERSONATION_LEVEL = enum :SECURITY_IMPERSONATION_LEVEL, [
@@ -405,6 +427,8 @@ class Chef
         safe_attach_function :SetSecurityDescriptorOwner, [ :pointer, :pointer, :BOOL ], :BOOL
         safe_attach_function :SetSecurityDescriptorSacl, [ :pointer, :BOOL, :pointer, :BOOL ], :BOOL
         safe_attach_function :GetTokenInformation, [ :HANDLE, :TOKEN_INFORMATION_CLASS, :pointer, :DWORD, :PDWORD ], :BOOL
+        safe_attach_function :LogonUserW, [:LPTSTR, :LPTSTR, :LPTSTR, :DWORD, :DWORD, :PHANDLE], :BOOL
+
       end
     end
   end

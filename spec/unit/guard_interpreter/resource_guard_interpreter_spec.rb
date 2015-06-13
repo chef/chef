@@ -24,6 +24,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
+    node.automatic[:os] = 'windows'
     node
   end
 
@@ -81,6 +82,14 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
     it "successfully evaluates the resource" do
       expect(guard_interpreter.evaluate).to eq(true)
+    end
+
+    it "does not corrupt the run_context of the node" do
+      node_run_context_before_guard_execution = parent_resource.run_context
+      expect(node_run_context_before_guard_execution.object_id).to eq(parent_resource.node.run_context.object_id)
+      guard_interpreter.evaluate
+      node_run_context_after_guard_execution = parent_resource.run_context
+      expect(node_run_context_after_guard_execution.object_id).to eq(parent_resource.node.run_context.object_id)
     end
 
     describe "script command opts switch" do
@@ -144,4 +153,3 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
     end
   end
 end
-

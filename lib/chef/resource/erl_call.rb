@@ -28,18 +28,16 @@ class Chef
 
       identity_attr :code
 
+      default_action :run
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :erl_call
 
         @code = "q()." # your erlang code goes here
         @cookie = nil # cookie of the erlang node
         @distributed = false # if you want to have a distributed erlang node
         @name_type = "sname" # type of erlang hostname name or sname
         @node_name = "chef@localhost" # the erlang node hostname
-
-        @action = "run"
-        @allowed_actions.push(:run)
       end
 
       def code(arg=nil)

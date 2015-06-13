@@ -30,15 +30,16 @@ class Chef
 
         def initialize(path, exception)
           @path, @exception = path, exception
+          @backtrace_lines_in_cookbooks = nil
+          @file_lines = nil
+          @culprit_backtrace_entry = nil
+          @culprit_line = nil
         end
 
         def add_explanation(error_description)
-          case exception
-          when Chef::Exceptions::RecipeNotFound
-            error_description.section(exception.class.name, exception.message)
-          else
-            error_description.section(exception.class.name, exception.message)
+          error_description.section(exception.class.name, exception.message)
 
+          if found_error_in_cookbooks?
             traceback = filtered_bt.map {|line| "  #{line}"}.join("\n")
             error_description.section("Cookbook Trace:", traceback)
             error_description.section("Relevant File Content:", context)
@@ -93,10 +94,21 @@ class Chef
         end
 
         def filtered_bt
-          filters = Array(Chef::Config.cookbook_path).map {|p| /^#{Regexp.escape(p)}/ }
-          r = exception.backtrace.select {|line| filters.any? {|filter| line =~ filter }}
-          Chef::Log.debug("filtered backtrace of compile error: #{r.join(",")}")
-          return r.count > 0 ? r : exception.backtrace
+          backtrace_lines_in_cookbooks.count > 0 ? backtrace_lines_in_cookbooks : exception.backtrace
+        end
+
+        def found_error_in_cookbooks?
+          !backtrace_lines_in_cookbooks.empty?
+        end
+
+        def backtrace_lines_in_cookbooks
+          @backtrace_lines_in_cookbooks ||=
+            begin
+              filters = Array(Chef::Config.cookbook_path).map {|p| /^#{Regexp.escape(p)}/i }
+              r = exception.backtrace.select {|line| filters.any? {|filter| line =~ filter }}
+              Chef::Log.debug("filtered backtrace of compile error: #{r.join(",")}")
+              r
+            end
         end
 
       end

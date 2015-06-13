@@ -31,11 +31,6 @@ class Chef
 
       provides :package, platform: "freebsd"
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :freebsd_package
-      end
-
       def after_created
         assign_provider
       end

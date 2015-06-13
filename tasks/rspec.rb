@@ -25,13 +25,26 @@ CHEF_ROOT = File.join(File.dirname(__FILE__), "..")
 begin
   require 'rspec/core/rake_task'
 
+
+  desc "Run specs for Chef's Components"
+  task :component_specs do
+    Dir.chdir("chef-config") do
+      Bundler.with_clean_env do
+        sh("bundle install --local")
+        sh("bundle exec rake spec")
+      end
+    end
+  end
+
   task :default => :spec
+
+  task :spec => :component_specs
 
   desc "Run standard specs (minus long running specs)"
   RSpec::Core::RakeTask.new(:spec) do |t|
     # right now this just limits to functional + unit, but could also remove
     # individual tests marked long-running
-    t.pattern = FileList['spec/{functional,unit}/**/*_spec.rb']
+    t.pattern = FileList['spec/**/*_spec.rb']
   end
 
   namespace :spec do
