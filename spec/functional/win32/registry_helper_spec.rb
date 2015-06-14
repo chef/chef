@@ -111,10 +111,6 @@ describe 'Chef::Win32::Registry', :windows_only do
       expect(@registry.key_exists!("HKCU\\Software\\Root\\Branch\\Flower")).to eq(true)
     end
 
-    it "returns true if the key path exists with a case insensitive path" do
-      expect(@registry.key_exists!("HKCU\\Software\\Root\\Branch\\flower")).to eq(true)
-    end
-
     it "throws an exception if the key path does not exist" do
       expect {@registry.key_exists!("HKCU\\Software\\Branch\\Flower")}.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
@@ -133,6 +129,9 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
     it "returns true if the value exists" do
       expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals"})).to eq(true)
+    end
+    it "returns true if the value exists with a case mismatch on the value name" do
+      expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"petals"})).to eq(true)
     end
     it "returns false if the value does not exist" do
       expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"FOOBAR"})).to eq(false)
