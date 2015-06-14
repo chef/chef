@@ -130,6 +130,9 @@ describe 'Chef::Win32::Registry', :windows_only do
     it "returns true if the value exists" do
       expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals"})).to eq(true)
     end
+    it "returns true if the value exists with a case mismatch on the value name" do
+      expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"petals"})).to eq(true)
+    end
     it "returns false if the value does not exist" do
       expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"FOOBAR"})).to eq(false)
     end
@@ -145,6 +148,9 @@ describe 'Chef::Win32::Registry', :windows_only do
     it "returns true if the value exists" do
       expect(@registry.value_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals"})).to eq(true)
     end
+    it "returns true if the value exists with a case mismatch on the value name" do
+      expect(@registry.value_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"petals"})).to eq(true)
+    end
     it "throws an exception if the value does not exist" do
       expect {@registry.value_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"FOOBAR"})}.to raise_error(Chef::Exceptions::Win32RegValueMissing)
     end
@@ -159,6 +165,9 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
     it "returns true if all the data matches" do
       expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Pink", "Delicate"]})).to eq(true)
+    end
+    it "returns true if all the data matches with a case mismatch on the data name" do
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"petals", :type=>:multi_string, :data=>["Pink", "Delicate"]})).to eq(true)
     end
     it "returns false if the name does not exist" do
       expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"slateP", :type=>:multi_string, :data=>["Pink", "Delicate"]})).to eq(false)
@@ -180,6 +189,9 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
     it "returns true if all the data matches" do
       expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Pink", "Delicate"]})).to eq(true)
+    end
+    it "returns true if all the data matches with a case mismatch on the data name" do
+      expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"petals", :type=>:multi_string, :data=>["Pink", "Delicate"]})).to eq(true)
     end
     it "throws an exception if the name does not exist" do
       expect {@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"slateP", :type=>:multi_string, :data=>["Pink", "Delicate"]})}.to raise_error(Chef::Exceptions::Win32RegDataMissing)
