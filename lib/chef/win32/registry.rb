@@ -203,7 +203,7 @@ class Chef
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          return true if reg.any? {|val| val == value[:name] }
+          return true if reg.any? {|val| val.downcase == value[:name].downcase }
         end
         return false
       end
