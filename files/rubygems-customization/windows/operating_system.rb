@@ -10,7 +10,7 @@ Gem::ConfigFile::OPERATING_SYSTEM_DEFAULTS["update"] = "--user"
 # We will inject our hacks in if the user will allow it.
 begin
   if (ENV['CHEFDK_ENV_FIX'] || '0').to_i != 0
-    require 'chefdk_env_customizations'
+    require 'chefdk_env_customization'
   end
 rescue
   nil
