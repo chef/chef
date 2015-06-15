@@ -186,9 +186,12 @@ class Chef
       end
 
       def search_nodes
+        @query = @name_args[0]
+        fuzzify_query
+
         list = Array.new
-        query = Chef::Search::Query.new
-        @action_nodes = query.search(:node, @name_args[0])[0]
+        q = Chef::Search::Query.new
+        @action_nodes = q.search(:node, @query)[0]
         @action_nodes.each do |item|
           # we should skip the loop to next iteration if the item
           # returned by the search is nil
@@ -202,6 +205,12 @@ class Chef
           list.push(srv)
         end
         list
+      end
+
+      def fuzzify_query
+        if @query !~ /:/
+          @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}*"
+        end
       end
 
       def session_from_list(list)
