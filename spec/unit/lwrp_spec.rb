@@ -409,13 +409,13 @@ describe "LWRP" do
         end
       end
 
-      context "when the child does not defined the methods" do
+      context "when the child does not define the methods" do
         let(:child) do
           Class.new(parent)
         end
 
         it "delegates #actions to the parent" do
-          expect(child.actions).to eq([:eat, :sleep])
+          expect(child.actions).to eq([:nothing, :eat, :sleep])
         end
 
         it "delegates #default_action to the parent" do
@@ -432,7 +432,7 @@ describe "LWRP" do
         end
 
         it "does not delegate #actions to the parent" do
-          expect(child.actions).to eq([:dont_eat, :dont_sleep])
+          expect(child.actions).to eq([:nothing, :dont_eat, :dont_sleep])
         end
 
         it "does not delegate #default_action to the parent" do
@@ -457,7 +457,7 @@ describe "LWRP" do
 
         it "amends actions when they are already defined" do
           raise_if_deprecated!
-          expect(child.actions).to eq([:eat, :sleep, :drink])
+          expect(child.actions).to eq([:nothing, :eat, :sleep, :drink])
         end
       end
     end
