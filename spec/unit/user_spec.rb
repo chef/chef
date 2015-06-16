@@ -244,7 +244,7 @@ describe Chef::User do
       expect(@json).not_to include("password")
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { @user }
     end
   end

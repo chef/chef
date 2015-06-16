@@ -67,7 +67,7 @@ describe Chef::JSONCompat do
       expect(Chef::JSONCompat.to_json_pretty(f)).to eql("{\n  \"foo\": 1234,\n  \"bar\": {\n    \"baz\": 5678\n  }\n}\n")
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { Foo.new }
     end
   end

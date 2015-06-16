@@ -344,6 +344,7 @@ describe Chef::Resource do
         expect(r.resource_name).to be_nil
         expect(r.declared_type).to eq :d
       end
+
       it "and there are no provides lines, @resource_name is used" do
         c = Class.new(Chef::Resource) do
           def initialize(*args, &block)
@@ -356,6 +357,20 @@ describe Chef::Resource do
         r.declared_type = :d
         expect(c.resource_name).to be_nil
         expect(r.resource_name).to eq :blah
+        expect(r.declared_type).to eq :d
+      end
+
+      it "and the resource class gets a late-bound name, resource_name is nil" do
+        c = Class.new(Chef::Resource) do
+          def self.name
+            "ResourceSpecNameTest"
+          end
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to be_nil
         expect(r.declared_type).to eq :d
       end
     end
@@ -416,7 +431,7 @@ describe Chef::Resource do
       expect(json).to match(/instance_vars/)
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { @resource }
     end
   end

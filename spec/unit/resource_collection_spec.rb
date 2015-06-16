@@ -252,7 +252,7 @@ describe Chef::ResourceCollection do
       expect(json).to match(/instance_vars/)
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { rc }
     end
   end

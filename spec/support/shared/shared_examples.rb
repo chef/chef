@@ -1,7 +1,7 @@
 # For storing any examples shared between multiple tests
 
 # Any object which defines a .to_json should import this test
-shared_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+shared_examples "to_json equivalent to Chef::JSONCompat.to_json" do
 
   let(:jsonable) {
     raise "You must define the subject when including this test"

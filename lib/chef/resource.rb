@@ -924,11 +924,6 @@ class Chef
         else
           @resource_name = nil
         end
-      else
-        # set resource_name automatically if it's not set
-        if !instance_variable_defined?(:@resource_name) && self.name
-          resource_name convert_to_snake_case(self.name.split('::')[-1])
-        end
       end
 
       @resource_name
@@ -1111,7 +1106,10 @@ class Chef
     def self.inherited(child)
       super
       @sorted_descendants = nil
-      child.resource_name
+      # set resource_name automatically if it's not set
+      if child.name && !child.resource_name
+        child.resource_name(convert_to_snake_case(child.name.split('::')[-1]))
+      end
     end
 
 
