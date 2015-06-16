@@ -24,6 +24,8 @@ describe 'chef_repo_path tests', :workstation do
   include IntegrationSupport
   include KnifeSupport
 
+  let(:error_rel_path_outside_repo) { /^ERROR: Attempt to use relative path '' when current directory is outside the repository path/ }
+
   # TODO alternate repo_path / *_path
   context 'alternate *_path' do
     when_the_repository 'has clients and clients2, cookbooks and cookbooks2, etc.' do
@@ -109,14 +111,14 @@ EOM
         context 'when cwd is at the top level' do
           before { cwd '.' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
         context 'when cwd is inside the data_bags directory' do
           before { cwd 'data_bags' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
@@ -192,14 +194,14 @@ EOM
         context 'when cwd is inside the data_bags directory' do
           before { cwd 'data_bags' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
         context 'when cwd is inside chef_repo2' do
           before { cwd 'chef_repo2' }
           it 'knife list -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
@@ -225,14 +227,14 @@ EOM
         context 'when cwd is at the top level' do
           before { cwd '.' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
         context 'when cwd is inside the data_bags directory' do
           before { cwd 'data_bags' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
@@ -445,7 +447,7 @@ EOM
         context 'when cwd is at the top level' do
           before { cwd '.' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
@@ -621,14 +623,14 @@ EOM
         context 'when cwd is at the top level' do
           before { cwd '.' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
         context 'when cwd is inside the data_bags directory' do
           before { cwd 'data_bags' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
@@ -782,7 +784,7 @@ EOM
         context 'when cwd is at the top level' do
           before { cwd '.' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
 
@@ -823,7 +825,7 @@ EOM
         context 'when cwd is inside chef_repo2/data_bags' do
           before { cwd 'chef_repo2/data_bags' }
           it 'knife list --local -Rfp fails' do
-            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+            knife('list --local -Rfp').should_fail(error_rel_path_outside_repo)
           end
         end
       end
