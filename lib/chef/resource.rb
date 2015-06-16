@@ -965,7 +965,7 @@ class Chef
     #
     # @param actions [Array<Symbol>] The list of actions to add to allowed_actions.
     #
-    # @return [Arrau<Symbol>] The list of actions, as symbols.
+    # @return [Array<Symbol>] The list of actions, as symbols.
     #
     def self.allowed_actions(*actions)
       @allowed_actions ||=
@@ -974,10 +974,10 @@ class Chef
         else
           [ :nothing ]
         end
-      @allowed_actions |= actions
+      @allowed_actions |= actions.flatten
     end
     def self.allowed_actions=(value)
-      @allowed_actions = value
+      @allowed_actions = value.uniq
     end
 
     #

@@ -85,8 +85,9 @@ class Chef
         # Adds +action_names+ to the list of valid actions for this resource.
         # Does not include superclass's action list when appending.
         def actions(*action_names)
+          action_names = action_names.flatten
           if !action_names.empty? && !@allowed_actions
-            self.allowed_actions = action_names
+            self.allowed_actions = ([ :nothing ] + action_names).uniq
           else
             allowed_actions(*action_names)
           end

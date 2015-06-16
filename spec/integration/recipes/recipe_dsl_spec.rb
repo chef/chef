@@ -754,4 +754,48 @@ describe "Recipe DSL methods" do
       end
     end
   end
+
+  before(:all) { Namer.current_index = 0 }
+  before { Namer.current_index += 1 }
+
+  context "with an LWRP that declares actions" do
+    let(:resource_class) {
+      Class.new(Chef::Resource::LWRPBase) do
+        provides :"recipe_dsl_spec#{Namer.current_index}"
+        actions :create
+      end
+    }
+    let(:resource) {
+      resource_class.new("blah", run_context)
+    }
+    it "The actions are part of actions along with :nothing" do
+      expect(resource_class.actions).to eq [ :nothing, :create ]
+    end
+    it "The actions are part of allowed_actions along with :nothing" do
+      expect(resource.allowed_actions).to eq [ :nothing, :create ]
+    end
+
+    context "and a subclass that declares more actions" do
+      let(:subresource_class) {
+        Class.new(Chef::Resource::LWRPBase) do
+          provides :"recipe_dsl_spec_sub#{Namer.current_index}"
+          actions :delete
+        end
+      }
+      let(:subresource) {
+        subresource_class.new("subblah", run_context)
+      }
+
+      it "The parent class actions are not part of actions" do
+        expect(subresource_class.actions).to eq [ :nothing, :delete ]
+      end
+      it "The parent class actions are not part of allowed_actions" do
+        expect(subresource.allowed_actions).to eq [ :nothing, :delete ]
+      end
+      it "The parent class actions do not change" do
+        expect(resource_class.actions).to eq [ :nothing, :create ]
+        expect(resource.allowed_actions).to eq [ :nothing, :create ]
+      end
+    end
+  end
 end
