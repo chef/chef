@@ -200,7 +200,11 @@ class Chef
       end
 
       def SafelyDowncase(val)
-        (val == nil ? nil : val.downcase)
+        begin
+          return (val == nil ? nil : val.downcase)
+        rescue NoMethodError
+          return val
+        end
       end
 
       def value_exists?(key_path, value)
