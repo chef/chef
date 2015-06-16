@@ -974,10 +974,10 @@ class Chef
         else
           [ :nothing ]
         end
-      @allowed_actions |= actions.map { |v| v.to_sym }
+      @allowed_actions |= actions.flatten
     end
     def self.allowed_actions=(value)
-      @allowed_actions = value.map { |v| v.to_sym }.uniq
+      @allowed_actions = value.uniq
     end
 
     #

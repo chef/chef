@@ -462,6 +462,45 @@ describe "LWRP" do
       end
     end
 
+    describe "when actions is set to an array" do
+      let(:resource_class) do
+        Class.new(Chef::Resource::LWRPBase) do
+          actions [ :eat, :sleep ]
+        end
+      end
+      let(:resource) do
+        resource_class.new('blah')
+      end
+      it "actions includes those actions" do
+        expect(resource_class.actions).to eq [ :nothing, :eat, :sleep ]
+      end
+      it "allowed_actions includes those actions" do
+        expect(resource_class.allowed_actions).to eq [ :nothing, :eat, :sleep ]
+      end
+      it "resource.allowed_actions includes those actions" do
+        expect(resource.allowed_actions).to eq [ :nothing, :eat, :sleep ]
+      end
+    end
+
+    describe "when allowed_actions is set to an array" do
+      let(:resource_class) do
+        Class.new(Chef::Resource::LWRPBase) do
+          allowed_actions [ :eat, :sleep ]
+        end
+      end
+      let(:resource) do
+        resource_class.new('blah')
+      end
+      it "actions includes those actions" do
+        expect(resource_class.actions).to eq [ :nothing, :eat, :sleep ]
+      end
+      it "allowed_actions includes those actions" do
+        expect(resource_class.allowed_actions).to eq [ :nothing, :eat, :sleep ]
+      end
+      it "resource.allowed_actions includes those actions" do
+        expect(resource.allowed_actions).to eq [ :nothing, :eat, :sleep ]
+      end
+    end
   end
 
   describe "Lightweight Chef::Provider" do
