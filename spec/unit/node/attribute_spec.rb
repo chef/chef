@@ -262,6 +262,9 @@ describe Chef::Node::Attribute do
     end
 
     it "gives the value at each level of precedence for a path spec" do
+      require 'pp'
+      pp @attributes.default[:qux][:quux][:quuux]
+      pp @attributes.default[:qux]
       expected = [
         ["default", "default"],
         ["env_default", "env_default"],

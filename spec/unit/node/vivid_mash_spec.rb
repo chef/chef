@@ -35,5 +35,24 @@ describe Chef::Node::VividMash do
       vivid['foo']
       key_exists_as_string('foo')
     end
+
+    it "should deeply autovivify correctly" do
+      vivid['foo'][:bar]['baz'] = true
+      expect(vivid['foo']).to eql({'bar' => { 'baz' => true } })
+    end
+  end
+
+  context "deep conversion of symbols to strings" do
+    context "in the constructor" do
+      let(:vivid) { Chef::Node::VividMash.new(wrapped_object: { foo: { bar: { baz: "qux" } } } ) }
+
+      it "should convert deeply nested symbols" do
+        expect(vivid.wrapped_object[:foo]).to be nil
+        expect(vivid.wrapped_object['foo'][:bar]).to be nil
+        expect(vivid.wrapped_object['foo']['bar'][:baz]).to be nil
+        expect(vivid.wrapped_object['foo']['bar']['baz']).to eql('qux')
+        expect(vivid.wrapped_object).to eql({ 'foo' => { 'bar' => { 'baz' => 'qux' } } } )
+      end
+    end
   end
 end

@@ -21,15 +21,11 @@ require 'chef/node/attribute_constants'
 require 'chef/node/attribute_cell'
 require 'chef/node/set_unless'
 require 'chef/node/attribute_trait/decorator'
-require 'chef/node/attribute_trait/stringize'
-require 'chef/node/attribute_trait/methodize'
 
 class Chef
   class Node
     class Attribute
       include AttributeTrait::Decorator
-      include AttributeTrait::Stringize
-      include AttributeTrait::Methodize
       include AttributeConstants
 
       def initialize(*args)
@@ -85,15 +81,15 @@ class Chef
       end
 
       def normal_unless
-        SetUnless.new(wrapped_object: wrapped_object.normal)
+        SetUnless.new_decorator(wrapped_object: wrapped_object.normal)
       end
 
       def default_unless
-        SetUnless.new(wrapped_object: wrapped_object.default)
+        SetUnless.new_decorator(wrapped_object: wrapped_object.default)
       end
 
       def override_unless
-        SetUnless.new(wrapped_object: wrapped_object.override)
+        SetUnless.new_decorator(wrapped_object: wrapped_object.override)
       end
 
       # should deprecate all of these, epecially #set
@@ -108,12 +104,14 @@ class Chef
       alias_method :automatic_attrs, :automatic
       alias_method :automatic_attrs=, :automatic=
 
-      alias_method :has_key?, :key?
-      alias_method :attribute?, :key?
-      alias_method :member?, :key?
-      alias_method :include?, :key?
+      def has_key?(key)
+        self.public_send(:key?, key)
+      end
 
-      # NOTE: each is handled by method_missing so alias_method does not work
+      alias_method :attribute?, :has_key?
+      alias_method :member?, :has_key?
+      alias_method :include?, :has_key?
+
       def each_attribute(&block)
         self.public_send(:each, &block)
       end

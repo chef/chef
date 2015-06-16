@@ -2,7 +2,6 @@ class Chef
   class Node
     class AttributeTrait
       module Decorator
-
         attr_accessor :wrapped_object
 
         def initialize(wrapped_object: nil)
@@ -14,10 +13,14 @@ class Chef
           super
         end
 
+        def regular_writer(key, value)
+          wrapped_object[key] = value
+        end
+
         def [](key)
           ret = wrapped_object[key]
           if ret.is_a?(Hash) || ret.is_a?(Array)
-            self.class.new(wrapped_object: ret)
+            new_decorator(ret)
           else
             ret
           end
@@ -91,6 +94,21 @@ class Chef
           e
         end
 
+        def new_decorator(obj)
+          self.class.new_decorator(obj)
+        end
+
+        def self.included(base)
+          base.extend(DecoratorClassMethods)
+        end
+
+        module DecoratorClassMethods
+          def new_decorator(obj)
+            dec = allocate
+            dec.wrapped_object = obj
+            dec
+          end
+        end
       end
     end
   end

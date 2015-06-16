@@ -3,9 +3,11 @@ class Chef
     class AttributeTrait
       module Methodize
 
+        alias_method :original_respond_to?, :respond_to?
+
         def method_missing(symbol, *args, &block)
           if self.is_a?(Hash)
-            if respond_to?(symbol)
+            if original_respond_to?(symbol)
               # a method_missing higher up the mixin/inheritance tree handles this
               super(symbol, *args, &block)
             elsif args.empty?
@@ -27,16 +29,10 @@ class Chef
           end
         end
 
-        # we do not implement respond_to? here deliberately because it would become
-        # largely meaningless.
-        #
-        # this is a huge smell that this pattern is overall terrible and should never have
-        # been used in the first place.
-        #
-        # that and this insolvable problem:
-        #
-        # foo['class'] = 'bar'
-        # foo.class  # != 'bar'
+        def respond_to?(symbol, include_private = false)
+          original_respond_to?(symbol, include_private) || key?(symbol)
+          # should return true if the symbol ends in '=' as well?  not sure.
+        end
 
       end
     end

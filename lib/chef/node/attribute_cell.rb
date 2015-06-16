@@ -7,19 +7,11 @@ class Chef
     class AttributeCell
 
       #
-      # This class is responsible for all of the different precedence levels and for merging
-      # values in between them.  It blends up all the precedence levels and behaves either
-      # Hash-like or Array-like as appropriate (somewhat magically, out of necessity).
+      # There are dangerous and unpredictable ways to use the internals of this API:
       #
-      # This class is expected to ultimately wrap Array-like or Hash-like objects.  It is
-      # likely going to be possible to directly twiddle these objects to turn them into
-      # non-Containers by directly writing non-Container values into high precedence levels.
-      #
-      # So do not do that.
-      #
-      # For normal use when you start with a node object you start Hash-like and as you walk
-      # down the node tree you will eventually walk off onto a leaf and that leaf value will
-      # not be wrapped.
+      # 1.  Mutating an interior hash/array into a bare value (particularly nil)
+      # 2.  Using individual setters/getters at anything other than the top level (always use
+      #     node.default['foo'] not node['foo'].default)
       #
 
       include AttributeConstants
@@ -40,26 +32,28 @@ class Chef
                      normal: nil,
                      override: nil, role_override: nil, env_override: nil, force_override: nil,
                      automatic: nil)
-        @default        = default
-        @env_default    = env_default
-        @role_default   = role_default
-        @force_default  = force_default
-        @normal         = normal
-        @override       = override
-        @role_override  = role_override
-        @env_override   = env_override
-        @force_override = force_override
-        @automatic      = automatic
+        self.default        = default
+        self.env_default    = env_default
+        self.role_default   = role_default
+        self.force_default  = force_default
+        self.normal         = normal
+        self.override       = override
+        self.role_override  = role_override
+        self.env_override   = env_override
+        self.force_override = force_override
+        self.automatic      = automatic
       end
 
       COMPONENTS_AS_SYMBOLS.each do |component|
-        define_method component do
-          value = instance_variable_get(:"@#{component}")
-          if value.is_a?(Hash) || value.is_a?(Array)
-            Chef::Node::VividMash.new(wrapped_object: value)
-          else
-            value
-          end
+        define_method :"#{component}=" do |value|
+          instance_variable_set(
+            :"@#{component}",
+            if value.is_a?(Hash) || value.is_a?(Array)
+              Chef::Node::VividMash.new(wrapped_object: value)
+            else
+              value
+            end
+          )
         end
       end
 
@@ -88,11 +82,21 @@ class Chef
       end
 
       def method_missing(method, *args, &block)
-        as_simple_object.public_send(method, *args, &block)
+        # FIXME: we're leaking stringize into this method
+        begin
+          as_simple_object.public_send(method, *args, &block)
+        rescue NoMethodError
+          if args.empty?
+            self[method.to_s]
+          else
+            raise
+          end
+        end
       end
 
       def respond_to?(method, include_private = false)
-        as_simple_object.respond_to?(method, include_private)
+        # FIXME: we're leaking stringize into this method
+        as_simple_object.respond_to?(method, include_private) || key?(method.to_s)
       end
 
       def [](key)
