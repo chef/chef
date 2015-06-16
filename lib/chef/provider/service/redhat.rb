@@ -26,8 +26,6 @@ class Chef
         CHKCONFIG_ON = /\d:on/
         CHKCONFIG_MISSING = /No such/
 
-        provides :service, platform_family: [ "rhel", "fedora", "suse" ]
-
         def self.provides?(node, resource)
           super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
         end

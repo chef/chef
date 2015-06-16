@@ -482,7 +482,6 @@ describe Chef::ProviderResolver do
     python: Chef::Provider::Script,
     remote_directory: Chef::Provider::RemoteDirectory,
     route: Chef::Provider::Route,
-    rpm_package: Chef::Provider::Package::Rpm,
     ruby: Chef::Provider::Script,
     ruby_block: Chef::Provider::RubyBlock,
     script: Chef::Provider::Script,

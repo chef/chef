@@ -153,24 +153,24 @@ describe Chef::Recipe do
             Object.send(:remove_const, :TottenhamHotspur)
           end
 
-          it "selects one if it is the last declared" do
-            expect(Chef::Log).not_to receive(:warn)
+          it "selects the first one alphabetically" do
+            expect(Chef::Log).to receive(:warn).with("You declared a new resource TottenhamHotspur for resource football, but it comes alphabetically after Sounders and has the same filters ({:platform=>\"nbc_sports\"}), so it will not be used. Use override: true if you want to use it for football.")
 
             Sounders.provides :football, platform: "nbc_sports"
             TottenhamHotspur.provides :football, platform: "nbc_sports"
 
             res1 = recipe.football "club world cup"
             expect(res1.name).to eql("club world cup")
-            expect(res1).to be_a_kind_of(TottenhamHotspur)
+            expect(res1).to be_a_kind_of(Sounders)
           end
 
-          it "selects the other one if it is given priority" do
-            expect(Chef::Log).not_to receive(:warn)
+          it "selects the first one alphabetically even if the declaration order is reversed" do
+            expect(Chef::Log).to receive(:warn).with("You are overriding football2 on {:platform=>\"nbc_sports\"} with Sounders: used to be TottenhamHotspur. Use override: true if this is what you intended.")
 
-            TottenhamHotspur.provides :football, platform: "nbc_sports"
-            Sounders.provides :football, platform: "nbc_sports"
+            TottenhamHotspur.provides :football2, platform: "nbc_sports"
+            Sounders.provides :football2, platform: "nbc_sports"
 
-            res1 = recipe.football "club world cup"
+            res1 = recipe.football2 "club world cup"
             expect(res1.name).to eql("club world cup")
             expect(res1).to be_a_kind_of(Sounders)
           end
