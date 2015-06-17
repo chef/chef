@@ -199,19 +199,18 @@ class Chef
         ( applied_arch == :x86_64 ) ? 0x0100 : 0x0200
       end
 
-      def SafelyDowncase(val)
-        begin
-          return (val == nil ? nil : val.downcase)
-        rescue NoMethodError
-          return val
+      def safely_downcase(val)
+        if val.is_a? String
+          return val.downcase
         end
+        return val
       end
 
       def value_exists?(key_path, value)
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          return true if reg.any? {|val| SafelyDowncase(val) == SafelyDowncase(value[:name]) }
+          return true if reg.any? {|val| safely_downcase(val) == safely_downcase(value[:name]) }
         end
         return false
       end
@@ -221,7 +220,7 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
-            if SafelyDowncase(val_name) == SafelyDowncase(value[:name]) &&
+            if safely_downcase(val_name) == safely_downcase(value[:name]) &&
               val_type == get_type_from_name(value[:type]) &&
               val_data == value[:data]
               return true
