@@ -17,7 +17,7 @@
 name          "push-jobs-client"
 friendly_name "Push Jobs Client"
 maintainer    "Chef Software, Inc. <maintainers@chef.io>"
-homepage      "https://www.getchef.com"
+homepage      "https://www.chef.io"
 
 # Ensure we install over the top of the previous package name
 replace  "opscode-push-jobs-client"
