@@ -335,9 +335,9 @@ describe "Chef::Resource.property" do
         resource.x lazy { 10 }
         expect(resource.property_is_set?(:x)).to be_truthy
       end
-      it "when x is retrieved, property_is_set?(:x) is true" do
+      it "when x is retrieved, property_is_set?(:x) is false" do
         resource.x
-        expect(resource.property_is_set?(:x)).to be_truthy
+        expect(resource.property_is_set?(:x)).to be_falsey
       end
     end
 
@@ -357,9 +357,9 @@ describe "Chef::Resource.property" do
         resource.x lazy { 10 }
         expect(resource.property_is_set?(:x)).to be_truthy
       end
-      it "when x is retrieved, property_is_set?(:x) is true" do
+      it "when x is retrieved, property_is_set?(:x) is false" do
         resource.x
-        expect(resource.property_is_set?(:x)).to be_truthy
+        expect(resource.property_is_set?(:x)).to be_falsey
       end
     end
 
@@ -379,9 +379,9 @@ describe "Chef::Resource.property" do
         resource.x lazy { 10 }
         expect(resource.property_is_set?(:x)).to be_truthy
       end
-      it "when x is retrieved, property_is_set?(:x) is true" do
+      it "when x is retrieved, property_is_set?(:x) is false" do
         resource.x
-        expect(resource.property_is_set?(:x)).to be_truthy
+        expect(resource.property_is_set?(:x)).to be_falsey
       end
     end
 
@@ -567,15 +567,28 @@ describe "Chef::Resource.property" do
         # end
       end
 
-      with_property ":x, default: lazy { Namer.next_index }, is: proc { |v| Namer.next_index; true }" do
+      with_property ":x, default: lazy { Namer.next_index.to_s }, is: proc { |v| Namer.next_index; true }" do
         it "validation is not run at all on the default value" do
-          expect(resource.x).to eq 1
+          expect(resource.x).to eq '1'
+          expect(Namer.current_index).to eq 1
+        end
+        # it "validation is run each time" do
+        #   expect(resource.x).to eq '1'
+        #   expect(Namer.current_index).to eq 2
+        #   expect(resource.x).to eq '1'
+        #   expect(Namer.current_index).to eq 2
+        # end
+      end
+
+      with_property ":x, default: lazy { Namer.next_index.to_s.freeze }, is: proc { |v| Namer.next_index; true }" do
+        it "validation is not run at all on the default value" do
+          expect(resource.x).to eq '1'
           expect(Namer.current_index).to eq 1
         end
         # it "validation is only run the first time" do
-        #   expect(resource.x).to eq 1
+        #   expect(resource.x).to eq '1'
         #   expect(Namer.current_index).to eq 2
-        #   expect(resource.x).to eq 1
+        #   expect(resource.x).to eq '1'
         #   expect(Namer.current_index).to eq 2
         # end
       end
@@ -592,10 +605,10 @@ describe "Chef::Resource.property" do
           expect(resource.x).to eq 'hi1'
           expect(Namer.current_index).to eq 1
         end
-        it "when x is retrieved, coercion is run, no more than once" do
+        it "when x is retrieved, coercion is run each time" do
           expect(resource.x).to eq '101'
-          expect(resource.x).to eq '101'
-          expect(Namer.current_index).to eq 1
+          expect(resource.x).to eq '102'
+          expect(Namer.current_index).to eq 2
         end
       end
 

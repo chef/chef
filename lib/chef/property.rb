@@ -41,7 +41,8 @@ class Chef
     #   @option options [Object] :default The value this property
     #     will return if the user does not set one. If this is `lazy`, it will
     #     be run in the context of the instance (and able to access other
-    #     properties) and cached. If not, the value will be frozen with Object#freeze.
+    #     properties) and cached. If not, the value will be frozen with Object#freeze
+    #     to prevent users from modifying it in an instance.
     #   @option options [Proc] :computed The value this property will return if
     #     the user does not set one. If this is `lazy`, it will be run in the
     #     context of the instance (and able to access other properties).
@@ -59,7 +60,9 @@ class Chef
       options[:name_property] = options.delete(:name_attribute) unless options.has_key?(:name_property)
       @options = options
 
-      options[:default] = options[:default].freeze if options.has_key?(:default)
+      if options.has_key?(:default)
+        options[:default] = options[:default].freeze
+      end
       options[:name] = options[:name].to_sym if options[:name]
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
     end
@@ -98,6 +101,20 @@ class Chef
     end
 
     #
+    # The raw default value for this resource.
+    #
+    # Does not coerce or validate the default. Does not evaluate lazy values.
+    #
+    # Defaults to `lazy { name }` if name_property is true; otherwise defaults to
+    # `nil`
+    #
+    def default
+      return options[:default] if options.has_key?(:default)
+      return Chef::DelayedEvaluator.new { name } if name_property?
+      nil
+    end
+
+    #
     # Whether this is part of the resource's natural identity or not.
     #
     # @return [Boolean]
@@ -133,7 +150,7 @@ class Chef
     # @return [Boolean]
     #
     def has_default?
-      options.has_key?(:default)
+      options.has_key?(:default) || name_property?
     end
 
     #
@@ -209,13 +226,13 @@ class Chef
     # Get the property value from the resource, handling lazy values,
     # defaults, and validation.
     #
-    # - If the property's value is lazy, the lazy value is evaluated, coerced
-    #   and validated, and the result stored in the property (it will not be
-    #   evaluated twice).
+    # - If the property's value is lazy, it is evaluated, coerced and validated.
     # - If the property has no value, and is required, raises ValidationFailed.
+    # - If the property has no value, but has a lazy default, it is evaluated,
+    #   coerced and validated. If the evaluated value is frozen, the resulting
     # - If the property has no value, but has a default, the default value
-    #   will be returned. If the default value is lazy, it will be evaluated,
-    #   coerced and validated, and the result stored in the property.
+    #   will be returned and frozen. If the default value is lazy, it will be
+    #   evaluated, coerced and validated, and the result stored in the property.
     # - If the property has no value, but is name_property, `resource.name`
     #   is retrieved, coerced, validated and stored in the property.
     # - Otherwise, `nil` is returned.
@@ -238,9 +255,16 @@ class Chef
 
       else
         raise Chef::Exceptions::ValidationFailed, "#{name} is required" if required?
-        set(resource, default(resource)) if has_default? || name_property?
-        default(resource) if has_computed?
 
+        if has_default?
+          value = default
+          if value.is_a?(DelayedEvaluator)
+            value = exec_in_resource(resource, value)
+            value = set(resource, value)
+          else
+            value = coerce(resource, value)
+          end
+        end
       end
     end
 
@@ -262,33 +286,6 @@ class Chef
     def set(resource, value)
       value = coerce(resource, value) unless value.is_a?(DelayedEvaluator)
       set_value(resource, value)
-    end
-
-    #
-    # Get the default value for this property.
-    #
-    # - If the property has a default, the default value will be returned. If
-    #   the default value is lazy, it will be evaluated, coerced, validated and
-    #   returned.
-    # - If the property is a name_property, `resource.name` is coerced,
-    #   validated and returned.
-    # - Otherwise, `nil` is returned.
-    #
-    # If resource and name are not passed, the default is returned without
-    # evaluation, coercion or validation, and name_property is not honored.
-    #
-    # @param resource [Chef::Resource] The resource to get the default against.
-    #
-    # @return The default value for the property.
-    #
-    # @raise Chef::Exceptions::ValidationFailed If the value is invalid for
-    #   this property.
-    #
-    def default(resource=nil)
-      return delazify(resource, options[:default]) if options.has_key?(:default)
-      return exec_in_resource(resource, options[:computed]) if options.has_key?(:computed)
-      return coerce(resource, resource.name) if name_property? && resource && name != :name
-      nil
     end
 
     #
@@ -340,7 +337,9 @@ class Chef
     #   this property.
     #
     def coerce(resource, value)
-      value = exec_in_resource(resource, options[:coerce], value) if options.has_key?(:coerce)
+      if options.has_key?(:coerce)
+        value = exec_in_resource(resource, options[:coerce], value)
+      end
       validate(resource, value)
       value
     end
@@ -380,27 +379,31 @@ class Chef
     #
     # Find out whether this type accepts nil explicitly.
     #
-    # A type accepts nil explicitly if it validates as nil, *and* is not simply
+    # A type accepts nil explicitly if "is" allows nil, it validates as nil, *and* is not simply
     # an empty type.
     #
     # These examples accept nil explicitly:
     # ```ruby
     # property :a, [ String, nil ]
-    # property :a, is: [ String, nil ]
+    # property :a, [ String, NilClass ]
+    # property :a, [ String, proc { |v| v.nil? } ]
+    # ```
+    #
+    # This does not (because the "is" doesn't exist or doesn't have nil):
+    #
+    # ```ruby
+    # property :x, String
+    # ```
+    #
+    # These do not, even though nil would validate fine (because they do not
+    # have "is"):
+    #
+    # ```ruby
+    # property :a
     # property :a, equal_to: [ 1, 2, 3, nil ]
     # property :a, kind_of: [ String, NilClass ]
     # property :a, respond_to: [ ]
-    # ```
-    #
-    # These do not:
-    # ```ruby
-    # property :a, [ String, nil ], cannot_be: :nil
-    # property :a, callbacks: { x: }
-    # ```
-    #
-    # This does not either (accepts nil implicitly only):
-    # ```ruby
-    # property :a
+    # property :a, callbacks: { "a" => proc { |v| v.nil? } }
     # ```
     #
     # @param resource [Chef::Resource] The resource we're coercing against
@@ -445,11 +448,6 @@ class Chef
       else
         raise ArgumentError, "Property #{name} has no instance variable defined and cannot be reset"
       end
-    end
-
-    def delazify(resource, value, *args)
-      return value if !value.is_a?(DelayedEvaluator)
-      exec_in_resource(resource, value, *args)
     end
 
     def exec_in_resource(resource, proc, *args)
