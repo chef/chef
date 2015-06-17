@@ -199,13 +199,6 @@ class Chef
         ( applied_arch == :x86_64 ) ? 0x0100 : 0x0200
       end
 
-      def safely_downcase(val)
-        if val.is_a? String
-          return val.downcase
-        end
-        return val
-      end
-
       def value_exists?(key_path, value)
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
@@ -295,6 +288,14 @@ class Chef
       end
 
       private
+
+
+      def safely_downcase(val)
+        if val.is_a? String
+          return val.downcase
+        end
+        return val
+      end
 
       def node
         run_context && run_context.node
