@@ -34,6 +34,8 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
+override :chefdk, version: '0.7.0.rc.0'
+
 # As of 27 October 2014, the newest CA cert bundle does not work with AWS's
 # root cert. See:
 # * https://github.com/opscode/chef-dk/issues/199
@@ -47,7 +49,7 @@ end
 override :cacerts, version: '2014.08.20'
 
 # Uncomment to pin the chef version
-# override :chef,           version: "12.3.0"
+override :chef,           version: "12.4.0.rc.2"
 override :berkshelf,      version: "v3.2.4"
 override :bundler,        version: "1.10.0"
 override :'chef-vault',   version: "v2.6.1"
