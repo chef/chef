@@ -135,6 +135,24 @@ class Chef
         end
       end
 
+      def combined_default
+        return self.class.new(
+          default: @default,
+          env_default: @env_default,
+          role_default: @role_default,
+          force_default: @force_default,
+        )
+      end
+
+      def combined_override
+        return self.class.new(
+          override: @override,
+          role_override: @role_override,
+          env_override: @env_override,
+          force_override: @force_override,
+        )
+      end
+
       private
 
       def as_simple_object

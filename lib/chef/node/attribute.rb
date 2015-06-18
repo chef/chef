@@ -80,6 +80,14 @@ class Chef
         end
       end
 
+      def combined_default
+        wrapped_object.combined_default
+      end
+
+      def combined_override
+        wrapped_object.combined_override
+      end
+
       def normal_unless
         SetUnless.new_decorator(wrapped_object: wrapped_object.normal)
       end
