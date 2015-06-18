@@ -1108,7 +1108,9 @@ class Chef
       @sorted_descendants = nil
       # set resource_name automatically if it's not set
       if child.name && !child.resource_name
-        child.resource_name(convert_to_snake_case(child.name.split('::')[-1]))
+        if child.name =~ /^Chef::Resource::(\w+)$/
+          child.resource_name(convert_to_snake_case($1))
+        end
       end
     end
 

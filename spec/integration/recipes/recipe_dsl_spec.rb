@@ -15,13 +15,8 @@ describe "Recipe DSL methods" do
     before(:context) {
 
       class BaseThingy < Chef::Resource
-        def initialize(*args, &block)
-          super
-          @allowed_actions = [ :create ]
-          @action = :create
-        end
-
         resource_name 'base_thingy'
+        default_action :create
 
         class<<self
           attr_accessor :created_resource
@@ -61,11 +56,7 @@ describe "Recipe DSL methods" do
         before(:context) {
 
           class Chef::Resource::BackcompatThingy < Chef::Resource
-            def initialize(*args, &block)
-              super
-              @allowed_actions = [ :create ]
-              @action = :create
-            end
+            default_action :create
           end
           class Chef::Provider::BackcompatThingy < Chef::Provider
             def load_current_resource
@@ -114,19 +105,17 @@ describe "Recipe DSL methods" do
 
         }
 
-        it "bar_thingy works" do
-          recipe = converge {
+        it "bar_thingy does not work" do
+          expect_converge {
             bar_thingy 'blah' do; end
-          }
-          expect(recipe.logged_warnings).to eq ''
-          expect(BaseThingy.created_resource).to eq(RecipeDSLSpecNamespace::Bar::BarThingy)
+          }.to raise_error(NoMethodError)
         end
       end
 
-      context "With a resource named NoNameThingy with resource_name nil" do
+      context "With a resource named Chef::Resource::NoNameThingy with resource_name nil" do
         before(:context) {
 
-          class NoNameThingy < BaseThingy
+          class Chef::Resource::NoNameThingy < BaseThingy
             resource_name nil
           end
 
@@ -134,7 +123,7 @@ describe "Recipe DSL methods" do
 
         it "no_name_thingy does not work" do
           expect_converge {
-            thingy 'blah' do; end
+            no_name_thingy 'blah' do; end
           }.to raise_error(NoMethodError)
         end
       end
@@ -199,6 +188,7 @@ describe "Recipe DSL methods" do
           before(:context) {
 
             class AnotherNoNameThingy3 < BaseThingy
+              resource_name :another_no_name_thingy_3
               provides :another_no_name_thingy3, os: 'blarghle'
             end
 
@@ -227,6 +217,7 @@ describe "Recipe DSL methods" do
           before(:context) {
 
             class AnotherNoNameThingy4 < BaseThingy
+              resource_name :another_no_name_thingy_4
               provides :another_no_name_thingy4, os: 'blarghle'
               provides :another_no_name_thingy4, platform_family: 'foo'
             end
@@ -418,6 +409,7 @@ describe "Recipe DSL methods" do
           before {
             eval <<-EOM, nil, __FILE__, __LINE__+1
               class #{class_name} < BaseThingy
+                resource_name #{dsl_method.inspect}
               end
             EOM
           }
@@ -426,6 +418,7 @@ describe "Recipe DSL methods" do
               eval <<-EOM, nil, __FILE__, __LINE__+1
                 module BlahModule
                   class #{class_name} < BaseThingy
+                    resource_name #{dsl_method.inspect}
                   end
                 end
               EOM
@@ -491,6 +484,7 @@ describe "Recipe DSL methods" do
               eval <<-EOM, nil, __FILE__, __LINE__+1
                 module BlahModule
                   class BlahModule::#{class_name} < BaseThingy
+                    resource_name #{dsl_method.inspect}
                     provides #{dsl_method.inspect}, os: 'blarghle'
                   end
                 end
@@ -611,6 +605,7 @@ describe "Recipe DSL methods" do
           before(:context) {
 
             class RecipeDSLSpecNamespace::Thingy6 < BaseThingy
+              resource_name :thingy6
               provides :thingy5
             end
 
@@ -640,6 +635,7 @@ describe "Recipe DSL methods" do
         before(:context) {
 
           class RecipeDSLSpecNamespace::Thingy7 < BaseThingy
+            resource_name :thingy7
             provides :thingy8
           end
 
