@@ -113,7 +113,7 @@ class Chef
           if highest_found_value.is_a?(Array) || highest_found_value.is_a?(Hash)
             return self.class.new(args)
           else
-            return highest_found_value.freeze
+            return highest_found_value
           end
         elsif self.is_a?(Array)
           tuple = highest_precedence_zipped_array[key]
@@ -122,7 +122,7 @@ class Chef
             return self.class.new(tuple[:level] => tuple[:value])
           else
             # return just the bare value
-            return tuple[:value].freeze  # FIXME: freezing should be in Immutablize
+            return tuple[:value]
           end
         else
           # this should never happen, what kind of object is this?
@@ -151,10 +151,10 @@ class Chef
           hash = instance_variable_get(component)
           next unless hash.is_a?(Hash)
           hash.each do |key, value|
-            merged_hash[key.freeze] = value.freeze
+            merged_hash[key] = value
           end
         end
-        merged_hash.freeze
+        merged_hash
       end
 
       def merged_default_zipped_array
@@ -168,12 +168,12 @@ class Chef
           merged_array << array.map do |value|
             { level: component, value: value }
           end
-        end.flatten.freeze
+        end.flatten
       end
 
       def merged_normal_zipped_array
         return nil unless @normal.is_a?(Array)
-        @normal.map { |value| { level: :normal, value: value } }.freeze
+        @normal.map { |value| { level: :normal, value: value } }
       end
 
       def merged_override_zipped_array
@@ -189,16 +189,16 @@ class Chef
           merged_array << array.map do |value|
             { level: component, value: value }
           end
-        end.flatten.freeze
+        end.flatten
       end
 
       def merged_automatic_zipped_array
         return nil unless @automatic.is_a?(Array)
-        @automatic.map { |value| { level: :automatic, value: value } }.freeze
+        @automatic.map { |value| { level: :automatic, value: value } }
       end
 
       def highest_precedence_array
-        highest_precedence_zipped_array.map { |i| i[:value] }.freeze
+        highest_precedence_zipped_array.map { |i| i[:value] }
       end
 
       def highest_precedence_zipped_array
