@@ -167,6 +167,10 @@ class Chef
         wrapped_object.is_a?(klass) || super(klass)
       end
 
+      def kind_of?(klass)
+        wrapped_object.kind_of?(klass) || super(klass)
+      end
+
       def inspect
         wrapped_object.inspect
       end

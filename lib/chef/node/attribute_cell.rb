@@ -65,6 +65,10 @@ class Chef
         highest_precedence.is_a?(klass) || super(klass)
       end
 
+      def kind_of?(klass)
+        highest_precedence.kind_of?(klass) || super(klass)
+      end
+
       def eql?(other)
         as_simple_object.eql?(other)
       end

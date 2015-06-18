@@ -56,7 +56,9 @@ describe Chef::Node::AttributeCell do
         cell.send(:"#{level}=", [])
         expect(cell.send(:highest_precedence)).to eql([])
         expect(cell.is_a?(Array)).to be true
+        expect(cell.kind_of?(Array)).to be true
         expect(cell.is_a?(Hash)).to be false
+        expect(cell.kind_of?(Hash)).to be false
         expect(cell.is_a?(Chef::Node::AttributeCell)).to be true
       end
     end
@@ -69,7 +71,9 @@ describe Chef::Node::AttributeCell do
         cell.send(:"#{level}=", {})
         expect(cell.send(:highest_precedence)).to eql({})
         expect(cell.is_a?(Array)).to be false
+        expect(cell.kind_of?(Array)).to be false
         expect(cell.is_a?(Hash)).to be true
+        expect(cell.kind_of?(Hash)).to be true
         expect(cell.is_a?(Chef::Node::AttributeCell)).to be true
       end
     end

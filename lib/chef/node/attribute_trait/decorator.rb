@@ -13,6 +13,11 @@ class Chef
           super
         end
 
+        def kind_of?(klass)
+          return true if wrapped_object.kind_of?(klass)
+          super
+        end
+
         def regular_writer(key, value)
           wrapped_object[key] = value
         end
