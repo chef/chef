@@ -25,7 +25,7 @@ self.instance_eval chef_project_contents
 name "angrychef"
 friendly_name "Angry Chef Client"
 maintainer "Chef Software, Inc. <maintainers@chef.io>"
-homepage "https://www.getchef.com"
+homepage "https://www.chef.io"
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
