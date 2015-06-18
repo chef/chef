@@ -79,10 +79,13 @@ The specific components of Chef related to a given platform - including (but not
 
 ## Ubuntu
 
+### Lieutenant
+
+* [Ranjib Dey](https://github.com/ranjib)
+
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
-* [Ranjib Dey](https://github.com/ranjib)
 * [Thom May](https://github.com/thommay)
 
 ## Windows
