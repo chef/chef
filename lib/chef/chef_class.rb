@@ -51,8 +51,10 @@ class Chef
     attr_reader :run_context
 
     # Register an event handler with user specified block
+    #
+    # @return[Chef::EventDispatch::Base] handler object
     def event_handler(&block)
-      dsl = Chef::EventDispatch::DSL.new
+      dsl = Chef::EventDispatch::DSL.new('Chef client DSL')
       dsl.instance_eval(&block)
     end
 

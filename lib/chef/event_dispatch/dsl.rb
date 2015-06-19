@@ -22,32 +22,43 @@ require 'chef/config'
 class Chef
   module EventDispatch
     class DSL
+      attr_reader :handler
+
+      def initialize(name)
+        klass = Class.new(Chef::EventDispatch::Base) do
+          def self.name
+            @@name
+          end
+        end
+        klass.class_variable_set(:@@name, name)
+        @handler = klass.new
+        # Use current event.register API to add anonymous handler if
+        # run_context and associated event dispatcher is set, else fallback to
+        # Chef::Config[:hanlder].
+        if Chef.run_context && Chef.run_context.events
+          Chef::Log.debug("Registering handler '#{name}' using events api")
+          Chef.run_context.events.register(handler)
+        else
+          Chef::Log.debug("Registering handler '#{name}' using global config")
+          Chef::Config[:event_handlers] << handler
+        end
+      end
+
       # Adds a new event handler derived from base handler
       # with user defined block against a chef event
       #
       # @return [Chef::EventDispatch::Base] a base handler object
       def on(event_type, &block)
         validate!(event_type)
-        handler = Chef::EventDispatch::Base.new
         handler.define_singleton_method(event_type) do |*args|
-          block.call(args)
+          instance_exec(*args, &block)
         end
-        # Use current event dispatch system is run_context and associated event
-        # dispatcher is set else fall back to Chef::Config[:hanlder]
-        if Chef.run_context && Chef.run_context.events
-          Chef::Log.debug('Registering handler using run_context')
-          Chef.run_context.events.register(handler)
-        else
-          Chef::Log.debug('Registering handler using config, this will only work inside config file')
-          Chef::Config[:event_handlers] << handler
-        end
-        handler
       end
 
       private
       def validate!(event_type)
         all_event_types = (Chef::EventDispatch::Base.instance_methods - Object.instance_methods)
-        raise Chef::Exceptions::UnknownEventType unless all_event_types.include?(event_type)
+        raise Chef::Exceptions::InvalidEventType, "Invalid event type: #{event_type}" unless all_event_types.include?(event_type)
       end
     end
   end

@@ -108,7 +108,7 @@ describe "Chef class" do
           on :yolo do
           end
         end
-      end.to raise_error(Chef::Exceptions::UnknownEventType)
+      end.to raise_error(Chef::Exceptions::InvalidEventType)
     end
   end
 end
