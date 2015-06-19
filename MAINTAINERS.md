@@ -133,3 +133,9 @@ The specific components of Chef related to a given platform - including (but not
 * [Cory Stephenson](https://github.com/Aevin1387)
 * [David Aronsohn](https://github.com/tbunnyman)
 
+## OpenBSD
+
+### Lieutenant
+
+* [Joe Miller](https://github.com/joemiller)
+
