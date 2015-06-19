@@ -89,15 +89,15 @@ class Chef
       end
 
       def normal_unless
-        SetUnless.new_decorator(wrapped_object: wrapped_object.normal)
+        SetUnless.new_decorator(wrapped_object.normal)
       end
 
       def default_unless
-        SetUnless.new_decorator(wrapped_object: wrapped_object.default)
+        SetUnless.new_decorator(wrapped_object.default)
       end
 
       def override_unless
-        SetUnless.new_decorator(wrapped_object: wrapped_object.override)
+        SetUnless.new_decorator(wrapped_object.override)
       end
 
       # should deprecate all of these, epecially #set
