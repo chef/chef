@@ -375,13 +375,10 @@ class Chef
 
     # Transform the node to a Hash
     def to_hash
-      index_hash = Hash.new
+      index_hash = attributes.to_hash
       index_hash["chef_type"] = "node"
       index_hash["name"] = name
       index_hash["chef_environment"] = chef_environment
-      attribute.each do |key, value|
-        index_hash[key] = value
-      end
       index_hash["recipe"] = run_list.recipe_names if run_list.recipe_names.length > 0
       index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
       index_hash["run_list"] = run_list.run_list_items
@@ -447,10 +444,10 @@ class Chef
       if o.has_key?("attributes")
         node.normal_attrs = o["attributes"]
       end
-      node.automatic_attrs = Mash.new(o["automatic"]) if o.has_key?("automatic")
-      node.normal_attrs = Mash.new(o["normal"]) if o.has_key?("normal")
-      node.default_attrs = Mash.new(o["default"]) if o.has_key?("default")
-      node.override_attrs = Mash.new(o["override"]) if o.has_key?("override")
+      node.automatic_attrs = o["automatic"] if o.has_key?("automatic")
+      node.normal_attrs = o["normal"] if o.has_key?("normal")
+      node.default_attrs = o["default"] if o.has_key?("default")
+      node.override_attrs = o["override"] if o.has_key?("override")
 
       if o.has_key?("run_list")
         node.run_list.reset!(o["run_list"])

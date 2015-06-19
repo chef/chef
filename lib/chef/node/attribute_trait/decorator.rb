@@ -8,6 +8,10 @@ class Chef
           @wrapped_object = wrapped_object
         end
 
+        def to_json(*opts)
+          wrapped_object.to_json(*opts)
+        end
+
         def is_a?(klass)
           return true if wrapped_object.is_a?(klass)
           super

@@ -129,9 +129,8 @@ class Chef
             return tuple[:value]
           end
         else
-          # this should never happen, what kind of object is this?
-          # guessing that we should deep-dup it or deep-freeze it and deep-duping is easier
-          return Marshall.load(Marshall.dump(highest_precedence[key]))
+          # this should never happen - should probably freeze this or dump/load
+          return highest_precedence[key]
         end
       end
 
@@ -151,6 +150,60 @@ class Chef
           env_override: @env_override,
           force_override: @force_override,
         )
+      end
+
+      def each(&block)
+        return enum_for(:each) unless block_given?
+
+        if self.is_a?(Hash)
+          merged_hash.keys.each do |key|
+            yield key, self[key]
+          end
+        elsif self.is_a?(Array)
+          highest_precedence_zipped_array.each do |value|
+            yield self.class.new(tuple[:level] => tuple[:value])
+          end
+        else
+          yield highest_precedence
+        end
+      end
+
+      def to_json(*opts)
+        Chef::JSONCompat.to_json(to_hash, *a)
+      end
+
+      def to_hash
+        if self.is_a?(Hash)
+          h = {}
+          each do |key, value|
+            if value.is_a?(Hash)
+              h[key] = value.to_hash
+            elsif value.is_a?(Array)
+              h[key] = value.to_a
+            else
+              h[key] = value
+            end
+          end
+          h
+        elsif self.is_a?(Array)
+          raise
+        else
+          highest_precedence.to_hash
+        end
+      end
+
+      def to_a
+        if self.is_a?(Hash)
+          raise
+        elsif self.is_a?(Array)
+          a = []
+          each do |value|
+            a.push(value)
+          end
+          a
+        else
+          highest_precedence.to_a
+        end
       end
 
       private
