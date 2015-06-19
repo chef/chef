@@ -32,7 +32,7 @@ class Chef
         handler.define_singleton_method(event_type) do |*args|
           block.call(args)
         end
-        # Use current event dispacth system is run_context and associated event
+        # Use current event dispatch system is run_context and associated event
         # dispatcher is set else fall back to Chef::Config[:hanlder]
         if Chef.run_context && Chef.run_context.events
           Chef::Log.debug('Registering handler using run_context')
