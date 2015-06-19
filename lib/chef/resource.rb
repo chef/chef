@@ -1143,7 +1143,7 @@ class Chef
         remove_canonical_dsl
       end
 
-      result = Chef.set_resource_priority_array(name, self, options, &block)
+      result = Chef.resource_priority_map.set(name, self, options, &block)
       Chef::DSL::Resources.add_resource_dsl(name)
       result
     end

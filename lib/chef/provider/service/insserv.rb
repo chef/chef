@@ -24,8 +24,6 @@ class Chef
     class Service
       class Insserv < Chef::Provider::Service::Init
 
-        provides :service, os: "linux"
-
         def self.provides?(node, resource)
           super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
         end

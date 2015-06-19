@@ -16,10 +16,11 @@
 # limitations under the License.
 #
 
+require 'chef/resource/package'
+
 class Chef
   class Resource
     class MacportsPackage < Chef::Resource::Package
-      provides :package, os: "darwin"
     end
   end
 end

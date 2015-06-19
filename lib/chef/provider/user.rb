@@ -23,8 +23,6 @@ require 'etc'
 class Chef
   class Provider
     class User < Chef::Provider
-      provides :user
-
       include Chef::Mixin::Command
 
       attr_accessor :user_exists, :locked
