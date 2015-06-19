@@ -1,12 +1,12 @@
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 73da8ea8c9a6ff53c1e3d04c1a25131d45e29e15
+  revision: ef22f9adac5868a1718acd66f3224bd2fd5368b5
   specs:
     omnibus-software (4.0.0)
 
 GIT
   remote: git://github.com/opscode/omnibus.git
-  revision: 5ed5e5bfd7c99de66c46aede110cefe1d5d997ac 
+  revision: 01f64177c9cb002cdeea9269df9895f51aa51514
   specs:
     omnibus (4.0.0)
       chef-sugar (~> 3.0)
@@ -22,7 +22,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.8)
-    berkshelf (3.2.3)
+    berkshelf (3.2.4)
       addressable (~> 2.3.4)
       berkshelf-api-client (~> 1.2)
       buff-config (~> 1.0)
@@ -77,9 +77,9 @@ GEM
     hitimes (1.2.2-x86-mingw32)
     httpclient (2.6.0.1)
     ipaddress (0.8.0)
-    json (1.8.2)
-    kitchen-vagrant (0.17.0.rc.1)
-      test-kitchen (~> 1.4.0.rc.1)
+    json (1.8.3)
+    kitchen-vagrant (0.17.0)
+      test-kitchen (~> 1.4)
     libyajl2 (1.2.0)
     little-plugger (1.1.3)
     logging (1.8.2)
@@ -96,15 +96,15 @@ GEM
     mixlib-shellout (1.6.1-x86-mingw32)
       win32-process (~> 0.7.1)
       windows-pr (~> 1.2.2)
-    mixlib-versioning (1.0.0)
-    multi_json (1.11.0)
+    mixlib-versioning (1.1.0)
+    multi_json (1.11.1)
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.2)
     nio4r (1.1.0)
-    nori (2.5.0)
+    nori (2.6.0)
     octokit (3.8.0)
       sawyer (~> 0.6.0, >= 0.5.3)
     ohai (7.4.1)
@@ -119,7 +119,7 @@ GEM
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
     retryable (2.0.1)
-    ridley (4.1.2)
+    ridley (4.2.0)
       addressable
       buff-config (~> 1.0)
       buff-extensions (~> 1.0)
@@ -133,7 +133,7 @@ GEM
       json (>= 1.7.7)
       mixlib-authentication (>= 1.3.0)
       net-http-persistent (>= 2.8)
-      retryable (>= 2.0.0)
+      retryable (~> 2.0)
       semverse (~> 1.1)
       varia_model (~> 0.4)
     ruby-progressbar (1.7.5)
@@ -148,7 +148,7 @@ GEM
       dep_selector (~> 1.0)
       semverse (~> 1.1)
     systemu (2.6.5)
-    test-kitchen (1.4.0.rc.1)
+    test-kitchen (1.4.1)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
       net-ssh (~> 2.7)
@@ -171,7 +171,7 @@ GEM
     windows-pr (1.2.4)
       win32-api (>= 1.4.5)
       windows-api (>= 0.4.0)
-    winrm (1.3.2)
+    winrm (1.3.3)
       builder (>= 2.1.2)
       gssapi (~> 1.2)
       gyoku (~> 1.0)
@@ -180,7 +180,7 @@ GEM
       nori (~> 2.0)
       rubyntlm (~> 0.4.0)
       uuidtools (~> 2.1.2)
-    winrm-transport (1.0.0)
+    winrm-transport (1.0.1)
       rubyzip (~> 1.1, >= 1.1.7)
       winrm (~> 1.3)
     wmi-lite (1.0.0)

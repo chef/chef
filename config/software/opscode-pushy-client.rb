@@ -29,7 +29,7 @@ dependency "chef"
 dependency "openssl-customization"
 
 if windows?
-  dependency "libzmq-windows"
+  dependency "libzmq4x-windows"
 else
   dependency "libzmq"
 end
@@ -42,15 +42,6 @@ build do
                 else
                   "#{install_dir}/embedded/lib"
                 end
-
-  # Install the ZMQ gem separately so the native extenstion
-  # compiles correctly.
-  gem "install zmq" \
-      " --no-ri --no-rdoc" \
-      " --verbose" \
-      " --" \
-      " --with-zmq-dir=#{install_dir}/embedded" \
-      " --with-zmq-lib=#{zmq_lib_dir}", env: env
 
   bundle "install", env: env
   gem "build opscode-pushy-client.gemspec", env: env
