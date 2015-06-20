@@ -112,7 +112,7 @@ The specific components of Chef related to a given platform - including (but not
 
 ## AIX
 
-### Maintainers
+### Lieutenant
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 
@@ -176,4 +176,10 @@ The specific components of Chef related to a given platform - including (but not
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+
+## OmniOS
+
+### Maintainers
+
+* [Thom May](https://github.com/thommay)
 

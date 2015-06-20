@@ -124,9 +124,7 @@ The specific components of Chef related to a given platform - including (but not
       [Org.Components.Subsystems.AIX]
         title = "AIX"
 
-        maintainers = [
-          "lamont-granquist"
-        ]
+        lieutenant = "lamont-granquist"
 
       [Org.Components.Subsystems."Mac OS X"]
         title = "Mac OS X"
@@ -187,6 +185,13 @@ The specific components of Chef related to a given platform - including (but not
 
         maintainers = [
           "lamont-granquist"
+        ]
+
+    [Org.Components.Subsystems.OmniOS]
+        title = "OmniOS"
+
+        maintainers = [
+          "thommay"
         ]
 
 [people]
