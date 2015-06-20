@@ -3,6 +3,10 @@ require 'chef/node_map'
 class Chef
   class Platform
     class PriorityMap < Chef::NodeMap
+      def priority(resource_name, priority_array, *filter)
+        set(resource_name.to_sym, Array(priority_array), *filter)
+      end
+      
       # @api private
       def get_priority_array(node, key)
         get(node, key)
