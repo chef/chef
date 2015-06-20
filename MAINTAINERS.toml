@@ -145,6 +145,10 @@ The specific components of Chef related to a given platform - including (but not
           "tBunnyMan"
         ]
 
+      [Org.Components.Subsystems.OpenBSD]
+        title = "OpenBSD"
+
+        lieutenant = "joemiller"
 
 [people]
   [people.adamhjk]
@@ -230,3 +234,7 @@ The specific components of Chef related to a given platform - including (but not
   [people.ksubrama]
     Name = "Kartik Cating-Subramanian"
     GitHub = "ksubrama"
+
+  [people.joemiller]
+    Name = "Joe Miller"
+    GitHub = "joemiller"
