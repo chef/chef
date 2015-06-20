@@ -4,7 +4,7 @@ class Chef
   class Platform
     class PriorityMap < Chef::NodeMap
       def priority(resource_name, priority_array, *filter)
-        set(resource_name.to_sym, Array(priority_array), *filter)
+        set_priority_array(resource_name.to_sym, priority_array, *filter)
       end
       
       # @api private
