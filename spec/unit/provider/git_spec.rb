@@ -311,9 +311,7 @@ SHAS
   end
 
   it "runs a checkout command with default options" do
-    expect(@provider).to receive(:shell_out!).with('git branch -f deploy d35af14d41ae22b19da05d7d03a0bafc321b244c', :cwd => "/my/deploy/dir",
-                                                             :log_tag => "git[web2.0 app]").ordered
-    expect(@provider).to receive(:shell_out!).with('git checkout deploy', :cwd => "/my/deploy/dir",
+    expect(@provider).to receive(:shell_out!).with('git checkout -fB deploy d35af14d41ae22b19da05d7d03a0bafc321b244c', :cwd => "/my/deploy/dir",
                                                              :log_tag => "git[web2.0 app]").ordered
     @provider.checkout
   end
