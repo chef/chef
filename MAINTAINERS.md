@@ -35,6 +35,7 @@ another component.
 * [Jay Mundrawala](https://github.com/jdmundrawala)
 * [Jon Cowie](https://github.com/jonlives)
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Claire McQuin](https://github.com/mcquin)
 * [Steven Murawski](https://github.com/smurawski)
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Ranjib Dey](https://github.com/ranjib)
