@@ -238,23 +238,24 @@ describe Chef::Client do
     describe "when converge completes successfully" do
       include_context "a client run"
       include_context "converge completed"
-
-      describe "when audit phase errors" do
-        include_context "audit phase failed with error"
-        include_examples "a completed run with audit failure" do
-          let(:run_errors) { [audit_error] }
+      context 'when audit mode is enabled' do
+        describe "when audit phase errors" do
+          include_context "audit phase failed with error"
+          include_examples "a completed run with audit failure" do
+            let(:run_errors) { [audit_error] }
+          end
         end
-      end
 
-      describe "when audit phase completed" do
-        include_context "audit phase completed"
-        include_examples "a completed run"
-      end
+        describe "when audit phase completed" do
+          include_context "audit phase completed"
+          include_examples "a completed run"
+        end
 
-      describe "when audit phase completed with failed controls" do
-        include_context "audit phase completed with failed controls"
-        include_examples "a completed run with audit failure" do
-          let(:run_errors) { [audit_error] }
+        describe "when audit phase completed with failed controls" do
+          include_context "audit phase completed with failed controls"
+          include_examples "a completed run with audit failure" do
+            let(:run_errors) { [audit_error] }
+          end
         end
       end
     end
@@ -512,11 +513,26 @@ describe Chef::Client do
       allow_any_instance_of(Chef::RunLock).to receive(:save_pid).and_raise(NoMethodError)
     end
 
-    it "should run exception handlers on early fail" do
-      expect(subject).to receive(:run_failed)
-      expect { subject.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
-        expect(error.wrapped_errors.size).to eq 1
-        expect(error.wrapped_errors).to include(NoMethodError)
+    context 'when audit mode is enabled' do
+      before do
+        Chef::Config[:audit_mode] = :enabled
+      end
+      it "should run exception handlers on early fail" do
+        expect(subject).to receive(:run_failed)
+        expect { subject.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+          expect(error.wrapped_errors.size).to eq 1
+          expect(error.wrapped_errors).to include(NoMethodError)
+        end
+      end
+    end
+
+    context 'when audit mode is disabled' do
+      before do
+        Chef::Config[:audit_mode] = :disabled
+      end
+      it "should run exception handlers on early fail" do
+        expect(subject).to receive(:run_failed)
+        expect { subject.run }.to raise_error(NoMethodError)
       end
     end
   end
