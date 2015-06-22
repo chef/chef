@@ -60,7 +60,7 @@ build do
   {
     'chefspec'          => '4.2.0',
     'fauxhai'           => '2.2.0',
-    'rubocop'           => '0.28.0',
+    'rubocop'           => '0.31.0',
     'knife-spork'       => '1.5.0',
     'winrm-transport'   => '1.0.1',
     'knife-windows'     => '0.8.5',
