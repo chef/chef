@@ -147,7 +147,8 @@ class Chef
               # Coerce and validate the default value
               _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
               _pv_coerce(opts, symbol, coerce) if coerce
-              validate(opts, { symbol => validation })
+              # We presently do not validate defaults, for backwards compatibility.
+#              validate(opts, { symbol => validation })
 
               # Defaults are presently "stickily" set on the instance
               self.instance_variable_set(iv_symbol, opts[symbol])

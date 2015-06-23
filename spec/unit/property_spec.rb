@@ -281,9 +281,9 @@ describe "Chef::Resource.property" do
         resource.x lazy { 10 }
         expect(resource.property_is_set?(:x)).to be_truthy
       end
-      it "when x is retrieved, property_is_set?(:x) is false" do
+      it "when x is retrieved, property_is_set?(:x) is true" do
         resource.x
-        expect(resource.property_is_set?(:x)).to be_falsey
+        expect(resource.property_is_set?(:x)).to be_truthy
       end
     end
 
@@ -436,9 +436,12 @@ describe "Chef::Resource.property" do
           expect(resource.x 'hi').to eq 'hi'
           expect(resource.x).to eq 'hi'
         end
-        it "when x is retrieved, a validation error is raised" do
-          expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+        it "when x is retrieved, no validation error is raised" do
+          expect(resource.x).to eq 10
         end
+        # it "when x is retrieved, a validation error is raised" do
+        #   expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+        # end
       end
 
       with_property ":x, String, default: lazy { Namer.next_index }" do
@@ -449,19 +452,27 @@ describe "Chef::Resource.property" do
           expect(resource.x 'hi').to eq 'hi'
           expect(resource.x).to eq 'hi'
         end
-        it "when x is retrieved, a validation error is raised" do
-          expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+        it "when x is retrieved, no validation error is raised" do
+          expect(resource.x).to eq 1
           expect(Namer.current_index).to eq 1
         end
+        # it "when x is retrieved, a validation error is raised" do
+        #   expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+        #   expect(Namer.current_index).to eq 1
+        # end
       end
 
       with_property ":x, default: lazy { Namer.next_index }, is: proc { |v| Namer.next_index; true }" do
-        it "validation is only run the first time" do
+        it "validation is not run at all on the default value" do
           expect(resource.x).to eq 1
-          expect(Namer.current_index).to eq 2
-          expect(resource.x).to eq 1
-          expect(Namer.current_index).to eq 2
+          expect(Namer.current_index).to eq 1
         end
+        # it "validation is only run the first time" do
+        #   expect(resource.x).to eq 1
+        #   expect(Namer.current_index).to eq 2
+        #   expect(resource.x).to eq 1
+        #   expect(Namer.current_index).to eq 2
+        # end
       end
     end
 
@@ -496,12 +507,12 @@ describe "Chef::Resource.property" do
       end
 
       with_property ':x, proc { |v| Namer.next_index; true }, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
-        it "coercion is only run the first time x is retrieved" do
+        it "coercion is only run the first time x is retrieved, and validation is not run" do
           expect(Namer.current_index).to eq 0
           expect(resource.x).to eq '101'
-          expect(Namer.current_index).to eq 2
+          expect(Namer.current_index).to eq 1
           expect(resource.x).to eq '101'
-          expect(Namer.current_index).to eq 2
+          expect(Namer.current_index).to eq 1
         end
       end
 
@@ -512,9 +523,12 @@ describe "Chef::Resource.property" do
           end
         end
         with_property ':x, Integer, coerce: proc { |v| "#{v}#{next_index}" }, default: 10' do
-          it "when x is retrieved, it is coerced before validating and fails" do
-            expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+          it "when x is retrieved, it is coerced and not validated" do
+            expect(resource.x).to eq '101'
           end
+          # it "when x is retrieved, it is coerced before validating and fails" do
+          #   expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+          # end
         end
         with_property ':x, String, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
           it "when x is retrieved, it is coerced before validating and passes" do
@@ -522,17 +536,20 @@ describe "Chef::Resource.property" do
           end
         end
         with_property ':x, Integer, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
-          it "when x is retrieved, it is coerced before validating and fails" do
-            expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+          it "when x is retrieved, it is coerced and not validated" do
+            expect(resource.x).to eq '101'
           end
+          # it "when x is retrieved, it is coerced before validating and fails" do
+          #   expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+          # end
         end
         with_property ':x, proc { |v| Namer.next_index; true }, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
-          it "coercion and validation is only run the first time x is retrieved" do
+          it "coercion is only run the first time x is retrieved, and validation is not run" do
             expect(Namer.current_index).to eq 0
             expect(resource.x).to eq '101'
-            expect(Namer.current_index).to eq 2
+            expect(Namer.current_index).to eq 1
             expect(resource.x).to eq '101'
-            expect(Namer.current_index).to eq 2
+            expect(Namer.current_index).to eq 1
           end
         end
       end
