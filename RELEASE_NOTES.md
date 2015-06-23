@@ -85,3 +85,41 @@ windows_package '7zip' do
   checksum '7c8e873991c82ad9cfcdbdf45254ea6101e9a645e12977dcd518979e50fdedf3'
 end
 ```
+
+## Powershell wrappers for command line tools
+
+There is now an optional feature in the msi that you can enable during the
+installation of Chef client that deploys a powershell module alongside the rest
+of your installation (usually at `C:\opscode\chef\modules\`).  This location
+will also be appended to your `PSModulePath` environment variable.  Since this
+feature is experimental, it is not automatically enabled.  You may activate it
+by running the following from any powershell session
+```powershell
+Import-Module chef
+```
+You can also add the above to your powershell profile at 
+`~\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`
+
+The module exports a number of cmdlets that have the same name as the Chef
+command line utilities that you already use - such as `chef-client`, `knife`
+and `chef-apply`.  What they provide is the ability to cleanly pass quoted
+argument strings from your powershell command line without the need for excessive
+double-quoting.  See https://github.com/chef/chef/issues/3026 or 
+https://github.com/chef/chef/issues/1687 for an examples.
+
+Previously you would have needed
+```powershell
+knife exec -E 'puts ARGV' """&s0meth1ng"""
+knife node run_list set test-node '''role[ssssssomething]'''
+```
+
+Now you only need
+```powershell
+knife exec -E 'puts ARGV' '&s0meth1ng'
+knife node run_list set test-node 'role[ssssssomething]'
+```
+
+If you wish to no longer use the wrappers, run
+```powershell
+Remove-Module chef
+```
