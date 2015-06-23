@@ -187,8 +187,7 @@ class Chef
         end
         self.action = arg
       else
-        # Pull the action from the class if it's not set
-        @action || self.class.default_action
+        @action
       end
     end
 
@@ -531,9 +530,7 @@ class Chef
     #
     # Equivalent to #ignore_failure.
     #
-    def epic_fail(arg=nil)
-      ignore_failure(arg)
-    end
+    alias :epic_fail :ignore_failure
 
     #
     # Make this resource into an exact (shallow) copy of the other resource.
@@ -688,13 +685,19 @@ class Chef
     #
     # The provider class for this resource.
     #
+    # If `action :x do ... end` has been declared on this resource or its
+    # superclasses, this will return the `action_provider_class`.
+    #
     # If this is not set, `provider_for_action` will dynamically determine the
     # provider.
     #
     # @param arg [String, Symbol, Class] Sets the provider class for this resource.
     #   If passed a String or Symbol, e.g. `:file` or `"file"`, looks up the
     #   provider based on the name.
+    #
     # @return The provider class for this resource.
+    #
+    # @see Chef::Resource.action_provider_class
     #
     def provider(arg=nil)
       klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
@@ -702,7 +705,8 @@ class Chef
       else
         arg
       end
-      set_or_return(:provider, klass, kind_of: [ Class ])
+      set_or_return(:provider, klass, kind_of: [ Class ]) ||
+        self.class.action_provider_class
     end
     def provider=(arg)
       provider(arg)
@@ -925,11 +929,23 @@ class Chef
           @resource_name = nil
         end
       end
-
       @resource_name
     end
     def self.resource_name=(name)
       resource_name(name)
+    end
+
+    #
+    # Use the class name as the resource name.
+    #
+    # Munges the last part of the class name from camel case to snake case,
+    # and sets the resource_name to that:
+    #
+    # A::B::BlahDBlah -> blah_d_blah
+    #
+    def self.use_automatic_resource_name
+      automatic_name = convert_to_snake_case(self.name.split('::')[-1])
+      resource_name automatic_name
     end
 
     #
@@ -1008,6 +1024,91 @@ class Chef
       end
     end
     def self.default_action=(action_name)
+      default_action action_name
+    end
+
+    #
+    # Define an action on this resource.
+    #
+    # The action is defined as a *recipe* block that will be compiled and then
+    # converged when the action is taken (when Resource is converged).  The recipe
+    # has access to the resource's attributes and methods, as well as the Chef
+    # recipe DSL.
+    #
+    # Resources in the action recipe may notify and subscribe to other resources
+    # within the action recipe, but cannot notify or subscribe to resources
+    # in the main Chef run.
+    #
+    # Resource actions are *inheritable*: if resource A defines `action :create`
+    # and B is a subclass of A, B gets all of A's actions.  Additionally,
+    # resource B can define `action :create` and call `super()` to invoke A's
+    # action code.
+    #
+    # The first action defined (besides `:nothing`) will become the default
+    # action for the resource.
+    #
+    # @param name [Symbol] The action name to define.
+    # @param recipe_block The recipe to run when the action is taken. This block
+    #   takes no parameters, and will be evaluated in a new context containing:
+    #
+    #   - The resource's public and protected methods (including attributes)
+    #   - The Chef Recipe DSL (file, etc.)
+    #   - super() referring to the parent version of the action (if any)
+    #
+    # @return The Action class implementing the action
+    #
+    def self.action(action, &recipe_block)
+      action = action.to_sym
+      new_action_provider_class.action(action, &recipe_block)
+      self.allowed_actions += [ action ]
+      default_action action if default_action == :nothing
+    end
+
+    #
+    # The action provider class is an automatic `Provider` created to handle
+    # actions declared by `action :x do ... end`.
+    #
+    # This class will be returned by `resource.provider` if `resource.provider`
+    # is not set. `provider_for_action` will also use this instead of calling
+    # out to `Chef::ProviderResolver`.
+    #
+    # If the user has not declared actions on this class or its superclasses
+    # using `action :x do ... end`, then there is no need for this class and
+    # `action_provider_class` will be `nil`.
+    #
+    # @api private
+    #
+    def self.action_provider_class
+      @action_provider_class ||
+        # If the superclass needed one, then we need one as well.
+        if superclass.respond_to?(:action_provider_class) && superclass.action_provider_class
+          new_action_provider_class
+        end
+    end
+
+    #
+    # Ensure the action provider class actually gets created. This is called
+    # when the user does `action :x do ... end`.
+    #
+    # @api private
+    def self.new_action_provider_class
+      return @action_provider_class if @action_provider_class
+
+      if superclass.respond_to?(:action_provider_class)
+        base_provider = superclass.action_provider_class
+      end
+      base_provider ||= Chef::Provider
+
+      resource_class = self
+      @action_provider_class = Class.new(base_provider) do
+        use_inline_resources
+        include_resource_dsl true
+        define_singleton_method(:to_s) { "#{resource_class} action provider" }
+        define_singleton_method(:inspect) { to_s }
+        define_method(:load_current_resource) {}
+      end
+    end
+    def self.default_action=(action_name)
       default_action(action_name)
     end
 
@@ -1082,7 +1183,7 @@ class Chef
 
     class << self
       # back-compat
-      # NOTE: that we do not support unregistering classes as descendents like
+      # NOTE: that we do not support unregistering classes as descendants like
       # we used to for LWRP unloading because that was horrible and removed in
       # Chef-12.
       # @deprecated
@@ -1208,7 +1309,8 @@ class Chef
     end
 
     def provider_for_action(action)
-      provider = Chef::ProviderResolver.new(node, self, action).resolve.new(self, run_context)
+      provider_class = Chef::ProviderResolver.new(node, self, action).resolve
+      provider = provider_class.new(self, run_context)
       provider.action = action
       provider
     end

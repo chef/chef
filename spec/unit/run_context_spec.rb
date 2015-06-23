@@ -68,6 +68,9 @@ describe Chef::RunContext do
         "dependency2" => {
           "version" => "0.0.0",
         },
+        "include" => {
+          "version" => "0.0.0",
+        },
         "no-default-attr" => {
           "version" => "0.0.0",
         },
@@ -82,6 +85,10 @@ describe Chef::RunContext do
         },
       }
     )
+  end
+
+  it "has a nil parent_run_context" do
+    expect(run_context.parent_run_context).to be_nil
   end
 
   describe "loading cookbooks for a run list" do
