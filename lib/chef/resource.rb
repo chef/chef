@@ -58,8 +58,6 @@ class Chef
     include Chef::Mixin::ShellOut
     include Chef::Mixin::PowershellOut
 
-    NULL_ARG = Object.new
-
     #
     # The node the current Chef run is using.
     #
@@ -712,6 +710,106 @@ class Chef
       provider(arg)
     end
 
+    #
+    # Create a property on this resource class.
+    #
+    # If a superclass has this property, or if this property has already been
+    # defined by this resource, this will *override* the previous value.
+    #
+    # @param name [Symbol] The name of the property.
+    # @param type [Object,Array<Object>] The type(s) of this property.
+    #   If present, this is prepended to the `is` validation option.
+    # @param options [Hash<Symbol,Object>] Validation options.
+    #   @option options [Object,Array] :is An object, or list of
+    #     objects, that must match the value using Ruby's `===` operator
+    #     (`options[:is].any? { |v| v === value }`).
+    #   @option options [Object,Array] :equal_to An object, or list
+    #     of objects, that must be equal to the value using Ruby's `==`
+    #     operator (`options[:is].any? { |v| v == value }`)
+    #   @option options [Regexp,Array<Regexp>] :regex An object, or
+    #     list of objects, that must match the value with `regex.match(value)`.
+    #   @option options [Class,Array<Class>] :kind_of A class, or
+    #     list of classes, that the value must be an instance of.
+    #   @option options [Hash<String,Proc>] :callbacks A hash of
+    #     messages -> procs, all of which match the value. The proc must
+    #     return a truthy or falsey value (true means it matches).
+    #   @option options [Symbol,Array<Symbol>] :respond_to A method
+    #     name, or list of method names, the value must respond to.
+    #   @option options [Symbol,Array<Symbol>] :cannot_be A property,
+    #     or a list of properties, that the value cannot have (such as `:nil` or
+    #     `:empty`). The method with a questionmark at the end is called on the
+    #     value (e.g. `value.empty?`). If the value does not have this method,
+    #     it is considered valid (i.e. if you don't respond to `empty?` we
+    #     assume you are not empty).
+    #   @option options [Proc] :coerce A proc which will be called to
+    #     transform the user input to canonical form. The value is passed in,
+    #     and the transformed value returned as output. Lazy values will *not*
+    #     be passed to this method until after they are evaluated. Called in the
+    #     context of the resource (meaning you can access other properties).
+    #   @option options [Boolean] :required `true` if this property
+    #     must be present; `false` otherwise. This is checked after the resource
+    #     is fully initialized.
+    #   @option options [Boolean] :name_property `true` if this
+    #     property defaults to the same value as `name`. Equivalent to
+    #     `default: lazy { name }`, except that #property_is_set? will
+    #     return `true` if the property is set *or* if `name` is set.
+    #   @option options [Boolean] :name_attribute Same as `name_property`.
+    #   @option options [Object] :default The value this property
+    #     will return if the user does not set one. If this is `lazy`, it will
+    #     be run in the context of the instance (and able to access other
+    #     properties).
+    #
+    # @example Bare property
+    #   property :x
+    #
+    # @example With just a type
+    #   property :x, String
+    #
+    # @example With just options
+    #   property :x, default: 'hi'
+    #
+    # @example With type and options
+    #   property :x, String, default: 'hi'
+    #
+    def self.property(name, type=NOT_PASSED, **options)
+      name = name.to_sym
+
+      if type != NOT_PASSED
+        if options[:is]
+          options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
+        else
+          options[:is] = type
+        end
+      end
+
+      define_method(name) do |value=NOT_PASSED|
+        set_or_return(name, value, options)
+      end
+      define_method("#{name}=") do |value|
+        set_or_return(name, value, options)
+      end
+    end
+
+    #
+    # Whether this property has been set (or whether it has a default that has
+    # been retrieved).
+    #
+    def property_is_set?(name)
+      name = name.to_sym
+      instance_variable_defined?("@#{name}")
+    end
+
+    #
+    # Create a lazy value for assignment to a default value.
+    #
+    # @param block The block to run when the value is retrieved.
+    #
+    # @return [Chef::DelayedEvaluator] The lazy value
+    #
+    def self.lazy(&block)
+      DelayedEvaluator.new(&block)
+    end
+
     # Set or return the list of "state attributes" implemented by the Resource
     # subclass. State attributes are attributes that describe the desired state
     # of the system, such as file permissions or ownership. In general, state
@@ -777,8 +875,8 @@ class Chef
     #   have.
     #
     attr_accessor :allowed_actions
-    def allowed_actions(value=NULL_ARG)
-      if value != NULL_ARG
+    def allowed_actions(value=NOT_PASSED)
+      if value != NOT_PASSED
         self.allowed_actions = value
       end
       @allowed_actions
@@ -912,9 +1010,9 @@ class Chef
     #
     # @return [Symbol] The name of this resource type (e.g. `:execute`).
     #
-    def self.resource_name(name=NULL_ARG)
+    def self.resource_name(name=NOT_PASSED)
       # Setter
-      if name != NULL_ARG
+      if name != NOT_PASSED
         remove_canonical_dsl
 
         # Set the resource_name and call provides
@@ -1004,8 +1102,8 @@ class Chef
     #
     # @return [Symbol,Array<Symbol>] The default actions for the resource.
     #
-    def self.default_action(action_name=NULL_ARG)
-      unless action_name.equal?(NULL_ARG)
+    def self.default_action(action_name=NOT_PASSED)
+      unless action_name.equal?(NOT_PASSED)
         if action_name.is_a?(Array)
           @default_action = action_name.map { |arg| arg.to_sym }
         else
