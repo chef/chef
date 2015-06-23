@@ -308,6 +308,7 @@ EOR
       allow_any_instance_of(Chef::Role).to receive(:from_file).with("#{Chef::Config[:role_path]}/memes/lolcat.rb")
       expect{ @role.class.from_disk("lolcat") }.not_to raise_error
     end
+    
   end
 
   describe "when loading from disk and role_path is an array" do
@@ -358,5 +359,19 @@ EOR
       expect {@role.class.from_disk("lolcat")}.to raise_error(Chef::Exceptions::RoleNotFound)
     end
 
+  end
+  
+  describe 'get_roles_files_in_path' do
+    it 'should search Windows absolute paths instead of Linux-style paths when on Windows' do
+      allow(ChefConfig).to receive(:windows?) { true }
+      expect(Dir).to receive(:glob).with(File.join('C:\\\\path1\\\\path2', '**', '**')).exactly(1).times
+      @role.class.get_roles_files_in_path('/path1/path2')
+    end
+    
+    it 'should search Linux paths on Linux' do
+      allow(ChefConfig).to receive(:windows?) { false }
+      expect(Dir).to receive(:glob).with(File.join('/path1/path2', '**', '**')).exactly(1).times
+      @role.class.get_roles_files_in_path('/path1/path2')
+    end
   end
 end
