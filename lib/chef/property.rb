@@ -250,6 +250,7 @@ class Chef
         if value.is_a?(DelayedEvaluator)
           value = exec_in_resource(resource, value)
           value = coerce(resource, value)
+          validate(resource, value)
         end
         value
 
@@ -260,7 +261,9 @@ class Chef
           value = default
           if value.is_a?(DelayedEvaluator)
             value = exec_in_resource(resource, value)
-            value = set(resource, value)
+            value = coerce(resource, value)
+            # We don't validate defaults
+            set_value(resource, value)
           else
             value = coerce(resource, value)
           end
@@ -284,7 +287,10 @@ class Chef
     #   this property.
     #
     def set(resource, value)
-      value = coerce(resource, value) unless value.is_a?(DelayedEvaluator)
+      unless value.is_a?(DelayedEvaluator)
+        value = coerce(resource, value)
+        validate(resource, value)
+      end
       set_value(resource, value)
     end
 
@@ -320,10 +326,10 @@ class Chef
     end
 
     #
-    # Coerce an input value into canonical form for the property, validating
-    # it in the process.
+    # Coerce an input value into canonical form for the property.
     #
     # After coercion, the value is suitable for storage in the resource.
+    # You must validate values after coercion, however.
     #
     # Does no special handling for lazy values.
     #
@@ -340,7 +346,6 @@ class Chef
       if options.has_key?(:coerce)
         value = exec_in_resource(resource, options[:coerce], value)
       end
-      validate(resource, value)
       value
     end
 
@@ -463,6 +468,7 @@ class Chef
 
       if value.is_a?(DelayedEvaluator)
         value = coerce(resource, value)
+        validate(resource, value)
       end
       value
     end
