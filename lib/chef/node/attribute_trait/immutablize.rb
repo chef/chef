@@ -48,10 +48,8 @@ class Chef
           value = super
           if value.is_a?(Hash) || value.is_a?(Array)
             value
-          elsif value.nil? || value.equal?(true) || value.equal?(false)
-            value
           else
-            value.dup.freeze
+            safe_dup(value).freeze
           end
         end
 

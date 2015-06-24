@@ -102,7 +102,7 @@ class Chef
         #def freeze
         #end
 
-        # rescue "can't dup NilClass"
+        # nil, true, false and Fixnums are not dup'able
         def safe_dup(e)
           e.dup
         rescue TypeError
