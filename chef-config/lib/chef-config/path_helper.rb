@@ -228,6 +228,17 @@ module ChefConfig
         joined_paths
       end
     end
+	
+    # On Windows, expands the given path so that it
+    # contains a drive letter at the beginning.
+    # [path] The path to convert
+    def self.get_full_windows_path(path)
+      if ChefConfig.windows?
+        path = cleanpath(File.absolute_path(path))
+      end
+      path
+    end
+	
   end
 end
 

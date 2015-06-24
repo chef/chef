@@ -101,6 +101,18 @@ RSpec.describe ChefConfig::PathHelper do
     it "cleanpath does not remove leading double backslash" do
       expect(path_helper.cleanpath('\\\\a/b\\c/d/')).to eq('\\\\a\\b\\c\\d')
     end
+    
+    describe 'get_full_windows_path' do
+      it 'expands path to begin with drive letter' do
+        expect(File).to receive(:absolute_path).with('\\a\\b\\c').and_return('C:\\a\\b\\c')
+        expect(path_helper.get_full_windows_path('\\a\\b\\c')).to eq('C:\\a\\b\\c')
+      end
+      
+      it 'appends relative path to current directory' do
+        expect(File).to receive(:absolute_path).with('a\\b\\c').and_return('C:\\x\\y\\z\\a\\b\\c')
+        expect(path_helper.get_full_windows_path('a\\b\\c')).to eq('C:\\x\\y\\z\\a\\b\\c')
+      end
+    end
 
   end
 

@@ -248,14 +248,16 @@ class Chef
     def self.from_disk(name)
       paths = Array(Chef::Config[:role_path])
       paths.each do |path|
-        roles_files = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(path), "**", "**"))
+        roles_files = get_roles_files_in_path(path)
+
         js_files = roles_files.select { |file| file.match(/\/#{name}\.json$/) }
         rb_files = roles_files.select { |file| file.match(/\/#{name}\.rb$/) }
+
         if js_files.count > 1 or rb_files.count > 1
           raise Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
         end
         js_path, rb_path = js_files.first, rb_files.first
-
+        
         if js_path && File.exists?(js_path)
           # from_json returns object.class => json_class in the JSON.
           return Chef::JSONCompat.from_json(IO.read(js_path))
@@ -268,6 +270,14 @@ class Chef
       end
 
       raise Chef::Exceptions::RoleNotFound, "Role '#{name}' could not be loaded from disk"
+    end
+    
+    # Gets the roles files found in the given path
+    # [path] The path where the roles files are
+    def self.get_roles_files_in_path(path)
+      path = Chef::Util::PathHelper.get_full_windows_path(path)
+      path = Chef::Util::PathHelper.escape_glob(path)
+      Dir.glob(File.join(path, "**", "**"))
     end
 
   end
