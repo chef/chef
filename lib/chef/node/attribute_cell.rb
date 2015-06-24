@@ -70,11 +70,13 @@ class Chef
 
       def eql?(other)
         if is_a?(Hash)
+          return false unless other.is_a?(Hash)
           merged_hash.each do |key, value|
             return false unless merged_hash[key].eql?(other[key])
           end
           return true
         elsif is_a?(Array)
+          return false unless other.is_a?(Array)
           merged_array.each_with_index do |value, i|
             return false unless value.eql?(other[i])
           end
@@ -86,10 +88,12 @@ class Chef
 
       def ==(other)
         if is_a?(Hash)
+          return false unless other.is_a?(Hash)
           merged_hash.each do |key, value|
             return false unless merged_hash[key] == other[key]
           end
         elsif is_a?(Array)
+          return false unless other.is_a?(Array)
           merged_array.each_with_index do |value, i|
             return false unless value == other[i]
           end
