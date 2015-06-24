@@ -62,7 +62,7 @@ build do
     'fauxhai'           => '2.2.0',
     'rubocop'           => '0.31.0',
     'knife-spork'       => '1.5.0',
-    'winrm-transport'   => '1.0.1',
+    'winrm-transport'   => '1.0.2',
     'knife-windows'     => '0.8.5',
     # Strainer build is hosed on windows
     # 'strainer'        => '0.15.0',
