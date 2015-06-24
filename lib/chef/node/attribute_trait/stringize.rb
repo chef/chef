@@ -1,4 +1,3 @@
-
 # NOTE you must include ConvertValue before this in order to use it
 # (fixing to include here is annoying due to the class method)
 class Chef

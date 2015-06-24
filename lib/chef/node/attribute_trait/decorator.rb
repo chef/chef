@@ -22,14 +22,20 @@ class Chef
           super
         end
 
-        def regular_writer(key, value)
-          wrapped_object[key] = value
+        def regular_writer(*path, value)
+          last_key = path.pop
+          obj = path.inject(wrapped_object) { |memo, key| memo[key] }
+          obj[last_key] = value
+        end
+
+        def regular_reader(*path)
+          path.inject(wrapped_object) { |memo, key| memo[key] }
         end
 
         def [](key)
           ret = wrapped_object[key]
           if ret.is_a?(Hash) || ret.is_a?(Array)
-            new_decorator(ret)
+            new_decorator(wrapped_object: ret)
           else
             ret
           end
@@ -44,7 +50,7 @@ class Chef
         end
 
         def respond_to?(method, include_private = false)
-          wrapped_object.respond_to?(method, include_private)
+          wrapped_object.respond_to?(method, include_private) || super
         end
 
         def inspect
@@ -103,8 +109,8 @@ class Chef
           e
         end
 
-        def new_decorator(obj)
-          self.class.new_decorator(obj)
+        def new_decorator(wrapped_object: wrapped_object)
+          self.class.new_decorator(wrapped_object: wrapped_object)
         end
 
         def self.included(base)
@@ -112,10 +118,14 @@ class Chef
         end
 
         module DecoratorClassMethods
-          def new_decorator(obj)
+          def new_decorator(wrapped_object: wrapped_object)
             dec = allocate
-            dec.wrapped_object = obj
+            dec.wrapped_object = wrapped_object
             dec
+          end
+
+          def mixins
+            @mixins ||= []
           end
         end
       end

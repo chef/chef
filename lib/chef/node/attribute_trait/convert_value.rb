@@ -7,9 +7,14 @@ class Chef
           super(wrapped_object: convert_value(wrapped_object))
         end
 
-        # This avoids the dup of value in #[]=
-        def regular_writer(key, value)
-          super(convert_key(key), value)
+        def regular_writer(*path, value)
+          path = path.map { |key| convert_key(key) }
+          super(*path, value)
+        end
+
+        def regular_reader(*path)
+          path = path.map { |key| convert_key(key) }
+          super(*path)
         end
 
         def []=(key, value)
@@ -33,7 +38,7 @@ class Chef
         end
 
         def update(other_hash)
-          other_has.each { |k, v| self[key] = value }
+          other_hash.each { |k, v| self[k] = v }
           self
         end
 

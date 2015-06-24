@@ -21,50 +21,33 @@ require 'chef/node/attribute_constants'
 require 'chef/node/attribute_cell'
 require 'chef/node/set_unless'
 require 'chef/node/attribute_trait/decorator'
+require 'chef/node/attribute_trait/convert_value'
+require 'chef/node/attribute_trait/stringize'
+require 'chef/node/attribute_trait/methodize'
+require 'chef/node/attribute_trait/immutablize'
 
 class Chef
   class Node
     class Attribute
       include AttributeTrait::Decorator
+      include AttributeTrait::ConvertValue
+      include AttributeTrait::Stringize
+      include AttributeTrait::Methodize
+      include AttributeTrait::Immutablize
       include AttributeConstants
 
-      def initialize(*args)
-        if args.length == 4
-          # Chef 11.x - 12.4.x backcompat initializer
-          # FIXME: deprecate
-          super(
-            wrapped_object: AttributeCell.new(
-              default: args[1],
-              env_default: {},
-              role_default: {},
-              force_default: {},
-              normal: args[0],
-              override: args[2],
-              role_override: {},
-              env_override: {},
-              force_override: {},
-              automatic: args[3],
-            )
-          )
-        else
-          super
-        end
-      end
-
-      def self.new_top_level_node_object
-        new(
-            wrapped_object: AttributeCell.new(
-              default: {},
-              env_default: {},
-              role_default: {},
-              force_default: {},
-              normal: {},
-              override: {},
-              role_override: {},
-              env_override: {},
-              force_override: {},
-              automatic: {},
-            )
+      def initialize(normal, default, override, automatic)
+        @wrapped_object = AttributeCell.new(
+            default: default,
+            env_default: {},
+            role_default: {},
+            force_default: {},
+            normal: normal,
+            override: override,
+            role_override: {},
+            env_override: {},
+            force_override: {},
+            automatic: automatic,
         )
       end
 
@@ -89,15 +72,15 @@ class Chef
       end
 
       def normal_unless
-        SetUnless.new_decorator(wrapped_object.normal)
+        SetUnless.new_decorator(wrapped_object: wrapped_object.normal)
       end
 
       def default_unless
-        SetUnless.new_decorator(wrapped_object.default)
+        SetUnless.new_decorator(wrapped_object: wrapped_object.default)
       end
 
       def override_unless
-        SetUnless.new_decorator(wrapped_object.override)
+        SetUnless.new_decorator(wrapped_object: wrapped_object.override)
       end
 
       # should deprecate all of these, epecially #set
@@ -183,18 +166,36 @@ class Chef
         wrapped_object.inspect
       end
 
+      # clears attributes from all precedence levels
+      #
+      # does not autovivify
       def rm(*args)
         raise "unimplemented"
       end
 
+      # clears attributes from all default precedence levels
+      #
+      # equivalent to: force_default!['foo']['bar'].delete('baz')
+      #
+      # does not autovivify
       def rm_default(*args)
         raise "unimplemented"
       end
 
+      # clears attributes from normal precedence
+      #
+      # equivalent to: normal!['foo']['bar'].delete('baz')
+      #
+      # does not autovivify
       def rm_normal(*args)
         raise "unimplemented"
       end
 
+      # clears attributes from all override precedence levels
+      #
+      # equivalent to: force_override!['foo']['bar'].delete('baz')
+      #
+      # does not autovivify
       def rm_override(*args)
         raise "unimplemented"
       end

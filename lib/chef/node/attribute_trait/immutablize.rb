@@ -45,8 +45,10 @@ class Chef
         end
 
         def [](key)
-          # FIXME: this get overridden by Cell and never gets called
+          value = super
           if value.is_a?(Hash) || value.is_a?(Array)
+            value
+          elsif value.nil? || value.equal?(true) || value.equal?(false)
             value
           else
             value.dup.freeze

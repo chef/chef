@@ -15,7 +15,6 @@ class Chef
       #
 
       include AttributeConstants
-      include AttributeTrait::Immutablize
 
       attr_accessor :default
       attr_accessor :env_default
@@ -70,11 +69,33 @@ class Chef
       end
 
       def eql?(other)
-        as_simple_object.eql?(other)
+        if is_a?(Hash)
+          merged_hash.each do |key, value|
+            return false unless merged_hash[key].eql?(other[key])
+          end
+          return true
+        elsif is_a?(Array)
+          merged_array.each_with_index do |value, i|
+            return false unless value.eql?(other[i])
+          end
+          return true
+        else
+          highest_precedence.eql?(other)
+        end
       end
 
       def ==(other)
-        as_simple_object == other
+        if is_a?(Hash)
+          merged_hash.each do |key, value|
+            return false unless merged_hash[key] == other[key]
+          end
+        elsif is_a?(Array)
+          merged_array.each_with_index do |value, i|
+            return false unless value == other[i]
+          end
+        else
+          highest_precedence == other
+        end
       end
 
       def ===(other)
@@ -86,48 +107,18 @@ class Chef
       end
 
       def method_missing(method, *args, &block)
-        # FIXME: we're leaking stringize into this method
-        begin
-          as_simple_object.public_send(method, *args, &block)
-        rescue NoMethodError
-          if args.empty?
-            self[method.to_s]
-          else
-            raise
-          end
-        end
+        as_simple_object.public_send(method, *args, &block)
       end
 
       def respond_to?(method, include_private = false)
-        # FIXME: we're leaking stringize into this method
         as_simple_object.respond_to?(method, include_private) || key?(method.to_s)
       end
 
       def [](key)
         if self.is_a?(Hash)
-          # this is a one-level deep_merge that preserves precedence level
-          args = {}
-          highest_found_value = nil
-          COMPONENTS.map do |component|
-            hash = instance_variable_get(component)
-            next unless hash.is_a?(Hash)
-            next unless hash.key?(key)
-            args[component.to_s[1..-1].to_sym] = highest_found_value = hash[key]
-          end
-          if highest_found_value.is_a?(Array) || highest_found_value.is_a?(Hash)
-            return self.class.new(args)
-          else
-            return highest_found_value
-          end
+          merged_hash[key]
         elsif self.is_a?(Array)
-          tuple = highest_precedence_zipped_array[key]
-          if tuple[:value].is_a?(Hash) || tuple[:value].is_a?(Array)
-            # return a new decorator with the correct precedence level set to the value
-            return self.class.new(tuple[:level] => tuple[:value])
-          else
-            # return just the bare value
-            return tuple[:value]
-          end
+          merged_array[key]
         else
           # this should never happen - should probably freeze this or dump/load
           return highest_precedence[key]
@@ -156,12 +147,12 @@ class Chef
         return enum_for(:each) unless block_given?
 
         if self.is_a?(Hash)
-          merged_hash.keys.each do |key|
-            yield key, self[key]
+          merged_hash.each do |key, value|
+            yield key, value
           end
         elsif self.is_a?(Array)
-          highest_precedence_zipped_array.each do |value|
-            yield self.class.new(tuple[:level] => tuple[:value])
+          merged_array.each do |value|
+            yield value
           end
         else
           yield highest_precedence
@@ -169,7 +160,7 @@ class Chef
       end
 
       def to_json(*opts)
-        Chef::JSONCompat.to_json(to_hash, *a)
+        Chef::JSONCompat.to_json(to_hash, *opts)
       end
 
       def to_hash
@@ -186,7 +177,7 @@ class Chef
           end
           h
         elsif self.is_a?(Array)
-          raise
+          raise # FIXME
         else
           highest_precedence.to_hash
         end
@@ -194,11 +185,17 @@ class Chef
 
       def to_a
         if self.is_a?(Hash)
-          raise
+          raise # FIXME
         elsif self.is_a?(Array)
           a = []
           each do |value|
-            a.push(value)
+            if value.is_a?(Hash)
+              a.push(value.to_hash)
+            elsif value.is_a?(Array)
+              a.push(value.to_a)
+            else
+              a.push(value)
+            end
           end
           a
         else
@@ -206,13 +203,15 @@ class Chef
         end
       end
 
+      alias_method :to_ary, :to_a
+
       private
 
       def as_simple_object
         if self.is_a?(Hash)
           merged_hash
         elsif self.is_a?(Array)
-          highest_precedence_array
+          merged_array
         else
           # in normal usage we never wrap non-containers, so this should never happen
           highest_precedence
@@ -222,67 +221,88 @@ class Chef
       def merged_hash
         # this is a one level deep deep_merge
         merged_hash = {}
-        COMPONENTS.each do |component|
-          hash = instance_variable_get(component)
+        highest_value_found = {}
+        COMPONENTS_AS_SYMBOLS.each do |component|
+          hash = instance_variable_get(:"@#{component}")
           next unless hash.is_a?(Hash)
           hash.each do |key, value|
-            merged_hash[key] = value
+            merged_hash[key] ||= self.class.new
+            merged_hash[key].instance_variable_set(:"@#{component}", value)
+            highest_value_found[key] = value
           end
+        end
+        # we need to expose scalars as undecorated scalars (esp. nil, true, false)
+        highest_value_found.each do |key, value|
+          next if highest_value_found[key].is_a?(Hash) || highest_value_found[key].is_a?(Array)
+          merged_hash[key] = highest_value_found[key]
         end
         merged_hash
       end
 
-      def merged_default_zipped_array
+      def merged_array
+        automatic_array || override_array || normal_array || default_array
+      end
+
+      def default_array
         return nil unless DEFAULT_COMPONENTS_AS_SYMBOLS.any? do |component|
           send(component).is_a?(Array)
         end
         # this is a one level deep deep_merge
-        DEFAULT_COMPONENTS_AS_SYMBOLS.each_with_object([]) do |component, merged_array|
+        default_array = []
+        DEFAULT_COMPONENTS_AS_SYMBOLS.each do |component|
           array = instance_variable_get(:"@#{component}")
           next unless array.is_a?(Array)
-          merged_array << array.map do |value|
-            { level: component, value: value }
+          default_array += array.map do |value|
+            if value.is_a?(Hash) || value.is_a?(Array)
+              self.class.new( component => value )
+            else
+              value
+            end
           end
-        end.flatten
+        end
+        default_array
       end
 
-      def merged_normal_zipped_array
+      def normal_array
         return nil unless @normal.is_a?(Array)
-        @normal.map { |value| { level: :normal, value: value } }
+        @normal.map do |value|
+          if value.is_a?(Hash) || value.is_a?(Array)
+            self.class.new( component => value )
+          else
+            value
+          end
+        end
       end
 
-      def merged_override_zipped_array
+      def override_array
         return nil unless OVERRIDE_COMPONENTS_AS_SYMBOLS.any? do |component|
           send(component).is_a?(Array)
         end
         # this is a one level deep deep_merge
-        OVERRIDE_COMPONENTS_AS_SYMBOLS.each_with_object([]) do |component, merged_array|
-          # FIXME: test all of these to make sure we're not getting VividMashes through
-          # the accessor and are really getting the instance variable directly
+        override_array = []
+        OVERRIDE_COMPONENTS_AS_SYMBOLS.each do |component|
           array = instance_variable_get(:"@#{component}")
           next unless array.is_a?(Array)
-          merged_array << array.map do |value|
-            { level: component, value: value }
+          override_array += array.map do |value|
+            if value.is_a?(Hash) || value.is_a?(Array)
+              self.class.new( component => value )
+            else
+              value
+            end
           end
-        end.flatten
+        end
+        override_array
       end
 
-      def merged_automatic_zipped_array
+      def automatic_array
         return nil unless @automatic.is_a?(Array)
-        @automatic.map { |value| { level: :automatic, value: value } }
-      end
-
-      def highest_precedence_array
-        highest_precedence_zipped_array.map { |i| i[:value] }
-      end
-
-      def highest_precedence_zipped_array
-        raise "internal bug, please report" unless is_a?(Array)
-        return merged_automatic_zipped_array if merged_automatic_zipped_array
-        return merged_override_zipped_array if merged_override_zipped_array
-        return merged_normal_zipped_array if merged_normal_zipped_array
-        return merged_default_zipped_array if merged_default_zipped_array
-        raise "internal bug, please report"
+        @automatic.map do |value|
+          if value.is_a?(Hash) || value.is_a?(Array)
+            self.class.new( component => value )
+          else
+            value
+          end
+        end
       end
 
       # @return [Object] value of the highest precedence level

@@ -215,7 +215,7 @@ describe Chef::Node::AttributeCell do
     end
   end
 
-  describe "#[] on Array-like" do
+ describe "#[] on Array-like" do
     it "preserves precedence order when merging default" do
       cell.default = [ 1 ]
       cell.env_default = [ 0 ]
@@ -402,82 +402,11 @@ describe Chef::Node::AttributeCell do
   end
 
   describe "converting values" do
-    it "works" do
-      # need some kind of convert_value() that recursively injests decorators and converts to
-      # underlying bare hash/array values.  Cells are the lowest level and should not decorate
-      # decorators (at least i don't think so right now).
-      pending "right now it does not work"
+    it "injesting decorated values removes the decorations" do
       ports = Chef::Node::AttributeCell.new(default: [ 80, 443 ])
       cell.default = { 'ports' => ports }
-      expect(cell.default['ports']).not_to be_a(Chef::Node::AttributeCell)
-    end
-  end
-
-  describe "immutability" do
-    context "when the cell is an Array" do
-      before do
-        cell.default = [ 0 ]
-      end
-
-      it "raises error on #clear" do
-        expect { cell.clear }.to raise_error
-      end
-
-      it "raises an error on #[]=" do
-        expect { cell[0] = 2 }.to raise_error
-      end
-
-      it "returns frozen values" do
-        expect( cell[0] ).to be_frozen
-      end
-
-      it "returns frozen values in #each" do
-        ret = false
-        cell.each { |i| ret = i.frozen? }
-        expect( ret ).to be true
-      end
-
-      it "returns a deep-dup'd mutable array from #to_a" do
-        cell.default = [[[0]]]
-        cell.to_a[0][0][0] = 1
-        expect(cell[0][0][0]).to eql(0)
-      end
-    end
-
-    context "when the cell is a Hash" do
-      before do
-        cell.default = { 'foo' => 'bar' }
-      end
-
-      it "raises error on #clear" do
-        expect { cell.clear }.to raise_error
-      end
-
-      it "raises an error on #[]=" do
-        expect { cell['baz'] = 'qux' }.to raise_error
-      end
-
-      it "returns frozen values" do
-        expect( cell['foo'] ).to be_frozen
-      end
-
-      it "returns frozen keys in #each" do
-        ret = false
-        cell.each { |k, v| ret = k.frozen? }
-        expect( ret ).to be true
-      end
-
-      it "returns frozen values in #each" do
-        ret = false
-        cell.each { |k, v| ret = v.frozen? }
-        expect( ret ).to be true
-      end
-
-      it "returns a deep-dup'd mutable hash from #to_hash" do
-        cell.default = { 'foo' => { 'bar' => { 'baz' => 'qux' }}}
-        cell.to_hash['foo']['bar']['baz'] = 'quux'
-        expect(cell['foo']['bar']['baz']).to eql('qux')
-      end
+      expect(cell.default.wrapped_object['ports']).not_to be_a(Chef::Node::AttributeCell)
+      expect(cell.default.wrapped_object['ports']).not_to be_a(Chef::Node::VividMash)
     end
   end
 end
