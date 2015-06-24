@@ -120,11 +120,11 @@ class Chef
 
       def [](key)
         if self.is_a?(Hash)
-          merged_hash[key]
+          merged_hash_key(key)
         elsif self.is_a?(Array)
           merged_array[key]
         else
-          # this should never happen - should probably freeze this or dump/load
+          # this probably makes no sense at all
           return highest_precedence[key]
         end
       end
@@ -219,6 +219,26 @@ class Chef
         else
           # in normal usage we never wrap non-containers, so this should never happen
           highest_precedence
+        end
+      end
+
+      def merged_hash_key(key)
+        # this is much faster than merged_hash[key]
+        retval = self.class.new
+        highest_value_found = nil
+        COMPONENTS_AS_SYMBOLS.each do |component|
+          hash = instance_variable_get(:"@#{component}")
+          next unless hash.is_a?(Hash)
+          next unless hash.key?(key)
+          value = hash[key]
+          retval ||= self.class.new
+          retval.instance_variable_set(:"@#{component}", value)
+          highest_value_found = value
+        end
+        if highest_value_found.is_a?(Hash) || highest_value_found.is_a?(Array)
+          return retval
+        else
+          return highest_value_found
         end
       end
 
