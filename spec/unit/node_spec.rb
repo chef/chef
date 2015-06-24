@@ -1106,7 +1106,7 @@ describe Chef::Node do
       expect(serialized_node.run_list).to eq(node.run_list)
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) {
         node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
         node

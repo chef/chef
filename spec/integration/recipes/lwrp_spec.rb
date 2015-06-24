@@ -45,12 +45,8 @@ log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'l-w-r-p::default'", :cwd => chef_dir)
-      actual = result.stdout.lines.map { |l| l.chomp }.join("\n")
-      expected = <<EOM
-  * l_w_r_p_foo[me] action create (up to date)
-EOM
-      expected = expected.lines.map { |l| l.chomp }.join("\n")
-      expect(actual).to include(expected)
+      expect(result.stdout).to match(/\* l_w_r_p_foo\[me\] action create \(up to date\)/)
+      expect(result.stdout).not_to match(/WARN: You are overriding l_w_r_p_foo/)
       result.error!
     end
   end

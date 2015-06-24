@@ -1,3 +1,5 @@
+## 12.5.0
+
 ## 12.4.0
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):

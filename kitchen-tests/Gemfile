@@ -6,4 +6,5 @@ group :end_to_end do
   gem 'kitchen-appbundle-updater', '~> 0.0.1'
   gem "kitchen-vagrant", '~> 0.17.0'
   gem 'kitchen-ec2', github: 'test-kitchen/kitchen-ec2'
+  gem 'vagrant-wrapper'
 end

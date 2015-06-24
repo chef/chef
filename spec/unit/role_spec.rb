@@ -217,7 +217,7 @@ describe Chef::Role do
 
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { @role }
     end
   end

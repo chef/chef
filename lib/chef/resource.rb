@@ -58,8 +58,6 @@ class Chef
     include Chef::Mixin::ShellOut
     include Chef::Mixin::PowershellOut
 
-    NULL_ARG = Object.new
-
     #
     # The node the current Chef run is using.
     #
@@ -187,8 +185,7 @@ class Chef
         end
         self.action = arg
       else
-        # Pull the action from the class if it's not set
-        @action || self.class.default_action
+        @action
       end
     end
 
@@ -531,9 +528,7 @@ class Chef
     #
     # Equivalent to #ignore_failure.
     #
-    def epic_fail(arg=nil)
-      ignore_failure(arg)
-    end
+    alias :epic_fail :ignore_failure
 
     #
     # Make this resource into an exact (shallow) copy of the other resource.
@@ -688,13 +683,19 @@ class Chef
     #
     # The provider class for this resource.
     #
+    # If `action :x do ... end` has been declared on this resource or its
+    # superclasses, this will return the `action_provider_class`.
+    #
     # If this is not set, `provider_for_action` will dynamically determine the
     # provider.
     #
     # @param arg [String, Symbol, Class] Sets the provider class for this resource.
     #   If passed a String or Symbol, e.g. `:file` or `"file"`, looks up the
     #   provider based on the name.
+    #
     # @return The provider class for this resource.
+    #
+    # @see Chef::Resource.action_provider_class
     #
     def provider(arg=nil)
       klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
@@ -702,10 +703,111 @@ class Chef
       else
         arg
       end
-      set_or_return(:provider, klass, kind_of: [ Class ])
+      set_or_return(:provider, klass, kind_of: [ Class ]) ||
+        self.class.action_provider_class
     end
     def provider=(arg)
       provider(arg)
+    end
+
+    #
+    # Create a property on this resource class.
+    #
+    # If a superclass has this property, or if this property has already been
+    # defined by this resource, this will *override* the previous value.
+    #
+    # @param name [Symbol] The name of the property.
+    # @param type [Object,Array<Object>] The type(s) of this property.
+    #   If present, this is prepended to the `is` validation option.
+    # @param options [Hash<Symbol,Object>] Validation options.
+    #   @option options [Object,Array] :is An object, or list of
+    #     objects, that must match the value using Ruby's `===` operator
+    #     (`options[:is].any? { |v| v === value }`).
+    #   @option options [Object,Array] :equal_to An object, or list
+    #     of objects, that must be equal to the value using Ruby's `==`
+    #     operator (`options[:is].any? { |v| v == value }`)
+    #   @option options [Regexp,Array<Regexp>] :regex An object, or
+    #     list of objects, that must match the value with `regex.match(value)`.
+    #   @option options [Class,Array<Class>] :kind_of A class, or
+    #     list of classes, that the value must be an instance of.
+    #   @option options [Hash<String,Proc>] :callbacks A hash of
+    #     messages -> procs, all of which match the value. The proc must
+    #     return a truthy or falsey value (true means it matches).
+    #   @option options [Symbol,Array<Symbol>] :respond_to A method
+    #     name, or list of method names, the value must respond to.
+    #   @option options [Symbol,Array<Symbol>] :cannot_be A property,
+    #     or a list of properties, that the value cannot have (such as `:nil` or
+    #     `:empty`). The method with a questionmark at the end is called on the
+    #     value (e.g. `value.empty?`). If the value does not have this method,
+    #     it is considered valid (i.e. if you don't respond to `empty?` we
+    #     assume you are not empty).
+    #   @option options [Proc] :coerce A proc which will be called to
+    #     transform the user input to canonical form. The value is passed in,
+    #     and the transformed value returned as output. Lazy values will *not*
+    #     be passed to this method until after they are evaluated. Called in the
+    #     context of the resource (meaning you can access other properties).
+    #   @option options [Boolean] :required `true` if this property
+    #     must be present; `false` otherwise. This is checked after the resource
+    #     is fully initialized.
+    #   @option options [Boolean] :name_property `true` if this
+    #     property defaults to the same value as `name`. Equivalent to
+    #     `default: lazy { name }`, except that #property_is_set? will
+    #     return `true` if the property is set *or* if `name` is set.
+    #   @option options [Boolean] :name_attribute Same as `name_property`.
+    #   @option options [Object] :default The value this property
+    #     will return if the user does not set one. If this is `lazy`, it will
+    #     be run in the context of the instance (and able to access other
+    #     properties).
+    #
+    # @example Bare property
+    #   property :x
+    #
+    # @example With just a type
+    #   property :x, String
+    #
+    # @example With just options
+    #   property :x, default: 'hi'
+    #
+    # @example With type and options
+    #   property :x, String, default: 'hi'
+    #
+    def self.property(name, type=NOT_PASSED, **options)
+      name = name.to_sym
+
+      if type != NOT_PASSED
+        if options[:is]
+          options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
+        else
+          options[:is] = type
+        end
+      end
+
+      define_method(name) do |value=NOT_PASSED|
+        set_or_return(name, value, options)
+      end
+      define_method("#{name}=") do |value|
+        set_or_return(name, value, options)
+      end
+    end
+
+    #
+    # Whether this property has been set (or whether it has a default that has
+    # been retrieved).
+    #
+    def property_is_set?(name)
+      name = name.to_sym
+      instance_variable_defined?("@#{name}")
+    end
+
+    #
+    # Create a lazy value for assignment to a default value.
+    #
+    # @param block The block to run when the value is retrieved.
+    #
+    # @return [Chef::DelayedEvaluator] The lazy value
+    #
+    def self.lazy(&block)
+      DelayedEvaluator.new(&block)
     end
 
     # Set or return the list of "state attributes" implemented by the Resource
@@ -773,8 +875,8 @@ class Chef
     #   have.
     #
     attr_accessor :allowed_actions
-    def allowed_actions(value=NULL_ARG)
-      if value != NULL_ARG
+    def allowed_actions(value=NOT_PASSED)
+      if value != NOT_PASSED
         self.allowed_actions = value
       end
       @allowed_actions
@@ -908,9 +1010,9 @@ class Chef
     #
     # @return [Symbol] The name of this resource type (e.g. `:execute`).
     #
-    def self.resource_name(name=NULL_ARG)
+    def self.resource_name(name=NOT_PASSED)
       # Setter
-      if name != NULL_ARG
+      if name != NOT_PASSED
         remove_canonical_dsl
 
         # Set the resource_name and call provides
@@ -924,17 +1026,24 @@ class Chef
         else
           @resource_name = nil
         end
-      else
-        # set resource_name automatically if it's not set
-        if !instance_variable_defined?(:@resource_name) && self.name
-          resource_name convert_to_snake_case(self.name.split('::')[-1])
-        end
       end
-
       @resource_name
     end
     def self.resource_name=(name)
       resource_name(name)
+    end
+
+    #
+    # Use the class name as the resource name.
+    #
+    # Munges the last part of the class name from camel case to snake case,
+    # and sets the resource_name to that:
+    #
+    # A::B::BlahDBlah -> blah_d_blah
+    #
+    def self.use_automatic_resource_name
+      automatic_name = convert_to_snake_case(self.name.split('::')[-1])
+      resource_name automatic_name
     end
 
     #
@@ -965,7 +1074,7 @@ class Chef
     #
     # @param actions [Array<Symbol>] The list of actions to add to allowed_actions.
     #
-    # @return [Arrau<Symbol>] The list of actions, as symbols.
+    # @return [Array<Symbol>] The list of actions, as symbols.
     #
     def self.allowed_actions(*actions)
       @allowed_actions ||=
@@ -974,10 +1083,10 @@ class Chef
         else
           [ :nothing ]
         end
-      @allowed_actions |= actions
+      @allowed_actions |= actions.flatten
     end
     def self.allowed_actions=(value)
-      @allowed_actions = value
+      @allowed_actions = value.uniq
     end
 
     #
@@ -993,8 +1102,8 @@ class Chef
     #
     # @return [Symbol,Array<Symbol>] The default actions for the resource.
     #
-    def self.default_action(action_name=NULL_ARG)
-      unless action_name.equal?(NULL_ARG)
+    def self.default_action(action_name=NOT_PASSED)
+      unless action_name.equal?(NOT_PASSED)
         if action_name.is_a?(Array)
           @default_action = action_name.map { |arg| arg.to_sym }
         else
@@ -1010,6 +1119,91 @@ class Chef
         superclass.default_action
       else
         :nothing
+      end
+    end
+    def self.default_action=(action_name)
+      default_action action_name
+    end
+
+    #
+    # Define an action on this resource.
+    #
+    # The action is defined as a *recipe* block that will be compiled and then
+    # converged when the action is taken (when Resource is converged).  The recipe
+    # has access to the resource's attributes and methods, as well as the Chef
+    # recipe DSL.
+    #
+    # Resources in the action recipe may notify and subscribe to other resources
+    # within the action recipe, but cannot notify or subscribe to resources
+    # in the main Chef run.
+    #
+    # Resource actions are *inheritable*: if resource A defines `action :create`
+    # and B is a subclass of A, B gets all of A's actions.  Additionally,
+    # resource B can define `action :create` and call `super()` to invoke A's
+    # action code.
+    #
+    # The first action defined (besides `:nothing`) will become the default
+    # action for the resource.
+    #
+    # @param name [Symbol] The action name to define.
+    # @param recipe_block The recipe to run when the action is taken. This block
+    #   takes no parameters, and will be evaluated in a new context containing:
+    #
+    #   - The resource's public and protected methods (including attributes)
+    #   - The Chef Recipe DSL (file, etc.)
+    #   - super() referring to the parent version of the action (if any)
+    #
+    # @return The Action class implementing the action
+    #
+    def self.action(action, &recipe_block)
+      action = action.to_sym
+      new_action_provider_class.action(action, &recipe_block)
+      self.allowed_actions += [ action ]
+      default_action action if default_action == :nothing
+    end
+
+    #
+    # The action provider class is an automatic `Provider` created to handle
+    # actions declared by `action :x do ... end`.
+    #
+    # This class will be returned by `resource.provider` if `resource.provider`
+    # is not set. `provider_for_action` will also use this instead of calling
+    # out to `Chef::ProviderResolver`.
+    #
+    # If the user has not declared actions on this class or its superclasses
+    # using `action :x do ... end`, then there is no need for this class and
+    # `action_provider_class` will be `nil`.
+    #
+    # @api private
+    #
+    def self.action_provider_class
+      @action_provider_class ||
+        # If the superclass needed one, then we need one as well.
+        if superclass.respond_to?(:action_provider_class) && superclass.action_provider_class
+          new_action_provider_class
+        end
+    end
+
+    #
+    # Ensure the action provider class actually gets created. This is called
+    # when the user does `action :x do ... end`.
+    #
+    # @api private
+    def self.new_action_provider_class
+      return @action_provider_class if @action_provider_class
+
+      if superclass.respond_to?(:action_provider_class)
+        base_provider = superclass.action_provider_class
+      end
+      base_provider ||= Chef::Provider
+
+      resource_class = self
+      @action_provider_class = Class.new(base_provider) do
+        use_inline_resources
+        include_resource_dsl true
+        define_singleton_method(:to_s) { "#{resource_class} action provider" }
+        define_singleton_method(:inspect) { to_s }
+        define_method(:load_current_resource) {}
       end
     end
     def self.default_action=(action_name)
@@ -1087,7 +1281,7 @@ class Chef
 
     class << self
       # back-compat
-      # NOTE: that we do not support unregistering classes as descendents like
+      # NOTE: that we do not support unregistering classes as descendants like
       # we used to for LWRP unloading because that was horrible and removed in
       # Chef-12.
       # @deprecated
@@ -1111,7 +1305,12 @@ class Chef
     def self.inherited(child)
       super
       @sorted_descendants = nil
-      child.resource_name
+      # set resource_name automatically if it's not set
+      if child.name && !child.resource_name
+        if child.name =~ /^Chef::Resource::(\w+)$/
+          child.resource_name(convert_to_snake_case($1))
+        end
+      end
     end
 
 
@@ -1143,7 +1342,7 @@ class Chef
         remove_canonical_dsl
       end
 
-      result = Chef.set_resource_priority_array(name, self, options, &block)
+      result = Chef.resource_priority_map.set(name, self, options, &block)
       Chef::DSL::Resources.add_resource_dsl(name)
       result
     end
@@ -1208,7 +1407,8 @@ class Chef
     end
 
     def provider_for_action(action)
-      provider = Chef::ProviderResolver.new(node, self, action).resolve.new(self, run_context)
+      provider_class = Chef::ProviderResolver.new(node, self, action).resolve
+      provider = provider_class.new(self, run_context)
       provider.action = action
       provider
     end
@@ -1318,23 +1518,22 @@ class Chef
       #   when Chef::Resource::MyLwrp
       #   end
       #
-      resource_subclass = class_eval <<-EOM, __FILE__, __LINE__+1
-        class Chef::Resource::#{class_name} < resource_class
-          resource_name nil # we do not actually provide anything
-          def initialize(*args, &block)
-            Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+      resource_subclass = Class.new(resource_class) do
+        resource_name nil # we do not actually provide anything
+        def initialize(*args, &block)
+          Chef::Log.deprecation("Using an LWRP by its name (#{self.class.name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+          super
+        end
+        def self.resource_name(*args)
+          if args.empty?
+            @resource_name ||= superclass.resource_name
+          else
             super
           end
-          def self.resource_name(*args)
-            if args.empty?
-              @resource_name ||= superclass.resource_name
-            else
-              super
-            end
-          end
-          self
         end
-      EOM
+        self
+      end
+      eval("Chef::Resource::#{class_name} = resource_subclass")
       # Make case, is_a and kind_of work with the new subclass, for backcompat.
       # Any subclass of Chef::Resource::ResourceClass is already a subclass of resource_class
       # Any subclass of resource_class is considered a subclass of Chef::Resource::ResourceClass

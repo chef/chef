@@ -100,8 +100,3 @@ class Chef
     end
   end
 end
-
-require 'chef/chef_class'
-require 'chef/resource/homebrew_package'
-
-Chef.set_resource_priority_array :package, Chef::Resource::HomebrewPackage, os: "darwin"

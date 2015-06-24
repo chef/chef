@@ -74,19 +74,14 @@ class Chef
           resource_class
         end
 
-        # Define an attribute on this resource, including optional validation
-        # parameters.
-        def attribute(attr_name, validation_opts={})
-          define_method(attr_name) do |arg=nil|
-            set_or_return(attr_name.to_sym, arg, validation_opts)
-          end
-        end
+        alias :attribute :property
 
         # Adds +action_names+ to the list of valid actions for this resource.
         # Does not include superclass's action list when appending.
         def actions(*action_names)
+          action_names = action_names.flatten
           if !action_names.empty? && !@allowed_actions
-            self.allowed_actions = action_names
+            self.allowed_actions = ([ :nothing ] + action_names).uniq
           else
             allowed_actions(*action_names)
           end

@@ -36,14 +36,7 @@ class Chef
   # A Recipe object is the context in which Chef recipes are evaluated.
   class Recipe
 
-    include Chef::DSL::DataQuery
-    include Chef::DSL::PlatformIntrospection
-    include Chef::DSL::IncludeRecipe
-    include Chef::DSL::Recipe
-    include Chef::DSL::RegistryHelper
-    include Chef::DSL::RebootPending
-    include Chef::DSL::Audit
-    include Chef::DSL::Powershell
+    include Chef::DSL::Recipe::FullDSL
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::Deprecation

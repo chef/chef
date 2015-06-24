@@ -26,15 +26,14 @@ class Chef
 
       def initialize(name)
         klass = Class.new(Chef::EventDispatch::Base) do
-          def self.name
-            @@name
-          end
+          attr_reader :name
         end
-        klass.class_variable_set(:@@name, name)
         @handler = klass.new
-        # Use current event.register API to add anonymous handler if
-        # run_context and associated event dispatcher is set, else fallback to
-        # Chef::Config[:hanlder].
+        @handler.instance_variable_set(:@name, name)
+
+        # Use event.register API to add anonymous handler if Chef.run_context
+        # and associated event dispatcher is set, else fallback to
+        # Chef::Config[:hanlder]
         if Chef.run_context && Chef.run_context.events
           Chef::Log.debug("Registering handler '#{name}' using events api")
           Chef.run_context.events.register(handler)

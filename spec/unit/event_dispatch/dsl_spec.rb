@@ -20,7 +20,28 @@ require 'spec_helper'
 require 'chef/event_dispatch/dsl'
 
 describe Chef::EventDispatch::DSL do
+  let(:events) do
+    Chef::EventDispatch::Dispatcher.new
+  end
+
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, nil, events)
+  end
+
+  before do
+    Chef.set_run_context(run_context)
+  end
+
+  after do
+    Chef.reset!
+  end
+
   subject{ described_class.new('test') }
+
+  it 'set handler name' do
+    subject.on(:run_started) {}
+    expect(events.subscribers.first.name).to eq('test')
+  end
 
   it 'raise error when invalid event type is supplied' do
     expect do
@@ -30,12 +51,10 @@ describe Chef::EventDispatch::DSL do
 
   it 'register user hooks against valid event type' do
     subject.on(:run_failed) {'testhook'}
-    expect(Chef::Config[:event_handlers].first.run_failed).to eq('testhook')
+    expect(events.subscribers.first.run_failed).to eq('testhook')
   end
 
   it 'preserve state across event hooks' do
-    Chef::Config.reset!
-    node = Chef::Node.new
     calls = []
     Chef.event_handler do
       on :resource_updated do
@@ -45,17 +64,13 @@ describe Chef::EventDispatch::DSL do
         calls << :started
       end
     end
-    events = Chef::EventDispatch::Dispatcher.new(*Chef::Config[:event_handlers])
-    rc = Chef::RunContext.new(node, nil, events)
-    resource = Chef::Resource::RubyBlock.new('foo', rc)
+    resource = Chef::Resource::RubyBlock.new('foo', run_context)
     resource.block { }
     resource.run_action(:run)
     expect(calls).to eq([:started, :updated])
   end
 
   it 'preserve instance variables across handler callbacks' do
-    Chef::Config.reset!
-    node = Chef::Node.new
     Chef.event_handler do
       on :resource_action_start do
         @ivar = [1]
@@ -64,11 +79,9 @@ describe Chef::EventDispatch::DSL do
         @ivar << 2
       end
     end
-    events = Chef::EventDispatch::Dispatcher.new(*Chef::Config[:event_handlers])
-    rc = Chef::RunContext.new(node, nil, events)
-    resource = Chef::Resource::RubyBlock.new('foo', rc)
+    resource = Chef::Resource::RubyBlock.new('foo', run_context)
     resource.block { }
     resource.run_action(:run)
-    expect(Chef::Config[:event_handlers].first.instance_variable_get(:@ivar)).to eq([1, 2])
+    expect(events.subscribers.first.instance_variable_get(:@ivar)).to eq([1, 2])
   end
 end

@@ -27,8 +27,6 @@ class Chef
       class Upstart < Chef::Provider::Service::Simple
         UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
 
-        provides :service, os: "linux"
-
         def self.provides?(node, resource)
           super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
         end
