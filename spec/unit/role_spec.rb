@@ -364,6 +364,7 @@ EOR
   describe 'get_roles_files_in_path' do
     it 'should search Windows absolute paths instead of Linux-style paths when on Windows' do
       allow(ChefConfig).to receive(:windows?) { true }
+      expect(File).to receive(:absolute_path).and_return('C:\\path1\\path2')
       expect(Dir).to receive(:glob).with(File.join('C:\\\\path1\\\\path2', '**', '**')).exactly(1).times
       @role.class.get_roles_files_in_path('/path1/path2')
     end
