@@ -197,7 +197,8 @@ class Chef
 
         def resource_matching_provider(platform, version, resource_type)
           if resource_type.kind_of?(Chef::Resource)
-            class_name = resource_type.class.to_s.split('::').last
+            class_name = resource_type.class.name ? resource_type.class.name.split('::').last : 
+              convert_to_class_name(resource_type.resource_name.to_s)
 
             begin
               result = Chef::Provider.const_get(class_name)

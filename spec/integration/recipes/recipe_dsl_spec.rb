@@ -969,4 +969,29 @@ describe "Recipe DSL methods" do
       end
     end
   end
+
+  context "with a dynamically defined resource and regular provider" do
+    before(:context) do
+      Class.new(Chef::Resource) do
+        resource_name :lw_resource_with_hw_provider_test_case
+        default_action :create
+        attr_accessor :created_provider
+      end
+      class Chef::Provider::LwResourceWithHwProviderTestCase < Chef::Provider
+        def load_current_resource
+        end
+        def action_create
+          new_resource.created_provider = self.class
+        end
+      end
+    end
+
+    it "looks up the provider in Chef::Provider converting the resource name from snake case to camel case" do
+      resource = nil
+      recipe = converge {
+        resource = lw_resource_with_hw_provider_test_case 'blah' do; end
+      }
+      expect(resource.created_provider).to eq(Chef::Provider::LwResourceWithHwProviderTestCase)
+    end
+  end
 end
