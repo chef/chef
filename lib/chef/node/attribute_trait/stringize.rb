@@ -8,7 +8,7 @@ class Chef
         protected
 
         def convert_key(key)
-          key.to_s
+          key.kind_of?(Symbol) ? key.to_s : key
         end
 
         def convert_value(value)
