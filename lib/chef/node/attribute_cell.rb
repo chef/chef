@@ -224,21 +224,22 @@ class Chef
 
       def merged_hash_key(key)
         # this is much faster than merged_hash[key]
-        retval = self.class.allocate
-        highest_value_found = nil
-        COMPONENTS_AS_SYMBOLS.each do |component|
+        highest_value_found = false
+        retval = nil
+        COMPONENTS_AS_SYMBOLS.reverse.each do |component|
           hash = instance_variable_get(:"@#{component}")
           next unless hash.is_a?(Hash)
           next unless hash.key?(key)
           value = hash[key]
+          unless highest_value_found
+            highest_value_found = true
+            # this short-circuit is critical for performance
+            return value unless value.is_a?(Hash) || value.is_a?(Array)
+          end
+          retval ||= self.class.allocate
           retval.instance_variable_set(:"@#{component}", value)
-          highest_value_found = value
         end
-        if highest_value_found.is_a?(Hash) || highest_value_found.is_a?(Array)
-          return retval
-        else
-          return highest_value_found
-        end
+        return retval
       end
 
       def merged_hash
