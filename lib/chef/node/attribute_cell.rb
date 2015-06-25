@@ -56,6 +56,33 @@ class Chef
         end
       end
 
+      def decorate_value_internal(value)
+        if value.is_a?(Hash) | value.is_a?(Array)
+          Chef::Node::VividMash.new_decorator(wrapped_object: value)
+        else
+          value
+        end
+      end
+
+      # cheap internal method that bypasses convert_value and the initializer
+      def new_decorator(default: nil, env_default: nil, role_default: nil, force_default: nil,
+                        normal: nil,
+                        override: nil, role_override: nil, env_override: nil, force_override: nil,
+                        automatic: nil)
+        cell = self.class.allocate
+        cell.instance_variable_set(:@default, decorate_value_internal(default))
+        cell.instance_variable_set(:@env_default, decorate_value_internal(env_default))
+        cell.instance_variable_set(:@role_default, decorate_value_internal(role_default))
+        cell.instance_variable_set(:@force_default, decorate_value_internal(force_default))
+        cell.instance_variable_set(:@normal, decorate_value_internal(normal))
+        cell.instance_variable_set(:@override, decorate_value_internal(override))
+        cell.instance_variable_set(:@role_override, decorate_value_internal(role_override))
+        cell.instance_variable_set(:@env_override, decorate_value_internal(env_override))
+        cell.instance_variable_set(:@force_override, decorate_value_internal(force_override))
+        cell.instance_variable_set(:@automatic, decorate_value_internal(automatic))
+        cell
+      end
+
       def kind_of?(klass)
         highest_precedence.kind_of?(klass) || super(klass)
       end
@@ -130,7 +157,7 @@ class Chef
       end
 
       def combined_default
-        return self.class.new(
+        return new_decorator(
           default: @default,
           env_default: @env_default,
           role_default: @role_default,
@@ -139,7 +166,7 @@ class Chef
       end
 
       def combined_override
-        return self.class.new(
+        return new_decorator(
           override: @override,
           role_override: @role_override,
           env_override: @env_override,
@@ -224,14 +251,13 @@ class Chef
 
       def merged_hash_key(key)
         # this is much faster than merged_hash[key]
-        retval = self.class.new
+        retval = new_decorator
         highest_value_found = nil
         COMPONENTS_AS_SYMBOLS.each do |component|
           hash = instance_variable_get(:"@#{component}")
           next unless hash.is_a?(Hash)
           next unless hash.key?(key)
           value = hash[key]
-          retval ||= self.class.new
           retval.instance_variable_set(:"@#{component}", value)
           highest_value_found = value
         end
@@ -250,7 +276,7 @@ class Chef
           hash = instance_variable_get(:"@#{component}")
           next unless hash.is_a?(Hash)
           hash.each do |key, value|
-            merged_hash[key] ||= self.class.new
+            merged_hash[key] ||= new_decorator
             merged_hash[key].instance_variable_set(:"@#{component}", value)
             highest_value_found[key] = value
           end
@@ -278,7 +304,7 @@ class Chef
           next unless array.is_a?(Array)
           default_array += array.map do |value|
             if value.is_a?(Hash) || value.is_a?(Array)
-              self.class.new( component => value )
+              new_decorator( component => value )
             else
               value
             end
@@ -291,7 +317,7 @@ class Chef
         return nil unless @normal.is_a?(Array)
         @normal.map do |value|
           if value.is_a?(Hash) || value.is_a?(Array)
-            self.class.new( component => value )
+            new_decorator( component => value )
           else
             value
           end
@@ -309,7 +335,7 @@ class Chef
           next unless array.is_a?(Array)
           override_array += array.map do |value|
             if value.is_a?(Hash) || value.is_a?(Array)
-              self.class.new( component => value )
+              new_decorator( component => value )
             else
               value
             end
@@ -322,7 +348,7 @@ class Chef
         return nil unless @automatic.is_a?(Array)
         @automatic.map do |value|
           if value.is_a?(Hash) || value.is_a?(Array)
-            self.class.new( component => value )
+            new_decorator( component => value )
           else
             value
           end
