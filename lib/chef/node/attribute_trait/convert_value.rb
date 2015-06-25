@@ -26,7 +26,7 @@ class Chef
         end
 
         def key?(key)
-          super(convert_key(key))
+          wrapped_object.key?(convert_key(key))
         end
 
         alias_method :include?, :key?
