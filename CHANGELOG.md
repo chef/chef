@@ -1,4 +1,6 @@
 ## 12.5.0
+* [**Ranjib Dey**](https://github.com/ranjib):
+  [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
 
 ## 12.4.0
 
