@@ -181,7 +181,7 @@ class Chef
     end
 
     def compare_matchers(key, new_matcher, matcher)
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:block] }
+      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:block] }
       return cmp if cmp != 0
       cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_version] }
       return cmp if cmp != 0
