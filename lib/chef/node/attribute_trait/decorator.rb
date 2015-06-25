@@ -42,7 +42,7 @@ class Chef
         end
 
         def method_missing(method, *args, &block)
-          if wrapped_object.respond_to?(method)
+          if wrapped_object.respond_to?(method, false)
             wrapped_object.public_send(method, *args, &block)
           else
             super
@@ -93,6 +93,18 @@ class Chef
           wrapped_object === other
         end
 
+        def []=(key, value)
+          wrapped_object[key] = value
+        end
+
+        def key?(key)
+          wrapped_object.key?(key)
+        end
+
+        def each(&block)
+          wrapped_object.each(&block)
+        end
+
         #def hash
         #end
 
@@ -109,7 +121,7 @@ class Chef
           e
         end
 
-        def new_decorator(wrapped_object: wrapped_object)
+        def new_decorator(wrapped_object: nil)
           self.class.new_decorator(wrapped_object: wrapped_object)
         end
 
@@ -118,7 +130,7 @@ class Chef
         end
 
         module DecoratorClassMethods
-          def new_decorator(wrapped_object: wrapped_object)
+          def new_decorator(wrapped_object: nil)
             dec = allocate
             dec.wrapped_object = wrapped_object
             dec
