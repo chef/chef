@@ -13,13 +13,11 @@ class Chef
         end
 
         def is_a?(klass)
-          return true if wrapped_object.is_a?(klass)
-          super
+          wrapped_object.is_a?(klass) || super
         end
 
         def kind_of?(klass)
-          return true if wrapped_object.kind_of?(klass)
-          super
+          wrapped_object.kind_of?(klass) || super
         end
 
         def regular_writer(*path, value)
