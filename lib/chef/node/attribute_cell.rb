@@ -357,9 +357,11 @@ class Chef
 
       # @return [Object] value of the highest precedence level
       def highest_precedence
-        COMPONENTS.map do |component|
-          instance_variable_get(component)
-        end.compact.last
+        COMPONENTS.reverse.each do |component|
+          value = instance_variable_get(component)
+          return value unless value.nil?
+        end
+        nil
       end
     end
   end
