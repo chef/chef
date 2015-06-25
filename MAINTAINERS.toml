@@ -200,7 +200,8 @@ The specific components of Chef related to a given platform - including (but not
         title = "ArchLinux"
 
         maintainers = [
-          "lamont-granquist"
+          "lamont-granquist",
+          "ryancragun"
         ]
 
 [people]
@@ -296,3 +297,6 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Noah Kantrowitz"
     GitHub = "coderanger"
 
+  [people.ryancragun]
+    Name = "Ryan Cragun"
+    GitHub = "ryancragun"
