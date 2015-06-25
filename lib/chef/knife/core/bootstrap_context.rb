@@ -40,7 +40,16 @@ class Chef
         end
 
         def bootstrap_environment
-          @chef_config[:environment] || '_default'
+          # Check for environment in CLI, first_boot_attributes, then in the
+          # config file. Use '_default' if no environment specified.
+
+          # @chef_config picks up @config's environment setting, even when
+          # environment is set in the config file being used. However,
+          # @config[:environment] is not polluted by @chef_config[:environment].
+          @config[:environment] ||
+            (@config[:first_boot_attributes][:environment] if @config[:first_boot_attributes]) ||
+            @chef_config[:environment] ||
+            '_default'
         end
 
         def validation_key
@@ -167,7 +176,7 @@ CONFIG
         end
 
         private
-       
+
         # Returns a string for copying the trusted certificates on the workstation to the system being bootstrapped
         # This string should contain both the commands necessary to both create the files, as well as their content
         def trusted_certs_content

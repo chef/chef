@@ -168,11 +168,95 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       client_builder.run
     end
 
-    it "builds a node with an environment if its given" do
-      knife_config[:environment] = "production"
-      expect(node).to receive(:environment).with("production")
-      expect(node).to receive(:run_list).with([])
-      client_builder.run
+    shared_examples "first-boot environment" do
+      let(:first_boot_attributes) {{ environment: first_boot_environment }}
+
+      let(:first_boot_environment) { "first_boot_environment" }
+
+      before do
+        knife_config[:first_boot_attributes] = first_boot_attributes
+        allow(node).to receive(:run_list)
+      end
+
+      it "builds a node with the environment specified in the first_boot_attributes" do
+        allow(node).to receive(:normal_attrs=)
+        expect(node).to receive(:environment).with(first_boot_environment)
+        client_builder.run
+      end
+
+      context "when environment is the only first-boot attribute" do
+        it "does not save any first-boot attributes" do
+          expect(node).to_not receive(:normal_attrs=)
+          allow(node).to receive(:environment)
+          client_builder.run
+        end
+      end
+
+      context "when environment is not the only first-boot attribute" do
+        let(:first_boot_attributes) {{ environment: first_boot_environment,
+                                       baz: :quux }}
+
+        it "saves the first-boot attributes, but does not save environment" do
+          expect(node).to receive(:normal_attrs=).with({ baz: :quux })
+          allow(node).to receive(:environment)
+          client_builder.run
+        end
+      end
+    end
+
+    shared_examples "cli environment" do
+      let(:cli_environment) { "cli_environment" }
+
+      before do
+        knife_config[:environment] = cli_environment
+        allow(node).to receive(:run_list)
+      end
+
+      it "builds a node with the environment specified from the command line" do
+        expect(node).to receive(:environment).with(cli_environment)
+        client_builder.run
+      end
+    end
+
+    context "with an environment specified in the chef config" do
+      let(:chef_config_environment) { "chef_config_environment" }
+
+      before do
+        chef_config[:environment] = chef_config_environment
+        allow(node).to receive(:run_list)
+      end
+
+      it "builds a node with the environment specified in the chef config" do
+        expect(node).to receive(:environment).with(chef_config_environment)
+        client_builder.run
+      end
+
+      context "with an environment specified in first_boot_attributes" do
+        include_examples "first-boot environment"
+
+        context "with an environment specified as a cli option" do
+          include_examples "cli environment"
+        end
+
+      end
+
+      context "with an environment specified as a cli option" do
+        include_examples "cli environment"
+      end
+
+    end
+
+    context "with an environment specified in first_boot_attributes" do
+      include_examples "first-boot environment"
+
+      context "with an environment specified as a cli option" do
+        include_examples "cli environment"
+      end
+
+    end
+
+    context "with an environment specified as a cli option" do
+      include_examples "cli environment"
     end
   end
 end

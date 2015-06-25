@@ -80,9 +80,12 @@ class Chef
           knife_config[:chef_node_name]
         end
 
-        # @return [String] enviroment from the knife_config
+        # @return [String] environment from the knife_config or first_boot_attributes, if none specified by knife_config
         def environment
-          knife_config[:environment]
+          # prefer environment from cli over environment from first-boot attributes
+          knife_config[:environment] ||
+            (first_boot_attributes[:environment] if first_boot_attributes) ||
+            chef_config[:environment]
         end
 
         # @return [String] run_list from the knife_config
@@ -138,7 +141,13 @@ class Chef
               node = Chef::Node.new(chef_server_rest: client_rest)
               node.name(node_name)
               node.run_list(normalized_run_list)
-              node.normal_attrs = first_boot_attributes if first_boot_attributes
+              if first_boot_attributes
+                scrubbed_first_boot_attributes = first_boot_attributes.dup
+                scrubbed_first_boot_attributes.delete(:environment)
+                unless scrubbed_first_boot_attributes.empty?
+                  node.normal_attrs = scrubbed_first_boot_attributes
+                end
+              end
               node.environment(environment) if environment
               node
             end
