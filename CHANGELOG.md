@@ -1,6 +1,8 @@
-## 12.5.0
+## Unreleased
 * [**Ranjib Dey**](https://github.com/ranjib):
   [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
+
+* [pr#3586](https://github.com/chef/chef/issues/3586) Fix bug preventing light weight resources from being used with heavy weight providers
 
 ## 12.4.0
 
