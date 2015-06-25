@@ -116,6 +116,8 @@ The specific components of Chef related to a given platform - including (but not
       [Org.Components.Subsystems.Solaris]
         title = "Solaris"
 
+        lieutenant = "thommay"
+
         maintainers = [
           "lamont-granquist"
         ]
@@ -123,9 +125,7 @@ The specific components of Chef related to a given platform - including (but not
       [Org.Components.Subsystems.AIX]
         title = "AIX"
 
-        maintainers = [
-          "lamont-granquist"
-        ]
+        lieutenant = "lamont-granquist"
 
       [Org.Components.Subsystems."Mac OS X"]
         title = "Mac OS X"
@@ -134,6 +134,36 @@ The specific components of Chef related to a given platform - including (but not
 
         maintainers = [
           "tyler-ball"
+        ]
+
+      [Org.Components.Subsystems.Debian]
+        title = "Debian"
+
+        lieutenant = "thommay"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+    [Org.Components.Subsystems.Fedora]
+        title = "Fedora"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+      [Org.Components.Subsystems.openSUSE]
+        title = "openSUSE"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+      [Org.Components.Subsystems."SUSE Enterprise Linux"]
+        title = "SUSE Enterprise Linux Server"
+
+        maintainers = [
+          "lamont-granquist"
         ]
 
       [Org.Components.Subsystems.FreeBSD]
@@ -150,6 +180,27 @@ The specific components of Chef related to a given platform - including (but not
         title = "OpenBSD"
 
         lieutenant = "joemiller"
+
+    [Org.Components.Subsystems.Gentoo]
+        title = "Gentoo"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
+    [Org.Components.Subsystems.OmniOS]
+        title = "OmniOS"
+
+        maintainers = [
+          "thommay"
+        ]
+
+    [Org.Components.Subsystems.ArchLinux]
+        title = "ArchLinux"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
 
 [people]
   [people.adamhjk]
