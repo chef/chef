@@ -194,6 +194,13 @@ The specific components of Chef related to a given platform - including (but not
           "thommay"
         ]
 
+    [Org.Components.Subsystems.ArchLinux]
+        title = "ArchLinux"
+
+        maintainers = [
+          "lamont-granquist"
+        ]
+
 [people]
   [people.adamhjk]
     Name = "Adam Jacob"

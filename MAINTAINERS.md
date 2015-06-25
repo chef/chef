@@ -183,3 +183,9 @@ The specific components of Chef related to a given platform - including (but not
 
 * [Thom May](https://github.com/thommay)
 
+## ArchLinux
+
+### Maintainers
+
+* [Lamont Granquist](https://github.com/lamont-granquist)
+
