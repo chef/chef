@@ -3,6 +3,7 @@
   [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
 
 * [pr#3586](https://github.com/chef/chef/issues/3586) Fix bug preventing light weight resources from being used with heavy weight providers
+* [Issue #3593](https://github.com/chef/chef/issues/3586) Fix bug where provider priority map did not take into consideration a provided block
 
 ## 12.4.0
 
