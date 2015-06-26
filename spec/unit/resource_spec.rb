@@ -987,6 +987,10 @@ describe Chef::Resource do
     let(:resource) { resource_class.new('test', nil) }
     subject { resource.action }
 
+    context "with a no action" do
+      it { is_expected.to eq [:nothing] }
+    end
+
     context "with a symbol action" do
       before { resource.action(:one) }
       it { is_expected.to eq [:one] }
