@@ -78,10 +78,25 @@ class Chef
 
           resource_class = Class.new(deprecated_resource_class).tap do |resource_class|
             resource_class.resource_name(resource_name.to_sym)
+            resource_class.run_context = run_context
             resource_class.instance_eval do
               define_method(:chef_deprecated_access) do
                 false
               end
+            end
+            resource_class.class_eval do
+              define_singleton_method(:===) do |instance|
+                super(instance) || instance.class <= deprecated_resource_class
+              end
+            end
+          end
+
+          deprecated_resource_class.class_eval do
+            define_method(:kind_of?) do |klass|
+              super(klass) || klass == resource_class
+            end
+            define_method(:is_a?) do |klass|
+              super(klass) || klass == resource_class
             end
           end
 
