@@ -46,7 +46,7 @@ describe Chef::Resource::RubyBlock do
 
   it "allows the action to be 'create'" do
     @resource.action :create
-    expect(@resource.action).to eq(:create)
+    expect(@resource.action).to eq([:create])
   end
 
   describe "when it has been initialized with block code" do
