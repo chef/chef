@@ -1116,7 +1116,7 @@ class Chef
       elsif superclass.respond_to?(:default_action)
         superclass.default_action
       else
-        :nothing
+        [:nothing]
       end
     end
     def self.default_action=(action_name)
