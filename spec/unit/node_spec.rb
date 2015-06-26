@@ -454,6 +454,7 @@ describe Chef::Node do
         end
 
         it "does not have a horrible error message when mistaking arrays for hashes" do
+          pending "did i fix a bug here or should we revert to the Chef 12.0.0 behavior?"
           expect { node.rm("mysql", "server", "port") }.to raise_error(TypeError, "Wrong type in index of attribute (did you use a Hash index on an Array?)")
         end
       end

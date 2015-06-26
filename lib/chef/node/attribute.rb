@@ -168,55 +168,113 @@ class Chef
 
       # clears attributes from all precedence levels
       #
-      # does not autovivify
+      # - does not autovivify
+      # - does not trainwreck if interior keys do not exist
       def rm(*args)
-        raise "unimplemented"
+        cell = args_to_cell(*args)
+        return nil unless cell.is_a?(Hash)
+        ret = cell[args.last]
+        rm_default(*args)
+        rm_normal(*args)
+        rm_override(*args)
+        ret
       end
 
       # clears attributes from all default precedence levels
       #
-      # equivalent to: force_default!['foo']['bar'].delete('baz')
-      #
-      # does not autovivify
+      # - similar to: force_default!['foo']['bar'].delete('baz')
+      # - does not autovivify
+      # - does not trainwreck if interior keys do not exist
       def rm_default(*args)
-        raise "unimplemented"
+        cell = args_to_cell(*args)
+        return nil unless cell.is_a?(Hash)
+        ret = if cell.combined_default.is_a?(Hash)
+                cell.combined_default[args.last]
+              end
+        cell.default.delete(args.last) if cell.default.is_a?(Hash)
+        cell.role_default.delete(args.last) if cell.role_default.is_a?(Hash)
+        cell.env_default.delete(args.last) if cell.env_default.is_a?(Hash)
+        cell.force_default.delete(args.last) if cell.force_default.is_a?(Hash)
+        ret
       end
 
       # clears attributes from normal precedence
       #
-      # equivalent to: normal!['foo']['bar'].delete('baz')
-      #
-      # does not autovivify
+      # - similar to: normal!['foo']['bar'].delete('baz')
+      # - does not autovivify
+      # - does not trainwreck if interior keys do not exist
       def rm_normal(*args)
-        raise "unimplemented"
+        cell = args_to_cell(*args)
+        return nil unless cell.is_a?(Hash)
+        cell.normal.delete(args.last) if cell.normal.is_a?(Hash)
       end
 
       # clears attributes from all override precedence levels
       #
-      # equivalent to: force_override!['foo']['bar'].delete('baz')
-      #
-      # does not autovivify
+      # - similar to: force_override!['foo']['bar'].delete('baz')
+      # - does not autovivify
+      # - does not trainwreck if interior keys do not exist
       def rm_override(*args)
+        cell = args_to_cell(*args)
+        return nil unless cell.is_a?(Hash)
+        ret = if cell.combined_override.is_a?(Hash)
+                cell.combined_override[args.last]
+              end
+        cell.override.delete(args.last) if cell.override.is_a?(Hash)
+        cell.role_override.delete(args.last) if cell.role_override.is_a?(Hash)
+        cell.env_override.delete(args.last) if cell.env_override.is_a?(Hash)
+        cell.force_override.delete(args.last) if cell.force_override.is_a?(Hash)
+        ret
+      end
+
+      def args_to_cell(*args)
+        begin
+          last = args.pop
+          cell = args.inject(self) do |memo, arg|
+            memo[arg]
+          end
+          cell
+        rescue NoMethodError
+          nil
+        end
+      end
+
+      private :args_to_cell
+
+      # sets default attributes without merging.
+      #
+      # - this API autovivifies (and cannot tranwreck)
+      def default!
         raise "unimplemented"
       end
 
-      def default!(*args)
+      # set override attributes without merging.
+      #
+      # - this API autovivifies (and cannot tranwreck)
+      def normal!
         raise "unimplemented"
       end
 
-      def normal!(*args)
+      # set override attributes without merging.
+      #
+      # - this API autovivifies (and cannot tranwreck)
+      def override!
         raise "unimplemented"
       end
 
-      def override!(*args)
+      # set force_default attributes without merging.
+      #
+      # - this also clears all of the other default levels as well.
+      # - this API autovivifies (and cannot tranwreck)
+      def force_default!
         raise "unimplemented"
       end
 
-      def force_default!(*args)
-        raise "unimplemented"
-      end
-
-      def force_override!(*args)
+      # set force_override attributes without merging.
+      #
+      # - this also clears all of the other override levels as well.
+      # - this API autovivifies (and cannot tranwreck)
+      def force_override!
         raise "unimplemented"
       end
     end
