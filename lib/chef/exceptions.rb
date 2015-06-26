@@ -97,6 +97,7 @@ class Chef
     class ConflictingMembersInGroup < ArgumentError; end
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
+    class ProviderNotFound < ArgumentError; end
     class VerificationNotFound < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.

@@ -17,7 +17,7 @@
 #
 
 require 'chef/exceptions'
-require 'chef/platform/provider_priority_map'
+require 'chef/platform/priority_map'
 
 class Chef
   #
@@ -63,7 +63,7 @@ class Chef
     end
 
     def provided_by?(provider_class)
-      prioritized_handlers.include?(provider_class)
+      potential_handlers.include?(provider_class)
     end
 
     private
@@ -78,19 +78,6 @@ class Chef
     def maybe_dynamic_provider_resolution(resource, action)
       Chef::Log.debug "Providers for generic #{resource.resource_name} resource enabled on node include: #{enabled_handlers}"
 
-      # Get all the handlers in the priority bucket
-      handlers = prioritized_handlers
-
-      # Narrow it down to handlers that return `true` to `provides?`
-      # TODO deprecate this and don't bother calling--the fact that they said
-      # `provides` should be enough.  But we need to do it right now because
-      # some classes implement additional handling.
-      enabled_handlers = prioritized_handlers.select { |handler| handler.provides?(node, resource) }
-
-      # Narrow it down to handlers that return `true` to `supports?`
-      # TODO deprecate this and allow actions to be passed as a filter to
-      # `provides` so we don't have to have two separate things.
-      supported_handlers = enabled_handlers.select { |handler| handler.supports?(resource, action) }
       if supported_handlers.empty?
         # if none of the providers specifically support the resource, we still need to pick one of the providers that are
         # enabled on the node to handle the why-run use case. FIXME we should only do this in why-run mode then.
@@ -114,13 +101,25 @@ class Chef
       Chef::Platform.find_provider_for_node(node, resource)
     end
 
-    def provider_priority_map
+    def priority_map
       Chef::Platform::ProviderPriorityMap.instance
     end
 
-    def prioritized_handlers
-      @prioritized_handlers ||=
-        provider_priority_map.list_handlers(node, resource.resource_name).flatten(1).uniq
+    # @api private
+    def potential_handlers
+      priority_map.list_handlers(node, resource.resource_name).flatten(1).uniq
+    end
+
+    def enabled_handlers
+      @enabled_handlers ||= potential_handlers.select { |handler| handler.method(:provides?).owner == Chef::Provider || handler.provides?(node, resource) }
+    end
+
+    # TODO deprecate this and allow actions to be passed as a filter to
+    # `provides` so we don't have to have two separate things.
+    # @api private
+    def supported_handlers
+      @supported_handlers ||=
+        enabled_handlers.select { |handler| handler.supports?(resource, action) }
     end
 
     module Deprecated
@@ -129,33 +128,28 @@ class Chef
         @providers ||= Chef::Provider.descendants
       end
 
-      # this cut looks at if the provider can handle the resource type on the node
       def enabled_handlers
-        @enabled_handlers ||=
-          providers.select do |klass|
-            # NB: this is different from resource_resolver which must pass a resource_name
-            # FIXME: deprecate this and normalize on passing resource_name here
-            klass.provides?(node, resource)
-          end.sort {|a,b| a.to_s <=> b.to_s }
-      end
-
-      # this cut looks at if the provider can handle the specific resource and action
-      def supported_handlers
-        @supported_handlers ||=
-          enabled_handlers.select do |klass|
-            klass.supports?(resource, action)
+        @enabled_handlers ||= begin
+          handlers = potential_handlers
+          # If there are no potential handlers for this node (nobody called provides)
+          # then we search through all classes and call provides in case someone
+          # defined a provides? method that returned true in spite of provides
+          # not being called
+          if handlers.empty?
+            warn = true
+            handlers = providers
           end
-      end
-
-      # If there are no providers for a DSL, we search through the
-      def prioritized_handlers
-        @prioritized_handlers ||= super || begin
-          result = providers.select { |handler| handler.provides?(node, resource) }.sort_by(:name)
-          if !result.empty?
-            Chef::Log.deprecation("#{resource.resource_name.to_sym} is marked as providing DSL #{method_symbol}, but provides #{resource.resource_name.to_sym.inspect} was never called!")
-            Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+          handlers.select do |handler|
+            if handler.method(:provides?).owner == Chef::Provider
+              true
+            elsif handler.provides?(node, resource)
+              if warn
+                Chef::Log.deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource.resource_name}, but provides #{resource.resource_name.to_sym.inspect} was never called!")
+                Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+              end
+              true
+            end
           end
-          result
         end
       end
     end

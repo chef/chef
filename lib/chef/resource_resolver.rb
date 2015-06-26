@@ -83,9 +83,9 @@ class Chef
     # @api private use Chef::ResourceResolver.resolve instead.
     def resolve
       # log this so we know what resources will work for the generic resource on the node (early cut)
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
+      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{enabled_handlers}"
 
-      handler = prioritized_handlers.first
+      handler = enabled_handlers.first
 
       if handler
         Chef::Log.debug "Resource for #{resource_name} is #{handler}"
@@ -98,8 +98,8 @@ class Chef
 
     # @api private
     def list
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
-      prioritized_handlers
+      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{enabled_handlers}"
+      enabled_handlers
     end
 
     #
@@ -107,7 +107,7 @@ class Chef
     #
     # @api private
     def provided_by?(resource_class)
-      !prioritized_handlers.include?(resource_class)
+      potential_handlers.include?(resource_class)
     end
 
     protected
@@ -116,41 +116,40 @@ class Chef
       Chef::Platform::ResourcePriorityMap.instance
     end
 
-    def prioritized_handlers
-      @prioritized_handlers ||=
-        priority_map.list_handlers(node, resource_name, canonical: canonical)
+    # @api private
+    def potential_handlers
+      priority_map.list_handlers(node, resource_name, canonical: canonical).flatten(1).uniq
+    end
+
+    def enabled_handlers
+      potential_handlers.select { |handler| handler.method(:provides?).owner == Chef::Resource || handler.provides?(node, resource_name) }
     end
 
     module Deprecated
       # return a deterministically sorted list of Chef::Resource subclasses
-      # @deprecated Now prioritized_handlers does its own work (more efficiently)
       def resources
         Chef::Resource.sorted_descendants
       end
 
-      # A list of all handlers
-      # @deprecated Now prioritized_handlers does its own work
       def enabled_handlers
-        Chef::Log.deprecation("enabled_handlers is deprecated.  If you are implementing a ResourceResolver, use provided_handlers.  If you are not, use Chef::ResourceResolver.list(#{resource_name.inspect}, node: <node>)")
-        resources.select { |klass| klass.provides?(node, resource_name) }
-      end
-
-      protected
-
-      # A list of all handlers for the given DSL.  If there are no handlers in
-      # the map, we still check all descendants of Chef::Resource for backwards
-      # compatibility purposes.
-      def prioritized_handlers
-        @prioritized_handlers ||= super ||
-          resources.select do |klass|
-            # Don't bother calling provides? unless it's overridden. We already
-            # know prioritized_handlers
-            if klass.method(:provides?).owner != Chef::Resource && klass.provides?(node, resource_name)
-              Chef::Log.deprecation("Resources #{provided.join(", ")} are marked as providing DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
-              Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+        @enabled_handlers ||= begin
+          handlers = potential_handlers
+          if handlers.empty?
+            warn = true
+            handlers = resources
+          end
+          handlers.select do |handler|
+            if handler.method(:provides?).owner == Chef::Resource
+              true
+            elsif handler.provides?(node, resource_name)
+              if warn
+                Chef::Log.deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
+                Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+              end
               true
             end
           end
+        end
       end
     end
     prepend Deprecated

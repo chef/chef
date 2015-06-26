@@ -176,7 +176,7 @@ class Chef
                          platform_provider(platform, version, resource_type) ||
                          resource_matching_provider(platform, version, resource_type)
 
-        raise ArgumentError, "Cannot find a provider for #{resource_type} on #{platform} version #{version}" if provider_klass.nil?
+        raise Chef::Exceptions::ProviderNotFound, "Cannot find a provider for #{resource_type} on #{platform} version #{version}" if provider_klass.nil?
 
         provider_klass
       end
@@ -197,7 +197,7 @@ class Chef
 
         def resource_matching_provider(platform, version, resource_type)
           if resource_type.kind_of?(Chef::Resource)
-            class_name = resource_type.class.name ? resource_type.class.name.split('::').last : 
+            class_name = resource_type.class.name ? resource_type.class.name.split('::').last :
               convert_to_class_name(resource_type.resource_name.to_s)
 
             begin
