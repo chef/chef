@@ -56,6 +56,7 @@ class Chef
     attr_reader :resource_name
     # @api private
     def resource
+      raise 'omg'
       Chef::Log.deprecation("Chef::ResourceResolver.resource deprecated.  Use resource_name instead.")
       resource_name
     end
@@ -105,12 +106,27 @@ class Chef
     #
     # Whether this DSL is provided by the given resource_class.
     #
+    # Does NOT call provides? on the resource (it is assumed this is being
+    # called *from* provides?).
+    #
     # @api private
     def provided_by?(resource_class)
       potential_handlers.include?(resource_class)
     end
 
+    #
+    # Whether the given handler attempts to provide the resource class at all.
+    #
+    # @api private
+    def self.includes_handler?(resource_name, resource_class)
+      priority_map.includes_handler?(resource_name, resource_class)
+    end
+
     protected
+
+    def self.priority_map
+      Chef::Platform::ResourcePriorityMap.instance
+    end
 
     def priority_map
       Chef::Platform::ResourcePriorityMap.instance
@@ -122,7 +138,11 @@ class Chef
     end
 
     def enabled_handlers
-      potential_handlers.select { |handler| handler.method(:provides?).owner == Chef::Resource || handler.provides?(node, resource_name) }
+      potential_handlers.select { |handler| !overrode_provides?(handler) || handler.provides?(node, resource_name) }
+    end
+
+    def overrode_provides?(handler)
+      handler.method(:provides?).owner != Chef::Resource.method(:provides?).owner
     end
 
     module Deprecated
@@ -133,22 +153,15 @@ class Chef
 
       def enabled_handlers
         @enabled_handlers ||= begin
-          handlers = potential_handlers
+          handlers = super
           if handlers.empty?
-            warn = true
-            handlers = resources
-          end
-          handlers.select do |handler|
-            if handler.method(:provides?).owner == Chef::Resource
-              true
-            elsif handler.provides?(node, resource_name)
-              if warn
-                Chef::Log.deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
-                Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
-              end
-              true
+            handlers = resources.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource_name) }
+            handlers.each do |handler|
+              Chef::Log.deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
+              Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
             end
           end
+          handlers
         end
       end
     end

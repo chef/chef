@@ -20,13 +20,6 @@ class Chef
   class NodeMap
 
     #
-    # Create a new NodeMap
-    #
-    def initialize
-      @map = {}
-    end
-
-    #
     # Set a key/value pair on the map with a filter.  The filter must be true
     # when applied to the node in order to retrieve the value.
     #
@@ -55,18 +48,18 @@ class Chef
       # The map is sorted in order of preference already; we just need to find
       # our place in it (just before the first value with the same preference level).
       insert_at = nil
-      @map[key] ||= []
-      @map[key].each_with_index do |matcher,index|
+      map[key] ||= []
+      map[key].each_with_index do |matcher,index|
         cmp = compare_matchers(key, new_matcher, matcher)
         insert_at ||= index if cmp && cmp <= 0
       end
       if insert_at
-        @map[key].insert(insert_at, new_matcher)
+        map[key].insert(insert_at, new_matcher)
       else
-        @map[key] << new_matcher
+        map[key] << new_matcher
       end
-      insert_at ||= @map[key].size - 1
-      @map
+      insert_at ||= map[key].size - 1
+      map
     end
 
     #
@@ -100,8 +93,8 @@ class Chef
     #
     def list(node, key, canonical: nil)
       raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
-      return [] unless @map.has_key?(key)
-      @map[key].select do |matcher|
+      return [] unless map.has_key?(key)
+      map[key].select do |matcher|
         node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
       end.map { |matcher| matcher[:value] }
     end
@@ -110,11 +103,11 @@ class Chef
     # @return remaining
     # @api private
     def delete_canonical(key, value)
-      remaining = @map[key]
+      remaining = map[key]
       if remaining
         remaining.delete_if { |matcher| matcher[:canonical] && Array(matcher[:value]) == Array(value) }
         if remaining.empty?
-          @map.delete(key)
+          map.delete(key)
           remaining = nil
         end
       end
@@ -221,6 +214,10 @@ class Chef
         return -1 if b.nil?
       end
       cmp
+    end
+
+    def map
+      @map ||= {}
     end
   end
 end

@@ -62,12 +62,19 @@ class Chef
         maybe_chef_platform_lookup(resource)
     end
 
+    # Does NOT call provides? on the resource (it is assumed this is being
+    # called *from* provides?).
     def provided_by?(provider_class)
       potential_handlers.include?(provider_class)
     end
 
+    def self.includes_handler?(resource_name, provider_class)
+      priority_map.includes_handler?(resource_name, provider_class)
+    end
+
     def enabled_handlers
-      @enabled_handlers ||= potential_handlers.select { |handler| handler.method(:provides?).owner == Chef::Provider || handler.provides?(node, resource) }
+      @enabled_handlers ||=
+        potential_handlers.select { |handler| !overrode_provides?(handler) || handler.provides?(node, resource) }
     end
 
     # TODO deprecate this and allow actions to be passed as a filter to
@@ -94,14 +101,15 @@ class Chef
     def maybe_dynamic_provider_resolution(resource, action)
       Chef::Log.debug "Providers for generic #{resource.resource_name} resource enabled on node include: #{enabled_handlers}"
 
-      if supported_handlers.empty?
+      handlers = supported_handlers
+      if handlers.empty?
         # if none of the providers specifically support the resource, we still need to pick one of the providers that are
         # enabled on the node to handle the why-run use case. FIXME we should only do this in why-run mode then.
         Chef::Log.debug "No providers responded true to `supports?` for action #{action} on resource #{resource}, falling back to enabled handlers so we can return something anyway."
-        handler = enabled_handlers.first
-      else
-        handler = supported_handlers.first
+        handlers = enabled_handlers
       end
+
+      handler = handlers.first
 
       if handler
         Chef::Log.debug "Provider for action #{action} on resource #{resource} is #{handler}"
@@ -117,8 +125,16 @@ class Chef
       Chef::Platform.find_provider_for_node(node, resource)
     end
 
+    def self.priority_map
+      Chef::Platform::ProviderPriorityMap.instance
+    end
+
     def priority_map
       Chef::Platform::ProviderPriorityMap.instance
+    end
+
+    def overrode_provides?(handler)
+      handler.method(:provides?).owner != Chef::Provider.method(:provides?).owner
     end
 
     module Deprecated
@@ -129,26 +145,19 @@ class Chef
 
       def enabled_handlers
         @enabled_handlers ||= begin
-          handlers = potential_handlers
-          # If there are no potential handlers for this node (nobody called provides)
-          # then we search through all classes and call provides in case someone
-          # defined a provides? method that returned true in spite of provides
-          # not being called
+          handlers = super
           if handlers.empty?
-            warn = true
-            handlers = providers
-          end
-          handlers.select do |handler|
-            if handler.method(:provides?).owner == Chef::Provider
-              true
-            elsif handler.provides?(node, resource)
-              if warn
-                Chef::Log.deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource.resource_name}, but provides #{resource.resource_name.to_sym.inspect} was never called!")
-                Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
-              end
-              true
+            # Look through all providers, and find ones that return true to provides.
+            # Don't bother with ones that don't override provides?, since they
+            # would have been in enabled_handlers already if that were so. (It's a
+            # perf concern otherwise.)
+            handlers = providers.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource) }
+            handlers.each do |handler|
+              Chef::Log.deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource.resource_name}, but provides #{resource.resource_name.inspect} was never called!")
+              Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
             end
           end
+          handlers
         end
       end
     end

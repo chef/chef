@@ -1017,7 +1017,7 @@ class Chef
         if name
           name = name.to_sym
           # If our class is not already providing this name, provide it.
-          if !Chef::ResourceResolver.list(name).include?(self)
+          if !Chef::ResourceResolver.includes_handler?(name, self)
             provides name, canonical: true
           end
           @resource_name = name
