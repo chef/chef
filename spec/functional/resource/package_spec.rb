@@ -386,5 +386,3 @@ describe Chef::Resource::Package, metadata do
   end
 
 end
-
-
