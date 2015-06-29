@@ -1152,7 +1152,7 @@ class Chef
       action = action.to_sym
       new_action_provider_class.action(action, &recipe_block)
       self.allowed_actions += [ action ]
-      default_action action if default_action == [:nothing]
+      default_action action if Array(default_action) == [:nothing]
     end
 
     #
