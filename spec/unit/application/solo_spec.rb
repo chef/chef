@@ -108,7 +108,6 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       let(:target_file) { StringIO.new }
       let(:shellout) { double(run_command: nil, error!: nil, stdout: '') }
      
-
       before do
         Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
         Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"

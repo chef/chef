@@ -215,7 +215,6 @@ class Chef::Application::Solo < Chef::Application
       tarball_path = File.join(recipes_path, 'recipes.tgz')
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
       Mixlib::ShellOut.new("tar zxvf #{tarball_path} -C #{recipes_path}").run_command
-	    #tarcommand.run_command  
     end
 
     # json_attribs shuld be fetched after recipe_url tarball is unpacked.
