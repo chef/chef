@@ -35,7 +35,7 @@ describe Chef::Resource::Env do
   end
 
   it "should have a default action of 'create'" do
-    expect(@resource.action).to eql(:create)
+    expect(@resource.action).to eql([:create])
   end
 
   { :create => false, :delete => false, :modify => false, :flibber => true }.each do |action,bad_value|
