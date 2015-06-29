@@ -66,7 +66,23 @@ class Chef
       potential_handlers.include?(provider_class)
     end
 
+    def enabled_handlers
+      @enabled_handlers ||= potential_handlers.select { |handler| handler.method(:provides?).owner == Chef::Provider || handler.provides?(node, resource) }
+    end
+
+    # TODO deprecate this and allow actions to be passed as a filter to
+    # `provides` so we don't have to have two separate things.
+    # @api private
+    def supported_handlers
+      @supported_handlers ||=
+        enabled_handlers.select { |handler| handler.supports?(resource, action) }
+    end
+
     private
+
+    def potential_handlers
+      priority_map.list_handlers(node, resource.resource_name).flatten(1).uniq
+    end
 
     # if resource.provider is set, just return one of those objects
     def maybe_explicit_provider(resource)
@@ -103,23 +119,6 @@ class Chef
 
     def priority_map
       Chef::Platform::ProviderPriorityMap.instance
-    end
-
-    # @api private
-    def potential_handlers
-      priority_map.list_handlers(node, resource.resource_name).flatten(1).uniq
-    end
-
-    def enabled_handlers
-      @enabled_handlers ||= potential_handlers.select { |handler| handler.method(:provides?).owner == Chef::Provider || handler.provides?(node, resource) }
-    end
-
-    # TODO deprecate this and allow actions to be passed as a filter to
-    # `provides` so we don't have to have two separate things.
-    # @api private
-    def supported_handlers
-      @supported_handlers ||=
-        enabled_handlers.select { |handler| handler.supports?(resource, action) }
     end
 
     module Deprecated
