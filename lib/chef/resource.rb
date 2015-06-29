@@ -1093,22 +1093,17 @@ class Chef
     # Setting default_action will automatially add the action to
     # allowed_actions, if it isn't already there.
     #
-    # Defaults to :nothing.
+    # Defaults to [:nothing].
     #
     # @param action_name [Symbol,Array<Symbol>] The default action (or series
     #   of actions) to use.
     #
-    # @return [Symbol,Array<Symbol>] The default actions for the resource.
+    # @return [Array<Symbol>] The default actions for the resource.
     #
     def self.default_action(action_name=NOT_PASSED)
       unless action_name.equal?(NOT_PASSED)
-        if action_name.is_a?(Array)
-          @default_action = action_name.map { |arg| arg.to_sym }
-        else
-          @default_action = action_name.to_sym
-        end
-
-        self.allowed_actions |= Array(@default_action)
+        @default_action = Array(action_name).map(&:to_sym)
+        self.allowed_actions |= @default_action
       end
 
       if @default_action
