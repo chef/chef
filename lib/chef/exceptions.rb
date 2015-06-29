@@ -17,11 +17,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef-config/exceptions'
+
 class Chef
   # == Chef::Exceptions
   # Chef's custom exceptions are all contained within the Chef::Exceptions
   # namespace.
   class Exceptions
+
+    ConfigurationError = ChefConfig::ConfigurationError
 
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'
@@ -68,7 +72,6 @@ class Chef
     class DuplicateRole < RuntimeError; end
     class ValidationFailed < ArgumentError; end
     class InvalidPrivateKey < ArgumentError; end
-    class ConfigurationError < ArgumentError; end
     class MissingKeyAttribute < ArgumentError; end
     class KeyCommandInputError < ArgumentError; end
     class InvalidKeyArgument < ArgumentError; end
