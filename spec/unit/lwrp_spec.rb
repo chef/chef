@@ -177,6 +177,16 @@ describe "LWRP" do
       end
     end
 
+    it "allows monkey patching of the lwrp through Chef::Resource" do
+      monkey = Module.new do
+        def issue_3607
+        end
+      end
+      allow(Chef::Config).to receive(:[]).with(:treat_deprecation_warnings_as_errors).and_return(false)
+      Chef::Resource::LwrpFoo.send(:include, monkey)
+      expect { get_lwrp(:lwrp_foo).new("blah").issue_3607 }.not_to raise_error
+    end
+
     it "should load the resource into a properly-named class and emit a warning when it is initialized" do
       expect { Chef::Resource::LwrpFoo.new('hi') }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
