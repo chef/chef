@@ -1020,6 +1020,11 @@ describe Chef::Resource do
       it { is_expected.to eq [:one] }
     end
 
+    context "with an array assignment" do
+      before { resource.action = [:two, :one] }
+      it { is_expected.to eq [:two, :one] }
+    end
+
     context "with an invalid action" do
       it { expect { resource.action(:three) }.to raise_error Chef::Exceptions::ValidationFailed }
     end
