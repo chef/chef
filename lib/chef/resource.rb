@@ -1499,7 +1499,7 @@ class Chef
         Chef::Resource.send(:remove_const, class_name)
       end
 
-      eval("Chef::Resource::#{class_name} = resource_class")
+      Chef::Resource.const_set(class_name, resource_class)
 
       deprecated_constants[class_name.to_sym] = resource_class
     end
