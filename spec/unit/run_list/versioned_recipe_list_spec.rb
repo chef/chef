@@ -180,8 +180,6 @@ describe Chef::RunList::VersionedRecipeList do
       end
 
       it "does not mutate the recipe name" do
-        pending "This reproduces https://github.com/chef/chef/issues/3618"
-
         expect(fq_names).to eq([ "apt::cacher@~> 1.2.0" ])
         expect(list).to eq( [ "apt::cacher" ] )
       end
