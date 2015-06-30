@@ -68,7 +68,9 @@ class Chef
         run_action = action || @resource.action
 
         begin
-          # Coerce to an array to be safe.
+          # Coerce to an array to be safe. This could happen with a legacy
+          # resource or something overriding the default_action code in a
+          # subclass.
           Array(run_action).each {|action_to_run| @resource.run_action(action_to_run) }
           resource_updated = @resource.updated
         rescue Mixlib::ShellOut::ShellCommandFailed
