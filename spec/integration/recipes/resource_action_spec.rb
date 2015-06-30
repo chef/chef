@@ -337,7 +337,7 @@ describe "Resource.action" do
           NoActionJackson.action_was = action
         end
       }
-      expect(NoActionJackson.action_was).to eq :nothing
+      expect(NoActionJackson.action_was).to eq [:nothing]
     end
   end
 end

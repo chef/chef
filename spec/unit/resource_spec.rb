@@ -977,4 +977,90 @@ describe Chef::Resource do
     end
 
   end
+
+  describe "#action" do
+    let(:resource_class) do
+      Class.new(described_class) do
+        allowed_actions(%i{one two})
+      end
+    end
+    let(:resource) { resource_class.new('test', nil) }
+    subject { resource.action }
+
+    context "with a no action" do
+      it { is_expected.to eq [:nothing] }
+    end
+
+    context "with a default action" do
+      let(:resource_class) do
+        Class.new(described_class) do
+          default_action(:one)
+        end
+      end
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with a symbol action" do
+      before { resource.action(:one) }
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with a string action" do
+      before { resource.action('two') }
+      it { is_expected.to eq [:two] }
+    end
+
+    context "with an array action" do
+      before { resource.action([:two, :one]) }
+      it { is_expected.to eq [:two, :one] }
+    end
+
+    context "with an assignment" do
+      before { resource.action = :one }
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with an array assignment" do
+      before { resource.action = [:two, :one] }
+      it { is_expected.to eq [:two, :one] }
+    end
+
+    context "with an invalid action" do
+      it { expect { resource.action(:three) }.to raise_error Chef::Exceptions::ValidationFailed }
+    end
+
+    context "with an invalid assignment action" do
+      it { expect { resource.action = :three }.to raise_error Chef::Exceptions::ValidationFailed }
+    end
+  end
+
+  describe ".default_action" do
+    let(:default_action) { }
+    let(:resource_class) do
+      actions = default_action
+      Class.new(described_class) do
+        default_action(actions) if actions
+      end
+    end
+    subject { resource_class.default_action }
+
+    context "with no default actions" do
+      it { is_expected.to eq [:nothing] }
+    end
+
+    context "with a symbol default action" do
+      let(:default_action) { :one }
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with a string default action" do
+      let(:default_action) { 'one' }
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with an array default action" do
+      let(:default_action) { [:two, :one] }
+      it { is_expected.to eq [:two, :one] }
+    end
+  end
 end
