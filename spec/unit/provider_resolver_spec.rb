@@ -28,30 +28,37 @@ include Chef::Mixin::ConvertToClassName
 
 describe Chef::ProviderResolver do
 
-  let(:node) do
-    node = Chef::Node.new
-    allow(node).to receive(:[]).with(:os).and_return(os)
-    allow(node).to receive(:[]).with(:platform_family).and_return(platform_family)
-    allow(node).to receive(:[]).with(:platform).and_return(platform)
-    allow(node).to receive(:[]).with(:platform_version).and_return(platform_version)
-    allow(node).to receive(:is_a?).and_return(Chef::Node)
-    node
-  end
-
-  let(:provider_resolver) { Chef::ProviderResolver.new(node, resource, action) }
-
+  let(:resource_name) { :service }
+  let(:provider) { nil }
   let(:action) { :start }
 
-  let(:resolved_provider) { provider_resolver.resolve }
+  let(:node) do
+    node = Chef::Node.new
+    node.automatic[:os] = os
+    node.automatic[:platform_family] = platform_family
+    node.automatic[:platform] = platform
+    node.automatic[:platform_version] = platform_version
+    node.automatic[:kernel] = { machine: 'i386' }
+    node
+  end
+  let(:run_context) { Chef::RunContext.new(node, nil, nil) }
 
-  let(:provider) { nil }
+  let(:provider_resolver) { Chef::ProviderResolver.new(node, resource, action) }
+  let(:resolved_provider) do
+    begin
+      resource ? resource.provider_for_action(action).class : nil
+    rescue Chef::Exceptions::ProviderNotFound
+      nil
+    end
+  end
 
-  let(:resource_name) { :service }
-
-  let(:resource) { double(Chef::Resource, provider: provider, resource_name: resource_name) }
-
-  before do
-    allow(resource).to receive(:is_a?).with(Chef::Resource).and_return(true)
+  let(:resource) do
+    resource_class = Chef::ResourceResolver.resolve(resource_name, node: node)
+    if resource_class
+      resource = resource_class.new('test', run_context)
+      resource.provider = provider if provider
+    end
+    resource
   end
 
   def self.on_platform(platform, *tags,
@@ -83,16 +90,30 @@ describe Chef::ProviderResolver do
   end
 
   def self.expect_providers(**providers)
-    providers.each do |name, provider|
+    providers.each do |name, expected_provider|
       describe name.to_s do
         let(:resource_name) { name }
-        if provider
-          it "resolves to a #{provider}" do
-            expect(resolved_provider).to eql(provider)
+
+        tags = []
+        expected_resource = nil
+        Array(expected_provider).each do |p|
+          if p.is_a?(Class) && p <= Chef::Provider
+            expected_provider = p
+          elsif p.is_a?(Class) && p <= Chef::Resource
+            expected_resource = p
+          else
+            tags << p
+          end
+        end
+
+        if expected_resource || expected_provider
+          it "resolves to #{[ expected_resource, expected_provider ].compact.join(" and ")}", *tags do
+            expect(resource.class).to eql(expected_resource) if expected_resource
+            expect(resolved_provider).to eql(expected_provider) if expected_provider
           end
         else
-          it "Fails to resolve (since #{name.inspect} is unsupported on #{platform} #{platform_version})" do
-            expect { resolved_provider }.to raise_error /Cannot find a provider/
+          it "Fails to resolve (since #{name.inspect} is unsupported on #{platform} #{platform_version})", *tags do
+            expect(resolved_provider).to be_nil
           end
         end
       end
@@ -454,7 +475,7 @@ describe Chef::ProviderResolver do
 
   PROVIDERS =
   {
-    bash: Chef::Provider::Script,
+    bash: [ Chef::Resource::Bash, Chef::Provider::Script ],
     breakpoint: Chef::Provider::Breakpoint,
     chef_gem: Chef::Provider::Package::Rubygems,
     cookbook_file: Chef::Provider::CookbookFile,
@@ -713,7 +734,7 @@ describe Chef::ProviderResolver do
 
     "openbsd" => {
       group: Chef::Provider::Group::Usermod,
-      package: Chef::Provider::Package::Openbsd,
+      package: [ Chef::Resource::OpenbsdPackage, Chef::Provider::Package::Openbsd ],
 
       "openbsd" => {
         "openbsd" => {
@@ -725,10 +746,10 @@ describe Chef::ProviderResolver do
 
     "solaris2" => {
       group: Chef::Provider::Group::Usermod,
-      ips_package: Chef::Provider::Package::Ips,
-      package: Chef::Provider::Package::Ips,
+      ips_package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
+      package: [ Chef::Resource::SolarisPackage, Chef::Provider::Package::Solaris ],
       mount: Chef::Provider::Mount::Solaris,
-      solaris_package: Chef::Provider::Package::Solaris,
+      solaris_package: [ Chef::Resource::SolarisPackage, Chef::Provider::Package::Solaris ],
 
       "smartos" => {
         smartos_package: Chef::Provider::Package::SmartOS,
@@ -743,7 +764,6 @@ describe Chef::ProviderResolver do
       "solaris2" => {
         "nexentacore" => {
           "3.1.4" => {
-            package: Chef::Provider::Package::Solaris,
           },
         },
         "omnios" => {
@@ -762,9 +782,9 @@ describe Chef::ProviderResolver do
         "solaris2" => {
           user: Chef::Provider::User::Solaris,
           "5.11" => {
+            package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
           },
           "5.9" => {
-            package: Chef::Provider::Package::Solaris,
           },
         },
       },

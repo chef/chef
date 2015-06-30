@@ -32,7 +32,7 @@ class Chef
             @new_resource.options.clear
           end
           if @new_resource.fstype == "auto"
-            @new_resource.fstype = nil
+            @new_resource.send(:clear_fstype)
           end
         end
 

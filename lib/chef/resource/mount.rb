@@ -174,6 +174,14 @@ class Chef
         )
       end
 
+      private
+
+      # Used by the AIX provider to set fstype to nil.
+      # TODO use property to make nil a valid value for fstype
+      def clear_fstype
+        @fstype = nil
+      end
+
     end
   end
 end
