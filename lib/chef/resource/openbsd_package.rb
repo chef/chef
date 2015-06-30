@@ -29,17 +29,6 @@ class Chef
       include Chef::Mixin::ShellOut
 
       provides :package, os: "openbsd"
-
-      def after_created
-        assign_provider
-      end
-
-      private
-
-      def assign_provider
-        @provider = Chef::Provider::Package::Openbsd
-      end
-
     end
   end
 end

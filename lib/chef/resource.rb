@@ -915,7 +915,7 @@ class Chef
         if name
           name = name.to_sym
           # If our class is not already providing this name, provide it.
-          if !Chef::ResourceResolver.list(name).include?(self)
+          if !Chef::ResourceResolver.includes_handler?(name, self)
             provides name, canonical: true
           end
           @resource_name = name
@@ -1099,7 +1099,7 @@ class Chef
     end
     def self.inherited(child)
       super
-      @sorted_descendants = nil
+      @@sorted_descendants = nil
       # set resource_name automatically if it's not set
       if child.name && !child.resource_name
         if child.name =~ /^Chef::Resource::(\w+)$/
@@ -1142,8 +1142,8 @@ class Chef
       result
     end
 
-    def self.provides?(node, resource)
-      Chef::ResourceResolver.resolve(resource, node: node).provided_by?(self)
+    def self.provides?(node, resource_name)
+      Chef::ResourceResolver.new(node, resource_name).provided_by?(self)
     end
 
     # Helper for #notifies

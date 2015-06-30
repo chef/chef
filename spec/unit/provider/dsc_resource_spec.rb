@@ -35,10 +35,10 @@ describe Chef::Provider::DscResource do
       node
     }
 
-    it 'raises a NoProviderAvailable exception' do
+    it 'raises a ProviderNotFound exception' do
       expect(provider).not_to receive(:meta_configuration)
       expect{provider.run_action(:run)}.to raise_error(
-              Chef::Exceptions::NoProviderAvailable, /5\.0\.10018\.0/)
+              Chef::Exceptions::ProviderNotFound, /5\.0\.10018\.0/)
     end
   end
 
@@ -56,7 +56,7 @@ describe Chef::Provider::DscResource do
         expect(provider).to receive(:meta_configuration).and_return(
                                                              meta_configuration)
         expect { provider.run_action(:run) }.to raise_error(
-          Chef::Exceptions::NoProviderAvailable, /Disabled/)
+          Chef::Exceptions::ProviderNotFound, /Disabled/)
       end
     end
 
