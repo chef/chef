@@ -1499,9 +1499,27 @@ class Chef
         Chef::Resource.send(:remove_const, class_name)
       end
 
-      Chef::Resource.const_set(class_name, resource_class)
+      resource_subclass =
+        if Chef::Config[:treat_deprecation_warnings_as_errors]
+          Class.new(resource_class) do
+            def initialize(*args, &block)
+              # This will raise an exception
+              Chef::Log.deprecation("Using an LWRP by its name (#{self.class.name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+            end
 
-      deprecated_constants[class_name.to_sym] = resource_class
+            [:inherited, :const_missing, :include, :extend].each do |method_name|
+              define_singleton_method(method_name) do |*args, &block|
+                Chef::Log.deprecation("Using an LWRP by its name (#{self.class.name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+              end
+            end
+          end
+        else
+          resource_class
+        end
+
+      Chef::Resource.const_set(class_name, resource_subclass)
+
+      deprecated_constants[class_name.to_sym] = resource_subclass
     end
 
     def self.deprecated_constants
