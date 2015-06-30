@@ -63,8 +63,7 @@ class Chef
       when /(.+?)::(.+)/
         [$1.to_sym, $2]
       when /^::(.+)/
-        raise Chef::Exceptions::RecipeNotFound, 'current_cookbook is nil, ' \
-          "cannot resolve #{recipe_name}" if current_cookbook.nil?
+        raise Chef::Exceptions::RecipeNotFound, "current_cookbook is nil, cannot resolve #{recipe_name}" if current_cookbook.nil?
         [current_cookbook.to_sym, $1]
       else
         [recipe.to_sym, 'default']
