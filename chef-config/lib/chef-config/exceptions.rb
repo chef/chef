@@ -20,7 +20,7 @@ require 'chef-config/logger'
 
 module ChefConfig
 
-  class InvalidPath < StandardError
-  end
+  class ConfigurationError < ArgumentError; end
+  class InvalidPath < StandardError; end
 
 end
