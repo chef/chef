@@ -29,7 +29,7 @@ describe Chef::Resource::DscScript do
       Chef::RunContext.new(node, {}, empty_events)
     }
     let(:dsc_test_resource) {
-      Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context) 
+      Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
     }
     let(:configuration_code) {'echo "This is supposed to create a configuration document."'}
     let(:configuration_path) {'c:/myconfigs/formatc.ps1'}
@@ -38,7 +38,7 @@ describe Chef::Resource::DscScript do
     let(:configuration_data_script) { 'c:/myconfigs/data/safedata.psd1' }
 
     it "has a default action of `:run`" do
-      expect(dsc_test_resource.action).to eq(:run)
+      expect(dsc_test_resource.action).to eq([:run])
     end
 
     it "has an allowed_actions attribute with only the `:run` and `:nothing` attributes" do

@@ -163,7 +163,7 @@ describe "LWRP" do
       it "Should load the old content, and not the new" do
         resource = Chef::ResourceResolver.resolve(:lwrp_foo)
         expect(resource).to eq @original_resource
-        expect(resource.default_action).to eq(:pass_buck)
+        expect(resource.default_action).to eq([:pass_buck])
         expect(Chef.method_defined?(:method_created_by_override_lwrp_foo)).to be_falsey
       end
     end
@@ -202,7 +202,7 @@ describe "LWRP" do
     end
 
     it "should set the specified action as the default action" do
-      expect(get_lwrp(:lwrp_foo).new("blah").action).to eq(:pass_buck)
+      expect(get_lwrp(:lwrp_foo).new("blah").action).to eq([:pass_buck])
     end
 
     it "should create a method for each attribute" do
@@ -419,7 +419,7 @@ describe "LWRP" do
         end
 
         it "delegates #default_action to the parent" do
-          expect(child.default_action).to eq(:eat)
+          expect(child.default_action).to eq([:eat])
         end
       end
 
@@ -436,7 +436,7 @@ describe "LWRP" do
         end
 
         it "does not delegate #default_action to the parent" do
-          expect(child.default_action).to eq(:dont_eat)
+          expect(child.default_action).to eq([:dont_eat])
         end
       end
 

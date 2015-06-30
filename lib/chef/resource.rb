@@ -171,26 +171,24 @@ class Chef
     # @param arg [Array[Symbol], Symbol] A list of actions (e.g. `:create`)
     # @return [Array[Symbol]] the list of actions.
     #
-    attr_accessor :action
     def action(arg=nil)
       if arg
-        if arg.is_a?(Array)
-          arg = arg.map { |a| a.to_sym }
-        else
-          arg = arg.to_sym
-        end
-        Array(arg).each do |action|
+        arg = Array(arg).map(&:to_sym)
+        arg.each do |action|
           validate(
             { action: action },
             { action: { kind_of: Symbol, equal_to: allowed_actions } }
           )
         end
-        self.action = arg
+        @action = arg
       else
         # Pull the action from the class if it's not set
         @action || self.class.default_action
       end
     end
+
+    # Alias for normal assigment syntax.
+    alias_method :action=, :action
 
     #
     # Sets up a notification that will run a particular action on another resource
@@ -981,22 +979,17 @@ class Chef
     # Setting default_action will automatially add the action to
     # allowed_actions, if it isn't already there.
     #
-    # Defaults to :nothing.
+    # Defaults to [:nothing].
     #
     # @param action_name [Symbol,Array<Symbol>] The default action (or series
     #   of actions) to use.
     #
-    # @return [Symbol,Array<Symbol>] The default actions for the resource.
+    # @return [Array<Symbol>] The default actions for the resource.
     #
     def self.default_action(action_name=NULL_ARG)
       unless action_name.equal?(NULL_ARG)
-        if action_name.is_a?(Array)
-          @default_action = action_name.map { |arg| arg.to_sym }
-        else
-          @default_action = action_name.to_sym
-        end
-
-        self.allowed_actions |= Array(@default_action)
+        @default_action = Array(action_name).map(&:to_sym)
+        self.allowed_actions |= @default_action
       end
 
       if @default_action
@@ -1004,12 +997,13 @@ class Chef
       elsif superclass.respond_to?(:default_action)
         superclass.default_action
       else
-        :nothing
+        [:nothing]
       end
     end
     def self.default_action=(action_name)
       default_action(action_name)
     end
+
 
     #
     # Internal Resource Interface (for Chef)

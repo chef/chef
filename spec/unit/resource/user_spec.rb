@@ -43,7 +43,7 @@ describe Chef::Resource::User, "initialize" do
   end
 
   it "should set action to :create" do
-    expect(@resource.action).to eql(:create)
+    expect(@resource.action).to eql([:create])
   end
 
   it "should set supports[:manage_home] to false" do
