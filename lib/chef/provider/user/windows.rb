@@ -29,11 +29,9 @@ class Chef
 
         provides :user, os: "windows"
 
-        if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-          def initialize(new_resource,run_context)
-            super
-            @net_user = Chef::Util::Windows::NetUser.new(@new_resource.username)
-          end
+        def initialize(new_resource,run_context)
+          super
+          @net_user = Chef::Util::Windows::NetUser.new(@new_resource.username)
         end
 
         def load_current_resource

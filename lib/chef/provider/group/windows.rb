@@ -28,11 +28,9 @@ class Chef
 
         provides :group, os: 'windows'
 
-        if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-          def initialize(new_resource,run_context)
-            super
-            @net_group = Chef::Util::Windows::NetGroup.new(@new_resource.group_name)
-          end
+        def initialize(new_resource,run_context)
+          super
+          @net_group = Chef::Util::Windows::NetGroup.new(@new_resource.group_name)
         end
 
         def load_current_resource

@@ -106,13 +106,23 @@ describe Chef::ProviderResolver do
           end
         end
 
-        if expected_resource || expected_provider
-          it "resolves to #{[ expected_resource, expected_provider ].compact.join(" and ")}", *tags do
-            expect(resource.class).to eql(expected_resource) if expected_resource
-            expect(resolved_provider).to eql(expected_provider) if expected_provider
+        if expected_resource && expected_provider
+          it "'#{name}' resolves to resource #{expected_resource} and provider #{expected_provider}", *tags do
+            expect(resource.class).to eql(expected_resource)
+            provider = double(expected_provider, class: expected_provider)
+            expect(provider).to receive(:action=).with(action)
+            expect(expected_provider).to receive(:new).with(resource, run_context).and_return(provider)
+            expect(resolved_provider).to eql(expected_provider)
+          end
+        elsif expected_provider
+          it "'#{name}' resolves to provider #{expected_provider}", *tags do
+            provider = double(expected_provider)
+            expect(provider).to receive(:action=).with(action)
+            expect(expected_provider).to receive(:new).with(resource, run_context).and_return(provider)
+            expect(resolved_provider).to eql(expected_provider)
           end
         else
-          it "Fails to resolve (since #{name.inspect} is unsupported on #{platform} #{platform_version})", *tags do
+          it "'#{name}' fails to resolve (since #{name.inspect} is unsupported on #{platform} #{platform_version})", *tags do
             expect(resolved_provider).to be_nil
           end
         end
