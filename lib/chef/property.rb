@@ -279,12 +279,20 @@ class Chef
           value = default
           if value.is_a?(DelayedEvaluator)
             value = exec_in_resource(resource, value)
-            value = coerce(resource, value)
-            # We don't validate defaults
-            set_value(resource, value)
-          else
-            value = coerce(resource, value)
           end
+
+          value = coerce(resource, value)
+
+          # We don't validate defaults
+
+          # If the value is mutable (non-frozen), we set it on the instance
+          # so that people can mutate it.  (All constant default values are
+          # frozen.)
+          if !value.frozen?
+            set_value(resource, value)
+          end
+
+          value
         end
       end
     end

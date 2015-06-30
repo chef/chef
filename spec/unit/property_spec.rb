@@ -397,9 +397,9 @@ describe "Chef::Resource.property" do
         resource.x = 10
         expect(resource.property_is_set?(:x)).to be_truthy
       end
-      it "when x is retrieved, property_is_set?(:x) is true" do
+      it "when x is retrieved, property_is_set?(:x) is false" do
         resource.x
-        expect(resource.property_is_set?(:x)).to be_truthy
+        expect(resource.property_is_set?(:x)).to be_falsey
       end
     end
   end
@@ -595,7 +595,26 @@ describe "Chef::Resource.property" do
     end
 
     context "coercion of defaults" do
+      # Frozen default, non-frozen coerce
       with_property ':x, coerce: proc { |v| "#{v}#{next_index}" }, default: 10' do
+        it "when the resource is created, the proc is not yet run" do
+          resource
+          expect(Namer.current_index).to eq 0
+        end
+        it "when x is set, coercion is run" do
+          expect(resource.x 'hi').to eq 'hi1'
+          expect(resource.x).to eq 'hi1'
+          expect(Namer.current_index).to eq 1
+        end
+        it "when x is retrieved, coercion is run exactly once" do
+          expect(resource.x).to eq '101'
+          expect(resource.x).to eq '101'
+          expect(Namer.current_index).to eq 1
+        end
+      end
+
+      # Frozen default, frozen coerce
+      with_property ':x, coerce: proc { |v| "#{v}#{next_index}".freeze }, default: 10' do
         it "when the resource is created, the proc is not yet run" do
           resource
           expect(Namer.current_index).to eq 0
@@ -612,6 +631,7 @@ describe "Chef::Resource.property" do
         end
       end
 
+      # Frozen lazy default, non-frozen coerce
       with_property ':x, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
         it "when the resource is created, the proc is not yet run" do
           resource
@@ -621,6 +641,29 @@ describe "Chef::Resource.property" do
           expect(resource.x 'hi').to eq 'hi1'
           expect(resource.x).to eq 'hi1'
           expect(Namer.current_index).to eq 1
+        end
+        it "when x is retrieved, coercion is run exactly once" do
+          expect(resource.x).to eq '101'
+          expect(resource.x).to eq '101'
+          expect(Namer.current_index).to eq 1
+        end
+      end
+
+      # Non-frozen lazy default, frozen coerce
+      with_property ':x, coerce: proc { |v| "#{v}#{next_index}".freeze }, default: lazy { "10" }' do
+        it "when the resource is created, the proc is not yet run" do
+          resource
+          expect(Namer.current_index).to eq 0
+        end
+        it "when x is set, coercion is run" do
+          expect(resource.x 'hi').to eq 'hi1'
+          expect(resource.x).to eq 'hi1'
+          expect(Namer.current_index).to eq 1
+        end
+        it "when x is retrieved, coercion is run each time" do
+          expect(resource.x).to eq '101'
+          expect(resource.x).to eq '102'
+          expect(Namer.current_index).to eq 2
         end
       end
 
