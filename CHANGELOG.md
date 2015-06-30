@@ -13,6 +13,7 @@
 * [pr#3519](https://github.com/chef/chef/pull/3519) The wording seemed odd.
 * [pr#3208](https://github.com/chef/chef/pull/3208) Missing require (require what you use).
 * [pr#3449](https://github.com/chef/chef/pull/3449) correcting minor typo in user_edit knife action
+* [pr#3572](https://github.com/chef/chef/pull/3572) Use windows paths without case-sensitivity.
 
 
 ## 12.4.0
