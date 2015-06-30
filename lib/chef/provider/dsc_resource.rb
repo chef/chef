@@ -53,7 +53,7 @@ class Chef
         requirements.assert(:run) do |a|
           a.assertion { supports_dsc_invoke_resource? }
           err = ["You must have Powershell version >= 5.0.10018.0 to use dsc_resource."]
-          a.failure_message Chef::Exceptions::NoProviderAvailable,
+          a.failure_message Chef::Exceptions::ProviderNotFound,
             err
           a.whyrun err + ["Assuming a previous resource installs Powershell 5.0.10018.0 or higher."]
           a.block_action!
@@ -63,7 +63,7 @@ class Chef
             meta_configuration['RefreshMode'] == 'Disabled'
           }
           err = ["The LCM must have its RefreshMode set to Disabled. "]
-          a.failure_message Chef::Exceptions::NoProviderAvailable, err.join(' ')
+          a.failure_message Chef::Exceptions::ProviderNotFound, err.join(' ')
           a.whyrun err + ["Assuming a previous resource sets the RefreshMode."]
           a.block_action!
         end

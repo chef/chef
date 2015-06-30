@@ -97,6 +97,8 @@ class Chef
     class ConflictingMembersInGroup < ArgumentError; end
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
+    class ProviderNotFound < RuntimeError; end
+    NoProviderAvailable = ProviderNotFound
     class VerificationNotFound < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
@@ -217,8 +219,6 @@ class Chef
     class InvalidSymlink < RuntimeError; end
 
     class ChildConvergeError < RuntimeError; end
-
-    class NoProviderAvailable < RuntimeError; end
 
     class DeprecatedFeatureError < RuntimeError;
       def initalize(message)

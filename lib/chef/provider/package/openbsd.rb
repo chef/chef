@@ -31,6 +31,7 @@ class Chef
       class Openbsd < Chef::Provider::Package
 
         provides :package, os: "openbsd"
+        provides :openbsd_package
 
         include Chef::Mixin::ShellOut
         include Chef::Mixin::GetSourceFromPackage

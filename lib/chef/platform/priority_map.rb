@@ -6,7 +6,7 @@ class Chef
       def priority(resource_name, priority_array, *filter)
         set_priority_array(resource_name.to_sym, priority_array, *filter)
       end
-      
+
       # @api private
       def get_priority_array(node, key)
         get(node, key)
@@ -22,6 +22,12 @@ class Chef
       # @api private
       def list_handlers(node, key, **filters)
         list(node, key, **filters).flatten(1).uniq
+      end
+
+      # @api private
+      def includes_handler?(key, handler)
+        return false if !map.has_key?(key)
+        map[key].any? { |m| h = m[:value]; h.is_a?(Array) ? h.include?(handler) : h == handler }
       end
 
       #
