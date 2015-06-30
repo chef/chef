@@ -36,6 +36,47 @@ class Chef
   #
   class Property
     #
+    # Create a reusable property type that can be used in multiple properties
+    # in different resources.
+    #
+    # @param type [Object,Array<Object>] The type(s) of this property.
+    #   If present, this is prepended to the `is` validation option.
+    #   If this is a Chef::Property, `specialize` is called on it to create the
+    #   new property instead of prepending to `is`.
+    # @param options [Hash<Symbol,Object>] Validation options. see #property for
+    #   the list of options.
+    #
+    # @example Bare property_type
+    #   property_type()
+    #
+    # @example With just a type
+    #   property_type(String)
+    #
+    # @example With just options
+    #   property_type(default: 'hi')
+    #
+    # @example With type and options
+    #   property_type(String, default: 'hi')
+    #
+    def self.create(type=NOT_PASSED, **options)
+      # Inherit from the property type, if one is passed
+      if type.is_a?(self)
+        type.specialize(**options)
+
+      else
+        if type != NOT_PASSED
+          # If a type was passed, combine it with "is" (if a type was passed)
+          if options[:is]
+            options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
+          else
+            options[:is] = type
+          end
+        end
+        new(**options)
+      end
+    end
+
+    #
     # Create a new property.
     #
     # @param options [Hash<Symbol,Object>] Property options, including
@@ -210,20 +251,17 @@ class Chef
     # resource.myprop value # set
     # ```
     #
-    # If multiple values or a block are passed, they will be passed to coerce.
-    # If there is no coerce method and multiple values are passed, we will throw
-    # an error.
+    # Subclasses may implement this with any arguments they want, as long as
+    # the corresponding DSL calls it correctly.
     #
     # @param resource [Chef::Resource] The resource to get the property from.
-    # @param value The value to set the property to. If not passed or set to
-    #   NOT_PASSED, this is treated as a get.
+    # @param value The value to set (or NOT_PASSED if it is a get).
     #
     # @return The current value of the property. If it is a `set`, lazy values
     #   will be returned without running, validating or coercing. If it is a
     #   `get`, the non-lazy, coerced, validated value will always be returned.
     #
     def call(resource, value=NOT_PASSED)
-      # myprop with no args
       if value == NOT_PASSED
         return get(resource)
       end
@@ -273,8 +311,6 @@ class Chef
         value
 
       else
-        raise Chef::Exceptions::ValidationFailed, "#{name} is required" if required?
-
         if has_default?
           value = default
           if value.is_a?(DelayedEvaluator)
@@ -293,6 +329,9 @@ class Chef
           end
 
           value
+
+        elsif required?
+          raise Chef::Exceptions::ValidationFailed, "#{name} is required"
         end
       end
     end
@@ -402,11 +441,46 @@ class Chef
     # @return [Property] The new property type.
     #
     def specialize(**modified_options)
-      Property.new(**options, **modified_options)
+      Property.new(**options.merge(**modified_options))
+    end
+
+    #
+    # Emit the DSL for this property into the resource class (`declared_in`).
+    #
+    # Creates a getter and setter for the property.
+    #
+    def emit_dsl
+      # We don't create the getter/setter if it's a custom property; we will
+      # be using the existing getter/setter to manipulate it instead.
+      return if !instance_variable_name
+
+      # We prefer this form because the property name won't show up in the
+      # stack trace if you use `define_method`.
+      declared_in.class_eval <<-EOM, __FILE__, __LINE__+1
+        def #{name}(value=NOT_PASSED)
+          self.class.properties[#{name.inspect}].call(self, value)
+        end
+        def #{name}=(value)
+          self.class.properties[#{name.inspect}].set(self, value)
+        end
+      EOM
+    rescue SyntaxError
+      # If the name is not a valid ruby name, we use define_method.
+      resource_class.define_method(name) do |value=NOT_PASSED|
+        self.class.properties[name].call(self, value)
+      end
+      resource_class.define_method("#{name}=") do |value|
+        self.class.properties[name].set(self, value)
+      end
     end
 
     protected
 
+    #
+    # The options this Property will use for get/set behavior and validation.
+    #
+    # @see #initialize for a list of valid options.
+    #
     attr_reader :options
 
     #

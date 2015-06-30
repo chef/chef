@@ -779,41 +779,37 @@ class Chef
     def self.property(name, type=NOT_PASSED, **options)
       name = name.to_sym
 
-      # Combine the type with "is"
-      if type != NOT_PASSED
-        if options[:is]
-          options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
-        else
-          options[:is] = type
-        end
-      end
-
       local_properties = properties(false)
+      type = properties[name] if type == NOT_PASSED && properties[name]
+      local_properties[name] = property_type(type, name: name, declared_in: self, **options)
+      local_properties[name].emit_dsl
+    end
 
-      # Inherit from the current / parent property if type is not passed
-      if type == NOT_PASSED && properties[name]
-        local_properties[name] = properties[name].specialize(declared_in: self, **options)
-      else
-        local_properties[name] = Property.new(name: name, declared_in: self, **options)
-      end
-
-      begin
-        class_eval <<-EOM, __FILE__, __LINE__+1
-          def #{name}(value=NOT_PASSED)
-            self.class.properties[#{name.inspect}].call(self, value)
-          end
-          def #{name}=(value)
-            self.class.properties[#{name.inspect}].set(self, value)
-          end
-        EOM
-      rescue SyntaxError
-        define_method(name) do |value=NOT_PASSED|
-          self.class.properties[name].call(self, value)
-        end
-        define_method("#{name}=") do |value|
-          self.class.properties[name].set(self, value)
-        end
-      end
+    #
+    # Create a reusable property type that can be used in multiple properties
+    # in different resources.
+    #
+    # @param type [Object,Array<Object>] The type(s) of this property.
+    #   If present, this is prepended to the `is` validation option.
+    #   If this is a Chef::Property, `specialize` is called on it to create the
+    #   new property instead of prepending to `is`.
+    # @param options [Hash<Symbol,Object>] Validation options. see #property for
+    #   the list of options.
+    #
+    # @example Bare property_type
+    #   property_type()
+    #
+    # @example With just a type
+    #   property_type(String)
+    #
+    # @example With just options
+    #   property_type(default: 'hi')
+    #
+    # @example With type and options
+    #   property_type(String, default: 'hi')
+    #
+    def self.property_type(type=NOT_PASSED, **options)
+      Property.create(type, **options)
     end
 
     #
@@ -915,10 +911,10 @@ class Chef
         # Add new properties to the list.
         names.each do |name|
           property = properties[name]
-          if property
-            local_properties[name] = property.specialize(declared_in: self, desired_state: true) if !property.desired_state?
-          else
-            local_properties[name] = Property.new(name: name, declared_in: self, instance_variable_name: nil)
+          if !property
+            self.property name, instance_variable_name: false, desired_state: true
+          elsif !property.desired_state?
+            self.property name, desired_state: true
           end
         end
 
@@ -926,7 +922,7 @@ class Chef
         # mark it as desired_state: false.
         local_properties.each do |name,property|
           if property.desired_state? && !names.include?(name)
-            local_properties[name] = property.specialize(declared_in: self, desired_state: false)
+            self.property name, desired_state: false
           end
         end
       end
@@ -985,16 +981,12 @@ class Chef
         names = names.map { |name| name.to_sym }
 
         # Add or change properties that are not part of the identity.
-        local_properties = properties(false)
         names.each do |name|
           property = properties[name]
-          if property
-            # Make our own special version of the attribute if it's not already
-            # an identity property.
-            local_properties[name] = property.specialize(declared_in: self, identity: true) if !property.identity?
-          else
-            # Create the property (since it isn't already there).
-            local_properties[name] = Property.new(declared_in: self, name: name, instance_variable_name: nil, identity: true)
+          if !property
+            self.property name, instance_variable_name: false, identity: true
+          elsif !property.identity?
+            self.property name, identity: true
           end
         end
 
@@ -1002,7 +994,7 @@ class Chef
         # identity, mark it as identity: false.
         properties.each do |name,property|
           if property.identity? && !names.include?(name)
-            local_properties[name] = property.specialize(declared_in: self, identity: false)
+            self.property name, identity: false
           end
         end
       end

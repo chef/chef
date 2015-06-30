@@ -17,4 +17,11 @@
 
 class Chef
   NOT_PASSED = Object.new
+  def NOT_PASSED.to_s
+    "NOT_PASSED"
+  end
+  def NOT_PASSED.inspect
+    to_s
+  end
+  NOT_PASSED.freeze
 end

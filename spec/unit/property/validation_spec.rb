@@ -556,7 +556,7 @@ describe "Chef::Resource.property validation" do
     end
 
     with_property ':x, name_property: true, required: true' do
-      it "if x is not specified, retrieval succeeds" do
+      it "if x is not specified, the name property is returned" do
         expect(resource.x).to eq 'blah'
       end
       it "value 1 is valid" do

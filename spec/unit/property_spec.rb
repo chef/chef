@@ -958,6 +958,11 @@ describe "Chef::Resource.property" do
           expect(resource.x).to eq 10
         end
       end
+      with_property ":x, #{name}: true, required: true" do
+        it "defaults x to resource.name" do
+          expect(resource.x).to eq 'blah'
+        end
+      end
     end
   end
 end
