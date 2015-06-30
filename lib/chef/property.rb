@@ -500,18 +500,5 @@ class Chef
       end
       value
     end
-
-    # Used by #set_or_return to avoid emitting a deprecation warning for
-    # "value nil"
-    # @api private
-    class NonDeprecatedNilGetter < Property
-      def call(resource, value=NOT_PASSED)
-        if value.nil? && !explicitly_accepts_nil?(resource)
-          get(resource)
-        else
-          super
-        end
-      end
-    end
   end
 end

@@ -119,7 +119,7 @@ class Chef
       end
 
       def set_or_return(symbol, value, validation)
-        property = Property::NonDeprecatedNilGetter.new(name: symbol, **validation)
+        property = SetOrReturnProperty.new(name: symbol, **validation)
         property.call(self, value)
       end
 
@@ -439,6 +439,29 @@ class Chef
           opts[key.to_s] = instance_exec(opts[key], &coercer)
         elsif opts.has_key?(key.to_sym)
           opts[key.to_sym] = instance_exec(opts[key], &coercer)
+        end
+      end
+
+      # Used by #set_or_return to avoid emitting a deprecation warning for
+      # "value nil" and to keep default stickiness working exactly the same
+      # @api private
+      class SetOrReturnProperty < Chef::Property
+        def get(resource)
+          value = super
+          # All values are sticky, frozen or not
+          if !is_set?(resource)
+            set_value(resource, value)
+          end
+          value
+        end
+
+        def call(resource, value=NOT_PASSED)
+          # setting to nil does a get
+          if value.nil? && !explicitly_accepts_nil?(resource)
+            get(resource)
+          else
+            super
+          end
         end
       end
     end

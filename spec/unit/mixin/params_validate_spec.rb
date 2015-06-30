@@ -21,6 +21,8 @@ require 'spec_helper'
 class TinyClass
   include Chef::Mixin::ParamsValidate
 
+  attr_reader :name
+
   def music(is_good=true)
     is_good
   end
