@@ -88,7 +88,7 @@ class Chef
     private
 
     def potential_handlers
-      priority_map.list_handlers(node, resource.resource_name).flatten(1).uniq
+      priority_map.list_handlers(node, resource.resource_name)
     end
 
     # if resource.provider is set, just return one of those objects
@@ -126,11 +126,11 @@ class Chef
     end
 
     def self.priority_map
-      Chef::Platform::ProviderPriorityMap.instance
+      Chef.provider_priority_map
     end
 
     def priority_map
-      Chef::Platform::ProviderPriorityMap.instance
+      Chef.provider_priority_map
     end
 
     def overrode_provides?(handler)

@@ -58,7 +58,6 @@ class Chef
       else
         map[key] << new_matcher
       end
-      insert_at ||= map[key].size - 1
       map
     end
 

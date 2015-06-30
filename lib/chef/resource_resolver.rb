@@ -56,7 +56,6 @@ class Chef
     attr_reader :resource_name
     # @api private
     def resource
-      raise 'omg'
       Chef::Log.deprecation("Chef::ResourceResolver.resource deprecated.  Use resource_name instead.")
       resource_name
     end
@@ -125,16 +124,16 @@ class Chef
     protected
 
     def self.priority_map
-      Chef::Platform::ResourcePriorityMap.instance
+      Chef.resource_priority_map
     end
 
     def priority_map
-      Chef::Platform::ResourcePriorityMap.instance
+      Chef.resource_priority_map
     end
 
     # @api private
     def potential_handlers
-      priority_map.list_handlers(node, resource_name, canonical: canonical).flatten(1).uniq
+      priority_map.list_handlers(node, resource_name, canonical: canonical)
     end
 
     def enabled_handlers
