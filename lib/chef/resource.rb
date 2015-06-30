@@ -1499,55 +1499,26 @@ class Chef
         Chef::Resource.send(:remove_const, class_name)
       end
 
-      # In order to generate deprecation warnings when you use Chef::Resource::MyLwrp,
-      # we make a special subclass (identical in nearly all respects) of the
-      # actual LWRP.  When you say any of these, a deprecation warning will be
-      # generated:
-      #
-      # - Chef::Resource::MyLwrp.new(...)
-      # - resource.is_a?(Chef::Resource::MyLwrp)
-      # - resource.kind_of?(Chef::Resource::MyLwrp)
-      # - case resource
-      #   when Chef::Resource::MyLwrp
-      #   end
-      #
-      resource_subclass = Class.new(resource_class) do
-        resource_name nil # we do not actually provide anything
-        def initialize(*args, &block)
-          Chef::Log.deprecation("Using an LWRP by its name (#{self.class.name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
-          super
-        end
-        def self.resource_name(*args)
-          if args.empty?
-            @resource_name ||= superclass.resource_name
-          else
-            super
+      resource_subclass =
+        if Chef::Config[:treat_deprecation_warnings_as_errors]
+          Class.new(resource_class) do
+            def initialize(*args, &block)
+              # This will raise an exception
+              Chef::Log.deprecation("Using an LWRP by its name (#{self.class.name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+            end
+
+            [:inherited, :const_missing, :include, :extend].each do |method_name|
+              define_singleton_method(method_name) do |*args, &block|
+                Chef::Log.deprecation("Using an LWRP by its name (#{self.class.name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
+              end
+            end
           end
+        else
+          resource_class
         end
-        self
-      end
-      eval("Chef::Resource::#{class_name} = resource_subclass")
-      # Make case, is_a and kind_of work with the new subclass, for backcompat.
-      # Any subclass of Chef::Resource::ResourceClass is already a subclass of resource_class
-      # Any subclass of resource_class is considered a subclass of Chef::Resource::ResourceClass
-      resource_class.class_eval do
-        define_method(:is_a?) do |other|
-          other.is_a?(Module) && other === self
-        end
-        define_method(:kind_of?) do |other|
-          other.is_a?(Module) && other === self
-        end
-      end
-      resource_subclass.class_eval do
-        define_singleton_method(:===) do |other|
-          Chef::Log.deprecation("Using an LWRP by its name (#{class_name}) directly is no longer supported in Chef 13 and will be removed.  Use Chef::Resource.resource_for_node(node, name) instead.")
-          # resource_subclass is a superclass of all resource_class descendants.
-          if self == resource_subclass && other.class <= resource_class
-            return true
-          end
-          super(other)
-        end
-      end
+
+      Chef::Resource.const_set(class_name, resource_subclass)
+
       deprecated_constants[class_name.to_sym] = resource_subclass
     end
 
