@@ -123,4 +123,70 @@ describe Chef::RunList::VersionedRecipeList do
       end
     end
   end
+
+  describe "with_fully_qualified_names_and_version_constraints" do
+
+    let(:fq_names) { list.with_fully_qualified_names_and_version_constraints }
+
+    context "with bare cookbook names" do
+
+      let(:recipes) { %w[ apache2 ] }
+
+      it "gives $cookbook_name::default" do
+        expect(fq_names).to eq( %w[ apache2::default ] )
+      end
+
+    end
+
+    context "with qualified recipe names but no versions" do
+
+      let(:recipes) { %w[ mysql::server ] }
+
+      it "returns the qualified recipe names" do
+        expect(fq_names).to eq( %w[ mysql::server ] )
+      end
+
+    end
+
+    context "with unqualified names that have version constraints" do
+
+      let(:versioned_recipes) do
+        [
+          {:name => "apt", :version => "~> 1.2.0"},
+        ]
+      end
+
+      it "gives qualified names with their versions" do
+        expect(fq_names).to eq([ "apt::default@~> 1.2.0" ])
+      end
+
+      it "does not mutate the recipe name" do
+        expect(fq_names).to eq([ "apt::default@~> 1.2.0" ])
+        expect(list).to eq( [ "apt" ] )
+      end
+
+    end
+
+    context "with fully qualified names that have version constraints" do
+
+      let(:versioned_recipes) do
+        [
+          {:name => "apt::cacher", :version => "~> 1.2.0"},
+        ]
+      end
+
+      it "gives qualified names with their versions" do
+        expect(fq_names).to eq([ "apt::cacher@~> 1.2.0" ])
+      end
+
+      it "does not mutate the recipe name" do
+        pending "This reproduces https://github.com/chef/chef/issues/3618"
+
+        expect(fq_names).to eq([ "apt::cacher@~> 1.2.0" ])
+        expect(list).to eq( [ "apt::cacher" ] )
+      end
+
+    end
+  end
+
 end
