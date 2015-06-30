@@ -1,3 +1,21 @@
+#
+# Author:: John Keiser <jkeiser@chef.io>
+# Copyright:: Copyright (c) 2015 John Keiser.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require 'chef/exceptions'
 require 'chef/delayed_evaluator'
 
@@ -381,6 +399,8 @@ class Chef
 
     protected
 
+    attr_reader :options
+
     #
     # Find out whether this type accepts nil explicitly.
     #
@@ -423,7 +443,7 @@ class Chef
 
     def get_value(resource)
       if instance_variable_name
-        resource.send(:instance_variable_get, instance_variable_name)
+        resource.instance_variable_get(instance_variable_name)
       else
         resource.send(name)
       end
@@ -431,7 +451,7 @@ class Chef
 
     def set_value(resource, value)
       if instance_variable_name
-        resource.send(:instance_variable_set, instance_variable_name, value)
+        resource.instance_variable_set(instance_variable_name, value)
       else
         resource.send(name, value)
       end
@@ -439,7 +459,7 @@ class Chef
 
     def value_is_set?(resource)
       if instance_variable_name
-        resource.send(:instance_variable_defined?, instance_variable_name)
+        resource.instance_variable_defined?(instance_variable_name)
       else
         true
       end
@@ -448,7 +468,7 @@ class Chef
     def reset_value(resource)
       if instance_variable_name
         if value_is_set?(resource)
-          resource.send(:remove_instance_variable, instance_variable_name)
+          resource.remove_instance_variable(instance_variable_name)
         end
       else
         raise ArgumentError, "Property #{name} has no instance variable defined and cannot be reset"
@@ -472,8 +492,6 @@ class Chef
       end
       value
     end
-
-    attr_reader :options
 
     # Used by #set_or_return to avoid emitting a deprecation warning for
     # "value nil"
