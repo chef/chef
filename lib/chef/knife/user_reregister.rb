@@ -23,7 +23,7 @@ class Chef
     class UserReregister < Knife
 
       deps do
-        require 'chef/user'
+        require 'chef/user_v1'
         require 'chef/json_compat'
       end
 
@@ -61,7 +61,7 @@ EOF
           exit 1
         end
 
-        user = Chef::User.load(@user_name)
+        user = Chef::UserV1.load(@user_name)
 
         # DEPRECATION NOTE
         # Remove this if statement and corrosponding code post OSC 11 support.

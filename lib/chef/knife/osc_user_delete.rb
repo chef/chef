@@ -28,7 +28,7 @@ class Chef
     class OscUserDelete < Knife
 
       deps do
-        require 'chef/osc_user'
+        require 'chef/user'
         require 'chef/json_compat'
       end
 
@@ -43,7 +43,7 @@ class Chef
           exit 1
         end
 
-        delete_object(Chef::OscUser, @user_name)
+        delete_object(Chef::User, @user_name)
       end
 
     end

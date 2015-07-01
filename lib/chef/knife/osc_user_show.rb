@@ -30,7 +30,7 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require 'chef/osc_user'
+        require 'chef/user'
         require 'chef/json_compat'
       end
 
@@ -45,7 +45,7 @@ class Chef
           exit 1
         end
 
-        user = Chef::OscUser.load(@user_name)
+        user = Chef::User.load(@user_name)
         output(format_for_display(user))
       end
 

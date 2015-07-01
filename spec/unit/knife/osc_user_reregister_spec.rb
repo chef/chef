@@ -29,7 +29,7 @@ describe Chef::Knife::OscUserReregister do
     @knife = Chef::Knife::OscUserReregister.new
     @knife.name_args = [ 'a_user' ]
     @user_mock = double('user_mock', :private_key => "private_key")
-    allow(Chef::OscUser).to receive(:load).and_return(@user_mock)
+    allow(Chef::User).to receive(:load).and_return(@user_mock)
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end

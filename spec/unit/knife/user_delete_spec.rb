@@ -26,7 +26,7 @@ describe Chef::Knife::UserDelete do
   before(:each) do
     Chef::Knife::UserDelete.load_deps
     knife.name_args = [ 'my_user' ]
-    allow(Chef::User).to receive(:load).and_return(user)
+    allow(Chef::UserV1).to receive(:load).and_return(user)
     allow(user).to receive(:username).and_return('my_user')
     allow(knife.ui).to receive(:stderr).and_return(stdout)
     allow(knife.ui).to receive(:stdout).and_return(stdout)
@@ -51,7 +51,7 @@ describe Chef::Knife::UserDelete do
   end
 
   it 'deletes the user' do
-    #expect(knife).to receive(:delete_object).with(Chef::User, 'my_user')
+    #expect(knife).to receive(:delete_object).with(Chef::UserV1, 'my_user')
     expect(knife).to receive(:delete_object).with('my_user')
     knife.run
   end

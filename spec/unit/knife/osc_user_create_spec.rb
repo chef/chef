@@ -36,19 +36,19 @@ describe Chef::Knife::OscUserCreate do
 
     @knife.name_args = [ 'a_user' ]
     @knife.config[:user_password] = "foobar"
-    @user = Chef::OscUser.new
+    @user = Chef::User.new
     @user.name "a_user"
-    @user_with_private_key = Chef::OscUser.new
+    @user_with_private_key = Chef::User.new
     @user_with_private_key.name "a_user"
     @user_with_private_key.private_key 'private_key'
     allow(@user).to receive(:create).and_return(@user_with_private_key)
-    allow(Chef::OscUser).to receive(:new).and_return(@user)
-    allow(Chef::OscUser).to receive(:from_hash).and_return(@user)
+    allow(Chef::User).to receive(:new).and_return(@user)
+    allow(Chef::User).to receive(:from_hash).and_return(@user)
     allow(@knife).to receive(:edit_data).and_return(@user.to_hash)
   end
 
   it "creates a new user" do
-    expect(Chef::OscUser).to receive(:new).and_return(@user)
+    expect(Chef::User).to receive(:new).and_return(@user)
     expect(@user).to receive(:create)
     @knife.run
     expect(@stderr.string).to match /created user.+a_user/i

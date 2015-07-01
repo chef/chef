@@ -186,7 +186,7 @@ describe Chef::Knife::UserCreate do
 
     context "when a private_key is returned" do
       before do
-        allow(knife).to receive(:create_user_from_hash).and_return(Chef::User.from_hash(knife.user.to_hash.merge({"private_key" => "some_private_key"})))
+        allow(knife).to receive(:create_user_from_hash).and_return(Chef::UserV1.from_hash(knife.user.to_hash.merge({"private_key" => "some_private_key"})))
       end
 
       context "when --file is passed" do
