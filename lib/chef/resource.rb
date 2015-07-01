@@ -1499,9 +1499,11 @@ class Chef
         Chef::Resource.send(:remove_const, class_name)
       end
 
-      Chef::Resource.const_set(class_name, resource_class)
+      if !Chef::Config[:treat_deprecation_warnings_as_errors]
+        Chef::Resource.const_set(class_name, resource_class)
+        deprecated_constants[class_name.to_sym] = resource_class
+      end
 
-      deprecated_constants[class_name.to_sym] = resource_class
     end
 
     def self.deprecated_constants
