@@ -52,52 +52,17 @@ class Chef
           resource_name = filename_to_qualified_string(cookbook_name, filename)
 
           # We load the class first to give it a chance to set its own name
-          deprecated_resource_class = Class.new(self).tap do |resource_class|
-            resource_class.resource_name(nil)
-            resource_class.run_context = run_context
-            resource_class.instance_eval do
-              define_method(:initialize) do |*args, &block|
-                Chef::Log::deprecation("Deprecated Thing") if chef_deprecated_access
-                super(*args, &block)
-              end
-              define_method(:chef_deprecated_access) do
-                true
-              end
-            end
+          resource_class = Class.new(self)
+          resource_class.resource_name resource_name.to_sym
+          resource_class.run_context = run_context
+          resource_class.class_from_file(filename)
 
-            resource_class.class_from_file(filename)
-
-            # Make a useful string for the class (rather than <Class:312894723894>)
-            resource_class.instance_eval do
-              define_singleton_method(:to_s) do
-                "LWRP resource #{resource_name} from cookbook #{cookbook_name}"
-              end
-              define_singleton_method(:inspect) { to_s }
+          # Make a useful string for the class (rather than <Class:312894723894>)
+          resource_class.instance_eval do
+            define_singleton_method(:to_s) do
+              "LWRP resource #{resource_name} from cookbook #{cookbook_name}"
             end
-          end
-
-          resource_class = Class.new(deprecated_resource_class).tap do |resource_class|
-            resource_class.resource_name(resource_name.to_sym)
-            resource_class.run_context = run_context
-            resource_class.instance_eval do
-              define_method(:chef_deprecated_access) do
-                false
-              end
-            end
-            resource_class.class_eval do
-              define_singleton_method(:===) do |instance|
-                super(instance) || instance.class <= deprecated_resource_class
-              end
-            end
-          end
-
-          deprecated_resource_class.class_eval do
-            define_method(:kind_of?) do |klass|
-              super(klass) || klass == resource_class
-            end
-            define_method(:is_a?) do |klass|
-              super(klass) || klass == resource_class
-            end
+            define_singleton_method(:inspect) { to_s }
           end
 
           Chef::Log.debug("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
@@ -105,7 +70,7 @@ class Chef
           LWRPBase.loaded_lwrps[filename] = true
 
           # Create the deprecated Chef::Resource::LwrpFoo class
-          Chef::Resource.register_deprecated_lwrp_class(deprecated_resource_class, convert_to_class_name(resource_name))
+          Chef::Resource.register_deprecated_lwrp_class(resource_class, convert_to_class_name(resource_name))
           resource_class
         end
 
