@@ -810,21 +810,21 @@ describe Chef::Resource do
     end
 
     it 'adds mappings for a single platform' do
-      expect(Chef.resource_priority_map).to receive(:set).with(
+      expect(Chef.resource_handler_map).to receive(:set).with(
         :dinobot, Chef::Resource::Klz, { platform: ['autobots'] }
       )
       klz.provides :dinobot, platform: ['autobots']
     end
 
     it 'adds mappings for multiple platforms' do
-      expect(Chef.resource_priority_map).to receive(:set).with(
+      expect(Chef.resource_handler_map).to receive(:set).with(
         :energy, Chef::Resource::Klz, { platform: ['autobots', 'decepticons']}
       )
       klz.provides :energy, platform: ['autobots', 'decepticons']
     end
 
     it 'adds mappings for all platforms' do
-      expect(Chef.resource_priority_map).to receive(:set).with(
+      expect(Chef.resource_handler_map).to receive(:set).with(
         :tape_deck, Chef::Resource::Klz, {}
       )
       klz.provides :tape_deck

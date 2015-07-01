@@ -1550,7 +1550,7 @@ class Chef
         remove_canonical_dsl
       end
 
-      result = Chef.resource_priority_map.set(name, self, options, &block)
+      result = Chef.resource_handler_map.set(name, self, options, &block)
       Chef::DSL::Resources.add_resource_dsl(name)
       result
     end
@@ -1742,7 +1742,7 @@ class Chef
 
     def self.remove_canonical_dsl
       if @resource_name
-        remaining = Chef.resource_priority_map.delete_canonical(@resource_name, self)
+        remaining = Chef.resource_handler_map.delete_canonical(@resource_name, self)
         if !remaining
           Chef::DSL::Resources.remove_resource_dsl(@resource_name)
         end

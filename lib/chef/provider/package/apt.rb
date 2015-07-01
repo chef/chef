@@ -25,6 +25,7 @@ class Chef
     class Package
       class Apt < Chef::Provider::Package
 
+        provides :package, platform_family: "debian"
         provides :apt_package, os: "linux"
 
         # return [Hash] mapping of package name to Boolean value

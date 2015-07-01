@@ -90,13 +90,14 @@ describe Chef::ProviderResolver do
   end
 
   def self.expect_providers(**providers)
-    providers.each do |name, expected_provider|
+    providers.each do |name, expected|
       describe name.to_s do
         let(:resource_name) { name }
 
         tags = []
+        expected_provider = nil
         expected_resource = nil
-        Array(expected_provider).each do |p|
+        Array(expected).each do |p|
           if p.is_a?(Class) && p <= Chef::Provider
             expected_provider = p
           elsif p.is_a?(Class) && p <= Chef::Resource
@@ -525,8 +526,8 @@ describe Chef::ProviderResolver do
     # We want to check that these are unsupported:
     apt_package: nil,
     bff_package: nil,
-    dsc_script: nil,
     dpkg_package: nil,
+    dsc_script: nil,
     ips_package: nil,
     pacman_package: nil,
     paludis_package: nil,

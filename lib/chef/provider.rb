@@ -176,7 +176,7 @@ class Chef
     end
 
     def self.provides(short_name, opts={}, &block)
-      Chef.provider_priority_map.set(short_name, self, opts, &block)
+      Chef.provider_handler_map.set(short_name, self, opts, &block)
     end
 
     def self.provides?(node, resource)

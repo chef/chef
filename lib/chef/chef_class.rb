@@ -28,6 +28,8 @@
 
 require 'chef/platform/provider_priority_map'
 require 'chef/platform/resource_priority_map'
+require 'chef/platform/provider_handler_map'
+require 'chef/platform/resource_handler_map'
 
 class Chef
   class << self
@@ -160,20 +162,26 @@ class Chef
       @node = nil
       @provider_priority_map = nil
       @resource_priority_map = nil
+      @provider_dsl_map = nil
+      @resource_dsl_map = nil
     end
 
     # @api private
     def provider_priority_map
-      @provider_priority_map ||= begin
-        # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
-        Chef::Platform::ProviderPriorityMap.instance
-      end
+      # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
+      @provider_priority_map ||= Chef::Platform::ProviderPriorityMap.instance
     end
     # @api private
     def resource_priority_map
-      @resource_priority_map ||= begin
-        Chef::Platform::ResourcePriorityMap.instance
-      end
+      @resource_priority_map ||= Chef::Platform::ResourcePriorityMap.instance
+    end
+    # @api private
+    def provider_handler_map
+      @provider_handler_map ||= Chef::Platform::ProviderHandlerMap.instance
+    end
+    # @api private
+    def resource_handler_map
+      @resource_handler_map ||= Chef::Platform::ResourceHandlerMap.instance
     end
   end
 

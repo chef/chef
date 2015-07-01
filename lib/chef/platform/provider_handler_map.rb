@@ -1,10 +1,10 @@
 require 'singleton'
-require 'chef/platform/priority_map'
+require 'chef/platform/handler_map'
 
 class Chef
   class Platform
     # @api private
-    class ResourcePriorityMap < Chef::Platform::PriorityMap
+    class ProviderHandlerMap < Chef::Platform::HandlerMap
       include Singleton
     end
   end

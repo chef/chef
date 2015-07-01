@@ -26,6 +26,7 @@ class Chef
     class Package
       class Aix < Chef::Provider::Package
 
+        provides :package, os: "aix"
         provides :bff_package, os: "aix"
 
         include Chef::Mixin::GetSourceFromPackage
