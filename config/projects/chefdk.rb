@@ -47,9 +47,7 @@ end
 override :cacerts, version: '2014.08.20'
 
 # Uncomment to pin the chef version
-override :chef,           version: "12.4.0"
-override :chefdk,           version: "0.7.0.rc.1"
-
+# override :chef,           version: "12.3.0"
 override :berkshelf,      version: "v3.2.4"
 override :bundler,        version: "1.10.0"
 override :'chef-vault',   version: "v2.6.1"
