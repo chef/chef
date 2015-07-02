@@ -92,13 +92,13 @@ class Chef
     end
 
     def destroy
-      chef_rest_v0.delete_rest("users/#{@name}")
+      chef_rest_v0.delete("users/#{@name}")
     end
 
     def create
       payload = {:name => self.name, :admin => self.admin, :password => self.password }
       payload[:public_key] = public_key if public_key
-      new_user = chef_rest_v0.post_rest("users", payload)
+      new_user = chef_rest_v0.post("users", payload)
       Chef::User.from_hash(self.to_hash.merge(new_user))
     end
 
@@ -106,7 +106,7 @@ class Chef
       payload = {:name => name, :admin => admin}
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
-      updated_user = chef_rest_v0.put_rest("users/#{name}", payload)
+      updated_user = chef_rest_v0.put("users/#{name}", payload)
       Chef::User.from_hash(self.to_hash.merge(updated_user))
     end
 
@@ -123,7 +123,7 @@ class Chef
     end
 
     def reregister
-      reregistered_self = chef_rest_v0.put_rest("users/#{name}", { :name => name, :admin => admin, :private_key => true })
+      reregistered_self = chef_rest_v0.put("users/#{name}", { :name => name, :admin => admin, :private_key => true })
       private_key(reregistered_self["private_key"])
       self
     end
@@ -158,7 +158,7 @@ class Chef
     end
 
     def self.list(inflate=false)
-      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get_rest('users')
+      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get('users')
       users = if response.is_a?(Array)
         transform_ohc_list_response(response) # OHC/OPC
       else
@@ -175,7 +175,7 @@ class Chef
     end
 
     def self.load(name)
-      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get_rest("users/#{name}")
+      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get("users/#{name}")
       Chef::User.from_hash(response)
     end
 

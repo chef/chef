@@ -219,24 +219,24 @@ describe Chef::User do
       end
 
       it "lists all clients on an OSC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@osc_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@osc_response)
         expect(Chef::User.list).to eq(@osc_response)
       end
 
       it "inflate all clients on an OSC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@osc_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@osc_response)
         expect(Chef::User.list(true)).to eq(@osc_inflated_response)
       end
 
       it "lists all clients on an OHC/OPC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@ohc_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@ohc_response)
         # We expect that Chef::User.list will give a consistent response
         # so OHC API responses should be transformed to OSC-style output.
         expect(Chef::User.list).to eq(@osc_response)
       end
 
       it "inflate all clients on an OHC/OPC server" do
-        allow(@http_client).to receive(:get_rest).with("users").and_return(@ohc_response)
+        allow(@http_client).to receive(:get).with("users").and_return(@ohc_response)
         expect(Chef::User.list(true)).to eq(@osc_inflated_response)
       end
     end
@@ -244,14 +244,14 @@ describe Chef::User do
     describe "create" do
       it "creates a new user via the API" do
         @user.password "password"
-        expect(@http_client).to receive(:post_rest).with("users", {:name => "foobar", :admin => false, :password => "password"}).and_return({})
+        expect(@http_client).to receive(:post).with("users", {:name => "foobar", :admin => false, :password => "password"}).and_return({})
         @user.create
       end
     end
 
     describe "read" do
       it "loads a named user from the API" do
-        expect(@http_client).to receive(:get_rest).with("users/foobar").and_return({"name" => "foobar", "admin" => true, "public_key" => "pubkey"})
+        expect(@http_client).to receive(:get).with("users/foobar").and_return({"name" => "foobar", "admin" => true, "public_key" => "pubkey"})
         user = Chef::User.load("foobar")
         expect(user.name).to eq("foobar")
         expect(user.admin).to eq(true)
@@ -261,14 +261,14 @@ describe Chef::User do
 
     describe "update" do
       it "updates an existing user on via the API" do
-        expect(@http_client).to receive(:put_rest).with("users/foobar", {:name => "foobar", :admin => false}).and_return({})
+        expect(@http_client).to receive(:put).with("users/foobar", {:name => "foobar", :admin => false}).and_return({})
         @user.update
       end
     end
 
     describe "destroy" do
       it "deletes the specified user via the API" do
-        expect(@http_client).to receive(:delete_rest).with("users/foobar")
+        expect(@http_client).to receive(:delete).with("users/foobar")
         @user.destroy
       end
     end
