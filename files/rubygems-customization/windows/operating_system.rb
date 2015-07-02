@@ -23,17 +23,15 @@ module Gem
 
   def self.user_dir
     chefdk_home_set = !([nil, ''].include? ENV['CHEFDK_HOME'])
-    default_home = if RUBY_PLATFORM =~ /mswin|mingw|windows/
-                     File.join(ENV['LOCALAPPDATA'], 'chefdk')
-                   else
-                     File.join(Gem.user_home, '.chefdk')
-                   end
+    # We call expand_path here because it converts \ -> /
+    # Rubygems seems to require that we not use \
+    default_home = File.join(File.expand_path(ENV['LOCALAPPDATA']), 'chefdk')
 
     chefdk_home = if chefdk_home_set
       ENV['CHEFDK_HOME']
     else
       old_home = File.join(Gem.user_home, '.chefdk')
-      if RUBY_PLATFORM =~ /mswin|mingw|windows/ && File.exists?(old_home)
+      if File.exists?(old_home)
         Gem.ui.say <<-EOF
         Warning:
         ChefDK now defaults to using #{default_home} instead of #{old_home}.
