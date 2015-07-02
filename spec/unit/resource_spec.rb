@@ -59,8 +59,8 @@ describe Chef::Resource do
   end
 
   describe "when declaring the identity attribute" do
-    it "has no identity attribute by default" do
-      expect(Chef::Resource.identity_attr).to be_nil
+    it "has :name as identity attribute by default" do
+      expect(Chef::Resource.identity_attr).to eq(:name)
     end
 
     it "sets an identity attribute" do

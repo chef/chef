@@ -101,7 +101,7 @@ class Chef
     # @param run_context The context of the Chef run. Corresponds to #run_context.
     #
     def initialize(name, run_context=nil)
-      name(name)
+      name(name) unless name.nil?
       @run_context = run_context
       @noop = nil
       @before = nil
@@ -130,37 +130,27 @@ class Chef
     end
 
     #
-    # The name of this particular resource.
+    # The list of properties defined on this resource.
     #
-    # This special resource attribute is set automatically from the declaration
-    # of the resource, e.g.
+    # Everything defined with `property` is in this list.
     #
-    #   execute 'Vitruvius' do
-    #     command 'ls'
-    #   end
+    # @param include_superclass [Boolean] `true` to include properties defined
+    #   on superclasses; `false` or `nil` to return the list of properties
+    #   directly on this class.
     #
-    # Will set the name to "Vitruvius".
+    # @return [Hash<Symbol,Property>] The list of property names and types.
     #
-    # This is also used in to_s to show the resource name, e.g. `execute[Vitruvius]`.
-    #
-    # This is also used for resource notifications and subscribes in the same manner.
-    #
-    # This will coerce any object into a string via #to_s.  Arrays are a special case
-    # so that `package ["foo", "bar"]` becomes package[foo, bar] instead of the more
-    # awkward `package[["foo", "bar"]]` that #to_s would produce.
-    #
-    # @param name [Object] The name to set, typically a String or Array
-    # @return [String] The name of this Resource.
-    #
-    def name(name=nil)
-      if !name.nil?
-        if name.is_a?(Array)
-          @name = name.join(', ')
+    def self.properties(include_superclass=true)
+      @properties ||= {}
+      if include_superclass
+        if superclass.respond_to?(:properties)
+          superclass.properties.merge(@properties)
         else
-          @name = name.to_s
+          @properties.dup
         end
+      else
+        @properties
       end
-      @name
     end
 
     #
@@ -475,13 +465,21 @@ class Chef
     #
     # Get the value of the state attributes in this resource as a hash.
     #
+    # Does not include properties that are not set (unless they are identity
+    # properties).
+    #
     # @return [Hash{Symbol => Object}] A Hash of attribute => value for the
     #   Resource class's `state_attrs`.
+    #
     def state_for_resource_reporter
-      self.class.state_attrs.inject({}) do |state_attrs, attr_name|
-        state_attrs[attr_name] = send(attr_name)
-        state_attrs
+      state = {}
+      state_properties = self.class.state_properties
+      state_properties.each do |property|
+        if property.identity? || property.is_set?(self)
+          state[property.name] = send(property.name)
+        end
       end
+      state
     end
 
     #
@@ -494,17 +492,22 @@ class Chef
     alias_method :state, :state_for_resource_reporter
 
     #
-    # The value of the identity attribute, if declared. Falls back to #name if
-    # no identity attribute is declared.
+    # The value of the identity of this resource.
     #
-    # @return The value of the identity attribute.
+    # - If there are no identity properties on the resource, `name` is returned.
+    # - If there is exactly one identity property on the resource, it is returned.
+    # - If there are more than one, they are returned in a hash.
+    #
+    # @return [Object,Hash<Symbol,Object>] The identity of this resource.
     #
     def identity
-      if identity_attr = self.class.identity_attr
-        send(identity_attr)
-      else
-        name
+      result = {}
+      identity_properties = self.class.identity_properties
+      identity_properties.each do |property|
+        result[property.name] = send(property.name)
       end
+      return result.values.first if identity_properties.size == 1
+      result
     end
 
     #
@@ -756,6 +759,10 @@ class Chef
     #     will return if the user does not set one. If this is `lazy`, it will
     #     be run in the context of the instance (and able to access other
     #     properties).
+    #   @option options [Boolean] :desired_state `true` if this property is
+    #     part of desired state. Defaults to `true`.
+    #   @option options [Boolean] :identity `true` if this property
+    #     is part of object identity. Defaults to `false`.
     #
     # @example Bare property
     #   property :x
@@ -772,6 +779,7 @@ class Chef
     def self.property(name, type=NOT_PASSED, **options)
       name = name.to_sym
 
+      # Combine the type with "is"
       if type != NOT_PASSED
         if options[:is]
           options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
@@ -780,21 +788,83 @@ class Chef
         end
       end
 
-      define_method(name) do |value=NOT_PASSED|
-        set_or_return(name, value, options)
+      local_properties = properties(false)
+
+      # Inherit from the current / parent property if type is not passed
+      if type == NOT_PASSED && properties[name]
+        local_properties[name] = properties[name].specialize(declared_in: self, **options)
+      else
+        local_properties[name] = Property.new(name: name, declared_in: self, **options)
       end
-      define_method("#{name}=") do |value|
-        set_or_return(name, value, options)
+
+      begin
+        class_eval <<-EOM, __FILE__, __LINE__+1
+          def #{name}(value=NOT_PASSED)
+            self.class.properties[#{name.inspect}].call(self, value)
+          end
+          def #{name}=(value)
+            self.class.properties[#{name.inspect}].set(self, value)
+          end
+        EOM
+      rescue SyntaxError
+        define_method(name) do |value=NOT_PASSED|
+          self.class.properties[name].call(self, value)
+        end
+        define_method("#{name}=") do |value|
+          self.class.properties[name].set(self, value)
+        end
       end
     end
+
+    #
+    # The name of this particular resource.
+    #
+    # This special resource attribute is set automatically from the declaration
+    # of the resource, e.g.
+    #
+    #   execute 'Vitruvius' do
+    #     command 'ls'
+    #   end
+    #
+    # Will set the name to "Vitruvius".
+    #
+    # This is also used in to_s to show the resource name, e.g. `execute[Vitruvius]`.
+    #
+    # This is also used for resource notifications and subscribes in the same manner.
+    #
+    # This will coerce any object into a string via #to_s.  Arrays are a special case
+    # so that `package ["foo", "bar"]` becomes package[foo, bar] instead of the more
+    # awkward `package[["foo", "bar"]]` that #to_s would produce.
+    #
+    # @param name [Object] The name to set, typically a String or Array
+    # @return [String] The name of this Resource.
+    #
+    property :name, String, coerce: proc { |v| v.is_a?(Array) ? v.join(', ') : v.to_s }, desired_state: false
 
     #
     # Whether this property has been set (or whether it has a default that has
     # been retrieved).
     #
+    # @param name [Symbol] The name of the property.
+    # @return [Boolean] `true` if the property has been set.
+    #
     def property_is_set?(name)
-      name = name.to_sym
-      instance_variable_defined?("@#{name}")
+      property = self.class.properties[name.to_sym]
+      raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+      property.is_set?(self)
+    end
+
+    #
+    # Clear this property as if it had never been set. It will thereafter return
+    # the default.
+    # been retrieved).
+    #
+    # @param name [Symbol] The name of the property.
+    #
+    def reset_property(name)
+      property = self.class.properties[name.to_sym]
+      raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+      property.reset(self)
     end
 
     #
@@ -808,46 +878,190 @@ class Chef
       DelayedEvaluator.new(&block)
     end
 
-    # Set or return the list of "state attributes" implemented by the Resource
-    # subclass. State attributes are attributes that describe the desired state
-    # of the system, such as file permissions or ownership. In general, state
-    # attributes are attributes that could be populated by examining the state
-    # of the system (e.g., File.stat can tell you the permissions on an
-    # existing file). Contrarily, attributes that are not "state attributes"
-    # usually modify the way Chef itself behaves, for example by providing
-    # additional options for a package manager to use when installing a
-    # package.
+    #
+    # Get or set the list of desired state properties for this resource.
+    #
+    # State properties are properties that describe the desired state
+    # of the system, such as file permissions or ownership.
+    # In general, state properties are properties that could be populated by
+    # examining the state of the system (e.g., File.stat can tell you the
+    # permissions on an existing file). Contrarily, properties that are not
+    # "state properties" usually modify the way Chef itself behaves, for example
+    # by providing additional options for a package manager to use when
+    # installing a package.
     #
     # This list is used by the Chef client auditing system to extract
     # information from resources to describe changes made to the system.
-    def self.state_attrs(*attr_names)
-      @state_attrs ||= []
-      @state_attrs = attr_names unless attr_names.empty?
+    #
+    # This method is unnecessary when declaring properties with `property`;
+    # properties are added to state_properties by default, and can be turned off
+    # with `desired_state: false`.
+    #
+    # ```ruby
+    # property :x # part of desired state
+    # property :y, desired_state: false # not part of desired state
+    # ```
+    #
+    # @param names [Array<Symbol>] A list of property names to set as desired
+    #   state.
+    #
+    # @return [Array<Property>] All properties in desired state.
+    #
+    def self.state_properties(*names)
+      if !names.empty?
+        names = names.map { |name| name.to_sym }.uniq
 
-      # Return *all* state_attrs that this class has, including inherited ones
-      if superclass.respond_to?(:state_attrs)
-        superclass.state_attrs + @state_attrs
-      else
-        @state_attrs
+        local_properties = properties(false)
+        # Add new properties to the list.
+        names.each do |name|
+          property = properties[name]
+          if property
+            local_properties[name] = property.specialize(declared_in: self, desired_state: true) if !property.desired_state?
+          else
+            local_properties[name] = Property.new(name: name, declared_in: self, instance_variable_name: nil)
+          end
+        end
+
+        # If state_attrs *excludes* something which is currently desired state,
+        # mark it as desired_state: false.
+        local_properties.each do |name,property|
+          if property.desired_state? && !names.include?(name)
+            local_properties[name] = property.specialize(declared_in: self, desired_state: false)
+          end
+        end
       end
+
+      properties.values.select { |property| property.desired_state? }
     end
 
-    # Set or return the "identity attribute" for this resource class. This is
-    # generally going to be the "name attribute" for this resource. In other
-    # words, the resource type plus this attribute uniquely identify a given
-    # bit of state that chef manages. For a File resource, this would be the
-    # path, for a package resource, it will be the package name. This will show
-    # up in chef-client's audit records as a searchable field.
-    def self.identity_attr(attr_name=nil)
-      @identity_attr ||= nil
-      @identity_attr = attr_name if attr_name
+    #
+    # Set or return the list of "state properties" implemented by the Resource
+    # subclass.
+    #
+    # Equivalent to calling #state_properties and getting `state_properties.keys`.
+    #
+    # @deprecated Use state_properties.keys instead. Note that when you declare
+    #   properties with `property`: properties are added to state_properties by
+    #   default, and can be turned off with `desired_state: false`
+    #
+    #   ```ruby
+    #   property :x # part of desired state
+    #   property :y, desired_state: false # not part of desired state
+    #   ```
+    #
+    # @param names [Array<Symbol>] A list of property names to set as desired
+    #   state.
+    #
+    # @return [Array<Symbol>] All property names with desired state.
+    #
+    def self.state_attrs(*names)
+      state_properties(*names).map { |property| property.name }
+    end
 
-      # If this class doesn't have an identity attr, we'll defer to the superclass:
-      if @identity_attr || !superclass.respond_to?(:identity_attr)
-        @identity_attr
-      else
-        superclass.identity_attr
+    #
+    # Set the identity of this resource to a particular set of properties.
+    #
+    # This drives #identity, which returns data that uniquely refers to a given
+    # resource on the given node (in such a way that it can be correlated
+    # across Chef runs).
+    #
+    # This method is unnecessary when declaring properties with `property`;
+    # properties can be added to identity during declaration with
+    # `identity: true`.
+    #
+    # ```ruby
+    # property :x, identity: true # part of identity
+    # property :y # not part of identity
+    # ```
+    #
+    # If no properties are marked as identity, "name" is considered the identity.
+    #
+    # @param names [Array<Symbol>] A list of property names to set as the identity.
+    #
+    # @return [Array<Property>] All identity properties.
+    #
+    def self.identity_properties(*names)
+      if !names.empty?
+        names = names.map { |name| name.to_sym }
+
+        # Add or change properties that are not part of the identity.
+        local_properties = properties(false)
+        names.each do |name|
+          property = properties[name]
+          if property
+            # Make our own special version of the attribute if it's not already
+            # an identity property.
+            local_properties[name] = property.specialize(declared_in: self, identity: true) if !property.identity?
+          else
+            # Create the property (since it isn't already there).
+            local_properties[name] = Property.new(declared_in: self, name: name, instance_variable_name: nil, identity: true)
+          end
+        end
+
+        # If state_attrs *excludes* something which is currently part of the
+        # identity, mark it as identity: false.
+        properties.each do |name,property|
+          if property.identity? && !names.include?(name)
+            local_properties[name] = property.specialize(declared_in: self, identity: false)
+          end
+        end
       end
+
+      result = properties.values.select { |property| property.identity? }
+      result = [ properties[:name] ] if result.empty?
+      result
+    end
+
+    #
+    # Set the identity of this resource to a particular property.
+    #
+    # This drives #identity, which returns data that uniquely refers to a given
+    # resource on the given node (in such a way that it can be correlated
+    # across Chef runs).
+    #
+    # This method is unnecessary when declaring properties with `property`;
+    # properties can be added to identity during declaration with
+    # `identity: true`.
+    #
+    # ```ruby
+    # property :x, identity: true # part of identity
+    # property :y # not part of identity
+    # ```
+    #
+    # @param name [Symbol] A list of property names to set as the identity.
+    #
+    # @return [Symbol] The identity property if there is only one; or `nil` if
+    #   there are more than one.
+    #
+    # @raise [ArgumentError] If no arguments are passed and the resource has
+    #   more than one identity property.
+    #
+    def self.identity_property(name=nil)
+      result = identity_properties(*Array(name))
+      if result.size > 1
+        raise Chef::Exceptions::MultipleIdentityError, "identity_property cannot be called on an object with more than one identity property (#{result.map { |r| r.name }.join(", ")})."
+      end
+      result.first
+    end
+
+    #
+    # Set a property as the "identity attribute" for this resource.
+    #
+    # Identical to calling #identity_property.first.key.
+    #
+    # @param name [Symbol] The name of the property to set.
+    #
+    # @return [Symbol]
+    #
+    # @deprecated `identity_property` should be used instead.
+    #
+    # @raise [ArgumentError] If no arguments are passed and the resource has
+    #   more than one identity property.
+    #
+    def self.identity_attr(name=nil)
+      property = identity_property(name)
+      return nil if !property
+      property.name
     end
 
     #

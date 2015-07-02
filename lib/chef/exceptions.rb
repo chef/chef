@@ -103,6 +103,7 @@ class Chef
     class ProviderNotFound < RuntimeError; end
     NoProviderAvailable = ProviderNotFound
     class VerificationNotFound < RuntimeError; end
+    class MultipleIdentityError < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
     class NoSuchResourceType < NameError
