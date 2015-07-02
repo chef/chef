@@ -23,6 +23,7 @@ require 'chef/mixin/from_file'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
+require 'chef/server_api'
 
 # DEPRECATION NOTE
 #
@@ -148,7 +149,7 @@ class Chef
     end
 
     def self.http_api
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
     end
 
     def self.reregister(name)
@@ -224,7 +225,7 @@ class Chef
     end
 
     def http_api
-      @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
     end
 
   end
