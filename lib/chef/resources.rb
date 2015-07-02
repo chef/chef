@@ -81,6 +81,7 @@ require 'chef/resource/yum_package'
 require 'chef/resource/lwrp_base'
 require 'chef/resource/bff_package'
 require 'chef/resource/zypper_package'
+require 'chef/resource/composite'
 
 begin
   # Optional resources chef_node, chef_client, machine, machine_image, etc.
