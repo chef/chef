@@ -97,15 +97,7 @@ class Chef
           Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key, :api_version => "0").get(path)
         end
 
-        def chef_rest_deprecation_method
-<<-EOH
-The chef_rest method is being removed from ChefServerRootDir in Chef 13.
-Please update your code to use the rest method instead.
-EOH
-        end
-
         def chef_rest
-          Chef::Log.deprecation(chef_rest_deprecation_method)
           Chef::REST.new(chef_server_url, chef_username, chef_private_key)
         end
 
