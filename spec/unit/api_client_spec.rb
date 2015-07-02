@@ -223,8 +223,8 @@ describe Chef::ApiClient do
       "validator" => true,
       "json_class" => "Chef::ApiClient"
       }
-      @http_client = double("Chef::REST mock")
-      allow(Chef::REST).to receive(:new).and_return(@http_client)
+      @http_client = double("Chef::ServerAPI mock")
+      allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
       expect(@http_client).to receive(:get).with("clients/black").and_return(client)
       @client = Chef::ApiClient.load(client['name'])
     end
@@ -270,18 +270,13 @@ describe Chef::ApiClient do
       File.open(Chef::Config[:client_key], "r") {|f| f.read.chomp }
     end
 
-    it "has an HTTP client configured with default credentials" do
-      expect(@client.http_api).to be_a_kind_of(Chef::REST)
-      expect(@client.http_api.client_name).to eq("silent-bob")
-      expect(@client.http_api.signing_key.to_s).to eq(private_key_data)
-    end
   end
 
 
   describe "when requesting a new key" do
     before do
       @http_client = double("Chef::REST mock")
-      allow(Chef::REST).to receive(:new).and_return(@http_client)
+      allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
     end
 
     context "and the client does not exist on the server" do
