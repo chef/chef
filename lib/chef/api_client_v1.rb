@@ -57,21 +57,15 @@ class Chef
     end
 
     def chef_rest_v0
-      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
+      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0", :inflate_json_class => false})
     end
 
     def chef_rest_v1
-      @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "1"})
+      @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "1", :inflate_json_class => false})
     end
 
-    # will default to the current version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
-    def http_api
-      @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
-    end
-
-    # will default to the current version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
     def self.http_api
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "1", :inflate_json_class => false})
     end
 
     # Gets or sets the client name.
@@ -157,7 +151,6 @@ class Chef
         "name" => @name,
         "validator" => @validator,
         "admin" => @admin,
-        'json_class' => self.class.name,
         "chef_type" => "client"
       }
       result["private_key"] = @private_key unless @private_key.nil?
@@ -184,16 +177,12 @@ class Chef
       client
     end
 
-    def self.json_create(data)
-      from_hash(data)
-    end
-
     def self.from_json(j)
-      from_hash(Chef::JSONCompat.parse(j))
+      Chef::ApiClientV1.from_hash(Chef::JSONCompat.from_json(j))
     end
 
     def self.reregister(name)
-      api_client = load(name)
+      api_client = Chef::ApiClientV1.load(name)
       api_client.reregister
     end
 
@@ -201,7 +190,7 @@ class Chef
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:client) do |n|
-          n = self.json_create(n) if n.instance_of?(Hash)
+          n = self.from_hash(n) if n.instance_of?(Hash)
           response[n.name] = n
         end
         response
@@ -213,20 +202,12 @@ class Chef
     # Load a client by name via the API
     def self.load(name)
       response = http_api.get("clients/#{name}")
-      if response.kind_of?(Chef::ApiClientV1)
-        response
-      # stupid automated object generation.
-      # just give me the json :(
-      elsif response.kind_of?(Chef::ApiClient)
-        json_create(response.to_json)
-      else
-        json_create(response)
-      end
+      Chef::ApiClientV1.from_hash(response)
     end
 
     # Remove this client via the REST API
     def destroy
-      http_api.delete("clients/#{@name}")
+      chef_rest_v1.delete("clients/#{@name}")
     end
 
     # Save this client via the REST API, returns a hash including the private key
@@ -291,7 +272,7 @@ class Chef
         new_client = chef_rest_v0.put("clients/#{name}", payload)
       end
 
-      new_client
+      Chef::ApiClientV1.from_hash(new_client)
     end
 
     # Create the client via the REST API
