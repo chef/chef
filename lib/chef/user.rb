@@ -21,6 +21,7 @@ require 'chef/mixin/from_file'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
+require 'chef/server_api'
 
 # TODO
 # DEPRECATION NOTE
