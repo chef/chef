@@ -23,7 +23,9 @@ module Gem
 
   def self.user_dir
     chefdk_home_set = !([nil, ''].include? ENV['CHEFDK_HOME'])
-    default_home = File.join(ENV['LOCALAPPDATA'], 'chefdk')
+    # We call expand_path here because it converts \ -> /
+    # Rubygems seems to require that we not use \
+    default_home = File.join(File.expand_path(ENV['LOCALAPPDATA']), 'chefdk')
 
     chefdk_home = if chefdk_home_set
       ENV['CHEFDK_HOME']
