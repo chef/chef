@@ -26,6 +26,7 @@ require 'chef/search/query'
 require 'chef/exceptions'
 require 'chef/mixin/api_version_request_handling'
 require 'chef/server_api'
+require 'chef/api_client'
 
 # COMPATIBILITY NOTE
 #
@@ -214,6 +215,10 @@ class Chef
       response = http_api.get("clients/#{name}")
       if response.kind_of?(Chef::ApiClientV1)
         response
+      # stupid automated object generation.
+      # just give me the json :(
+      elsif response.kind_of?(Chef::ApiClient)
+        json_create(response.to_json)
       else
         json_create(response)
       end
