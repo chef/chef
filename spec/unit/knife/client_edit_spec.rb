@@ -26,7 +26,7 @@ describe Chef::Knife::ClientEdit do
 
   describe 'run' do
     it 'should edit the client' do
-      expect(@knife).to receive(:edit_object).with(Chef::ApiClient, 'adam')
+      expect(@knife).to receive(:edit_object).with(Chef::ApiClientV1, 'adam')
       @knife.run
     end
 

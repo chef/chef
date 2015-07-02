@@ -29,6 +29,7 @@ class Chef
     JSON_CLASS = "json_class".freeze
 
     CHEF_APICLIENT          = "Chef::ApiClient".freeze
+    CHEF_APICLIENTV1        = "Chef::ApiClientV1".freeze
     CHEF_CHECKSUM           = "Chef::Checksum".freeze
     CHEF_COOKBOOKVERSION    = "Chef::CookbookVersion".freeze
     CHEF_DATABAG            = "Chef::DataBag".freeze
@@ -124,6 +125,8 @@ class Chef
         case json_class
         when CHEF_APICLIENT
           Chef::ApiClient
+        when CHEF_APICLIENTV1
+          Chef::ApiClientV1
         when CHEF_CHECKSUM
           Chef::Checksum
         when CHEF_COOKBOOKVERSION

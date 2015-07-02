@@ -23,7 +23,7 @@ class Chef
     class ClientReregister < Knife
 
       deps do
-        require 'chef/api_client'
+        require 'chef/api_client_v1'
         require 'chef/json_compat'
       end
 
@@ -43,7 +43,7 @@ class Chef
           exit 1
         end
 
-        client = Chef::ApiClient.reregister(@client_name)
+        client = Chef::ApiClientV1.reregister(@client_name)
         Chef::Log.debug("Updated client data: #{client.inspect}")
         key = client.private_key
         if config[:file]

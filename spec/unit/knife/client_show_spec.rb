@@ -27,7 +27,7 @@ describe Chef::Knife::ClientShow do
 
   describe 'run' do
     it 'should list the client' do
-      expect(Chef::ApiClient).to receive(:load).with('adam').and_return(@client_mock)
+      expect(Chef::ApiClientV1).to receive(:load).with('adam').and_return(@client_mock)
       expect(@knife).to receive(:format_for_display).with(@client_mock)
       @knife.run
     end
@@ -37,7 +37,7 @@ describe Chef::Knife::ClientShow do
       @stdout = StringIO.new
       allow(@knife.ui).to receive(:stdout).and_return(@stdout)
       fake_client_contents = {"foo"=>"bar", "baz"=>"qux"}
-      expect(Chef::ApiClient).to receive(:load).with('adam').and_return(fake_client_contents)
+      expect(Chef::ApiClientV1).to receive(:load).with('adam').and_return(fake_client_contents)
       @knife.run
       expect(@stdout.string).to eql("{\n  \"foo\": \"bar\",\n  \"baz\": \"qux\"\n}\n")
     end

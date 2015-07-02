@@ -23,7 +23,7 @@ class Chef
     class ClientEdit < Knife
 
       deps do
-        require 'chef/api_client'
+        require 'chef/api_client_v1'
         require 'chef/json_compat'
       end
 
@@ -38,7 +38,7 @@ class Chef
           exit 1
         end
 
-        edit_object(Chef::ApiClient, @client_name)
+        edit_object(Chef::ApiClientV1, @client_name)
       end
     end
   end

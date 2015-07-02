@@ -23,7 +23,7 @@ class Chef
     class ClientCreate < Knife
 
       deps do
-        require 'chef/api_client'
+        require 'chef/api_client_v1'
         require 'chef/json_compat'
       end
 
@@ -57,7 +57,7 @@ class Chef
       banner "knife client create CLIENTNAME (options)"
 
       def client
-        @client_field ||= Chef::ApiClient.new
+        @client_field ||= Chef::ApiClientV1.new
       end
 
       def create_client(client)
