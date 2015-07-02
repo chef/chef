@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class Chef
-  NOT_PASSED = Object.new
+require 'chef/constants'
+require 'chef/property'
+require 'chef/delayed_evaluator'
 
-  class DelayedEvaluator < Proc
-  end
+class Chef
   module Mixin
     module ParamsValidate
 
@@ -34,20 +34,55 @@ class Chef
       # Would raise an exception if the value of :one above is not a kind_of? string.  Valid
       # map options are:
       #
-      # :default:: Sets the default value for this parameter.
-      # :callbacks:: Takes a hash of Procs, which should return true if the argument is valid.
-      #              The key will be inserted into the error message if the Proc does not return true:
-      #                 "Option #{key}'s value #{value} #{message}!"
-      # :kind_of:: Ensure that the value is a kind_of?(Whatever).  If passed an array, it will ensure
-      #            that the value is one of those types.
-      # :respond_to:: Ensure that the value has a given method.  Takes one method name or an array of
-      #               method names.
-      # :required:: Raise an exception if this parameter is missing. Valid values are true or false,
-      #             by default, options are not required.
-      # :regex:: Match the value of the parameter against a regular expression.
-      # :equal_to:: Match the value of the parameter with ==.  An array means it can be equal to any
-      #             of the values.
+      # @param opts [Hash<Symbol,Object>] Validation opts.
+      #   @option opts [Object,Array] :is An object, or list of
+      #     objects, that must match the value using Ruby's `===` operator
+      #     (`opts[:is].any? { |v| v === value }`). (See #_pv_is.)
+      #   @option opts [Object,Array] :equal_to An object, or list
+      #     of objects, that must be equal to the value using Ruby's `==`
+      #     operator (`opts[:is].any? { |v| v == value }`)  (See #_pv_equal_to.)
+      #   @option opts [Regexp,Array<Regexp>] :regex An object, or
+      #     list of objects, that must match the value with `regex.match(value)`.
+      #     (See #_pv_regex)
+      #   @option opts [Class,Array<Class>] :kind_of A class, or
+      #     list of classes, that the value must be an instance of.  (See
+      #     #_pv_kind_of.)
+      #   @option opts [Hash<String,Proc>] :callbacks A hash of
+      #     messages -> procs, all of which match the value. The proc must
+      #     return a truthy or falsey value (true means it matches).  (See
+      #     #_pv_callbacks.)
+      #   @option opts [Symbol,Array<Symbol>] :respond_to A method
+      #     name, or list of method names, the value must respond to.  (See
+      #     #_pv_respond_to.)
+      #   @option opts [Symbol,Array<Symbol>] :cannot_be A property,
+      #     or a list of properties, that the value cannot have (such as `:nil` or
+      #     `:empty`). The method with a questionmark at the end is called on the
+      #     value (e.g. `value.empty?`). If the value does not have this method,
+      #     it is considered valid (i.e. if you don't respond to `empty?` we
+      #     assume you are not empty).  (See #_pv_cannot_be.)
+      #   @option opts [Proc] :coerce A proc which will be called to
+      #     transform the user input to canonical form. The value is passed in,
+      #     and the transformed value returned as output. Lazy values will *not*
+      #     be passed to this method until after they are evaluated. Called in the
+      #     context of the resource (meaning you can access other properties).
+      #     (See #_pv_coerce.) (See #_pv_coerce.)
+      #   @option opts [Boolean] :required `true` if this property
+      #     must be present and not `nil`; `false` otherwise. This is checked
+      #     after the resource is fully initialized. (See #_pv_required.)
+      #   @option opts [Boolean] :name_property `true` if this
+      #     property defaults to the same value as `name`. Equivalent to
+      #     `default: lazy { name }`, except that #property_is_set? will
+      #     return `true` if the property is set *or* if `name` is set. (See
+      #     #_pv_name_property.)
+      #   @option opts [Boolean] :name_attribute Same as `name_property`.
+      #   @option opts [Object] :default The value this property
+      #     will return if the user does not set one. If this is `lazy`, it will
+      #     be run in the context of the instance (and able to access other
+      #     properties).  (See #_pv_default.)
+      #
       def validate(opts, map)
+        map = map.validation_options if map.is_a?(Property)
+
         #--
         # validate works by taking the keys in the validation map, assuming it's a hash, and
         # looking for _pv_:symbol as methods.  Assuming it find them, it calls the right
@@ -84,91 +119,8 @@ class Chef
       end
 
       def set_or_return(symbol, value, validation)
-        symbol = symbol.to_sym
-        iv_symbol = :"@#{symbol}"
-
-        # Steal default, coerce, name_property and required from validation
-        # so that we can handle the order in which they are applied
-        validation = validation.dup
-        if validation.has_key?(:default)
-          default = validation.delete(:default)
-        elsif validation.has_key?('default')
-          default = validation.delete('default')
-        else
-          default = NOT_PASSED
-        end
-        coerce    = validation.delete(:coerce)
-        coerce  ||= validation.delete('coerce')
-        name_property   = validation.delete(:name_property)
-        name_property ||= validation.delete('name_property')
-        name_property ||= validation.delete(:name_attribute)
-        name_property ||= validation.delete('name_attribute')
-        required   = validation.delete(:required)
-        required ||= validation.delete('required')
-
-        opts = {}
-        # If the user passed NOT_PASSED, or passed nil, then this is a get.
-        if value == NOT_PASSED || (value.nil? && !explicitly_allows_nil?(symbol, validation))
-
-          # Get the value if there is one
-          if self.instance_variable_defined?(iv_symbol)
-            opts[symbol] = self.instance_variable_get(iv_symbol)
-
-            # Handle lazy values
-            if opts[symbol].is_a?(DelayedEvaluator)
-              if opts[symbol].arity >= 1
-                opts[symbol] = opts[symbol].call(self)
-              else
-                opts[symbol] = opts[symbol].call
-              end
-
-              # Coerce and validate the default value
-              _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
-              _pv_coerce(opts, symbol, coerce) if coerce
-              validate(opts, { symbol => validation })
-            end
-
-          # Get the default value
-          else
-            _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
-            _pv_default(opts, symbol, default) unless default == NOT_PASSED
-            _pv_name_property(opts, symbol, name_property)
-
-            if opts.has_key?(symbol)
-              # Handle lazy defaults.
-              if opts[symbol].is_a?(DelayedEvaluator)
-                if opts[symbol].arity >= 1
-                  opts[symbol] = opts[symbol].call(self)
-                else
-                  opts[symbol] = instance_eval(&opts[symbol])
-                end
-              end
-
-              # Coerce and validate the default value
-              _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
-              _pv_coerce(opts, symbol, coerce) if coerce
-              # We presently do not validate defaults, for backwards compatibility.
-#              validate(opts, { symbol => validation })
-
-              # Defaults are presently "stickily" set on the instance
-              self.instance_variable_set(iv_symbol, opts[symbol])
-            end
-          end
-
-        # Set the value
-        else
-          opts[symbol] = value
-          unless opts[symbol].is_a?(DelayedEvaluator)
-            # Coerce and validate the value
-            _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
-            _pv_coerce(opts, symbol, coerce) if coerce
-            validate(opts, { symbol => validation })
-          end
-
-          self.instance_variable_set(iv_symbol, opts[symbol])
-        end
-
-        opts[symbol]
+        property = Property::NonDeprecatedNilGetter.new(name: symbol, **validation)
+        property.call(self, value)
       end
 
       private
@@ -193,8 +145,9 @@ class Chef
         if is_required
           return true if opts.has_key?(key.to_s) && (explicitly_allows_nil || !opts[key.to_s].nil?)
           return true if opts.has_key?(key.to_sym) && (explicitly_allows_nil || !opts[key.to_sym].nil?)
-          raise Exceptions::ValidationFailed, "Required argument #{key} is missing!"
+          raise Exceptions::ValidationFailed, "Required argument #{key.inspect} is missing!"
         end
+        true
       end
 
       #
@@ -425,9 +378,9 @@ class Chef
       #   x 1 #=> invalid
       #   ```
       #
-      # @example PropertyType
+      # @example Property
       #   ```ruby
-      #   type = PropertyType.new(is: String)
+      #   type = Property.new(is: String)
       #   property :x, type
       #   x 'foo' #=> valid
       #   x 1     #=> invalid
@@ -448,8 +401,12 @@ class Chef
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)
         to_be.each do |tb|
-          if tb.is_a?(Proc)
+          case tb
+          when Proc
             return true if instance_exec(value, &tb)
+          when Property
+            validate(opts, { key => tb.validation_options })
+            return true
           else
             return true if tb === value
           end
