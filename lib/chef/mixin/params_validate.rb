@@ -317,7 +317,6 @@ class Chef
       def _pv_default(opts, key, default_value)
         value = _pv_opts_lookup(opts, key)
         if value.nil?
-          default_value = default_value.freeze if !default_value.is_a?(DelayedEvaluator)
           opts[key] = default_value
         end
       end
