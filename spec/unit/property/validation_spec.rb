@@ -549,8 +549,8 @@ describe "Chef::Resource.property validation" do
     end
 
     with_property ':x, name_property: true, required: true' do
-      it "if x is not specified, retrieval fails" do
-        expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+      it "if x is not specified, retrieval succeeds" do
+        expect(resource.x).to eq 'blah'
       end
       it "value 1 is valid" do
         expect(resource.x 1).to eq 1
@@ -564,8 +564,8 @@ describe "Chef::Resource.property validation" do
     end
 
     with_property ':x, default: 10, required: true' do
-      it "if x is not specified, retrieval fails" do
-        expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+      it "if x is not specified, the default is returned" do
+        expect(resource.x).to eq 10
       end
       it "value 1 is valid" do
         expect(resource.x 1).to eq 1

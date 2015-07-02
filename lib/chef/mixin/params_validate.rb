@@ -130,9 +130,9 @@ class Chef
 
           # Get the default value
           else
-            _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
             _pv_default(opts, symbol, default) unless default == NOT_PASSED
             _pv_name_property(opts, symbol, name_property)
+            _pv_required(opts, symbol, required, explicitly_allows_nil?(symbol, validation)) if required
 
             if opts.has_key?(symbol)
               # Handle lazy defaults.
@@ -380,7 +380,7 @@ class Chef
       def _pv_name_property(opts, key, is_name_property=true)
         if is_name_property
           if opts[key].nil?
-            opts[key] = self.instance_variable_get("@name")
+            opts[key] = self.instance_variable_get(:"@name")
           end
         end
       end
