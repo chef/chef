@@ -581,8 +581,11 @@ describe "Chef::Resource.property validation" do
         expect(resource.x).to eq 1
       end
       it "value nil is invalid" do
+        expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+        resource.x 1
+        expect(resource.x nil).to eq 1
+        expect(resource.x).to eq 1
       end
     end
   end

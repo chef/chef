@@ -779,37 +779,49 @@ class Chef
     def self.property(name, type=NOT_PASSED, **options)
       name = name.to_sym
 
+      options.merge!(name: name, declared_in: self)
+
+      if type == NOT_PASSED
+        # If a type is not passed, the property derives from the
+        # superclass property (if any)
+        if properties.has_key?(name)
+          property = properties[name].derive(**options)
+        else
+          property = property_type(**options)
+        end
+
+      # If a Property is specified, derive a new one from that.
+      elsif type.is_a?(Property) || (type.is_a?(Class) && type <= Property)
+        property = type.derive(**options)
+
+      # If a primitive type was passed, combine it with "is"
+      else
+        if options[:is]
+          options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
+        else
+          options[:is] = type
+        end
+        property = property_type(**options)
+      end
+
       local_properties = properties(false)
-      type = properties[name] if type == NOT_PASSED && properties[name]
-      local_properties[name] = property_type(type, name: name, declared_in: self, **options)
-      local_properties[name].emit_dsl
+      local_properties[name] = property
+
+      property.emit_dsl
     end
 
     #
     # Create a reusable property type that can be used in multiple properties
     # in different resources.
     #
-    # @param type [Object,Array<Object>] The type(s) of this property.
-    #   If present, this is prepended to the `is` validation option.
-    #   If this is a Chef::Property, `specialize` is called on it to create the
-    #   new property instead of prepending to `is`.
     # @param options [Hash<Symbol,Object>] Validation options. see #property for
     #   the list of options.
     #
-    # @example Bare property_type
-    #   property_type()
-    #
-    # @example With just a type
-    #   property_type(String)
-    #
-    # @example With just options
+    # @example
     #   property_type(default: 'hi')
     #
-    # @example With type and options
-    #   property_type(String, default: 'hi')
-    #
-    def self.property_type(type=NOT_PASSED, **options)
-      Property.create(type, **options)
+    def self.property_type(**options)
+      Property.derive(**options)
     end
 
     #
@@ -1404,9 +1416,6 @@ class Chef
         define_singleton_method(:inspect) { to_s }
         define_method(:load_current_resource) {}
       end
-    end
-    def self.default_action=(action_name)
-      default_action(action_name)
     end
 
     #

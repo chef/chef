@@ -39,41 +39,14 @@ class Chef
     # Create a reusable property type that can be used in multiple properties
     # in different resources.
     #
-    # @param type [Object,Array<Object>] The type(s) of this property.
-    #   If present, this is prepended to the `is` validation option.
-    #   If this is a Chef::Property, `specialize` is called on it to create the
-    #   new property instead of prepending to `is`.
-    # @param options [Hash<Symbol,Object>] Validation options. see #property for
+    # @param options [Hash<Symbol,Object>] Validation options. See Chef::Resource.property for
     #   the list of options.
     #
-    # @example Bare property_type
-    #   property_type()
+    # @example
+    #   Property.derive(default: 'hi')
     #
-    # @example With just a type
-    #   property_type(String)
-    #
-    # @example With just options
-    #   property_type(default: 'hi')
-    #
-    # @example With type and options
-    #   property_type(String, default: 'hi')
-    #
-    def self.create(type=NOT_PASSED, **options)
-      # Inherit from the property type, if one is passed
-      if type.is_a?(self)
-        type.specialize(**options)
-
-      else
-        if type != NOT_PASSED
-          # If a type was passed, combine it with "is" (if a type was passed)
-          if options[:is]
-            options[:is] = ([ type ] + [ options[:is] ]).flatten(1)
-          else
-            options[:is] = type
-          end
-        end
-        new(**options)
-      end
+    def self.derive(**options)
+      new(**options)
     end
 
     #
@@ -102,9 +75,6 @@ class Chef
     #     be run in the context of the instance (and able to access other
     #     properties) and cached. If not, the value will be frozen with Object#freeze
     #     to prevent users from modifying it in an instance.
-    #   @option options [Proc] :computed The value this property will return if
-    #     the user does not set one. If this is `lazy`, it will be run in the
-    #     context of the instance (and able to access other properties).
     #   @option options [Proc] :coerce A proc which will be called to
     #     transform the user input to canonical form. The value is passed in,
     #     and the transformed value returned as output. Lazy values will *not*
@@ -210,15 +180,6 @@ class Chef
     #
     def has_default?
       options.has_key?(:default) || name_property?
-    end
-
-    #
-    # Whether this property has a computed default value.
-    #
-    # @return [Boolean]
-    #
-    def has_computed?
-      options.has_key?(:computed)
     end
 
     #
@@ -432,7 +393,7 @@ class Chef
     end
 
     #
-    # Specialize this Property by making a duplicate with some added or
+    # Derive a new Property that is just like this one, except with some added or
     # changed options.
     #
     # @param options [Hash<Symbol,Object>] List of options that would be passed
@@ -440,7 +401,7 @@ class Chef
     #
     # @return [Property] The new property type.
     #
-    def specialize(**modified_options)
+    def derive(**modified_options)
       Property.new(**options.merge(**modified_options))
     end
 
