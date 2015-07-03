@@ -21,6 +21,8 @@ require 'spec_helper'
 class TinyClass
   include Chef::Mixin::ParamsValidate
 
+  attr_reader :name
+
   def music(is_good=true)
     is_good
   end
@@ -331,11 +333,11 @@ describe Chef::Mixin::ParamsValidate do
   it "asserts that a value returns false from a predicate method" do
     expect do
       @vo.validate({:not_blank => "should pass"},
-                   {:not_blank => {:cannot_be => :nil, :cannot_be => :empty}})
+                   {:not_blank => {:cannot_be => [ :nil, :empty ]}})
     end.not_to raise_error
     expect do
       @vo.validate({:not_blank => ""},
-                   {:not_blank => {:cannot_be => :nil, :cannot_be => :empty}})
+                   {:not_blank => {:cannot_be => [ :nil, :empty ]}})
     end.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
