@@ -56,7 +56,12 @@ class Chef
             false
           else
             paths.each do |sc|
-              Kernel.load sc
+              if File.exists?(sc)
+                Kernel.load sc
+              else
+                puts "Plugin '#{sc}' is missing for subcommand '#{subcommand_for_args(args)}'. Please rehash to update the subcommands cache."
+                return false
+              end
             end
             true
           end
