@@ -208,7 +208,7 @@ describe Chef::Provider::Service::AixInit do
     context "when rc2.d contains both start and stop scripts" do
       before do
         @files = ["/etc/rc.d/rc2.d/S20apache", "/etc/rc.d/rc2.d/K80apache"]
-        @priority = {2 => [:start, 20], 2 => [:stop, 80]}
+        @priority = {2 => [:stop, 80]}
 
         allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]chef"]).and_return(@files)
       end
@@ -253,7 +253,7 @@ describe Chef::Provider::Service::AixInit do
     context "when rc2.d contains both start and stop scripts" do
       before do
         files = ["/etc/rc.d/rc2.d/Sapache", "/etc/rc.d/rc2.d/Kapache"]
-        @priority = {2 => [:start, ''], 2 => [:stop, '']}
+        @priority = {2 => [:stop, '']}
 
         allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return(files)
       end
