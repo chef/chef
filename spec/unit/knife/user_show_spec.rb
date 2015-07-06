@@ -35,7 +35,7 @@ describe Chef::Knife::UserShow do
   context "when the username field is not supported by the server" do
     before do
       allow(knife).to receive(:run_osc_11_user_show).and_raise(SystemExit)
-      allow(Chef::User).to receive(:load).with('my_user').and_return(user_mock)
+      allow(Chef::UserV1).to receive(:load).with('my_user').and_return(user_mock)
       allow(user_mock).to receive(:username).and_return(nil)
     end
 
@@ -51,7 +51,7 @@ describe Chef::Knife::UserShow do
   end
 
   it 'loads and displays the user' do
-    expect(Chef::User).to receive(:load).with('my_user').and_return(user_mock)
+    expect(Chef::UserV1).to receive(:load).with('my_user').and_return(user_mock)
     expect(knife).to receive(:format_for_display).with(user_mock)
     knife.run
   end

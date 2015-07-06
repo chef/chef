@@ -28,7 +28,7 @@ class Chef
     class OscUserReregister < Knife
 
       deps do
-        require 'chef/osc_user'
+        require 'chef/user'
         require 'chef/json_compat'
       end
 
@@ -48,7 +48,7 @@ class Chef
           exit 1
         end
 
-        user = Chef::OscUser.load(@user_name).reregister
+        user = Chef::User.load(@user_name).reregister
         Chef::Log.debug("Updated user data: #{user.inspect}")
         key = user.private_key
         if config[:file]

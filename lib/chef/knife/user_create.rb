@@ -27,7 +27,7 @@ class Chef
       attr_accessor :user_field
 
       deps do
-        require 'chef/user'
+        require 'chef/user_v1'
         require 'chef/json_compat'
       end
 
@@ -61,11 +61,11 @@ class Chef
       banner "knife user create USERNAME DISPLAY_NAME FIRST_NAME LAST_NAME EMAIL PASSWORD (options)"
 
       def user
-        @user_field ||= Chef::User.new
+        @user_field ||= Chef::UserV1.new
       end
 
       def create_user_from_hash(hash)
-        Chef::User.from_hash(hash).create
+        Chef::UserV1.from_hash(hash).create
       end
 
       def osc_11_warning

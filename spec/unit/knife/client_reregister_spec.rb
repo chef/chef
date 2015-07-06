@@ -41,7 +41,7 @@ describe Chef::Knife::ClientReregister do
 
   context 'when not configured for file output' do
     it 'reregisters the client and prints the key' do
-      expect(Chef::ApiClient).to receive(:reregister).with('adam').and_return(@client_mock)
+      expect(Chef::ApiClientV1).to receive(:reregister).with('adam').and_return(@client_mock)
       @knife.run
       expect(@stdout.string).to match( /foo_key/ )
     end
@@ -49,7 +49,7 @@ describe Chef::Knife::ClientReregister do
 
   context 'when configured for file output' do
     it 'should write the private key to a file' do
-      expect(Chef::ApiClient).to receive(:reregister).with('adam').and_return(@client_mock)
+      expect(Chef::ApiClientV1).to receive(:reregister).with('adam').and_return(@client_mock)
 
       @knife.config[:file] = '/tmp/monkeypants'
       filehandle = StringIO.new
