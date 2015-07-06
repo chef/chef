@@ -26,7 +26,7 @@ shared_examples_for "version handling" do
     allow(rest_v1).to receive(http_verb).and_raise(exception_406)
   end
 
-  context "when the server does not support the min or max server API version that Chef::User supports" do
+  context "when the server does not support the min or max server API version that Chef::UserV1 supports" do
     before do
       allow(object).to receive(:server_client_api_version_intersection).and_return([])
     end
@@ -34,7 +34,7 @@ shared_examples_for "version handling" do
     it "raises the original exception" do
       expect{ object.send(method) }.to raise_error(exception_406)
     end
-  end # when the server does not support the min or max server API version that Chef::User supports
+  end # when the server does not support the min or max server API version that Chef::UserV1 supports
 end # version handling
 
 shared_examples_for "user and client reregister" do

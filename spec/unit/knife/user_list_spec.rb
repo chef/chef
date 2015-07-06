@@ -29,7 +29,7 @@ describe Chef::Knife::UserList do
   end
 
   it 'lists the users' do
-    expect(Chef::User).to receive(:list)
+    expect(Chef::UserV1).to receive(:list)
     expect(knife).to receive(:format_list_for_display)
     knife.run
   end

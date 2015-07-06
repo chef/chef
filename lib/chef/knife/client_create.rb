@@ -23,7 +23,7 @@ class Chef
     class ClientCreate < Knife
 
       deps do
-        require 'chef/api_client'
+        require 'chef/api_client_v1'
         require 'chef/json_compat'
       end
 
@@ -57,12 +57,12 @@ class Chef
       banner "knife client create CLIENTNAME (options)"
 
       def client
-        @client_field ||= Chef::ApiClient.new
+        @client_field ||= Chef::ApiClientV1.new
       end
 
       def create_client(client)
         # should not be using save :( bad behavior
-        client.save
+        Chef::ApiClientV1.from_hash(client).save
       end
 
       def run
@@ -93,7 +93,7 @@ class Chef
 
         output = edit_data(client)
         final_client = create_client(output)
-        ui.info("Created #{output}")
+        ui.info("Created #{final_client}")
 
         # output private_key if one
         if final_client.private_key

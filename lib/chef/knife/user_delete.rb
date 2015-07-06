@@ -23,7 +23,7 @@ class Chef
     class UserDelete < Knife
 
       deps do
-        require 'chef/user'
+        require 'chef/user_v1'
         require 'chef/json_compat'
       end
 
@@ -55,7 +55,7 @@ EOF
         if Kernel.block_given?
           object = block.call
         else
-          object = Chef::User.load(user_name)
+          object = Chef::UserV1.load(user_name)
           object.destroy
         end
 
@@ -77,10 +77,10 @@ EOF
         # Below is modification of Chef::Knife.delete_object to detect OSC 11 server.
         # When OSC 11 is deprecated, simply delete all this and go back to:
         #
-        # delete_object(Chef::User, @user_name)
+        # delete_object(Chef::UserV1, @user_name)
         #
         # Also delete our override of delete_object above
-        object = Chef::User.load(@user_name)
+        object = Chef::UserV1.load(@user_name)
 
         # OSC 11 case
         if object.username.nil?

@@ -14,6 +14,7 @@
 * [pr#3208](https://github.com/chef/chef/pull/3208) Missing require (require what you use).
 * [pr#3449](https://github.com/chef/chef/pull/3449) correcting minor typo in user_edit knife action
 * [pr#3572](https://github.com/chef/chef/pull/3572) Use windows paths without case-sensitivity.
+* [pr#3630](https://github.com/chef/chef/pull/3630) Restore Chef::User and Chef::ApiClient namespace to API V0 functionality and move new functionality into Chef::UserV1 and Chef::ApiClientV1 until Chef 13.
 
 
 ## 12.4.0
