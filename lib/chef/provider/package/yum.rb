@@ -28,6 +28,7 @@ class Chef
     class Package
       class Yum < Chef::Provider::Package
 
+        provides :package, platform_family: %w(rhel fedora)
         provides :yum_package, os: "linux"
 
         class RPMUtils

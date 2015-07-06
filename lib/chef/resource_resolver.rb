@@ -83,9 +83,9 @@ class Chef
     # @api private use Chef::ResourceResolver.resolve instead.
     def resolve
       # log this so we know what resources will work for the generic resource on the node (early cut)
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{enabled_handlers}"
+      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
 
-      handler = enabled_handlers.first
+      handler = prioritized_handlers.first
 
       if handler
         Chef::Log.debug "Resource for #{resource_name} is #{handler}"
@@ -98,8 +98,8 @@ class Chef
 
     # @api private
     def list
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{enabled_handlers}"
-      enabled_handlers
+      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
+      prioritized_handlers
     end
 
     #
@@ -118,7 +118,7 @@ class Chef
     #
     # @api private
     def self.includes_handler?(resource_name, resource_class)
-      priority_map.includes_handler?(resource_name, resource_class)
+      handler_map.list(nil, resource_name).include?(resource_class)
     end
 
     protected
@@ -127,17 +127,36 @@ class Chef
       Chef.resource_priority_map
     end
 
+    def self.handler_map
+      Chef.resource_handler_map
+    end
+
     def priority_map
       Chef.resource_priority_map
     end
 
+    def handler_map
+      Chef.resource_handler_map
+    end
+
     # @api private
     def potential_handlers
-      priority_map.list_handlers(node, resource_name, canonical: canonical)
+      handler_map.list(node, resource_name, canonical: canonical).uniq
     end
 
     def enabled_handlers
       potential_handlers.select { |handler| !overrode_provides?(handler) || handler.provides?(node, resource_name) }
+    end
+
+    def prioritized_handlers
+      @prioritized_handlers ||= begin
+        enabled_handlers = self.enabled_handlers
+
+        prioritized = priority_map.list(node, resource_name, canonical: canonical).flatten(1)
+        prioritized &= enabled_handlers # Filter the priority map by the actual enabled handlers
+        prioritized |= enabled_handlers # Bring back any handlers that aren't in the priority map, at the *end* (ordered set)
+        prioritized
+      end
     end
 
     def overrode_provides?(handler)
@@ -151,17 +170,15 @@ class Chef
       end
 
       def enabled_handlers
-        @enabled_handlers ||= begin
-          handlers = super
-          if handlers.empty?
-            handlers = resources.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource_name) }
-            handlers.each do |handler|
-              Chef::Log.deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
-              Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
-            end
+        handlers = super
+        if handlers.empty?
+          handlers = resources.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource_name) }
+          handlers.each do |handler|
+            Chef::Log.deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
+            Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
           end
-          handlers
         end
+        handlers
       end
     end
     prepend Deprecated

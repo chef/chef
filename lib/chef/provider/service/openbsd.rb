@@ -26,7 +26,7 @@ class Chef
     class Service
       class Openbsd < Chef::Provider::Service::Init
 
-        provides :service, os: [ "openbsd" ]
+        provides :service, os: "openbsd"
 
         include Chef::Mixin::ShellOut
 
