@@ -27,6 +27,8 @@ class Chef
 
         include Chef::Mixin::GetSourceFromPackage
 
+        provides :package, platform: "nexentacore"
+        provides :package, platform: "solaris2", platform_version: '< 5.11'
         provides :solaris_package, os: "solaris2"
 
         # def initialize(*args)

@@ -25,6 +25,8 @@ class Chef
   class Provider
     class Package
       class Portage < Chef::Provider::Package
+
+        provides :package, platform: "gentoo"
         provides :portage_package
 
         PACKAGE_NAME_PATTERN = %r{(?:([^/]+)/)?([^/]+)}

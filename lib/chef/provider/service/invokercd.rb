@@ -23,6 +23,8 @@ class Chef
     class Service
       class Invokercd < Chef::Provider::Service::Init
 
+        provides :service, platform_family: 'debian', override: true
+
         def self.provides?(node, resource)
           super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:invokercd)
         end

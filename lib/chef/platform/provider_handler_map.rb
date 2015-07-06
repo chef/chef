@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright (c) 2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,26 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/node_map'
+require 'singleton'
+require 'chef/platform/handler_map'
 
 class Chef
   class Platform
-    class PriorityMap < Chef::NodeMap
-      def priority(resource_name, priority_array, *filter)
-        set_priority_array(resource_name.to_sym, priority_array, *filter)
-      end
-
-      # @api private
-      def get_priority_array(node, key)
-        get(node, key)
-      end
-
-      # @api private
-      def set_priority_array(key, priority_array, *filter, &block)
-        priority_array = Array(priority_array)
-        set(key, priority_array, *filter, &block)
-        priority_array
-      end
+    # @api private
+    class ProviderHandlerMap < Chef::Platform::HandlerMap
+      include Singleton
     end
   end
 end

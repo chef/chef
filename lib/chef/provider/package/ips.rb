@@ -27,6 +27,7 @@ class Chef
     class Package
       class Ips < Chef::Provider::Package
 
+        provides :package, platform: %w(openindiana opensolaris omnios solaris2)
         provides :ips_package, os: "solaris2"
 
         attr_accessor :virtual
