@@ -72,7 +72,7 @@ class Chef
       def could_match_children?(path)
         return false if path == '' # Empty string is not a path
 
-        argument_is_absolute = !!(path =~ /^#{Chef::ChefFS::PathUtils::regexp_path_separator}/)
+        argument_is_absolute = Chef::ChefFS::PathUtils::is_absolute?(path)
         return false if is_absolute != argument_is_absolute
         path = path[1,path.length-1] if argument_is_absolute
 
@@ -111,7 +111,7 @@ class Chef
       #
       # This method assumes +could_match_children?(path)+ is +true+.
       def exact_child_name_under(path)
-        path = path[1,path.length-1] if !!(path =~ /^#{Chef::ChefFS::PathUtils::regexp_path_separator}/)
+        path = path[1,path.length-1] if Chef::ChefFS::PathUtils::is_absolute?(path)
         dirs_in_path = Chef::ChefFS::PathUtils::split(path).length
         return nil if exact_parts.length <= dirs_in_path
         return exact_parts[dirs_in_path]
@@ -149,7 +149,7 @@ class Chef
       #   abc/*/def.match?('abc/foo/def') == true
       #   abc/*/def.match?('abc/foo') == false
       def match?(path)
-        argument_is_absolute = !!(path =~ /^#{Chef::ChefFS::PathUtils::regexp_path_separator}/)
+        argument_is_absolute = Chef::ChefFS::PathUtils::is_absolute?(path)
         return false if is_absolute != argument_is_absolute
         path = path[1,path.length-1] if argument_is_absolute
         !!regexp.match(path)
@@ -158,17 +158,6 @@ class Chef
       # Returns the string pattern
       def to_s
         pattern
-      end
-
-      # Given a relative file pattern and a directory, makes a new file pattern
-      # starting with the directory.
-      #
-      #   FilePattern.relative_to('/usr/local', 'bin/*grok') == FilePattern.new('/usr/local/bin/*grok')
-      #
-      # BUG: this does not support patterns starting with <tt>..</tt>
-      def self.relative_to(dir, pattern)
-        return FilePattern.new(pattern) if pattern =~ /^#{Chef::ChefFS::PathUtils::regexp_path_separator}/
-        FilePattern.new(Chef::ChefFS::PathUtils::join(dir, pattern))
       end
 
     private
@@ -195,7 +184,7 @@ class Chef
 
       def calculate
         if !@regexp
-          @is_absolute = !!(@pattern =~ /^#{Chef::ChefFS::PathUtils::regexp_path_separator}/)
+          @is_absolute = Chef::ChefFS::PathUtils::is_absolute?(@pattern)
 
           full_regexp_parts = []
           normalized_parts = []

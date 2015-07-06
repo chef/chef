@@ -34,7 +34,7 @@ describe Chef::Resource::Ohai do
   end
 
   it "should have a default action of create" do
-    expect(@resource.action).to eql(:reload)
+    expect(@resource.action).to eql([:reload])
   end
 
   it "should allow you to set the plugin attribute" do

@@ -30,8 +30,8 @@ describe Chef::Resource::RubyBlock do
     expect(@resource).to be_a_kind_of(Chef::Resource::RubyBlock)
   end
 
-  it "should have a default action of 'create'" do
-    expect(@resource.action).to eql(:run)
+  it "should have a default action of 'run'" do
+    expect(@resource.action).to eql([:run])
   end
 
   it "should have a resource name of :ruby_block" do
@@ -46,7 +46,7 @@ describe Chef::Resource::RubyBlock do
 
   it "allows the action to be 'create'" do
     @resource.action :create
-    expect(@resource.action).to eq(:create)
+    expect(@resource.action).to eq([:create])
   end
 
   describe "when it has been initialized with block code" do

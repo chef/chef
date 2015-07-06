@@ -1,5 +1,6 @@
 #
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Author:: John Keiser <jkeiser@chef.io>
+# Copyright:: Copyright (c) 2015 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,14 +14,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-require 'chef-config/windows'
-require 'chef-config/logger'
-
-module ChefConfig
-
-  class ConfigurationError < ArgumentError; end
-  class InvalidPath < StandardError; end
-
+class Chef
+  class DelayedEvaluator < Proc
+  end
 end

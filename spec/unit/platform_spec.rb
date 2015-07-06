@@ -103,7 +103,7 @@ describe Chef::Platform do
     end
 
     it "should raise an exception if a provider cannot be found for a resource type" do
-      expect { Chef::Platform.find_provider("Darwin", "9.2.2", :coffee) }.to raise_error(ArgumentError)
+      expect { Chef::Platform.find_provider("Darwin", "9.2.2", :coffee) }.to raise_error(Chef::Exceptions::ProviderNotFound)
     end
 
     it "should look up a provider for a resource with a Chef::Resource object" do

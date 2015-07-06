@@ -35,7 +35,7 @@ describe Chef::Resource::Mdadm do
   end
 
   it "should have a default action of create" do
-    expect(@resource.action).to eql(:create)
+    expect(@resource.action).to eql([:create])
   end
 
   it "should accept create, assemble, stop as actions" do

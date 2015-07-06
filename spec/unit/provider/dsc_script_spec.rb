@@ -158,14 +158,14 @@ describe Chef::Provider::DscScript do
 
           expect {
             provider.run_action(:run)
-          }.to raise_error(Chef::Exceptions::NoProviderAvailable)
+          }.to raise_error(Chef::Exceptions::ProviderNotFound)
         end
       end
 
       it 'raises an exception if Powershell is not present' do
         expect {
           provider.run_action(:run)
-        }.to raise_error(Chef::Exceptions::NoProviderAvailable)
+        }.to raise_error(Chef::Exceptions::ProviderNotFound)
       end
 
     end
