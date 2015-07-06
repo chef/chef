@@ -69,7 +69,7 @@ class Chef
     end
 
     def enabled_handlers
-      potential_handlers.select { |handler| !overrode_provides?(handler) || handler.provides?(node, resource) }
+      @enabled_handlers ||= potential_handlers.select { |handler| !overrode_provides?(handler) || handler.provides?(node, resource) }
     end
 
     # TODO deprecate this and allow actions to be passed as a filter to

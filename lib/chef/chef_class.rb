@@ -162,8 +162,8 @@ class Chef
       @node = nil
       @provider_priority_map = nil
       @resource_priority_map = nil
-      @provider_dsl_map = nil
-      @resource_dsl_map = nil
+      @provider_handler_map = nil
+      @resource_handler_map = nil
     end
 
     # @api private
