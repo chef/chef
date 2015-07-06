@@ -47,6 +47,26 @@ describe "Recipe DSL methods" do
       BaseThingy.created_provider = nil
     end
 
+    it "creates base_thingy when you call base_thingy in a recipe" do
+      recipe = converge {
+        base_thingy 'blah' do; end
+      }
+      expect(recipe.logged_warnings).to eq ''
+      expect(BaseThingy.created_resource).to eq BaseThingy
+    end
+
+    it "errors out when you call base_thingy do ... end in a recipe" do
+      expect_converge {
+        base_thingy do; end
+      }.to raise_error(ArgumentError, 'You must supply a name when declaring a base_thingy resource')
+    end
+
+    it "errors out when you call base_thingy 'foo', 'bar' do ... end in a recipe" do
+      expect_converge {
+        base_thingy 'foo', 'bar' do; end
+      }.to raise_error(ArgumentError, 'wrong number of arguments (2 for 0..1)')
+    end
+
     context "Deprecated automatic resource DSL" do
       before do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
