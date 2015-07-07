@@ -25,7 +25,7 @@ class Chef
       end
 
       def action_purr
-        @new_resource.updated_by_last_action(true)
+        new_resource.updated_by_last_action(true)
         true
       end
 
@@ -34,6 +34,12 @@ class Chef
       end
 
       def action_buy
+        true
+      end
+
+      def action_check_has_crashed
+        new_resource.updated_by_last_action(true)
+        new_resource.run_context_has_crashed = node.run_context.has_crashed?
         true
       end
     end

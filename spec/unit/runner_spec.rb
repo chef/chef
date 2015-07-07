@@ -196,26 +196,29 @@ describe Chef::Runner do
       expect(first_resource).to be_updated # by notification from middle_resource
     end
 
-    it "should execute delayed actions on changed resources" do
+    it "should execute delayed actions on changed resources, without marking the run_context as having crashed" do
+      provider = Chef::Provider::SnakeOil.new(first_resource, run_context)
       first_resource.action = :nothing
       second_resource = Chef::Resource::Cat.new("peanut", run_context)
       second_resource.action = :purr
 
       run_context.resource_collection << second_resource
-      second_resource.notifies(:purr, first_resource, :delayed)
+      second_resource.notifies(:check_has_crashed, first_resource, :delayed)
 
       runner.converge
 
       expect(first_resource).to be_updated
+      expect(first_resource.run_context_has_crashed).to be(false)
     end
 
-    it "should execute delayed notifications when a failure occurs in the chef client run" do
+    it "should execute delayed notifications when a failure occurs in the chef client run, after marking the run_context as having crashed" do
+      provider = Chef::Provider::SnakeOil.new(first_resource, run_context)
       first_resource.action = :nothing
       second_resource = Chef::Resource::Cat.new("peanut", run_context)
       second_resource.action = :purr
 
       run_context.resource_collection << second_resource
-      second_resource.notifies(:purr, first_resource, :delayed)
+      second_resource.notifies(:check_has_crashed, first_resource, :delayed)
 
       third_resource = FailureResource.new("explode", run_context)
       run_context.resource_collection << third_resource
@@ -223,9 +226,11 @@ describe Chef::Runner do
       expect { runner.converge }.to raise_error(FailureProvider::ChefClientFail)
 
       expect(first_resource).to be_updated
+      expect(first_resource.run_context_has_crashed).to be(true)
     end
 
-    it "should execute delayed notifications when a failure occurs in a notification" do
+    it "should execute delayed notifications when a failure occurs in a notification, after marking the run_context as having crashed" do
+      provider = Chef::Provider::SnakeOil.new(first_resource, run_context)
       first_resource.action = :nothing
       second_resource = Chef::Resource::Cat.new("peanut", run_context)
       second_resource.action = :purr
@@ -237,11 +242,12 @@ describe Chef::Runner do
       run_context.resource_collection << third_resource
 
       second_resource.notifies(:fail, third_resource, :delayed)
-      second_resource.notifies(:purr, first_resource, :delayed)
+      second_resource.notifies(:check_has_crashed, first_resource, :delayed)
 
       expect {runner.converge}.to raise_error(FailureProvider::ChefClientFail)
 
       expect(first_resource).to be_updated
+      expect(first_resource.run_context_has_crashed).to be(true)
     end
 
     it "should execute delayed notifications when a failure occurs in multiple notifications" do

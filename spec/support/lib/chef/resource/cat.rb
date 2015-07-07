@@ -21,6 +21,7 @@ class Chef
     class Cat < Chef::Resource
 
       attr_accessor :action
+      attr_accessor :run_context_has_crashed
 
       def initialize(name, run_context=nil)
         super
