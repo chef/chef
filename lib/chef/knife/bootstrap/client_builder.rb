@@ -84,7 +84,7 @@ class Chef
         def environment
           # prefer environment from cli over environment from first-boot attributes
           knife_config[:environment] ||
-            (first_boot_attributes[:environment] if first_boot_attributes) ||
+            (first_boot_attributes[:chef_environment] if first_boot_attributes) ||
             chef_config[:environment]
         end
 
@@ -143,7 +143,7 @@ class Chef
               node.run_list(normalized_run_list)
               if first_boot_attributes
                 scrubbed_first_boot_attributes = first_boot_attributes.dup
-                scrubbed_first_boot_attributes.delete(:environment)
+                scrubbed_first_boot_attributes.delete(:chef_environment)
                 unless scrubbed_first_boot_attributes.empty?
                   node.normal_attrs = scrubbed_first_boot_attributes
                 end

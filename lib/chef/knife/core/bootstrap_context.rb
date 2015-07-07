@@ -47,7 +47,7 @@ class Chef
           # environment is set in the config file being used. However,
           # @config[:environment] is not polluted by @chef_config[:environment].
           @config[:environment] ||
-            (@config[:first_boot_attributes][:environment] if @config[:first_boot_attributes]) ||
+            (@config[:first_boot_attributes][:chef_environment] if @config[:first_boot_attributes]) ||
             @chef_config[:environment] ||
             '_default'
         end

@@ -105,7 +105,7 @@ EXPECTED
     end
 
     context "when an environment is specified" do
-      let(:first_boot_attributes) { {environment: "proderption"} }
+      let(:first_boot_attributes) { {chef_environment: "proderption"} }
       it "starts chef in the configured environment" do
         expect(bootstrap_context.start_chef).to eq('chef-client -j /etc/chef/first-boot.json -E proderption')
       end

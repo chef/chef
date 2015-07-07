@@ -169,7 +169,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     end
 
     shared_examples "first-boot environment" do
-      let(:first_boot_attributes) {{ environment: first_boot_environment }}
+      let(:first_boot_attributes) {{ chef_environment: first_boot_environment }}
 
       let(:first_boot_environment) { "first_boot_environment" }
 
@@ -193,7 +193,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       end
 
       context "when environment is not the only first-boot attribute" do
-        let(:first_boot_attributes) {{ environment: first_boot_environment,
+        let(:first_boot_attributes) {{ chef_environment: first_boot_environment,
                                        baz: :quux }}
 
         it "saves the first-boot attributes, but does not save environment" do
