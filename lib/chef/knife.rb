@@ -225,7 +225,13 @@ class Chef
     # Error out and print usage. probably because the arguments given by the
     # user could not be resolved to a subcommand.
     def self.subcommand_not_found!(args)
-      ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
+      ui.fatal("Cannot find subcommand for: '#{args.join(' ')}'")
+
+      # Mention rehash when the subcommands cache(plugin_manifest.json) is used
+      if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader) ||
+         subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::CustomManifestLoader)
+        ui.info("If this is a recently installed plugin, please rehash to update the subcommands cache.")
+      end
 
       if category_commands = guess_category(args)
         list_commands(category_commands)
