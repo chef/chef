@@ -11,7 +11,7 @@ describe "Recipe DSL methods" do
   before(:all) { Namer.current_index = 1 }
   before { Namer.current_index += 1 }
 
-  context "With resource 'base_thingy' declared as BaseThingy" do
+  context "with resource 'base_thingy' declared as BaseThingy" do
     before(:context) {
 
       class BaseThingy < Chef::Resource
@@ -19,6 +19,7 @@ describe "Recipe DSL methods" do
         default_action :create
 
         class<<self
+          attr_accessor :created_name
           attr_accessor :created_resource
           attr_accessor :created_provider
         end
@@ -30,6 +31,7 @@ describe "Recipe DSL methods" do
           def load_current_resource
           end
           def action_create
+            BaseThingy.created_name = new_resource.name
             BaseThingy.created_resource = new_resource.class
             BaseThingy.created_provider = self.class
           end
@@ -47,12 +49,38 @@ describe "Recipe DSL methods" do
       BaseThingy.created_provider = nil
     end
 
+    it "creates base_thingy when you call base_thingy in a recipe" do
+      recipe = converge {
+        base_thingy 'blah' do; end
+      }
+      expect(recipe.logged_warnings).to eq ''
+      expect(BaseThingy.created_name).to eq 'blah'
+      expect(BaseThingy.created_resource).to eq BaseThingy
+    end
+
+    it "errors out when you call base_thingy do ... end in a recipe" do
+      expect_converge {
+        base_thingy do; end
+      }.to raise_error(ArgumentError, 'You must supply a name when declaring a base_thingy resource')
+    end
+
+    it "emits a warning when you call base_thingy 'foo', 'bar' do ... end in a recipe" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      recipe = converge {
+        base_thingy 'foo', 'bar' do
+        end
+      }
+      expect(recipe.logged_warnings).to match(/Cannot create resource base_thingy with more than one argument. All arguments except the name \("foo"\) will be ignored. This will cause an error in Chef 13. Arguments: \["foo", "bar"\]/)
+      expect(BaseThingy.created_name).to eq 'foo'
+      expect(BaseThingy.created_resource).to eq BaseThingy
+    end
+
     context "Deprecated automatic resource DSL" do
       before do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
       end
 
-      context "With a resource 'backcompat_thingy' declared in Chef::Resource and Chef::Provider" do
+      context "with a resource 'backcompat_thingy' declared in Chef::Resource and Chef::Provider" do
         before(:context) {
 
           class Chef::Resource::BackcompatThingy < Chef::Resource
@@ -97,7 +125,7 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "With a resource named RecipeDSLSpecNamespace::Bar::BarThingy" do
+      context "with a resource named RecipeDSLSpecNamespace::Bar::BarThingy" do
         before(:context) {
 
           class RecipeDSLSpecNamespace::Bar::BarThingy < BaseThingy
@@ -112,7 +140,7 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "With a resource named Chef::Resource::NoNameThingy with resource_name nil" do
+      context "with a resource named Chef::Resource::NoNameThingy with resource_name nil" do
         before(:context) {
 
           class Chef::Resource::NoNameThingy < BaseThingy
@@ -128,7 +156,7 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "With a resource named AnotherNoNameThingy with resource_name :another_thingy_name" do
+      context "with a resource named AnotherNoNameThingy with resource_name :another_thingy_name" do
         before(:context) {
 
           class AnotherNoNameThingy < BaseThingy
@@ -152,7 +180,7 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "With a resource named AnotherNoNameThingy2 with resource_name :another_thingy_name2; resource_name :another_thingy_name3" do
+      context "with a resource named AnotherNoNameThingy2 with resource_name :another_thingy_name2; resource_name :another_thingy_name3" do
         before(:context) {
 
           class AnotherNoNameThingy2 < BaseThingy
@@ -184,7 +212,7 @@ describe "Recipe DSL methods" do
       end
 
       context "provides overriding resource_name" do
-        context "With a resource named AnotherNoNameThingy3 with provides :another_no_name_thingy3, os: 'blarghle'" do
+        context "with a resource named AnotherNoNameThingy3 with provides :another_no_name_thingy3, os: 'blarghle'" do
           before(:context) {
 
             class AnotherNoNameThingy3 < BaseThingy
@@ -213,7 +241,7 @@ describe "Recipe DSL methods" do
           end
         end
 
-        context "With a resource named AnotherNoNameThingy4 with two provides" do
+        context "with a resource named AnotherNoNameThingy4 with two provides" do
           before(:context) {
 
             class AnotherNoNameThingy4 < BaseThingy
@@ -253,7 +281,7 @@ describe "Recipe DSL methods" do
           end
         end
 
-        context "With a resource named AnotherNoNameThingy5, a different resource_name, and a provides with the original resource_name" do
+        context "with a resource named AnotherNoNameThingy5, a different resource_name, and a provides with the original resource_name" do
           before(:context) {
 
             class AnotherNoNameThingy5 < BaseThingy
@@ -290,7 +318,7 @@ describe "Recipe DSL methods" do
           end
         end
 
-        context "With a resource named AnotherNoNameThingy6, a provides with the original resource name, and a different resource_name" do
+        context "with a resource named AnotherNoNameThingy6, a provides with the original resource name, and a different resource_name" do
           before(:context) {
 
             class AnotherNoNameThingy6 < BaseThingy
@@ -327,7 +355,7 @@ describe "Recipe DSL methods" do
           end
         end
 
-        context "With a resource named AnotherNoNameThingy7, a new resource_name, and provides with that new resource name" do
+        context "with a resource named AnotherNoNameThingy7, a new resource_name, and provides with that new resource name" do
           before(:context) {
 
             class AnotherNoNameThingy7 < BaseThingy
@@ -365,7 +393,7 @@ describe "Recipe DSL methods" do
         end
 
         # opposite order from the previous test (provides, then resource_name)
-        context "With a resource named AnotherNoNameThingy8, a provides with a new resource name, and resource_name with that new resource name" do
+        context "with a resource named AnotherNoNameThingy8, a provides with a new resource name, and resource_name with that new resource name" do
           before(:context) {
 
             class AnotherNoNameThingy8 < BaseThingy
@@ -399,119 +427,6 @@ describe "Recipe DSL methods" do
               run_context.node.automatic[:os] = 'linux'
               another_thingy_name8 'blah' do; end
             }.to raise_error(NoMethodError)
-          end
-        end
-
-        context "With a resource TwoClassesOneDsl" do
-          let(:class_name) { "TwoClassesOneDsl#{Namer.current_index}" }
-          let(:dsl_method) { :"two_classes_one_dsl#{Namer.current_index}" }
-
-          before {
-            eval <<-EOM, nil, __FILE__, __LINE__+1
-              class #{class_name} < BaseThingy
-                resource_name #{dsl_method.inspect}
-              end
-            EOM
-          }
-          context "and resource BlahModule::TwoClassesOneDsl" do
-            before {
-              eval <<-EOM, nil, __FILE__, __LINE__+1
-                module BlahModule
-                  class #{class_name} < BaseThingy
-                    resource_name #{dsl_method.inspect}
-                  end
-                end
-              EOM
-            }
-            it "two_classes_one_dsl resolves to BlahModule::TwoClassesOneDsl (alphabetical)" do
-              dsl_method = self.dsl_method
-              recipe = converge {
-                instance_eval("#{dsl_method} 'blah' do; end")
-              }
-              expect(recipe.logged_warnings).to eq ''
-              expect(BaseThingy.created_resource).to eq eval("BlahModule::#{class_name}")
-            end
-            it "resource_matching_short_name returns BlahModule::TwoClassesOneDsl" do
-              expect(Chef::Resource.resource_matching_short_name(dsl_method)).to eq eval("BlahModule::#{class_name}")
-            end
-          end
-          context "and resource BlahModule::TwoClassesOneDsl with resource_name nil" do
-            before {
-              eval <<-EOM, nil, __FILE__, __LINE__+1
-                module BlahModule
-                  class BlahModule::#{class_name} < BaseThingy
-                    resource_name nil
-                  end
-                end
-              EOM
-            }
-            it "two_classes_one_dsl resolves to ::TwoClassesOneDsl" do
-              dsl_method = self.dsl_method
-              recipe = converge {
-                instance_eval("#{dsl_method} 'blah' do; end")
-              }
-              expect(recipe.logged_warnings).to eq ''
-              expect(BaseThingy.created_resource).to eq eval("::#{class_name}")
-            end
-            it "resource_matching_short_name returns ::TwoClassesOneDsl" do
-              expect(Chef::Resource.resource_matching_short_name(dsl_method)).to eq eval("::#{class_name}")
-            end
-          end
-          context "and resource BlahModule::TwoClassesOneDsl with resource_name :argh" do
-            before {
-              eval <<-EOM, nil, __FILE__, __LINE__+1
-                module BlahModule
-                  class BlahModule::#{class_name} < BaseThingy
-                    resource_name :argh
-                  end
-                end
-              EOM
-            }
-            it "two_classes_one_dsl resolves to ::TwoClassesOneDsl" do
-              dsl_method = self.dsl_method
-              recipe = converge {
-                instance_eval("#{dsl_method} 'blah' do; end")
-              }
-              expect(recipe.logged_warnings).to eq ''
-              expect(BaseThingy.created_resource).to eq eval("::#{class_name}")
-            end
-            it "resource_matching_short_name returns ::TwoClassesOneDsl" do
-              expect(Chef::Resource.resource_matching_short_name(dsl_method)).to eq eval("::#{class_name}")
-            end
-          end
-          context "and resource BlahModule::TwoClassesOneDsl with provides :two_classes_one_dsl, os: 'blarghle'" do
-            before {
-              eval <<-EOM, nil, __FILE__, __LINE__+1
-                module BlahModule
-                  class BlahModule::#{class_name} < BaseThingy
-                    resource_name #{dsl_method.inspect}
-                    provides #{dsl_method.inspect}, os: 'blarghle'
-                  end
-                end
-              EOM
-            }
-
-            it "and os = blarghle, two_classes_one_dsl resolves to BlahModule::TwoClassesOneDsl" do
-              dsl_method = self.dsl_method
-              recipe = converge {
-                # this is an ugly way to test, make Cheffish expose node attrs
-                run_context.node.automatic[:os] = 'blarghle'
-                instance_eval("#{dsl_method} 'blah' do; end")
-              }
-              expect(recipe.logged_warnings).to eq ''
-              expect(BaseThingy.created_resource).to eq eval("BlahModule::#{class_name}")
-            end
-
-            it "and os = linux, two_classes_one_dsl resolves to ::TwoClassesOneDsl" do
-              dsl_method = self.dsl_method
-              recipe = converge {
-                # this is an ugly way to test, make Cheffish expose node attrs
-                run_context.node.automatic[:os] = 'linux'
-                instance_eval("#{dsl_method} 'blah' do; end")
-              }
-              expect(recipe.logged_warnings).to eq ''
-              expect(BaseThingy.created_resource).to eq eval("::#{class_name}")
-            end
           end
         end
       end
@@ -833,7 +748,7 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "With platform-specific resources 'my_super_thingy_foo' and 'my_super_thingy_bar'" do
+      context "with platform-specific resources 'my_super_thingy_foo' and 'my_super_thingy_bar'" do
         before(:context) {
           class MySuperThingyFoo < BaseThingy
             resource_name :my_super_thingy_foo
@@ -924,6 +839,601 @@ describe "Recipe DSL methods" do
         end
       end
     end
+
+    context "with a resource named 'B' with resource name :two_classes_one_dsl" do
+      let(:two_classes_one_dsl) { :"two_classes_one_dsl#{Namer.current_index}" }
+      let(:resource_class) {
+        result = Class.new(BaseThingy) do
+          def self.name
+            "B"
+          end
+          def self.to_s; name; end
+          def self.inspect; name.inspect; end
+        end
+        result.resource_name two_classes_one_dsl
+        result
+      }
+      before { resource_class } # pull on it so it gets defined before the recipe runs
+
+      context "and another resource named 'A' with resource_name :two_classes_one_dsl" do
+        let(:resource_class_a) {
+          result = Class.new(BaseThingy) do
+            def self.name
+              "A"
+            end
+            def self.to_s; name; end
+            def self.inspect; name.inspect; end
+          end
+          result.resource_name two_classes_one_dsl
+          result
+        }
+        before { resource_class_a } # pull on it so it gets defined before the recipe runs
+
+        it "two_classes_one_dsl resolves to A (alphabetically earliest)" do
+          two_classes_one_dsl = self.two_classes_one_dsl
+          recipe = converge {
+            instance_eval("#{two_classes_one_dsl} 'blah'")
+          }
+          expect(recipe.logged_warnings).to eq ''
+          expect(BaseThingy.created_resource).to eq resource_class_a
+        end
+
+        it "resource_matching_short_name returns B" do
+          expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class_a
+        end
+      end
+
+      context "and another resource named 'Z' with resource_name :two_classes_one_dsl" do
+        let(:resource_class_z) {
+          result = Class.new(BaseThingy) do
+            def self.name
+              "Z"
+            end
+            def self.to_s; name; end
+            def self.inspect; name.inspect; end
+          end
+          result.resource_name two_classes_one_dsl
+          result
+        }
+        before { resource_class_z } # pull on it so it gets defined before the recipe runs
+
+        it "two_classes_one_dsl resolves to B (alphabetically earliest)" do
+          two_classes_one_dsl = self.two_classes_one_dsl
+          recipe = converge {
+            instance_eval("#{two_classes_one_dsl} 'blah'")
+          }
+          expect(recipe.logged_warnings).to eq ''
+          expect(BaseThingy.created_resource).to eq resource_class
+        end
+
+        it "resource_matching_short_name returns B" do
+          expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class
+        end
+
+        context "and a priority array [ Z, B ]" do
+          before do
+            Chef.set_resource_priority_array(two_classes_one_dsl, [ resource_class_z, resource_class ])
+          end
+
+          it "two_classes_one_dsl resolves to Z (respects the priority array)" do
+            two_classes_one_dsl = self.two_classes_one_dsl
+            recipe = converge {
+              instance_eval("#{two_classes_one_dsl} 'blah'")
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq resource_class_z
+          end
+
+          it "resource_matching_short_name returns B" do
+            expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class
+          end
+
+          context "when Z provides(:two_classes_one_dsl) { false }" do
+            before do
+              resource_class_z.provides(two_classes_one_dsl) { false }
+            end
+
+            it "two_classes_one_dsl resolves to B (picks the next thing in the priority array)" do
+              two_classes_one_dsl = self.two_classes_one_dsl
+              recipe = converge {
+                instance_eval("#{two_classes_one_dsl} 'blah'")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_resource).to eq resource_class
+            end
+
+            it "resource_matching_short_name returns B" do
+              expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class
+            end
+          end
+        end
+
+        context "and priority arrays [ B ] and [ Z ]" do
+          before do
+            Chef.set_resource_priority_array(two_classes_one_dsl, [ resource_class ])
+            Chef.set_resource_priority_array(two_classes_one_dsl, [ resource_class_z ])
+          end
+
+          it "two_classes_one_dsl resolves to Z (respects the most recent priority array)" do
+            two_classes_one_dsl = self.two_classes_one_dsl
+            recipe = converge {
+              instance_eval("#{two_classes_one_dsl} 'blah'")
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq resource_class_z
+          end
+
+          it "resource_matching_short_name returns B" do
+            expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class
+          end
+
+          context "when Z provides(:two_classes_one_dsl) { false }" do
+            before do
+              resource_class_z.provides(two_classes_one_dsl) { false }
+            end
+
+            it "two_classes_one_dsl resolves to B (picks the first match from the other priority array)" do
+              two_classes_one_dsl = self.two_classes_one_dsl
+              recipe = converge {
+                instance_eval("#{two_classes_one_dsl} 'blah'")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_resource).to eq resource_class
+            end
+
+            it "resource_matching_short_name returns B" do
+              expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class
+            end
+          end
+        end
+
+        context "and a priority array [ Z ]" do
+          before do
+            Chef.set_resource_priority_array(two_classes_one_dsl, [ resource_class_z ])
+          end
+
+          context "when Z provides(:two_classes_one_dsl) { false }" do
+            before do
+              resource_class_z.provides(two_classes_one_dsl) { false }
+            end
+
+            it "two_classes_one_dsl resolves to B (picks the first match outside the priority array)" do
+              two_classes_one_dsl = self.two_classes_one_dsl
+              recipe = converge {
+                instance_eval("#{two_classes_one_dsl} 'blah'")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_resource).to eq resource_class
+            end
+
+            it "resource_matching_short_name returns B" do
+              expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class
+            end
+          end
+        end
+
+      end
+
+      context "and a provider named 'B' which provides :two_classes_one_dsl" do
+        before do
+          resource_class.send(:define_method, :provider) { nil }
+        end
+
+        let(:provider_class) {
+          result = Class.new(BaseThingy::Provider) do
+            def self.name
+              "B"
+            end
+            def self.to_s; name; end
+            def self.inspect; name.inspect; end
+          end
+          result.provides two_classes_one_dsl
+          result
+        }
+        before { provider_class } # pull on it so it gets defined before the recipe runs
+
+        context "and another provider named 'A'" do
+          let(:provider_class_a) {
+            result = Class.new(BaseThingy::Provider) do
+              def self.name
+                "A"
+              end
+              def self.to_s; name; end
+              def self.inspect; name.inspect; end
+            end
+            result
+          }
+          context "which provides :two_classes_one_dsl" do
+            before { provider_class_a.provides two_classes_one_dsl }
+
+            it "two_classes_one_dsl resolves to A (alphabetically earliest)" do
+              two_classes_one_dsl = self.two_classes_one_dsl
+              recipe = converge {
+                instance_eval("#{two_classes_one_dsl} 'blah'")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_provider).to eq provider_class_a
+            end
+          end
+          context "which provides(:two_classes_one_dsl) { false }" do
+            before { provider_class_a.provides(two_classes_one_dsl) { false } }
+
+            it "two_classes_one_dsl resolves to B (since A declined)" do
+              two_classes_one_dsl = self.two_classes_one_dsl
+              recipe = converge {
+                instance_eval("#{two_classes_one_dsl} 'blah'")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_provider).to eq provider_class
+            end
+          end
+        end
+
+        context "and another provider named 'Z'" do
+          let(:provider_class_z) {
+            result = Class.new(BaseThingy::Provider) do
+              def self.name
+                "Z"
+              end
+              def self.to_s; name; end
+              def self.inspect; name.inspect; end
+            end
+            result
+          }
+          before { provider_class_z } # pull on it so it gets defined before the recipe runs
+
+          context "which provides :two_classes_one_dsl" do
+            before { provider_class_z.provides two_classes_one_dsl }
+
+            it "two_classes_one_dsl resolves to B (alphabetically earliest)" do
+              two_classes_one_dsl = self.two_classes_one_dsl
+              recipe = converge {
+                instance_eval("#{two_classes_one_dsl} 'blah'")
+              }
+              expect(recipe.logged_warnings).to eq ''
+              expect(BaseThingy.created_provider).to eq provider_class
+            end
+
+            context "with a priority array [ Z, B ]" do
+              before { Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class_z, provider_class ] }
+
+              it "two_classes_one_dsl resolves to Z (respects the priority map)" do
+                two_classes_one_dsl = self.two_classes_one_dsl
+                recipe = converge {
+                  instance_eval("#{two_classes_one_dsl} 'blah'")
+                }
+                expect(recipe.logged_warnings).to eq ''
+                expect(BaseThingy.created_provider).to eq provider_class_z
+              end
+            end
+          end
+
+          context "which provides(:two_classes_one_dsl) { false }" do
+            before { provider_class_z.provides(two_classes_one_dsl) { false } }
+
+            context "with a priority array [ Z, B ]" do
+              before { Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class_z, provider_class ] }
+
+              it "two_classes_one_dsl resolves to B (the next one in the priority map)" do
+                two_classes_one_dsl = self.two_classes_one_dsl
+                recipe = converge {
+                  instance_eval("#{two_classes_one_dsl} 'blah'")
+                }
+                expect(recipe.logged_warnings).to eq ''
+                expect(BaseThingy.created_provider).to eq provider_class
+              end
+            end
+
+            context "with priority arrays [ B ] and [ Z ]" do
+              before { Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class_z ] }
+              before { Chef.set_provider_priority_array two_classes_one_dsl, [ provider_class ] }
+
+              it "two_classes_one_dsl resolves to B (the one in the next priority map)" do
+                two_classes_one_dsl = self.two_classes_one_dsl
+                recipe = converge {
+                  instance_eval("#{two_classes_one_dsl} 'blah'")
+                }
+                expect(recipe.logged_warnings).to eq ''
+                expect(BaseThingy.created_provider).to eq provider_class
+              end
+            end
+          end
+        end
+      end
+
+      context "and another resource Blarghle with provides :two_classes_one_dsl, os: 'blarghle'" do
+        let(:resource_class_blarghle) {
+          result = Class.new(BaseThingy) do
+            def self.name
+              "Blarghle"
+            end
+            def self.to_s; name; end
+            def self.inspect; name.inspect; end
+          end
+          result.resource_name two_classes_one_dsl
+          result.provides two_classes_one_dsl, os: 'blarghle'
+          result
+        }
+        before { resource_class_blarghle } # pull on it so it gets defined before the recipe runs
+
+        it "on os = blarghle, two_classes_one_dsl resolves to Blarghle" do
+          two_classes_one_dsl = self.two_classes_one_dsl
+          recipe = converge {
+            # this is an ugly way to test, make Cheffish expose node attrs
+            run_context.node.automatic[:os] = 'blarghle'
+            instance_eval("#{two_classes_one_dsl} 'blah' do; end")
+          }
+          expect(recipe.logged_warnings).to eq ''
+          expect(BaseThingy.created_resource).to eq resource_class_blarghle
+        end
+
+        it "on os = linux, two_classes_one_dsl resolves to B" do
+          two_classes_one_dsl = self.two_classes_one_dsl
+          recipe = converge {
+            # this is an ugly way to test, make Cheffish expose node attrs
+            run_context.node.automatic[:os] = 'linux'
+            instance_eval("#{two_classes_one_dsl} 'blah' do; end")
+          }
+          expect(recipe.logged_warnings).to eq ''
+          expect(BaseThingy.created_resource).to eq resource_class
+        end
+      end
+    end
+
+    context "with a resource MyResource" do
+      let(:resource_class) { Class.new(BaseThingy) do
+        def self.called_provides
+          @called_provides
+        end
+        def to_s
+          "MyResource"
+        end
+      end }
+      let(:my_resource) { :"my_resource#{Namer.current_index}" }
+      let(:blarghle_blarghle_little_star) { :"blarghle_blarghle_little_star#{Namer.current_index}" }
+
+      context "with resource_name :my_resource" do
+        before {
+          resource_class.resource_name my_resource
+        }
+
+        context "with provides? returning true to my_resource" do
+          before {
+            my_resource = self.my_resource
+            resource_class.define_singleton_method(:provides?) do |node, resource_name|
+              @called_provides = true
+              resource_name == my_resource
+            end
+          }
+
+          it "my_resource returns the resource and calls provides?, but does not emit a warning" do
+            dsl_name = self.my_resource
+            recipe = converge {
+              instance_eval("#{dsl_name} 'foo'")
+            }
+            expect(recipe.logged_warnings).to eq ''
+            expect(BaseThingy.created_resource).to eq resource_class
+            expect(resource_class.called_provides).to be_truthy
+          end
+        end
+
+        context "with provides? returning true to blarghle_blarghle_little_star and not resource_name" do
+          before do
+            blarghle_blarghle_little_star = self.blarghle_blarghle_little_star
+            resource_class.define_singleton_method(:provides?) do |node, resource_name|
+              @called_provides = true
+              resource_name == blarghle_blarghle_little_star
+            end
+          end
+
+          it "my_resource does not return the resource" do
+            dsl_name = self.my_resource
+            expect_converge {
+              instance_eval("#{dsl_name} 'foo'")
+            }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+            expect(resource_class.called_provides).to be_truthy
+          end
+
+          it "blarghle_blarghle_little_star 'foo' returns the resource and emits a warning" do
+            Chef::Config[:treat_deprecation_warnings_as_errors] = false
+            dsl_name = self.blarghle_blarghle_little_star
+            recipe = converge {
+              instance_eval("#{dsl_name} 'foo'")
+            }
+            expect(recipe.logged_warnings).to include "WARN: #{resource_class}.provides? returned true when asked if it provides DSL #{dsl_name}, but provides :#{dsl_name} was never called!"
+            expect(BaseThingy.created_resource).to eq resource_class
+            expect(resource_class.called_provides).to be_truthy
+          end
+        end
+
+        context "and a provider" do
+          let(:provider_class) do
+            Class.new(BaseThingy::Provider) do
+              def self.name
+                "MyProvider"
+              end
+              def self.to_s; name; end
+              def self.inspect; name.inspect; end
+              def self.called_provides
+                @called_provides
+              end
+            end
+          end
+
+          before do
+            resource_class.send(:define_method, :provider) { nil }
+          end
+
+          context "that provides :my_resource" do
+            before do
+              provider_class.provides my_resource
+            end
+
+            context "with supports? returning true" do
+              before do
+                provider_class.define_singleton_method(:supports?) { |resource,action| true }
+              end
+
+              it "my_resource runs the provider and does not emit a warning" do
+                my_resource = self.my_resource
+                recipe = converge {
+                  instance_eval("#{my_resource} 'foo'")
+                }
+                expect(recipe.logged_warnings).to eq ''
+                expect(BaseThingy.created_provider).to eq provider_class
+              end
+
+              context "and another provider supporting :my_resource with supports? false" do
+                let(:provider_class2) do
+                  Class.new(BaseThingy::Provider) do
+                    def self.name
+                      "MyProvider2"
+                    end
+                    def self.to_s; name; end
+                    def self.inspect; name.inspect; end
+                    def self.called_provides
+                      @called_provides
+                    end
+                    provides my_resource
+                    def self.supports?(resource, action)
+                      false
+                    end
+                  end
+                end
+
+                it "my_resource runs the first provider" do
+                  my_resource = self.my_resource
+                  recipe = converge {
+                    instance_eval("#{my_resource} 'foo'")
+                  }
+                  expect(recipe.logged_warnings).to eq ''
+                  expect(BaseThingy.created_provider).to eq provider_class
+                end
+              end
+            end
+
+            context "with supports? returning false" do
+              before do
+                provider_class.define_singleton_method(:supports?) { |resource,action| false }
+              end
+
+              # TODO no warning? ick
+              it "my_resource runs the provider anyway" do
+                my_resource = self.my_resource
+                recipe = converge {
+                  instance_eval("#{my_resource} 'foo'")
+                }
+                expect(recipe.logged_warnings).to eq ''
+                expect(BaseThingy.created_provider).to eq provider_class
+              end
+
+              context "and another provider supporting :my_resource with supports? true" do
+                let(:provider_class2) do
+                  my_resource = self.my_resource
+                  Class.new(BaseThingy::Provider) do
+                    def self.name
+                      "MyProvider2"
+                    end
+                    def self.to_s; name; end
+                    def self.inspect; name.inspect; end
+                    def self.called_provides
+                      @called_provides
+                    end
+                    provides my_resource
+                    def self.supports?(resource, action)
+                      true
+                    end
+                  end
+                end
+                before { provider_class2 } # make sure the provider class shows up
+
+                it "my_resource runs the other provider" do
+                  my_resource = self.my_resource
+                  recipe = converge {
+                    instance_eval("#{my_resource} 'foo'")
+                  }
+                  expect(recipe.logged_warnings).to eq ''
+                  expect(BaseThingy.created_provider).to eq provider_class2
+                end
+              end
+            end
+          end
+
+          context "with provides? returning true" do
+            before {
+              my_resource = self.my_resource
+              provider_class.define_singleton_method(:provides?) do |node, resource|
+                @called_provides = true
+                resource.declared_type == my_resource
+              end
+            }
+
+            context "that provides :my_resource" do
+              before {
+                provider_class.provides my_resource
+              }
+
+              it "my_resource calls the provider (and calls provides?), but does not emit a warning" do
+                my_resource = self.my_resource
+                recipe = converge {
+                  instance_eval("#{my_resource} 'foo'")
+                }
+                expect(recipe.logged_warnings).to eq ''
+                expect(BaseThingy.created_provider).to eq provider_class
+                expect(provider_class.called_provides).to be_truthy
+              end
+            end
+
+            context "that does not call provides :my_resource" do
+              it "my_resource calls the provider (and calls provides?), and emits a warning" do
+                Chef::Config[:treat_deprecation_warnings_as_errors] = false
+                my_resource = self.my_resource
+                recipe = converge {
+                  instance_eval("#{my_resource} 'foo'")
+                }
+                expect(recipe.logged_warnings).to include("WARN: #{provider_class}.provides? returned true when asked if it provides DSL #{my_resource}, but provides :#{my_resource} was never called!")
+                expect(BaseThingy.created_provider).to eq provider_class
+                expect(provider_class.called_provides).to be_truthy
+              end
+            end
+          end
+
+          context "with provides? returning false to my_resource" do
+            before {
+              my_resource = self.my_resource
+              provider_class.define_singleton_method(:provides?) do |node, resource|
+                @called_provides = true
+                false
+              end
+            }
+
+            context "that provides :my_resource" do
+              before {
+                provider_class.provides my_resource
+              }
+
+              it "my_resource fails to find a provider (and calls provides)" do
+                my_resource = self.my_resource
+                expect_converge {
+                  instance_eval("#{my_resource} 'foo'")
+                }.to raise_error(Chef::Exceptions::ProviderNotFound)
+                expect(provider_class.called_provides).to be_truthy
+              end
+            end
+
+            context "that does not provide :my_resource" do
+              it "my_resource fails to find a provider (and calls provides)" do
+                my_resource = self.my_resource
+                expect_converge {
+                  instance_eval("#{my_resource} 'foo'")
+                }.to raise_error(Chef::Exceptions::ProviderNotFound)
+                expect(provider_class.called_provides).to be_truthy
+              end
+            end
+          end
+        end
+      end
+    end
   end
 
   before(:all) { Namer.current_index = 0 }
@@ -967,6 +1477,31 @@ describe "Recipe DSL methods" do
         expect(resource_class.actions).to eq [ :nothing, :create ]
         expect(resource.allowed_actions).to eq [ :nothing, :create ]
       end
+    end
+  end
+
+  context "with a dynamically defined resource and regular provider" do
+    before(:context) do
+      Class.new(Chef::Resource) do
+        resource_name :lw_resource_with_hw_provider_test_case
+        default_action :create
+        attr_accessor :created_provider
+      end
+      class Chef::Provider::LwResourceWithHwProviderTestCase < Chef::Provider
+        def load_current_resource
+        end
+        def action_create
+          new_resource.created_provider = self.class
+        end
+      end
+    end
+
+    it "looks up the provider in Chef::Provider converting the resource name from snake case to camel case" do
+      resource = nil
+      recipe = converge {
+        resource = lw_resource_with_hw_provider_test_case 'blah' do; end
+      }
+      expect(resource.created_provider).to eq(Chef::Provider::LwResourceWithHwProviderTestCase)
     end
   end
 end

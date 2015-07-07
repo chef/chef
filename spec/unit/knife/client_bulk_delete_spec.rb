@@ -45,7 +45,7 @@ describe Chef::Knife::ClientBulkDelete do
     clients = Hash.new
 
     nonvalidator_client_names.each do |client_name|
-      client = Chef::ApiClient.new()
+      client = Chef::ApiClientV1.new()
       client.name(client_name)
       allow(client).to receive(:destroy).and_return(true)
       clients[client_name] = client
@@ -59,7 +59,7 @@ describe Chef::Knife::ClientBulkDelete do
     clients = Hash.new
 
     validator_client_names.each do |validator_client_name|
-      validator_client = Chef::ApiClient.new()
+      validator_client = Chef::ApiClientV1.new()
       validator_client.name(validator_client_name)
       allow(validator_client).to receive(:validator).and_return(true)
       allow(validator_client).to receive(:destroy).and_return(true)
@@ -75,7 +75,7 @@ describe Chef::Knife::ClientBulkDelete do
   }
 
   before(:each) do
-    allow(Chef::ApiClient).to receive(:list).and_return(clients)
+    allow(Chef::ApiClientV1).to receive(:list).and_return(clients)
   end
 
   describe "run" do
@@ -89,7 +89,7 @@ describe Chef::Knife::ClientBulkDelete do
 
     describe "with any clients" do
       it "should get the list of the clients" do
-        expect(Chef::ApiClient).to receive(:list)
+        expect(Chef::ApiClientV1).to receive(:list)
         knife.run
       end
 

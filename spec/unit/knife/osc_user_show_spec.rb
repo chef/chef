@@ -32,7 +32,7 @@ describe Chef::Knife::OscUserShow do
   end
 
   it 'loads and displays the user' do
-    expect(Chef::OscUser).to receive(:load).with('my_user').and_return(@user_mock)
+    expect(Chef::User).to receive(:load).with('my_user').and_return(@user_mock)
     expect(@knife).to receive(:format_for_display).with(@user_mock)
     @knife.run
   end

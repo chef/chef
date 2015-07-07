@@ -23,7 +23,7 @@ class Chef
     class ClientList < Knife
 
       deps do
-        require 'chef/api_client'
+        require 'chef/api_client_v1'
         require 'chef/json_compat'
       end
 
@@ -35,7 +35,7 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        output(format_list_for_display(Chef::ApiClient.list))
+        output(format_list_for_display(Chef::ApiClientV1.list))
       end
     end
   end

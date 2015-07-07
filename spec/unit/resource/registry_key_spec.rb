@@ -45,7 +45,7 @@ describe Chef::Resource::RegistryKey, "initialize" do
   end
 
   it "should set action to :create" do
-    expect(@resource.action).to eql(:create)
+    expect(@resource.action).to eql([:create])
   end
 
   %w{create create_if_missing delete delete_key}.each do |action|

@@ -28,7 +28,7 @@ class Chef
     class OscUserEdit < Knife
 
       deps do
-        require 'chef/osc_user'
+        require 'chef/user'
         require 'chef/json_compat'
       end
 
@@ -43,10 +43,10 @@ class Chef
           exit 1
         end
 
-        original_user = Chef::OscUser.load(@user_name).to_hash
+        original_user = Chef::User.load(@user_name).to_hash
         edited_user = edit_data(original_user)
         if original_user != edited_user
-          user = Chef::OscUser.from_hash(edited_user)
+          user = Chef::User.from_hash(edited_user)
           user.update
           ui.msg("Saved #{user}.")
         else

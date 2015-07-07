@@ -28,7 +28,7 @@ class Chef
     class OscUserList < Knife
 
       deps do
-        require 'chef/osc_user'
+        require 'chef/user'
         require 'chef/json_compat'
       end
 
@@ -40,7 +40,7 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        output(format_list_for_display(Chef::OscUser.list))
+        output(format_list_for_display(Chef::User.list))
       end
     end
   end

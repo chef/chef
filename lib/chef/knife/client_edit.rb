@@ -23,7 +23,7 @@ class Chef
     class ClientEdit < Knife
 
       deps do
-        require 'chef/api_client'
+        require 'chef/api_client_v1'
         require 'chef/json_compat'
       end
 
@@ -38,7 +38,15 @@ class Chef
           exit 1
         end
 
-        edit_object(Chef::ApiClient, @client_name)
+        original_data = Chef::ApiClientV1.load(@client_name).to_hash
+        edited_client = edit_data(original_data)
+        if original_data != edited_client
+          client = Chef::ApiClientV1.from_hash(edited_client)
+          client.save
+          ui.msg("Saved #{client}.")
+        else
+          ui.msg("Client unchanged, not saving.")
+        end
       end
     end
   end

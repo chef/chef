@@ -25,6 +25,9 @@ class Chef
   class Provider
     class Service
       class Upstart < Chef::Provider::Service::Simple
+
+        provides :service, platform_family: 'debian', override: true
+
         UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
 
         def self.provides?(node, resource)

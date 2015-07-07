@@ -622,7 +622,7 @@ describe Chef::Provider::Deploy do
 
       gems = @provider.send(:gem_packages)
 
-      expect(gems.map { |g| g.action }).to eq([:install])
+      expect(gems.map { |g| g.action }).to eq([%i{install}])
       expect(gems.map { |g| g.name }).to eq(%w{eventmachine})
       expect(gems.map { |g| g.version }).to eq(%w{0.12.9})
     end

@@ -105,52 +105,80 @@ class Chef
     #
     # Whether this DSL is provided by the given resource_class.
     #
+    # Does NOT call provides? on the resource (it is assumed this is being
+    # called *from* provides?).
+    #
     # @api private
     def provided_by?(resource_class)
-      !prioritized_handlers.include?(resource_class)
+      potential_handlers.include?(resource_class)
+    end
+
+    #
+    # Whether the given handler attempts to provide the resource class at all.
+    #
+    # @api private
+    def self.includes_handler?(resource_name, resource_class)
+      handler_map.list(nil, resource_name).include?(resource_class)
     end
 
     protected
 
+    def self.priority_map
+      Chef.resource_priority_map
+    end
+
+    def self.handler_map
+      Chef.resource_handler_map
+    end
+
     def priority_map
-      Chef::Platform::ResourcePriorityMap.instance
+      Chef.resource_priority_map
+    end
+
+    def handler_map
+      Chef.resource_handler_map
+    end
+
+    # @api private
+    def potential_handlers
+      handler_map.list(node, resource_name, canonical: canonical).uniq
+    end
+
+    def enabled_handlers
+      potential_handlers.select { |handler| !overrode_provides?(handler) || handler.provides?(node, resource_name) }
     end
 
     def prioritized_handlers
-      @prioritized_handlers ||=
-        priority_map.list_handlers(node, resource_name, canonical: canonical)
+      @prioritized_handlers ||= begin
+        enabled_handlers = self.enabled_handlers
+
+        prioritized = priority_map.list(node, resource_name, canonical: canonical).flatten(1)
+        prioritized &= enabled_handlers # Filter the priority map by the actual enabled handlers
+        prioritized |= enabled_handlers # Bring back any handlers that aren't in the priority map, at the *end* (ordered set)
+        prioritized
+      end
+    end
+
+    def overrode_provides?(handler)
+      handler.method(:provides?).owner != Chef::Resource.method(:provides?).owner
     end
 
     module Deprecated
       # return a deterministically sorted list of Chef::Resource subclasses
-      # @deprecated Now prioritized_handlers does its own work (more efficiently)
       def resources
         Chef::Resource.sorted_descendants
       end
 
-      # A list of all handlers
-      # @deprecated Now prioritized_handlers does its own work
       def enabled_handlers
-        Chef::Log.deprecation("enabled_handlers is deprecated.  If you are implementing a ResourceResolver, use provided_handlers.  If you are not, use Chef::ResourceResolver.list(#{resource_name.inspect}, node: <node>)")
-        resources.select { |klass| klass.provides?(node, resource_name) }
-      end
-
-      protected
-
-      # A list of all handlers for the given DSL.  If there are no handlers in
-      # the map, we still check all descendants of Chef::Resource for backwards
-      # compatibility purposes.
-      def prioritized_handlers
-        @prioritized_handlers ||= super ||
-          resources.select do |klass|
-            # Don't bother calling provides? unless it's overridden. We already
-            # know prioritized_handlers
-            if klass.method(:provides?).owner != Chef::Resource && klass.provides?(node, resource_name)
-              Chef::Log.deprecation("Resources #{provided.join(", ")} are marked as providing DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
-              Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
-              true
-            end
+        handlers = super
+        if handlers.empty?
+          handlers = resources.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource_name) }
+          handlers.each do |handler|
+            Chef::Log.deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
+            Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
           end
+        end
+        handlers
       end
     end
     prepend Deprecated

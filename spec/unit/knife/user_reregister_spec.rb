@@ -26,7 +26,7 @@ describe Chef::Knife::UserReregister do
   before do
     Chef::Knife::UserReregister.load_deps
     knife.name_args = [ 'a_user' ]
-    allow(Chef::User).to receive(:load).and_return(user_mock)
+    allow(Chef::UserV1).to receive(:load).and_return(user_mock)
     allow(knife.ui).to receive(:stdout).and_return(stdout)
     allow(knife.ui).to receive(:stderr).and_return(stdout)
     allow(user_mock).to receive(:username).and_return('a_user')

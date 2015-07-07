@@ -26,6 +26,7 @@ class Chef
     class Package
       class Homebrew < Chef::Provider::Package
 
+        provides :package, os: "darwin", override: true
         provides :homebrew_package
 
         include Chef::Mixin::HomebrewUser
