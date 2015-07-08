@@ -44,10 +44,12 @@ end
 # For now we resolve it by using an older version of the cert. This only works
 # if you have this version of the CA bundle stored via S3 caching (which Chef
 # Software does).
-override :cacerts, version: '2014.08.20'
+override :cacerts,        version: '2014.08.20'
 
 # Uncomment to pin the chef version
-# override :chef,           version: "12.3.0"
+override :chef,           version: "12.4.1"
+override :chefdk,         version: '0.7.0.rc.2'
+
 override :berkshelf,      version: "v3.2.4"
 override :bundler,        version: "1.10.0"
 override :'chef-vault',   version: "v2.6.1"
@@ -66,7 +68,6 @@ override :ruby,           version: "2.1.6"
 override :'ruby-windows', version: "2.1.6"
 override :'ruby-windows-devkit', version: "4.7.2-20130224-1151"
 override :'openssl-windows', version: "1.0.1m"
-#override :'ruby-windows', version: "2.0.0-p451"
 ######
 
 ######
