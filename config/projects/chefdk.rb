@@ -76,7 +76,7 @@ override :'openssl-windows', version: "1.0.1m"
 override :rubygems,       version: "2.4.4"
 ######
 
-override :'test-kitchen', version: "v1.4.0"
+override :'test-kitchen', version: "v1.4.1"
 override :'kitchen-vagrant', version: "v0.18.0"
 override :yajl,           version: "1.2.1"
 override :zlib,           version: "1.2.8"
