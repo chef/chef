@@ -14,7 +14,7 @@ skip_tags: true
 branches:
   only:
     - master
-    - 12-stable
+    - 12.4-stable
 
 cache:
   - C:\Ruby200\lib\ruby\gems\2.0.0
