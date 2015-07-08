@@ -236,12 +236,17 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
       let(:config_content) { "" }
 
+      # We need to keep a reference to the tempfile because while #close does
+      # not unlink the file, the object being GC'd will.
+      let(:tempfile) do
+        Tempfile.new("Chef-WorkstationConfigLoader-rspec-test").tap do |t|
+          t.print(config_content)
+          t.close
+        end
+      end
+
       let(:explicit_config_location) do
-        # could use described_class, but remove all ':' from the path if so.
-        t = Tempfile.new("Chef-WorkstationConfigLoader-rspec-test")
-        t.print(config_content)
-        t.close
-        t.path
+        tempfile.path
       end
 
       after { File.unlink(explicit_config_location) if File.exist?(explicit_config_location) }
