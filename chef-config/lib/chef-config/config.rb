@@ -720,6 +720,14 @@ module ChefConfig
     # break Chef community cookbooks and is very highly discouraged.
     default :ruby_encoding, Encoding::UTF_8
 
+    # Default resource cloning behavior when an identically named resource is found on the resource collection.
+    #  :clone  - CHEF-3694-style resource cloning behavior
+    #  :rewind - chef-rewind style behavior where the prior resource is updated in-place in the resource collection
+    #  :none   - no cloning.
+    #
+    # Setting the default to :rewind is not recommended.
+    default :default_resource_cloning_behavior, :clone
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
