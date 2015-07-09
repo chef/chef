@@ -42,6 +42,14 @@ describe Chef::Node do
     expect([n3, n1, n2].sort).to eq([n1, n2, n3])
   end
 
+  it "should share identity only with others of the same name" do
+    n1 = Chef::Node.build('foo')
+    n2 = Chef::Node.build('foo')
+    n3 = Chef::Node.build('bar')
+    expect(n1).to eq(n2)
+    expect(n1).not_to eq(n3)
+  end
+
   describe "when the node does not exist on the server" do
     before do
       response = OpenStruct.new(:code => '404')

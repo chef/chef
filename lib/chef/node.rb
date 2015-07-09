@@ -550,6 +550,14 @@ class Chef
       "node[#{name}]"
     end
 
+    def ==(other)
+      if other.kind_of?(self.class)
+         self.name == other.name
+      else
+        false
+      end
+    end
+
     def <=>(other_node)
       self.name <=> other_node.name
     end
