@@ -51,7 +51,7 @@ end
 override :cacerts, version: '2014.08.20'
 
 override :bundler,        version: "1.7.2"
-override :ruby,           version: "2.1.6"
+override :ruby,           version: "2.2.2"
 ######
 # Ruby 2.1.3 is currently not working on windows due to:
 # https://github.com/ffi/ffi/issues/375
