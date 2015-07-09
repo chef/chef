@@ -449,9 +449,9 @@ class Chef::Application::Client < Chef::Application
   end
 
   def audit_mode_settings_explanation
-    "\n* To enable audit mode after converge, use command line option `--audit-mode enabled` or set `:audit_mode = :enabled` in your config file." +
-    "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `:audit_mode = :disabled` in your config file." +
-    "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `:audit_mode = :audit_only` in your config file." +
+    "\n* To enable audit mode after converge, use command line option `--audit-mode enabled` or set `audit_mode :enabled` in your config file." +
+    "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `audit_mode :disabled` in your config file." +
+    "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `audit_mode :audit_only` in your config file." +
     "\nAudit mode is disabled by default."
   end
 
