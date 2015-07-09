@@ -19,6 +19,10 @@
 require 'spec_helper'
 
 describe Chef::Provider::Service::Upstart do
+  let(:shell_out_success) do
+    double('shell_out_with_systems_locale', :exitstatus => 0, :error? => false)
+  end
+
   before(:each) do
     @node =Chef::Node.new
     @node.name('upstarter')
@@ -173,7 +177,7 @@ describe Chef::Provider::Service::Upstart do
       end
 
       it "should run the services status command if one has been specified" do
-        allow(@provider).to receive(:shell_out!).with("/bin/chefhasmonkeypants status").and_return(0)
+        allow(@provider).to receive(:shell_out!).with("/bin/chefhasmonkeypants status").and_return(shell_out_success)
         expect(@current_resource).to receive(:running).with(true)
         @provider.load_current_resource
       end
@@ -246,7 +250,7 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should call '/sbin/start service_name' if no start command is specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(0)
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(shell_out_success)
       @provider.start_service()
     end
 
@@ -261,7 +265,7 @@ describe Chef::Provider::Service::Upstart do
       @new_resource.parameters({ "OSD_ID" => "2" })
       @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
       @provider.current_resource = @current_resource
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start rsyslog OSD_ID=2").and_return(0)
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start rsyslog OSD_ID=2").and_return(shell_out_success)
       @provider.start_service()
     end
 
@@ -274,13 +278,13 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call '/sbin/restart service_name' if no restart command is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/restart #{@new_resource.service_name}").and_return(0)
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/restart #{@new_resource.service_name}").and_return(shell_out_success)
       @provider.restart_service()
     end
 
     it "should call '/sbin/start service_name' if restart_service is called for a stopped service" do
       allow(@current_resource).to receive(:running).and_return(false)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(0)
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(shell_out_success)
       @provider.restart_service()
     end
 
@@ -293,7 +297,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call '/sbin/reload service_name' if no reload command is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/reload #{@new_resource.service_name}").and_return(0)
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/reload #{@new_resource.service_name}").and_return(shell_out_success)
       @provider.reload_service()
     end
 
@@ -306,7 +310,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call '/sbin/stop service_name' if no stop command is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}").and_return(0)
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}").and_return(shell_out_success)
       @provider.stop_service()
     end
 
