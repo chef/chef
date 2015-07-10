@@ -18,6 +18,7 @@
 
 require 'ffi_yajl'
 require 'chef/util/path_helper'
+require 'chef/data_bag_item'
 
 class Chef
   class Knife
