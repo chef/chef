@@ -162,14 +162,14 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     end
 
     it "builds a node with first_boot_attributes if they're given" do
-      knife_config[:first_boot_attributes] = {:baz => :quux}
-      expect(node).to receive(:normal_attrs=).with({:baz=>:quux})
+      knife_config[:first_boot_attributes] = { 'baz' => 'quux' }
+      expect(node).to receive(:normal_attrs=).with({ 'baz' => 'quux' })
       expect(node).to receive(:run_list).with([])
       client_builder.run
     end
 
     shared_examples "first-boot environment" do
-      let(:first_boot_attributes) {{ chef_environment: first_boot_environment }}
+      let(:first_boot_attributes) {{ 'chef_environment' => first_boot_environment }}
 
       let(:first_boot_environment) { "first_boot_environment" }
 
@@ -193,11 +193,11 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       end
 
       context "when environment is not the only first-boot attribute" do
-        let(:first_boot_attributes) {{ chef_environment: first_boot_environment,
-                                       baz: :quux }}
+        let(:first_boot_attributes) {{ 'chef_environment' => first_boot_environment,
+                                       'baz' => 'quux' }}
 
         it "saves the first-boot attributes, but does not save environment" do
-          expect(node).to receive(:normal_attrs=).with({ baz: :quux })
+          expect(node).to receive(:normal_attrs=).with({ 'baz' => 'quux' })
           allow(node).to receive(:environment)
           client_builder.run
         end

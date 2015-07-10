@@ -98,14 +98,14 @@ EXPECTED
   end
 
   describe "when JSON attributes are given" do
-    let(:first_boot_attributes) { {baz: :quux} }
+    let(:first_boot_attributes) {{ 'baz' => 'quux' }}
     let(:config) { {:first_boot_attributes => first_boot_attributes} }
     it "adds the attributes to first_boot" do
       expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json({:baz => :quux, :run_list => run_list}))
     end
 
     context "when an environment is specified" do
-      let(:first_boot_attributes) { {chef_environment: "proderption"} }
+      let(:first_boot_attributes) {{ 'chef_environment' => 'proderption' }}
       it "starts chef in the configured environment" do
         expect(bootstrap_context.start_chef).to eq('chef-client -j /etc/chef/first-boot.json -E proderption')
       end
