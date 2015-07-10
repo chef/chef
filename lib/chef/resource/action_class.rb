@@ -20,7 +20,7 @@ require 'chef/exceptions'
 
 class Chef
   class Resource
-    module ActionProvider
+    module ActionClass
       #
       # If load_current_value! is defined on the resource, use that.
       #
@@ -63,6 +63,20 @@ class Chef
       end
 
       module ClassMethods
+        #
+        # The Chef::Resource class this ActionClass was declared against.
+        #
+        # @return [Class] The Chef::Resource class this ActionClass was declared against.
+        #
+        attr_accessor :resource_class
+
+        def to_s
+          "#{resource_class} action provider"
+        end
+
+        def inspect
+          to_s
+        end
       end
     end
   end
