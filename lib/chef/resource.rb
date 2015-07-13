@@ -173,6 +173,7 @@ class Chef
     #
     def action(arg=nil)
       if arg
+        arg = arg.call if arg.respond_to?(:call)
         arg = Array(arg).map(&:to_sym)
         arg.each do |action|
           validate(
