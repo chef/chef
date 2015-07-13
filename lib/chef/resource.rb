@@ -1367,7 +1367,7 @@ class Chef
     # @return The Action class implementing the action
     #
     def self.action(action, &recipe_block)
-      action = action.to_sym
+      action = action.respond_to?(:call) ? action.call.to_sym : action.to_sym
       new_action_provider_class.action(action, &recipe_block)
       self.allowed_actions += [ action ]
       default_action action if Array(default_action) == [:nothing]
