@@ -387,7 +387,7 @@ class Chef
           command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -SH #{command}" : "sudo -H #{command}"
         end
 
-        Chef::Log.debug("Bootstrap rendered command is: ")
+        Chef::Log.debug("Bootstrap command has rendered as: ")
         Chef::Log.debug(command)
 
         command
