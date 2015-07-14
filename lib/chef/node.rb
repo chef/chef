@@ -315,6 +315,7 @@ class Chef
     # Consumes the combined run_list and other attributes in +attrs+
     def consume_attributes(attrs)
       normal_attrs_to_merge = consume_run_list(attrs)
+      normal_attrs_to_merge = consume_chef_environment(normal_attrs_to_merge)
       Chef::Log.debug("Applying attributes from json file")
       self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs,normal_attrs_to_merge)
       self.tags # make sure they're defined
@@ -343,6 +344,24 @@ class Chef
         end
         Chef::Log.info("Setting the run_list to #{new_run_list.to_s} from CLI options")
         run_list(new_run_list)
+      end
+      attrs
+    end
+
+    # chef_environment when set in -j JSON will take precedence over
+    # -E ENVIRONMENT. Ideally, IMO, the order of precedence should be (lowest to
+    #  highest):
+    #   config_file
+    #   -j JSON
+    #   -E ENVIRONMENT
+    # so that users could reuse their JSON and override the chef_environment
+    # configured within it with -E ENVIRONMENT. Because command line options are
+    # merged with Chef::Config there is currently no way to distinguish between
+    # an environment set via config from an environment set via command line.
+    def consume_chef_environment(attrs)
+      attrs = attrs ? attrs.dup : {}
+      if env = attrs.delete("chef_environment")
+        chef_environment(env)
       end
       attrs
     end
