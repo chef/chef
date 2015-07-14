@@ -128,7 +128,7 @@ class Chef
             ::Win32::Service.configure(
               :service_name     => @service_name,
               :delayed_start    => @delayed_start
-            )
+            ) unless @delayed_start.nil?
             puts "Service '#{@service_name}' has successfully been installed."
           end
         when 'status'

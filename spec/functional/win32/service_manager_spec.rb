@@ -43,7 +43,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
     end
 
     it "throws an error with required missing options" do
-      test_service.each do |key,value|
+      [:service_name, :service_display_name, :service_description, :service_file_path].each do |key|
         service_def = test_service.dup
         service_def.delete(key)
 
