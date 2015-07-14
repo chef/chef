@@ -163,6 +163,7 @@ E
         expect(ssl_check).to receive(:verify_X509).and_return(true) # X509 valid certs (no warn)
         expect(ssl_socket).to receive(:connect) # no error
         expect(ssl_socket).to receive(:post_connection_check).with("foo.example.com") # no error
+        expect(ssl_socket).to receive(:hostname=).with("foo.example.com") # no error
       end
 
       it "prints a success message" do
@@ -197,6 +198,7 @@ E
           expect(ssl_socket).to receive(:post_connection_check).
             with("foo.example.com").
             and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:hostname=).with("foo.example.com") # no error
           expect(ssl_socket_for_debug).to receive(:connect)
           expect(ssl_socket_for_debug).to receive(:peer_cert).and_return(self_signed_crt)
         end
@@ -215,6 +217,8 @@ E
           expect(ssl_check).to receive(:verify_X509).and_return(true) # X509 valid certs
           expect(ssl_socket).to receive(:connect).
             and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:hostname=).
+            with("foo.example.com") # no error
           expect(ssl_socket_for_debug).to receive(:connect)
           expect(ssl_socket_for_debug).to receive(:peer_cert).and_return(self_signed_crt)
         end
