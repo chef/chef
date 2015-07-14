@@ -29,6 +29,7 @@ another component.
 ### Maintainers
 
 * [Bryan McLellan](https://github.com/btm)
+* [Noah Kantrowitz](https://github.com/coderanger)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
 * [AJ Christensen](https://github.com/fujin)
 * [Phil Dibowitz](https://github.com/jaymzh)
@@ -189,4 +190,5 @@ The specific components of Chef related to a given platform - including (but not
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Ryan Cragun](https://github.com/ryancragun)
 
