@@ -369,6 +369,21 @@ describe "Chef::Resource#identity and #state" do
       end
     end
 
+    context "When state_properties happens before properties are declared" do
+      before do
+        resource_class.class_eval do
+          state_properties :x
+          property :x
+        end
+      end
+      it "the property works and is in state_properties" do
+        expect(resource_class.state_properties).to include(resource_class.properties[:x])
+        resource.x = 1
+        expect(resource.x).to eq 1
+        expect(resource.state_for_resource_reporter).to eq(x: 1)
+      end
+    end
+
     with_property ":x, Integer, identity: true" do
       it "state_properties(:x) leaves the property in desired_state" do
         resource_class.state_properties(:x)

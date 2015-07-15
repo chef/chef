@@ -779,6 +779,7 @@ class Chef
     def self.property(name, type=NOT_PASSED, **options)
       name = name.to_sym
 
+      options[:instance_variable_name] = :"@#{name}" if !options.has_key?(:instance_variable_name)
       options.merge!(name: name, declared_in: self)
 
       if type == NOT_PASSED
@@ -1002,8 +1003,8 @@ class Chef
           end
         end
 
-        # If state_attrs *excludes* something which is currently part of the
-        # identity, mark it as identity: false.
+        # If identity_properties *excludes* something which is currently part of
+        # the identity, mark it as identity: false.
         properties.each do |name,property|
           if property.identity? && !names.include?(name)
             self.property name, identity: false
