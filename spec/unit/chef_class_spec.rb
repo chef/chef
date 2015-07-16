@@ -88,4 +88,27 @@ describe "Chef class" do
       expect(Chef.node).to eql(node)
     end
   end
+
+  context '#event_handler' do
+    it 'adds a new handler' do
+      x = 1
+      Chef.event_handler do
+        on :converge_start do
+          x = 2
+        end
+      end
+      expect(Chef::Config[:event_handlers]).to_not be_empty
+      Chef::Config[:event_handlers].first.send(:converge_start)
+      expect(x).to eq(2)
+    end
+
+    it 'raise error if unknown event type is passed' do
+      expect do
+        Chef.event_handler do
+          on :yolo do
+          end
+        end
+      end.to raise_error(Chef::Exceptions::InvalidEventType)
+    end
+  end
 end

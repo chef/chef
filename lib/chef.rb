@@ -31,5 +31,5 @@ require 'chef/daemon'
 require 'chef/run_status'
 require 'chef/handler'
 require 'chef/handler/json_file'
-
+require 'chef/event_dispatch/dsl'
 require 'chef/chef_class'
