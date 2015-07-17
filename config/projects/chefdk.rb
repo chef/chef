@@ -47,8 +47,8 @@ end
 override :cacerts,        version: '2014.08.20'
 
 # Uncomment to pin the chef version
-#override :chef,           version: "12.4.1"
-#override :chefdk,         version: '0.7.0.rc.2'
+override :chef,           version: "12.4.1"
+override :chefdk,         version: '0.7.0.rc.3'
 
 override :berkshelf,      version: "v3.2.4"
 override :bundler,        version: "1.10.0"
@@ -87,7 +87,7 @@ override :zlib,           version: "1.2.8"
 override :'chef-provisioning-fog', version: "v0.13.2"
 override :'chef-provisioning-vagrant', version: "v0.8.3"
 override :'chef-provisioning-azure', version: "v0.3.2"
-override :'chef-provisioning-aws', version: "v1.2.1"
+override :'chef-provisioning-aws', version: "v1.3.0"
 
 dependency "preparation"
 dependency "chefdk"
