@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: git://github.com/opscode/omnibus.git
-  revision: 01f64177c9cb002cdeea9269df9895f51aa51514
+  revision: e28303ad28a683c6c8bc16d8a6c63aec78d57966
   specs:
     omnibus (4.0.0)
       chef-sugar (~> 3.0)
@@ -54,7 +54,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-sugar (3.1.0)
+    chef-sugar (3.1.1)
     cleanroom (1.0.0)
     dep-selector-libgecode (1.0.2)
     dep_selector (1.0.3)
@@ -63,8 +63,8 @@ GEM
     erubis (2.7.0)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.8)
-    ffi (1.9.8-x86-mingw32)
+    ffi (1.9.10)
+    ffi (1.9.10-x86-mingw32)
     ffi-yajl (1.4.0)
       ffi (~> 1.5)
       libyajl2 (~> 1.2)
