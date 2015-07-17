@@ -44,10 +44,12 @@ end
 # For now we resolve it by using an older version of the cert. This only works
 # if you have this version of the CA bundle stored via S3 caching (which Chef
 # Software does).
-override :cacerts, version: '2014.08.20'
+override :cacerts,        version: '2014.08.20'
 
 # Uncomment to pin the chef version
-# override :chef,           version: "12.3.0"
+#override :chef,           version: "12.4.1"
+#override :chefdk,         version: '0.7.0.rc.2'
+
 override :berkshelf,      version: "v3.2.4"
 override :bundler,        version: "1.10.0"
 override :'chef-vault',   version: "v2.6.1"
@@ -58,7 +60,7 @@ override :libtool,        version: "2.4.2"
 override :libxml2,        version: "2.9.1"
 override :libxslt,        version: "1.1.28"
 
-override :ruby,           version: "2.1.6"
+override :ruby,           version: "2.2.2"
 ######
 # Ruby 2.1/2.2 has an error on Windows - HTTPS gem downloads aren't working
 # https://bugs.ruby-lang.org/issues/11033
@@ -66,7 +68,6 @@ override :ruby,           version: "2.1.6"
 override :'ruby-windows', version: "2.1.6"
 override :'ruby-windows-devkit', version: "4.7.2-20130224-1151"
 override :'openssl-windows', version: "1.0.1m"
-#override :'ruby-windows', version: "2.0.0-p451"
 ######
 
 ######
@@ -76,7 +77,7 @@ override :'openssl-windows', version: "1.0.1m"
 override :rubygems,       version: "2.4.4"
 ######
 
-override :'test-kitchen', version: "v1.4.0"
+override :'test-kitchen', version: "v1.4.1"
 override :'kitchen-vagrant', version: "v0.18.0"
 override :yajl,           version: "1.2.1"
 override :zlib,           version: "1.2.8"
