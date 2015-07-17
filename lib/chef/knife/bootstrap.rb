@@ -383,12 +383,12 @@ class Chef
       def ssh_command
         command = render_template
 
+        Chef::Log.debug("Bootstrap command has rendered as: ")
+        Chef::Log.debug(command)
+
         if config[:use_sudo]
           command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -SH #{command}" : "sudo -H #{command}"
         end
-
-        Chef::Log.debug("Bootstrap command has rendered as: ")
-        Chef::Log.debug(command)
 
         command
       end
