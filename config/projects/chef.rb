@@ -65,6 +65,7 @@ override :rubygems,       version: "2.4.4"
 # Chef Release version pinning
 #override :chef, version: "12.4.1"
 #override :ohai, version: "8.5.0"
+override :'openssl-windows', version: '1.0.0r'
 
 dependency "preparation"
 dependency "chef"
