@@ -12,6 +12,7 @@
 * [pr#3208](https://github.com/chef/chef/pull/3208) Missing require (require what you use).
 * [pr#3449](https://github.com/chef/chef/pull/3449) correcting minor typo in user_edit knife action
 * [pr#3572](https://github.com/chef/chef/pull/3572) Use windows paths without case-sensitivity.
+* [pr#3666](https://github.com/chef/chef/pull/3666) Support SNI in `knife ssl check`.
 
 ## 12.4.1
 
