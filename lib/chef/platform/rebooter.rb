@@ -32,7 +32,7 @@ class Chef
 
           cmd = if Chef::Platform.windows?
             # should this do /f as well? do we then need a minimum delay to let apps quit?
-            "shutdown /r /t #{reboot_info[:delay_mins]} /c \"#{reboot_info[:reason]}\""
+            "shutdown /r /t #{reboot_info[:delay_mins]*60} /c \"#{reboot_info[:reason]}\""
           else
             # probably Linux-only.
             "shutdown -r +#{reboot_info[:delay_mins]} \"#{reboot_info[:reason]}\""

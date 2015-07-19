@@ -43,7 +43,7 @@ describe Chef::Platform::Rebooter do
 
   let(:expected) do
     {
-      :windows => 'shutdown /r /t 5 /c "rebooter spec test"',
+      :windows => 'shutdown /r /t 300 /c "rebooter spec test"',
       :linux => 'shutdown -r +5 "rebooter spec test"'
     }
   end
