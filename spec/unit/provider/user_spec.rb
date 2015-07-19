@@ -59,15 +59,15 @@ describe Chef::Provider::User do
     before(:each) do
       @node = Chef::Node.new
       #@new_resource = double("Chef::Resource::User",
-      #  :null_object => true,
-      #  :username => "adam",
-      #  :comment => "Adam Jacob",
-      #  :uid => 1000,
-      #  :gid => 1000,
-      #  :home => "/home/adam",
-      #  :shell => "/usr/bin/zsh",
-      #  :password => nil,
-      #  :updated => nil
+      #  null_object: true,
+      #  username: "adam",
+      #  comment: "Adam Jacob",
+      #  uid: 1000,
+      #  gid: 1000,
+      #  home: "/home/adam",
+      #  shell: "/usr/bin/zsh",
+      #  password: nil,
+      #  updated: nil
       #)
       allow(Chef::Resource::User).to receive(:new).and_return(@current_resource)
       @pw_user = EtcPwnamIsh.new
@@ -110,11 +110,11 @@ describe Chef::Provider::User do
 
     # The mapping between the Chef::Resource::User and Getpwnam struct
     user_attrib_map = {
-      :uid => :uid,
-      :gid => :gid,
-      :comment => :gecos,
-      :home => :dir,
-      :shell => :shell
+      uid: :uid,
+      gid: :gid,
+      comment: :gecos,
+      home: :dir,
+      shell: :shell
     }
     user_attrib_map.each do |user_attrib, getpwnam_attrib|
       it "should set the current resources #{user_attrib} based on getpwnam #{getpwnam_attrib}" do
@@ -161,15 +161,15 @@ describe Chef::Provider::User do
 
       unless shadow_lib_unavail?
         context "and we have the ruby-shadow gem" do
-          skip "and we are not root (rerun this again as root)", :requires_unprivileged_user => true
+          skip "and we are not root (rerun this again as root)", requires_unprivileged_user: true
 
-          context "and we are root", :requires_root => true do
+          context "and we are root", requires_root: true do
             it "should pass assertions when ruby-shadow can be loaded" do
               @provider.action = 'create'
               original_method = @provider.method(:require)
               expect(@provider).to receive(:require) { |*args| original_method.call(*args) }
-              passwd_info = Struct::PasswdEntry.new(:sp_namp => "adm ", :sp_pwdp => "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", :sp_lstchg => 14861, :sp_min => 0, :sp_max => 99999,
-                                                    :sp_warn => 7, :sp_inact => -1, :sp_expire => -1, :sp_flag => -1)
+              passwd_info = Struct::PasswdEntry.new(sp_namp: "adm ", sp_pwdp: "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", sp_lstchg: 14861, sp_min: 0, sp_max: 99999,
+                                                    sp_warn: 7, sp_inact: -1, sp_expire: -1, sp_flag: -1)
               expect(Shadow::Passwd).to receive(:getspnam).with("adam").and_return(passwd_info)
               @provider.load_current_resource
               @provider.define_resource_requirements
@@ -227,15 +227,15 @@ describe Chef::Provider::User do
     before(:each) do
       allow(@provider).to receive(:load_current_resource)
       # @current_resource = double("Chef::Resource::User",
-      #   :null_object => true,
-      #   :username => "adam",
-      #   :comment => "Adam Jacob",
-      #   :uid => 1000,
-      #   :gid => 1000,
-      #   :home => "/home/adam",
-      #   :shell => "/usr/bin/zsh",
-      #   :password => nil,
-      #   :updated => nil
+      #   null_object: true,
+      #   username: "adam",
+      #   comment: "Adam Jacob",
+      #   uid: 1000,
+      #   gid: 1000,
+      #   home: "/home/adam",
+      #   shell: "/usr/bin/zsh",
+      #   password: nil,
+      #   updated: nil
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
@@ -300,10 +300,10 @@ describe Chef::Provider::User do
       allow(@provider).to receive(:load_current_resource)
       # @node = Chef::Node.new
       # @new_resource = double("Chef::Resource::User",
-      #   :null_object => true
+      #   null_object: true
       # )
       # @current_resource = double("Chef::Resource::User",
-      #   :null_object => true
+      #   null_object: true
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
@@ -343,10 +343,10 @@ describe Chef::Provider::User do
       allow(@provider).to receive(:load_current_resource)
       # @node = Chef::Node.new
       # @new_resource = double("Chef::Resource::User",
-      #   :null_object => true
+      #   null_object: true
       # )
       # @current_resource = double("Chef::Resource::User",
-      #   :null_object => true
+      #   null_object: true
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
@@ -412,10 +412,10 @@ describe Chef::Provider::User do
       allow(@provider).to receive(:load_current_resource)
       # @node = Chef::Node.new
       # @new_resource = double("Chef::Resource::User",
-      #   :null_object => true
+      #   null_object: true
       # )
       # @current_resource = double("Chef::Resource::User",
-      #   :null_object => true
+      #   null_object: true
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource

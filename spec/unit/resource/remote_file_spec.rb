@@ -186,8 +186,8 @@ describe Chef::Resource::RemoteFile do
       state = @resource.state
       if Chef::Platform.windows?
         puts state
-        expect(state[:rights]).to eq([{:permissions => :read, :principals => "Everyone"}])
-        expect(state[:deny_rights]).to eq([{:permissions => :full_control, :principals => "Clumsy_Sam"}])
+        expect(state[:rights]).to eq([{permissions: :read, principals: "Everyone"}])
+        expect(state[:deny_rights]).to eq([{permissions: :full_control, principals: "Clumsy_Sam"}])
       else
         expect(state[:group]).to eq("pokemon")
         expect(state[:mode]).to eq("0664")

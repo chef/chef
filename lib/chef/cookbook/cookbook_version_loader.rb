@@ -43,15 +43,15 @@ class Chef
         @relative_path = /#{Regexp.escape(@cookbook_path)}\/(.+)$/
         @metadata_loaded = false
         @cookbook_settings = {
-          :attribute_filenames  => {},
-          :definition_filenames => {},
-          :recipe_filenames     => {},
-          :template_filenames   => {},
-          :file_filenames       => {},
-          :library_filenames    => {},
-          :resource_filenames   => {},
-          :provider_filenames   => {},
-          :root_filenames       => {}
+          attribute_filenames: {},
+          definition_filenames: {},
+          recipe_filenames: {},
+          template_filenames: {},
+          file_filenames: {},
+          library_filenames: {},
+          resource_filenames: {},
+          provider_filenames: {},
+          root_filenames: {}
         }
 
         @metadata_filenames = []

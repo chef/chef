@@ -44,14 +44,14 @@ class Chef
         @init_command = nil
         @priority = nil
         @timeout = nil
-        @supports = { :restart => false, :reload => false, :status => false }
+        @supports = { restart: false, reload: false, status: false }
       end
 
       def service_name(arg=nil)
         set_or_return(
           :service_name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -60,7 +60,7 @@ class Chef
         set_or_return(
           :pattern,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -69,7 +69,7 @@ class Chef
         set_or_return(
           :start_command,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -78,7 +78,7 @@ class Chef
         set_or_return(
           :stop_command,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -87,7 +87,7 @@ class Chef
         set_or_return(
           :status_command,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -96,7 +96,7 @@ class Chef
         set_or_return(
           :restart_command,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -104,7 +104,7 @@ class Chef
         set_or_return(
           :reload_command,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -117,7 +117,7 @@ class Chef
         set_or_return(
           :init_command,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -126,7 +126,7 @@ class Chef
         set_or_return(
           :enabled,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -135,7 +135,7 @@ class Chef
         set_or_return(
           :running,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -153,7 +153,7 @@ class Chef
         set_or_return(
           :priority,
           arg,
-          :kind_of => [ Integer, String, Hash ]
+          kind_of: [ Integer, String, Hash ]
         )
       end
 
@@ -162,7 +162,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => Integer
+          kind_of: Integer
         )
       end
 
@@ -170,7 +170,7 @@ class Chef
         set_or_return(
           :parameters,
           arg,
-          :kind_of => [ Hash ]
+          kind_of: [ Hash ]
         )
       end
 

@@ -163,7 +163,7 @@ class Mash < Hash
   # @return [Mash] A new mash without the selected keys.
   #
   # @example
-  #   { :one => 1, :two => 2, :three => 3 }.except(:one)
+  #   { one: 1, two: 2, three: 3 }.except(:one)
   #     #=> { "two" => 2, "three" => 3 }
   def except(*keys)
     super(*keys.map {|k| convert_key(k)})

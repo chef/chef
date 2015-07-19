@@ -32,17 +32,17 @@ class Chef
         # platform_hash (Hash) a hash of the same structure as Chef::Platform,
         # like this:
         #   {
-        #     :debian => {:default => 'the value for all debian'}
-        #     [:centos, :redhat, :fedora] => {:default => "value for all EL variants"}
-        #     :ubuntu => { :default => "default for ubuntu", '10.04' => "value for 10.04 only"},
-        #     :default => "the default when nothing else matches"
+        #     debian: {default: 'the value for all debian'}
+        #     [:centos, :redhat, :fedora] => {default: "value for all EL variants"}
+        #     ubuntu: { default: "default for ubuntu", '10.04' => "value for 10.04 only"},
+        #     default: "the default when nothing else matches"
         #   }
         # * platforms can be specified as Symbols or Strings
         # * multiple platforms can be grouped by using an Array as the key
         # * values for platforms need to be Hashes of the form:
         #   {platform_version => value_for_that_version}
         # * the exception to the above is the default value, which is given as
-        #   :default => default_value
+        #   default: default_value
         def initialize(platform_hash)
           @values = {}
           platform_hash.each { |platforms, value| set(platforms, value)}
@@ -127,7 +127,7 @@ class Chef
 
         def assert_valid_platform_values!(platforms, value)
           unless value.kind_of?(Hash)
-            msg = "platform dependent values must be specified in the format :platform => {:version => value} "
+            msg = "platform dependent values must be specified in the format platform: {version: value} "
             msg << "you gave a value #{value.inspect} for platform(s) #{platforms}"
             raise ArgumentError, msg
           end
@@ -178,18 +178,18 @@ class Chef
         # platform_family_hash (Hash) a map of platform families to values.
         # like this:
         #   {
-        #     :rhel => "value for all EL variants"
-        #     :fedora =>  "value for fedora variants fedora and amazon" ,
+        #     rhel: "value for all EL variants"
+        #     fedora:  "value for fedora variants fedora and amazon" ,
         #     [:fedora, :rhel] => "value for all known redhat variants"
-        #     :debian =>  "value for debian variants including debian, ubuntu, mint" ,
-        #     :default => "the default when nothing else matches"
+        #     debian:  "value for debian variants including debian, ubuntu, mint" ,
+        #     default: "the default when nothing else matches"
         #   }
         # * platform families can be specified as Symbols or Strings
         # * multiple platform families can be grouped by using an Array as the key
         # * values for platform families can be any object, with no restrictions. Some examples:
         #   - [:stop, :start]
         #   - "mysql-devel"
-        #   - { :key => "value" }
+        #   - { key: "value" }
         def initialize(platform_family_hash)
           @values = {}
           @values["default"] = nil

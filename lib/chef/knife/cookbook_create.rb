@@ -31,29 +31,29 @@ class Chef
       banner "knife cookbook create COOKBOOK (options)"
 
       option :cookbook_path,
-        :short => "-o PATH",
-        :long => "--cookbook-path PATH",
-        :description => "The directory where the cookbook will be created"
+        short: "-o PATH",
+        long: "--cookbook-path PATH",
+        description: "The directory where the cookbook will be created"
 
       option :readme_format,
-        :short => "-r FORMAT",
-        :long => "--readme-format FORMAT",
-        :description => "Format of the README file, supported formats are 'md' (markdown) and 'rdoc' (rdoc)"
+        short: "-r FORMAT",
+        long: "--readme-format FORMAT",
+        description: "Format of the README file, supported formats are 'md' (markdown) and 'rdoc' (rdoc)"
 
       option :cookbook_license,
-        :short => "-I LICENSE",
-        :long => "--license LICENSE",
-        :description => "License for cookbook, apachev2, gplv2, gplv3, mit or none"
+        short: "-I LICENSE",
+        long: "--license LICENSE",
+        description: "License for cookbook, apachev2, gplv2, gplv3, mit or none"
 
       option :cookbook_copyright,
-        :short => "-C COPYRIGHT",
-        :long => "--copyright COPYRIGHT",
-        :description => "Name of Copyright holder"
+        short: "-C COPYRIGHT",
+        long: "--copyright COPYRIGHT",
+        description: "Name of Copyright holder"
 
       option :cookbook_email,
-        :short => "-m EMAIL",
-        :long => "--email EMAIL",
-        :description => "Email address of cookbook maintainer"
+        short: "-m EMAIL",
+        long: "--email EMAIL",
+        description: "Email address of cookbook maintainer"
 
       def run
         self.config = Chef::Config.merge!(config)

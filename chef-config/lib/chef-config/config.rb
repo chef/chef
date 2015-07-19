@@ -504,7 +504,7 @@ module ChefConfig
 
     # Deprecated:
     # Move this to the default value of syntax_cache_path when this is removed.
-    default(:cache_options) { { :path => PathHelper.join(config_dir, "syntaxcache") } }
+    default(:cache_options) { { path: PathHelper.join(config_dir, "syntaxcache") } }
 
     # Whether errors should be raised for deprecation warnings. When set to
     # `false` (the default setting), a warning is emitted but code using
@@ -596,7 +596,7 @@ module ChefConfig
     # There are 3 possible values for this configuration setting.
     # true => file staging is done in the destination directory
     # false => file staging is done via tempfiles under ENV['TMP']
-    # :auto => file staging will try using destination directory if possible and
+    # auto: file staging will try using destination directory if possible and
     #   will fall back to ENV['TMP'] if destination directory is not usable.
     default :file_staging_uses_destdir, :auto
 

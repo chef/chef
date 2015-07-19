@@ -28,16 +28,16 @@ class Chef
       end
 
       def source(arg=nil)
-        set_or_return(:source, arg, :kind_of => [ String, Array ])
+        set_or_return(:source, arg, kind_of: [ String, Array ])
       end
 
       def clear_sources(arg=nil)
-        set_or_return(:clear_sources, arg, :kind_of => [ TrueClass, FalseClass ])
+        set_or_return(:clear_sources, arg, kind_of: [ TrueClass, FalseClass ])
       end
 
       # Sets a custom gem_binary to run for gem commands.
       def gem_binary(gem_cmd=nil)
-        set_or_return(:gem_binary,gem_cmd,:kind_of => [ String ])
+        set_or_return(:gem_binary,gem_cmd,kind_of: [ String ])
       end
 
       ##
@@ -47,7 +47,7 @@ class Chef
       # will be installed by shelling out to the gem command. Using a Hash of
       # options with an explicit gem_binary will result in undefined behavior.
       def options(opts=nil)
-        set_or_return(:options,opts,:kind_of => [String,Hash])
+        set_or_return(:options,opts,kind_of: [String,Hash])
       end
 
 

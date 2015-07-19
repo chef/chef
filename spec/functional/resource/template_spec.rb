@@ -67,7 +67,7 @@ describe Chef::Resource::Template do
   context "when the target file does not exist" do
     it "creates the template with the rendered content using the variable attribute when the :create action is run" do
       resource.source('openldap_variable_stuff.conf.erb')
-      resource.variables(:secret => "nutella")
+      resource.variables(secret: "nutella")
       resource.run_action(:create)
       expect(IO.read(path)).to eq("super secret is nutella")
     end

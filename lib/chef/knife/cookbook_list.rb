@@ -26,14 +26,14 @@ class Chef
       banner "knife cookbook list (options)"
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs"
 
       option :all_versions,
-        :short => "-a",
-        :long => "--all",
-        :description => "Show all available versions."
+        short: "-a",
+        long: "--all",
+        description: "Show all available versions."
 
       def run
         env          = config[:environment]

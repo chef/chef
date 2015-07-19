@@ -36,7 +36,7 @@ class Chef
         set_or_return(
             :homebrew_user,
             arg,
-            :kind_of => [ String, Integer ]
+            kind_of: [ String, Integer ]
         )
       end
 

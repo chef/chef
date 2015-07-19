@@ -45,7 +45,7 @@ class Chef
         set_or_return(
           :source,
           file,
-          :kind_of => [ String, Array ]
+          kind_of: [ String, Array ]
         )
       end
 
@@ -53,7 +53,7 @@ class Chef
         set_or_return(
           :variables,
           args,
-          :kind_of => [ Hash ]
+          kind_of: [ Hash ]
         )
       end
 
@@ -61,7 +61,7 @@ class Chef
         set_or_return(
           :cookbook,
           args,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -69,7 +69,7 @@ class Chef
         set_or_return(
           :local,
           args,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 

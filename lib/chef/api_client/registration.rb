@@ -106,7 +106,7 @@ class Chef
       end
 
       def put_data
-        base_put_data = { :name => name, :admin => false }
+        base_put_data = { name: name, admin: false }
         if self_generate_keys?
           base_put_data[:public_key] = generated_public_key
         else
@@ -116,7 +116,7 @@ class Chef
       end
 
       def post_data
-        post_data = { :name => name, :admin => false }
+        post_data = { name: name, admin: false }
         post_data[:public_key] = generated_public_key if self_generate_keys?
         post_data
       end

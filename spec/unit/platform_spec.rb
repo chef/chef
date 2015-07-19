@@ -32,25 +32,25 @@ describe Chef::Platform do
 
     before(:each) do
       Chef::Platform.platforms = {
-        :darwin => {
+        darwin: {
           ">= 10.11" => {
-            :file => "new_darwinian"
+            file: "new_darwinian"
           },
           "9.2.2" => {
-            :file => "darwinian",
-            :else => "thing"
+            file: "darwinian",
+            else: "thing"
           },
-          :default => {
-            :file => "old school",
-            :snicker => "snack"
+          default: {
+            file: "old school",
+            snicker: "snack"
           }
         },
-        :mars_volta => {
+        mars_volta: {
         },
-        :default => {
-          :file => Chef::Provider::File,
-          :pax => "brittania",
-          :cat => "nice"
+        default: {
+          file: Chef::Provider::File,
+          pax: "brittania",
+          cat: "nice"
         }
       }
       @events = Chef::EventDispatch::Dispatcher.new
@@ -180,57 +180,57 @@ describe Chef::Platform do
 
     it "should update the provider map with map" do
       Chef::Platform.set(
-           :platform => :darwin,
-           :version => "9.2.2",
-           :resource => :file,
-           :provider => "masterful"
+           platform: :darwin,
+           version: "9.2.2",
+           resource: :file,
+           provider: "masterful"
       )
       expect(Chef::Platform.platforms[:darwin]["9.2.2"][:file]).to eql("masterful")
       Chef::Platform.set(
-           :platform => :darwin,
-           :resource => :file,
-           :provider => "masterful"
+           platform: :darwin,
+           resource: :file,
+           provider: "masterful"
       )
       expect(Chef::Platform.platforms[:darwin][:default][:file]).to eql("masterful")
       Chef::Platform.set(
-           :resource => :file,
-           :provider => "masterful"
+           resource: :file,
+           provider: "masterful"
       )
       expect(Chef::Platform.platforms[:default][:file]).to eql("masterful")
 
       Chef::Platform.set(
-           :platform => :hero,
-           :version => "9.2.2",
-           :resource => :file,
-           :provider => "masterful"
+           platform: :hero,
+           version: "9.2.2",
+           resource: :file,
+           provider: "masterful"
       )
       expect(Chef::Platform.platforms[:hero]["9.2.2"][:file]).to eql("masterful")
 
       Chef::Platform.set(
-           :resource => :file,
-           :provider => "masterful"
+           resource: :file,
+           provider: "masterful"
       )
       expect(Chef::Platform.platforms[:default][:file]).to eql("masterful")
 
       Chef::Platform.platforms = {}
 
       Chef::Platform.set(
-           :resource => :file,
-           :provider => "masterful"
+           resource: :file,
+           provider: "masterful"
       )
       expect(Chef::Platform.platforms[:default][:file]).to eql("masterful")
 
-      Chef::Platform.platforms = { :neurosis => {} }
-      Chef::Platform.set(:platform => :neurosis, :resource => :package, :provider => "masterful")
+      Chef::Platform.platforms = { neurosis: {} }
+      Chef::Platform.set(platform: :neurosis, resource: :package, provider: "masterful")
       expect(Chef::Platform.platforms[:neurosis][:default][:package]).to eql("masterful")
 
     end
 
     it "does not overwrite the platform map when using :default platform" do
       Chef::Platform.set(
-        :resource => :file,
-        :platform => :default,
-        :provider => "new school"
+        resource: :file,
+        platform: :default,
+        provider: "new school"
       )
       expect(Chef::Platform.platforms[:default][:file]).to eql("new school")
       expect(Chef::Platform.platforms[:default][:cat]).to eql("nice")

@@ -32,63 +32,63 @@ class Chef::Application::Apply < Chef::Application
   banner "Usage: chef-apply [RECIPE_FILE] [-e RECIPE_TEXT] [-s]"
 
   option :execute,
-    :short        => "-e RECIPE_TEXT",
-    :long         => "--execute RECIPE_TEXT",
-    :description  => "Execute resources supplied in a string",
-    :proc         => nil
+    short: "-e RECIPE_TEXT",
+    long: "--execute RECIPE_TEXT",
+    description: "Execute resources supplied in a string",
+    proc: nil
 
   option :stdin,
-    :short        => "-s",
-    :long         => "--stdin",
-    :description  => "Execute resources read from STDIN",
-    :boolean      => true
+    short: "-s",
+    long: "--stdin",
+    description: "Execute resources read from STDIN",
+    boolean: true
 
   option :json_attribs,
-    :short => "-j JSON_ATTRIBS",
-    :long => "--json-attributes JSON_ATTRIBS",
-    :description => "Load attributes from a JSON file or URL",
-    :proc => nil
+    short: "-j JSON_ATTRIBS",
+    long: "--json-attributes JSON_ATTRIBS",
+    description: "Load attributes from a JSON file or URL",
+    proc: nil
 
   option :log_level,
-    :short        => "-l LEVEL",
-    :long         => "--log_level LEVEL",
-    :description  => "Set the log level (debug, info, warn, error, fatal)",
-    :proc         => lambda { |l| l.to_sym }
+    short: "-l LEVEL",
+    long: "--log_level LEVEL",
+    description: "Set the log level (debug, info, warn, error, fatal)",
+    proc: lambda { |l| l.to_sym }
 
   option :help,
-    :short        => "-h",
-    :long         => "--help",
-    :description  => "Show this message",
-    :on           => :tail,
-    :boolean      => true,
-    :show_options => true,
-    :exit         => 0
+    short: "-h",
+    long: "--help",
+    description: "Show this message",
+    on: :tail,
+    boolean: true,
+    show_options: true,
+    exit: 0
 
 
   option :version,
-    :short        => "-v",
-    :long         => "--version",
-    :description  => "Show chef version",
-    :boolean      => true,
-    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
-    :exit         => 0
+    short: "-v",
+    long: "--version",
+    description: "Show chef version",
+    boolean: true,
+    proc: lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    exit: 0
 
   option :why_run,
-    :short        => '-W',
-    :long         => '--why-run',
-    :description  => 'Enable whyrun mode',
-    :boolean      => true
+    short: '-W',
+    long: '--why-run',
+    description: 'Enable whyrun mode',
+    boolean: true
 
   option :color,
-    :long         => '--[no-]color',
-    :boolean      => true,
-    :default      => !Chef::Platform.windows?,
-    :description  => "Use colored output, defaults to enabled"
+    long: '--[no-]color',
+    boolean: true,
+    default: !Chef::Platform.windows?,
+    description: "Use colored output, defaults to enabled"
 
   option :minimal_ohai,
-    :long           => "--minimal-ohai",
-    :description    => "Only run the bare minimum ohai plugins chef needs to function",
-    :boolean        => true
+    long: "--minimal-ohai",
+    description: "Only run the bare minimum ohai plugins chef needs to function",
+    boolean: true
 
   attr_reader :json_attribs
 

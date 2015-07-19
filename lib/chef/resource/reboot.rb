@@ -37,11 +37,11 @@ class Chef
       end
 
       def reason(arg=nil)
-        set_or_return(:reason, arg, :kind_of => String)
+        set_or_return(:reason, arg, kind_of: String)
       end
 
       def delay_mins(arg=nil)
-        set_or_return(:delay_mins, arg, :kind_of => Fixnum)
+        set_or_return(:delay_mins, arg, kind_of: Fixnum)
       end
     end
   end

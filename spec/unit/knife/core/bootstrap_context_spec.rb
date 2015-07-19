@@ -20,13 +20,13 @@ require 'spec_helper'
 require 'chef/knife/core/bootstrap_context'
 
 describe Chef::Knife::Core::BootstrapContext do
-  let(:config) { {:foo => :bar} }
+  let(:config) { {foo: :bar} }
   let(:run_list) { Chef::RunList.new('recipe[tmux]', 'role[base]') }
   let(:chef_config) do
     {
-      :validation_key => File.join(CHEF_SPEC_DATA, 'ssl', 'private_key.pem'),
-      :chef_server_url => 'http://chef.example.com:4444',
-      :validation_client_name => 'chef-validator-testing'
+      validation_key: File.join(CHEF_SPEC_DATA, 'ssl', 'private_key.pem'),
+      chef_server_url: 'http://chef.example.com:4444',
+      validation_client_name: 'chef-validator-testing'
     }
   end
 
@@ -43,7 +43,7 @@ describe Chef::Knife::Core::BootstrapContext do
   end
 
   describe "when in verbosity mode" do
-    let(:config) { {:verbosity => 2} }
+    let(:config) { {verbosity: 2} }
     it "adds '-l debug' when verbosity is >= 2" do
       expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug -E _default"
     end
@@ -68,14 +68,14 @@ EXPECTED
   end
 
   describe "alternate chef-client path" do
-    let(:chef_config){ {:chef_client_path => '/usr/local/bin/chef-client'} }
+    let(:chef_config){ {chef_client_path: '/usr/local/bin/chef-client'} }
     it "runs chef-client from another path when specified" do
       expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json -E _default"
     end
   end
 
   describe "validation key path that contains a ~" do
-    let(:chef_config){ {:validation_key => '~/my.key'} }
+    let(:chef_config){ {validation_key: '~/my.key'} }
     it "reads the validation key when it contains a ~" do
       expect(File).to receive(:exist?).with(File.expand_path("my.key", ENV['HOME'])).and_return(true)
       expect(IO).to receive(:read).with(File.expand_path("my.key", ENV['HOME']))
@@ -84,29 +84,29 @@ EXPECTED
   end
 
   describe "when an explicit node name is given" do
-    let(:config){ {:chef_node_name => 'foobar.example.com' }}
+    let(:config){ {chef_node_name: 'foobar.example.com' }}
     it "sets the node name in the client.rb" do
       expect(bootstrap_context.config_content).to match(/node_name "foobar\.example\.com"/)
     end
   end
 
   describe "when bootstrapping into a specific environment" do
-    let(:chef_config){ {:environment => "prodtastic"} }
+    let(:chef_config){ {environment: "prodtastic"} }
     it "starts chef in the configured environment" do
       expect(bootstrap_context.start_chef).to eq('chef-client -j /etc/chef/first-boot.json -E prodtastic')
     end
   end
 
   describe "when JSON attributes are given" do
-    let(:config) { {:first_boot_attributes => {:baz => :quux}} }
+    let(:config) { {first_boot_attributes: {baz: :quux}} }
     it "adds the attributes to first_boot" do
-      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json({:baz => :quux, :run_list => run_list}))
+      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json({baz: :quux, run_list: run_list}))
     end
   end
 
   describe "when JSON attributes are NOT given" do
     it "sets first_boot equal to run_list" do
-      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json({:run_list => run_list}))
+      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json({run_list: run_list}))
     end
   end
 
@@ -130,7 +130,7 @@ EXPECTED
   describe "when a bootstrap_version is specified" do
     let(:chef_config) do
       {
-        :knife => {:bootstrap_version => "11.12.4" }
+        knife: {bootstrap_version: "11.12.4" }
       }
     end
 
@@ -142,7 +142,7 @@ EXPECTED
   describe "when a pre-release bootstrap_version is specified" do
     let(:chef_config) do
       {
-        :knife => {:bootstrap_version => "11.12.4.rc.0" }
+        knife: {bootstrap_version: "11.12.4.rc.0" }
       }
     end
 
@@ -166,7 +166,7 @@ EXPECTED
     describe "when configured in config" do
       let(:chef_config) do
         {
-          :knife => {:ssl_verify_mode => :verify_peer}
+          knife: {ssl_verify_mode: :verify_peer}
         }
       end
 
@@ -175,7 +175,7 @@ EXPECTED
       end
 
       describe "when configured via CLI" do
-        let(:config) {{:node_ssl_verify_mode => "none"}}
+        let(:config) {{node_ssl_verify_mode: "none"}}
 
         it "uses CLI value" do
           expect(bootstrap_context.config_content).to include("ssl_verify_mode :verify_none")
@@ -192,7 +192,7 @@ EXPECTED
     describe "when configured in config" do
       let(:chef_config) do
         {
-          :knife => {:verify_api_cert => :false}
+          knife: {verify_api_cert: :false}
         }
       end
 
@@ -201,7 +201,7 @@ EXPECTED
       end
 
       describe "when configured via CLI" do
-        let(:config) {{:node_verify_api_cert => true}}
+        let(:config) {{node_verify_api_cert: true}}
 
         it "uses CLI value" do
           expect(bootstrap_context.config_content).to include("verify_api_cert true")
@@ -216,7 +216,7 @@ EXPECTED
     end
 
     describe "when configured via cli" do
-      let(:config) {{:prerelease => true}}
+      let(:config) {{prerelease: true}}
 
       it "uses CLI value" do
         expect(bootstrap_context.latest_current_chef_version_string).to eq("-p")

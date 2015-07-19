@@ -128,7 +128,7 @@ describe Shell do
 
     it "adds help text for subcommands" do
       describe_define =<<-EVAL
-        subcommands :baz_obj_command => "something you can do with baz.baz_obj_command"
+        subcommands baz_obj_command: "something you can do with baz.baz_obj_command"
         def baz
         end
       EVAL

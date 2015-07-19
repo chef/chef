@@ -99,7 +99,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     dep = Gem::Dependency.new('rspec', '>= 0')
     dep_installer = Gem::DependencyInstaller.new
     allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    best_gem = double("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
+    best_gem = double("best gem match", spec: gemspec("rspec", Gem::Version.new("1.3.0")), source: "https://rubygems.org")
     available_set = double("Gem::AvailableSet test double")
     expect(available_set).to receive(:pick_best!)
     expect(available_set).to receive(:set).and_return([best_gem])
@@ -135,30 +135,30 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
   it "installs a gem with a hash of options for the dependency installer" do
     dep_installer = Gem::DependencyInstaller.new
-    expect(@gem_env).to receive(:dependency_installer).with(:install_dir => '/foo/bar').and_return(dep_installer)
+    expect(@gem_env).to receive(:dependency_installer).with(install_dir: '/foo/bar').and_return(dep_installer)
     expect(@gem_env).to receive(:with_gem_sources).with('http://gems.example.com').and_yield
     expect(dep_installer).to receive(:install).with(Gem::Dependency.new('rspec', '>= 0'))
-    @gem_env.install(Gem::Dependency.new('rspec', '>= 0'), :install_dir => '/foo/bar', :sources => ['http://gems.example.com'])
+    @gem_env.install(Gem::Dependency.new('rspec', '>= 0'), install_dir: '/foo/bar', sources: ['http://gems.example.com'])
   end
 
   it "builds an uninstaller for a gem with options set to avoid requiring user input" do
     # default options for uninstaller should be:
-    # :ignore => true, :executables => true
-    expect(Gem::Uninstaller).to receive(:new).with('rspec', :ignore => true, :executables => true)
+    # ignore: true, executables: true
+    expect(Gem::Uninstaller).to receive(:new).with('rspec', ignore: true, executables: true)
     @gem_env.uninstaller('rspec')
   end
 
   it "uninstalls all versions of a gem" do
     uninstaller = double('gem uninstaller')
     expect(uninstaller).to receive(:uninstall)
-    expect(@gem_env).to receive(:uninstaller).with('rspec', :all => true).and_return(uninstaller)
+    expect(@gem_env).to receive(:uninstaller).with('rspec', all: true).and_return(uninstaller)
     @gem_env.uninstall('rspec')
   end
 
   it "uninstalls a specific version of a gem" do
     uninstaller = double('gem uninstaller')
     expect(uninstaller).to receive(:uninstall)
-    expect(@gem_env).to receive(:uninstaller).with('rspec', :version => '1.2.3').and_return(uninstaller)
+    expect(@gem_env).to receive(:uninstaller).with('rspec', version: '1.2.3').and_return(uninstaller)
     @gem_env.uninstall('rspec', '1.2.3')
   end
 
@@ -175,14 +175,14 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
 
   it "determines the gem paths from shelling out to gem env" do
     gem_env_output = ['/path/to/gems', '/another/path/to/gems'].join(File::PATH_SEPARATOR)
-    shell_out_result = OpenStruct.new(:stdout => gem_env_output)
+    shell_out_result = OpenStruct.new(stdout: gem_env_output)
     expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env gempath').and_return(shell_out_result)
     expect(@gem_env.gem_paths).to eq(['/path/to/gems', '/another/path/to/gems'])
   end
 
   it "caches the gempaths by gem_binary" do
     gem_env_output = ['/path/to/gems', '/another/path/to/gems'].join(File::PATH_SEPARATOR)
-    shell_out_result = OpenStruct.new(:stdout => gem_env_output)
+    shell_out_result = OpenStruct.new(stdout: gem_env_output)
     expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env gempath').and_return(shell_out_result)
     expected = ['/path/to/gems', '/another/path/to/gems']
     expect(@gem_env.gem_paths).to eq(['/path/to/gems', '/another/path/to/gems'])
@@ -249,20 +249,20 @@ RubyGems Environment:
      - /Users/you/.rvm/gems/jruby-1.5.0
      - /Users/you/.rvm/gems/jruby-1.5.0@global
   - GEM CONFIGURATION:
-     - :update_sources => true
-     - :verbose => true
-     - :benchmark => false
-     - :backtrace => false
-     - :bulk_threshold => 1000
+     - update_sources: true
+     - verbose: true
+     - benchmark: false
+     - backtrace: false
+     - bulk_threshold: 1000
      - "install" => "--env-shebang"
      - "update" => "--env-shebang"
      - "gem" => "--no-rdoc --no-ri"
-     - :sources => ["https://rubygems.org/", "http://gems.github.com/"]
+     - sources: ["https://rubygems.org/", "http://gems.github.com/"]
   - REMOTE SOURCES:
      - https://rubygems.org/
      - http://gems.github.com/
 JRUBY_GEM_ENV
-    expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('jruby_gem_env', :stdout => gem_env_out))
+    expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('jruby_gem_env', stdout: gem_env_out))
     expected = ['ruby', Gem::Platform.new('universal-java-1.6')]
     expect(@gem_env.gem_platforms).to eq(expected)
     # it should also cache the result
@@ -293,18 +293,18 @@ RubyGems Environment:
      - /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514
      - /Users/ddeleo/.rvm/gems/rbx-1.0.0-20100514@global
   - GEM CONFIGURATION:
-     - :update_sources => true
-     - :verbose => true
-     - :benchmark => false
-     - :backtrace => false
-     - :bulk_threshold => 1000
-     - :sources => ["https://rubygems.org/", "http://gems.github.com/"]
+     - update_sources: true
+     - verbose: true
+     - benchmark: false
+     - backtrace: false
+     - bulk_threshold: 1000
+     - sources: ["https://rubygems.org/", "http://gems.github.com/"]
      - "gem" => "--no-rdoc --no-ri"
   - REMOTE SOURCES:
      - https://rubygems.org/
      - http://gems.github.com/
 RBX_GEM_ENV
-    expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('rbx_gem_env', :stdout => gem_env_out))
+    expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('rbx_gem_env', stdout: gem_env_out))
     expect(@gem_env.gem_platforms).to eq(Gem.platforms)
     expect(Chef::Provider::Package::Rubygems::AlternateGemEnvironment.platform_cache['/usr/weird/bin/gem']).to eq(Gem.platforms)
   end
@@ -397,7 +397,7 @@ describe Chef::Provider::Package::Rubygems do
 
     it "smites you when you try to use a hash of install options with an explicit gem binary" do
       @new_resource.gem_binary('/foo/bar')
-      @new_resource.options(:fail => :burger)
+      @new_resource.options(fail: :burger)
       expect {Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)}.to raise_error(ArgumentError)
     end
 
@@ -466,7 +466,7 @@ describe Chef::Provider::Package::Rubygems do
 
       describe "in the current gem environment" do
         it "installs the gem via the gems api when no explicit options are used" do
-          expect(@provider.gem_env).to receive(:install).with(@gem_dep, :sources => nil)
+          expect(@provider.gem_env).to receive(:install).with(@gem_dep, sources: nil)
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -474,7 +474,7 @@ describe Chef::Provider::Package::Rubygems do
         it "installs the gem via the gems api when a remote source is provided" do
           @new_resource.source('http://gems.example.org')
           sources = ['http://gems.example.org']
-          expect(@provider.gem_env).to receive(:install).with(@gem_dep, :sources => sources)
+          expect(@provider.gem_env).to receive(:install).with(@gem_dep, sources: sources)
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -500,7 +500,7 @@ describe Chef::Provider::Package::Rubygems do
         it "installs the gem via the gems api, when the package has no file separator characters in it, but a matching file exists in cwd" do
           allow(::File).to receive(:exists?).and_return(true)
           @new_resource.package_name('rspec-core')
-          expect(@provider.gem_env).to receive(:install).with(@gem_dep, :sources => nil)
+          expect(@provider.gem_env).to receive(:install).with(@gem_dep, sources: nil)
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -545,8 +545,8 @@ describe Chef::Provider::Package::Rubygems do
         end
 
         it "installs the gem via the gems api when options are given as a Hash" do
-          @new_resource.options(:install_dir => '/alt/install/location')
-          expect(@provider.gem_env).to receive(:install).with(@gem_dep, :sources => nil, :install_dir => '/alt/install/location')
+          @new_resource.options(install_dir: '/alt/install/location')
+          expect(@provider.gem_env).to receive(:install).with(@gem_dep, sources: nil, install_dir: '/alt/install/location')
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -557,7 +557,7 @@ describe Chef::Provider::Package::Rubygems do
           end
 
           it "installs the gem via the gems api" do
-            expect(@provider.gem_env).to receive(:install).with(@gem_dep, :sources => nil)
+            expect(@provider.gem_env).to receive(:install).with(@gem_dep, sources: nil)
             @provider.run_action(:install)
             expect(@new_resource).to be_updated_by_last_action
           end
@@ -637,8 +637,8 @@ describe Chef::Provider::Package::Rubygems do
           expect(@provider.new_resource.version).to be_nil
           expect(@provider.current_resource.version).not_to be_nil
           # the behavior we're testing:
-          @new_resource.options(:install_dir => '/alt/install/location')
-          expect(@provider.gem_env).to receive(:uninstall).with('rspec', nil, :install_dir => '/alt/install/location')
+          @new_resource.options(install_dir: '/alt/install/location')
+          expect(@provider.gem_env).to receive(:uninstall).with('rspec', nil, install_dir: '/alt/install/location')
           @provider.action_remove
         end
 

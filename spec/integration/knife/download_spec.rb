@@ -255,7 +255,7 @@ EOM
           end
 
           it 'knife download with no parameters reports an error' do
-            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -383,7 +383,7 @@ EOM
             cwd 'data_bags'
           end
           it 'knife download fails' do
-            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", stdout: /USAGE/
           end
           it 'knife download --purge . downloads everything' do
             knife('download --purge .').should_succeed <<EOM
@@ -547,7 +547,7 @@ WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error
                      (right here) ------^
 
 EOH
-          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", :stderr => warning
+          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", stderr: warning
           knife('diff --name-status /environments/x.json').should_succeed ''
         end
       end
@@ -760,7 +760,7 @@ EOM
             cwd '.'
           end
           it 'knife download with no parameters reports an error' do
-            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -879,7 +879,7 @@ EOM
             cwd 'data_bags'
           end
           it 'knife download fails' do
-            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", stdout: /USAGE/
           end
           it 'knife download --purge . downloads everything' do
             knife('download --purge .').should_succeed <<EOM
@@ -1092,7 +1092,7 @@ EOM
     end
   end
 
-  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+  when_the_chef_server "is in Enterprise mode", osc_compat: false, single_org: false do
     before do
       organization 'foo' do
         container 'x', {}

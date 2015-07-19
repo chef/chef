@@ -44,7 +44,7 @@ describe Chef::Node do
 
   describe "when the node does not exist on the server" do
     before do
-      response = OpenStruct.new(:code => '404')
+      response = OpenStruct.new(code: '404')
       exception = Net::HTTPServerException.new("404 not found", response)
       allow(Chef::Node).to receive(:load).and_raise(exception)
       node.name("created-node")
@@ -663,7 +663,7 @@ describe Chef::Node do
   describe "consuming json" do
 
     before do
-      @ohai_data = {:platform => 'foo', :platform_version => 'bar'}
+      @ohai_data = {platform: 'foo', platform_version: 'bar'}
     end
 
     it "consumes the run list portion of a collection of attributes and returns the remainder" do
@@ -730,7 +730,7 @@ describe Chef::Node do
 
   describe "preparing for a chef client run" do
     before do
-      @ohai_data = {:platform => 'foobuntu', :platform_version => '23.42'}
+      @ohai_data = {platform: 'foobuntu', platform_version: '23.42'}
     end
 
     it "sets its platform according to platform detection" do
@@ -874,12 +874,12 @@ describe Chef::Node do
     before do
       node.chef_environment = "rspec"
       @expansion = Chef::RunList::RunListExpansion.new("rspec", [])
-      @expansion.default_attrs.replace({:default => "from role", :d_role => "role only"})
-      @expansion.override_attrs.replace({:override => "from role", :o_role => "role only"})
+      @expansion.default_attrs.replace({default: "from role", d_role: "role only"})
+      @expansion.override_attrs.replace({override: "from role", o_role: "role only"})
 
       @environment = Chef::Environment.new
-      @environment.default_attributes = {:default => "from env", :d_env => "env only" }
-      @environment.override_attributes = {:override => "from env", :o_env => "env only"}
+      @environment.default_attributes = {default: "from env", d_env: "env only" }
+      @environment.override_attributes = {override: "from env", o_env: "env only"}
       allow(Chef::Environment).to receive(:load).and_return(@environment)
       node.apply_expansion_attributes(@expansion)
     end
@@ -1047,7 +1047,7 @@ describe Chef::Node do
   end
 
   describe "converting to or from json" do
-    it "should serialize itself as json", :json => true do
+    it "should serialize itself as json", json: true do
       node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(node)
       expect(json).to match(/json_class/)
@@ -1059,7 +1059,7 @@ describe Chef::Node do
       expect(json).to match(/run_list/)
     end
 
-    it 'should serialize valid json with a run list', :json => true do
+    it 'should serialize valid json with a run list', json: true do
       #This test came about because activesupport mucks with Chef json serialization
       #Test should pass with and without Activesupport
       node.run_list << {"type" => "role", "name" => 'Cthulu'}
@@ -1068,7 +1068,7 @@ describe Chef::Node do
       expect(json).to match(/\"run_list\":\[\"role\[Cthulu\]\",\"role\[Hastur\]\"\]/)
     end
 
-    it "should serialize the correct run list", :json => true do
+    it "should serialize the correct run list", json: true do
       node.run_list << "role[marxist]"
       node.run_list << "role[leninist]"
       node.override_runlist << "role[stalinist]"
@@ -1093,7 +1093,7 @@ describe Chef::Node do
       expect(node_for_json["default"]["env default"]).to eq("env default")
     end
 
-    it "should deserialize itself from json", :json => true do
+    it "should deserialize itself from json", json: true do
       node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(node)
       serialized_node = Chef::JSONCompat.from_json(json)
@@ -1132,7 +1132,7 @@ describe Chef::Node do
     describe "list" do
       describe "inflated" do
         it "should return a hash of node names and objects" do
-          n1 = double("Chef::Node", :name => "one")
+          n1 = double("Chef::Node", name: "one")
           expect(@query).to receive(:search).with(:node).and_yield(n1)
           r = Chef::Node.list(true)
           expect(r["one"]).to eq(n1)
@@ -1180,7 +1180,7 @@ describe Chef::Node do
       it "should create if it cannot update" do
         node.name("monkey")
         allow(node).to receive(:data_for_save).and_return({})
-        exception = double("404 error", :code => "404")
+        exception = double("404 error", code: "404")
         expect(@rest).to receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
         expect(@rest).to receive(:post_rest).with("nodes", {})
         node.save

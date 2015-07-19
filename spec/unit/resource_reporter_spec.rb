@@ -42,7 +42,7 @@ describe Chef::ResourceReporter do
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
     @cookbook_name = "monkey"
     @new_resource.cookbook_name = @cookbook_name
-    @cookbook_version = double("Cookbook::Version", :version => "1.2.3")
+    @cookbook_version = double("Cookbook::Version", version: "1.2.3")
     allow(@new_resource).to receive(:cookbook_version).and_return(@cookbook_version)
     @current_resource  = Chef::Resource::File.new("/tmp/a-file.txt")
     @start_time = Time.new
@@ -291,8 +291,8 @@ describe Chef::ResourceReporter do
       context "the new_resource name and id are hashes" do
         before do
           @bad_resource = Chef::Resource::File.new("/tmp/filename_as_hash.txt")
-          allow(@bad_resource).to receive(:name).and_return({:foo=>:bar})
-          allow(@bad_resource).to receive(:identity).and_return({:foo=>:bar})
+          allow(@bad_resource).to receive(:name).and_return({foo::bar})
+          allow(@bad_resource).to receive(:identity).and_return({foo::bar})
           @resource_reporter.resource_action_start(@bad_resource, :create)
           @resource_reporter.resource_current_state_loaded(@bad_resource, :create, @current_resource)
           @resource_reporter.resource_updated(@bad_resource, :create)
@@ -302,11 +302,11 @@ describe Chef::ResourceReporter do
           @first_update_report = @report["resources"].first
         end
         # Ruby 1.8.7 flattens out hash to string using join instead of inspect, resulting in
-        # irb(main):001:0> {:foo => :bar}.to_s
+        # irb(main):001:0> {foo: :bar}.to_s
         # => "foobar"
         # instead of the expected
-        # irb(main):001:0> {:foo => :bar}.to_s
-        # => "{:foo=>:bar}"
+        # irb(main):001:0> {foo: :bar}.to_s
+        # => "{foo::bar}"
         # Hence checking for the class instead of the actual value.
         it "resource_name in prepared_run_data is a string" do
           expect(@first_update_report["name"].class).to eq(String)
@@ -441,7 +441,7 @@ describe Chef::ResourceReporter do
     context "when the resource is a RegistryKey with binary data" do
       let(:new_resource) do
         resource = Chef::Resource::RegistryKey.new('Wubba\Lubba\Dub\Dubs')
-        resource.values([ { :name => 'rick', :type => :binary, :data => 255.chr * 1 } ])
+        resource.values([ { name: 'rick', type: :binary, data: 255.chr * 1 } ])
         allow(resource).to receive(:cookbook_name).and_return(@cookbook_name)
         allow(resource).to receive(:cookbook_version).and_return(@cookbook_version)
         resource
@@ -449,7 +449,7 @@ describe Chef::ResourceReporter do
 
       let(:current_resource) do
         resource = Chef::Resource::RegistryKey.new('Wubba\Lubba\Dub\Dubs')
-        resource.values([ { :name => 'rick', :type => :binary, :data => 255.chr * 1 } ])
+        resource.values([ { name: 'rick', type: :binary, data: 255.chr * 1 } ])
         resource
       end
 
@@ -586,8 +586,8 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
         @error = Net::HTTPServerException.new("404 message", @response)
         expect(@rest_client).to receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id,
-                                               :start_time => @start_time.to_s},
+          with("reports/nodes/spitfire/runs", {action: :start, run_id: @run_id,
+                                               start_time: @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
       end
@@ -616,7 +616,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
         expect(@rest_client).to receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
+          with("reports/nodes/spitfire/runs", {action: :start, run_id: @run_id, start_time: @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
       end
@@ -646,7 +646,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
         expect(@rest_client).to receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
+          with("reports/nodes/spitfire/runs", {action: :start, run_id: @run_id, start_time: @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
       end
@@ -667,7 +667,7 @@ describe Chef::ResourceReporter do
       before do
         response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/@run_id"}
         expect(@rest_client).to receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
+          with("reports/nodes/spitfire/runs", {action: :start, run_id: @run_id, start_time: @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_return(response)
         @resource_reporter.run_started(@run_status)

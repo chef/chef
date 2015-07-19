@@ -22,7 +22,7 @@ require 'chef/mixin/shell_out'
 # run this test only for following platforms.
 include_flag = !(['ubuntu', 'centos', 'aix'].include?(ohai[:platform]))
 
-describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
+describe Chef::Resource::Ifconfig, :requires_root, external: include_flag do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
@@ -113,7 +113,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
   end
 
   exclude_test = ohai[:platform] != 'ubuntu'
-  describe "#action_add", :external => exclude_test do
+  describe "#action_add", external: exclude_test do
     after do
       new_resource.run_action(:delete)
     end
@@ -125,7 +125,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_enable", :external => exclude_test do
+  describe "#action_enable", external: exclude_test do
     after do
       new_resource.run_action(:disable)
     end
@@ -136,7 +136,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_disable", :external => exclude_test do
+  describe "#action_disable", external: exclude_test do
     before do
       setup_enable_interface(new_resource)
       new_resource.run_action(:enable)
@@ -148,7 +148,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_delete", :external => exclude_test do
+  describe "#action_delete", external: exclude_test do
     before do
       setup_add_interface(new_resource)
       new_resource.run_action(:add)

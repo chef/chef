@@ -33,31 +33,31 @@ class Chef
       banner "knife configure (options)"
 
       option :repository,
-        :short => "-r REPO",
-        :long => "--repository REPO",
-        :description => "The path to the chef-repo"
+        short: "-r REPO",
+        long: "--repository REPO",
+        description: "The path to the chef-repo"
 
       option :initial,
-        :short => "-i",
-        :long => "--initial",
-        :boolean => true,
-        :description => "Use to create a API client, typically an administrator client on a freshly-installed server"
+        short: "-i",
+        long: "--initial",
+        boolean: true,
+        description: "Use to create a API client, typically an administrator client on a freshly-installed server"
 
       option :admin_client_name,
-        :long => "--admin-client-name NAME",
-        :description => "The name of the client, typically the name of the admin client"
+        long: "--admin-client-name NAME",
+        description: "The name of the client, typically the name of the admin client"
 
       option :admin_client_key,
-        :long => "--admin-client-key PATH",
-        :description => "The path to the private key used by the client, typically a file named admin.pem"
+        long: "--admin-client-key PATH",
+        description: "The path to the private key used by the client, typically a file named admin.pem"
 
       option :validation_client_name,
-        :long => "--validation-client-name NAME",
-        :description => "The name of the validation client, typically a client named chef-validator"
+        long: "--validation-client-name NAME",
+        description: "The name of the validation client, typically a client named chef-validator"
 
       option :validation_key,
-        :long => "--validation-key PATH",
-        :description => "The path to the validation key used by the client, typically a file named validation.pem"
+        long: "--validation-key PATH",
+        description: "The path to the validation key used by the client, typically a file named validation.pem"
 
       def configure_chef
         # We are just faking out the system so that you can do this without a key specified
@@ -123,7 +123,7 @@ EOH
       end
 
       def ask_user_for_config_path
-        config[:config_file] ||= ask_question("Where should I put the config file? ", :default => "#{Chef::Config[:user_home]}/.chef/knife.rb")
+        config[:config_file] ||= ask_question("Where should I put the config file? ", default: "#{Chef::Config[:user_home]}/.chef/knife.rb")
         # have to use expand path to expand the tilde character to the user's home
         config[:config_file] = File.expand_path(config[:config_file])
         if File.exists?(config[:config_file])
@@ -133,17 +133,17 @@ EOH
 
       def ask_user_for_config
         server_name = guess_servername
-        @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "https://#{server_name}:443")
+        @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", default: "https://#{server_name}:443")
         if config[:initial]
-          @new_client_name        = config[:node_name] || ask_question("Please enter a name for the new user: ", :default => Etc.getlogin)
-          @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin name: ", :default => 'admin')
-          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", :default => '/etc/chef-server/admin.pem')
+          @new_client_name        = config[:node_name] || ask_question("Please enter a name for the new user: ", default: Etc.getlogin)
+          @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin name: ", default: 'admin')
+          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", default: '/etc/chef-server/admin.pem')
           @admin_client_key       = File.expand_path(@admin_client_key)
         else
-          @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", :default => Etc.getlogin)
+          @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", default: Etc.getlogin)
         end
-        @validation_client_name = config[:validation_client_name] || ask_question("Please enter the validation clientname: ", :default => 'chef-validator')
-        @validation_key         = config[:validation_key] || ask_question("Please enter the location of the validation key: ", :default => '/etc/chef-server/chef-validator.pem')
+        @validation_client_name = config[:validation_client_name] || ask_question("Please enter the validation clientname: ", default: 'chef-validator')
+        @validation_key         = config[:validation_key] || ask_question("Please enter the location of the validation key: ", default: '/etc/chef-server/chef-validator.pem')
         @validation_key         = File.expand_path(@validation_key)
         @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository (or leave blank): ")
 

@@ -47,29 +47,29 @@ class Chef
 
       def run_start(version)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::INFO_TYPE,
-          :source => SOURCE,
-          :event_id => RUN_START_EVENT_ID,
-          :data => [version]
+          event_type: ::Win32::EventLog::INFO_TYPE,
+          source: SOURCE,
+          event_id: RUN_START_EVENT_ID,
+          data: [version]
         )
       end
 
       def run_started(run_status)
         @run_status = run_status
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::INFO_TYPE,
-          :source => SOURCE,
-          :event_id => RUN_STARTED_EVENT_ID,
-          :data => [run_status.run_id]
+          event_type: ::Win32::EventLog::INFO_TYPE,
+          source: SOURCE,
+          event_id: RUN_STARTED_EVENT_ID,
+          data: [run_status.run_id]
         )
       end
 
       def run_completed(node)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::INFO_TYPE,
-          :source => SOURCE,
-          :event_id => RUN_COMPLETED_EVENT_ID,
-          :data => [@run_status.run_id, @run_status.elapsed_time.to_s]
+          event_type: ::Win32::EventLog::INFO_TYPE,
+          source: SOURCE,
+          event_id: RUN_COMPLETED_EVENT_ID,
+          data: [@run_status.run_id, @run_status.elapsed_time.to_s]
         )
       end
 
@@ -87,10 +87,10 @@ class Chef
           end
 
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::ERROR_TYPE,
-          :source => SOURCE,
-          :event_id => RUN_FAILED_EVENT_ID,
-          :data => data + [e.class.name,
+          event_type: ::Win32::EventLog::ERROR_TYPE,
+          source: SOURCE,
+          event_id: RUN_FAILED_EVENT_ID,
+          data: data + [e.class.name,
                            e.message,
                            e.backtrace.join("\n")]
         )

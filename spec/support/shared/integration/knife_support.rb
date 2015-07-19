@@ -39,8 +39,8 @@ module KnifeSupport
     # Work on machines where we can't access /var
     checksums_cache_dir = Dir.mktmpdir('checksums') do |checksums_cache_dir|
       Chef::Config[:cache_options] = {
-        :path => checksums_cache_dir,
-        :skip_expires => true
+        path: checksums_cache_dir,
+        skip_expires: true
       }
 
       # This is Chef::Knife.run without load_commands--we'll load stuff

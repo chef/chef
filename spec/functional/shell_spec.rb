@@ -26,7 +26,7 @@ describe Shell do
   # chef-shell's unit tests are by necessity very mock-heavy, and frequently do
   # not catch cases where chef-shell fails to boot because of changes in
   # chef/client.rb
-  describe "smoke tests", :unix_only => true do
+  describe "smoke tests", unix_only: true do
     include Chef::Mixin::Command::Unix
 
     TIMEOUT=300
@@ -83,7 +83,7 @@ describe Shell do
         config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
         path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
         output = ''
-        status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
+        status = popen4("#{path_to_chef_shell} -c #{config} #{options}", waitlast: true) do |pid, stdin, stdout, stderr|
           read_until(stdout, "chef (#{Chef::VERSION})>")
           yield stdout, stdin if block_given?
           stdin.write("'done'\n")

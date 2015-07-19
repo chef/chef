@@ -29,124 +29,124 @@ require 'fileutils'
 class Chef::Application::Solo < Chef::Application
 
   option :config_file,
-    :short => "-c CONFIG",
-    :long  => "--config CONFIG",
-    :default => Chef::Config.platform_specific_path('/etc/chef/solo.rb'),
-    :description => "The configuration file to use"
+    short: "-c CONFIG",
+    long: "--config CONFIG",
+    default: Chef::Config.platform_specific_path('/etc/chef/solo.rb'),
+    description: "The configuration file to use"
 
   option :formatter,
-    :short        => "-F FORMATTER",
-    :long         => "--format FORMATTER",
-    :description  => "output format to use",
-    :proc         => lambda { |format| Chef::Config.add_formatter(format) }
+    short: "-F FORMATTER",
+    long: "--format FORMATTER",
+    description: "output format to use",
+    proc: lambda { |format| Chef::Config.add_formatter(format) }
 
   option :force_logger,
-    :long         => "--force-logger",
-    :description  => "Use logger output instead of formatter output",
-    :boolean      => true,
-    :default      => false
+    long: "--force-logger",
+    description: "Use logger output instead of formatter output",
+    boolean: true,
+    default: false
 
   option :force_formatter,
-    :long         => "--force-formatter",
-    :description  => "Use formatter output instead of logger output",
-    :boolean      => true,
-    :default      => false
+    long: "--force-formatter",
+    description: "Use formatter output instead of logger output",
+    boolean: true,
+    default: false
 
   option :color,
-    :long         => '--[no-]color',
-    :boolean      => true,
-    :default      => !Chef::Platform.windows?,
-    :description  => "Use colored output, defaults to enabled"
+    long: '--[no-]color',
+    boolean: true,
+    default: !Chef::Platform.windows?,
+    description: "Use colored output, defaults to enabled"
 
   option :log_level,
-    :short        => "-l LEVEL",
-    :long         => "--log_level LEVEL",
-    :description  => "Set the log level (debug, info, warn, error, fatal)",
-    :proc         => lambda { |l| l.to_sym }
+    short: "-l LEVEL",
+    long: "--log_level LEVEL",
+    description: "Set the log level (debug, info, warn, error, fatal)",
+    proc: lambda { |l| l.to_sym }
 
   option :log_location,
-    :short        => "-L LOGLOCATION",
-    :long         => "--logfile LOGLOCATION",
-    :description  => "Set the log file location, defaults to STDOUT",
-    :proc         => nil
+    short: "-L LOGLOCATION",
+    long: "--logfile LOGLOCATION",
+    description: "Set the log file location, defaults to STDOUT",
+    proc: nil
 
   option :help,
-    :short        => "-h",
-    :long         => "--help",
-    :description  => "Show this message",
-    :on           => :tail,
-    :boolean      => true,
-    :show_options => true,
-    :exit         => 0
+    short: "-h",
+    long: "--help",
+    description: "Show this message",
+    on: :tail,
+    boolean: true,
+    show_options: true,
+    exit: 0
 
   option :user,
-    :short => "-u USER",
-    :long => "--user USER",
-    :description => "User to set privilege to",
-    :proc => nil
+    short: "-u USER",
+    long: "--user USER",
+    description: "User to set privilege to",
+    proc: nil
 
   option :group,
-    :short => "-g GROUP",
-    :long => "--group GROUP",
-    :description => "Group to set privilege to",
-    :proc => nil
+    short: "-g GROUP",
+    long: "--group GROUP",
+    description: "Group to set privilege to",
+    proc: nil
 
   unless Chef::Platform.windows?
     option :daemonize,
-      :short => "-d",
-      :long => "--daemonize",
-      :description => "Daemonize the process",
-      :proc => lambda { |p| true }
+      short: "-d",
+      long: "--daemonize",
+      description: "Daemonize the process",
+      proc: lambda { |p| true }
   end
 
   option :lockfile,
-    :long         => "--lockfile LOCKFILE",
-    :description  => "Set the lockfile location. Prevents multiple processes from converging at the same time",
-    :proc         => nil
+    long: "--lockfile LOCKFILE",
+    description: "Set the lockfile location. Prevents multiple processes from converging at the same time",
+    proc: nil
 
   option :interval,
-    :short => "-i SECONDS",
-    :long => "--interval SECONDS",
-    :description => "Run chef-client periodically, in seconds",
-    :proc => lambda { |s| s.to_i }
+    short: "-i SECONDS",
+    long: "--interval SECONDS",
+    description: "Run chef-client periodically, in seconds",
+    proc: lambda { |s| s.to_i }
 
   option :json_attribs,
-    :short => "-j JSON_ATTRIBS",
-    :long => "--json-attributes JSON_ATTRIBS",
-    :description => "Load attributes from a JSON file or URL",
-    :proc => nil
+    short: "-j JSON_ATTRIBS",
+    long: "--json-attributes JSON_ATTRIBS",
+    description: "Load attributes from a JSON file or URL",
+    proc: nil
 
   option :node_name,
-    :short => "-N NODE_NAME",
-    :long => "--node-name NODE_NAME",
-    :description => "The node name for this client",
-    :proc => nil
+    short: "-N NODE_NAME",
+    long: "--node-name NODE_NAME",
+    description: "The node name for this client",
+    proc: nil
 
   option :splay,
-    :short => "-s SECONDS",
-    :long => "--splay SECONDS",
-    :description => "The splay time for running at intervals, in seconds",
-    :proc => lambda { |s| s.to_i }
+    short: "-s SECONDS",
+    long: "--splay SECONDS",
+    description: "The splay time for running at intervals, in seconds",
+    proc: lambda { |s| s.to_i }
 
   option :recipe_url,
-      :short => "-r RECIPE_URL",
-      :long => "--recipe-url RECIPE_URL",
-      :description => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache.",
-      :proc => nil
+      short: "-r RECIPE_URL",
+      long: "--recipe-url RECIPE_URL",
+      description: "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache.",
+      proc: nil
 
   option :version,
-    :short        => "-v",
-    :long         => "--version",
-    :description  => "Show chef version",
-    :boolean      => true,
-    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
-    :exit         => 0
+    short: "-v",
+    long: "--version",
+    description: "Show chef version",
+    boolean: true,
+    proc: lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    exit: 0
 
   option :override_runlist,
-    :short        => "-o RunlistItem,RunlistItem...",
-    :long         => "--override-runlist RunlistItem,RunlistItem...",
-    :description  => "Replace current run list with specified items",
-    :proc         => lambda{|items|
+    short: "-o RunlistItem,RunlistItem...",
+    long: "--override-runlist RunlistItem,RunlistItem...",
+    description: "Replace current run list with specified items",
+    proc: lambda{|items|
       items = items.split(',')
       items.compact.map{|item|
         Chef::RunList::RunListItem.new(item)
@@ -154,36 +154,36 @@ class Chef::Application::Solo < Chef::Application
     }
 
   option :client_fork,
-    :short        => "-f",
-    :long         => "--[no-]fork",
-    :description  => "Fork client",
-    :boolean      => true
+    short: "-f",
+    long: "--[no-]fork",
+    description: "Fork client",
+    boolean: true
 
   option :why_run,
-    :short        => '-W',
-    :long         => '--why-run',
-    :description  => 'Enable whyrun mode',
-    :boolean      => true
+    short: '-W',
+    long: '--why-run',
+    description: 'Enable whyrun mode',
+    boolean: true
 
   option :ez,
-    :long         => '--ez',
-    :description  => 'A memorial for Ezra Zygmuntowicz',
-    :boolean      => true
+    long: '--ez',
+    description: 'A memorial for Ezra Zygmuntowicz',
+    boolean: true
 
   option :environment,
-    :short        => '-E ENVIRONMENT',
-    :long         => '--environment ENVIRONMENT',
-    :description  => 'Set the Chef Environment on the node'
+    short: '-E ENVIRONMENT',
+    long: '--environment ENVIRONMENT',
+    description: 'Set the Chef Environment on the node'
 
   option :run_lock_timeout,
-    :long         => "--run-lock-timeout SECONDS",
-    :description  => "Set maximum duration to wait for another client run to finish, default is indefinitely.",
-    :proc         => lambda { |s| s.to_i }
+    long: "--run-lock-timeout SECONDS",
+    description: "Set maximum duration to wait for another client run to finish, default is indefinitely.",
+    proc: lambda { |s| s.to_i }
 
   option :minimal_ohai,
-    :long           => "--minimal-ohai",
-    :description    => "Only run the bare minimum ohai plugins chef needs to function",
-    :boolean        => true
+    long: "--minimal-ohai",
+    description: "Only run the bare minimum ohai plugins chef needs to function",
+    boolean: true
 
   attr_reader :chef_client_json
 
@@ -209,7 +209,7 @@ class Chef::Application::Solo < Chef::Application
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
 
       Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
-      FileUtils.rm_rf(recipes_path, :secure => true)
+      FileUtils.rm_rf(recipes_path, secure: true)
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p(recipes_path)
       tarball_path = File.join(recipes_path, 'recipes.tgz')

@@ -66,7 +66,7 @@ describe Chef::Provider::Package::Freebsd::Port do
 
   describe "determining current installed version" do
     before(:each) do
-      @pkg_info = OpenStruct.new(:stdout => "zsh-3.1.7\n")
+      @pkg_info = OpenStruct.new(stdout: "zsh-3.1.7\n")
     end
 
     it "should check 'pkg_info' if system uses pkg_* tools" do
@@ -77,7 +77,7 @@ describe Chef::Provider::Package::Freebsd::Port do
     end
 
     it "should check 'pkg info' if make supports WITH_PKGNG if freebsd version is < 1000017" do
-      pkg_enabled = OpenStruct.new(:stdout => "yes\n")
+      pkg_enabled = OpenStruct.new(stdout: "yes\n")
       [1000016, 1000000, 901503, 902506, 802511].each do |__freebsd_version|
         @node.automatic_attrs[:os_version] = __freebsd_version
         expect(@new_resource).to receive(:shell_out!).with('make -V WITH_PKGNG', env: nil).and_return(pkg_enabled)
@@ -96,7 +96,7 @@ describe Chef::Provider::Package::Freebsd::Port do
 
   describe "determining candidate version" do
     before(:each) do
-      @port_version = OpenStruct.new(:stdout => "5.0.5\n", :exitstatus => 0)
+      @port_version = OpenStruct.new(stdout: "5.0.5\n", exitstatus: 0)
     end
 
     it "should return candidate version if port exists" do
@@ -126,13 +126,13 @@ describe Chef::Provider::Package::Freebsd::Port do
     end
 
     it "should query system for path given just a name" do
-      whereis = OpenStruct.new(:stdout => "zsh: /usr/ports/shells/zsh\n")
+      whereis = OpenStruct.new(stdout: "zsh: /usr/ports/shells/zsh\n")
       expect(@provider).to receive(:shell_out!).with("whereis -s zsh", env: nil, timeout: 900).and_return(whereis)
       expect(@provider.port_dir).to eq("/usr/ports/shells/zsh")
     end
 
     it "should raise exception if not found" do
-      whereis = OpenStruct.new(:stdout => "zsh:\n")
+      whereis = OpenStruct.new(stdout: "zsh:\n")
       expect(@provider).to receive(:shell_out!).with("whereis -s zsh", env: nil, timeout: 900).and_return(whereis)
       expect { @provider.port_dir }.to raise_error(Chef::Exceptions::Package, "Could not find port with the name zsh")
     end
@@ -141,13 +141,13 @@ describe Chef::Provider::Package::Freebsd::Port do
 
   describe "building a binary package" do
     before(:each) do
-      @install_result = OpenStruct.new(:status => true)
+      @install_result = OpenStruct.new(status: true)
     end
 
     it "should run make install in port directory" do
       allow(@provider).to receive(:port_dir).and_return("/usr/ports/shells/zsh")
       expect(@provider).to receive(:shell_out!).
-        with("make -DBATCH install clean", :timeout => 1800, :cwd => "/usr/ports/shells/zsh", :env => nil).
+        with("make -DBATCH install clean", timeout: 1800, cwd: "/usr/ports/shells/zsh", env: nil).
         and_return(@install_result)
       @provider.install_package("zsh", "5.0.5")
     end
@@ -156,13 +156,13 @@ describe Chef::Provider::Package::Freebsd::Port do
 
   describe "removing a binary package" do
     before(:each) do
-      @install_result = OpenStruct.new(:status => true)
+      @install_result = OpenStruct.new(status: true)
     end
 
     it "should run make deinstall in port directory" do
       allow(@provider).to receive(:port_dir).and_return("/usr/ports/shells/zsh")
       expect(@provider).to receive(:shell_out!).
-        with("make deinstall", :timeout => 300, :cwd => "/usr/ports/shells/zsh", :env => nil).
+        with("make deinstall", timeout: 300, cwd: "/usr/ports/shells/zsh", env: nil).
         and_return(@install_result)
       @provider.remove_package("zsh", "5.0.5")
     end

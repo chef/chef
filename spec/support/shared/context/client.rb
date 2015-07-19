@@ -11,16 +11,16 @@ shared_context "client" do
 
   let(:ohai_data) do
     {
-      :fqdn =>             fqdn,
-      :hostname =>         hostname,
-      :machinename =>      machinename,
-      :platform =>         platform,
-      :platform_version => platform_version
+      fqdn:             fqdn,
+      hostname:         hostname,
+      machinename:      machinename,
+      platform:         platform,
+      platform_version: platform_version
     }
   end
 
   let(:ohai_system) do
-    ohai = instance_double("Ohai::System", :all_plugins => true, :data => ohai_data)
+    ohai = instance_double("Ohai::System", all_plugins: true, data: ohai_data)
     allow(ohai).to receive(:[]) do |k|
       ohai_data[k]
     end
@@ -117,7 +117,7 @@ shared_context "a client run" do
     expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
     expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
     expect(http_cookbook_sync).to receive(:post).
-      with("environments/_default/cookbook_versions", {:run_list => []}).
+      with("environments/_default/cookbook_versions", {run_list: []}).
       and_return({})
   end
 
@@ -223,7 +223,7 @@ end
 
 shared_context "audit phase completed with failed controls" do
   let(:audit_runner) { instance_double("Chef::Audit::Runner", :failed? => true,
-    :num_failed => 1, :num_total => 3) }
+    num_failed: 1, num_total: 3) }
 
   let(:audit_error) do
     err = Chef::Exceptions::AuditsFailed.new(audit_runner.num_failed, audit_runner.num_total)

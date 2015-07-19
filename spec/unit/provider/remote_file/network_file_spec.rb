@@ -28,8 +28,8 @@ describe Chef::Provider::RemoteFile::NetworkFile do
 
   describe "when fetching the object" do
 
-    let(:tempfile) { double("Tempfile", :path => "/tmp/foo/bar/Foo.tar.gz", :close => nil) }
-    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
+    let(:tempfile) { double("Tempfile", path: "/tmp/foo/bar/Foo.tar.gz", close: nil) }
+    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", tempfile: tempfile) }
 
     it "stages the local file to a temporary file" do
       expect(Chef::FileContentManagement::Tempfile).to receive(:new).with(new_resource).and_return(chef_tempfile)

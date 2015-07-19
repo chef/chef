@@ -30,9 +30,9 @@ class Chef
       banner "knife node list (options)"
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs"
 
       def run
         env = Chef::Config[:environment]

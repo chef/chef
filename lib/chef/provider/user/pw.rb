@@ -32,21 +32,21 @@ class Chef
         def create_user
           command = "pw useradd"
           command << set_options
-          run_command(:command => command)
+          run_command(command: command)
           modify_password
         end
 
         def manage_user
           command = "pw usermod"
           command << set_options
-          run_command(:command => command)
+          run_command(command: command)
           modify_password
         end
 
         def remove_user
           command = "pw userdel #{@new_resource.username}"
           command << " -r" if @new_resource.supports[:manage_home]
-          run_command(:command => command)
+          run_command(command: command)
         end
 
         def check_lock
@@ -60,11 +60,11 @@ class Chef
         end
 
         def lock_user
-          run_command(:command => "pw lock #{@new_resource.username}")
+          run_command(command: "pw lock #{@new_resource.username}")
         end
 
         def unlock_user
-          run_command(:command => "pw unlock #{@new_resource.username}")
+          run_command(command: "pw unlock #{@new_resource.username}")
         end
 
         def set_options
@@ -97,7 +97,7 @@ class Chef
           if (not @new_resource.password.nil?) && (@current_resource.password != @new_resource.password)
             Chef::Log.debug("#{new_resource} updating password")
             command = "pw usermod #{@new_resource.username} -H 0"
-            status = popen4(command, :waitlast => true) do |pid, stdin, stdout, stderr|
+            status = popen4(command, waitlast: true) do |pid, stdin, stdout, stderr|
               stdin.puts "#{@new_resource.password}"
             end
 

@@ -35,14 +35,14 @@ describe Chef::Provider::Ifconfig do
     @provider = Chef::Provider::Ifconfig.new(@new_resource, @run_context)
     @current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
 
-    status = double("Status", :exitstatus => 0)
+    status = double("Status", exitstatus: 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
 
  end
   describe Chef::Provider::Ifconfig, "load_current_resource" do
     before do
-      @status = double(:stdout => "", :exitstatus => 1)
+      @status = double(stdout: "", exitstatus: 1)
       allow(@provider).to receive(:shell_out).and_return(@status)
       @provider.load_current_resource
     end
@@ -61,7 +61,7 @@ describe Chef::Provider::Ifconfig do
       allow(@provider).to receive(:load_current_resource)
       @current_resource.inet_addr nil
       command = "ifconfig eth0 10.0.0.1 netmask 255.255.254.0 metric 1 mtu 1500"
-      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).to receive(:run_command).with(command: command)
       expect(@provider).to receive(:generate_config)
 
       @provider.run_action(:add)
@@ -89,7 +89,7 @@ describe Chef::Provider::Ifconfig do
       allow(@provider).to receive(:load_current_resource)
       @current_resource.inet_addr nil
       command = "ifconfig eth0 10.0.0.1 netmask 255.255.254.0 metric 1 mtu 1500"
-      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).to receive(:run_command).with(command: command)
       expect(@provider).not_to receive(:generate_config)
 
       @provider.run_action(:enable)
@@ -113,7 +113,7 @@ describe Chef::Provider::Ifconfig do
       allow(@provider).to receive(:load_current_resource)
       @current_resource.device "eth0"
       command = "ifconfig #{@new_resource.device} down"
-      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).to receive(:run_command).with(command: command)
       expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)
@@ -136,7 +136,7 @@ describe Chef::Provider::Ifconfig do
       allow(@provider).to receive(:load_current_resource)
       @current_resource.device "eth0"
       command = "ifconfig #{@new_resource.device} down"
-      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).to receive(:run_command).with(command: command)
       expect(@provider).not_to receive(:delete_config)
 
       @provider.run_action(:disable)
@@ -159,7 +159,7 @@ describe Chef::Provider::Ifconfig do
       allow(@provider).to receive(:load_current_resource)
       @current_resource.device "eth0"
       command = "ifconfig #{@new_resource.device} down"
-      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).to receive(:run_command).with(command: command)
       expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)

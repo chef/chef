@@ -1,4 +1,4 @@
-define :new_dog, :is_cute => true do
+define :new_dog, is_cute: true do
   dog "#{params[:name]}" do
     cute params[:is_cute]
   end

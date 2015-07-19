@@ -48,8 +48,8 @@ class Powershell
     attr_reader :output_format
 
     def run(switches={}, execution_options={}, *arguments)
-      streams = { :json => CmdletStream.new('json'),
-                  :verbose => CmdletStream.new('verbose'),
+      streams = { json: CmdletStream.new('json'),
+                  verbose: CmdletStream.new('verbose'),
                 }
 
       arguments_string = arguments.join(' ')
@@ -71,7 +71,7 @@ class Powershell
                        "#{arguments_string} #{redirections}"\
                        "#{json_command}\";if ( ! $? ) { exit 1 }"
 
-      augmented_options = {:returns => [0], :live_stream => false}.merge(execution_options)
+      augmented_options = {returns: [0], live_stream: false}.merge(execution_options)
       command = Mixlib::ShellOut.new(command_string, augmented_options)
 
       status = nil

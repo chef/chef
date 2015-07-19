@@ -28,18 +28,18 @@ end
 
 mysql_database node['webapp']['database'] do
   connection ({
-    :host => 'localhost',
-    :username => 'root',
-    :password => creds['mysql']['server_root_password']
+    host: 'localhost',
+    username: 'root',
+    password: creds['mysql']['server_root_password']
   })
   action :create
 end
 
 mysql_database_user node['webapp']['db_username'] do
   connection ({
-    :host => 'localhost',
-    :username => 'root',
-    :password => creds['mysql']['server_root_password']
+    host: 'localhost',
+    username: 'root',
+    password: creds['mysql']['server_root_password']
   })
   password creds['webapp']['db_password']
   database_name node['webapp']['database']

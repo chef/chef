@@ -106,7 +106,7 @@ class Chef
         set_or_return(
           :deploy_to,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -114,7 +114,7 @@ class Chef
         set_or_return(
           :repo,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
       alias :repository :repo
@@ -123,7 +123,7 @@ class Chef
         set_or_return(
           :remote,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -131,7 +131,7 @@ class Chef
         set_or_return(
           :role,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -140,7 +140,7 @@ class Chef
         set_or_return(
           :restart_command,
           arg,
-          :kind_of => [ String, Proc ]
+          kind_of: [ String, Proc ]
         )
       end
       alias :restart :restart_command
@@ -149,7 +149,7 @@ class Chef
         set_or_return(
           :migrate,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -157,7 +157,7 @@ class Chef
         set_or_return(
           :migration_command,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -165,7 +165,7 @@ class Chef
         set_or_return(
           :rollback_on_error,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -173,7 +173,7 @@ class Chef
         set_or_return(
           :user,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -181,7 +181,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -189,7 +189,7 @@ class Chef
         set_or_return(
           :enable_submodules,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -197,7 +197,7 @@ class Chef
         set_or_return(
           :shallow_clone,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -205,7 +205,7 @@ class Chef
         set_or_return(
           :repository_cache,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -213,7 +213,7 @@ class Chef
         set_or_return(
           :copy_exclude,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -221,7 +221,7 @@ class Chef
         set_or_return(
           :revision,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
       alias :branch :revision
@@ -230,7 +230,7 @@ class Chef
         set_or_return(
           :git_ssh_wrapper,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
       alias :ssh_wrapper :git_ssh_wrapper
@@ -239,7 +239,7 @@ class Chef
         set_or_return(
           :svn_username,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -247,7 +247,7 @@ class Chef
         set_or_return(
           :svn_password,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -255,7 +255,7 @@ class Chef
         set_or_return(
           :svn_arguments,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -263,7 +263,7 @@ class Chef
         set_or_return(
           :svn_arguments,
           arg,
-          :kind_of => [ String ])
+          kind_of: [ String ])
       end
 
       def scm_provider(arg=nil)
@@ -275,7 +275,7 @@ class Chef
         set_or_return(
           :scm_provider,
           klass,
-          :kind_of => [ Class ]
+          kind_of: [ Class ]
         )
       end
 
@@ -289,7 +289,7 @@ class Chef
         set_or_return(
           :svn_force_export,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -302,7 +302,7 @@ class Chef
         set_or_return(
           :environment,
           arg,
-          :kind_of => [ Hash ]
+          kind_of: [ Hash ]
         )
       end
 
@@ -311,7 +311,7 @@ class Chef
         [set_or_return(
           :keep_releases,
           arg,
-          :kind_of => [ Integer ]), 1].max
+          kind_of: [ Integer ]), 1].max
       end
 
       # An array of paths, relative to your app's root, to be purged from a
@@ -322,7 +322,7 @@ class Chef
         set_or_return(
           :purge_before_symlink,
           arg,
-          :kind_of => Array
+          kind_of: Array
         )
       end
 
@@ -338,7 +338,7 @@ class Chef
         set_or_return(
           :create_dirs_before_symlink,
           arg,
-          :kind_of => Array
+          kind_of: Array
         )
       end
 
@@ -352,7 +352,7 @@ class Chef
         set_or_return(
           :symlinks,
           arg,
-          :kind_of => Hash
+          kind_of: Hash
         )
       end
 
@@ -367,39 +367,39 @@ class Chef
         set_or_return(
           :symlink_before_migrate,
           arg,
-          :kind_of => Hash
+          kind_of: Hash
         )
       end
 
       # Callback fires before migration is run.
       def before_migrate(arg=nil, &block)
         arg ||= block
-        set_or_return(:before_migrate, arg, :kind_of => [Proc, String])
+        set_or_return(:before_migrate, arg, kind_of: [Proc, String])
       end
 
       # Callback fires before symlinking
       def before_symlink(arg=nil, &block)
         arg ||= block
-        set_or_return(:before_symlink, arg, :kind_of => [Proc, String])
+        set_or_return(:before_symlink, arg, kind_of: [Proc, String])
       end
 
       # Callback fires before restart
       def before_restart(arg=nil, &block)
         arg ||= block
-        set_or_return(:before_restart, arg, :kind_of => [Proc, String])
+        set_or_return(:before_restart, arg, kind_of: [Proc, String])
       end
 
       # Callback fires after restart
       def after_restart(arg=nil, &block)
         arg ||= block
-        set_or_return(:after_restart, arg, :kind_of => [Proc, String])
+        set_or_return(:after_restart, arg, kind_of: [Proc, String])
       end
 
       def additional_remotes(arg=nil)
         set_or_return(
           :additional_remotes,
           arg,
-          :kind_of => Hash
+          kind_of: Hash
         )
       end
 
@@ -407,7 +407,7 @@ class Chef
         set_or_return(
           :enable_checkout,
           arg,
-          :kind_of => [TrueClass, FalseClass]
+          kind_of: [TrueClass, FalseClass]
         )
       end
 
@@ -415,7 +415,7 @@ class Chef
         set_or_return(
           :checkout_branch,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
@@ -428,7 +428,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => Integer
+          kind_of: Integer
         )
       end
 

@@ -322,7 +322,7 @@ user password using shadow hash.")
           src = @current_resource.home
           FileUtils.mkdir_p(@new_resource.home)
           files = ::Dir.glob("#{Chef::Util::PathHelper.escape_glob(src)}/*", ::File::FNM_DOTMATCH) - ["#{src}/.","#{src}/.."]
-          ::FileUtils.mv(files,@new_resource.home, :force => true)
+          ::FileUtils.mv(files,@new_resource.home, force: true)
           ::FileUtils.rmdir(src)
           ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
         end
@@ -352,7 +352,7 @@ user password using shadow hash.")
           # Shadow info is saved as binary plist. Convert the info to binary plist.
           shadow_info_binary = StringIO.new
           command = Mixlib::ShellOut.new("plutil -convert binary1 -o - -",
-            :input => shadow_info.to_plist, :live_stream => shadow_info_binary)
+            input: shadow_info.to_plist, live_stream: shadow_info_binary)
           command.run_command
 
           if @user_info.nil?
@@ -552,14 +552,14 @@ user password using shadow hash.")
 
         # A simple map of Chef's terms to DSCL's terms.
         DSCL_PROPERTY_MAP = {
-          :uid => "uid",
-          :gid => "gid",
-          :home => "home",
-          :shell => "shell",
-          :comment => "realname",
-          :password => "passwd",
-          :auth_authority => "authentication_authority",
-          :shadow_hash => "ShadowHashData"
+          uid: "uid",
+          gid: "gid",
+          home: "home",
+          shell: "shell",
+          comment: "realname",
+          password: "passwd",
+          auth_authority: "authentication_authority",
+          shadow_hash: "ShadowHashData"
         }.freeze
 
         # Directory where the user plist files are stored for versions 10.7 and above
@@ -653,14 +653,14 @@ user password using shadow hash.")
           result = shell_out("plutil -#{args.join(' ')}")
           raise(Chef::Exceptions::PlistUtilCommandFailed,"plutil error: #{result.inspect}") unless result.exitstatus == 0
           if result.stdout.encoding == Encoding::ASCII_8BIT
-            result.stdout.encode("utf-8", "binary",  :undef => :replace, :invalid => :replace, :replace => '?')
+            result.stdout.encode("utf-8", "binary",  undef: :replace, invalid: :replace, replace: '?')
           else
             result.stdout
           end
         end
 
         def convert_binary_plist_to_xml(binary_plist_string)
-          Mixlib::ShellOut.new("plutil -convert xml1 -o - -", :input => binary_plist_string).run_command.stdout
+          Mixlib::ShellOut.new("plutil -convert xml1 -o - -", input: binary_plist_string).run_command.stdout
         end
 
         def convert_to_binary(string)

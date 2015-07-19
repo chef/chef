@@ -23,9 +23,9 @@ describe Chef::Knife::CookbookSiteInstall do
   let(:stdout) { StringIO.new }
   let(:stderr) { StringIO.new }
   let(:downloader) { Hash.new }
-  let(:repo) { double(:sanity_check => true, :reset_to_default_state => true,
-                      :prepare_to_import => true, :finalize_updates_to => true,
-                      :merge_updates_from => true) }
+  let(:repo) { double(sanity_check: true, reset_to_default_state: true,
+                      prepare_to_import: true, finalize_updates_to: true,
+                      merge_updates_from: true) }
   let(:install_path) { if Chef::Platform.windows?
                         'C:/tmp/chef'
                       else

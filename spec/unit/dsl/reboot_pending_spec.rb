@@ -36,7 +36,7 @@ describe Chef::DSL::RebootPending do
         end
   
         it 'should return true if "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations" exists' do
-          allow(recipe).to receive(:registry_value_exists?).with('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => 'PendingFileRenameOperations' }).and_return(true)
+          allow(recipe).to receive(:registry_value_exists?).with('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { name: 'PendingFileRenameOperations' }).and_return(true)
           expect(recipe.reboot_pending?).to be_truthy
         end
   
@@ -53,7 +53,7 @@ describe Chef::DSL::RebootPending do
         it 'should return true if value "HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile" contains specific data' do
           allow(recipe).to receive(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').and_return(true)
           allow(recipe).to receive(:registry_get_values).with('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').and_return(
-                [{:name => "Flags", :type => :dword, :data => 3}])
+                [{name: "Flags", type: :dword, data: 3}])
           expect(recipe.reboot_pending?).to be_truthy
         end
       end

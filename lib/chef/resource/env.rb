@@ -41,7 +41,7 @@ class Chef
         set_or_return(
           :key_name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -49,7 +49,7 @@ class Chef
         set_or_return(
           :value,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -57,7 +57,7 @@ class Chef
         set_or_return(
           :delim,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
     end

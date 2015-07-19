@@ -35,7 +35,7 @@ class Chef
         def create_group
           command = "mkgroup"
           command << set_options << " #{@new_resource.group_name}"
-          run_command(:command => command)
+          run_command(command: command)
           modify_group_members
         end
 
@@ -45,13 +45,13 @@ class Chef
           #Usage: chgroup [-R load_module] "attr=value" ... group
           if options.size > 0
             command << options << " #{@new_resource.group_name}"
-            run_command(:command => command)
+            run_command(command: command)
           end
           modify_group_members
         end
 
         def remove_group
-          run_command(:command => "rmgroup #{@new_resource.group_name}")
+          run_command(command: "rmgroup #{@new_resource.group_name}")
         end
 
         def add_member(member)
@@ -69,7 +69,7 @@ class Chef
 
         def set_options
           opts = ""
-          { :gid => "id" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
+          { gid: "id" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
                 Chef::Log.debug("#{@new_resource} setting #{field.to_s} to #{@new_resource.send(field)}")

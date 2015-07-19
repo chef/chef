@@ -80,7 +80,7 @@ describe Chef::REST::AuthCredentials do
   describe "generating signature headers for a request" do
     before do
       @request_time = Time.at(1270920860)
-      @request_params = {:http_method => :POST, :path => "/clients", :body => '{"some":"json"}', :host => "localhost"}
+      @request_params = {http_method: :POST, path: "/clients", body: '{"some":"json"}', host: "localhost"}
     end
 
     it "generates signature headers for the request" do

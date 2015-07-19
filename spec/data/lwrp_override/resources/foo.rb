@@ -2,7 +2,7 @@
 
 actions :never_execute
 
-attribute :ever, :kind_of => String
+attribute :ever, kind_of: String
 
 class ::Chef
   def method_created_by_override_lwrp_foo

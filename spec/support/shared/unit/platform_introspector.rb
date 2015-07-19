@@ -38,7 +38,7 @@ shared_examples_for "a platform introspector" do
       "debian" => "debian value",
       [:rhel, :fedora] => "redhatty value",
       "suse" => "suse value",
-      :default => "default value"
+      default: "default value"
     }
   end
 

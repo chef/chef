@@ -24,7 +24,7 @@ class Chef
         set_or_return(
           :owner,
           arg,
-          :regex => Chef::Config[:user_valid_regex]
+          regex: Chef::Config[:user_valid_regex]
         )
       end
 
@@ -34,7 +34,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :regex => Chef::Config[:group_valid_regex]
+          regex: Chef::Config[:group_valid_regex]
         )
       end
 
@@ -42,7 +42,7 @@ class Chef
         set_or_return(
           :mode,
           arg,
-          :callbacks => {
+          callbacks: {
             "not in valid numeric range" => lambda { |m|
               if m.kind_of?(String)
                 m =~ /^0/ || m="0#{m}"
@@ -89,8 +89,8 @@ class Chef
         #
         #   rights :read, ["Administrators","Everyone"]
         #   rights :deny, "Pinky"
-        #   rights :full_control, "Users", :applies_to_children => true
-        #   rights :write, "John Keiser", :applies_to_children => :containers_only, :applies_to_self => false, :one_level_deep => true
+        #   rights :full_control, "Users", applies_to_children: true
+        #   rights :write, "John Keiser", applies_to_children: :containers_only, applies_to_self: false, one_level_deep: true
         #
         # ==== Internal Data Structure
         # rights attributes support multiple right declarations
@@ -115,16 +115,16 @@ class Chef
             rights = self.instance_variable_get("@#{name.to_s}".to_sym)
             unless permissions.nil?
               input = {
-                :permissions => permissions,
-                :principals => principals
+                permissions: permissions,
+                principals: principals
               }
               input.merge!(args_hash) unless args_hash.nil?
 
-              validations = {:permissions => { :required => true },
-                             :principals => { :required => true, :kind_of => [String, Array] },
-                             :applies_to_children => { :equal_to => [ true, false, :containers_only, :objects_only ]},
-                             :applies_to_self => { :kind_of => [ TrueClass, FalseClass ] },
-                             :one_level_deep => { :kind_of => [ TrueClass, FalseClass ] }
+              validations = {permissions: { required: true },
+                             principals: { required: true, kind_of: [String, Array] },
+                             applies_to_children: { equal_to: [ true, false, :containers_only, :objects_only ]},
+                             applies_to_self: { kind_of: [ TrueClass, FalseClass ] },
+                             one_level_deep: { kind_of: [ TrueClass, FalseClass ] }
                             }
               validate(input, validations)
 
@@ -174,7 +174,7 @@ class Chef
           set_or_return(
             :inherits,
             arg,
-            :kind_of => [ TrueClass, FalseClass ]
+            kind_of: [ TrueClass, FalseClass ]
           )
         end
       end

@@ -109,7 +109,7 @@ class Chef
             command = add_command
             converge_by ("run #{command} to add #{@new_resource}") do
               run_command(
-                :command => command
+                command: command
               )
               Chef::Log.info("#{@new_resource} added")
             end
@@ -127,7 +127,7 @@ class Chef
             command = enable_command
             converge_by ("run #{command} to enable #{@new_resource}") do
               run_command(
-                :command => command
+                command: command
               )
               Chef::Log.info("#{@new_resource} enabled")
             end
@@ -141,7 +141,7 @@ class Chef
           command = delete_command
           converge_by ("run #{command} to delete #{@new_resource}") do
             run_command(
-              :command => command
+              command: command
             )
             Chef::Log.info("#{@new_resource} deleted")
           end
@@ -158,7 +158,7 @@ class Chef
           command = disable_command
           converge_by ("run #{command} to disable #{@new_resource}") do
             run_command(
-              :command => command
+              command: command
             )
             Chef::Log.info("#{@new_resource} disabled")
           end

@@ -65,7 +65,7 @@ describe Chef::ResourceCollection do
     end
 
     it "should accept named arguments in any order" do
-      rc.insert(resource, :instance_name => 'foo', :resource_type =>'bar')
+      rc.insert(resource, instance_name: 'foo', resource_type:'bar')
       expect(rc[0]).to eq(resource)
     end
 
@@ -164,21 +164,21 @@ describe Chef::ResourceCollection do
 
   describe "resources" do
 
-    it "should find a resource by symbol and name (:zen_master => monkey)" do
+    it "should find a resource by symbol and name (zen_master: monkey)" do
       load_up_resources
-      expect(rc.resources(:zen_master => "monkey").name).to eql("monkey")
+      expect(rc.resources(zen_master: "monkey").name).to eql("monkey")
     end
 
-    it "should find a resource by symbol and array of names (:zen_master => [a,b])" do
+    it "should find a resource by symbol and array of names (zen_master: [a,b])" do
       load_up_resources
-      results = rc.resources(:zen_master => [ "monkey", "dog" ])
+      results = rc.resources(zen_master: [ "monkey", "dog" ])
       expect(results.length).to eql(2)
       check_by_names(results, "monkey", "dog")
     end
 
-    it "should find resources of multiple kinds (:zen_master => a, :file => b)" do
+    it "should find resources of multiple kinds (zen_master: a, file: b)" do
       load_up_resources
-      results = rc.resources(:zen_master => "monkey", :file => "something")
+      results = rc.resources(zen_master: "monkey", file: "something")
       expect(results.length).to eql(2)
       check_by_names(results, "monkey", "something")
     end
@@ -221,8 +221,8 @@ describe Chef::ResourceCollection do
       expect(rc.validate_lookup_spec!("resource_type[resource_name]")).to be_truthy
     end
 
-    it "accepts a single-element :resource_type => 'resource_name' Hash" do
-      expect(rc.validate_lookup_spec!(:service => "apache2")).to be_truthy
+    it "accepts a single-element resource_type: 'resource_name' Hash" do
+      expect(rc.validate_lookup_spec!(service: "apache2")).to be_truthy
     end
 
 

@@ -176,7 +176,7 @@ class Chef
         # interactive prompts. Command is run with default localization rather
         # than forcing locale to "C", so command output may not be stable.
         def run_noninteractive(command)
-          shell_out_with_timeout!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+          shell_out_with_timeout!(command, env: { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
         end
 
       end

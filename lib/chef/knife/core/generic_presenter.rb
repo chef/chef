@@ -30,10 +30,10 @@ class Chef
           includer.class_eval do
             @attrs_to_show = []
             option :attribute,
-              :short => "-a ATTR1 [-a ATTR2]",
-              :long => "--attribute ATTR1 [--attribute ATTR2] ",
-              :proc => lambda {|val| @attrs_to_show << val},
-              :description => "Show one or more attributes"
+              short: "-a ATTR1 [-a ATTR2]",
+              long: "--attribute ATTR1 [--attribute ATTR2] ",
+              proc: lambda {|val| @attrs_to_show << val},
+              description: "Show one or more attributes"
           end
         end
       end

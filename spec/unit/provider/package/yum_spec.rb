@@ -25,18 +25,18 @@ describe Chef::Provider::Package::Yum do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new('cups')
-    @status = double("Status", :exitstatus => 0)
+    @status = double("Status", exitstatus: 0)
     @yum_cache = double(
       'Chef::Provider::Yum::YumCache',
-      :reload_installed => true,
-      :reset => true,
-      :installed_version => "1.2.4-11.18.el5",
-      :candidate_version => "1.2.4-11.18.el5_2.3",
+      reload_installed: true,
+      reset: true,
+      installed_version: "1.2.4-11.18.el5",
+      candidate_version: "1.2.4-11.18.el5_2.3",
       :package_available? => true,
       :version_available? => true,
-      :allow_multi_install => [ "kernel" ],
-      :package_repository => "base",
-      :disable_extra_repo_control => true
+      allow_multi_install: [ "kernel" ],
+      package_repository: "base",
+      disable_extra_repo_control: true
     )
     allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -81,7 +81,7 @@ describe Chef::Provider::Package::Yum do
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         allow(File).to receive(:exists?).with(@new_resource.source).and_return(true)
         allow(@yum_cache).to receive(:installed_version).and_return(nil)
-        shellout_double = double(:stdout => 'chef-server-core 12.0.5-1')
+        shellout_double = double(stdout: 'chef-server-core 12.0.5-1')
         allow(@provider).to receive(:shell_out!).and_return(shellout_double)
         @provider.load_current_resource
         expect(@provider.candidate_version).to eql('12.0.5-1')
@@ -237,13 +237,13 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should flush the cache if :before is true" do
-      allow(@new_resource).to receive(:flush_cache).and_return({:after => false, :before => true})
+      allow(@new_resource).to receive(:flush_cache).and_return({after: false, before: true})
       expect(@yum_cache).to receive(:reload).once
       @provider.load_current_resource
     end
 
     it "should flush the cache if :before is false" do
-      allow(@new_resource).to receive(:flush_cache).and_return({:after => false, :before => false})
+      allow(@new_resource).to receive(:flush_cache).and_return({after: false, before: false})
       expect(@yum_cache).not_to receive(:reload)
       @provider.load_current_resource
     end
@@ -269,13 +269,13 @@ describe Chef::Provider::Package::Yum do
     context "when the package name isn't found" do
       let(:yum_cache) { double(
           'Chef::Provider::Yum::YumCache',
-          :reload_installed => true,
-          :reset => true,
-          :installed_version => "1.0.1.el5",
-          :candidate_version => "2.0.1.el5",
+          reload_installed: true,
+          reset: true,
+          installed_version: "1.0.1.el5",
+          candidate_version: "2.0.1.el5",
           :package_available? => false,
           :version_available? => true,
-          :disable_extra_repo_control => true
+          disable_extra_repo_control: true
       )
       }
 
@@ -343,13 +343,13 @@ describe Chef::Provider::Package::Yum do
       @new_resource = Chef::Resource::YumPackage.new('test-package')
       @yum_cache = double(
           'Chef::Provider::Yum::YumCache',
-          :reload_installed => true,
-          :reset => true,
-          :installed_version => "1.0.1.el5",
-          :candidate_version => "2.0.1.el5",
+          reload_installed: true,
+          reset: true,
+          installed_version: "1.0.1.el5",
+          candidate_version: "2.0.1.el5",
           :package_available? => false,
           :version_available? => true,
-          :disable_extra_repo_control => true
+          disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
@@ -364,13 +364,13 @@ describe Chef::Provider::Package::Yum do
       @new_resource = Chef::Resource::YumPackage.new('test-package')
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.18.el5",
+        reload_installed: true,
+        reset: true,
+        installed_version: "1.2.4-11.18.el5",
+        candidate_version: "1.2.4-11.18.el5",
         :package_available? => false,
         :version_available? => true,
-        :disable_extra_repo_control => true
+        disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
@@ -386,13 +386,13 @@ describe Chef::Provider::Package::Yum do
     it "should correctly detect the installed states of an array of package names and version numbers" do
       @yum_cache = double(
           'Chef::Provider::Yum::YumCache',
-          :reload_installed => true,
-          :reset => true,
-          :installed_version => "1.0.1.el5",
-          :candidate_version => "2.0.1.el5",
+          reload_installed: true,
+          reset: true,
+          installed_version: "1.0.1.el5",
+          candidate_version: "2.0.1.el5",
           :package_available? => false,
           :version_available? => true,
-          :disable_extra_repo_control => true
+          disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
 
@@ -410,13 +410,13 @@ describe Chef::Provider::Package::Yum do
     it "should search provides if no package is available - if no match in installed provides then load the complete set" do
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.18.el5",
+        reload_installed: true,
+        reset: true,
+        installed_version: "1.2.4-11.18.el5",
+        candidate_version: "1.2.4-11.18.el5",
         :package_available? => false,
         :version_available? => true,
-        :disable_extra_repo_control => true
+        disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       expect(@yum_cache).to receive(:packages_from_require).twice.and_return([])
@@ -429,13 +429,13 @@ describe Chef::Provider::Package::Yum do
     it "should search provides if no package is available and not load the complete set if action is :remove or :purge" do
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.18.el5",
+        reload_installed: true,
+        reset: true,
+        installed_version: "1.2.4-11.18.el5",
+        candidate_version: "1.2.4-11.18.el5",
         :package_available? => false,
         :version_available? => true,
-        :disable_extra_repo_control => true
+        disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -452,14 +452,14 @@ describe Chef::Provider::Package::Yum do
     it "should search provides if no package is available - if no match in provides leave the name intact" do
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
-        :reload_provides => true,
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.18.el5",
+        reload_provides: true,
+        reload_installed: true,
+        reset: true,
+        installed_version: "1.2.4-11.18.el5",
+        candidate_version: "1.2.4-11.18.el5",
         :package_available? => false,
         :version_available? => true,
-        :disable_extra_repo_control => true
+        disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       expect(@yum_cache).to receive(:packages_from_require).twice.and_return([])
@@ -522,13 +522,13 @@ describe Chef::Provider::Package::Yum do
     it "should raise an exception if the package is not available" do
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
-        :reload_from_cache => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.18.el5_2.3",
+        reload_from_cache: true,
+        reset: true,
+        installed_version: "1.2.4-11.18.el5",
+        candidate_version: "1.2.4-11.18.el5_2.3",
         :package_available? => true,
         :version_available? => nil,
-        :disable_extra_repo_control => true
+        disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -539,14 +539,14 @@ describe Chef::Provider::Package::Yum do
       allow(@new_resource).to receive(:allow_downgrade).and_return(false)
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.15.el5",
+        reload_installed: true,
+        reset: true,
+        installed_version: "1.2.4-11.18.el5",
+        candidate_version: "1.2.4-11.15.el5",
         :package_available? => true,
         :version_available? => true,
-        :allow_multi_install => [ "kernel" ],
-        :disable_extra_repo_control => true
+        allow_multi_install: [ "kernel" ],
+        disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -557,15 +557,15 @@ describe Chef::Provider::Package::Yum do
     it "should not raise an exception if candidate version is older than the installed version and the package is list in yum's installonlypkg option" do
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.15.el5",
+        reload_installed: true,
+        reset: true,
+        installed_version: "1.2.4-11.18.el5",
+        candidate_version: "1.2.4-11.15.el5",
         :package_available? => true,
         :version_available? => true,
-        :allow_multi_install => [ "cups" ],
-        :package_repository => "base",
-        :disable_extra_repo_control => true
+        allow_multi_install: [ "cups" ],
+        package_repository: "base",
+        disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -580,15 +580,15 @@ describe Chef::Provider::Package::Yum do
       allow(@new_resource).to receive(:allow_downgrade).and_return(true)
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.15.el5",
+        reload_installed: true,
+        reset: true,
+        installed_version: "1.2.4-11.18.el5",
+        candidate_version: "1.2.4-11.15.el5",
         :package_available? => true,
         :version_available? => true,
-        :allow_multi_install => [],
-        :package_repository => "base",
-        :disable_extra_repo_control => true
+        allow_multi_install: [],
+        package_repository: "base",
+        disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -600,7 +600,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum install then flush the cache if :after is true" do
-      allow(@new_resource).to receive(:flush_cache).and_return({:after => true, :before => false})
+      allow(@new_resource).to receive(:flush_cache).and_return({after: true, before: false})
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
@@ -611,7 +611,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum install then not flush the cache if :after is false" do
-      allow(@new_resource).to receive(:flush_cache).and_return({:after => false, :before => false})
+      allow(@new_resource).to receive(:flush_cache).and_return({after: false, before: false})
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
@@ -647,14 +647,14 @@ describe Chef::Provider::Package::Yum do
     it "should raise an exception if candidate version is older than the installed version" do
       @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => "1.2.4-11.15.el5",
+        reload_installed: true,
+        reset: true,
+        installed_version: "1.2.4-11.18.el5",
+        candidate_version: "1.2.4-11.15.el5",
         :package_available? => true,
         :version_available? => true,
-        :allow_multi_install => [ "kernel" ],
-        :disable_extra_repo_control => true
+        allow_multi_install: [ "kernel" ],
+        disable_extra_repo_control: true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -731,44 +731,44 @@ describe Chef::Provider::Package::Yum do
 
   describe "when running yum" do
     it "should run yum once if it exits with a return code of 0" do
-      @status = double("Status", :exitstatus => 0, :stdout => "", :stderr => "")
+      @status = double("Status", exitstatus: 0, stdout: "", stderr: "")
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {:timeout => Chef::Config[:yum_timeout]}
+        {timeout: Chef::Config[:yum_timeout]}
       )
       @provider.yum_command("yum -d0 -e0 -y install emacs-1.0")
     end
 
     it "should run yum once if it exits with a return code > 0 and no scriptlet failures" do
-      @status = double("Status", :exitstatus => 2, :stdout => "failure failure", :stderr => "problem problem")
+      @status = double("Status", exitstatus: 2, stdout: "failure failure", stderr: "problem problem")
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {:timeout => Chef::Config[:yum_timeout]}
+        {timeout: Chef::Config[:yum_timeout]}
       )
       expect { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
     end
 
     it "should run yum once if it exits with a return code of 1 and %pre scriptlet failures" do
-      @status = double("Status", :exitstatus => 1, :stdout => "error: %pre(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2",
-                      :stderr => "")
+      @status = double("Status", exitstatus: 1, stdout: "error: %pre(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2",
+                      stderr: "")
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {:timeout => Chef::Config[:yum_timeout]}
+        {timeout: Chef::Config[:yum_timeout]}
       )
       # will still raise an exception, can't stub out the subsequent call
       expect { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
     end
 
     it "should run yum twice if it exits with a return code of 1 and %post scriptlet failures" do
-      @status = double("Status", :exitstatus => 1, :stdout => "error: %post(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2",
-                      :stderr => "")
+      @status = double("Status", exitstatus: 1, stdout: "error: %post(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2",
+                      stderr: "")
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).twice.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {:timeout => Chef::Config[:yum_timeout]}
+        {timeout: Chef::Config[:yum_timeout]}
       )
       # will still raise an exception, can't stub out the subsequent call
       expect { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
@@ -1689,8 +1689,8 @@ describe Chef::Provider::Package::Yum::YumCache do
   }
 
   before(:each) do
-    @stdin = double("STDIN", :nil_object => true)
-    @stdout = double("STDOUT", :nil_object => true)
+    @stdin = double("STDIN", nil_object: true)
+    @stdout = double("STDOUT", nil_object: true)
 
     @stdout_good = <<EOF
 [option installonlypkgs] kernel kernel-bigmem kernel-enterprise
@@ -1732,7 +1732,7 @@ yum-dump Config Error: File contains no section headers.
 file: file://///etc/yum.repos.d/CentOS-Base.repo, line: 12
 'qeqwewe\n'
 EOF
-    @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_good, :stderr => @stderr)
+    @status = double("Status", exitstatus: 0, stdin: @stdin, stdout: @stdout_good, stderr: @stderr)
     # new singleton each time
     Chef::Provider::Package::Yum::YumCache.reset_instance
     @yc = Chef::Provider::Package::Yum::YumCache.instance
@@ -1790,58 +1790,58 @@ EOF
 
     it "should run yum-dump.py using the system python when next_refresh is for :all" do
       @yc.reload
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --yum-lock-timeout 30$}, timeout:Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should run yum-dump.py with the installed flag when next_refresh is for :installed" do
       @yc.reload_installed
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --installed --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --installed --yum-lock-timeout 30$}, timeout:Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should run yum-dump.py with the all-provides flag when next_refresh is for :provides" do
       @yc.reload_provides
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --all-provides --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --all-provides --yum-lock-timeout 30$}, timeout:Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should pass extra_repo_control args to yum-dump.py" do
       @yc.enable_extra_repo_control("--enablerepo=foo --disablerepo=bar")
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 30$}, timeout:Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should pass extra_repo_control args and configured yum lock timeout to yum-dump.py" do
       Chef::Config[:yum_lock_timeout] = 999
       @yc.enable_extra_repo_control("--enablerepo=foo --disablerepo=bar")
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 999$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 999$}, timeout:Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should warn about invalid data with too many separators" do
-      @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_bad_separators, :stderr => @stderr)
+      @status = double("Status", exitstatus: 0, stdin: @stdin, stdout: @stdout_bad_separators, stderr: @stderr)
       allow(@yc).to receive(:shell_out!).and_return(@status)
       expect(Chef::Log).to receive(:warn).exactly(3).times.with(%r{Problem parsing})
       @yc.refresh
     end
 
     it "should warn about invalid data with an incorrect type" do
-      @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_bad_type, :stderr => @stderr)
+      @status = double("Status", exitstatus: 0, stdin: @stdin, stdout: @stdout_bad_type, stderr: @stderr)
       allow(@yc).to receive(:shell_out!).and_return(@status)
       expect(Chef::Log).to receive(:warn).exactly(2).times.with(%r{Problem parsing})
       @yc.refresh
     end
 
     it "should warn about no output from yum-dump.py" do
-      @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_no_output, :stderr => @stderr)
+      @status = double("Status", exitstatus: 0, stdin: @stdin, stdout: @stdout_no_output, stderr: @stderr)
       allow(@yc).to receive(:shell_out!).and_return(@status)
       expect(Chef::Log).to receive(:warn).exactly(1).times.with(%r{no output from yum-dump.py})
       @yc.refresh
     end
 
     it "should raise exception yum-dump.py exits with a non zero status" do
-      @status = double("Status", :exitstatus => 1, :stdin => @stdin, :stdout => @stdout_no_output, :stderr => @stderr)
+      @status = double("Status", exitstatus: 1, stdin: @stdin, stdout: @stdout_no_output, stderr: @stderr)
       allow(@yc).to receive(:shell_out!).and_return(@status)
       expect { @yc.refresh}.to raise_error(Chef::Exceptions::Package, %r{CentOS-Base.repo, line: 12})
     end
@@ -2039,18 +2039,18 @@ describe "Chef::Provider::Package::Yum - Multi" do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new(['cups', 'vim'])
-    @status = double("Status", :exitstatus => 0)
+    @status = double("Status", exitstatus: 0)
     @yum_cache = double(
       'Chef::Provider::Yum::YumCache',
-      :reload_installed => true,
-      :reset => true,
-      :installed_version => 'XXXX',
-      :candidate_version => 'YYYY',
+      reload_installed: true,
+      reset: true,
+      installed_version: 'XXXX',
+      candidate_version: 'YYYY',
       :package_available? => true,
       :version_available? => true,
-      :allow_multi_install => [ 'kernel' ],
-      :package_repository => 'base',
-      :disable_extra_repo_control => true
+      allow_multi_install: [ 'kernel' ],
+      package_repository: 'base',
+      disable_extra_repo_control: true
     )
     allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)

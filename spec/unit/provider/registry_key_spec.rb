@@ -275,20 +275,20 @@ end
 describe Chef::Provider::RegistryKey do
   context "when the key data is safe" do
     let(:keyname) { 'HKLM\Software\Opscode\Testing\Safe' }
-    let(:testval1) { { :name => "one", :type => :string, :data => "1" } }
-    let(:testval1_wrong_type) { { :name => "one", :type => :multi_string, :data => "1" } }
-    let(:testval1_wrong_data) { { :name => "one", :type => :string, :data => "2" } }
-    let(:testval2) { { :name => "two", :type => :string, :data => "2" } }
+    let(:testval1) { { name: "one", type: :string, data: "1" } }
+    let(:testval1_wrong_type) { { name: "one", type: :multi_string, data: "1" } }
+    let(:testval1_wrong_data) { { name: "one", type: :string, data: "2" } }
+    let(:testval2) { { name: "two", type: :string, data: "2" } }
 
     it_should_behave_like "a registry key"
   end
 
   context "when the key data is unsafe" do
     let(:keyname) { 'HKLM\Software\Opscode\Testing\Unsafe' }
-    let(:testval1) { { :name => "one", :type => :binary, :data => 255.chr * 1 } }
-    let(:testval1_wrong_type) { { :name => "one", :type => :string, :data => 255.chr * 1 } }
-    let(:testval1_wrong_data) { { :name => "one", :type => :binary, :data => 254.chr * 1 } }
-    let(:testval2) { { :name => "two", :type => :binary, :data => 0.chr * 1 } }
+    let(:testval1) { { name: "one", type: :binary, data: 255.chr * 1 } }
+    let(:testval1_wrong_type) { { name: "one", type: :string, data: 255.chr * 1 } }
+    let(:testval1_wrong_data) { { name: "one", type: :binary, data: 254.chr * 1 } }
+    let(:testval2) { { name: "two", type: :binary, data: 0.chr * 1 } }
 
     it_should_behave_like "a registry key"
   end

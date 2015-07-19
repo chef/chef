@@ -98,8 +98,8 @@ TEST_PLATFORM_VERSION = TEST_NODE['platform_version']
 
 RSpec.configure do |config|
   config.include(Matchers)
-  config.filter_run :focus => true
-  config.filter_run_excluding :external => true
+  config.filter_run focus: true
+  config.filter_run_excluding external: true
 
   # Explicitly disable :should syntax
   config.expect_with :rspec do |c|
@@ -113,56 +113,56 @@ RSpec.configure do |config|
   config.filter_run_excluding :workstation if solaris? or aix?
 
   # Tests that randomly fail, but may have value.
-  config.filter_run_excluding :volatile => true
-  config.filter_run_excluding :volatile_on_solaris => true if solaris?
-  config.filter_run_excluding :volatile_from_verify => false
+  config.filter_run_excluding volatile: true
+  config.filter_run_excluding volatile_on_solaris: true if solaris?
+  config.filter_run_excluding volatile_from_verify: false
 
-  config.filter_run_excluding :skip_appveyor => true if ENV["APPVEYOR"]
-  config.filter_run_excluding :appveyor_only => true unless ENV["APPVEYOR"]
+  config.filter_run_excluding skip_appveyor: true if ENV["APPVEYOR"]
+  config.filter_run_excluding appveyor_only: true unless ENV["APPVEYOR"]
 
-  config.filter_run_excluding :windows_only => true unless windows?
-  config.filter_run_excluding :not_supported_on_mac_osx_106 => true if mac_osx_106?
-  config.filter_run_excluding :not_supported_on_mac_osx=> true if mac_osx?
-  config.filter_run_excluding :mac_osx_only=> true if !mac_osx?
-  config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
-  config.filter_run_excluding :not_supported_on_solaris => true if solaris?
-  config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
-  config.filter_run_excluding :windows_2008r2_or_later => true unless windows_2008r2_or_later?
-  config.filter_run_excluding :windows64_only => true unless windows64?
-  config.filter_run_excluding :windows32_only => true unless windows32?
-  config.filter_run_excluding :windows_powershell_dsc_only => true unless windows_powershell_dsc?
-  config.filter_run_excluding :windows_powershell_no_dsc_only => true unless ! windows_powershell_dsc?
-  config.filter_run_excluding :windows_domain_joined_only => true unless windows_domain_joined?
-  config.filter_run_excluding :windows_not_domain_joined_only => true if windows_domain_joined?
-  config.filter_run_excluding :solaris_only => true unless solaris?
-  config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
-  config.filter_run_excluding :unix_only => true unless unix?
-  config.filter_run_excluding :aix_only => true unless aix?
-  config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
-  config.filter_run_excluding :selinux_only => true unless selinux_enabled?
-  config.filter_run_excluding :ruby_20_only => true unless ruby_20?
+  config.filter_run_excluding windows_only: true unless windows?
+  config.filter_run_excluding not_supported_on_mac_osx_106: true if mac_osx_106?
+  config.filter_run_excluding not_supported_on_mac_osx: true if mac_osx?
+  config.filter_run_excluding mac_osx_only: true if !mac_osx?
+  config.filter_run_excluding not_supported_on_win2k3: true if windows_win2k3?
+  config.filter_run_excluding not_supported_on_solaris: true if solaris?
+  config.filter_run_excluding win2k3_only: true unless windows_win2k3?
+  config.filter_run_excluding windows_2008r2_or_later: true unless windows_2008r2_or_later?
+  config.filter_run_excluding windows64_only: true unless windows64?
+  config.filter_run_excluding windows32_only: true unless windows32?
+  config.filter_run_excluding windows_powershell_dsc_only: true unless windows_powershell_dsc?
+  config.filter_run_excluding windows_powershell_no_dsc_only: true unless ! windows_powershell_dsc?
+  config.filter_run_excluding windows_domain_joined_only: true unless windows_domain_joined?
+  config.filter_run_excluding windows_not_domain_joined_only: true if windows_domain_joined?
+  config.filter_run_excluding solaris_only: true unless solaris?
+  config.filter_run_excluding system_windows_service_gem_only: true unless system_windows_service_gem?
+  config.filter_run_excluding unix_only: true unless unix?
+  config.filter_run_excluding aix_only: true unless aix?
+  config.filter_run_excluding supports_cloexec: true unless supports_cloexec?
+  config.filter_run_excluding selinux_only: true unless selinux_enabled?
+  config.filter_run_excluding ruby_20_only: true unless ruby_20?
   # chef_gte_XX_only and chef_lt_XX_only pair up correctly with the same XX
   # number.  please conserve this pattern & resist filling out all the operators
-  config.filter_run_excluding :chef_gte_13_only => true unless chef_gte_13?
-  config.filter_run_excluding :chef_lt_13_only => true unless chef_lt_13?
-  config.filter_run_excluding :requires_root => true unless root?
-  config.filter_run_excluding :requires_root_or_running_windows => true unless (root? || windows?)
-  config.filter_run_excluding :requires_unprivileged_user => true if root?
-  config.filter_run_excluding :uses_diff => true unless has_diff?
-  config.filter_run_excluding :openssl_gte_101 => true unless openssl_gte_101?
-  config.filter_run_excluding :openssl_lt_101 => true unless openssl_lt_101?
-  config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
-  config.filter_run_excluding :broken => true
+  config.filter_run_excluding chef_gte_13_only: true unless chef_gte_13?
+  config.filter_run_excluding chef_lt_13_only: true unless chef_lt_13?
+  config.filter_run_excluding requires_root: true unless root?
+  config.filter_run_excluding requires_root_or_running_windows: true unless (root? || windows?)
+  config.filter_run_excluding requires_unprivileged_user: true if root?
+  config.filter_run_excluding uses_diff: true unless has_diff?
+  config.filter_run_excluding openssl_gte_101: true unless openssl_gte_101?
+  config.filter_run_excluding openssl_lt_101: true unless openssl_lt_101?
+  config.filter_run_excluding aes_256_gcm_only: true unless aes_256_gcm?
+  config.filter_run_excluding broken: true
 
   running_platform_arch = `uname -m`.strip unless windows?
 
-  config.filter_run_excluding :arch => lambda {|target_arch|
+  config.filter_run_excluding arch: lambda {|target_arch|
     running_platform_arch != target_arch
   }
 
   # Functional Resource tests that are provider-specific:
-  # context "on platforms that use useradd", :provider => {:user => Chef::Provider::User::Useradd}} do #...
-  config.filter_run_excluding :provider => lambda {|criteria|
+  # context "on platforms that use useradd", provider: {user: Chef::Provider::User::Useradd}} do #...
+  config.filter_run_excluding provider: lambda {|criteria|
     type, target_provider = criteria.first
 
     node = TEST_NODE.dup

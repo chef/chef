@@ -26,9 +26,9 @@ class Chef
       category "cookbook site"
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs"
 
       def run
         if config[:with_uri]

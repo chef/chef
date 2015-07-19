@@ -26,7 +26,7 @@ def start_server(chef_repo_path)
   Chef::Config.versioned_cookbooks = true
   chef_fs = Chef::ChefFS::Config.new.local_fs
   data_store = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
-  server = ChefZero::Server.new(:port => 8889.upto(9999), :data_store => data_store)#, :log_level => :debug)
+  server = ChefZero::Server.new(port: 8889.upto(9999), data_store: data_store)#, log_level: :debug)
   server.start_background
   server
 end
@@ -44,14 +44,14 @@ begin
 
   Bundler.with_clean_env do
 
-    shell_out("bundle install --gemfile spec/support/pedant/Gemfile", :live_stream => STDOUT)
+    shell_out("bundle install --gemfile spec/support/pedant/Gemfile", live_stream: STDOUT)
 
     pedant_cmd = "chef-pedant " +
         " --config spec/support/pedant/pedant_config.rb" +
         " --server '#{server.url}'" +
         " --skip-knife --skip-validation --skip-authentication" +
         " --skip-authorization --skip-omnibus"
-    so = shell_out("bundle exec #{pedant_cmd}", :live_stream => STDOUT, :env => {'BUNDLE_GEMFILE' => 'spec/support/pedant/Gemfile'})
+    so = shell_out("bundle exec #{pedant_cmd}", live_stream: STDOUT, env: {'BUNDLE_GEMFILE' => 'spec/support/pedant/Gemfile'})
 
   end
 

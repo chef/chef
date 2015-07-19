@@ -159,7 +159,7 @@ describe Chef::Provider::RemoteFile::HTTP do
 
     let(:tempfile_path) { "/tmp/chef-mock-tempfile-abc123" }
 
-    let(:tempfile) { double(Tempfile, :path => tempfile_path, :close => nil) }
+    let(:tempfile) { double(Tempfile, path: tempfile_path, close: nil) }
 
     let(:last_response) { {} }
 
@@ -270,7 +270,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       context "and the target file is a tarball [CHEF-3140]" do
 
         let(:uri) { URI.parse("http://opscode.com/tarball.tgz") }
-        let(:expected_http_opts) { {:disable_gzip => true} }
+        let(:expected_http_opts) { {disable_gzip: true} }
 
         # CHEF-3140
         # Some servers return tarballs as content type tar and encoding gzip, which

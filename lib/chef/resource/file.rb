@@ -65,7 +65,7 @@ class Chef
         set_or_return(
           :content,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
@@ -73,7 +73,7 @@ class Chef
         set_or_return(
           :backup,
           arg,
-          :kind_of => [ Integer, FalseClass ]
+          kind_of: [ Integer, FalseClass ]
         )
       end
 
@@ -81,7 +81,7 @@ class Chef
         set_or_return(
           :checksum,
           arg,
-          :regex => /^[a-zA-Z0-9]{64}$/
+          regex: /^[a-zA-Z0-9]{64}$/
         )
       end
 
@@ -89,7 +89,7 @@ class Chef
         set_or_return(
           :path,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
@@ -97,7 +97,7 @@ class Chef
         set_or_return(
           :diff,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
@@ -105,7 +105,7 @@ class Chef
         set_or_return(
           :atomic_update,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -113,7 +113,7 @@ class Chef
         set_or_return(
           :force_unlink,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -121,7 +121,7 @@ class Chef
         set_or_return(
           :manage_symlink_source,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 

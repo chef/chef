@@ -68,13 +68,13 @@ WARNDEP
       #
       # :filter_result should be in the format of another Hash with the structure of:
       # {
-      #   :returned_name1 => ["path", "to", "variable"],
-      #   :returned_name2 => ["shorter", "path"]
+      #   returned_name1: ["path", "to", "variable"],
+      #   returned_name2: ["shorter", "path"]
       # }
       # a real world example might be something like:
       # {
-      #   :ip_address => ["ipaddress"],
-      #   :ruby_version => ["languages", "ruby", "version"]
+      #   ip_address: ["ipaddress"],
+      #   ruby_version: ["languages", "ruby", "version"]
       # }
       #  this will bring back 2 variables 'ip_address' and 'ruby_version' with whatever value was found
       # an example of the returned json may be:

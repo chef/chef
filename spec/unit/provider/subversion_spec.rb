@@ -36,7 +36,7 @@ describe Chef::Provider::Subversion do
   it "converts resource attributes to options for run_command and popen4" do
     expect(@provider.run_options).to eq({})
     @resource.user 'deployninja'
-    expect(@provider.run_options).to eq({:user => "deployninja"})
+    expect(@provider.run_options).to eq({user: "deployninja"})
   end
 
   context "determining the revision of the currently deployed code" do
@@ -68,7 +68,7 @@ describe Chef::Provider::Subversion do
       allow(@stdout).to receive(:string).and_return(example_svn_info)
       allow(@stderr).to receive(:string).and_return("")
       allow(@exitstatus).to receive(:exitstatus).and_return(0)
-      expected_command = ["svn info", {:cwd=>"/my/deploy/dir"}]
+      expected_command = ["svn info", {cwd:"/my/deploy/dir"}]
       expect(@provider).to receive(:popen4).with(*expected_command).
                                         and_yield("no-pid", "no-stdin", @stdout,@stderr).
                                         and_return(@exitstatus)
@@ -132,7 +132,7 @@ describe Chef::Provider::Subversion do
       @resource.revision "HEAD"
       allow(@stdout).to receive(:string).and_return(example_svn_info)
       allow(@stderr).to receive(:string).and_return("")
-      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd=>Dir.tmpdir}]
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {cwd:Dir.tmpdir}]
       expect(@provider).to receive(:popen4).with(*expected_command).
                                         and_yield("no-pid","no-stdin",@stdout,@stderr).
                                         and_return(exitstatus)

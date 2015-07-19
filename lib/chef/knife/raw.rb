@@ -16,27 +16,27 @@ class Chef
       end
 
       option :method,
-        :long => '--method METHOD',
-        :short => '-m METHOD',
-        :default => "GET",
-        :description => "Request method (GET, POST, PUT or DELETE).  Default: GET"
+        long: '--method METHOD',
+        short: '-m METHOD',
+        default: "GET",
+        description: "Request method (GET, POST, PUT or DELETE).  Default: GET"
 
       option :pretty,
-        :long => '--[no-]pretty',
-        :boolean => true,
-        :default => true,
-        :description => "Pretty-print JSON output.  Default: true"
+        long: '--[no-]pretty',
+        boolean: true,
+        default: true,
+        description: "Pretty-print JSON output.  Default: true"
 
       option :input,
-        :long => '--input FILE',
-        :short => '-i FILE',
-        :description => "Name of file to use for PUT or POST"
+        long: '--input FILE',
+        short: '-i FILE',
+        description: "Name of file to use for PUT or POST"
 
       option :proxy_auth,
-        :long => '--proxy-auth',
-        :boolean => true,
-        :default => false,
-        :description => "Use webui proxy authentication.  Client key must be the webui key."
+        long: '--proxy-auth',
+        boolean: true,
+        default: false,
+        description: "Use webui proxy authentication.  Client key must be the webui key."
 
       class RawInputServerAPI < Chef::HTTP
         def initialize(options = {})
@@ -83,7 +83,7 @@ class Chef
               result = Chef::JSONCompat.to_json_pretty(result)
             end
           else
-            chef_rest = RawInputServerAPI.new(:raw_output => true)
+            chef_rest = RawInputServerAPI.new(raw_output: true)
             result = chef_rest.request(method, name_args[0], headers, data)
           end
           output result

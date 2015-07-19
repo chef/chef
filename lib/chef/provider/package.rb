@@ -509,7 +509,7 @@ class Chef
           options[:timeout] = 900 unless options.has_key?(:timeout)
           args << options
         else
-          args << { :timeout => new_resource.timeout ? new_resource.timeout : 900 }
+          args << { timeout: new_resource.timeout ? new_resource.timeout : 900 }
         end
         args
       end

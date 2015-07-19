@@ -38,7 +38,7 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
   end
 
   field_list = {
-    :gid => "-g"
+    gid: "-g"
   }
 
   field_list.each do |attribute, option|
@@ -100,7 +100,7 @@ describe Chef::Provider::Group::Groupadd, "create_group" do
   end
 
   it "should run groupadd with the return of set_options" do
-    expect(@provider).to receive(:run_command).with({ :command => "groupadd monkey" }).and_return(true)
+    expect(@provider).to receive(:run_command).with({ command: "groupadd monkey" }).and_return(true)
     @provider.create_group
   end
 
@@ -125,7 +125,7 @@ describe Chef::Provider::Group::Groupadd do
 
     it "should run groupmod with the return of set_options" do
       allow(@provider).to receive(:modify_group_members).and_return(true)
-      expect(@provider).to receive(:run_command).with({ :command => "groupmod monkey" }).and_return(true)
+      expect(@provider).to receive(:run_command).with({ command: "groupmod monkey" }).and_return(true)
       @provider.manage_group
     end
 
@@ -138,7 +138,7 @@ describe Chef::Provider::Group::Groupadd do
   describe "remove_group" do
 
     it "should run groupdel with the new resources group name" do
-      expect(@provider).to receive(:run_command).with({ :command => "groupdel aj" }).and_return(true)
+      expect(@provider).to receive(:run_command).with({ command: "groupdel aj" }).and_return(true)
       @provider.remove_group
     end
   end

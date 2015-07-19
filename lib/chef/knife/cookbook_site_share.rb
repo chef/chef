@@ -38,17 +38,17 @@ class Chef
       category "cookbook site"
 
       option :cookbook_path,
-        :short => "-o PATH:PATH",
-        :long => "--cookbook-path PATH:PATH",
-        :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
+        short: "-o PATH:PATH",
+        long: "--cookbook-path PATH:PATH",
+        description: "A colon-separated path to look for cookbooks in",
+        proc: lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
       option :dry_run,
-        :long => '--dry-run',
-        :short => '-n',
-        :boolean => true,
-        :default => false,
-        :description => "Don't take action, only print what files will be upload to SuperMarket."
+        long: '--dry-run',
+        short: '-n',
+        boolean: true,
+        default: false,
+        description: "Don't take action, only print what files will be upload to SuperMarket."
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -73,7 +73,7 @@ class Chef
           begin
             Chef::Log.debug("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
             ui.info("Making tarball #{cookbook_name}.tgz")
-            shell_out!("#{tar_cmd} -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
+            shell_out!("#{tar_cmd} -czf #{cookbook_name}.tgz #{cookbook_name}", cwd: tmp_cookbook_dir)
           rescue => e
             ui.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
@@ -82,7 +82,7 @@ class Chef
 
           if config[:dry_run]
             ui.info("Not uploading #{cookbook_name}.tgz due to --dry-run flag.")
-            result = shell_out!("#{tar_cmd} -tzf #{cookbook_name}.tgz", :cwd => tmp_cookbook_dir)
+            result = shell_out!("#{tar_cmd} -tzf #{cookbook_name}.tgz", cwd: tmp_cookbook_dir)
             ui.info(result.stdout)
             FileUtils.rm_rf tmp_cookbook_dir
             return
@@ -128,8 +128,8 @@ class Chef
         category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
 
         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
-          :tarball => File.open(cookbook_filename),
-          :cookbook => category_string
+          tarball: File.open(cookbook_filename),
+          cookbook: category_string
         })
 
         res = Chef::JSONCompat.from_json(http_resp.body)

@@ -29,7 +29,7 @@ class Chef
       #
       # For example:
       #
-      #   validate({ :one => "neat" }, { :one => { :kind_of => String }})
+      #   validate({ one: "neat" }, { one: { kind_of: String }})
       #
       # Would raise an exception if the value of :one above is not a kind_of? string.  Valid
       # map options are:

@@ -110,19 +110,19 @@ class Chef
         validate(
           args,
           {
-            :platform => {
-              :kind_of => Symbol,
-              :required => false,
+            platform: {
+              kind_of: Symbol,
+              required: false,
             },
-            :version => {
-              :kind_of => String,
-              :required => false,
+            version: {
+              kind_of: String,
+              required: false,
             },
-            :resource => {
-              :kind_of => Symbol,
+            resource: {
+              kind_of: Symbol,
             },
-            :provider => {
-              :kind_of => [ String, Symbol, Class ],
+            provider: {
+              kind_of: [ String, Symbol, Class ],
             }
           }
         )
@@ -150,11 +150,11 @@ class Chef
               elsif args[:platform] == :default
                 platforms[:default][args[:resource].to_sym] = args[:provider]
               else
-                platforms[args[:platform]] = { :default => { args[:resource].to_sym => args[:provider] } }
+                platforms[args[:platform]] = { default: { args[:resource].to_sym => args[:provider] } }
               end
             else
               platforms[args[:platform]] = {
-                :default => {
+                default: {
                   args[:resource].to_sym => args[:provider]
                 }
               }

@@ -34,9 +34,9 @@ describe Chef::Audit::AuditEventProxy do
   describe "#example_group_started" do
 
     let(:description) { "poots" }
-    let(:group) { double("ExampleGroup", :parent_groups => parents,
-      :description => description) }
-    let(:notification) { double("Notification", :group => group) }
+    let(:group) { double("ExampleGroup", parent_groups: parents,
+      description: description) }
+    let(:notification) { double("Notification", group: group) }
 
     context "when notified from a top-level example group" do
 
@@ -65,9 +65,9 @@ describe Chef::Audit::AuditEventProxy do
   describe "#stop" do
 
     let(:examples) { [] }
-    let(:notification) { double("Notification", :examples => examples) }
+    let(:notification) { double("Notification", examples: examples) }
     let(:exception) { nil }
-    let(:example) { double("Example", :exception => exception) }
+    let(:example) { double("Example", exception: exception) }
     let(:control_group_name) { "audit test" }
     let(:control_data) { double("ControlData") }
 
@@ -120,29 +120,29 @@ describe Chef::Audit::AuditEventProxy do
 
       let(:examples) { [example] }
 
-      let(:example) { double("Example", :metadata => metadata,
-        :description => example_description,
-        :full_description => full_description, :exception => nil) }
+      let(:example) { double("Example", metadata: metadata,
+        description: example_description,
+        full_description: full_description, exception: nil) }
 
       let(:metadata) {
         {
-          :described_class => described_class,
-          :example_group => example_group,
-          :line_number => line
+          described_class: described_class,
+          example_group: example_group,
+          line_number: line
         }
       }
 
       let(:example_group) {
         {
-          :description => group_description,
-          :parent_example_group => parent_group
+          description: group_description,
+          parent_example_group: parent_group
         }
       }
 
       let(:parent_group) {
         {
-          :description => control_group_name,
-          :parent_example_group => nil
+          description: control_group_name,
+          parent_example_group: nil
         }
       }
 
@@ -150,12 +150,12 @@ describe Chef::Audit::AuditEventProxy do
 
       let(:control_data) {
         {
-          :name => example_description,
-          :desc => full_description,
-          :resource_type => resource_type,
-          :resource_name => resource_name,
-          :context => context,
-          :line_number => line
+          name: example_description,
+          desc: full_description,
+          resource_type: resource_type,
+          resource_name: resource_name,
+          context: context,
+          line_number: line
         }
       }
 
@@ -223,7 +223,7 @@ describe Chef::Audit::AuditEventProxy do
 
         # Metadata fields
         let(:described_class) { double("Serverspec::Type::Port",
-          :class => "Serverspec::Type::Port", :name => resource_name) }
+          class: "Serverspec::Type::Port", name: resource_name) }
 
         # Control data fields
         let(:resource_type) { "Port" }
@@ -281,20 +281,20 @@ describe Chef::Audit::AuditEventProxy do
 
         # Metadata parts
         let(:described_class) { double("Serverspec::Type::File",
-          :class => "Serverspec::Type::File", :name => resource_name) }
+          class: "Serverspec::Type::File", name: resource_name) }
 
         # Example group parts
         let(:parent_group) {
           {
-            :description => outer_group_description,
-            :parent_example_group => control_group
+            description: outer_group_description,
+            parent_example_group: control_group
           }
         }
 
         let(:control_group) {
           {
-            :description => control_group_name,
-            :parent_example_group => nil
+            description: control_group_name,
+            parent_example_group: nil
           }
         }
 

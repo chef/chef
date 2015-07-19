@@ -81,29 +81,29 @@ class Chef
     # The format is as follows:
     #
     #     {
-    #       :cookbook_name  => name,            # String
-    #       :metadata       => metadata,        # Chef::Cookbook::Metadata
-    #       :version        => version,         # Chef::Version
-    #       :name           => full_name,       # String of "#{name}-#{version}"
+    #       cookbook_name: name,            # String
+    #       metadata: metadata,        # Chef::Cookbook::Metadata
+    #       version: version,         # Chef::Version
+    #       name: full_name,       # String of "#{name}-#{version}"
     #
-    #       :recipes        => Array<FileSpec>,
-    #       :definitions    => Array<FileSpec>,
-    #       :libraries      => Array<FileSpec>,
-    #       :attributes     => Array<FileSpec>,
-    #       :files          => Array<FileSpec>,
-    #       :templates      => Array<FileSpec>,
-    #       :resources      => Array<FileSpec>,
-    #       :providers      => Array<FileSpec>,
-    #       :root_files     => Array<FileSpec>
+    #       recipes: Array<FileSpec>,
+    #       definitions: Array<FileSpec>,
+    #       libraries: Array<FileSpec>,
+    #       attributes: Array<FileSpec>,
+    #       files: Array<FileSpec>,
+    #       templates: Array<FileSpec>,
+    #       resources: Array<FileSpec>,
+    #       providers: Array<FileSpec>,
+    #       root_files: Array<FileSpec>
     #     }
     #
     # Where a `FileSpec` is a Hash of the form:
     #
     #     {
-    #       :name         => file_name,
-    #       :path         => path,
-    #       :checksum     => csum,
-    #       :specificity  => specificity
+    #       name: file_name,
+    #       path: path,
+    #       checksum: csum,
+    #       specificity: specificity
     #     }
     #
     def manifest
@@ -185,15 +185,15 @@ class Chef
     # See #preferred_manifest_record for a description an individual manifest record.
     def generate_manifest
       manifest = Mash.new({
-        :recipes => Array.new,
-        :definitions => Array.new,
-        :libraries => Array.new,
-        :attributes => Array.new,
-        :files => Array.new,
-        :templates => Array.new,
-        :resources => Array.new,
-        :providers => Array.new,
-        :root_files => Array.new
+        recipes: Array.new,
+        definitions: Array.new,
+        libraries: Array.new,
+        attributes: Array.new,
+        files: Array.new,
+        templates: Array.new,
+        resources: Array.new,
+        providers: Array.new,
+        root_files: Array.new
       })
       @checksums = {}
 
@@ -212,10 +212,10 @@ class Chef
           csum = checksum_cookbook_file(segment_file)
           @checksums[csum] = segment_file
           rs = Mash.new({
-            :name => file_name,
-            :path => path,
-            :checksum => csum,
-            :specificity => specificity
+            name: file_name,
+            path: path,
+            checksum: csum,
+            specificity: specificity
           })
 
           manifest[segment] << rs

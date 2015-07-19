@@ -20,8 +20,8 @@ require 'spec_helper'
 
 describe Chef::Provider::RegistryKey do
 
-  let(:value1) { { :name => "one", :type => :string, :data => "1" } }
-  let(:value1_upcase_name) { {:name => "ONE", :type => :string, :data => "1"} }
+  let(:value1) { { name: "one", type: :string, data: "1" } }
+  let(:value1_upcase_name) { {name: "ONE", type: :string, data: "1"} }
   let(:key_path) { 'HKCU\Software\OpscodeNumbers' }
   let(:key) { 'Software\OpscodeNumbers' }
   let(:key_parent) { 'Software' }

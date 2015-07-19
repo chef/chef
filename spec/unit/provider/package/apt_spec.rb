@@ -31,7 +31,7 @@ describe Chef::Provider::Package::Apt do
         @run_context = Chef::RunContext.new(@node, {}, @events)
         @new_resource = resource_klass.new("irssi", @run_context)
 
-        @status = double("Status", :exitstatus => 0)
+        @status = double("Status", exitstatus: 0)
         @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
         @stdin = StringIO.new
         @stdout =<<-PKG_STATUS
@@ -43,7 +43,7 @@ irssi:
         500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
         PKG_STATUS
         @stderr = ""
-        @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
+        @shell_out = OpenStruct.new(stdout: @stdout,stdin: @stdin,stderr: @stderr,status: @status,exitstatus: 0)
         @timeout = 900
       end
 
@@ -52,7 +52,7 @@ irssi:
         it "should create a current resource with the name of the new_resource" do
           expect(@provider).to receive(:shell_out!).with(
             "apt-cache policy #{@new_resource.package_name}",
-            :timeout => @timeout
+            timeout: @timeout
           ).and_return(@shell_out)
           @provider.load_current_resource
 
@@ -92,10 +92,10 @@ libmysqlclient15-dev:
   Candidate: (none)
   Version table:
           VPKG_STDOUT
-          virtual_package = double(:stdout => virtual_package_out,:exitstatus => 0)
+          virtual_package = double(stdout: virtual_package_out,exitstatus: 0)
           expect(@provider).to receive(:shell_out!).with(
             "apt-cache policy libmysqlclient15-dev",
-            :timeout => @timeout
+            timeout: @timeout
           ).and_return(virtual_package)
           showpkg_out =<<-SHOWPKG_STDOUT
 Package: libmysqlclient15-dev
@@ -115,10 +115,10 @@ libmysqlclient-dev 5.1.41-3ubuntu12.7
 libmysqlclient-dev 5.1.41-3ubuntu12.10
 libmysqlclient-dev 5.1.41-3ubuntu12
           SHOWPKG_STDOUT
-          showpkg = double(:stdout => showpkg_out,:exitstatus => 0)
+          showpkg = double(stdout: showpkg_out,exitstatus: 0)
           expect(@provider).to receive(:shell_out!).with(
             "apt-cache showpkg libmysqlclient15-dev",
-            :timeout => @timeout
+            timeout: @timeout
           ).and_return(showpkg)
           real_package_out=<<-RPKG_STDOUT
 libmysqlclient-dev:
@@ -133,10 +133,10 @@ libmysqlclient-dev:
      5.1.41-3ubuntu12 0
         500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
           RPKG_STDOUT
-          real_package = double(:stdout => real_package_out,:exitstatus => 0)
+          real_package = double(stdout: real_package_out,exitstatus: 0)
           expect(@provider).to receive(:shell_out!).with(
             "apt-cache policy libmysqlclient-dev",
-            :timeout => @timeout
+            timeout: @timeout
           ).and_return(real_package)
           @provider.load_current_resource
         end
@@ -149,10 +149,10 @@ mp3-decoder:
   Candidate: (none)
   Version table:
           VPKG_STDOUT
-          virtual_package = double(:stdout => virtual_package_out,:exitstatus => 0)
+          virtual_package = double(stdout: virtual_package_out,exitstatus: 0)
           expect(@provider).to receive(:shell_out!).with(
             "apt-cache policy mp3-decoder",
-            :timeout => @timeout
+            timeout: @timeout
           ).and_return(virtual_package)
           showpkg_out=<<-SHOWPKG_STDOUT
 Package: mp3-decoder
@@ -175,10 +175,10 @@ opencubicplayer 1:0.1.17-2
 mpg321 0.2.10.6
 mpg123 1.12.1-0ubuntu1
           SHOWPKG_STDOUT
-          showpkg = double(:stdout => showpkg_out,:exitstatus => 0)
+          showpkg = double(stdout: showpkg_out,exitstatus: 0)
           expect(@provider).to receive(:shell_out!).with(
             "apt-cache showpkg mp3-decoder",
-            :timeout => @timeout
+            timeout: @timeout
           ).and_return(showpkg)
           expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
         end
@@ -191,7 +191,7 @@ mpg123 1.12.1-0ubuntu1
           allow(@new_resource).to receive(:provider).and_return(nil)
           expect(@provider).to receive(:shell_out!).with(
             "apt-cache -o APT::Default-Release=lenny-backports policy irssi",
-            :timeout => @timeout
+            timeout: @timeout
           ).and_return(@shell_out)
           @provider.load_current_resource
         end
@@ -200,11 +200,11 @@ mpg123 1.12.1-0ubuntu1
           @new_resource.source "pluto"
           expect(@provider).to receive(:shell_out!).with(
             "apt-cache policy #{@new_resource.package_name}",
-            :timeout => @timeout
+            timeout: @timeout
           ).and_return(@shell_out)
           @provider.load_current_resource
           @provider.define_resource_requirements
-          expect(@provider).to receive(:shell_out!).with("apt-cache policy irssi", {:timeout=>900}).and_return(@shell_out)
+          expect(@provider).to receive(:shell_out!).with("apt-cache policy irssi", {timeout:900}).and_return(@shell_out)
           expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
         end
       end
@@ -219,8 +219,8 @@ mpg123 1.12.1-0ubuntu1
           it "should run apt-get install with the package name and version" do
             expect(@provider).to receive(:shell_out!). with(
               "apt-get -q -y install irssi=0.8.12-7",
-              :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil},
-              :timeout => @timeout
+              env: { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil},
+              timeout: @timeout
             )
             @provider.install_package("irssi", "0.8.12-7")
           end
@@ -228,8 +228,8 @@ mpg123 1.12.1-0ubuntu1
           it "should run apt-get install with the package name and version and options if specified" do
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y --force-yes install irssi=0.8.12-7",
-              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
-              :timeout => @timeout
+              env: {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              timeout: @timeout
             )
             @new_resource.options("--force-yes")
             @provider.install_package("irssi", "0.8.12-7")
@@ -244,8 +244,8 @@ mpg123 1.12.1-0ubuntu1
 
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y -o APT::Default-Release=lenny-backports install irssi=0.8.12-7",
-              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
-              :timeout => @timeout
+              env: {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              timeout: @timeout
             )
 
             @provider.install_package("irssi", "0.8.12-7")
@@ -265,8 +265,8 @@ mpg123 1.12.1-0ubuntu1
           it "should run apt-get remove with the package name" do
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y remove irssi",
-              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil},
-              :timeout => @timeout
+              env: {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil},
+              timeout: @timeout
             )
             @provider.remove_package("irssi", "0.8.12-7")
           end
@@ -274,8 +274,8 @@ mpg123 1.12.1-0ubuntu1
           it "should run apt-get remove with the package name and options if specified" do
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y --force-yes remove irssi",
-              :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
-              :timeout => @timeout
+              env: { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              timeout: @timeout
             )
             @new_resource.options("--force-yes")
 
@@ -288,8 +288,8 @@ mpg123 1.12.1-0ubuntu1
           it "should run apt-get purge with the package name" do
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y purge irssi",
-              :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
-              :timeout => @timeout
+              env: { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              timeout: @timeout
             )
             @provider.purge_package("irssi", "0.8.12-7")
           end
@@ -297,8 +297,8 @@ mpg123 1.12.1-0ubuntu1
           it "should run apt-get purge with the package name and options if specified" do
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y --force-yes purge irssi",
-              :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
-              :timeout => @timeout
+              env: { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              timeout: @timeout
             )
             @new_resource.options("--force-yes")
 
@@ -316,8 +316,8 @@ mpg123 1.12.1-0ubuntu1
 
             expect(@provider).to receive(:shell_out!).with(
               "debconf-set-selections /tmp/irssi-0.8.12-7.seed",
-              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil},
-              :timeout => @timeout
+              env: {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil},
+              timeout: @timeout
             )
 
             @provider.preseed_package(file)
@@ -326,8 +326,8 @@ mpg123 1.12.1-0ubuntu1
           it "should run debconf-set-selections on the preseed file if it has changed" do
             expect(@provider).to receive(:shell_out!).with(
               "debconf-set-selections /tmp/irssi-0.8.12-7.seed",
-              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil},
-              :timeout => @timeout
+              env: {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil},
+              timeout: @timeout
             )
             file = @provider.get_preseed_file("irssi", "0.8.12-7")
             @provider.preseed_package(file)
@@ -347,8 +347,8 @@ mpg123 1.12.1-0ubuntu1
           it "should run dpkg-reconfigure package" do
             expect(@provider).to receive(:shell_out!).with(
               "dpkg-reconfigure irssi",
-              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
-              :timeout => @timeout
+              env: {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              timeout: @timeout
             )
             @provider.reconfig_package("irssi", "0.8.12-7")
           end
@@ -359,8 +359,8 @@ mpg123 1.12.1-0ubuntu1
             @provider.is_virtual_package['libmysqlclient-dev'] = true
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y install libmysqlclient-dev",
-              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
-              :timeout => @timeout
+              env: {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              timeout: @timeout
             )
             @provider.install_package("libmysqlclient-dev", "not_a_real_version")
           end
@@ -373,8 +373,8 @@ mpg123 1.12.1-0ubuntu1
             @provider.is_virtual_package['irssi'] = false
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y install libmysqlclient-dev irssi=0.8.12-7",
-              :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
-              :timeout => @timeout
+              env: {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
+              timeout: @timeout
             )
             @provider.install_package(["libmysqlclient-dev", "irssi"], ["not_a_real_version", "0.8.12-7"])
           end

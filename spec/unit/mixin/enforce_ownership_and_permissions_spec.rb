@@ -55,7 +55,7 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
                       else
                         Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
                       end
-      group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
+      group_struct = OpenStruct.new(name: "root", passwd: "x", gid: 0)
       allow(Etc).to receive(:getpwuid).and_return(passwd_struct)
       allow(Etc).to receive(:getgrgid).and_return(group_struct)
     end
@@ -79,7 +79,7 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
                       else
                         Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
                       end
-      group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
+      group_struct = OpenStruct.new(name: "root", passwd: "x", gid: 0)
       allow(Etc).to receive(:getpwuid).and_return(passwd_struct)
       allow(Etc).to receive(:getgrgid).and_return(group_struct)
     end

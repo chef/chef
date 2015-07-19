@@ -201,7 +201,7 @@ class Chef
 
           converge_by("execute migration command #{@new_resource.migration_command}") do
             Chef::Log.info "#{@new_resource} migrating #{@new_resource.user} with environment #{env_info}"
-            run_command(run_options(:command => @new_resource.migration_command, :cwd=>release_path, :log_level => :info))
+            run_command(run_options(command: @new_resource.migration_command, cwd:release_path, log_level: :info))
           end
         end
       end
@@ -221,7 +221,7 @@ class Chef
           else
             converge_by("restart app using command #{@new_resource.restart_command}") do
               Chef::Log.info("#{@new_resource} restarting app")
-              run_command(run_options(:command => @new_resource.restart_command, :cwd => @new_resource.current_path))
+              run_command(run_options(command: @new_resource.restart_command, cwd: @new_resource.current_path))
             end
           end
         end
@@ -269,7 +269,7 @@ class Chef
         converge_by("deploy from repo to #{target_dir_path} ") do
           FileUtils.rm_rf(release_path) if ::File.exist?(release_path)
           FileUtils.mkdir_p(target_dir_path)
-          FileUtils.cp_r(::File.join(@new_resource.destination, "."), release_path, :preserve => true)
+          FileUtils.cp_r(::File.join(@new_resource.destination, "."), release_path, preserve: true)
           Chef::Log.info "#{@new_resource} copied the cached checkout to #{release_path}"
         end
       end

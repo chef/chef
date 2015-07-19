@@ -46,7 +46,7 @@ class Chef
         set_or_return(
           :chunk,
           arg,
-          :kind_of => [ Integer ]
+          kind_of: [ Integer ]
         )
       end
 
@@ -54,7 +54,7 @@ class Chef
         set_or_return(
           :devices,
           arg,
-          :kind_of => [ Array ]
+          kind_of: [ Array ]
         )
       end
 
@@ -62,7 +62,7 @@ class Chef
         set_or_return(
           :exists,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 
@@ -70,7 +70,7 @@ class Chef
         set_or_return(
           :level,
           arg,
-          :kind_of => [ Integer ]
+          kind_of: [ Integer ]
         )
       end
 
@@ -78,7 +78,7 @@ class Chef
         set_or_return(
           :metadata,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -86,7 +86,7 @@ class Chef
         set_or_return(
           :bitmap,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -94,7 +94,7 @@ class Chef
         set_or_return(
           :raid_device,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 

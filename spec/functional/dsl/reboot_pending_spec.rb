@@ -31,7 +31,7 @@ describe Chef::DSL::RebootPending, :windows_only do
   end
 
   def registry_unsafe?
-    registry.value_exists?('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => 'PendingFileRenameOperations' }) ||
+    registry.value_exists?('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { name: 'PendingFileRenameOperations' }) ||
     registry.key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired')
     registry.key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired') ||
     registry.key_exists?('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile')
@@ -57,14 +57,14 @@ describe Chef::DSL::RebootPending, :windows_only do
       it "returns true if the registry value exists" do
         skip "Found existing registry keys" if registry_unsafe?
         registry.set_value('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager',
-            { :name => 'PendingFileRenameOperations', :type => :multi_string, :data => ['\??\C:\foo.txt|\??\C:\bar.txt'] })
+            { name: 'PendingFileRenameOperations', type: :multi_string, data: ['\??\C:\foo.txt|\??\C:\bar.txt'] })
 
         expect(recipe.reboot_pending?).to be_truthy
       end
 
       after do
         unless registry_unsafe?
-          registry.delete_value('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => 'PendingFileRenameOperations' })
+          registry.delete_value('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { name: 'PendingFileRenameOperations' })
         end
       end
     end
@@ -105,14 +105,14 @@ describe Chef::DSL::RebootPending, :windows_only do
         skip "Found existing registry keys" if registry_unsafe?
         registry.create_key('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile', true)
         registry.set_value('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile',
-                    { :name => 'Flags', :type => :dword, :data => 3 })
+                    { name: 'Flags', type: :dword, data: 3 })
 
         expect(recipe.reboot_pending?).to be_truthy
       end
 
       after do
         unless registry_unsafe?
-          registry.delete_value('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile', { :name => 'Flags' })
+          registry.delete_value('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile', { name: 'Flags' })
           registry.delete_key('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile', false)
         end
       end

@@ -38,7 +38,7 @@ describe Chef::Resource::Deploy do
       end
     end
 
-    def resource_has_a_boolean_attribute(attr_name, opts={:defaults_to=>false})
+    def resource_has_a_boolean_attribute(attr_name, opts={defaults_to:false})
       it "has a Boolean attribute for #{attr_name.to_s}" do
         expect(@resource.send(attr_name)).to eql(opts[:defaults_to])
         @resource.send(attr_name, !opts[:defaults_to])
@@ -80,9 +80,9 @@ describe Chef::Resource::Deploy do
   resource_has_a_string_attribute(:svn_arguments)
   resource_has_a_string_attribute(:svn_info_args)
 
-  resource_has_a_boolean_attribute(:migrate, :defaults_to=>false)
-  resource_has_a_boolean_attribute(:enable_submodules, :defaults_to=>false)
-  resource_has_a_boolean_attribute(:shallow_clone, :defaults_to=>false)
+  resource_has_a_boolean_attribute(:migrate, defaults_to:false)
+  resource_has_a_boolean_attribute(:enable_submodules, defaults_to:false)
+  resource_has_a_boolean_attribute(:shallow_clone, defaults_to:false)
 
   it "uses the first argument as the deploy directory" do
     expect(@resource.deploy_to).to eql("/my/deploy/dir")

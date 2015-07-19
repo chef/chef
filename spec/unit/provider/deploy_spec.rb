@@ -342,7 +342,7 @@ describe Chef::Provider::Deploy do
 
   it "makes a copy of the cached repo in releases dir" do
     expect(FileUtils).to receive(:mkdir_p).with("/my/deploy/dir/releases")
-    expect(FileUtils).to receive(:cp_r).with("/my/deploy/dir/shared/cached-copy/.", @expected_release_dir, :preserve => true)
+    expect(FileUtils).to receive(:cp_r).with("/my/deploy/dir/shared/cached-copy/.", @expected_release_dir, preserve: true)
     @provider.copy_cached_repo
   end
 
@@ -378,11 +378,11 @@ describe Chef::Provider::Deploy do
 
     allow(STDOUT).to receive(:tty?).and_return(true)
     allow(Chef::Log).to receive(:info?).and_return(true)
-    expect(@provider).to receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
-                                                :user => "deployNinja", :group => "deployNinjas",
-                                                :log_level => :info, :live_stream => STDOUT,
-                                                :log_tag => "deploy[/my/deploy/dir]",
-                                                :environment => {"RAILS_ENV"=>"production"})
+    expect(@provider).to receive(:run_command).with(command: "migration_foo", cwd: @expected_release_dir,
+                                                user: "deployNinja", group: "deployNinjas",
+                                                log_level: :info, live_stream: STDOUT,
+                                                log_tag: "deploy[/my/deploy/dir]",
+                                                environment: {"RAILS_ENV"=>"production"})
     @provider.migrate
   end
 
@@ -451,7 +451,7 @@ describe Chef::Provider::Deploy do
 
   it "runs the restart command in the current application dir when the resource has a restart_command" do
     @resource.restart_command "restartcmd"
-    expect(@provider).to receive(:run_command).with(:command => "restartcmd", :cwd => "/my/deploy/dir/current", :log_tag => "deploy[/my/deploy/dir]", :log_level => :debug)
+    expect(@provider).to receive(:run_command).with(command: "restartcmd", cwd: "/my/deploy/dir/current", log_tag: "deploy[/my/deploy/dir]", log_level: :debug)
     @provider.restart
   end
 
@@ -516,7 +516,7 @@ describe Chef::Provider::Deploy do
 
   context "using inline recipes for callbacks" do
 
-    it "runs an inline recipe with the provided block for :callback_name == {:recipe => &block} " do
+    it "runs an inline recipe with the provided block for :callback_name == {recipe: &block} " do
       snitch = nil
       recipe_code = Proc.new {snitch = 42}
       #@provider.should_receive(:instance_eval).with(&recipe_code)
@@ -613,7 +613,7 @@ describe Chef::Provider::Deploy do
 
     before do
       allow(::File).to receive(:exist?).with("#{@expected_release_dir}/gems.yml").and_return(true)
-      @gem_list = [{:name=>"eventmachine", :version=>"0.12.9"}]
+      @gem_list = [{name:"eventmachine", version:"0.12.9"}]
     end
 
     it "reads a gems.yml file, creating gem providers for each with action :upgrade" do

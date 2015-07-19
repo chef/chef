@@ -33,7 +33,7 @@ class Chef
         set_or_return(
           :allow_downgrade,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 

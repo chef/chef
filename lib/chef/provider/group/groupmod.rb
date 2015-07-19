@@ -100,7 +100,7 @@ class Chef
           shell_out!(rename)
 
           create = "group add"
-          create << set_options(:overwrite_gid => true)
+          create << set_options(overwrite_gid: true)
           shell_out!(create)
 
           remove = "group del #{@new_resource.group_name}_bak"

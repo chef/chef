@@ -224,7 +224,7 @@ describe Chef::Node::Attribute do
 
     [ :normal, :default, :override, :automatic ].each do |accessor|
       it "should set #{accessor}" do
-        na = Chef::Node::Attribute.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
+        na = Chef::Node::Attribute.new({ normal: true }, { default: true }, { override: true }, { automatic: true })
         expect(na.send(accessor)).to eq({ accessor.to_s => true })
       end
     end
