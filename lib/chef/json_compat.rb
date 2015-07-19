@@ -66,7 +66,7 @@ class Chef
 
         # The old default in the json gem (which we are mimicing because we
         # sadly rely on this misfeature) is to "create additions" i.e., convert
-        # JSON objects into ruby objects. Explicit :create_additions => false
+        # JSON objects into ruby objects. Explicit create_additions: false
         # is required to turn it off.
         if opts[:create_additions].nil? || opts[:create_additions]
           map_to_rb_obj(obj)

@@ -176,7 +176,7 @@ class Chef
             prefix = Chef::Config[:file_backup_path].to_s
             backup_path = ::File.join(prefix, backup_filename)
             FileUtils.mkdir_p(::File.dirname(backup_path)) if Chef::Config[:file_backup_path]
-            FileUtils.cp(file, backup_path, :preserve => true)
+            FileUtils.cp(file, backup_path, preserve: true)
             Chef::Log.info("#{@new_resource} backed up to #{backup_path}")
 
             # Clean up after the number of backups

@@ -109,7 +109,7 @@ describe Chef::Mixin::Template, "render_template" do
         tf.write "test"
         tf.rewind
 
-        output = @template_context.render_template_from_string("before {<%= render '#{tf.path}', :local => true %>} after")
+        output = @template_context.render_template_from_string("before {<%= render '#{tf.path}', local: true %>} after")
         expect(output).to eq("before {test} after")
       ensure
         tf.close
@@ -119,7 +119,7 @@ describe Chef::Mixin::Template, "render_template" do
     it "should render partials from a different cookbook" do
       @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, 'apache2', @node)
 
-      output = @template_context.render_template_from_string("before {<%= render('test.erb', :cookbook => 'openldap').strip %>} after")
+      output = @template_context.render_template_from_string("before {<%= render('test.erb', cookbook: 'openldap').strip %>} after")
       expect(output).to eq("before {We could be diving for pearls!} after")
     end
 
@@ -129,7 +129,7 @@ describe Chef::Mixin::Template, "render_template" do
         tf.write "test"
         tf.rewind
 
-        output = @template_context.render_template_from_string("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after")
+        output = @template_context.render_template_from_string("before {<%= render 'something', local: true, source: '#{tf.path}' %>} after")
         expect(output).to eq("before {test} after")
       ensure
         tf.close
@@ -151,19 +151,19 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should pass variables to partials" do
-      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'whatever' } %>} after")
+      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', variables: {secret: 'whatever' } %>} after")
       expect(output).to eq("before {super secret is whatever} after")
     end
 
     it "should pass variables to partials even if they are named the same" do
       @template_context[:secret] = 'one'
 
-      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'two' } %>} after <%= @secret %>")
+      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', variables: {secret: 'two' } %>} after <%= @secret %>")
       expect(output).to eq("before {super secret is two} after one")
     end
 
     it "should pass nil for missing variables in partials" do
-      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {} %>} after")
+      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', variables: {} %>} after")
       expect(output).to eq("before {super secret is } after")
 
       output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after")
@@ -173,7 +173,7 @@ describe Chef::Mixin::Template, "render_template" do
     it "should render nested partials" do
       path = File.expand_path(File.join(CHEF_SPEC_DATA, "partial_one.erb"))
 
-      output = @template_context.render_template_from_string("before {<%= render('#{path}', :local => true).strip %>} after")
+      output = @template_context.render_template_from_string("before {<%= render('#{path}', local: true).strip %>} after")
       expect(output).to eq("before {partial one We could be diving for pearls! calling home} after")
     end
 

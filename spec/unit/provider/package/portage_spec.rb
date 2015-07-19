@@ -107,7 +107,7 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       end
 
       it "should throw an exception if the exitstatus is not 0" do
-        status = double(:stdout => "", :exitstatus => 1)
+        status = double(stdout: "", exitstatus: 1)
         allow(@provider).to receive(:shell_out).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
@@ -143,7 +143,7 @@ Searching...
       License:       GPL-2
 EOF
 
-        status = double(:stdout => output, :exitstatus => 0)
+        status = double(stdout: output, exitstatus: 0)
         expect(@provider).to receive(:shell_out).and_return(status)
         expect(@provider.candidate_version).to eq("1.6.0.6")
       end
@@ -179,7 +179,7 @@ Searching...
       License:       GPL-2
 EOF
 
-        status = double(:stdout => output, :exitstatus => 0)
+        status = double(stdout: output, exitstatus: 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         expect(@provider).to receive(:shell_out).and_return(status)
         expect(@provider.candidate_version).to eq("1.6.0.6")
@@ -224,7 +224,7 @@ Searching...
       License:       GPL-2
 EOF
 
-        status = double(:stdout => output, :exitstatus => 0)
+        status = double(stdout: output, exitstatus: 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         expect(@provider).to receive(:shell_out).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
@@ -269,7 +269,7 @@ Searching...
       License:       GPL-2
 EOF
 
-        status = double(:stdout => output, :exitstatus => 0)
+        status = double(stdout: output, exitstatus: 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context)
         expect(@provider).to receive(:shell_out).and_return(status)
         expect(@provider.candidate_version).to eq("1.6.0.6")

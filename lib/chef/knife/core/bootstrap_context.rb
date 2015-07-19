@@ -163,7 +163,7 @@ CONFIG
         end
 
         def first_boot
-          (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+          (@config[:first_boot_attributes] || {}).merge(run_list: @run_list)
         end
 
         private

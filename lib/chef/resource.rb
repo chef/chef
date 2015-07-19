@@ -73,8 +73,8 @@ class Chef
     # Find existing resources by searching the list of existing resources.  Possible
     # forms are:
     #
-    #   find(:file => "foobar")
-    #   find(:file => [ "foobar", "baz" ])
+    #   find(file: "foobar")
+    #   find(file: [ "foobar", "baz" ])
     #   find("file[foobar]", "file[baz]")
     #   find("file[foobar,baz]")
     #
@@ -231,7 +231,7 @@ class Chef
     #   end
     #
     def notifies(action, resource_spec, timing=:delayed)
-      # when using old-style resources(:template => "/foo.txt") style, you
+      # when using old-style resources(template: "/foo.txt") style, you
       # could end up with multiple resources.
       validate_resource_spec!(resource_spec)
 
@@ -421,7 +421,7 @@ class Chef
     # @return [Boolean] Whether this resource is sensitive or not.
     #
     def sensitive(arg=nil)
-      set_or_return(:sensitive, arg, :kind_of => [ TrueClass, FalseClass ])
+      set_or_return(:sensitive, arg, kind_of: [ TrueClass, FalseClass ])
     end
     attr_writer :sensitive
 
@@ -458,7 +458,7 @@ class Chef
       if arg.nil?
         @guard_interpreter || @default_guard_interpreter
       else
-        set_or_return(:guard_interpreter, arg, :kind_of => Symbol)
+        set_or_return(:guard_interpreter, arg, kind_of: Symbol)
       end
     end
 

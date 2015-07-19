@@ -62,7 +62,7 @@ class Chef
           else
             pkg = "#{@new_resource.package_name}"
           end
-          shell_out!("cave -L warning resolve -x#{expand_options(@new_resource.options)} \"#{pkg}\"",:timeout => @new_resource.timeout)
+          shell_out!("cave -L warning resolve -x#{expand_options(@new_resource.options)} \"#{pkg}\"",timeout: @new_resource.timeout)
         end
 
         def upgrade_package(name, version)

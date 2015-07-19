@@ -29,13 +29,13 @@ class Chef
       category "cookbook site"
 
       option :file,
-        :short => "-f FILE",
-        :long => "--file FILE",
-        :description => "The filename to write to"
+        short: "-f FILE",
+        long: "--file FILE",
+        description: "The filename to write to"
 
       option :force,
-        :long => "--force",
-        :description => "Force download deprecated version"
+        long: "--force",
+        description: "Force download deprecated version"
 
       def run
         if current_cookbook_deprecated?

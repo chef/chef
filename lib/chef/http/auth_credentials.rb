@@ -40,7 +40,7 @@ class Chef
         raise ArgumentError, "Cannot sign the request without a client name, check that :node_name is assigned" if client_name.nil?
         Chef::Log.debug("Signing the request as #{client_name}")
 
-        # params_in = {:http_method => :GET, :path => "/clients", :body => "", :host => "localhost"}
+        # params_in = {http_method: :GET, path: "/clients", body: "", host: "localhost"}
         request_params                 = request_params.dup
         request_params[:timestamp]     = Time.now.utc.iso8601
         request_params[:user_id]       = client_name
@@ -48,7 +48,7 @@ class Chef
         host = request_params.delete(:host) || "localhost"
 
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
-        signed =  sign_obj.sign(key).merge({:host => host})
+        signed =  sign_obj.sign(key).merge({host: host})
         signed.inject({}){|memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1];memo}
       end
 

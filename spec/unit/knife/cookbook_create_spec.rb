@@ -34,7 +34,7 @@ describe Chef::Knife::CookbookCreate do
     # Fixes CHEF-2579
     it "should expand the path of the cookbook directory" do
       expect(File).to receive(:expand_path).with("~/tmp/monkeypants")
-      @knife.config = {:cookbook_path => "~/tmp/monkeypants"}
+      @knife.config = {cookbook_path: "~/tmp/monkeypants"}
       allow(@knife).to receive(:create_cookbook)
       allow(@knife).to receive(:create_readme)
       allow(@knife).to receive(:create_changelog)
@@ -44,7 +44,7 @@ describe Chef::Knife::CookbookCreate do
 
     it "should create a new cookbook with default values to copyright name, email, readme format and license if those are not supplied" do
       @dir = Dir.tmpdir
-      @knife.config = {:cookbook_path => @dir}
+      @knife.config = {cookbook_path: @dir}
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "none")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -55,8 +55,8 @@ describe Chef::Knife::CookbookCreate do
     it "should create a new cookbook with specified company name in the copyright section if one is specified" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
@@ -69,9 +69,9 @@ describe Chef::Knife::CookbookCreate do
     it "should create a new cookbook with specified copyright name and email if they are specified" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
@@ -84,10 +84,10 @@ describe Chef::Knife::CookbookCreate do
     it "should create a new cookbook with specified copyright name and email and license information (true) if they are specified" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "apachev2"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: "apachev2"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "apachev2")
@@ -100,10 +100,10 @@ describe Chef::Knife::CookbookCreate do
     it "should create a new cookbook with specified copyright name and email and license information (false) if they are specified" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => false
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: false
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
@@ -116,10 +116,10 @@ describe Chef::Knife::CookbookCreate do
     it "should create a new cookbook with specified copyright name and email and license information ('false' as string) if they are specified" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "false"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: "false"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
@@ -132,10 +132,10 @@ describe Chef::Knife::CookbookCreate do
     it "should allow specifying a gpl2 license" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "gplv2"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: "gplv2"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv2")
@@ -148,10 +148,10 @@ describe Chef::Knife::CookbookCreate do
     it "should allow specifying a gplv3 license" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "gplv3"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: "gplv3"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv3")
@@ -164,10 +164,10 @@ describe Chef::Knife::CookbookCreate do
     it "should allow specifying the mit license" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: "mit"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
@@ -180,11 +180,11 @@ describe Chef::Knife::CookbookCreate do
     it "should allow specifying the rdoc readme format" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "rdoc"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: "mit",
+        readme_format: "rdoc"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
@@ -197,11 +197,11 @@ describe Chef::Knife::CookbookCreate do
     it "should allow specifying the mkd readme format" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "mkd"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: "mit",
+        readme_format: "mkd"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
@@ -214,11 +214,11 @@ describe Chef::Knife::CookbookCreate do
     it "should allow specifying the txt readme format" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "txt"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: "mit",
+        readme_format: "txt"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
@@ -231,11 +231,11 @@ describe Chef::Knife::CookbookCreate do
     it "should allow specifying an arbitrary readme format" do
       @dir = Dir.tmpdir
       @knife.config = {
-        :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "foo"
+        cookbook_path: @dir,
+        cookbook_copyright: "Opscode, Inc",
+        cookbook_email: "nuo@opscode.com",
+        cookbook_license: "mit",
+        readme_format: "foo"
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")

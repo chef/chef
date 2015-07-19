@@ -34,30 +34,30 @@ class Chef
       category "cookbook site"
 
       option :no_deps,
-       :short => "-D",
-       :long => "--skip-dependencies",
-       :boolean => true,
-       :default => false,
-       :description => "Skips automatic dependency installation."
+       short: "-D",
+       long: "--skip-dependencies",
+       boolean: true,
+       default: false,
+       description: "Skips automatic dependency installation."
 
       option :cookbook_path,
-        :short => "-o PATH:PATH",
-        :long => "--cookbook-path PATH:PATH",
-        :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| o.split(":") }
+        short: "-o PATH:PATH",
+        long: "--cookbook-path PATH:PATH",
+        description: "A colon-separated path to look for cookbooks in",
+        proc: lambda { |o| o.split(":") }
 
       option :default_branch,
-        :short => "-B BRANCH",
-        :long => "--branch BRANCH",
-        :description => "Default branch to work with",
-        :default => "master"
+        short: "-B BRANCH",
+        long: "--branch BRANCH",
+        description: "Default branch to work with",
+        default: "master"
 
       option :use_current_branch,
-        :short =>  "-b",
-        :long => "--use-current-branch",
-        :description => "Use the current branch",
-        :boolean => true,
-        :default => false
+        short:  "-b",
+        long: "--use-current-branch",
+        description: "Use the current branch",
+        boolean: true,
+        default: false
 
       attr_reader :cookbook_name
       attr_reader :vendor_path
@@ -142,7 +142,7 @@ class Chef
       def extract_cookbook(upstream_file, version)
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
         # FIXME: Detect if we have the bad tar from git on Windows: https://github.com/opscode/chef/issues/1753
-        shell_out!("tar zxvf #{convert_path upstream_file}", :cwd => @install_path)
+        shell_out!("tar zxvf #{convert_path upstream_file}", cwd: @install_path)
       end
 
       def clear_existing_files(cookbook_path)

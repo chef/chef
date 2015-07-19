@@ -91,7 +91,7 @@ class Chef
       end
 
       def authentication_headers(method, url, json_body=nil)
-        request_params = {:http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}"}
+        request_params = {http_method: method, path: url.path, body: json_body, host: "#{url.host}:#{url.port}"}
         request_params[:body] ||= ""
         auth_credentials.signature_headers(request_params)
       end

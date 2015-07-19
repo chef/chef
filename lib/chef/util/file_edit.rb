@@ -84,7 +84,7 @@ class Chef
       def write_file
         if @changes
           backup_pathname = original_pathname + ".old"
-          FileUtils.cp(original_pathname, backup_pathname, :preserve => true)
+          FileUtils.cp(original_pathname, backup_pathname, preserve: true)
           File.open(original_pathname, "w") do |newfile|
             editor.lines.each do |line|
               newfile.puts(line)

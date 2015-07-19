@@ -22,14 +22,14 @@ describe Chef::Provider::Template::Content do
 
   let(:new_resource) do
     double("Chef::Resource::Template (new)",
-         :cookbook_name => 'openldap',
-         :source => 'openldap_stuff.conf.erb',
-         :local => false,
-         :cookbook => nil,
-         :variables => {},
-         :inline_helper_blocks => {},
-         :inline_helper_modules => [],
-         :helper_modules => [])
+         cookbook_name: 'openldap',
+         source: 'openldap_stuff.conf.erb',
+         local: false,
+         cookbook: nil,
+         variables: {},
+         inline_helper_blocks: {},
+         inline_helper_modules: [],
+         helper_modules: [])
   end
 
   let(:rendered_file_location) { Dir.tmpdir + '/openldap_stuff.conf' }
@@ -41,7 +41,7 @@ describe Chef::Provider::Template::Content do
     cl.load_cookbooks
     cookbook_collection = Chef::CookbookCollection.new(cl)
     node = Chef::Node.new
-    double("Chef::Resource::RunContext", :node => node, :cookbook_collection => cookbook_collection)
+    double("Chef::Resource::RunContext", node: node, cookbook_collection: cookbook_collection)
   end
 
   let(:content) do

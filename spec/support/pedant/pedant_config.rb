@@ -83,44 +83,44 @@ ingore_x_chef_version true
 platform_class Pedant::OpenSourcePlatform
 
 requestors({
-  :clients => {
+  clients: {
     # The the admin user, for the purposes of getting things rolling
-    :admin => {
-      :name => "pedant_admin_client",
-      :create_me => true,
-      :create_knife => true,
-      :admin => true
+    admin: {
+      name: "pedant_admin_client",
+      create_me: true,
+      create_knife: true,
+      admin: true
     },
-    :non_admin => {
-      :name => 'pedant_client',
-      :create_me => true,
-      :create_knife => true
+    non_admin: {
+      name: 'pedant_client',
+      create_me: true,
+      create_knife: true
     },
-    :bad => {
-      :name => 'bad_client',
-      :bogus => true
+    bad: {
+      name: 'bad_client',
+      bogus: true
     }
   },
-  :users => {
-    :admin => {
-      :name => "admin",
-      :key_file => key,
-      :create_me => false,
-      :create_knife => false,
-      :admin => true
+  users: {
+    admin: {
+      name: "admin",
+      key_file: key,
+      create_me: false,
+      create_knife: false,
+      admin: true
      },
-    :non_admin => {
-      :name => "pedant_non_admin_user",
-      :create_me => true,
-      :create_knife => true,
-      :admin => false
+    non_admin: {
+      name: "pedant_non_admin_user",
+      create_me: true,
+      create_knife: true,
+      admin: false
     },
     # A user for Knife tests.  A knife.rb and key files will be set up
     # for this user
-    :knife_user => {
-      :name => "knifey",
-      :create_me => true,
-      :create_knife => true
+    knife_user: {
+      name: "knifey",
+      create_me: true,
+      create_knife: true
     }
   }
 })

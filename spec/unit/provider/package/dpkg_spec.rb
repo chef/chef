@@ -28,7 +28,7 @@ describe Chef::Provider::Package::Dpkg do
 
     @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
 
-    @status = double(:stdout => "", :exitstatus => 0)
+    @status = double(stdout: "", exitstatus: 0)
     allow(@provider).to receive(:shell_out).and_return(@status)
 
     allow(::File).to receive(:exists?).and_return(true)
@@ -50,7 +50,7 @@ describe Chef::Provider::Package::Dpkg do
 
     describe 'gets the source package version from dpkg-deb' do
       def check_version(version)
-        @status = double(:stdout => "wget\t#{version}", :exitstatus => 0)
+        @status = double(stdout: "wget\t#{version}", exitstatus: 0)
         allow(@provider).to receive(:shell_out).with("dpkg-deb -W #{@new_resource.source}", timeout: 900).and_return(@status)
         @provider.load_current_resource
         expect(@provider.current_resource.package_name).to eq("wget")
@@ -77,7 +77,7 @@ describe Chef::Provider::Package::Dpkg do
 
     it "gets the source package name from dpkg-deb correctly when the package name has `-', `+' or `.' characters" do
       stdout = "f.o.o-pkg++2\t1.11.4-1ubuntu1"
-      status = double(:stdout => stdout, :exitstatus => 1)
+      status = double(stdout: stdout, exitstatus: 1)
       allow(@provider).to receive(:shell_out).and_return(status)
       @provider.load_current_resource
       expect(@provider.current_resource.package_name).to eq("f.o.o-pkg++2")
@@ -105,7 +105,7 @@ Config-Version: 1.11.4-1ubuntu1
 Depends: libc6 (>= 2.8~20080505), libssl0.9.8 (>= 0.9.8f-5)
 Conflicts: wget-ssl
 DPKG_S
-      status = double(:stdout => stdout, :exitstatus => 1)
+      status = double(stdout: stdout, exitstatus: 1)
       allow(@provider).to receive(:shell_out).with("dpkg -s wget", timeout: 900).and_return(status)
 
       @provider.load_current_resource
@@ -113,7 +113,7 @@ DPKG_S
     end
 
     it "should raise an exception if dpkg fails to run" do
-      status = double(:stdout => "", :exitstatus => -1)
+      status = double(stdout: "", exitstatus: -1)
       allow(@provider).to receive(:shell_out).and_return(status)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
     end

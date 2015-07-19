@@ -219,7 +219,7 @@ class Chef
 
       def write_crontab(crontab)
         write_exception = false
-        status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
+        status = popen4("crontab -u #{@new_resource.user} -", waitlast: true) do |pid, stdin, stdout, stderr|
           begin
             stdin.write crontab
           rescue Errno::EPIPE => e

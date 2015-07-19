@@ -37,7 +37,7 @@ class Chef
         set_or_return(
           :purge,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
     end

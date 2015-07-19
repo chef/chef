@@ -56,7 +56,7 @@ describe Chef::Provider::ErlCall do
 
     it "should write to stdin of the erl_call command" do
       expected_cmd = "erl_call -e -s -sname chef@localhost -c nomnomnom"
-      expect(@provider).to receive(:popen4).with(expected_cmd, :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
+      expect(@provider).to receive(:popen4).with(expected_cmd, waitlast: true).and_return([@pid, @stdin, @stdout, @stderr])
       expect(Process).to receive(:wait).with(@pid)
 
       @provider.action_run
@@ -73,7 +73,7 @@ describe Chef::Provider::ErlCall do
     end
 
     it "should write to stdin of the erl_call command" do
-      expect(@provider).to receive(:popen4).with("erl_call -e  -name chef@localhost ", :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
+      expect(@provider).to receive(:popen4).with("erl_call -e  -name chef@localhost ", waitlast: true).and_return([@pid, @stdin, @stdout, @stderr])
       expect(Process).to receive(:wait).with(@pid)
 
       @provider.action_run

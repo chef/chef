@@ -9,7 +9,7 @@ module KnifeSpecs
       @test_deps_loaded = true
     end
 
-    option :scro, :short => '-s SCRO', :long => '--scro SCRO', :description => 'a configurable setting'
+    option :scro, short: '-s SCRO', long: '--scro SCRO', description: 'a configurable setting'
 
     attr_reader :ran
 

@@ -88,7 +88,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
     describe "when the json_attribs configuration option is specified" do
       let(:json_attribs) { {"a" => "b"} }
-      let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+      let(:config_fetcher) { double(Chef::ConfigFetcher, fetch_json: json_attribs) }
       let(:json_source) { "https://foo.com/foo.json" }
 
       before do
@@ -145,7 +145,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
   describe "when the json_attribs and recipe_url configuration options are both specified" do
     let(:json_attribs) { {"a" => "b"} }
-    let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+    let(:config_fetcher) { double(Chef::ConfigFetcher, fetch_json: json_attribs) }
     let(:json_source) { "https://foo.com/foo.json" }
 
     before do

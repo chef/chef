@@ -47,7 +47,7 @@ class Chef
           command = "groupadd"
           command << set_options
           command << groupadd_options
-          run_command(:command => command)
+          run_command(command: command)
           modify_group_members
         end
 
@@ -55,13 +55,13 @@ class Chef
         def manage_group
           command = "groupmod"
           command << set_options
-          run_command(:command => command)
+          run_command(command: command)
           modify_group_members
         end
 
         # Remove the group
         def remove_group
-          run_command(:command => "groupdel #{@new_resource.group_name}")
+          run_command(command: "groupdel #{@new_resource.group_name}")
         end
 
         def modify_group_members
@@ -113,7 +113,7 @@ class Chef
         # <string>:: A string containing the option and then the quoted value
         def set_options
           opts = ""
-          { :gid => "-g" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
+          { gid: "-g" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
                 opts << " #{option} '#{@new_resource.send(field)}'"

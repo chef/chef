@@ -135,7 +135,7 @@ class Chef::Provider::Route < Chef::Provider
       else
         command = generate_command(:add)
         converge_by ("run #{ command } to add route") do
-          run_command( :command => command )
+          run_command( command: command )
           Chef::Log.info("#{@new_resource} added")
         end
       end
@@ -148,7 +148,7 @@ class Chef::Provider::Route < Chef::Provider
       if is_running
         command = generate_command(:delete)
         converge_by ("run #{ command } to delete route ") do
-          run_command( :command => command )
+          run_command( command: command )
           Chef::Log.info("#{@new_resource} removed")
         end
       else
@@ -176,7 +176,7 @@ class Chef::Provider::Route < Chef::Provider
             conf[dev] = String.new if conf[dev].nil?
             case @action
             when :add
-              conf[dev] << config_file_contents(:add, :target => resource.target, :netmask => resource.netmask, :gateway => resource.gateway)
+              conf[dev] << config_file_contents(:add, target: resource.target, netmask: resource.netmask, gateway: resource.gateway)
             when :delete
               # need to do this for the case when the last route on an int
               # is removed

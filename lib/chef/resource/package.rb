@@ -45,7 +45,7 @@ class Chef
         set_or_return(
           :package_name,
           arg,
-          :kind_of => [ String, Array ]
+          kind_of: [ String, Array ]
         )
       end
 
@@ -53,7 +53,7 @@ class Chef
         set_or_return(
           :version,
           arg,
-          :kind_of => [ String, Array ]
+          kind_of: [ String, Array ]
         )
       end
 
@@ -61,7 +61,7 @@ class Chef
         set_or_return(
           :response_file,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -69,7 +69,7 @@ class Chef
         set_or_return(
           :response_file_variables,
           arg,
-          :kind_of => [ Hash ]
+          kind_of: [ Hash ]
         )
       end
 
@@ -77,7 +77,7 @@ class Chef
         set_or_return(
           :source,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -85,7 +85,7 @@ class Chef
         set_or_return(
       	  :options,
       	  arg,
-      	  :kind_of => [ String ]
+      	  kind_of: [ String ]
       	)
       end
 
@@ -93,7 +93,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [String, Integer]
+          kind_of: [String, Integer]
         )
       end
 

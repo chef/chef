@@ -26,7 +26,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
   let(:node) { double('Chef::Node') }
   let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
-  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
+  let(:run_context) { double('Chef::RunContext', node: node, events: events) }
   let(:resource_source) { 'calculator.msi' }
   let(:new_resource) { Chef::Resource::WindowsPackage.new(resource_source) }
   let(:provider) { Chef::Provider::Package::Windows.new(new_resource, run_context) }
@@ -37,7 +37,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       before(:each) do
         allow(Chef::Util::PathHelper).to receive(:validate_path)
         allow(provider).to receive(:package_provider).and_return(double('package_provider',
-          :installed_version => "1.0", :package_version => "2.0"))
+          installed_version: "1.0", package_version: "2.0"))
       end
 
       it "creates a current resource with the name of the new resource" do
@@ -78,7 +78,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       end
 
       context "when remote_file_attributes are provided" do
-        let (:remote_file_attributes) { {:path => 'C:\\foobar.msi'} }
+        let (:remote_file_attributes) { {path: 'C:\\foobar.msi'} }
         before(:each) do
           new_resource.remote_file_attributes(remote_file_attributes)
         end

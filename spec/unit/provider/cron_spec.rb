@@ -880,7 +880,7 @@ MAILTO=foo@example.com
 
   describe "read_crontab" do
     before :each do
-      @status = double("Status", :exitstatus => 0)
+      @status = double("Status", exitstatus: 0)
       @stdout = StringIO.new(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -910,13 +910,13 @@ MAILTO=foo@example.com
     end
 
     it "should return nil if the user has no crontab" do
-      status = double("Status", :exitstatus => 1)
+      status = double("Status", exitstatus: 1)
       allow(@provider).to receive(:popen4).and_return(status)
       expect(@provider.send(:read_crontab)).to eq(nil)
     end
 
     it "should raise an exception if another error occurs" do
-      status = double("Status", :exitstatus => 2)
+      status = double("Status", exitstatus: 2)
       allow(@provider).to receive(:popen4).and_return(status)
       expect do
         @provider.send(:read_crontab)
@@ -926,13 +926,13 @@ MAILTO=foo@example.com
 
   describe "write_crontab" do
     before :each do
-      @status = double("Status", :exitstatus => 0)
+      @status = double("Status", exitstatus: 0)
       @stdin = StringIO.new
       allow(@provider).to receive(:popen4).and_yield(1234, @stdin, StringIO.new, StringIO.new).and_return(@status)
     end
 
     it "should call crontab for the user" do
-      expect(@provider).to receive(:popen4).with("crontab -u #{@new_resource.user} -", :waitlast => true).and_return(@status)
+      expect(@provider).to receive(:popen4).with("crontab -u #{@new_resource.user} -", waitlast: true).and_return(@status)
       @provider.send(:write_crontab, "Foo")
     end
 

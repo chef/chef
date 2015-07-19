@@ -59,17 +59,17 @@ local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
     end
 
-    it "should complete successfully with no other environment variables", :skip => (Chef::Platform.windows?) do
+    it "should complete successfully with no other environment variables", skip: (Chef::Platform.windows?) do
       file 'config/client.rb', <<EOM
 local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       begin
-        result = shell_out("env -i #{critical_env_vars} #{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+        result = shell_out("env -i #{critical_env_vars} #{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
         result.error!
       rescue
         Chef::Log.info "Bare invocation will have the following load-path."
@@ -84,29 +84,29 @@ local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} --no-listen -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} --no-listen -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
       result.error!
     end
 
     it "should be able to node.save with bad utf8 characters in the node data" do
       file "cookbooks/x/attributes/default.rb", 'default["badutf8"] = "Elan Ruusam\xE4e"'
-      result = shell_out("#{chef_client} -z -r 'x::default' --disable-config", :cwd => path_to(''))
+      result = shell_out("#{chef_client} -z -r 'x::default' --disable-config", cwd: path_to(''))
       result.error!
     end
 
     context 'and no config file' do
       it 'should complete with success when cwd is just above cookbooks and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", cwd: path_to(''))
         result.error!
       end
 
       it 'should complete with success when cwd is below cookbooks and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => path_to('cookbooks/x'))
+        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", cwd: path_to('cookbooks/x'))
         result.error!
       end
 
       it 'should fail when cwd is below high above and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => File.expand_path('..', path_to('')))
+        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", cwd: File.expand_path('..', path_to('')))
         expect(result.exitstatus).to eq(1)
       end
     end
@@ -115,7 +115,7 @@ EOM
       before { file '.chef/knife.rb', 'xxx.xxx' }
 
       it 'should load .chef/knife.rb when -z is specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default'", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -z -o 'x::default'", cwd: path_to(''))
         # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
         expect(result.stdout).to include("xxx")
       end
@@ -128,7 +128,7 @@ local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
       result.error!
     end
 
@@ -172,7 +172,7 @@ client_key #{path_to('mykey.pem').inspect}
 cookbook_path #{path_to('cookbooks').inspect}
 EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", cwd: chef_dir)
         result.error!
       end
 
@@ -195,7 +195,7 @@ file #{path_to('tempfile2.txt').inspect} do
 end
 EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" #{path_to('arbitrary.rb')} #{path_to('arbitrary2.rb')}", :cwd => chef_dir)
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" #{path_to('arbitrary.rb')} #{path_to('arbitrary2.rb')}", cwd: chef_dir)
         result.error!
 
         expect(IO.read(path_to('tempfile.txt'))).to eq('1')
@@ -215,7 +215,7 @@ file #{path_to('tempfile.txt').inspect} do
 end
 EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" arbitrary.rb", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" arbitrary.rb", cwd: path_to(''))
         result.error!
 
         expect(IO.read(path_to('tempfile.txt'))).to eq('1')
@@ -239,7 +239,7 @@ file #{path_to('tempfile.txt').inspect} do
 end
 EOM
 
-        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", cwd: path_to(''))
         result.error!
 
         expect(IO.read(path_to('tempfile.txt'))).to eq('1')
@@ -253,7 +253,7 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", cwd: chef_dir)
       result.error!
     end
 
@@ -263,7 +263,7 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", cwd: chef_dir)
       result.error!
     end
 
@@ -273,7 +273,7 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", cwd: chef_dir)
       expect(result.stdout).not_to include("SSL validation of HTTPS requests is disabled.")
       result.error!
     end
@@ -284,7 +284,7 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", cwd: chef_dir)
       result.error!
     end
 
@@ -294,7 +294,7 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", cwd: chef_dir)
       expect(result.stdout).not_to include("Overridden Run List")
       expect(result.stdout).to include("Run List is [recipe[x::default]]")
       #puts result.stdout
@@ -322,7 +322,7 @@ control_group "control group without top level control" do
 end
       RECIPE
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed'", cwd: chef_dir)
       expect(result.error?).to be_falsey
       expect(result.stdout).to include("Successfully executed all `control_group` blocks and contained examples")
     end
@@ -336,7 +336,7 @@ control_group "control group without top level control" do
 end
       RECIPE
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::fail'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::fail'", cwd: chef_dir)
       expect(result.error?).to be_truthy
       expect(result.stdout).to include("Failure/Error: expect(2 - 2).to eq(1)")
     end
@@ -358,12 +358,12 @@ end
       file 'config/client.rb', <<EOM
 chef_repo_path "#{tmp_dir}"
 EOM
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", :cwd => tmp_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", cwd: tmp_dir)
       result.error!
     end
 
     it 'should fail when passed --recipe-url and not passed -z' do
-      result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
+      result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", cwd: tmp_dir)
       expect(result.exitstatus).not_to eq(0)
     end
   end

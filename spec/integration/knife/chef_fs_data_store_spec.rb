@@ -149,7 +149,7 @@ EOM
       end
 
       it 'knife cookbook upload works' do
-        knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} x").should_succeed :stderr => <<EOM
+        knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} x").should_succeed stderr: <<EOM
 Uploading x              [1.0.0]
 Uploaded 1 cookbook.
 EOM
@@ -182,7 +182,7 @@ EOM
         knife('list --local /users').should_succeed "/users/x.json\n"
       end
 
-      it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', :skip => (RUBY_VERSION < "1.9") do
+      it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', skip: (RUBY_VERSION < "1.9") do
         knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
         expect(IO.read(path_to('roles/x.json'))).to eq <<EOM.strip
 {
@@ -211,7 +211,7 @@ EOM
       end
 
       it 'knife cookbook upload works' do
-        knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} z").should_succeed :stderr => <<EOM
+        knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} z").should_succeed stderr: <<EOM
 Uploading z            [1.0.0]
 Uploaded 1 cookbook.
 EOM
@@ -250,7 +250,7 @@ EOM
         knife('list --local /users').should_succeed "/users/z.json\n"
       end
 
-      it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', :skip => (RUBY_VERSION < "1.9") do
+      it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', skip: (RUBY_VERSION < "1.9") do
         knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed( /uri/ )
         expect(IO.read(path_to('roles/x.json'))).to eq <<EOM.strip
 {

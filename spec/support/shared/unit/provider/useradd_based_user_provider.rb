@@ -46,7 +46,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @current_resource.manage_home false
     @current_resource.force false
     @current_resource.non_unique false
-    @current_resource.supports({:manage_home => false, :non_unique => false})
+    @current_resource.supports({manage_home: false, non_unique: false})
   end
 
   describe "when setting option" do
@@ -64,8 +64,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management" do
-        allow(@new_resource).to receive(:supports).and_return({:manage_home => false,
-                                                    :non_unique => false})
+        allow(@new_resource).to receive(:supports).and_return({manage_home: false,
+                                                    non_unique: false})
         allow(@new_resource).to receive(attribute).and_return("hola")
         expect(provider.universal_options).to eql([option, 'hola'])
       end
@@ -103,8 +103,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     describe "when the resource has a different home directory and supports home directory management" do
       before do
         allow(@new_resource).to receive(:home).and_return("/wowaweea")
-        allow(@new_resource).to receive(:supports).and_return({:manage_home => true,
-                                                   :non_unique => false})
+        allow(@new_resource).to receive(:supports).and_return({manage_home: true,
+                                                   non_unique: false})
       end
 
       it "should set -m -d /homedir" do
@@ -128,8 +128,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     describe "when the resource supports non_unique ids" do
       before do
-        allow(@new_resource).to receive(:supports).and_return({:manage_home => false,
-                                                  :non_unique => true})
+        allow(@new_resource).to receive(:supports).and_return({manage_home: false,
+                                                  non_unique: true})
       end
 
       it "should set -m -o" do
@@ -246,15 +246,15 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     end
 
     it "should run userdel with the new resources user name and -r if manage_home is true" do
-      @new_resource.supports({ :manage_home => true,
-                               :non_unique => false})
+      @new_resource.supports({ manage_home: true,
+                               non_unique: false})
       expect(provider).to receive(:shell_out!).with("userdel", "-r", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name if non_unique is true" do
-      @new_resource.supports({ :manage_home => false,
-                               :non_unique => true})
+      @new_resource.supports({ manage_home: false,
+                               non_unique: true})
       expect(provider).to receive(:shell_out!).with("userdel", @new_resource.username).and_return(true)
       provider.remove_user
     end
@@ -269,14 +269,14 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   describe "when checking the lock" do
     # lazy initialize so we can modify stdout and stderr strings
     let(:passwd_s_status) do
-      double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => @stdout, :stderr => @stderr)
+      double("Mixlib::ShellOut command", exitstatus: 0, stdout: @stdout, stderr: @stderr)
     end
 
     before(:each) do
       # @node = Chef::Node.new
       # @new_resource = double("Chef::Resource::User",
-      #   :nil_object => true,
-      #   :username => "adam"
+      #   nil_object: true,
+      #   username: "adam"
       # )
       #provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
       @stdout = "root P 09/02/2008 0 99999 7 -1"
@@ -285,7 +285,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     it "should return false if status begins with P" do
       expect(provider).to receive(:shell_out!).
-        with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
+        with("passwd", "-S", @new_resource.username, {returns:[0, 1]}).
         and_return(passwd_s_status)
       expect(provider.check_lock).to eql(false)
     end
@@ -293,7 +293,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "should return false if status begins with N" do
       @stdout = "root N"
       expect(provider).to receive(:shell_out!).
-        with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
+        with("passwd", "-S", @new_resource.username, {returns:[0, 1]}).
         and_return(passwd_s_status)
       expect(provider.check_lock).to eql(false)
     end
@@ -301,7 +301,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "should return true if status begins with L" do
       @stdout = "root L"
       expect(provider).to receive(:shell_out!).
-        with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
+        with("passwd", "-S", @new_resource.username, {returns:[0, 1]}).
         and_return(passwd_s_status)
       expect(provider.check_lock).to eql(true)
     end
@@ -309,7 +309,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "should raise a Chef::Exceptions::User if passwd -S fails on anything other than redhat/centos" do
       @node.automatic_attrs[:platform] = 'ubuntu'
       expect(provider).to receive(:shell_out!).
-        with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
+        with("passwd", "-S", @new_resource.username, {returns:[0, 1]}).
         and_return(passwd_s_status)
       expect(passwd_s_status).to receive(:exitstatus).and_return(1)
       expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
@@ -320,9 +320,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         @node.automatic_attrs[:platform] = os
         expect(passwd_s_status).to receive(:exitstatus).and_return(1)
         expect(provider).to receive(:shell_out!).
-          with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
+          with("passwd", "-S", @new_resource.username, {returns:[0, 1]}).
           and_return(passwd_s_status)
-        rpm_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-1\n", :stderr => "")
+        rpm_status = double("Mixlib::ShellOut command", exitstatus: 0, stdout: "passwd-0.73-1\n", stderr: "")
         expect(provider).to receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
         expect { provider.check_lock }.not_to raise_error
       end
@@ -331,9 +331,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         @node.automatic_attrs[:platform] = os
         expect(passwd_s_status).to receive(:exitstatus).and_return(1)
         expect(provider).to receive(:shell_out!).
-          with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
+          with("passwd", "-S", @new_resource.username, {returns:[0, 1]}).
           and_return(passwd_s_status)
-        rpm_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-2\n", :stderr => "")
+        rpm_status = double("Mixlib::ShellOut command", exitstatus: 0, stdout: "passwd-0.73-2\n", stderr: "")
         expect(provider).to receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
         expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
       end
@@ -347,9 +347,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     context "when in why run mode" do
       before do
-        passwd_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "", :stderr => "passwd: user 'chef-test' does not exist\n")
+        passwd_status = double("Mixlib::ShellOut command", exitstatus: 0, stdout: "", stderr: "passwd: user 'chef-test' does not exist\n")
         expect(provider).to receive(:shell_out!).
-          with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
+          with("passwd", "-S", @new_resource.username, {returns:[0, 1]}).
           and_return(passwd_status)
         Chef::Config[:why_run] = true
       end

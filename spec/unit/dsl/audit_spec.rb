@@ -12,7 +12,7 @@ end
 
 describe Chef::DSL::Audit do
   let(:auditor) { AuditDSLTester.new("cookbook_name", "recipe_name", run_context) }
-  let(:run_context) { instance_double(Chef::RunContext, :audits => audits, :cookbook_collection => cookbook_collection) }
+  let(:run_context) { instance_double(Chef::RunContext, audits: audits, cookbook_collection: cookbook_collection) }
   let(:audits) { {} }
   let(:cookbook_collection) { {} }
 

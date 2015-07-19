@@ -400,13 +400,13 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
       it "evaluates a not_if block using the cwd guard parameter" do
         custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
-        resource.not_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", :cwd => custom_cwd
+        resource.not_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", cwd: custom_cwd
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates an only_if block using the cwd guard parameter" do
         custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
-        resource.only_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", :cwd => custom_cwd
+        resource.only_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", cwd: custom_cwd
         expect(resource.should_skip?(:run)).to be_falsey
       end
 

@@ -68,8 +68,8 @@ class Chef
       # Find existing resources by searching the list of existing resources.  Possible
       # forms are:
       #
-      # find(:file => "foobar")
-      # find(:file => [ "foobar", "baz" ])
+      # find(file: "foobar")
+      # find(file: [ "foobar", "baz" ])
       # find("file[foobar]", "file[baz]")
       # find("file[foobar,baz]")
       #
@@ -86,7 +86,7 @@ class Chef
             when String
               results << find_resource_by_string(arg)
             else
-              msg = "arguments to #{self.class.name}#find should be of the form :resource => 'name' or 'resource[name]'"
+              msg = "arguments to #{self.class.name}#find should be of the form resource: 'name' or 'resource[name]'"
               raise Chef::Exceptions::InvalidResourceSpecification, msg
           end
         end
@@ -103,7 +103,7 @@ class Chef
       # resource, or raises InvalidResourceSpecification if not.
       # === Arguments
       # * query_object should be a string of the form
-      # "resource_type[resource_name]", a single element Hash (e.g., :service =>
+      # "resource_type[resource_name]", a single element Hash (e.g., service:
       # "apache2"), or a Chef::Resource (this is the happy path). Other arguments
       # will raise an exception.
       # === Returns

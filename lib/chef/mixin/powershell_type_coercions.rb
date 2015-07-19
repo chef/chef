@@ -23,12 +23,12 @@ class Chef
 
       def type_coercions
         @type_coercions ||= {
-          Fixnum => { :type => lambda { |x| x.to_s }},
-          Float => { :type => lambda { |x| x.to_s }},
-          FalseClass => { :type => lambda { |x| '$false' }},
-          TrueClass => { :type => lambda { |x| '$true' }},
-          Hash => {:type => Proc.new { |x| translate_hash(x)}},
-          Array => {:type => Proc.new { |x| translate_array(x)}}
+          Fixnum => { type: lambda { |x| x.to_s }},
+          Float => { type: lambda { |x| x.to_s }},
+          FalseClass => { type: lambda { |x| '$false' }},
+          TrueClass => { type: lambda { |x| '$true' }},
+          Hash => {type: Proc.new { |x| translate_hash(x)}},
+          Array => {type: Proc.new { |x| translate_array(x)}}
         }
       end
 

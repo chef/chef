@@ -66,7 +66,7 @@ describe Chef::Resource::Notification do
   end
 
   it "resolves a lazy reference to a resource" do
-    @notification.resource = {:cat => "keyboard_cat"}
+    @notification.resource = {cat: "keyboard_cat"}
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @keyboard_cat
@@ -79,7 +79,7 @@ describe Chef::Resource::Notification do
   it "resolves a lazy reference to its notifying resource" do
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @notification.resource = @keyboard_cat
-    @notification.notifying_resource = {:cat => "long_cat"}
+    @notification.notifying_resource = {cat: "long_cat"}
     @long_cat = Chef::Resource::Cat.new("long_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @long_cat
@@ -88,11 +88,11 @@ describe Chef::Resource::Notification do
   end
 
   it "resolves lazy references to both its resource and its notifying resource" do
-    @notification.resource = {:cat => "keyboard_cat"}
+    @notification.resource = {cat: "keyboard_cat"}
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @keyboard_cat
-    @notification.notifying_resource = {:cat => "long_cat"}
+    @notification.notifying_resource = {cat: "long_cat"}
     @long_cat = Chef::Resource::Cat.new("long_cat")
     @resource_collection << @long_cat
     @notification.resolve_resource_reference(@resource_collection)
@@ -101,7 +101,7 @@ describe Chef::Resource::Notification do
   end
 
   it "raises a RuntimeError if you try to reference multiple resources" do
-    @notification.resource = {:cat => ["keyboard_cat", "cheez_cat"]}
+    @notification.resource = {cat: ["keyboard_cat", "cheez_cat"]}
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new
@@ -113,7 +113,7 @@ describe Chef::Resource::Notification do
   end
 
   it "raises a RuntimeError if you try to reference multiple notifying resources" do
-    @notification.notifying_resource = {:cat => ["long_cat", "cheez_cat"]}
+    @notification.notifying_resource = {cat: ["long_cat", "cheez_cat"]}
     @long_cat = Chef::Resource::Cat.new("long_cat")
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new
@@ -125,7 +125,7 @@ describe Chef::Resource::Notification do
   end
 
   it "raises a RuntimeError if it can't find a resource in the resource collection when resolving a lazy reference" do
-    @notification.resource = {:cat => "keyboard_cat"}
+    @notification.resource = {cat: "keyboard_cat"}
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @cheez_cat
@@ -135,7 +135,7 @@ describe Chef::Resource::Notification do
   end
 
   it "raises a RuntimeError if it can't find a notifying resource in the resource collection when resolving a lazy reference" do
-    @notification.notifying_resource = {:cat => "long_cat"}
+    @notification.notifying_resource = {cat: "long_cat"}
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @cheez_cat

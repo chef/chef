@@ -170,11 +170,11 @@ describe Chef::RunList do
       @role = Chef::Role.new
       @role.name "stubby"
       @role.run_list "one", "two"
-      @role.default_attributes :one => :two
-      @role.override_attributes :three => :four
+      @role.default_attributes one: :two
+      @role.override_attributes three: :four
 
       allow(Chef::Role).to receive(:load).and_return(@role)
-      @rest = double("Chef::REST", { :get_rest => @role, :url => "/" })
+      @rest = double("Chef::REST", { get_rest: @role, url: "/" })
       allow(Chef::REST).to receive(:new).and_return(@rest)
 
       @run_list << "role[stubby]"
@@ -267,7 +267,7 @@ describe Chef::RunList do
     it "should recurse into a child role" do
       dog = Chef::Role.new
       dog.name "dog"
-      dog.default_attributes :seven => :nine
+      dog.default_attributes seven: :nine
       dog.run_list "three"
       @role.run_list << "role[dog]"
       allow(Chef::Role).to receive(:from_disk).with("stubby").and_return(@role)
@@ -281,7 +281,7 @@ describe Chef::RunList do
     it "should not recurse infinitely" do
       dog = Chef::Role.new
       dog.name "dog"
-      dog.default_attributes :seven => :nine
+      dog.default_attributes seven: :nine
       dog.run_list "role[dog]", "three"
       @role.run_list << "role[dog]"
       allow(Chef::Role).to receive(:from_disk).with("stubby").and_return(@role)

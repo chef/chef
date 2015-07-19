@@ -26,7 +26,7 @@ class Chef
         set_or_return(
           :easy_install_binary,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -34,7 +34,7 @@ class Chef
         set_or_return(
           :python_install_binary,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -42,7 +42,7 @@ class Chef
         set_or_return(
           :module_name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 

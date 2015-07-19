@@ -175,12 +175,12 @@ describe Chef::Client do
 
     context "when an override run list is given" do
       it "permits spaces in overriding run list" do
-        Chef::Client.new(nil, :override_runlist => 'role[a], role[b]')
+        Chef::Client.new(nil, override_runlist: 'role[a], role[b]')
       end
 
       describe "calling run" do
         include_examples "a successful client run" do
-          let(:client_opts) { {:override_runlist => "recipe[override_recipe]"} }
+          let(:client_opts) { {override_runlist: "recipe[override_recipe]"} }
 
           def stub_for_sync_cookbooks
             # --Client#setup_run_context
@@ -189,7 +189,7 @@ describe Chef::Client do
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
             expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
             expect(http_cookbook_sync).to receive(:post).
-              with("environments/_default/cookbook_versions", {:run_list => ["override_recipe"]}).
+              with("environments/_default/cookbook_versions", {run_list: ["override_recipe"]}).
               and_return({})
           end
 
@@ -214,7 +214,7 @@ describe Chef::Client do
 
       include_examples "a successful client run" do
         let(:new_runlist) { "recipe[new_run_list_recipe]" }
-        let(:client_opts) { {:runlist => new_runlist} }
+        let(:client_opts) { {runlist: new_runlist} }
 
         def stub_for_sync_cookbooks
           # --Client#setup_run_context
@@ -223,7 +223,7 @@ describe Chef::Client do
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
           expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
           expect(http_cookbook_sync).to receive(:post).
-            with("environments/_default/cookbook_versions", {:run_list => ["new_run_list_recipe"]}).
+            with("environments/_default/cookbook_versions", {run_list: ["new_run_list_recipe"]}).
             and_return({})
         end
 
@@ -289,7 +289,7 @@ describe Chef::Client do
 
   describe "when handling run failures" do
     it "should remove the run_lock on failure of #load_node" do
-      @run_lock = double("Chef::RunLock", :acquire => true)
+      @run_lock = double("Chef::RunLock", acquire: true)
       allow(Chef::RunLock).to receive(:new).and_return(@run_lock)
 
       @events = double("Chef::EventDispatch::Dispatcher").as_null_object

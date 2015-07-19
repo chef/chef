@@ -151,7 +151,7 @@ class Chef
       end
 
       def git(command)
-        shell_out!("git #{command}", :cwd => repo_path)
+        shell_out!("git #{command}", cwd: repo_path)
       end
 
     end

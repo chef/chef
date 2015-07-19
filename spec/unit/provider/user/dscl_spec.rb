@@ -218,7 +218,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     }
 
     before do
-      new_resource.supports({ :manage_home => true })
+      new_resource.supports({ manage_home: true })
       new_resource.home('/Users/toor')
 
       provider.current_resource = current_resource
@@ -237,7 +237,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     it "moves the users home to the new location if it exists and the target location is different" do
-      new_resource.supports(:manage_home => true)
+      new_resource.supports(manage_home: true)
 
       current_home = CHEF_SPEC_DATA + '/old_home_dir'
       current_home_files = [current_home + '/my-dot-emacs', current_home + '/my-dot-vim']
@@ -249,7 +249,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       expect(FileUtils).to receive(:mkdir_p).with('/Users/toor').and_return(true)
       expect(FileUtils).to receive(:rmdir).with(current_home)
       expect(::Dir).to receive(:glob).with("#{CHEF_SPEC_DATA}/old_home_dir/*",::File::FNM_DOTMATCH).and_return(current_home_files)
-      expect(FileUtils).to receive(:mv).with(current_home_files, "/Users/toor", :force => true)
+      expect(FileUtils).to receive(:mv).with(current_home_files, "/Users/toor", force: true)
       expect(FileUtils).to receive(:chown_R).with('toor','23','/Users/toor')
 
       expect(provider).to receive(:run_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'")
@@ -842,7 +842,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
     describe "when Chef is removing the user" do
       it "removes the user from the groups and deletes home directory when the resource is configured to manage home" do
-        new_resource.supports({ :manage_home => true })
+        new_resource.supports({ manage_home: true })
         expect(provider).to receive(:run_dscl).with("list /Groups").and_return("my_group\nyour_group\nreal_group\n")
         expect(provider).to receive(:run_dscl).with("read /Groups/my_group").and_raise(Chef::Exceptions::DsclCommandFailed) # Empty group
         expect(provider).to receive(:run_dscl).with("read /Groups/your_group").and_return("GroupMembership: not_you")

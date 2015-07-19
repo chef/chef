@@ -89,10 +89,10 @@ describe Chef::Knife::CookbookShow do
         @manifest = {
           "recipes" => [
             {
-              :name => "default.rb",
-              :path => "recipes/default.rb",
-              :checksum => "1234",
-              :url => "http://example.org/files/default.rb"
+              name: "default.rb",
+              path: "recipes/default.rb",
+              checksum: "1234",
+              url: "http://example.org/files/default.rb"
             }
           ]
         }
@@ -114,10 +114,10 @@ describe Chef::Knife::CookbookShow do
         @cookbook_response.manifest = {
           "recipes" => [
             {
-              :name => "default.rb",
-              :path => "recipes/default.rb",
-              :checksum => "1234",
-              :url => "http://example.org/files/default.rb"
+              name: "default.rb",
+              path: "recipes/default.rb",
+              checksum: "1234",
+              url: "http://example.org/files/default.rb"
             }
           ]
         }
@@ -139,32 +139,32 @@ describe Chef::Knife::CookbookShow do
         @cookbook_response.manifest = {
           "files" => [
             {
-              :name => "afile.rb",
-              :path => "files/host-examplehost.example.org/afile.rb",
-              :checksum => "1111",
-              :specificity => "host-examplehost.example.org",
-              :url => "http://example.org/files/1111"
+              name: "afile.rb",
+              path: "files/host-examplehost.example.org/afile.rb",
+              checksum: "1111",
+              specificity: "host-examplehost.example.org",
+              url: "http://example.org/files/1111"
             },
             {
-              :name => "afile.rb",
-              :path => "files/ubuntu-9.10/afile.rb",
-              :checksum => "2222",
-              :specificity => "ubuntu-9.10",
-              :url => "http://example.org/files/2222"
+              name: "afile.rb",
+              path: "files/ubuntu-9.10/afile.rb",
+              checksum: "2222",
+              specificity: "ubuntu-9.10",
+              url: "http://example.org/files/2222"
             },
             {
-              :name => "afile.rb",
-              :path => "files/ubuntu/afile.rb",
-              :checksum => "3333",
-              :specificity => "ubuntu",
-              :url => "http://example.org/files/3333"
+              name: "afile.rb",
+              path: "files/ubuntu/afile.rb",
+              checksum: "3333",
+              specificity: "ubuntu",
+              url: "http://example.org/files/3333"
             },
             {
-              :name => "afile.rb",
-              :path => "files/default/afile.rb",
-              :checksum => "4444",
-              :specificity => "default",
-              :url => "http://example.org/files/4444"
+              name: "afile.rb",
+              path: "files/default/afile.rb",
+              checksum: "4444",
+              specificity: "default",
+              url: "http://example.org/files/4444"
             },
           ]
         }

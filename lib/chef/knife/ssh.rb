@@ -42,74 +42,74 @@ class Chef
       banner "knife ssh QUERY COMMAND (options)"
 
       option :concurrency,
-        :short => "-C NUM",
-        :long => "--concurrency NUM",
-        :description => "The number of concurrent connections",
-        :default => nil,
-        :proc => lambda { |o| o.to_i }
+        short: "-C NUM",
+        long: "--concurrency NUM",
+        description: "The number of concurrent connections",
+        default: nil,
+        proc: lambda { |o| o.to_i }
 
       option :attribute,
-        :short => "-a ATTR",
-        :long => "--attribute ATTR",
-        :description => "The attribute to use for opening the connection - default depends on the context",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key.strip }
+        short: "-a ATTR",
+        long: "--attribute ATTR",
+        description: "The attribute to use for opening the connection - default depends on the context",
+        proc: Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key.strip }
 
       option :manual,
-        :short => "-m",
-        :long => "--manual-list",
-        :boolean => true,
-        :description => "QUERY is a space separated list of servers",
-        :default => false
+        short: "-m",
+        long: "--manual-list",
+        boolean: true,
+        description: "QUERY is a space separated list of servers",
+        default: false
 
       option :ssh_user,
-        :short => "-x USERNAME",
-        :long => "--ssh-user USERNAME",
-        :description => "The ssh username"
+        short: "-x USERNAME",
+        long: "--ssh-user USERNAME",
+        description: "The ssh username"
 
       option :ssh_password_ng,
-        :short => "-P [PASSWORD]",
-        :long => "--ssh-password [PASSWORD]",
-        :description => "The ssh password - will prompt if flag is specified but no password is given",
+        short: "-P [PASSWORD]",
+        long: "--ssh-password [PASSWORD]",
+        description: "The ssh password - will prompt if flag is specified but no password is given",
         # default to a value that can not be a password (boolean)
         # so we can effectively test if this parameter was specified
         # without a vlaue
-        :default => false
+        default: false
 
       option :ssh_port,
-        :short => "-p PORT",
-        :long => "--ssh-port PORT",
-        :description => "The ssh port",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key.strip }
+        short: "-p PORT",
+        long: "--ssh-port PORT",
+        description: "The ssh port",
+        proc: Proc.new { |key| Chef::Config[:knife][:ssh_port] = key.strip }
 
       option :ssh_gateway,
-        :short => "-G GATEWAY",
-        :long => "--ssh-gateway GATEWAY",
-        :description => "The ssh gateway",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
+        short: "-G GATEWAY",
+        long: "--ssh-gateway GATEWAY",
+        description: "The ssh gateway",
+        proc: Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
 
       option :forward_agent,
-        :short => "-A",
-        :long => "--forward-agent",
-        :description => "Enable SSH agent forwarding",
-        :boolean => true
+        short: "-A",
+        long: "--forward-agent",
+        description: "Enable SSH agent forwarding",
+        boolean: true
 
       option :identity_file,
-        :short => "-i IDENTITY_FILE",
-        :long => "--identity-file IDENTITY_FILE",
-        :description => "The SSH identity file used for authentication"
+        short: "-i IDENTITY_FILE",
+        long: "--identity-file IDENTITY_FILE",
+        description: "The SSH identity file used for authentication"
 
       option :host_key_verify,
-        :long => "--[no-]host-key-verify",
-        :description => "Verify host key, enabled by default.",
-        :boolean => true,
-        :default => true
+        long: "--[no-]host-key-verify",
+        description: "Verify host key, enabled by default.",
+        boolean: true,
+        default: true
 
       option :on_error,
-        :short => '-e',
-        :long => '--exit-on-error',
-        :description => "Immediately exit if an error is encountered",
-        :boolean => true,
-        :proc => Proc.new { :raise }
+        short: '-e',
+        long: '--exit-on-error',
+        description: "Immediately exit if an error is encountered",
+        boolean: true,
+        proc: Proc.new { :raise }
 
       def session
         config[:on_error] ||= :skip
@@ -124,7 +124,7 @@ class Chef
           end
         end
 
-        @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
+        @session ||= Net::SSH::Multi.start(concurrent_connections: config[:concurrency], on_error: ssh_error_handler)
       end
 
       def configure_gateway
@@ -132,14 +132,14 @@ class Chef
         if config[:ssh_gateway]
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
-          gw_opts = gw_port ? { :port => gw_port } : {}
+          gw_opts = gw_port ? { port: gw_port } : {}
 
           session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
         end
       rescue Net::SSH::AuthenticationFailed
         user = gw_user || config[:ssh_user]
         prompt = "Enter the password for #{user}@#{gw_host}: "
-        gw_opts.merge!(:password => prompt_for_password(prompt))
+        gw_opts.merge!(password: prompt_for_password(prompt))
         session.via(gw_host, user, gw_opts)
       end
 
@@ -410,18 +410,18 @@ class Chef
         end
 
         Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate
-        Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
+        Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", using::command_down)
         term = Appscript.app('Terminal')
         window = term.windows.first.get
 
         (session.servers_for.size - 1).times do |i|
           window.activate
-          Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", :using=>:command_down)
+          Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", using::command_down)
         end
 
         session.servers_for.each_with_index do |server, tab_number|
           cmd = "unset PROMPT_COMMAND; echo -e \"\\033]0;#{server.host}\\007\"; ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}"
-          Appscript.app('Terminal').do_script(cmd, :in => window.tabs[tab_number + 1].get)
+          Appscript.app('Terminal').do_script(cmd, in: window.tabs[tab_number + 1].get)
         end
       end
 

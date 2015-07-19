@@ -41,7 +41,7 @@ installed on the system.  Try specifying -r to query remotely:
 
    crypto/gnupg
 PKG_STATUS
-    return OpenStruct.new(:stdout => stdout,:stdin => stdin,:stderr => stderr,:status => @status,:exitstatus => 1)
+    return OpenStruct.new(stdout: stdout,stdin: stdin,stderr: stderr,status: @status,exitstatus: 1)
   end
 
   def remote_output
@@ -60,7 +60,7 @@ Packaging Date: April  1, 2012 05:55:52 PM
 PKG_STATUS
   stdin = StringIO.new
   stderr = ''
-  return OpenStruct.new(:stdout => stdout,:stdin => stdin,:stderr => stderr,:status => @status,:exitstatus => 0)
+  return OpenStruct.new(stdout: stdout,stdin: stdin,stderr: stderr,status: @status,exitstatus: 0)
   end
 
   context "when loading current resource" do

@@ -40,15 +40,15 @@ class Chef
       end
 
       def with_versions
-        self.map {|recipe_name| {:name => recipe_name, :version => @versions[recipe_name]}}
+        self.map {|recipe_name| {name: recipe_name, version: @versions[recipe_name]}}
       end
 
       # Return an Array of Hashes, each of the form:
-      #  {:name => RECIPE_NAME, :version_constraint => Chef::VersionConstraint }
+      #  {name: RECIPE_NAME, version_constraint: Chef::VersionConstraint }
       def with_version_constraints
         self.map do |recipe_name|
           constraint = Chef::VersionConstraint.new(@versions[recipe_name])
-          { :name => recipe_name, :version_constraint => constraint }
+          { name: recipe_name, version_constraint: constraint }
         end
       end
 

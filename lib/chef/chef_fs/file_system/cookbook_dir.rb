@@ -49,15 +49,15 @@ class Chef
         attr_reader :cookbook_name, :version
 
         COOKBOOK_SEGMENT_INFO = {
-          :attributes => { :ruby_only => true },
-          :definitions => { :ruby_only => true },
-          :recipes => { :ruby_only => true },
-          :libraries => { :ruby_only => true },
-          :templates => { :recursive => true },
-          :files => { :recursive => true },
-          :resources => { :ruby_only => true, :recursive => true },
-          :providers => { :ruby_only => true, :recursive => true },
-          :root_files => { }
+          attributes: { ruby_only: true },
+          definitions: { ruby_only: true },
+          recipes: { ruby_only: true },
+          libraries: { ruby_only: true },
+          templates: { recursive: true },
+          files: { recursive: true },
+          resources: { ruby_only: true, recursive: true },
+          providers: { ruby_only: true, recursive: true },
+          root_files: { }
         }
 
         # See Erchef code

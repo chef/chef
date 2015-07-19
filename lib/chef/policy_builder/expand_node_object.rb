@@ -155,7 +155,7 @@ class Chef
         #
         # Convert @expanded_run_list, which is an
         # Array of Hashes of the form
-        #   {:name => NAME, :version_constraint => Chef::VersionConstraint },
+        #   {name: NAME, version_constraint: Chef::VersionConstraint },
         # into @expanded_run_list_with_versions, an
         # Array of Strings of the form
         #   "#{NAME}@#{VERSION}"
@@ -180,7 +180,7 @@ class Chef
         begin
           events.cookbook_resolution_start(@expanded_run_list_with_versions)
           cookbook_hash = api_service.post("environments/#{node.chef_environment}/cookbook_versions",
-                                         {:run_list => @expanded_run_list_with_versions})
+                                         {run_list: @expanded_run_list_with_versions})
         rescue Exception => e
           # TODO: wrap/munge exception to provide helpful error output
           events.cookbook_resolution_failed(@expanded_run_list_with_versions, e)

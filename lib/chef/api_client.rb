@@ -53,7 +53,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_\.]+$/
+        regex: /^[\-[:alnum:]_\.]+$/
       )
     end
 
@@ -65,7 +65,7 @@ class Chef
       set_or_return(
         :admin,
         arg,
-        :kind_of => [ TrueClass, FalseClass ]
+        kind_of: [ TrueClass, FalseClass ]
       )
     end
 
@@ -77,7 +77,7 @@ class Chef
       set_or_return(
         :public_key,
         arg,
-        :kind_of => String
+        kind_of: String
       )
     end
 
@@ -90,7 +90,7 @@ class Chef
       set_or_return(
         :validator,
         arg,
-        :kind_of => [TrueClass, FalseClass]
+        kind_of: [TrueClass, FalseClass]
       )
     end
 
@@ -102,7 +102,7 @@ class Chef
       set_or_return(
         :private_key,
         arg,
-        :kind_of => [String, FalseClass]
+        kind_of: [String, FalseClass]
       )
     end
 
@@ -149,7 +149,7 @@ class Chef
     end
 
     def self.http_api
-      Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], {api_version: "0"})
     end
 
     def self.reregister(name)
@@ -188,11 +188,11 @@ class Chef
     # Save this client via the REST API, returns a hash including the private key
     def save
       begin
-        http_api.put("clients/#{name}", { :name => self.name, :admin => self.admin, :validator => self.validator})
+        http_api.put("clients/#{name}", { name: self.name, admin: self.admin, validator: self.validator})
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
         if e.response.code == "404"
-          http_api.post("clients", {:name => self.name, :admin => self.admin, :validator => self.validator })
+          http_api.post("clients", {name: self.name, admin: self.admin, validator: self.validator })
         else
           raise e
         end
@@ -200,7 +200,7 @@ class Chef
     end
 
     def reregister
-      reregistered_self = http_api.put("clients/#{name}", { :name => name, :admin => admin, :validator => validator, :private_key => true })
+      reregistered_self = http_api.put("clients/#{name}", { name: name, admin: admin, validator: validator, private_key: true })
       if reregistered_self.respond_to?(:[])
         private_key(reregistered_self["private_key"])
       else
@@ -225,7 +225,7 @@ class Chef
     end
 
     def http_api
-      @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
+      @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {api_version: "0"})
     end
 
   end

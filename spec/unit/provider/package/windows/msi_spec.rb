@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Package::Windows::MSI do
   let(:node) { double('Chef::Node') }
   let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
-  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
+  let(:run_context) { double('Chef::RunContext', node: node, events: events) }
   let(:new_resource) { Chef::Resource::WindowsPackage.new("calculator.msi") }
   let(:provider) { Chef::Provider::Package::Windows::MSI.new(new_resource) }
 

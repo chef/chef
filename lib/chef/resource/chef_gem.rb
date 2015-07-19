@@ -42,7 +42,7 @@ class Chef
         set_or_return(
           :compile_time,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 

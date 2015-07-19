@@ -236,11 +236,11 @@ describe Chef::REST do
     end
 
     it "can take private key as a sting :raw_key in options during initializaton" do
-      expect(Chef::REST.new(base_url, "client-name", nil, :raw_key => SIGNING_KEY_DOT_PEM).signing_key).to eq(SIGNING_KEY_DOT_PEM)
+      expect(Chef::REST.new(base_url, "client-name", nil, raw_key: SIGNING_KEY_DOT_PEM).signing_key).to eq(SIGNING_KEY_DOT_PEM)
     end
 
     it "raises InvalidPrivateKey when the key passed as string :raw_key in options doesnt' look like a key" do
-      expect {Chef::REST.new(base_url, "client-name", nil, :raw_key => "bad key string")}.to raise_error(Chef::Exceptions::InvalidPrivateKey)
+      expect {Chef::REST.new(base_url, "client-name", nil, raw_key: "bad key string")}.to raise_error(Chef::Exceptions::InvalidPrivateKey)
     end
 
   end
@@ -321,7 +321,7 @@ describe Chef::REST do
       context "when configured to disable compression" do
         let(:rest) do
           allow(Net::HTTP).to receive(:new).and_return(http_client)
-          Chef::REST.new(base_url, nil, nil,  :disable_gzip => true)
+          Chef::REST.new(base_url, nil, nil,  disable_gzip: true)
         end
 
         it "does not accept encoding gzip" do
@@ -386,7 +386,7 @@ describe Chef::REST do
         expected_headers = base_headers.merge("Content-Type" => 'application/json', 'Content-Length' => '13')
 
         expect(Net::HTTP::Post).to receive(:new).with("/?foo=bar", expected_headers).and_return(request)
-        rest.request(:POST, url, {}, {:one=>:two})
+        rest.request(:POST, url, {}, {one::two})
         expect(request.body).to eq('{"one":"two"}')
       end
 
@@ -394,7 +394,7 @@ describe Chef::REST do
         request = Net::HTTP::Put.new(url.path)
         expected_headers = base_headers.merge("Content-Type" => 'application/json', 'Content-Length' => '13')
         expect(Net::HTTP::Put).to receive(:new).with("/?foo=bar",expected_headers).and_return(request)
-        rest.request(:PUT, url, {}, {:one=>:two})
+        rest.request(:PUT, url, {}, {one::two})
         expect(request.body).to eq('{"one":"two"}')
       end
 
@@ -659,7 +659,7 @@ describe Chef::REST do
       end
 
       it "closes and unlinks the tempfile when the response is a redirect" do
-        tempfile = double("A tempfile", :path => "/tmp/ragefist", :close => true, :binmode => true)
+        tempfile = double("A tempfile", path: "/tmp/ragefist", close: true, binmode: true)
         expect(tempfile).to receive(:close!).at_least(1).times
         allow(Tempfile).to receive(:new).with("chef-rest").and_return(tempfile)
 

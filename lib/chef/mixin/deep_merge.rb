@@ -46,10 +46,10 @@ class Chef
       # Where child elements are not of the same type, deep_merge will skip or optionally overwrite
       # the destination element with the contents of the source element at that level.
       # So if you have two hashes like this:
-      #   source = {:x => [1,2,3], :y => 2}
-      #   dest =   {:x => [4,5,'6'], :y => [7,8,9]}
+      #   source = {x: [1,2,3], y: 2}
+      #   dest =   {x: [4,5,'6'], y: [7,8,9]}
       #   dest.deep_merge!(source)
-      #   Results: {:x => [1,2,3,4,5,'6'], :y => 2}
+      #   Results: {x: [1,2,3,4,5,'6'], y: 2}
       # By default, "deep_merge!" will overwrite any unmergeables and merge everything else.
       # To avoid this, use "deep_merge" (no bang/exclamation mark)
       def deep_merge!(source, dest)

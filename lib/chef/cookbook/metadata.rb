@@ -61,12 +61,12 @@ class Chef
                             :replacing, :attributes, :groupings, :recipes, :version,
                             :source_url, :issues_url ]
 
-      VERSION_CONSTRAINTS = {:depends     => DEPENDENCIES,
-                             :recommends  => RECOMMENDATIONS,
-                             :suggests    => SUGGESTIONS,
-                             :conflicts   => CONFLICTING,
-                             :provides    => PROVIDING,
-                             :replaces    => REPLACING }
+      VERSION_CONSTRAINTS = {depends: DEPENDENCIES,
+                             recommends: RECOMMENDATIONS,
+                             suggests: SUGGESTIONS,
+                             conflicts: CONFLICTING,
+                             provides: PROVIDING,
+                             replaces: REPLACING }
 
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
@@ -163,7 +163,7 @@ class Chef
         set_or_return(
           :maintainer,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -178,7 +178,7 @@ class Chef
         set_or_return(
           :maintainer_email,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -193,7 +193,7 @@ class Chef
         set_or_return(
           :license,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -208,7 +208,7 @@ class Chef
         set_or_return(
           :description,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -223,7 +223,7 @@ class Chef
         set_or_return(
           :long_description,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -254,7 +254,7 @@ class Chef
         set_or_return(
           :name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -445,16 +445,16 @@ class Chef
         validate(
           options,
           {
-            :display_name => { :kind_of => String },
-            :description => { :kind_of => String },
-            :choice => { :kind_of => [ Array ], :default => [] },
-            :calculated => { :equal_to => [ true, false ], :default => false },
-            :type => { :equal_to => [ "string", "array", "hash", "symbol", "boolean", "numeric" ], :default => "string" },
-            :required => { :equal_to => [ "required", "recommended", "optional", true, false ], :default => "optional" },
-            :recipes => { :kind_of => [ Array ], :default => [] },
-            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] },
-            :source_url => { :kind_of => String },
-            :issues_url => { :kind_of => String }
+            display_name: { kind_of: String },
+            description: { kind_of: String },
+            choice: { kind_of: [ Array ], default: [] },
+            calculated: { equal_to: [ true, false ], default: false },
+            type: { equal_to: [ "string", "array", "hash", "symbol", "boolean", "numeric" ], default: "string" },
+            required: { equal_to: [ "required", "recommended", "optional", true, false ], default: "optional" },
+            recipes: { kind_of: [ Array ], default: [] },
+            default: { kind_of: [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] },
+            source_url: { kind_of: String },
+            issues_url: { kind_of: String }
           }
         )
         options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
@@ -470,8 +470,8 @@ class Chef
         validate(
           options,
           {
-            :title => { :kind_of => String },
-            :description => { :kind_of => String }
+            title: { kind_of: String },
+            description: { kind_of: String }
           }
         )
         @groupings[name] = options
@@ -571,7 +571,7 @@ class Chef
         set_or_return(
           :source_url,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -586,7 +586,7 @@ class Chef
         set_or_return(
           :issues_url,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -644,7 +644,7 @@ INVALID
       def validate_string_array(arry)
         if arry.kind_of?(Array)
           arry.each do |choice|
-            validate( {:choice => choice}, {:choice => {:kind_of => String}} )
+            validate( {choice: choice}, {choice: {kind_of: String}} )
           end
         end
       end
@@ -672,7 +672,7 @@ INVALID
             end
 
             opts[:choice].each do |choice|
-              validate( {:choice => choice}, {:choice => {:kind_of => validator}} )
+              validate( {choice: choice}, {choice: {kind_of: validator}} )
             end
           end
         end

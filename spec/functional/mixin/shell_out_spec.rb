@@ -36,9 +36,9 @@ describe Chef::Mixin::ShellOut do
     describe "when environment['LC_ALL'] is set" do
       it "should use the option's setting" do
         cmd = if windows?
-          shell_out_with_systems_locale('echo %LC_ALL%', :environment => {'LC_ALL' => 'POSIX'})
+          shell_out_with_systems_locale('echo %LC_ALL%', environment: {'LC_ALL' => 'POSIX'})
         else
-          shell_out_with_systems_locale('echo $LC_ALL', :environment => {'LC_ALL' => 'POSIX'})
+          shell_out_with_systems_locale('echo $LC_ALL', environment: {'LC_ALL' => 'POSIX'})
         end
 
         expect(cmd.stdout.chomp).to eq 'POSIX'

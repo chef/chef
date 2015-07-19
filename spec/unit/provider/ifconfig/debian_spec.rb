@@ -40,7 +40,7 @@ describe Chef::Provider::Ifconfig::Debian do
   let(:current_resource) {  Chef::Resource::Ifconfig.new("10.0.0.1", run_context) }
 
   let(:provider) do
-    status = double("Status", :exitstatus => 0)
+    status = double("Status", exitstatus: 0)
     provider = Chef::Provider::Ifconfig::Debian.new(new_resource, run_context)
     provider.instance_variable_set("@status", status)
     provider.current_resource = current_resource

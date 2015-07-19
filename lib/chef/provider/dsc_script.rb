@@ -32,10 +32,10 @@ class Chef
         @dsc_resource = dsc_resource
         @resource_converged = false
         @operations = {
-          :set => Proc.new { |config_manager, document, shellout_flags|
+          set: Proc.new { |config_manager, document, shellout_flags|
             config_manager.set_configuration(document, shellout_flags)
           },
-          :test => Proc.new { |config_manager, document, shellout_flags|
+          test: Proc.new { |config_manager, document, shellout_flags|
             config_manager.test_configuration(document, shellout_flags)
           }}
       end
@@ -90,9 +90,9 @@ class Chef
         config_manager = Chef::Util::DSC::LocalConfigurationManager.new(@run_context.node, config_directory)
 
         shellout_flags = {
-          :cwd => @dsc_resource.cwd,
-          :environment => @dsc_resource.environment,
-          :timeout => @dsc_resource.timeout
+          cwd: @dsc_resource.cwd,
+          environment: @dsc_resource.environment,
+          timeout: @dsc_resource.timeout
         }
 
         begin
@@ -117,9 +117,9 @@ class Chef
 
       def generate_configuration_document(config_directory, configuration_flags)
         shellout_flags = {
-          :cwd => @dsc_resource.cwd,
-          :environment => @dsc_resource.environment,
-          :timeout => @dsc_resource.timeout
+          cwd: @dsc_resource.cwd,
+          environment: @dsc_resource.environment,
+          timeout: @dsc_resource.timeout
         }
 
         generator = Chef::Util::DSC::ConfigurationGenerator.new(@run_context.node, config_directory)

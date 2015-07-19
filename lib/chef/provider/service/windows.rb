@@ -342,17 +342,17 @@ EOS
   # Takes Win32::Service start_types
   def set_startup_type(type)
     # Set-Service Startup Type => Win32::Service Constant
-    allowed_types = { :automatic => Win32::Service::AUTO_START,
-                      :manual    => Win32::Service::DEMAND_START,
-                      :disabled  => Win32::Service::DISABLED }
+    allowed_types = { automatic: Win32::Service::AUTO_START,
+                      manual: Win32::Service::DEMAND_START,
+                      disabled: Win32::Service::DISABLED }
     unless allowed_types.keys.include?(type)
       raise Chef::Exceptions::ConfigurationError, "#{@new_resource.name}: Startup type '#{type}' is not supported"
     end
 
     Chef::Log.debug "#{@new_resource.name} setting start_type to #{type}"
     Win32::Service.configure(
-      :service_name => @new_resource.service_name,
-      :start_type => allowed_types[type]
+      service_name: @new_resource.service_name,
+      start_type: allowed_types[type]
     )
     @new_resource.updated_by_last_action(true)
   end

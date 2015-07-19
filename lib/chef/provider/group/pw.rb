@@ -50,7 +50,7 @@ class Chef
             command += " -M #{@new_resource.members.join(',')}"
           end
 
-          run_command(:command => command)
+          run_command(command: command)
         end
 
         # Manage the group when it already exists
@@ -59,17 +59,17 @@ class Chef
           command << set_options
           member_options = set_members_options
           if member_options.empty?
-            run_command(:command => command)
+            run_command(command: command)
           else
             member_options.each do |option|
-              run_command(:command => command + option)
+              run_command(command: command + option)
             end
           end
         end
 
         # Remove the group
         def remove_group
-          run_command(:command => "pw groupdel #{@new_resource.group_name}")
+          run_command(command: "pw groupdel #{@new_resource.group_name}")
         end
 
         # Little bit of magic as per Adam's useradd provider to pull and assign the command line flags

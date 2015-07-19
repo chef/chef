@@ -47,7 +47,7 @@ class Chef
           # alternate value and overwrite it with the defaults.
           Gem.configuration
 
-          DEFAULT_UNINSTALLER_OPTS = {:ignore => true, :executables => true}
+          DEFAULT_UNINSTALLER_OPTS = {ignore: true, executables: true}
 
           ##
           # The paths where rubygems should search for installed gems.
@@ -508,7 +508,7 @@ class Chef
         def install_package(name, version)
           if source_is_remote? && @new_resource.gem_binary.nil?
             if @new_resource.options.nil?
-              @gem_env.install(gem_dependency, :sources => gem_sources)
+              @gem_env.install(gem_dependency, sources: gem_sources)
             elsif @new_resource.options.kind_of?(Hash)
               options = @new_resource.options
               options[:sources] = gem_sources
@@ -538,9 +538,9 @@ class Chef
             src = @new_resource.source && " --source=#{@new_resource.source} --source=https://rubygems.org"
           end
           if !version.nil? && version.length > 0
-            shell_out_with_timeout!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", env:nil)
           else
-            shell_out_with_timeout!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", env:nil)
           end
         end
 
@@ -564,9 +564,9 @@ class Chef
 
         def uninstall_via_gem_command(name, version)
           if version
-            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", env:nil)
           else
-            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", env:nil)
           end
         end
 

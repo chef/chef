@@ -21,7 +21,7 @@ require 'chef/client'
 describe Chef::RunLock do
 
   # This behavior works on windows, but the tests use fork :(
-  describe "when locking the chef-client run", :unix_only => true do
+  describe "when locking the chef-client run", unix_only: true do
 
     ##
     # Lockfile location and helpers
@@ -167,7 +167,7 @@ describe Chef::RunLock do
       expect(File).to exist(lockfile)
     end
 
-    it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
+    it "sets FD_CLOEXEC on the lockfile", supports_cloexec: true do
       run_lock.acquire
       expect(run_lock.runlock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).to eq(Fcntl::FD_CLOEXEC)
     end

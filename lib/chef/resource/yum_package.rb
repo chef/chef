@@ -26,7 +26,7 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @flush_cache = { :before => false, :after => false }
+        @flush_cache = { before: false, after: false }
         @allow_downgrade = false
       end
 
@@ -35,7 +35,7 @@ class Chef
         set_or_return(
           :arch,
           arg,
-          :kind_of => [ String, Array ]
+          kind_of: [ String, Array ]
         )
       end
 
@@ -53,7 +53,7 @@ class Chef
         set_or_return(
           :allow_downgrade,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [ TrueClass, FalseClass ]
         )
       end
 

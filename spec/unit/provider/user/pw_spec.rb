@@ -32,7 +32,7 @@ describe Chef::Provider::User::Pw do
     @new_resource.shell     "/usr/bin/zsh"
     @new_resource.password  "abracadabra"
 
-    @new_resource.supports :manage_home => true
+    @new_resource.supports manage_home: true
 
     @current_resource = Chef::Resource::User.new("adam")
     @current_resource.comment  "Adam Jacob"
@@ -67,7 +67,7 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not null, without homedir management" do
-        allow(@new_resource).to receive(:supports).and_return({:manage_home => false})
+        allow(@new_resource).to receive(:supports).and_return({manage_home: false})
         allow(@new_resource).to receive(attribute).and_return("hola")
         expect(@provider.set_options).to eql(" #{@new_resource.username} #{option} '#{@new_resource.send(attribute)}'")
       end
@@ -91,7 +91,7 @@ describe Chef::Provider::User::Pw do
     end
 
     it "should run pw useradd with the return of set_options" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw useradd adam -m" }).and_return(true)
+      expect(@provider).to receive(:run_command).with({ command: "pw useradd adam -m" }).and_return(true)
       @provider.create_user
     end
 
@@ -108,7 +108,7 @@ describe Chef::Provider::User::Pw do
     end
 
     it "should run pw usermod with the return of set_options" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw usermod adam -m" }).and_return(true)
+      expect(@provider).to receive(:run_command).with({ command: "pw usermod adam -m" }).and_return(true)
       @provider.manage_user
     end
 
@@ -120,13 +120,13 @@ describe Chef::Provider::User::Pw do
 
   describe "remove_user" do
     it "should run pw userdel with the new resources user name" do
-      @new_resource.supports :manage_home => false
-      expect(@provider).to receive(:run_command).with({ :command => "pw userdel #{@new_resource.username}" }).and_return(true)
+      @new_resource.supports manage_home: false
+      expect(@provider).to receive(:run_command).with({ command: "pw userdel #{@new_resource.username}" }).and_return(true)
       @provider.remove_user
     end
 
     it "should run pw userdel with the new resources user name and -r if manage_home is true" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw userdel #{@new_resource.username} -r"}).and_return(true)
+      expect(@provider).to receive(:run_command).with({ command: "pw userdel #{@new_resource.username} -r"}).and_return(true)
       @provider.remove_user
     end
   end
@@ -145,21 +145,21 @@ describe Chef::Provider::User::Pw do
 
   describe "when locking the user" do
     it "should run pw lock with the new resources username" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw lock #{@new_resource.username}"})
+      expect(@provider).to receive(:run_command).with({ command: "pw lock #{@new_resource.username}"})
       @provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
     it "should run pw unlock with the new resources username" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw unlock #{@new_resource.username}"})
+      expect(@provider).to receive(:run_command).with({ command: "pw unlock #{@new_resource.username}"})
       @provider.unlock_user
     end
   end
 
   describe "when modifying the password" do
     before(:each) do
-      @status = double("Status", :exitstatus => 0)
+      @status = double("Status", exitstatus: 0)
       allow(@provider).to receive(:popen4).and_return(@status)
       @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil
     end
@@ -211,7 +211,7 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should run pw usermod with the username and the option -H 0" do
-        expect(@provider).to receive(:popen4).with("pw usermod adam -H 0", :waitlast => true).and_return(@status)
+        expect(@provider).to receive(:popen4).with("pw usermod adam -H 0", waitlast: true).and_return(@status)
         @provider.modify_password
       end
 

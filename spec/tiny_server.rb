@@ -48,12 +48,12 @@ module TinyServer
     # 5 == debug, 3 == warning
     LOGGER = WEBrick::Log.new(STDOUT, 3)
     DEFAULT_OPTIONS = {
-      :server => 'webrick',
-      :Port => 9000,
-      :Host => 'localhost',
-      :environment => :none,
-      :Logger => LOGGER,
-      :AccessLog => [] # Remove this option to enable the access log when debugging.
+      server: 'webrick',
+      Port: 9000,
+      Host: 'localhost',
+      environment: :none,
+      Logger: LOGGER,
+      AccessLog: [] # Remove this option to enable the access log when debugging.
     }
 
     def initialize(options=nil)
@@ -147,10 +147,10 @@ module TinyServer
       if response = response_for_request(env)
         response.call
       else
-        debug_info = {:message => "no data matches the request for #{env['REQUEST_URI']}",
-                      :available_routes => @routes, :request => env}
+        debug_info = {message: "no data matches the request for #{env['REQUEST_URI']}",
+                      available_routes: @routes, request: env}
         # Uncomment me for glorious debugging
-        # pp :not_found => debug_info
+        # pp not_found: debug_info
         [404, {'Content-Type' => 'application/json'}, [ Chef::JSONCompat.to_json(debug_info) ]]
       end
     end

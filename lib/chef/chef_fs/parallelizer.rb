@@ -45,7 +45,7 @@ class Chef
       end
 
       def parallel_do(enumerable, options = {}, &block)
-        ParallelEnumerable.new(@tasks, enumerable, options.merge(:ordered => false), &block).wait
+        ParallelEnumerable.new(@tasks, enumerable, options.merge(ordered: false), &block).wait
       end
 
       def stop(wait = true, timeout = nil)

@@ -103,10 +103,10 @@ describe Chef::Resource::RemoteFile do
       key_text = File.read(File.expand_path("ssl/chef-rspec.key", CHEF_SPEC_DATA))
       key = OpenSSL::PKey::RSA.new(key_text)
 
-      server_opts = { :SSLEnable => true,
-                      :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
-                      :SSLCertificate => cert,
-                      :SSLPrivateKey => key }
+      server_opts = { SSLEnable: true,
+                      SSLVerifyClient: OpenSSL::SSL::VERIFY_NONE,
+                      SSLCertificate: cert,
+                      SSLPrivateKey: key }
 
       start_tiny_server(server_opts)
     end

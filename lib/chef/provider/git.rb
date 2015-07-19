@@ -120,7 +120,7 @@ class Chef
         Chef::Log.debug("#{@new_resource} finding current git revision")
         if ::File.exist?(::File.join(cwd, ".git"))
           # 128 is returned when we're not in a git repo. this is fine
-          result = shell_out!('git rev-parse HEAD', :cwd => cwd, :returns => [0,128]).stdout.strip
+          result = shell_out!('git rev-parse HEAD', cwd: cwd, returns: [0,128]).stdout.strip
         end
         sha_hash?(result) ? result : nil
       end
@@ -157,8 +157,8 @@ class Chef
 
         converge_by("checkout ref #{sha_ref} branch #{@new_resource.revision}") do
           # checkout into a local branch rather than a detached HEAD
-          shell_out!("git branch -f #{@new_resource.checkout_branch} #{sha_ref}", run_options(:cwd => @new_resource.destination))
-          shell_out!("git checkout #{@new_resource.checkout_branch}", run_options(:cwd => @new_resource.destination))
+          shell_out!("git branch -f #{@new_resource.checkout_branch} #{sha_ref}", run_options(cwd: @new_resource.destination))
+          shell_out!("git checkout #{@new_resource.checkout_branch}", run_options(cwd: @new_resource.destination))
           Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} onto: #{@new_resource.checkout_branch} reference: #{sha_ref}"
         end
       end
@@ -168,11 +168,11 @@ class Chef
           converge_by("enable git submodules for #{@new_resource}") do
             Chef::Log.info "#{@new_resource} synchronizing git submodules"
             command = "git submodule sync"
-            shell_out!(command, run_options(:cwd => @new_resource.destination))
+            shell_out!(command, run_options(cwd: @new_resource.destination))
             Chef::Log.info "#{@new_resource} enabling git submodules"
             # the --recursive flag means we require git 1.6.5+ now, see CHEF-1827
             command = "git submodule update --init --recursive"
-            shell_out!(command, run_options(:cwd => @new_resource.destination))
+            shell_out!(command, run_options(cwd: @new_resource.destination))
           end
         end
       end
@@ -183,7 +183,7 @@ class Chef
           # since we're in a local branch already, just reset to specified revision rather than merge
           fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{target_revision}"
           Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revision #{target_revision}"
-          shell_out!(fetch_command, run_options(:cwd => @new_resource.destination))
+          shell_out!(fetch_command, run_options(cwd: @new_resource.destination))
         end
       end
 
@@ -192,7 +192,7 @@ class Chef
           Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{remote_url} "+
             "at remote #{remote_name}"
           check_remote_command = "git config --get remote.#{remote_name}.url"
-          remote_status = shell_out!(check_remote_command, run_options(:cwd => @new_resource.destination, :returns => [0,1,2]))
+          remote_status = shell_out!(check_remote_command, run_options(cwd: @new_resource.destination, returns: [0,1,2]))
           case remote_status.exitstatus
           when 0, 2
             # * Status 0 means that we already have a remote with this name, so we should update the url
@@ -202,11 +202,11 @@ class Chef
 
             if multiple_remotes?(remote_status) || !remote_matches?(remote_url,remote_status)
               update_remote_url_command = "git config --replace-all remote.#{remote_name}.url #{remote_url}"
-              shell_out!(update_remote_url_command, run_options(:cwd => @new_resource.destination))
+              shell_out!(update_remote_url_command, run_options(cwd: @new_resource.destination))
             end
           when 1
             add_remote_command = "git remote add #{remote_name} #{remote_url}"
-            shell_out!(add_remote_command, run_options(:cwd => @new_resource.destination))
+            shell_out!(add_remote_command, run_options(cwd: @new_resource.destination))
           end
         end
       end

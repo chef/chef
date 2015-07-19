@@ -23,7 +23,7 @@ require 'tmpdir'
 # run this test only for following platforms.
 include_flag = !(['ubuntu', 'centos', 'aix', 'solaris2'].include?(ohai[:platform]))
 
-describe Chef::Resource::Mount, :requires_root, :external => include_flag do
+describe Chef::Resource::Mount, :requires_root, external: include_flag do
 
   include Chef::Mixin::ShellOut
 
@@ -166,7 +166,7 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
   # don't run the remount tests on solaris2 (tmpfs does not support remount)
   # Need to make sure the platforms we've already excluded are considered:
   skip_remount = include_flag || (ohai[:platform] == "solaris2")
-  describe "when the filesystem should be remounted and the resource supports remounting", :external => skip_remount do
+  describe "when the filesystem should be remounted and the resource supports remounting", external: skip_remount do
     it "should remount the filesystem if it is mounted" do
       new_resource.run_action(:mount)
       mount_should_exist(new_resource.mount_point, new_resource.device)

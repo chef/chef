@@ -34,7 +34,7 @@ describe Chef::Provider::Package::EasyInstall do
 
     @stdin = StringIO.new
     @stdout = StringIO.new
-    @status = double("Status", :exitstatus => 0)
+    @status = double("Status", exitstatus: 0)
     @stderr = StringIO.new
     @pid = 2342
     allow(@provider).to receive(:popen4).and_return(@status)
@@ -66,14 +66,14 @@ describe Chef::Provider::Package::EasyInstall do
   describe "actions_on_package" do
     it "should run easy_install with the package name and version" do
       expect(@provider).to receive(:run_command).with({
-        :command => "easy_install \"boto==1.8d\""
+        command: "easy_install \"boto==1.8d\""
       })
       @provider.install_package("boto", "1.8d")
     end
 
     it "should run easy_install with the package name and version and specified options" do
       expect(@provider).to receive(:run_command).with({
-        :command => "easy_install --always-unzip \"boto==1.8d\""
+        command: "easy_install --always-unzip \"boto==1.8d\""
       })
       allow(@new_resource).to receive(:options).and_return("--always-unzip")
       @provider.install_package("boto", "1.8d")
@@ -81,21 +81,21 @@ describe Chef::Provider::Package::EasyInstall do
 
     it "should run easy_install with the package name and version" do
       expect(@provider).to receive(:run_command).with({
-        :command => "easy_install \"boto==1.8d\""
+        command: "easy_install \"boto==1.8d\""
       })
       @provider.upgrade_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version" do
       expect(@provider).to receive(:run_command).with({
-        :command => "easy_install -m boto"
+        command: "easy_install -m boto"
       })
       @provider.remove_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version and specified options" do
       expect(@provider).to receive(:run_command).with({
-        :command => "easy_install -x -m boto"
+        command: "easy_install -x -m boto"
       })
       allow(@new_resource).to receive(:options).and_return("-x")
       @provider.remove_package("boto", "1.8d")
@@ -103,7 +103,7 @@ describe Chef::Provider::Package::EasyInstall do
 
     it "should run easy_install -m with the package name and version" do
       expect(@provider).to receive(:run_command).with({
-        :command => "easy_install -m boto"
+        command: "easy_install -m boto"
       })
       @provider.purge_package("boto", "1.8d")
     end

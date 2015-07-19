@@ -84,7 +84,7 @@ end
     end
 
     it "should not allow a hash" do
-      expect { @resource.send(attrib, { :woot => "i found it" }) }.to raise_error(ArgumentError)
+      expect { @resource.send(attrib, { woot: "i found it" }) }.to raise_error(ArgumentError)
     end
   end
 end
@@ -106,7 +106,7 @@ end
     end
 
     it "should not allow a hash" do
-      expect { @resource.send(attrib, { :woot => "i found it" }) }.to raise_error(ArgumentError)
+      expect { @resource.send(attrib, { woot: "i found it" }) }.to raise_error(ArgumentError)
     end
   end
 

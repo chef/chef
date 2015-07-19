@@ -96,14 +96,14 @@ shared_context Chef::Resource::WindowsScript do
 
       let (:architecture) { :x86_64 }
       it "should execute a 64-bit guard if the guard's architecture is specified as 64-bit", :windows64_only do
-        resource.only_if resource_guard_command, :architecture => :x86_64
+        resource.only_if resource_guard_command, architecture: :x86_64
         resource.run_action(:run)
         expect(get_guard_process_architecture).to eq('amd64')
       end
 
       let (:architecture) { :i386 }
       it "should execute a 32-bit guard if the guard's architecture is specified as 32-bit" do
-        resource.only_if resource_guard_command, :architecture => :i386
+        resource.only_if resource_guard_command, architecture: :i386
         resource.run_action(:run)
         expect(get_guard_process_architecture).to eq('x86')
       end

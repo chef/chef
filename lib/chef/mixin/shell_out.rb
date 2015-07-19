@@ -40,7 +40,7 @@ class Chef
           options[env_key]['LANG'] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?('LANG')
           args << options
         else
-          args << { :environment => {
+          args << { environment: {
             'LC_ALL' => Chef::Config[:internal_locale],
             'LANGUAGE' => Chef::Config[:internal_locale],
             'LANG' => Chef::Config[:internal_locale],

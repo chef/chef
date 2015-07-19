@@ -37,11 +37,11 @@ class Chef
       end
 
       def source(source_filename=nil)
-        set_or_return(:source, source_filename, :kind_of => [ String, Array ])
+        set_or_return(:source, source_filename, kind_of: [ String, Array ])
       end
 
       def cookbook(cookbook_name=nil)
-        set_or_return(:cookbook, cookbook_name, :kind_of => String)
+        set_or_return(:cookbook, cookbook_name, kind_of: String)
       end
 
     end

@@ -30,7 +30,7 @@ describe Chef::Audit::RspecFormatter do
 
   let(:events) { double("events").as_null_object }
   let(:audits) { {} }
-  let(:run_context) { instance_double(Chef::RunContext, :events => events, :audits => audits) }
+  let(:run_context) { instance_double(Chef::RunContext, events: events, audits: audits) }
   let(:runner) { Chef::Audit::Runner.new(run_context) }
 
   let(:output) { double("output") }

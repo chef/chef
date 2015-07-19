@@ -35,19 +35,19 @@ class Chef
       # cause indentation but will not move to the next line yet (future 'print'
       # and 'puts' statements will stay on this line).
       def start_line(string, *args)
-        print(string, from_args(args, :start_line => true))
+        print(string, from_args(args, start_line: true))
       end
 
       # Print a line.  This will continue from the last start_line or print,
       # or start a new line and indent if necessary.
       def puts(string, *args)
-        print(string, from_args(args, :end_line => true))
+        print(string, from_args(args, end_line: true))
       end
 
       # Print an entire line from start to end.  This will terminate any existing
       # lines and cause indentation.
       def puts_line(string, *args)
-        print(string, from_args(args, :start_line => true, :end_line => true))
+        print(string, from_args(args, start_line: true, end_line: true))
       end
 
       # Print a string.
@@ -55,12 +55,12 @@ class Chef
       # == Arguments
       # string: string to print.
       # options: a hash with these possible options:
-      # - :stream => OBJ: unique identifier for a stream. If two prints have
+      # - stream: OBJ: unique identifier for a stream. If two prints have
       #           different streams, they will print on separate lines.
       #           Otherwise, they will stay together.
-      # - :start_line => BOOLEAN: if true, print will begin on a blank (indented) line.
-      # - :end_line => BOOLEAN: if true, current line will be ended.
-      # - :name => STRING: a name to prefix in front of a stream. It will be printed
+      # - start_line: BOOLEAN: if true, print will begin on a blank (indented) line.
+      # - end_line: BOOLEAN: if true, current line will be ended.
+      # - name: STRING: a name to prefix in front of a stream. It will be printed
       #           once (with the first line of the stream) and subsequent lines
       #           will be indented to match.
       #
@@ -98,7 +98,7 @@ class Chef
         if colors.size == 1 && colors[0].kind_of?(Hash)
           merge_options.merge(colors[0])
         else
-          merge_options.merge({ :colors => colors })
+          merge_options.merge({ colors: colors })
         end
       end
 

@@ -106,7 +106,7 @@ class Chef
         # We reuse Chef::GuardInterpreter in order to support
         # the same set of options that the not_if/only_if blocks do
         def verify_command(path, opts)
-          command = @command % {:file => path}
+          command = @command % {file: path}
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           interpreter.evaluate
         end

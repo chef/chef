@@ -43,14 +43,14 @@ describe Chef::Mixin::Command, :volatile do
       end
 
       it "should respect locale when specified explicitly" do
-        popen4("echo $LC_ALL", :environment => {"LC_ALL" => "es"}) do |pid, stdin, stdout, stderr|
+        popen4("echo $LC_ALL", environment: {"LC_ALL" => "es"}) do |pid, stdin, stdout, stderr|
           expect(stdout.read.strip).to eq("es")
         end
       end
 
       it "should end when the child process reads from STDIN and a block is given" do
         expect {Timeout.timeout(10) do
-            popen4("ruby -e 'while gets; end'", :waitlast => true) do |pid, stdin, stdout, stderr|
+            popen4("ruby -e 'while gets; end'", waitlast: true) do |pid, stdin, stdout, stderr|
               (1..5).each { |i| stdin.puts "#{i}" }
             end
           end
@@ -77,7 +77,7 @@ describe Chef::Mixin::Command, :volatile do
       it "logs the command's stderr and stdout output if the command failed" do
         allow(Chef::Log).to receive(:level).and_return(:debug)
         begin
-          run_command(:command => "sh -c 'echo hello; echo world >&2; false'")
+          run_command(command: "sh -c 'echo hello; echo world >&2; false'")
           violated "Exception expected, but nothing raised."
         rescue => e
           expect(e.message).to match(/STDOUT: hello/)
@@ -94,7 +94,7 @@ describe Chef::Mixin::Command, :volatile do
           # are taking a long time to exit. Bumping timeout now to 10.
           expect {Timeout.timeout(10) do
             evil_forker="exit if fork; 10.times { sleep 1}"
-            run_command(:command => "ruby -e '#{evil_forker}'")
+            run_command(command: "ruby -e '#{evil_forker}'")
           end}.not_to raise_error
         end
 

@@ -286,10 +286,10 @@ class Chef
     #
     # A manifest record is a Mash that follows the following form:
     # {
-    #   :name => "example.rb",
-    #   :path => "files/default/example.rb",
-    #   :specificity => "default",
-    #   :checksum => "1234"
+    #   name: "example.rb",
+    #   path: "files/default/example.rb",
+    #   specificity: "default",
+    #   checksum: "1234"
     # }
     def preferred_manifest_record(node, segment, filename)
       found_pref = find_preferred_manifest_record(node, segment, filename)
@@ -486,7 +486,7 @@ class Chef
       COOKBOOK_SEGMENTS.each do |segment|
         if rendered_manifest.has_key?(segment)
           rendered_manifest[segment].each do |manifest_record|
-            url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => manifest_record["checksum"] }
+            url_options = { cookbook_name: name.to_s, cookbook_version: version, checksum: manifest_record["checksum"] }
             manifest_record["url"] = url_generator.call(url_options)
           end
         end

@@ -46,7 +46,7 @@ class Chef
         set_or_return(
           :installer_type,
           arg,
-          :kind_of => [ Symbol ]
+          kind_of: [ Symbol ]
         )
       end
 
@@ -54,7 +54,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ String, Integer ]
+          kind_of: [ String, Integer ]
         )
       end
 
@@ -62,7 +62,7 @@ class Chef
         set_or_return(
           :returns,
           arg,
-          :kind_of => [ String, Integer, Array ]
+          kind_of: [ String, Integer, Array ]
         )
       end
 
@@ -83,7 +83,7 @@ class Chef
         set_or_return(
           :checksum,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -91,7 +91,7 @@ class Chef
         set_or_return(
           :remote_file_attributes,
           arg,
-          :kind_of => [ Hash ]
+          kind_of: [ Hash ]
         )
       end
 

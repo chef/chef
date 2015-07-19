@@ -38,9 +38,9 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
     let(:target_file_mode) { 0644 }
     let(:target_file_stat) do
       double "File::Stat struct for target file",
-           :mode => target_file_mode,
-           :uid => target_file_uid,
-           :gid => target_file_gid
+           mode: target_file_mode,
+           uid: target_file_uid,
+           gid: target_file_gid
     end
 
     before do

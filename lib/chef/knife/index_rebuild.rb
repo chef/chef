@@ -24,10 +24,10 @@ class Chef
 
       banner "knife index rebuild (options)"
       option :yes,
-        :short        => "-y",
-        :long         => "--yes",
-        :boolean      => true,
-        :description  => "don't bother to ask if I'm sure"
+        short: "-y",
+        long: "--yes",
+        boolean: true,
+        description: "don't bother to ask if I'm sure"
 
       def run
         api_info = grab_api_info

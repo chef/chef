@@ -55,11 +55,11 @@ class Chef
               result = []
               root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
                 cookbooks['versions'].each do |cookbook_version|
-                  result << CookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self, :exists => true)
+                  result << CookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self, exists: true)
                 end
               end
             else
-              result = root.get_json(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
+              result = root.get_json(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, exists: true) }
             end
             result.sort_by(&:name)
           end
@@ -106,7 +106,7 @@ class Chef
             cookbook_to_upload.freeze_version if options[:freeze]
 
             # Instantiate a new uploader based on the proxy loader
-            uploader = Chef::CookbookUploader.new(cookbook_to_upload, :force => options[:force], :rest => root.chef_rest)
+            uploader = Chef::CookbookUploader.new(cookbook_to_upload, force: options[:force], rest: root.chef_rest)
 
             with_actual_cookbooks_dir(temp_cookbooks_path) do
               upload_cookbook!(uploader)
@@ -128,7 +128,7 @@ class Chef
         def upload_unversioned_cookbook(other, options)
           cookbook_to_upload = other.chef_object
           cookbook_to_upload.freeze_version if options[:freeze]
-          uploader = Chef::CookbookUploader.new(cookbook_to_upload, :force => options[:force], :rest => root.chef_rest)
+          uploader = Chef::CookbookUploader.new(cookbook_to_upload, force: options[:force], rest: root.chef_rest)
 
           with_actual_cookbooks_dir(other.parent.file_path) do
             upload_cookbook!(uploader)

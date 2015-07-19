@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Service::Debian do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = {:ps => 'fuuuu'}
+    @node.automatic_attrs[:command] = {ps: 'fuuuu'}
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -61,7 +61,7 @@ describe Chef::Provider::Service::Debian do
 
         @stdout = StringIO.new(result)
         @stderr = StringIO.new
-        @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+        @status = double("Status", exitstatus: 0, stdout: @stdout)
         allow(@provider).to receive(:shell_out!).and_return(@status)
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
@@ -80,11 +80,11 @@ describe Chef::Provider::Service::Debian do
     context "when update-rc.d shows init isn't linked to rc*.d/" do
       before do
         allow(@provider).to receive(:assert_update_rcd_available)
-        @status = double("Status", :exitstatus => 0)
+        @status = double("Status", exitstatus: 0)
         @stdout = StringIO.new(
           " Removing any system startup links for /etc/init.d/chef ...")
         @stderr = StringIO.new
-        @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+        @status = double("Status", exitstatus: 0, stdout: @stdout)
         allow(@provider).to receive(:shell_out!).and_return(@status)
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
@@ -102,7 +102,7 @@ describe Chef::Provider::Service::Debian do
 
     context "when update-rc.d fails" do
       before do
-        @status = double("Status", :exitstatus => -1)
+        @status = double("Status", exitstatus: -1)
         allow(@provider).to receive(:popen4).and_return(@status)
       end
 
@@ -200,7 +200,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
 
             @stdout = StringIO.new(expected_results["linked"]["stdout"])
             @stderr = StringIO.new(expected_results["linked"]["stderr"])
-            @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+            @status = double("Status", exitstatus: 0, stdout: @stdout)
             allow(@provider).to receive(:shell_out!).and_return(@status)
             allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end
@@ -226,7 +226,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
             allow(@provider).to receive(:assert_update_rcd_available)
             @stdout = StringIO.new(expected_results["not linked"]["stdout"])
             @stderr = StringIO.new(expected_results["not linked"]["stderr"])
-            @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+            @status = double("Status", exitstatus: 0, stdout: @stdout)
             allow(@provider).to receive(:shell_out!).and_return(@status)
             allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end

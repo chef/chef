@@ -62,12 +62,12 @@ describe Chef::Provider::Service::Upstart do
 
   describe "load_current_resource" do
     before(:each) do
-      @node.automatic_attrs[:command] = {:ps => "ps -ax"}
+      @node.automatic_attrs[:command] = {ps: "ps -ax"}
 
       @current_resource = Chef::Resource::Service.new("rsyslog")
       allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
 
-      @status = double("Status", :exitstatus => 0)
+      @status = double("Status", exitstatus: 0)
       allow(@provider).to receive(:popen4).and_return(@status)
       @stdin = StringIO.new
       @stdout = StringIO.new
@@ -142,14 +142,14 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should set enabled to true when it finds 'starts on'" do
-      @lines = double("start on filesystem", :gets => "start on filesystem")
+      @lines = double("start on filesystem", gets: "start on filesystem")
       allow(::File).to receive(:open).and_yield(@lines)
       expect(@current_resource).to receive(:running).with(false)
       @provider.load_current_resource
     end
 
     it "should set enabled to false when it finds '#starts on'" do
-      @lines = double("start on filesystem", :gets => "#start on filesystem")
+      @lines = double("start on filesystem", gets: "#start on filesystem")
       allow(::File).to receive(:open).and_yield(@lines)
       expect(@current_resource).to receive(:running).with(false)
       @provider.load_current_resource

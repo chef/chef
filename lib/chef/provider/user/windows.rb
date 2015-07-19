@@ -95,7 +95,7 @@ class Chef
         end
 
         def set_options
-          opts = {:name => @new_resource.username}
+          opts = {name: @new_resource.username}
 
           field_list = {
             'comment' => 'full_name',

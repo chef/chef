@@ -239,10 +239,10 @@ E
       end
 
       desc "returns an object to control a paused chef run"
-      subcommands :resume       => "resume the chef run",
-                  :step         => "run only the next resource",
-                  :skip_back    => "move back in the run list",
-                  :skip_forward => "move forward in the run list"
+      subcommands resume: "resume the chef run",
+                  step: "run only the next resource",
+                  skip_back: "move back in the run list",
+                  skip_forward: "move forward in the run list"
       def chef_run
         Shell.session.resource_collection.iterator
       end
@@ -374,7 +374,7 @@ E
   You can also use a Hash based syntax, multiple search conditions will be
   joined with AND.
 
-      clients.find :KEY => :VALUE, :KEY2 => :VALUE2, ...
+      clients.find KEY: :VALUE, KEY2: :VALUE2, ...
 
 ## BULK-EDIT CLIENTS ##
                     **BE CAREFUL, THIS IS DESTRUCTIVE**
@@ -393,18 +393,18 @@ E
 
   This will strip the admin privileges from any client named after borat.
 E
-      subcommands :all        => "list all api clients",
-                  :show       => "load an api client by name",
-                  :search     => "search for API clients",
-                  :transform  => "edit all api clients via a code block and save them"
+      subcommands all: "list all api clients",
+                  show: "load an api client by name",
+                  search: "search for API clients",
+                  transform: "edit all api clients via a code block and save them"
       def clients
         @clients ||= Shell::ModelWrapper.new(Chef::ApiClient, :client)
       end
 
       desc "Find and edit cookbooks"
-      subcommands :all        => "list all cookbooks",
-                  :show       => "load a cookbook by name",
-                  :transform  => "edit all cookbooks via a code block and save them"
+      subcommands all: "list all cookbooks",
+                  show: "load a cookbook by name",
+                  transform: "edit all cookbooks via a code block and save them"
       def cookbooks
         @cookbooks ||= Shell::ModelWrapper.new(Chef::CookbookVersion)
       end
@@ -432,12 +432,12 @@ E
 ## SEARCH FOR NODES ##
   You can search for nodes using the +search+ or +find+ subcommands:
 
-      nodes.find(:name => "app*") #=> [<Chef::Node @name="app1.example.com" ...>, ...]
+      nodes.find(name: "app*") #=> [<Chef::Node @name="app1.example.com" ...>, ...]
 
   Similarly to +all+, you can pass a code block to limit or transform the
   information returned:
 
-      nodes.find(:name => "app#") { |node| node.ec2 }
+      nodes.find(name: "app#") { |node| node.ec2 }
 
 ## BULK EDIT NODES ##
               **BE CAREFUL, THIS OPERATION IS DESTRUCTIVE**
@@ -455,10 +455,10 @@ E
 
   This will assign the attribute to every node with a FQDN matching the regex.
 E
-      subcommands :all        => "list all nodes",
-                  :show       => "load a node by name",
-                  :search     => "search for nodes",
-                  :transform  => "edit all nodes via a code block and save them"
+      subcommands all: "list all nodes",
+                  show: "load a node by name",
+                  search: "search for nodes",
+                  transform: "edit all nodes via a code block and save them"
       def nodes
         @nodes ||= Shell::ModelWrapper.new(Chef::Node)
       end
@@ -477,10 +477,10 @@ E
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
 E
-      subcommands :all        => "list all roles",
-                  :show       => "load a role by name",
-                  :search     => "search for roles",
-                  :transform  => "edit all roles via a code block and save them"
+      subcommands all: "list all roles",
+                  show: "load a role by name",
+                  search: "search for roles",
+                  transform: "edit all roles via a code block and save them"
       def roles
         @roles ||= Shell::ModelWrapper.new(Chef::Role)
       end
@@ -503,10 +503,10 @@ E
   See the help for +nodes+ for more information about the subcommands.
 
 E
-      subcommands :all        => "list all items in the data bag",
-                  :show       => "load a data bag item by id",
-                  :search     => "search for items in the data bag",
-                  :transform  => "edit all items via a code block and save them"
+      subcommands all: "list all items in the data bag",
+                  show: "load a data bag item by id",
+                  search: "search for items in the data bag",
+                  transform: "edit all items via a code block and save them"
       def databags(databag_name)
         @named_databags_wrappers ||= {}
         @named_databags_wrappers[databag_name] ||= Shell::NamedDataBagWrapper.new(databag_name)
@@ -526,10 +526,10 @@ E
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
 E
-      subcommands :all        => "list all environments",
-                  :show       => "load an environment by name",
-                  :search     => "search for environments",
-                  :transform  => "edit all environments via a code block and save them"
+      subcommands all: "list all environments",
+                  show: "load an environment by name",
+                  search: "search for environments",
+                  transform: "edit all environments via a code block and save them"
       def environments
         @environments ||= Shell::ModelWrapper.new(Chef::Environment)
       end

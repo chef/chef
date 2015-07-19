@@ -103,8 +103,8 @@ describe Chef::Runner do
     before do
       # set up old Chef::Platform resolution instead of provider_resolver
       Chef::Platform.set(
-        :resource => :cat,
-        :provider => Chef::Provider::SnakeOil
+        resource: :cat,
+        provider: Chef::Provider::SnakeOil
       )
       allow(Chef::ProviderResolver).to receive(:new).and_return(provider_resolver)
       allow(provider_resolver).to receive(:maybe_dynamic_provider_resolution).with(first_resource, anything()).and_return(nil)

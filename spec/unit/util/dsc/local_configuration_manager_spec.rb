@@ -47,7 +47,7 @@ EOH
   }
 
   let(:lcm_status) {
-    double("LCM cmdlet status", :stderr => lcm_standard_error, :return_value => lcm_standard_output, :succeeded? => lcm_cmdlet_success)
+    double("LCM cmdlet status", stderr: lcm_standard_error, return_value: lcm_standard_output, :succeeded? => lcm_cmdlet_success)
   }
 
   describe 'test_configuration method invocation' do

@@ -34,14 +34,14 @@ class Chef
       banner "knife node show NODE (options)"
 
       option :run_list,
-        :short => "-r",
-        :long => "--run-list",
-        :description => "Show only the run list"
+        short: "-r",
+        long: "--run-list",
+        description: "Show only the run list"
 
       option :environment,
-        :short        => "-E",
-        :long         => "--environment",
-        :description  => "Show only the Chef environment"
+        short: "-E",
+        long: "--environment",
+        description: "Show only the Chef environment"
 
       def run
         ui.use_presenter Knife::Core::NodePresenter

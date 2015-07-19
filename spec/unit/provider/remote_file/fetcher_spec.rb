@@ -45,7 +45,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed an http url" do
-    let(:uri) { double("uri", :scheme => "http" ) }
+    let(:uri) { double("uri", scheme: "http" ) }
     before do
       expect(Chef::Provider::RemoteFile::HTTP).to receive(:new).and_return(fetcher_instance)
     end
@@ -55,7 +55,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed an https url" do
-    let(:uri) { double("uri", :scheme => "https" ) }
+    let(:uri) { double("uri", scheme: "https" ) }
     before do
       expect(Chef::Provider::RemoteFile::HTTP).to receive(:new).and_return(fetcher_instance)
     end
@@ -65,7 +65,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed an ftp url" do
-    let(:uri) { double("uri", :scheme => "ftp" ) }
+    let(:uri) { double("uri", scheme: "ftp" ) }
     before do
       expect(Chef::Provider::RemoteFile::FTP).to receive(:new).and_return(fetcher_instance)
     end
@@ -75,7 +75,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed a file url" do
-    let(:uri) { double("uri", :scheme => "file" ) }
+    let(:uri) { double("uri", scheme: "file" ) }
     before do
       expect(Chef::Provider::RemoteFile::LocalFile).to receive(:new).and_return(fetcher_instance)
     end
@@ -85,7 +85,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed a url we do not recognize" do
-    let(:uri) { double("uri", :scheme => "xyzzy" ) }
+    let(:uri) { double("uri", scheme: "xyzzy" ) }
     it "throws an ArgumentError exception" do
       expect { described_class.for_resource(uri, new_resource, current_resource) }.to raise_error(ArgumentError)
     end

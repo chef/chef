@@ -32,10 +32,10 @@ class Chef
       banner "knife node edit NODE (options)"
 
       option :all_attributes,
-        :short => "-a",
-        :long => "--all",
-        :boolean => true,
-        :description => "Display all attributes when editing"
+        short: "-a",
+        long: "--all",
+        boolean: true,
+        description: "Display all attributes when editing"
 
       def run
         if node_name.nil?

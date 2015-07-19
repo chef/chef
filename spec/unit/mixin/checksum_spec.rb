@@ -29,7 +29,7 @@ describe Chef::Mixin::Checksum do
     @checksum_user = Chef::CMCCheck.new
     @cache = Chef::Digester.instance
     @file = CHEF_SPEC_DATA + "/checksum/random.txt"
-    @stat = double("File::Stat", { :mtime => Time.at(0) })
+    @stat = double("File::Stat", { mtime: Time.at(0) })
     allow(File).to receive(:stat).and_return(@stat)
   end
 

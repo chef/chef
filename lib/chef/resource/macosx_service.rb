@@ -41,7 +41,7 @@ class Chef
         set_or_return(
           :plist,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
@@ -49,7 +49,7 @@ class Chef
         set_or_return(
           :session_type,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 

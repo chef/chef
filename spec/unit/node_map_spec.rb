@@ -150,18 +150,18 @@ describe Chef::NodeMap do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
     end
 
-    it "should handle :on_platforms => :all" do
-      node_map.set(:chef_gem, :foo, :on_platforms => :all)
+    it "should handle on_platforms: :all" do
+      node_map.set(:chef_gem, :foo, on_platforms: :all)
       allow(node).to receive(:[]).with(:platform).and_return("windows")
       expect(node_map.get(node, :chef_gem)).to eql(:foo)
     end
-    it "should handle :on_platforms => [ 'windows' ]" do
-      node_map.set(:dsc_script, :foo, :on_platforms => [ 'windows' ])
+    it "should handle on_platforms: [ 'windows' ]" do
+      node_map.set(:dsc_script, :foo, on_platforms: [ 'windows' ])
       allow(node).to receive(:[]).with(:platform).and_return("windows")
       expect(node_map.get(node, :dsc_script)).to eql(:foo)
     end
-    it "should handle :on_platform => :all" do
-      node_map.set(:link, :foo, :on_platform => :all)
+    it "should handle on_platform: :all" do
+      node_map.set(:link, :foo, on_platform: :all)
       allow(node).to receive(:[]).with(:platform).and_return("windows")
       expect(node_map.get(node, :link)).to eql(:foo)
     end

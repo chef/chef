@@ -63,7 +63,7 @@ class Chef
 
         converge_by("run erlang block") do
           begin
-            pid, stdin, stdout, stderr = popen4(command, :waitlast => true)
+            pid, stdin, stdout, stderr = popen4(command, waitlast: true)
 
             Chef::Log.debug("#{@new_resource} running")
             Chef::Log.debug("#{@new_resource} command: #{command}")

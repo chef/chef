@@ -28,7 +28,7 @@ describe "chef-solo" do
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
       result.error!
       expect(result.stdout).to include("ITWORKS")
     end
@@ -43,7 +43,7 @@ EOM
 {"run_list":["x::default"]}
 E
 
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -j '#{path_to('config/node.json')}' -l debug", :cwd => chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -j '#{path_to('config/node.json')}' -l debug", cwd: chef_dir)
       result.error!
       expect(result.stdout).to include("ITWORKS")
     end
@@ -64,7 +64,7 @@ E
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", cwd: chef_dir)
       expect(result.exitstatus).to eq(0) # For CHEF-5120 this becomes 1
       expect(result.stdout).to include("WARN: MissingCookbookDependency")
     end
@@ -98,14 +98,14 @@ EOM
 
           # Instantiate the first chef-solo run
           s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
--l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+-l debug -L #{path_to('logs/runs.log')}", chdir: chef_dir)
 
           # Give it some time to progress
           sleep 1
 
           # Instantiate the second chef-solo run
           s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
--l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+-l debug -L #{path_to('logs/runs.log')}", chdir: chef_dir)
 
           Process.waitpid(s1)
           Process.waitpid(s2)

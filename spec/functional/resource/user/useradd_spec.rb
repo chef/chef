@@ -30,10 +30,10 @@ def user_provider_for_platform
   end
 end
 
-metadata = { :unix_only => true,
-  :requires_root => true,
-  :not_supported_on_mac_osx => true,
-  :provider => {:user => user_provider_for_platform}
+metadata = { unix_only: true,
+  requires_root: true,
+  not_supported_on_mac_osx: true,
+  provider: {user: user_provider_for_platform}
 }
 
 describe Chef::Provider::User::Useradd, metadata do
@@ -104,7 +104,7 @@ describe Chef::Provider::User::Useradd, metadata do
     while max_retries > 0
       begin
         pw_entry # will raise if the user doesn't exist
-        status = shell_out!("userdel", "-r", username, :returns => [0,8,12])
+        status = shell_out!("userdel", "-r", username, returns: [0,8,12])
 
         # Error code 8 during userdel indicates that the user is logged in.
         # This occurs randomly because the accounts daemon holds a lock due to which userdel fails.
