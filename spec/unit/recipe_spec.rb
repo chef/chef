@@ -163,8 +163,6 @@ describe Chef::Recipe do
           end
 
           it "selects the first one alphabetically even if the declaration order is reversed" do
-            expect(Chef::Log).to receive(:warn).with("You are overriding football2 on {:platform=>\"nbc_sports\"} with Sounders: used to be TottenhamHotspur. Use override: true if this is what you intended.")
-
             TottenhamHotspur.provides :football2, platform: "nbc_sports"
             Sounders.provides :football2, platform: "nbc_sports"
 
