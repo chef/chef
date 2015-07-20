@@ -49,6 +49,24 @@ class Chef::Application::Apply < Chef::Application
     :description => "Load attributes from a JSON file or URL",
     :proc => nil
 
+  option :force_logger,
+    :long         => "--force-logger",
+    :description  => "Use logger output instead of formatter output",
+    :boolean      => true,
+    :default      => false
+
+  option :force_formatter,
+    :long         => "--force-formatter",
+    :description  => "Use formatter output instead of logger output",
+    :boolean      => true,
+    :default      => false
+
+  option :formatter,
+    :short        => "-F FORMATTER",
+    :long         => "--format FORMATTER",
+    :description  => "output format to use",
+    :proc         => lambda { |format| Chef::Config.add_formatter(format) }
+
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
