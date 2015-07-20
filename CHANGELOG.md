@@ -14,6 +14,7 @@
 * [pr#3572](https://github.com/chef/chef/pull/3572) Use windows paths without case-sensitivity.
 * [pr#3666](https://github.com/chef/chef/pull/3666) Support SNI in `knife ssl check`.
 * [pr#3667](https://github.com/chef/chef/pull/3667) Change chef service to start as 'Automatic delayed start'.
+* [pr#3683](https://github.com/chef/chef/pull/3683) Correct Windows reboot command to delay in minutes, per the property.
 
 ## 12.4.1
 
