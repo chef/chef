@@ -27,7 +27,7 @@ class Chef
     class OscUserCreate < Knife
 
       deps do
-        require 'chef/osc_user'
+        require 'chef/user'
         require 'chef/json_compat'
       end
 
@@ -69,7 +69,7 @@ class Chef
           exit 1
         end
 
-        user = Chef::OscUser.new
+        user = Chef::User.new
         user.name(@user_name)
         user.admin(config[:admin])
         user.password config[:user_password]
@@ -79,7 +79,7 @@ class Chef
         end
 
         output = edit_data(user)
-        user = Chef::OscUser.from_hash(output).create
+        user = Chef::User.from_hash(output).create
 
         ui.info("Created #{user}")
         if user.private_key

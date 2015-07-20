@@ -38,7 +38,7 @@ describe Chef::Knife::OscUserEdit do
 
   it 'loads and edits the user' do
     data = { :name => "my_user" }
-    allow(Chef::OscUser).to receive(:load).with("my_user").and_return(data)
+    allow(Chef::User).to receive(:load).with("my_user").and_return(data)
     expect(@knife).to receive(:edit_data).with(data).and_return(data)
     @knife.run
   end

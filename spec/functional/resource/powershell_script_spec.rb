@@ -125,16 +125,16 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       expect { resource.run_action(:run) }.not_to raise_error
     end
 
-    it "raises an error if the script is not syntactically correct and returns is not set to 1" do
+    it "raises a Mixlib::ShellOut::ShellCommandFailed error if the script is not syntactically correct" do
       resource.code('if({)')
       resource.returns(0)
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
 
-    it "returns 1 if the script provided to the code attribute is not syntactically correct" do
+    it "raises an error if the script is not syntactically correct even if returns is set to 1 which is what powershell.exe returns for syntactically invalid scripts" do
       resource.code('if({)')
       resource.returns(1)
-      expect { resource.run_action(:run) }.not_to raise_error
+      expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
 
     # This somewhat ambiguous case, two failures of different types,

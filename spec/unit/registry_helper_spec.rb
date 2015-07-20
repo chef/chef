@@ -21,6 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::RegistryKey do
 
   let(:value1) { { :name => "one", :type => :string, :data => "1" } }
+  let(:value1_upcase_name) { {:name => "ONE", :type => :string, :data => "1"} }
   let(:key_path) { 'HKCU\Software\OpscodeNumbers' }
   let(:key) { 'Software\OpscodeNumbers' }
   let(:key_parent) { 'Software' }
@@ -71,7 +72,20 @@ describe Chef::Provider::RegistryKey do
       expect(@registry).to receive(:data_exists?).with(key_path, value1).and_return(true)
       @registry.set_value(key_path, value1)
     end
-
+    it "does nothing if case insensitive key and hive and value exist" do
+      expect(@registry).to receive(:key_exists!).with(key_path.downcase).and_return(true)
+      expect(@registry).to receive(:get_hive_and_key).with(key_path.downcase).and_return([@hive_mock, key])
+      expect(@registry).to receive(:value_exists?).with(key_path.downcase, value1).and_return(true)
+      expect(@registry).to receive(:data_exists?).with(key_path.downcase, value1).and_return(true)
+      @registry.set_value(key_path.downcase, value1)
+    end
+    it "does nothing if key and hive and value with a case insensitive name exist" do
+      expect(@registry).to receive(:key_exists!).with(key_path.downcase).and_return(true)
+      expect(@registry).to receive(:get_hive_and_key).with(key_path.downcase).and_return([@hive_mock, key])
+      expect(@registry).to receive(:value_exists?).with(key_path.downcase, value1_upcase_name).and_return(true)
+      expect(@registry).to receive(:data_exists?).with(key_path.downcase, value1_upcase_name).and_return(true)
+      @registry.set_value(key_path.downcase, value1_upcase_name)
+    end
     it "updates value if key and hive and value exist, but data is different" do
       expect(@registry).to receive(:key_exists!).with(key_path).and_return(true)
       expect(@registry).to receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])

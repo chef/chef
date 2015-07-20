@@ -78,7 +78,7 @@ class Chef
 
         raise ArgumentError, "Service definition is not provided" if service_options.nil?
 
-        required_options = [:service_name, :service_display_name, :service_name, :service_description, :service_file_path]
+        required_options = [:service_name, :service_display_name, :service_description, :service_file_path]
 
         required_options.each do |req_option|
           if !service_options.has_key?(req_option)
@@ -92,6 +92,7 @@ class Chef
         @service_file_path = service_options[:service_file_path]
         @service_start_name = service_options[:run_as_user]
         @password = service_options[:run_as_password]
+        @delayed_start = service_options[:delayed_start]
       end
 
       def run(params = ARGV)
@@ -113,17 +114,21 @@ class Chef
             cmd = "\"#{ruby}\" \"#{@service_file_path}\" #{opts}".gsub(File::SEPARATOR, File::ALT_SEPARATOR)
 
             ::Win32::Service.new(
-                                 :service_name     => @service_name,
-                                 :display_name     => @service_display_name,
-                                 :description      => @service_description,
-                                 # Prior to 0.8.5, win32-service creates interactive services by default,
-                                 # and we don't want that, so we need to override the service type.
-                                 :service_type     => ::Win32::Service::SERVICE_WIN32_OWN_PROCESS,
-                                 :start_type       => ::Win32::Service::SERVICE_AUTO_START,
-                                 :binary_path_name => cmd,
-                                 :service_start_name => @service_start_name,
-                                 :password => @password,
-                                 )
+              :service_name     => @service_name,
+              :display_name     => @service_display_name,
+              :description      => @service_description,
+              # Prior to 0.8.5, win32-service creates interactive services by default,
+              # and we don't want that, so we need to override the service type.
+              :service_type     => ::Win32::Service::SERVICE_WIN32_OWN_PROCESS,
+              :start_type       => ::Win32::Service::SERVICE_AUTO_START,
+              :binary_path_name => cmd,
+              :service_start_name => @service_start_name,
+              :password => @password,
+            )
+            ::Win32::Service.configure(
+              :service_name     => @service_name,
+              :delayed_start    => @delayed_start
+            ) unless @delayed_start.nil?
             puts "Service '#{@service_name}' has successfully been installed."
           end
         when 'status'

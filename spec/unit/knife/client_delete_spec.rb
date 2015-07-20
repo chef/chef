@@ -30,7 +30,7 @@ describe Chef::Knife::ClientDelete do
 
   describe 'run' do
     it 'should delete the client' do
-      expect(@knife).to receive(:delete_object).with(Chef::ApiClient, 'adam', 'client')
+      expect(@knife).to receive(:delete_object).with(Chef::ApiClientV1, 'adam', 'client')
       @knife.run
     end
 
@@ -46,8 +46,8 @@ describe Chef::Knife::ClientDelete do
     before(:each) do
       allow(Chef::Knife::UI).to receive(:confirm).and_return(true)
       allow(@knife).to receive(:confirm).and_return(true)
-      @client = Chef::ApiClient.new
-      expect(Chef::ApiClient).to receive(:load).and_return(@client)
+      @client = Chef::ApiClientV1.new
+      expect(Chef::ApiClientV1).to receive(:load).and_return(@client)
     end
 
     it 'should delete non-validator client if --delete-validators is not set' do

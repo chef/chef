@@ -30,8 +30,8 @@ class Chef
       end
 
       def action_run
-        valid_syntax = validate_script_syntax!
-        super if valid_syntax
+        validate_script_syntax!
+        super
       end
 
       def flags
@@ -62,30 +62,43 @@ class Chef
       def validate_script_syntax!
         interpreter_arguments = default_interpreter_flags.join(' ')
         Tempfile.open(['chef_powershell_script-user-code', '.ps1']) do | user_script_file |
-          user_script_file.puts("{#{@new_resource.code}}")
-          user_script_file.close
+          # Wrap the user's code in a PowerShell script block so that
+          # it isn't executed. However, syntactically invalid script
+          # in that block will still trigger a syntax error which is
+          # exactly what we want here -- verify the syntax without
+          # actually running the script.
+          user_code_wrapped_in_powershell_script_block = <<-EOH
+{
+  #{@new_resource.code}
+}
+EOH
+          user_script_file.puts user_code_wrapped_in_powershell_script_block
 
+          # A .close or explicit .flush required to ensure the file is
+          # written to the file system at this point, which is required since
+          # the intent is to execute the code just written to it.
+          user_script_file.close
           validation_command = "\"#{interpreter}\" #{interpreter_arguments} -Command #{user_script_file.path}"
 
-          # For consistency with other script resources, allow even syntax errors
-          # to be suppressed if the returns attribute would have suppressed it
-          # at converge.
-          valid_returns = [0]
-          specified_returns = @new_resource.returns.is_a?(Integer) ?
-            [@new_resource.returns] :
-            @new_resource.returns
-          valid_returns.concat([1]) if specified_returns.include?(1)
+          # Note that other script providers like bash allow syntax errors
+          # to be suppressed by setting 'returns' to a value that the
+          # interpreter would return as a status code in the syntax
+          # error case. We explicitly don't do this here -- syntax
+          # errors will not be suppressed, since doing so could make
+          # it harder for users to detect / debug invalid scripts.
 
-          result = shell_out!(validation_command, {returns: valid_returns})
-          result.exitstatus == 0
+          # Therefore, the only return value for a syntactically valid
+          # script is 0. If an exception is raised by shellout, this
+          # means a non-zero return and thus a syntactically invalid script.
+          shell_out!(validation_command, {returns: [0]})
         end
       end
 
       def default_interpreter_flags
-        # 'Bypass' is preferable since it doesn't require user input confirmation
-        # for files such as PowerShell modules downloaded from the
-        # Internet. However, 'Bypass' is not supported prior to
-        # PowerShell 3.0, so the fallback is 'Unrestricted'
+        # Execution policy 'Bypass' is preferable since it doesn't require
+        # user input confirmation for files such as PowerShell modules
+        # downloaded from the Internet. However, 'Bypass' is not supported
+        # prior to PowerShell 3.0, so the fallback is 'Unrestricted'
         execution_policy = Chef::Platform.supports_powershell_execution_bypass?(run_context.node) ? 'Bypass' : 'Unrestricted'
 
         [

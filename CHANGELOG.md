@@ -1,6 +1,35 @@
-## 12.5.0
+## Unreleased
 * [**Ranjib Dey**](https://github.com/ranjib):
   [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
+* [**John Kerry**](https://github.com/jkerry):
+  [pr#3539](https://github.com/chef/chef/pull/3539) Fix issue: registry_key resource is case sensitive in chef but not on windows
+* [**David Eddy**](https://github.com/bahamas10):
+  [pr#3443](https://github.com/chef/chef/pull/3443) remove extraneous space
+
+
+* [pr#3455](https://github.com/chef/chef/pull/3455) powershell_script: do not allow suppression of syntax errors
+* [pr#3519](https://github.com/chef/chef/pull/3519) The wording seemed odd.
+* [pr#3208](https://github.com/chef/chef/pull/3208) Missing require (require what you use).
+* [pr#3449](https://github.com/chef/chef/pull/3449) correcting minor typo in user_edit knife action
+* [pr#3572](https://github.com/chef/chef/pull/3572) Use windows paths without case-sensitivity.
+* [pr#3666](https://github.com/chef/chef/pull/3666) Support SNI in `knife ssl check`.
+* [pr#3667](https://github.com/chef/chef/pull/3667) Change chef service to start as 'Automatic delayed start'.
+* [pr#3683](https://github.com/chef/chef/pull/3683) Correct Windows reboot command to delay in minutes, per the property.
+
+## 12.4.1
+
+* [**Noah Kantrowitz**](https://github.com/coderanger):
+  [pr#3605](https://github.com/chef/chef/pull/3605) Rework `Resource#action` to match 12.3 API
+
+* [pr#3586](https://github.com/chef/chef/issues/3586) Fix bug preventing light weight resources from being used with heavy weight providers
+* [Issue #3593](https://github.com/chef/chef/issues/3593) Fix bug where provider priority map did not take into consideration a provided block
+* [pr#3630](https://github.com/chef/chef/pull/3630) Restore Chef::User and Chef::ApiClient namespace to API V0 functionality and move new functionality into Chef::UserV1 and Chef::ApiClientV1 until Chef 13.
+* [pr#3611](https://github.com/chef/chef/pull/3611) Call `provides?` even if `provides` is not called
+* [pr#3589](https://github.com/chef/chef/pull/3589) Fix errant bashisms
+* [pr#3620](https://github.com/chef/chef/pull/3620) Fix issue where recipe names in run list mutate when version constaints are present
+* [pr#3623](https://github.com/chef/chef/pull/3623) Allow LWRPs to access the real class when accessed through `Chef::Resource` and `Chef::Provider`
+* [pr#3627](https://github.com/chef/chef/pull/3627) Separate priority map and DSL handler map so that `provides` has veto power over priority
+* [pr#3638](https://github.com/chef/chef/pull/3638) Deprecate passing more than 1 argument to create a resource
 
 ## 12.4.0
 

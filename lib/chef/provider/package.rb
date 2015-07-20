@@ -142,7 +142,7 @@ class Chef
       def action_remove
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of " :  ""
-          converge_by("remove #{description} package #{@current_resource.package_name}") do
+          converge_by("remove #{description}package #{@current_resource.package_name}") do
             remove_package(@current_resource.package_name, @new_resource.version)
             Chef::Log.info("#{@new_resource} removed")
           end
@@ -490,37 +490,6 @@ class Chef
           false
         end
       end
-
-      # Set provider priority
-      require 'chef/chef_class'
-      require 'chef/provider/package/dpkg'
-      require 'chef/provider/package/homebrew'
-      require 'chef/provider/package/macports'
-      require 'chef/provider/package/apt'
-      require 'chef/provider/package/yum'
-      require 'chef/provider/package/zypper'
-      require 'chef/provider/package/portage'
-      require 'chef/provider/package/pacman'
-      require 'chef/provider/package/ips'
-      require 'chef/provider/package/solaris'
-      require 'chef/provider/package/smartos'
-      require 'chef/provider/package/aix'
-      require 'chef/provider/package/paludis'
-
-      Chef.set_provider_priority_array :package, [ Homebrew, Macports ], os: "darwin"
-
-      Chef.set_provider_priority_array :package,  Apt,      platform_family: "debian"
-      Chef.set_provider_priority_array :package,  Yum,      platform_family: %w(rhel fedora)
-      Chef.set_provider_priority_array :package,  Zypper,   platform_family: "suse"
-      Chef.set_provider_priority_array :package,  Portage,  platform: "gentoo"
-      Chef.set_provider_priority_array :package,  Pacman,   platform: "arch"
-      Chef.set_provider_priority_array :package,  Ips,      platform: %w(openindiana opensolaris omnios solaris2)
-      Chef.set_provider_priority_array :package,  Solaris,  platform: "nexentacore"
-      Chef.set_provider_priority_array :package,  Solaris,  platform: "solaris2", platform_version: '< 5.11'
-
-      Chef.set_provider_priority_array :package,  SmartOS,  platform: "smartos"
-      Chef.set_provider_priority_array :package,  Aix,      platform: "aix"
-      Chef.set_provider_priority_array :package,  Paludis,  platform: "exherbo"
 
       private
 

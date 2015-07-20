@@ -22,7 +22,7 @@ class Chef
   class Resource
     class DscScript < Chef::Resource
 
-      provides :dsc_script, platform: "windows"
+      provides :dsc_script, os: "windows"
 
       default_action :run
 

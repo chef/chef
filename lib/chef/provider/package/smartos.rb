@@ -29,6 +29,7 @@ class Chef
       class SmartOS < Chef::Provider::Package
         attr_accessor :is_virtual_package
 
+        provides :package, platform: "smartos"
         provides :smartos_package, os: "solaris2", platform_family: "smartos"
 
         def load_current_resource

@@ -73,11 +73,12 @@ class Chef
         exit 1
       end
 
-
       def verify_peer_socket
         @verify_peer_socket ||= begin
           tcp_connection = TCPSocket.new(host, port)
-          OpenSSL::SSL::SSLSocket.new(tcp_connection, verify_peer_ssl_context)
+          ssl_client = OpenSSL::SSL::SSLSocket.new(tcp_connection, verify_peer_ssl_context)
+          ssl_client.hostname = host
+          ssl_client
         end
       end
 

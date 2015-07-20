@@ -18,9 +18,12 @@
 
 require 'spec_helper'
 require 'tempfile'
-require 'chef/workstation_config_loader'
 
-describe Chef::WorkstationConfigLoader do
+require 'chef-config/exceptions'
+require 'chef-config/windows'
+require 'chef-config/workstation_config_loader'
+
+RSpec.describe ChefConfig::WorkstationConfigLoader do
 
   let(:explicit_config_location) { nil }
 
@@ -65,7 +68,7 @@ describe Chef::WorkstationConfigLoader do
         let(:home) { "/Users/example.user" }
 
         before do
-          allow(Chef::Util::PathHelper).to receive(:home).with('.chef').and_yield(File.join(home, '.chef'))
+          allow(ChefConfig::PathHelper).to receive(:home).with('.chef').and_yield(File.join(home, '.chef'))
           allow(config_loader).to receive(:path_exists?).with("#{home}/.chef/knife.rb").and_return(true)
         end
 
@@ -88,7 +91,7 @@ describe Chef::WorkstationConfigLoader do
             let(:env_pwd) { "/path/to/cwd" }
 
             before do
-              if Chef::Platform.windows?
+              if ChefConfig.windows?
                 env["CD"] = env_pwd
               else
                 env["PWD"] = env_pwd
@@ -224,7 +227,7 @@ describe Chef::WorkstationConfigLoader do
       let(:explicit_config_location) { "/nope/nope/nope/frab/jab/nab" }
 
       it "raises a configuration error" do
-        expect { config_loader.load }.to raise_error(Chef::Exceptions::ConfigurationError)
+        expect { config_loader.load }.to raise_error(ChefConfig::ConfigurationError)
       end
 
     end
@@ -233,15 +236,20 @@ describe Chef::WorkstationConfigLoader do
 
       let(:config_content) { "" }
 
-      let(:explicit_config_location) do
-        # could use described_class, but remove all ':' from the path if so.
-        t = Tempfile.new("Chef-WorkstationConfigLoader-rspec-test")
-        t.print(config_content)
-        t.close
-        t.path
+      # We need to keep a reference to the tempfile because while #close does
+      # not unlink the file, the object being GC'd will.
+      let(:tempfile) do
+        Tempfile.new("Chef-WorkstationConfigLoader-rspec-test").tap do |t|
+          t.print(config_content)
+          t.close
+        end
       end
 
-      after { File.unlink(explicit_config_location) if File.exists?(explicit_config_location) }
+      let(:explicit_config_location) do
+        tempfile.path
+      end
+
+      after { File.unlink(explicit_config_location) if File.exist?(explicit_config_location) }
 
       context "and is valid" do
 
@@ -249,12 +257,12 @@ describe Chef::WorkstationConfigLoader do
 
         it "loads the config" do
           expect(config_loader.load).to be(true)
-          expect(Chef::Config.config_file_evaluated).to be(true)
+          expect(ChefConfig::Config.config_file_evaluated).to be(true)
         end
 
-        it "sets Chef::Config.config_file" do
+        it "sets ChefConfig::Config.config_file" do
           config_loader.load
-          expect(Chef::Config.config_file).to eq(explicit_config_location)
+          expect(ChefConfig::Config.config_file).to eq(explicit_config_location)
         end
       end
 
@@ -263,7 +271,7 @@ describe Chef::WorkstationConfigLoader do
         let(:config_content) { "{{{{{:{{" }
 
         it "raises a ConfigurationError" do
-          expect { config_loader.load }.to raise_error(Chef::Exceptions::ConfigurationError)
+          expect { config_loader.load }.to raise_error(ChefConfig::ConfigurationError)
         end
       end
 
@@ -272,7 +280,7 @@ describe Chef::WorkstationConfigLoader do
         let(:config_content) { ":foo\n:bar\nraise 'oops'\n:baz\n" }
 
         it "raises a ConfigurationError" do
-          expect { config_loader.load }.to raise_error(Chef::Exceptions::ConfigurationError)
+          expect { config_loader.load }.to raise_error(ChefConfig::ConfigurationError)
         end
       end
 

@@ -21,6 +21,11 @@ require 'spec_helper'
 require 'chef/api_client'
 require 'tempfile'
 
+# DEPRECATION NOTE
+#
+# This code will be removed in Chef 13 in favor of the code in Chef::ApiClientV1,
+# which will be moved to this namespace. New development should occur in
+# Chef::ApiClientV1 until the time before Chef 13.
 describe Chef::ApiClient do
   before(:each) do
     @client = Chef::ApiClient.new
@@ -51,20 +56,6 @@ describe Chef::ApiClient do
   it "allows only boolean values for the admin flag" do
     expect { @client.admin(false) }.not_to raise_error
     expect { @client.admin(Hash.new) }.to raise_error(ArgumentError)
-  end
-
-  it "has an create_key flag attribute" do
-    @client.create_key(true)
-    expect(@client.create_key).to be_truthy
-  end
-
-  it "create_key defaults to false" do
-    expect(@client.create_key).to be_falsey
-  end
-
-  it "allows only boolean values for the create_key flag" do
-    expect { @client.create_key(false) }.not_to raise_error
-    expect { @client.create_key(Hash.new) }.to raise_error(ArgumentError)
   end
 
   it "has a 'validator' flag attribute" do
@@ -129,12 +120,6 @@ describe Chef::ApiClient do
       expect(@json).to include(%q{"validator":false})
     end
 
-    it "includes the 'create_key' flag when present" do
-      @client.create_key(true)
-      @json = @client.to_json
-      expect(@json).to include(%q{"create_key":true})
-    end
-
     it "includes the private key when present" do
       @client.private_key("monkeypants")
       expect(@client.to_json).to include(%q{"private_key":"monkeypants"})
@@ -143,15 +128,11 @@ describe Chef::ApiClient do
     it "does not include the private key if not present" do
       expect(@json).not_to include("private_key")
     end
-
-    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
-      let(:jsonable) { @client }
-    end
   end
 
   describe "when deserializing from JSON (string) using ApiClient#from_json" do
     let(:client_string) do
-      "{\"name\":\"black\",\"public_key\":\"crowes\",\"private_key\":\"monkeypants\",\"admin\":true,\"validator\":true,\"create_key\":true}"
+      "{\"name\":\"black\",\"public_key\":\"crowes\",\"private_key\":\"monkeypants\",\"admin\":true,\"validator\":true}"
     end
 
     let(:client) do
@@ -178,10 +159,6 @@ describe Chef::ApiClient do
       expect(client.admin).to be_truthy
     end
 
-    it "preserves the create_key status" do
-      expect(client.create_key).to be_truthy
-    end
-
     it "preserves the 'validator' status" do
       expect(client.validator).to be_truthy
     end
@@ -199,7 +176,6 @@ describe Chef::ApiClient do
         "private_key" => "monkeypants",
         "admin" => true,
         "validator" => true,
-        "create_key" => true,
         "json_class" => "Chef::ApiClient"
       }
     end
@@ -224,10 +200,6 @@ describe Chef::ApiClient do
       expect(client.admin).to be_truthy
     end
 
-    it "preserves the create_key status" do
-      expect(client.create_key).to be_truthy
-    end
-
     it "preserves the 'validator' status" do
       expect(client.validator).to be_truthy
     end
@@ -243,18 +215,16 @@ describe Chef::ApiClient do
 
     before(:each) do
       client = {
-        "name" => "black",
-        "clientname" => "black",
-        "public_key" => "crowes",
-        "private_key" => "monkeypants",
-        "admin" => true,
-        "create_key" => true,
-        "validator" => true,
-        "json_class" => "Chef::ApiClient"
+      "name" => "black",
+      "clientname" => "black",
+      "public_key" => "crowes",
+      "private_key" => "monkeypants",
+      "admin" => true,
+      "validator" => true,
+      "json_class" => "Chef::ApiClient"
       }
-
-      @http_client = double("Chef::REST mock")
-      allow(Chef::REST).to receive(:new).and_return(@http_client)
+      @http_client = double("Chef::ServerAPI mock")
+      allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
       expect(@http_client).to receive(:get).with("clients/black").and_return(client)
       @client = Chef::ApiClient.load(client['name'])
     end
@@ -273,10 +243,6 @@ describe Chef::ApiClient do
 
     it "preserves the admin status" do
       expect(@client.admin).to be_a_kind_of(TrueClass)
-    end
-
-    it "preserves the create_key status" do
-      expect(@client.create_key).to be_a_kind_of(TrueClass)
     end
 
     it "preserves the 'validator' status" do
@@ -304,18 +270,13 @@ describe Chef::ApiClient do
       File.open(Chef::Config[:client_key], "r") {|f| f.read.chomp }
     end
 
-    it "has an HTTP client configured with default credentials" do
-      expect(@client.http_api).to be_a_kind_of(Chef::REST)
-      expect(@client.http_api.client_name).to eq("silent-bob")
-      expect(@client.http_api.signing_key.to_s).to eq(private_key_data)
-    end
   end
 
 
   describe "when requesting a new key" do
     before do
       @http_client = double("Chef::REST mock")
-      allow(Chef::REST).to receive(:new).and_return(@http_client)
+      allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
     end
 
     context "and the client does not exist on the server" do
@@ -332,34 +293,24 @@ describe Chef::ApiClient do
     end
 
     context "and the client exists" do
-      let(:chef_rest_v0_mock) { double('chef rest root v0 object') }
-      let(:payload) {
-        {:name => "lost-my-key", :admin => false, :validator => false, :private_key => true}
-      }
-
       before do
         @api_client_without_key = Chef::ApiClient.new
         @api_client_without_key.name("lost-my-key")
-        allow(@api_client_without_key).to receive(:chef_rest_v0).and_return(chef_rest_v0_mock)
-        #allow(@api_client_with_key).to receive(:http_api).and_return(_api_mock)
-
-        allow(chef_rest_v0_mock).to receive(:put).with("clients/lost-my-key", payload).and_return(@api_client_with_key)
-        allow(chef_rest_v0_mock).to receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
-        allow(@http_client).to receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
+        expect(@http_client).to receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
       end
+
 
       context "and the client exists on a Chef 11-like server" do
         before do
           @api_client_with_key = Chef::ApiClient.new
           @api_client_with_key.name("lost-my-key")
           @api_client_with_key.private_key("the new private key")
-          allow(@api_client_with_key).to receive(:chef_rest_v0).and_return(chef_rest_v0_mock)
+          expect(@http_client).to receive(:put).
+            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
+            and_return(@api_client_with_key)
         end
 
         it "returns an ApiClient with a private key" do
-          expect(chef_rest_v0_mock).to receive(:put).with("clients/lost-my-key", payload).
-                                        and_return(@api_client_with_key)
-
           response = Chef::ApiClient.reregister("lost-my-key")
           # no sane == method for ApiClient :'(
           expect(response).to eq(@api_client_without_key)
@@ -372,7 +323,7 @@ describe Chef::ApiClient do
       context "and the client exists on a Chef 10-like server" do
         before do
           @api_client_with_key = {"name" => "lost-my-key", "private_key" => "the new private key"}
-          expect(chef_rest_v0_mock).to receive(:put).
+          expect(@http_client).to receive(:put).
             with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
             and_return(@api_client_with_key)
         end
@@ -389,135 +340,5 @@ describe Chef::ApiClient do
       end
 
     end
-  end
-
-  describe "Versioned API Interactions" do
-    let(:response_406) { OpenStruct.new(:code => '406') }
-    let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
-    let(:payload)  {
-      {
-        :name => "some_name",
-        :validator => true,
-        :admin => true
-      }
-    }
-
-    before do
-      @client = Chef::ApiClient.new
-      allow(@client).to receive(:chef_rest_v0).and_return(double('chef rest root v0 object'))
-      allow(@client).to receive(:chef_rest_v1).and_return(double('chef rest root v1 object'))
-      @client.name "some_name"
-      @client.validator true
-      @client.admin true
-    end
-
-    describe "create" do
-
-      # from spec/support/shared/unit/user_and_client_shared.rb
-      it_should_behave_like "user or client create" do
-        let(:object)  { @client }
-        let(:error)   { Chef::Exceptions::InvalidClientAttribute }
-        let(:rest_v0) { @client.chef_rest_v0 }
-        let(:rest_v1) { @client.chef_rest_v1 }
-        let(:url)     { "clients" }
-      end
-
-      context "when API V1 is not supported by the server" do
-        # from spec/support/shared/unit/api_versioning.rb
-        it_should_behave_like "version handling" do
-          let(:object)    { @client }
-          let(:method)    { :create }
-          let(:http_verb) { :post }
-          let(:rest_v1)   { @client.chef_rest_v1 }
-        end
-      end
-
-    end # create
-
-    describe "update" do
-      context "when a valid client is defined" do
-
-        shared_examples_for "client updating" do
-          it "updates the client" do
-            expect(rest). to receive(:put).with("clients/some_name", payload)
-            @client.update
-          end
-
-          context "when only the name field exists" do
-
-            before do
-              # needed since there is no way to set to nil via code
-              @client.instance_variable_set(:@validator, nil)
-              @client.instance_variable_set(:@admin, nil)
-            end
-
-            after do
-              @client.validator true
-              @client.admin true
-            end
-
-            it "updates the client with only the name" do
-              expect(rest). to receive(:put).with("clients/some_name", {:name => "some_name"})
-              @client.update
-            end
-          end
-
-        end
-
-        context "when API V1 is supported by the server" do
-
-          it_should_behave_like "client updating" do
-            let(:rest) { @client.chef_rest_v1 }
-          end
-
-        end # when API V1 is supported by the server
-
-        context "when API V1 is not supported by the server" do
-          context "when no version is supported" do
-            # from spec/support/shared/unit/api_versioning.rb
-            it_should_behave_like "version handling" do
-              let(:object)    { @client }
-              let(:method)    { :create }
-              let(:http_verb) { :post }
-              let(:rest_v1)   { @client.chef_rest_v1 }
-            end
-          end # when no version is supported
-
-          context "when API V0 is supported" do
-
-            before do
-              allow(@client.chef_rest_v1).to receive(:put).and_raise(exception_406)
-              allow(@client).to receive(:server_client_api_version_intersection).and_return([0])
-            end
-
-            it_should_behave_like "client updating" do
-              let(:rest) { @client.chef_rest_v0 }
-            end
-
-          end
-
-        end # when API V1 is not supported by the server
-      end # when a valid client is defined
-    end # update
-
-    # DEPRECATION
-    # This can be removed after API V0 support is gone
-    describe "reregister" do
-      context "when server API V0 is valid on the Chef Server receiving the request" do
-        it "creates a new object via the API" do
-          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({:private_key => true})).and_return({})
-          @client.reregister
-        end
-      end # when server API V0 is valid on the Chef Server receiving the request
-
-      context "when server API V0 is not supported by the Chef Server" do
-        # from spec/support/shared/unit/api_versioning.rb
-        it_should_behave_like "user and client reregister" do
-          let(:object)    { @client }
-          let(:rest_v0)   { @client.chef_rest_v0 }
-        end
-      end # when server API V0 is not supported by the Chef Server
-    end # reregister
-
   end
 end

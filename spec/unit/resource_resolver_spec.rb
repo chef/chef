@@ -31,19 +31,23 @@ describe Chef::ResourceResolver do
 
   context 'instance methods' do
     let(:resolver) do
-      described_class.new(Chef::Node.new, 'execute[echo]')
+      described_class.new(Chef::Node.new, 'execute')
     end
 
     it '#resolve' do
-      expect(resolver.resolve).to be_nil
+      expect(resolver.resolve).to eq Chef::Resource::Execute
     end
 
     it '#list' do
-      expect(resolver.list).to be_empty
+      expect(resolver.list).to eq [ Chef::Resource::Execute ]
     end
 
-    it '#provided_by?' do
+    it '#provided_by? returns true when resource class is in the list' do
       expect(resolver.provided_by?(Chef::Resource::Execute)).to be_truthy
+    end
+
+    it '#provided_by? returns false when resource class is not in the list' do
+      expect(resolver.provided_by?(Chef::Resource::File)).to be_falsey
     end
   end
 end

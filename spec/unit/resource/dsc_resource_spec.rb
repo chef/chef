@@ -35,7 +35,7 @@ describe Chef::Resource::DscResource do
     }
 
     it "has a default action of `:run`" do
-      expect(dsc_test_resource.action).to eq(:run)
+      expect(dsc_test_resource.action).to eq([:run])
     end
 
     it "has an allowed_actions attribute with only the `:run` and `:nothing` attributes" do

@@ -29,6 +29,7 @@ class Chef
     class Package
       class Zypper < Chef::Provider::Package
 
+        provides :package, platform_family: "suse"
         provides :zypper_package, os: "linux"
 
         def load_current_resource

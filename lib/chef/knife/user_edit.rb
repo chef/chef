@@ -23,7 +23,7 @@ class Chef
     class UserEdit < Knife
 
       deps do
-        require 'chef/user'
+        require 'chef/user_v1'
         require 'chef/json_compat'
       end
 
@@ -56,8 +56,7 @@ EOF
           exit 1
         end
 
-        original_user = Chef::User.load(@user_name).to_hash
-
+        original_user = Chef::UserV1.load(@user_name).to_hash
         # DEPRECATION NOTE
         # Remove this if statement and corrosponding code post OSC 11 support.
         #
@@ -69,11 +68,11 @@ EOF
         else # EC / CS 12 user create
           edited_user = edit_data(original_user)
           if original_user != edited_user
-            user = Chef::User.from_hash(edited_user)
+            user = Chef::UserV1.from_hash(edited_user)
             user.update
             ui.msg("Saved #{user}.")
           else
-            ui.msg("User unchaged, not saving.")
+            ui.msg("User unchanged, not saving.")
           end
         end
 

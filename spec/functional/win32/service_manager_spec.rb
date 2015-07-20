@@ -33,7 +33,7 @@ end
 # directories.
 #
 
-describe "Chef::Application::WindowsServiceManager", :windows_only, :system_windows_service_gem_only do
+describe "Chef::Application::WindowsServiceManager", :windows_only, :system_windows_service_gem_only, :appveyor_only do
 
   include_context "using Win32::Service"
 
@@ -43,7 +43,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
     end
 
     it "throws an error with required missing options" do
-      test_service.each do |key,value|
+      [:service_name, :service_display_name, :service_description, :service_file_path].each do |key|
         service_def = test_service.dup
         service_def.delete(key)
 

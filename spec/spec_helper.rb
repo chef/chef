@@ -87,12 +87,14 @@ Dir["spec/support/**/*.rb"].
 OHAI_SYSTEM = Ohai::System.new
 OHAI_SYSTEM.all_plugins("platform")
 
-TEST_PLATFORM =
-  (OHAI_SYSTEM['platform'] ||
-  'unknown_test_platform').dup.freeze
-TEST_PLATFORM_VERSION =
-  (OHAI_SYSTEM['platform_version'] ||
-  'unknown_platform_version').dup.freeze
+test_node = Chef::Node.new
+test_node.automatic['os'] = (OHAI_SYSTEM['os'] || 'unknown_os').dup.freeze
+test_node.automatic['platform_family'] = (OHAI_SYSTEM['platform_family'] || 'unknown_platform_family').dup.freeze
+test_node.automatic['platform'] = (OHAI_SYSTEM['platform'] || 'unknown_platform').dup.freeze
+test_node.automatic['platform_version'] = (OHAI_SYSTEM['platform_version'] || 'unknown_platform_version').dup.freeze
+TEST_NODE = test_node.freeze
+TEST_PLATFORM = TEST_NODE['platform']
+TEST_PLATFORM_VERSION = TEST_NODE['platform_version']
 
 RSpec.configure do |config|
   config.include(Matchers)
@@ -116,6 +118,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :volatile_from_verify => false
 
   config.filter_run_excluding :skip_appveyor => true if ENV["APPVEYOR"]
+  config.filter_run_excluding :appveyor_only => true unless ENV["APPVEYOR"]
 
   config.filter_run_excluding :windows_only => true unless windows?
   config.filter_run_excluding :not_supported_on_mac_osx_106 => true if mac_osx_106?
@@ -162,13 +165,17 @@ RSpec.configure do |config|
   config.filter_run_excluding :provider => lambda {|criteria|
     type, target_provider = criteria.first
 
-    platform = TEST_PLATFORM.dup
-    platform_version = TEST_PLATFORM_VERSION.dup
-
-    begin
-      provider_for_running_platform = Chef::Platform.find_provider(platform, platform_version, type)
-      provider_for_running_platform != target_provider
-    rescue ArgumentError # no provider for platform
+    node = TEST_NODE.dup
+    resource_class = Chef::ResourceResolver.resolve(type, node: node)
+    if resource_class
+      resource = resource_class.new('test', Chef::RunContext.new(node, nil, nil))
+      begin
+        provider = resource.provider_for_action(Array(resource_class.default_action).first)
+        provider.class != target_provider
+      rescue Chef::Exceptions::ProviderNotFound # no provider for platform
+        true
+      end
+    else
       true
     end
   }

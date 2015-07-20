@@ -34,7 +34,7 @@ describe Chef::Knife::ClientCreate do
   end
 
   let(:client) do
-    Chef::ApiClient.new
+    Chef::ApiClientV1.new
   end
 
   let(:knife) do

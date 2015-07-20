@@ -23,7 +23,7 @@ class Chef
     class ClientBulkDelete < Knife
 
       deps do
-        require 'chef/api_client'
+        require 'chef/api_client_v1'
         require 'chef/json_compat'
       end
 
@@ -39,7 +39,7 @@ class Chef
           ui.fatal("You must supply a regular expression to match the results against")
           exit 42
         end
-        all_clients = Chef::ApiClient.list(true)
+        all_clients = Chef::ApiClientV1.list(true)
 
         matcher = /#{name_args[0]}/
         clients_to_delete = {}
