@@ -228,6 +228,37 @@ module ChefConfig
         joined_paths
       end
     end
+
+    # Determine if the given path is protected by OS X System Integrity Protection.
+    def self.is_sip_path?(path, node)
+      if node['platform'] == 'mac_os_x' and Gem::Version.new(node['platform_version']) >= Gem::Version.new('10.11')
+          # todo: parse rootless.conf for this?
+          sip_paths= [
+            '/System', '/bin', '/sbin', '/usr',
+          ]
+          sip_paths.each do |sip_path|
+            ChefConfig.logger.info("This is a SIP path, checking if it in exceptions list.")
+            return true if path.start_with?(sip_path)
+          end
+          false
+      else
+        false
+      end
+    end
+    # Determine if the given path is on the exception list for OS X System Integrity Protection.
+    def self.writable_sip_path?(path)
+      # todo: parse rootless.conf for this?
+      sip_exceptions = [
+        '/System/Library/Caches', '/System/Library/Extensions',
+        '/System/Library/Speech', '/System/Library/User Template',
+        '/usr/libexec/cups', '/usr/local', '/usr/share/man'
+      ]
+      sip_exceptions.each do |exception_path|
+        return true if path.start_with?(exception_path)
+      end
+      ChefConfig.logger.error("Cannot write to a SIP Path on OS X 10.11+")
+      false
+    end
   end
 end
 
