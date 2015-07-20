@@ -28,8 +28,11 @@ require 'chef-config/logger'
 ChefConfig.logger = Chef::Log
 
 require 'chef-config/config'
-
 require 'chef/platform/query_helpers'
+
+# Load the ohai config into the chef config. We can't have an empty ohai
+# configuration context because `ohai.plugins_path << some_path` won't work.
+require 'ohai/config'
 
 class Chef
   Config = ChefConfig::Config
