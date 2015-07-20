@@ -58,7 +58,7 @@ build do
 
   # Perform multiple gem installs to better isolate/debug failures
   {
-    'chefspec'          => '4.2.0',
+    'chefspec'          => '4.3.0',
     'fauxhai'           => '2.2.0',
     'rubocop'           => '0.31.0',
     'knife-spork'       => '1.5.0',
