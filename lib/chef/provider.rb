@@ -211,10 +211,29 @@ class Chef
           extend Forwardable
           define_singleton_method(:to_s) { "#{resource_class} forwarder module" }
           define_singleton_method(:inspect) { to_s }
+          # Add a delegator for each explicit property that will get the *current* value
+          # of the property by default instead of the *actual* value.
+          resource.class.properties.each do |name, property|
+            class_eval(<<-EOM, __FILE__, __LINE__)
+              def #{name}(*args, &block)
+                # If no arguments were passed, we process "get" by defaulting
+                # the value to current_resource, not new_resource. This helps
+                # avoid issues where resources accidentally overwrite perfectly
+                # valid stuff with default values.
+                if args.empty? && !block
+                  if !new_resource.property_is_set?(__method__) && current_resource
+                    return current_resource.public_send(__method__)
+                  end
+                end
+                new_resource.public_send(__method__, *args, &block)
+              end
+            EOM
+          end
           dsl_methods =
              resource.class.public_instance_methods +
              resource.class.protected_instance_methods -
-             provider_class.instance_methods
+             provider_class.instance_methods -
+             resource.class.properties.keys
           def_delegators(:new_resource, *dsl_methods)
         end
         include @included_resource_dsl_module

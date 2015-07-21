@@ -1442,9 +1442,12 @@ class Chef
         use_inline_resources
         include_resource_dsl true
         define_singleton_method(:to_s) { "#{resource_class} action provider" }
-        define_singleton_method(:inspect) { to_s }
-        define_method(:load_current_resource) do
+        def self.inspect
+          to_s
+        end
+        def load_current_resource
           if new_resource.respond_to?(:load_current_value!)
+            # dup the resource and then reset desired-state properties.
             current_resource = new_resource.dup
 
             # We clear desired state in the copy, because it is supposed to be actual state.
