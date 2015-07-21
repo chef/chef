@@ -30,8 +30,17 @@ ChefConfig.logger = Chef::Log
 require 'chef-config/config'
 require 'chef/platform/query_helpers'
 
+# Ohai::Config defines its own log_level and log_location. When loaded, it will
+# override the default ChefConfig::Config values. We save them here before
+# loading ohai/config so that we can override them again inside Chef::Config.
+#
+# REMOVEME once these configurables are removed from the top level of Ohai.
+LOG_LEVEL = ChefConfig::Config[:log_level] unless defined? LOG_LEVEL
+LOG_LOCATION = ChefConfig::Config[:log_location] unless defined? LOG_LOCATION
+
 # Load the ohai config into the chef config. We can't have an empty ohai
-# configuration context because `ohai.plugins_path << some_path` won't work.
+# configuration context because `ohai.plugins_path << some_path` won't work,
+# and providing default ohai config values here isn't DRY.
 require 'ohai/config'
 
 class Chef
@@ -50,6 +59,25 @@ class Chef
         evt_loggers << :win_evt
       end
       evt_loggers
+    end
+
+    # Override the default values that were set by Ohai.
+    #
+    # REMOVEME once these configurables are removed from the top level of Ohai.
+    default :log_level, LOG_LEVEL
+    default :log_location, LOG_LOCATION
+
+    # Ohai::Config[:log_level] is deprecated and warns when set. Unfortunately,
+    # there is no way to distinguish between setting log_level and setting
+    # Ohai::Config[:log_level]. Since log_level and log_location are used by
+    # chef-client and other tools (e.g., knife), we will mute the warnings here
+    # by redefining the config_attr_writer to not warn for these options.
+    #
+    # REMOVEME once the warnings for these configurables are removed from Ohai.
+    [ :log_level, :log_location ].each do |option|
+      config_attr_writer option do |value|
+        value
+      end
     end
 
   end
