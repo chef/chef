@@ -672,6 +672,13 @@ describe Chef::Node do
       expect(node.run_list).to eq([ "role[base]", "recipe[chef::server]" ])
     end
 
+    it "sets the node chef_environment" do
+      attrs = { "chef_environment" => "foo_environment", "bar" => "baz" }
+      expect(node.consume_chef_environment(attrs)).to eq({ "bar" => "baz" })
+      expect(node.chef_environment).to eq("foo_environment")
+      expect(node['chef_environment']).to be nil
+    end
+
     it "should overwrites the run list with the run list it consumes" do
       node.consume_run_list "recipes" => [ "one", "two" ]
       node.consume_run_list "recipes" => [ "three" ]
