@@ -66,9 +66,9 @@ XML
           if service_type == 'Agent'
             let(:plist) {'/Library/LaunchAgents/io.redis.redis-server.plist'}
             let(:session) {'-S Aqua '}
-            let(:su_cmd) {'su igor -c'}
-            if not ["10.10", "10.11"].include?(platform_version)
-              let(:su_cmd) {'su -l igor -c'}
+            let(:su_cmd) {'su -l igor -c'}
+            if platform_version == "10.9"
+              let(:su_cmd) {'su igor -c'}
             end
           end
           let(:service_label) {'io.redis.redis-server'}
