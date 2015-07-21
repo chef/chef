@@ -69,12 +69,22 @@ describe Chef::Resource::File::Verification do
     end
 
     context "with a verification command(String)" do
+      def platform_specific_verify_command(variable_name)
+        if windows?
+          "if \"#{temp_path}\" == \"%{#{variable_name}}\" (exit 0) else (exit 1)"
+        else
+          "test #{temp_path} = %{#{variable_name}}"
+        end
+      end
+
       it "substitutes \%{file} with the path" do
-        test_command = if windows?
-                         "if \"#{temp_path}\" == \"%{file}\" (exit 0) else (exit 1)"
-                       else
-                         "test #{temp_path} = %{file}"
-                       end
+        test_command = platform_specific_verify_command('file')
+        v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
+        expect(v.verify(temp_path)).to eq(true)
+      end
+
+      it "substitutes \%{path} with the path" do
+        test_command = platform_specific_verify_command('path')
         v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
         expect(v.verify(temp_path)).to eq(true)
       end
