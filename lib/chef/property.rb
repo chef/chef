@@ -86,7 +86,7 @@ class Chef
     #
     def initialize(**options)
       options.each { |k,v| options[k.to_sym] = v if k.is_a?(String) }
-      options[:name_property] = options.delete(:name_attribute) unless options.has_key?(:name_property)
+      options[:name_property] = options.delete(:name_attribute) if options.has_key?(:name_attribute) && !options.has_key?(:name_property)
       @options = options
 
       if options.has_key?(:default)
