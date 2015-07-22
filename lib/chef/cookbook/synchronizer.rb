@@ -131,7 +131,7 @@ class Chef
       files_remaining_by_cookbook[file.cookbook] -= 1
 
       if files_remaining_by_cookbook[file.cookbook] == 0
-        @events.synchronized_cookbook(file.cookbook.name)
+        @events.synchronized_cookbook(file.cookbook)
       end
     end
 
