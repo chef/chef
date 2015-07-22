@@ -15,6 +15,7 @@
 * [pr#3666](https://github.com/chef/chef/pull/3666) Support SNI in `knife ssl check`.
 * [pr#3667](https://github.com/chef/chef/pull/3667) Change chef service to start as 'Automatic delayed start'.
 * [pr#3683](https://github.com/chef/chef/pull/3683) Correct Windows reboot command to delay in minutes, per the property.
+* [pr#3698](https://github.com/chef/chef/pull/3698) Add ability to specify dependencies in chef-service-manager.
 
 ## 12.4.1
 

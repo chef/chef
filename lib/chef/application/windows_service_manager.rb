@@ -93,6 +93,7 @@ class Chef
         @service_start_name = service_options[:run_as_user]
         @password = service_options[:run_as_password]
         @delayed_start = service_options[:delayed_start]
+        @dependencies = service_options[:dependencies]
       end
 
       def run(params = ARGV)
@@ -114,16 +115,17 @@ class Chef
             cmd = "\"#{ruby}\" \"#{@service_file_path}\" #{opts}".gsub(File::SEPARATOR, File::ALT_SEPARATOR)
 
             ::Win32::Service.new(
-              :service_name     => @service_name,
-              :display_name     => @service_display_name,
-              :description      => @service_description,
+              :service_name       => @service_name,
+              :display_name       => @service_display_name,
+              :description        => @service_description,
               # Prior to 0.8.5, win32-service creates interactive services by default,
               # and we don't want that, so we need to override the service type.
-              :service_type     => ::Win32::Service::SERVICE_WIN32_OWN_PROCESS,
-              :start_type       => ::Win32::Service::SERVICE_AUTO_START,
-              :binary_path_name => cmd,
+              :service_type       => ::Win32::Service::SERVICE_WIN32_OWN_PROCESS,
+              :start_type         => ::Win32::Service::SERVICE_AUTO_START,
+              :binary_path_name   => cmd,
               :service_start_name => @service_start_name,
-              :password => @password,
+              :password           => @password,
+              :dependencies       => @dependencies
             )
             ::Win32::Service.configure(
               :service_name     => @service_name,
