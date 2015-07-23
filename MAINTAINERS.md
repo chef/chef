@@ -19,7 +19,7 @@ a maintainer, lieutenant, or the project lead.
 ## Chef Core
 
 Handles the core parts of the Chef DSL, base resource and provider
-infrastructure, and the Chef applications. Includes anything not covered by
+infrastructure, the Chef applications and [omnibus-chef](https://github.com/chef/omnibus-chef). Includes anything not covered by
 another component.
 
 ### Lieutenant
