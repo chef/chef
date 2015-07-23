@@ -5,6 +5,8 @@
   [pr#3539](https://github.com/chef/chef/pull/3539) Fix issue: registry\_key resource is case sensitive in chef but not on windows
 * [**David Eddy**](https://github.com/bahamas10):
   [pr#3443](https://github.com/chef/chef/pull/3443) remove extraneous space
+* [**margueritepd**](https://github.com/margueritepd):
+  [pr#3693](https://github.com/chef/chef/pull/3693) Interpolate `%{path}` in verify command
 
 
 * [pr#3455](https://github.com/chef/chef/pull/3455) powershell\_script: do not allow suppression of syntax errors
