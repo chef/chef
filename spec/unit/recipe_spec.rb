@@ -154,8 +154,6 @@ describe Chef::Recipe do
           end
 
           it "selects the first one alphabetically" do
-            expect(Chef::Log).to receive(:warn).with("You declared a new resource TottenhamHotspur for resource football, but it comes alphabetically after Sounders and has the same filters ({:platform=>\"nbc_sports\"}), so it will not be used. Use override: true if you want to use it for football.")
-
             Sounders.provides :football, platform: "nbc_sports"
             TottenhamHotspur.provides :football, platform: "nbc_sports"
 
@@ -165,8 +163,6 @@ describe Chef::Recipe do
           end
 
           it "selects the first one alphabetically even if the declaration order is reversed" do
-            expect(Chef::Log).to receive(:warn).with("You are overriding football2 on {:platform=>\"nbc_sports\"} with Sounders: used to be TottenhamHotspur. Use override: true if this is what you intended.")
-
             TottenhamHotspur.provides :football2, platform: "nbc_sports"
             Sounders.provides :football2, platform: "nbc_sports"
 

@@ -31,11 +31,6 @@ class Chef
           # are exactly equal
           if new_matcher[:value].is_a?(Class) && !new_matcher[:override]
             cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:value].name }
-            if cmp < 0
-              Chef::Log.warn "You are overriding #{key} on #{new_matcher[:filters].inspect} with #{new_matcher[:value].inspect}: used to be #{matcher[:value].inspect}. Use override: true if this is what you intended."
-            elsif cmp > 0
-              Chef::Log.warn "You declared a new resource #{new_matcher[:value].inspect} for resource #{key}, but it comes alphabetically after #{matcher[:value].inspect} and has the same filters (#{new_matcher[:filters].inspect}), so it will not be used. Use override: true if you want to use it for #{key}."
-            end
           end
         end
         cmp

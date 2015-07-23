@@ -794,21 +794,6 @@ describe "Recipe DSL methods" do
         end
       end
 
-      context "when Thingy9 provides :thingy9" do
-        before(:context) {
-          class RecipeDSLSpecNamespace::Thingy9 < BaseThingy
-            resource_name :thingy9
-          end
-        }
-
-        it "declaring a resource providing the same :thingy9 produces a warning" do
-          expect(Chef::Log).to receive(:warn).with("You declared a new resource RecipeDSLSpecNamespace::Thingy9AlternateProvider for resource thingy9, but it comes alphabetically after RecipeDSLSpecNamespace::Thingy9 and has the same filters ({}), so it will not be used. Use override: true if you want to use it for thingy9.")
-          class RecipeDSLSpecNamespace::Thingy9AlternateProvider < BaseThingy
-            resource_name :thingy9
-          end
-        end
-      end
-
       context "when Thingy10 provides :thingy10" do
         before(:context) {
           class RecipeDSLSpecNamespace::Thingy10 < BaseThingy
