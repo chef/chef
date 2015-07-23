@@ -11,8 +11,15 @@ is_smartos() {
   uname -v | grep "^joyent" 2>&1 >/dev/null
 }
 
+is_darwin()
+{
+  uname -v | grep "^Darwin" 2>&1 >/dev/null
+}
+
 if is_smartos; then
     PREFIX="/opt/local"
+elif is_darwin; then
+    PREFIX="/usr/local"
 else
     PREFIX="/usr"
 fi
