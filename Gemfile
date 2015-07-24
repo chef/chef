@@ -5,11 +5,6 @@ gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
 gem 'chef-config', path: "chef-config"
 
-# REMOVEME once there is a release of Ohai with these changes, and the
-# chef.gemspec is updated.
-gem 'ohai', github: 'chef/ohai',
-            ref: '7556a1d55808c459f3a9fad88e2a2371f361f3e0'
-
 group(:docgen) do
   gem "tomlrb"
   gem "yard"
