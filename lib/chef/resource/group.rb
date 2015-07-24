@@ -25,19 +25,17 @@ class Chef
 
       state_attrs :members
 
-      provides :group
+      allowed_actions :create, :remove, :modify, :manage
+      default_action :create
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :group
         @group_name = name
         @gid = nil
         @members = []
         @excluded_members = []
-        @action = :create
         @append = false
         @non_unique = false
-        @allowed_actions.push(:create, :remove, :modify, :manage)
       end
 
       def group_name(arg=nil)

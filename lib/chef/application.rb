@@ -93,7 +93,6 @@ class Chef
       if config[:config_file].nil?
         Chef::Log.warn("No config file found or specified on command line, using command line options.")
       elsif config_fetcher.config_missing?
-        pp config_missing: true
         Chef::Log.warn("*****************************************")
         Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
         Chef::Log.warn("*****************************************")

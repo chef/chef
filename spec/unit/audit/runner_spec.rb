@@ -68,8 +68,8 @@ describe Chef::Audit::Runner do
         in_sub_process do
           runner.send(:setup)
 
-          expect(RSpec.configuration.output_stream).to eq(log_location)
-          expect(RSpec.configuration.error_stream).to eq(log_location)
+          expect(RSpec.configuration.output_stream).to eq(Chef::Audit::Logger)
+          expect(RSpec.configuration.error_stream).to eq(Chef::Audit::Logger)
 
           expect(RSpec.configuration.formatters.size).to eq(2)
           expect(RSpec.configuration.formatters).to include(instance_of(Chef::Audit::AuditEventProxy))

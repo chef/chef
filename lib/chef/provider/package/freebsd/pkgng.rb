@@ -28,11 +28,11 @@ class Chef
             unless @current_resource.version
               case @new_resource.source
               when /^(http|ftp|\/)/
-                shell_out!("pkg add#{expand_options(@new_resource.options)} #{@new_resource.source}", :env => { 'LC_ALL' => nil }).status
+                shell_out_with_timeout!("pkg add#{expand_options(@new_resource.options)} #{@new_resource.source}", :env => { 'LC_ALL' => nil }).status
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               else
-                shell_out!("pkg install -y#{expand_options(@new_resource.options)} #{name}", :env => { 'LC_ALL' => nil }).status
+                shell_out_with_timeout!("pkg install -y#{expand_options(@new_resource.options)} #{name}", :env => { 'LC_ALL' => nil }).status
               end
             end
           end
@@ -40,11 +40,11 @@ class Chef
           def remove_package(name, version)
             options = @new_resource.options && @new_resource.options.sub(repo_regex, '')
             options && !options.empty? || options = nil
-            shell_out!("pkg delete -y#{expand_options(options)} #{name}#{version ? '-' + version : ''}", :env => nil).status
+            shell_out_with_timeout!("pkg delete -y#{expand_options(options)} #{name}#{version ? '-' + version : ''}", :env => nil).status
           end
 
           def current_installed_version
-            pkg_info = shell_out!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,70])
+            pkg_info = shell_out_with_timeout!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,70])
             pkg_info.stdout[/^Version +: (.+)$/, 1]
           end
 
@@ -63,7 +63,7 @@ class Chef
               options = $1
             end
 
-            pkg_query = shell_out!("pkg rquery#{expand_options(options)} '%v' #{@new_resource.package_name}", :env => nil)
+            pkg_query = shell_out_with_timeout!("pkg rquery#{expand_options(options)} '%v' #{@new_resource.package_name}", :env => nil)
             pkg_query.exitstatus.zero? ? pkg_query.stdout.strip.split(/\n/).last : nil
           end
 

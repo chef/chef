@@ -25,21 +25,19 @@ class Chef
     class Link < Chef::Resource
       include Chef::Mixin::Securable
 
-      provides :link
-
       identity_attr :target_file
 
       state_attrs :to, :owner, :group
 
+      default_action :create
+      allowed_actions :create, :delete
+
       def initialize(name, run_context=nil)
         verify_links_supported!
         super
-        @resource_name = :link
         @to = nil
-        @action = :create
         @link_type = :symbolic
         @target_file = name
-        @allowed_actions.push(:create, :delete)
       end
 
       def to(arg=nil)

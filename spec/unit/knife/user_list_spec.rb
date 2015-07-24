@@ -19,14 +19,18 @@
 require 'spec_helper'
 
 describe Chef::Knife::UserList do
+  let(:knife) { Chef::Knife::UserList.new }
+  let(:stdout) { StringIO.new }
+
   before(:each) do
     Chef::Knife::UserList.load_deps
-    @knife = Chef::Knife::UserList.new
+    allow(knife.ui).to receive(:stderr).and_return(stdout)
+    allow(knife.ui).to receive(:stdout).and_return(stdout)
   end
 
   it 'lists the users' do
-    expect(Chef::User).to receive(:list)
-    expect(@knife).to receive(:format_list_for_display)
-    @knife.run
+    expect(Chef::UserV1).to receive(:list)
+    expect(knife).to receive(:format_list_for_display)
+    knife.run
   end
 end

@@ -47,15 +47,13 @@ class Chef
       # @returns [String] Checksum of the file we actually rendered
       attr_accessor :final_checksum
 
-      provides :file
+      default_action :create
+      allowed_actions :create, :delete, :touch, :create_if_missing
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :file
         @path = name
         @backup = 5
-        @action = "create"
-        @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @atomic_update = Chef::Config[:file_atomic_update]
         @force_unlink = false
         @manage_symlink_source = nil

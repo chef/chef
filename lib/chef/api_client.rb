@@ -23,7 +23,13 @@ require 'chef/mixin/from_file'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
+require 'chef/server_api'
 
+# DEPRECATION NOTE
+#
+# This code will be removed in Chef 13 in favor of the code in Chef::ApiClientV1,
+# which will be moved to this namespace. New development should occur in
+# Chef::ApiClientV1 until the time before Chef 13.
 class Chef
   class ApiClient
 
@@ -143,7 +149,7 @@ class Chef
     end
 
     def self.http_api
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
     end
 
     def self.reregister(name)
@@ -219,7 +225,7 @@ class Chef
     end
 
     def http_api
-      @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
     end
 
   end

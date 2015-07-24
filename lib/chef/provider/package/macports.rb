@@ -3,8 +3,8 @@ class Chef
     class Package
       class Macports < Chef::Provider::Package
 
-        provides :macports_package
         provides :package, os: "darwin"
+        provides :macports_package
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -49,21 +49,21 @@ class Chef
           unless @current_resource.version == version
             command = "port#{expand_options(@new_resource.options)} install #{name}"
             command << " @#{version}" if version and !version.empty?
-            shell_out!(command)
+            shell_out_with_timeout!(command)
           end
         end
 
         def purge_package(name, version)
           command = "port#{expand_options(@new_resource.options)} uninstall #{name}"
           command << " @#{version}" if version and !version.empty?
-          shell_out!(command)
+          shell_out_with_timeout!(command)
         end
 
         def remove_package(name, version)
           command = "port#{expand_options(@new_resource.options)} deactivate #{name}"
           command << " @#{version}" if version and !version.empty?
 
-          shell_out!(command)
+          shell_out_with_timeout!(command)
         end
 
         def upgrade_package(name, version)
@@ -76,14 +76,14 @@ class Chef
             # that hasn't been installed.
             install_package(name, version)
           elsif current_version != version
-            shell_out!( "port#{expand_options(@new_resource.options)} upgrade #{name} @#{version}" )
+            shell_out_with_timeout!( "port#{expand_options(@new_resource.options)} upgrade #{name} @#{version}" )
           end
         end
 
         private
         def get_response_from_command(command)
           output = nil
-          status = shell_out(command)
+          status = shell_out_with_timeout(command)
           begin
             output = status.stdout
           rescue Exception

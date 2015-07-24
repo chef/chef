@@ -27,11 +27,11 @@ class Chef
 
       state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
 
-      provides :mount
+      default_action :mount
+      allowed_actions :mount, :umount, :remount, :enable, :disable
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :mount
         @mount_point = name
         @device = nil
         @device_type = :device
@@ -42,9 +42,7 @@ class Chef
         @pass = 2
         @mounted = false
         @enabled = false
-        @action = :mount
         @supports = { :remount => false }
-        @allowed_actions.push(:mount, :umount, :remount, :enable, :disable)
         @username = nil
         @password = nil
         @domain = nil
@@ -174,6 +172,14 @@ class Chef
           arg,
           :kind_of => [ String ]
         )
+      end
+
+      private
+
+      # Used by the AIX provider to set fstype to nil.
+      # TODO use property to make nil a valid value for fstype
+      def clear_fstype
+        @fstype = nil
       end
 
     end

@@ -739,6 +739,3 @@ module ChefConfig
     end
   end
 end
-
-
-

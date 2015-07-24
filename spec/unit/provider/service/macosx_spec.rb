@@ -60,15 +60,15 @@ XML
 
     ["Daemon", "Agent"].each do |service_type|
       ["redis-server", "io.redis.redis-server"].each do |service_name|
-        ["10.9", "10.10"].each do |platform_version|
+        ["10.9", "10.10", "10.11"].each do |platform_version|
           let(:plist) {'/Library/LaunchDaemons/io.redis.redis-server.plist'}
           let(:session) { StringIO.new }
           if service_type == 'Agent'
             let(:plist) {'/Library/LaunchAgents/io.redis.redis-server.plist'}
             let(:session) {'-S Aqua '}
-            let(:su_cmd) {'su igor -c'}
-            if platform_version != "10.10"
-              let(:su_cmd) {'su -l igor -c'}
+            let(:su_cmd) {'su -l igor -c'}
+            if platform_version == "10.9"
+              let(:su_cmd) {'su igor -c'}
             end
           end
           let(:service_label) {'io.redis.redis-server'}

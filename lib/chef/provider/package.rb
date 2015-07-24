@@ -142,7 +142,7 @@ class Chef
       def action_remove
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of " :  ""
-          converge_by("remove #{description} package #{@current_resource.package_name}") do
+          converge_by("remove #{description}package #{@current_resource.package_name}") do
             remove_package(@current_resource.package_name, @new_resource.version)
             Chef::Log.info("#{@new_resource} removed")
           end
@@ -490,6 +490,30 @@ class Chef
           false
         end
       end
+
+      private
+
+      def shell_out_with_timeout(*command_args)
+        shell_out(*add_timeout_option(command_args))
+      end
+
+      def shell_out_with_timeout!(*command_args)
+        shell_out!(*add_timeout_option(command_args))
+      end
+
+      def add_timeout_option(command_args)
+        args = command_args.dup
+        if args.last.is_a?(Hash)
+          options = args.pop.dup
+          options[:timeout] = new_resource.timeout if new_resource.timeout
+          options[:timeout] = 900 unless options.has_key?(:timeout)
+          args << options
+        else
+          args << { :timeout => new_resource.timeout ? new_resource.timeout : 900 }
+        end
+        args
+      end
+
     end
   end
 end

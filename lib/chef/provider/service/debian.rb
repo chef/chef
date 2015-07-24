@@ -22,10 +22,10 @@ class Chef
   class Provider
     class Service
       class Debian < Chef::Provider::Service::Init
+        provides :service, platform_family: 'debian'
+
         UPDATE_RC_D_ENABLED_MATCHES = /\/rc[\dS].d\/S|not installed/i
         UPDATE_RC_D_PRIORITIES = /\/rc([\dS]).d\/([SK])(\d\d)/i
-
-        provides :service, platform_family: "debian"
 
         def self.provides?(node, resource)
           super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)

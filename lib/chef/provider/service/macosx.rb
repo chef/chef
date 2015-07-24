@@ -28,8 +28,8 @@ class Chef
     class Service
       class Macosx < Chef::Provider::Service::Simple
 
-        provides :service, os: "darwin"
         provides :macosx_service, os: "darwin"
+        provides :service, os: "darwin"
 
         def self.gather_plist_dirs
           locations = %w{/Library/LaunchAgents
@@ -41,6 +41,10 @@ class Chef
         end
 
         PLIST_DIRS = gather_plist_dirs
+
+        def this_version_or_newer?(this_version)
+          Gem::Version.new(node['platform_version']) >= Gem::Version.new(this_version)
+        end
 
         def load_current_resource
           @current_resource = Chef::Resource::MacosxService.new(@new_resource.name)
@@ -56,7 +60,7 @@ class Chef
             @console_user = Etc.getlogin
             Chef::Log.debug("#{new_resource} console_user: '#{@console_user}'")
             cmd = "su "
-            param = !node['platform_version'].include?('10.10') ? '-l ' : ''
+            param = this_version_or_newer?('10.10') ? '' : '-l '
             @base_user_cmd = cmd + param + "#{@console_user} -c"
             # Default LauchAgent session should be Aqua
             @session_type = 'Aqua' if @session_type.nil?

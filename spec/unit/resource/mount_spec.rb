@@ -38,7 +38,7 @@ describe Chef::Resource::Mount do
   end
 
   it "should have a default action of mount" do
-    expect(@resource.action).to eql(:mount)
+    expect(@resource.action).to eql([:mount])
   end
 
   it "should accept mount, umount and remount as actions" do

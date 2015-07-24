@@ -10,6 +10,7 @@ gem "mixlib-shellout", github: "opscode/mixlib-shellout", branch: "master"
 gem "ohai", github: "opscode/ohai", branch: "master"
 
 group(:docgen) do
+  gem "tomlrb"
   gem "yard"
 end
 

@@ -70,7 +70,7 @@ class Chef
             "Powershell 4.0 or higher was not detected on your system and is required to use the dsc_script resource.",
           ]
           a.assertion { supports_dsc? }
-          a.failure_message Chef::Exceptions::NoProviderAvailable, err.join(' ')
+          a.failure_message Chef::Exceptions::ProviderNotFound, err.join(' ')
           a.whyrun err + ["Assuming a previous resource installs Powershell 4.0 or higher."]
           a.block_action!
         end

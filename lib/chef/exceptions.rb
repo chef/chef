@@ -17,11 +17,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef-config/exceptions'
+
 class Chef
   # == Chef::Exceptions
   # Chef's custom exceptions are all contained within the Chef::Exceptions
   # namespace.
   class Exceptions
+
+    ConfigurationError = ChefConfig::ConfigurationError
 
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'
@@ -68,15 +72,17 @@ class Chef
     class DuplicateRole < RuntimeError; end
     class ValidationFailed < ArgumentError; end
     class InvalidPrivateKey < ArgumentError; end
-    class ConfigurationError < ArgumentError; end
     class MissingKeyAttribute < ArgumentError; end
     class KeyCommandInputError < ArgumentError; end
     class InvalidKeyArgument < ArgumentError; end
     class InvalidKeyAttribute < ArgumentError; end
+    class InvalidUserAttribute < ArgumentError; end
+    class InvalidClientAttribute < ArgumentError; end
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookFrozen < ArgumentError; end
     class CookbookNotFound < RuntimeError; end
+    class OnlyApiVersion0SupportedForAction < RuntimeError; end
     # Cookbook loader used to raise an argument error when cookbook not found.
     # for back compat, need to raise an error that inherits from ArgumentError
     class CookbookNotFoundInRepo < ArgumentError; end
@@ -94,7 +100,11 @@ class Chef
     class ConflictingMembersInGroup < ArgumentError; end
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
+    class ProviderNotFound < RuntimeError; end
+    NoProviderAvailable = ProviderNotFound
     class VerificationNotFound < RuntimeError; end
+    class InvalidEventType < ArgumentError; end
+    class MultipleIdentityError < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
     class NoSuchResourceType < NameError
@@ -214,8 +224,6 @@ class Chef
     class InvalidSymlink < RuntimeError; end
 
     class ChildConvergeError < RuntimeError; end
-
-    class NoProviderAvailable < RuntimeError; end
 
     class DeprecatedFeatureError < RuntimeError;
       def initalize(message)
@@ -435,7 +443,7 @@ class Chef
         wrapped_errors.each_with_index do |e,i|
           backtrace << "#{i+1}) #{e.class} -  #{e.message}"
           backtrace += e.backtrace if e.backtrace
-          backtrace << ""
+          backtrace << "" unless i == wrapped_errors.length - 1
         end
         set_backtrace(backtrace)
       end

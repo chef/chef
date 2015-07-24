@@ -23,24 +23,21 @@ require 'chef/provider/erl_call'
 class Chef
   class Resource
     class ErlCall < Chef::Resource
-      provides :erl_call
 
       # erl_call : http://erlang.org/doc/man/erl_call.html
 
       identity_attr :code
 
+      default_action :run
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :erl_call
 
         @code = "q()." # your erlang code goes here
         @cookie = nil # cookie of the erlang node
         @distributed = false # if you want to have a distributed erlang node
         @name_type = "sname" # type of erlang hostname name or sname
         @node_name = "chef@localhost" # the erlang node hostname
-
-        @action = "run"
-        @allowed_actions.push(:run)
       end
 
       def code(arg=nil)

@@ -67,13 +67,11 @@ describe Chef::JSONCompat do
       expect(Chef::JSONCompat.to_json_pretty(f)).to eql("{\n  \"foo\": 1234,\n  \"bar\": {\n    \"baz\": 5678\n  }\n}\n")
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { Foo.new }
     end
   end
 
-  # On FreeBSD 10.1 i386 rspec fails with a SystemStackError loading the expect line with more that 252 entries
-  # https://github.com/chef/chef/issues/3101
   describe "with the file with 252 or less nested entries" do
     let(:json) { IO.read(File.join(CHEF_SPEC_DATA, 'nested.json')) }
     let(:hash) { Chef::JSONCompat.from_json(json) }
@@ -84,7 +82,10 @@ describe Chef::JSONCompat do
       end
 
       it "should has 'test' as a 252 nested value" do
-        expect(hash['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']).to eq('test')
+        v = 252.times.inject(hash) do |memo, _|
+          memo['key']
+        end
+        expect(v).to eq('test')
       end
     end
   end

@@ -203,7 +203,7 @@ class Chef
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          return true if reg.any? {|val| val == value[:name] }
+          return true if reg.any? {|val| safely_downcase(val) == safely_downcase(value[:name]) }
         end
         return false
       end
@@ -213,7 +213,7 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
-            if val_name == value[:name] &&
+            if safely_downcase(val_name) == safely_downcase(value[:name]) &&
               val_type == get_type_from_name(value[:type]) &&
               val_data == value[:data]
               return true
@@ -288,6 +288,14 @@ class Chef
       end
 
       private
+
+
+      def safely_downcase(val)
+        if val.is_a? String
+          return val.downcase
+        end
+        return val
+      end
 
       def node
         run_context && run_context.node

@@ -25,12 +25,10 @@ class Chef
   class Resource
     class HomebrewPackage < Chef::Resource::Package
 
-      provides :homebrew_package
       provides :package, os: "darwin"
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :homebrew_package
         @homebrew_user = nil
       end
 

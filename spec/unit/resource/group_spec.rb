@@ -50,7 +50,7 @@ describe Chef::Resource::Group, "initialize" do
   end
 
   it "should set action to :create" do
-    expect(@resource.action).to eql(:create)
+    expect(@resource.action).to eql([:create])
   end
 
   %w{create remove modify manage}.each do |action|

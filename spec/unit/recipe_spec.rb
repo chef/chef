@@ -121,7 +121,8 @@ describe Chef::Recipe do
 
         it "locate resource for particular platform" do
           ShaunTheSheep = Class.new(Chef::Resource)
-          ShaunTheSheep.provides :laughter, :on_platforms => ["television"]
+          ShaunTheSheep.resource_name :shaun_the_sheep
+          ShaunTheSheep.provides :laughter, :platform => ["television"]
           node.automatic[:platform] = "television"
           node.automatic[:platform_version] = "123"
           res = recipe.laughter "timmy"
@@ -131,6 +132,7 @@ describe Chef::Recipe do
 
         it "locate a resource for all platforms" do
           YourMom = Class.new(Chef::Resource)
+          YourMom.resource_name :your_mom
           YourMom.provides :love_and_caring
           res = recipe.love_and_caring "mommy"
           expect(res.name).to eql("mommy")
@@ -141,9 +143,9 @@ describe Chef::Recipe do
           before do
             node.automatic[:platform] = "nbc_sports"
             Sounders = Class.new(Chef::Resource)
-            Sounders.provides :football, platform: "nbc_sports"
+            Sounders.resource_name :sounders
             TottenhamHotspur = Class.new(Chef::Resource)
-            TottenhamHotspur.provides :football, platform: "nbc_sports"
+            TottenhamHotspur.resource_name :tottenham_hotspur
           end
 
           after do
@@ -151,25 +153,20 @@ describe Chef::Recipe do
             Object.send(:remove_const, :TottenhamHotspur)
           end
 
-          it "warns if resolution of the two resources is ambiguous" do
-            expect(Chef::Log).to receive(:warn).at_least(:once).with(/Ambiguous resource precedence/)
+          it "selects the first one alphabetically" do
+            Sounders.provides :football, platform: "nbc_sports"
+            TottenhamHotspur.provides :football, platform: "nbc_sports"
+
             res1 = recipe.football "club world cup"
             expect(res1.name).to eql("club world cup")
-            # the class of res1 is not defined.
+            expect(res1).to be_a_kind_of(Sounders)
           end
 
-          it "selects one if it is given priority" do
-            expect(Chef::Log).not_to receive(:warn)
-            Chef::Platform::ResourcePriorityMap.instance.send(:priority, :football, TottenhamHotspur, platform: "nbc_sports")
-            res1 = recipe.football "club world cup"
-            expect(res1.name).to eql("club world cup")
-            expect(res1).to be_a_kind_of(TottenhamHotspur)
-          end
+          it "selects the first one alphabetically even if the declaration order is reversed" do
+            TottenhamHotspur.provides :football2, platform: "nbc_sports"
+            Sounders.provides :football2, platform: "nbc_sports"
 
-          it "selects the other one if it is given priority" do
-            expect(Chef::Log).not_to receive(:warn)
-            Chef::Platform::ResourcePriorityMap.instance.send(:priority, :football, Sounders, platform: "nbc_sports")
-            res1 = recipe.football "club world cup"
+            res1 = recipe.football2 "club world cup"
             expect(res1.name).to eql("club world cup")
             expect(res1).to be_a_kind_of(Sounders)
           end
@@ -409,7 +406,7 @@ describe Chef::Recipe do
 
       it "does not copy the action from the first resource" do
         expect(original_resource.action).to eq([:score])
-        expect(duplicated_resource.action).to eq(:nothing)
+        expect(duplicated_resource.action).to eq([:nothing])
       end
 
       it "does not copy the source location of the first resource" do
@@ -576,6 +573,36 @@ describe Chef::Recipe do
       openldap_recipe.include_recipe "openldap::default"
       expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
       openldap_recipe.include_recipe "::default"
+    end
+
+    it "will not load a recipe twice when called first from an LWRP provider" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "::default"
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+    end
+
+    it "will not load a recipe twice when called last from an LWRP provider" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "::default"
+    end
+
+    it "will not load a recipe twice when called both times from an LWRP provider" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
     end
   end
 

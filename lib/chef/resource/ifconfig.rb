@@ -22,18 +22,17 @@ require 'chef/resource'
 class Chef
   class Resource
     class Ifconfig < Chef::Resource
-      provides :ifconfig
 
       identity_attr :device
 
       state_attrs :inet_addr, :mask
 
+      default_action :add
+      allowed_actions :add, :delete, :enable, :disable
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ifconfig
         @target = name
-        @action = :add
-        @allowed_actions.push(:add, :delete, :enable, :disable)
         @hwaddr = nil
         @mask = nil
         @inet_addr = nil

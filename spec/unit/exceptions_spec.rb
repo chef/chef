@@ -76,7 +76,7 @@ describe Chef::Exceptions do
     end
 
     if exception.methods.include?(:to_json)
-      include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
         let(:jsonable) { exception }
       end
     end
@@ -113,7 +113,7 @@ describe Chef::Exceptions do
     context "initialized with 1 error and nil" do
       let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), nil)  }
       let(:num_errors) { 1 }
-      let(:backtrace) { ["1) RuntimeError -  foo", ""] }
+      let(:backtrace) { ["1) RuntimeError -  foo"] }
 
       include_examples "RunFailedWrappingError expectations"
     end
@@ -121,7 +121,7 @@ describe Chef::Exceptions do
     context "initialized with 2 errors" do
       let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), RuntimeError.new("bar"))  }
       let(:num_errors) { 2 }
-      let(:backtrace) { ["1) RuntimeError -  foo", "", "2) RuntimeError -  bar", ""] }
+      let(:backtrace) { ["1) RuntimeError -  foo", "", "2) RuntimeError -  bar"] }
 
       include_examples "RunFailedWrappingError expectations"
     end

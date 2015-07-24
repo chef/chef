@@ -73,7 +73,7 @@ describe Chef::DataBag do
         expect(@deserial.send(t.to_sym)).to eq(@data_bag.send(t.to_sym))
       end
 
-      include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
         let(:jsonable) { @data_bag }
       end
     end

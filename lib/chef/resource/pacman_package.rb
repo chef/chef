@@ -21,14 +21,7 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
-
       provides :pacman_package, os: "linux"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :pacman_package
-      end
-
     end
   end
 end

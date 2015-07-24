@@ -24,6 +24,7 @@ require 'rubygems/package_task'
 require 'rdoc/task'
 require_relative 'tasks/rspec'
 require_relative 'tasks/external_tests'
+require_relative 'tasks/maintainers'
 
 GEM_NAME = "chef"
 
@@ -108,9 +109,19 @@ Dir[File.expand_path("../*gemspec", __FILE__)].reverse.each do |gemspec_path|
   Gem::PackageTask.new(gemspec).define
 end
 
+def with_clean_env(&block)
+  if defined?(Bundler)
+    Bundler.with_clean_env(&block)
+  else
+    block.call
+  end
+end
+
 desc "Build and install a chef gem"
 task :install => [:package] do
-  sh %{gem install pkg/#{GEM_NAME}-#{VERSION}.gem --no-rdoc --no-ri}
+  with_clean_env do
+    sh %{gem install pkg/#{GEM_NAME}-#{VERSION}.gem --no-rdoc --no-ri}
+  end
 end
 
 task :uninstall do

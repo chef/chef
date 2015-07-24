@@ -23,12 +23,13 @@ class Chef
   class Resource
     class IpsPackage < ::Chef::Resource::Package
 
+      provides :package, os: "solaris2"
       provides :ips_package, os: "solaris2"
+
+      allowed_actions :install, :remove, :upgrade
 
       def initialize(name, run_context = nil)
         super(name, run_context)
-        @resource_name = :ips_package
-        @allowed_actions.push(:install, :remove, :upgrade)
         @accept_license = false
       end
 

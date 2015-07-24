@@ -213,7 +213,7 @@ class Chef
       # If we failed before we received the run_started callback, there's not much we can do
       # in terms of reporting
       if @run_status
-          post_reporting_data
+        post_reporting_data
       end
     end
 

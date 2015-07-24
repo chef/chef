@@ -2,6 +2,7 @@
 coverage
 .DS_Store
 pkg
+tags
 */tags
 *~
 

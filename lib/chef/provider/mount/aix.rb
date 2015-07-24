@@ -22,6 +22,7 @@ class Chef
   class Provider
     class Mount
       class Aix < Chef::Provider::Mount::Mount
+        provides :mount, platform: %w(aix)
 
         # Override for aix specific handling
         def initialize(new_resource, run_context)
@@ -31,7 +32,7 @@ class Chef
             @new_resource.options.clear
           end
           if @new_resource.fstype == "auto"
-            @new_resource.fstype = nil
+            @new_resource.send(:clear_fstype)
           end
         end
 

@@ -106,7 +106,8 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     describe "when the recipe_url configuration option is specified" do
       let(:tarfile) { StringIO.new("remote_tarball_content") }
       let(:target_file) { StringIO.new }
-
+      let(:shellout) { double(run_command: nil, error!: nil, stdout: '') }
+     
       before do
         Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
         Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"
@@ -117,7 +118,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
         allow(app).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(tarfile)
         allow(File).to receive(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(target_file)
 
-        allow(Chef::Mixin::Command).to receive(:run_command).and_return(true)
+        allow(Mixlib::ShellOut).to receive(:new).and_return(shellout)
       end
 
       it "should create the recipes path based on the parent of the cookbook path" do
@@ -136,7 +137,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       end
 
       it "should untar the target file to the parent of the cookbook path" do
-        expect(Chef::Mixin::Command).to receive(:run_command).with({:command => "tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo"}).and_return(true)
+        expect(Mixlib::ShellOut).to receive(:new).with("tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo")  
         app.reconfigure
       end
     end

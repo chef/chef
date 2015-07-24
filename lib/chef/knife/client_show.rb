@@ -25,7 +25,7 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require 'chef/api_client'
+        require 'chef/api_client_v1'
         require 'chef/json_compat'
       end
 
@@ -40,7 +40,7 @@ class Chef
           exit 1
         end
 
-        client = Chef::ApiClient.load(@client_name)
+        client = Chef::ApiClientV1.load(@client_name)
         output(format_for_display(client))
       end
 

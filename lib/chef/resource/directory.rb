@@ -32,15 +32,13 @@ class Chef
 
       include Chef::Mixin::Securable
 
-      provides :directory
+      default_action :create
+      allowed_actions :create, :delete
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :directory
         @path = name
-        @action = :create
         @recursive = false
-        @allowed_actions.push(:create, :delete)
       end
 
       def recursive(arg=nil)

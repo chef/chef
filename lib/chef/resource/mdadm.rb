@@ -27,11 +27,11 @@ class Chef
 
       state_attrs :devices, :level, :chunk
 
-      provides :mdadm
+      default_action :create
+      allowed_actions :create, :assemble, :stop
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :mdadm
 
         @chunk = 16
         @devices = []
@@ -40,9 +40,6 @@ class Chef
         @metadata = "0.90"
         @bitmap = nil
         @raid_device = name
-
-        @action = :create
-        @allowed_actions.push(:create, :assemble, :stop)
       end
 
       def chunk(arg=nil)

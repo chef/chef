@@ -18,12 +18,14 @@
 
 require 'chef/knife'
 
+# NOTE: only knife user command that is backwards compatible with OSC 11,
+# so no deprecation warnings are necessary.
 class Chef
   class Knife
     class UserList < Knife
 
       deps do
-        require 'chef/user'
+        require 'chef/user_v1'
         require 'chef/json_compat'
       end
 
@@ -35,8 +37,9 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        output(format_list_for_display(Chef::User.list))
+        output(format_list_for_display(Chef::UserV1.list))
       end
+
     end
   end
 end

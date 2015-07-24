@@ -77,6 +77,18 @@ shared_examples_for "a registry key" do
   end
 
   describe "action_create" do
+    context "when a case insensitive match for the key exists" do
+      before(:each) do
+        expect(@double_registry).to receive(:key_exists?).twice.with(keyname.downcase).and_return(true)
+      end
+      it "should do nothing if the if a case insensitive key and the value both exist" do
+        @provider.new_resource.key(keyname.downcase)
+        expect(@double_registry).to receive(:get_values).with(keyname.downcase).and_return( testval1 )
+        expect(@double_registry).not_to receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+    end
     context "when the key exists" do
       before(:each) do
         expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)

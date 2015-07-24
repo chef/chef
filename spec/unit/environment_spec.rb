@@ -208,7 +208,7 @@ describe Chef::Environment do
       expect(@json).to match(/"chef_type":"environment"/)
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { @environment }
     end
   end

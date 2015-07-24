@@ -64,6 +64,7 @@ class Chef
       options = options.dup
       options[:client_name] = client_name
       options[:signing_key_filename] = signing_key_filename
+
       super(url, options)
 
       @decompressor = Decompressor.new(options)

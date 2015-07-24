@@ -26,6 +26,7 @@ class Chef
     class Package
       class Aix < Chef::Provider::Package
 
+        provides :package, os: "aix"
         provides :bff_package, os: "aix"
 
         include Chef::Mixin::GetSourceFromPackage
@@ -52,7 +53,7 @@ class Chef
             @package_source_found = ::File.exists?(@new_resource.source)
             if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
-              ret = shell_out("installp -L -d #{@new_resource.source}")
+              ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
               ret.stdout.each_line do | line |
                 case line
                 when /#{@new_resource.package_name}:/
@@ -65,7 +66,7 @@ class Chef
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          ret = shell_out("lslpp -lcq #{@current_resource.package_name}")
+          ret = shell_out_with_timeout("lslpp -lcq #{@current_resource.package_name}")
           ret.stdout.each_line do | line |
             case line
             when /#{@current_resource.package_name}/
@@ -84,7 +85,7 @@ class Chef
 
         def candidate_version
           return @candidate_version if @candidate_version
-          ret = shell_out("installp -L -d #{@new_resource.source}")
+          ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
           ret.stdout.each_line do | line |
             case line
             when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
@@ -110,10 +111,10 @@ class Chef
         def install_package(name, version)
           Chef::Log.debug("#{@new_resource} package install options: #{@new_resource.options}")
           if @new_resource.options.nil?
-            shell_out!( "installp -aYF -d #{@new_resource.source} #{@new_resource.package_name}" )
+            shell_out_with_timeout!( "installp -aYF -d #{@new_resource.source} #{@new_resource.package_name}" )
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           else
-            shell_out!( "installp -aYF #{expand_options(@new_resource.options)} -d #{@new_resource.source} #{@new_resource.package_name}" )
+            shell_out_with_timeout!( "installp -aYF #{expand_options(@new_resource.options)} -d #{@new_resource.source} #{@new_resource.package_name}" )
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           end
         end
@@ -122,10 +123,10 @@ class Chef
 
         def remove_package(name, version)
           if @new_resource.options.nil?
-            shell_out!( "installp -u #{name}" )
+            shell_out_with_timeout!( "installp -u #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           else
-            shell_out!( "installp -u #{expand_options(@new_resource.options)} #{name}" )
+            shell_out_with_timeout!( "installp -u #{expand_options(@new_resource.options)} #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           end
         end

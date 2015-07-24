@@ -168,6 +168,32 @@ class Chef
         @new_resource.respond_to?(method_name) &&
           !!@new_resource.send(method_name)
       end
+
+      module ServicePriorityInit
+
+        #
+        # Platform-specific versions
+        #
+
+        #
+        # Linux
+        #
+
+        require 'chef/chef_class'
+        require 'chef/provider/service/systemd'
+        require 'chef/provider/service/insserv'
+        require 'chef/provider/service/redhat'
+        require 'chef/provider/service/arch'
+        require 'chef/provider/service/gentoo'
+        require 'chef/provider/service/upstart'
+        require 'chef/provider/service/debian'
+        require 'chef/provider/service/invokercd'
+
+        Chef.set_provider_priority_array :service, [ Systemd, Arch ], platform_family: 'arch'
+        Chef.set_provider_priority_array :service, [ Systemd, Gentoo ], platform_family: 'gentoo'
+        Chef.set_provider_priority_array :service, [ Systemd, Upstart, Insserv, Debian, Invokercd ], platform_family: 'debian'
+        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ], platform_family: %w(rhel fedora suse)
+      end
     end
   end
 end

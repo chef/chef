@@ -21,14 +21,8 @@ require 'chef/json_compat'
 class Chef
   class Resource
     class ZenFollower < Chef::Resource
-      provides :zen_follower
 
       provides :follower, platform: "zen"
-
-      def initialize(name, run_context=nil)
-        @resource_name = :zen_follower
-        super
-      end
 
       def master(arg=nil)
         if !arg.nil?

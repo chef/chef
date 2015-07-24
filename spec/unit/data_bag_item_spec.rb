@@ -193,7 +193,7 @@ describe Chef::DataBagItem do
       expect(deserial["snooze"]).to eq({ "finally" => "world_will" })
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { data_bag_item }
     end
   end

@@ -82,7 +82,7 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
         and_yield("something-varnish-1.1.1   something varnish like\n").
         and_yield("varnish-2.3.4             actual varnish\n")
       @shell_out = double('shell_out!', :stdout => search)
-      expect(@provider).to receive(:shell_out!).with('/opt/local/bin/pkgin', 'se', 'varnish', :env => nil, :returns => [0,1]).and_return(@shell_out)
+      expect(@provider).to receive(:shell_out!).with('/opt/local/bin/pkgin', 'se', 'varnish', :env => nil, :returns => [0,1], :timeout=>900).and_return(@shell_out)
       expect(@provider.candidate_version).to eq("2.3.4")
     end
 
@@ -92,7 +92,7 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
         and_yield("something-varnish-1.1.1;;something varnish like\n").
         and_yield("varnish-2.3.4;;actual varnish\n")
       @shell_out = double('shell_out!', :stdout => search)
-      expect(@provider).to receive(:shell_out!).with('/opt/local/bin/pkgin', 'se', 'varnish', :env => nil, :returns => [0,1]).and_return(@shell_out)
+      expect(@provider).to receive(:shell_out!).with('/opt/local/bin/pkgin', 'se', 'varnish', :env => nil, :returns => [0,1], :timeout=>900).and_return(@shell_out)
       expect(@provider.candidate_version).to eq("2.3.4")
     end
   end
@@ -101,8 +101,8 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
 
     it "run pkgin and install the package" do
       out = OpenStruct.new(:stdout => nil)
-      expect(@provider).to receive(:shell_out!).with("/opt/local/sbin/pkg_info", "-E", "varnish*", {:env => nil, :returns=>[0,1]}).and_return(@shell_out)
-      expect(@provider).to receive(:shell_out!).with("/opt/local/bin/pkgin", "-y", "install", "varnish-2.1.5nb2", {:env=>nil}).and_return(out)
+      expect(@provider).to receive(:shell_out!).with("/opt/local/sbin/pkg_info", "-E", "varnish*", {:env => nil, :returns=>[0,1], :timeout=>900}).and_return(@shell_out)
+      expect(@provider).to receive(:shell_out!).with("/opt/local/bin/pkgin", "-y", "install", "varnish-2.1.5nb2", {:env=>nil, :timeout=>900}).and_return(out)
       @provider.load_current_resource
       @provider.install_package("varnish", "2.1.5nb2")
     end

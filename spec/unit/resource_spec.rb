@@ -21,10 +21,6 @@
 
 require 'spec_helper'
 
-class ResourceTestHarness < Chef::Resource
-  provider_base Chef::Provider::Package
-end
-
 describe Chef::Resource do
   before(:each) do
     @cookbook_repo_path =  File.join(CHEF_SPEC_DATA, 'cookbooks')
@@ -63,8 +59,8 @@ describe Chef::Resource do
   end
 
   describe "when declaring the identity attribute" do
-    it "has no identity attribute by default" do
-      expect(Chef::Resource.identity_attr).to be_nil
+    it "has :name as identity attribute by default" do
+      expect(Chef::Resource.identity_attr).to eq(:name)
     end
 
     it "sets an identity attribute" do
@@ -336,6 +332,86 @@ describe Chef::Resource do
     end
   end
 
+  describe "self.resource_name" do
+    context "When resource_name is not set" do
+      it "and there are no provides lines, resource_name is nil" do
+        c = Class.new(Chef::Resource) do
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to be_nil
+        expect(r.declared_type).to eq :d
+      end
+
+      it "and there are no provides lines, @resource_name is used" do
+        c = Class.new(Chef::Resource) do
+          def initialize(*args, &block)
+            @resource_name = :blah
+            super
+          end
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to eq :blah
+        expect(r.declared_type).to eq :d
+      end
+
+      it "and the resource class gets a late-bound name, resource_name is nil" do
+        c = Class.new(Chef::Resource) do
+          def self.name
+            "ResourceSpecNameTest"
+          end
+        end
+
+        r = c.new('hi')
+        r.declared_type = :d
+        expect(c.resource_name).to be_nil
+        expect(r.resource_name).to be_nil
+        expect(r.declared_type).to eq :d
+      end
+    end
+
+    it "resource_name without provides is honored" do
+      c = Class.new(Chef::Resource) do
+        resource_name 'blah'
+      end
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "setting class.resource_name with 'resource_name = blah' overrides declared_type" do
+      c = Class.new(Chef::Resource) do
+        provides :self_resource_name_test_2
+      end
+      c.resource_name = :blah
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+    it "setting class.resource_name with 'resource_name blah' overrides declared_type" do
+      c = Class.new(Chef::Resource) do
+        resource_name :blah
+        provides :self_resource_name_test_3
+      end
+
+      r = c.new('hi')
+      r.declared_type = :d
+      expect(c.resource_name).to eq :blah
+      expect(r.resource_name).to eq :blah
+      expect(r.declared_type).to eq :d
+    end
+  end
+
   describe "is" do
     it "should return the arguments passed with 'is'" do
       zm = Chef::Resource::ZenMaster.new("coffee")
@@ -355,7 +431,7 @@ describe Chef::Resource do
       expect(json).to match(/instance_vars/)
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { @resource }
     end
   end
@@ -459,8 +535,21 @@ describe Chef::Resource do
       expect(Chef::Resource.provider_base).to eq(Chef::Provider)
     end
 
-    it "allows the base provider to be overriden by a " do
-      expect(ResourceTestHarness.provider_base).to eq(Chef::Provider::Package)
+    it "allows the base provider to be overridden" do
+      Chef::Config.treat_deprecation_warnings_as_errors(false)
+      class OverrideProviderBaseTest < Chef::Resource
+        provider_base Chef::Provider::Package
+      end
+
+      expect(OverrideProviderBaseTest.provider_base).to eq(Chef::Provider::Package)
+    end
+
+    it "warns when setting provider_base" do
+      expect {
+        class OverrideProviderBaseTest2 < Chef::Resource
+          provider_base Chef::Provider::Package
+        end
+      }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
 
   end
@@ -721,22 +810,22 @@ describe Chef::Resource do
     end
 
     it 'adds mappings for a single platform' do
-      expect(Chef::Resource::Klz.node_map).to receive(:set).with(
-        :dinobot, true, { platform: ['autobots'] }
+      expect(Chef.resource_handler_map).to receive(:set).with(
+        :dinobot, Chef::Resource::Klz, { platform: ['autobots'] }
       )
       klz.provides :dinobot, platform: ['autobots']
     end
 
     it 'adds mappings for multiple platforms' do
-      expect(Chef::Resource::Klz.node_map).to receive(:set).with(
-        :energy, true, { platform: ['autobots', 'decepticons']}
+      expect(Chef.resource_handler_map).to receive(:set).with(
+        :energy, Chef::Resource::Klz, { platform: ['autobots', 'decepticons']}
       )
       klz.provides :energy, platform: ['autobots', 'decepticons']
     end
 
     it 'adds mappings for all platforms' do
-      expect(Chef::Resource::Klz.node_map).to receive(:set).with(
-        :tape_deck, true, {}
+      expect(Chef.resource_handler_map).to receive(:set).with(
+        :tape_deck, Chef::Resource::Klz, {}
       )
       klz.provides :tape_deck
     end
@@ -776,7 +865,7 @@ describe Chef::Resource do
         @node.name("bumblebee")
         @node.automatic[:platform] = "autobots"
         @node.automatic[:platform_version] = "6.1"
-        klz2.provides :dinobot, :on_platforms => ['autobots']
+        klz2.provides :dinobot, :platform => ['autobots']
         Object.const_set('Grimlock', klz2)
         klz2.provides :grimlock
       end
@@ -887,5 +976,91 @@ describe Chef::Resource do
           }
     end
 
+  end
+
+  describe "#action" do
+    let(:resource_class) do
+      Class.new(described_class) do
+        allowed_actions(%i{one two})
+      end
+    end
+    let(:resource) { resource_class.new('test', nil) }
+    subject { resource.action }
+
+    context "with a no action" do
+      it { is_expected.to eq [:nothing] }
+    end
+
+    context "with a default action" do
+      let(:resource_class) do
+        Class.new(described_class) do
+          default_action(:one)
+        end
+      end
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with a symbol action" do
+      before { resource.action(:one) }
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with a string action" do
+      before { resource.action('two') }
+      it { is_expected.to eq [:two] }
+    end
+
+    context "with an array action" do
+      before { resource.action([:two, :one]) }
+      it { is_expected.to eq [:two, :one] }
+    end
+
+    context "with an assignment" do
+      before { resource.action = :one }
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with an array assignment" do
+      before { resource.action = [:two, :one] }
+      it { is_expected.to eq [:two, :one] }
+    end
+
+    context "with an invalid action" do
+      it { expect { resource.action(:three) }.to raise_error Chef::Exceptions::ValidationFailed }
+    end
+
+    context "with an invalid assignment action" do
+      it { expect { resource.action = :three }.to raise_error Chef::Exceptions::ValidationFailed }
+    end
+  end
+
+  describe ".default_action" do
+    let(:default_action) { }
+    let(:resource_class) do
+      actions = default_action
+      Class.new(described_class) do
+        default_action(actions) if actions
+      end
+    end
+    subject { resource_class.default_action }
+
+    context "with no default actions" do
+      it { is_expected.to eq [:nothing] }
+    end
+
+    context "with a symbol default action" do
+      let(:default_action) { :one }
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with a string default action" do
+      let(:default_action) { 'one' }
+      it { is_expected.to eq [:one] }
+    end
+
+    context "with an array default action" do
+      let(:default_action) { [:two, :one] }
+      it { is_expected.to eq [:two, :one] }
+    end
   end
 end

@@ -20,18 +20,16 @@
 class Chef
   class Resource
     class Ohai < Chef::Resource
-      provides :ohai
 
       identity_attr :name
 
       state_attrs :plugin
 
+      default_action :reload
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ohai
         @name = name
-        @allowed_actions.push(:reload)
-        @action = :reload
         @plugin = nil
       end
 

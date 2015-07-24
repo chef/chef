@@ -21,8 +21,10 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/exceptions'
 require 'chef/resource_builder'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/powershell_out'
 require 'chef/dsl/resources'
 require 'chef/dsl/definitions'
+require 'chef/resource'
 
 class Chef
   module DSL
@@ -33,58 +35,7 @@ class Chef
     module Recipe
 
       include Chef::Mixin::ShellOut
-
-      # method_missing must live for backcompat purposes until Chef 13.
-      def method_missing(method_symbol, *args, &block)
-        #
-        # If there is already DSL for this, someone must have called
-        # method_missing manually. Not a fan. Not. A. Fan.
-        #
-        if respond_to?(method_symbol)
-          Chef::Log.deprecation("Calling method_missing(#{method_symbol.inspect}) directly is deprecated in Chef 12 and will be removed in Chef 13.")
-          Chef::Log.deprecation("Use public_send() or send() instead.")
-          return send(method_symbol, *args, &block)
-        end
-
-        #
-        # If a definition exists, then Chef::DSL::Definitions.add_definition was
-        # never called.  DEPRECATED.
-        #
-        if run_context.definitions.has_key?(method_symbol.to_sym)
-          Chef::Log.deprecation("Definition #{method_symbol} (#{run_context.definitions[method_symbol.to_sym]}) was added to the run_context without calling Chef::DSL::Definitions.add_definition(#{method_symbol.to_sym.inspect}).  This will become required in Chef 13.")
-          Chef::DSL::Definitions.add_definition(method_symbol)
-          return send(method_symbol, *args, &block)
-        end
-
-        #
-        # See if the resource exists anyway.  If the user had set
-        # Chef::Resource::Blah = <resource>, a deprecation warning will be
-        # emitted and the DSL method 'blah' will be added to the DSL.
-        #
-        resource_class = Chef::ResourceResolver.new(run_context ? run_context.node : nil, method_symbol).resolve
-        if resource_class
-          #
-          # If the DSL method was *not* added, this is the case where the
-          # matching class implements 'provides?' and matches resources that it
-          # never declared "provides" for (which means we would never have
-          # created DSL).  Anything where we don't create DSL is deprecated.
-          #
-          if !respond_to?(method_symbol)
-            Chef::Log.deprecation("#{resource_class} is marked as providing DSL #{method_symbol}, but provides #{method_symbol.inspect} was never called!")
-            Chef::Log.deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
-            Chef::DSL::Resources.add_resource_dsl(method_symbol)
-          end
-          return send(method_symbol, *args, &block)
-        end
-
-        begin
-          super
-        rescue NoMethodError
-          raise NoMethodError, "No resource or method named `#{method_symbol}' for #{describe_self_for_error}"
-        rescue NameError
-          raise NameError, "No resource, method, or local variable named `#{method_symbol}' for #{describe_self_for_error}"
-        end
-      end
+      include Chef::Mixin::PowershellOut
 
       include Chef::DSL::Resources
       include Chef::DSL::Definitions
@@ -171,9 +122,9 @@ class Chef
 
       def describe_self_for_error
         if respond_to?(:name)
-          %Q[`#{self.class.name} "#{name}"']
+          %Q[`#{self.class} "#{name}"']
         elsif respond_to?(:recipe_name)
-          %Q[`#{self.class.name} "#{recipe_name}"']
+          %Q[`#{self.class} "#{recipe_name}"']
         else
           to_s
         end
@@ -183,13 +134,69 @@ class Chef
         raise Chef::Exceptions::ResourceNotFound, "exec was called, but you probably meant to use an execute resource.  If not, please call Kernel#exec explicitly.  The exec block called was \"#{args}\""
       end
 
+      # DEPRECATED:
+      # method_missing must live for backcompat purposes until Chef 13.
+      def method_missing(method_symbol, *args, &block)
+        #
+        # If there is already DSL for this, someone must have called
+        # method_missing manually. Not a fan. Not. A. Fan.
+        #
+        if respond_to?(method_symbol)
+          Chef::Log.deprecation("Calling method_missing(#{method_symbol.inspect}) directly is deprecated in Chef 12 and will be removed in Chef 13.")
+          Chef::Log.deprecation("Use public_send() or send() instead.")
+          return send(method_symbol, *args, &block)
+        end
+
+        #
+        # If a definition exists, then Chef::DSL::Definitions.add_definition was
+        # never called.  DEPRECATED.
+        #
+        if run_context.definitions.has_key?(method_symbol.to_sym)
+          Chef::Log.deprecation("Definition #{method_symbol} (#{run_context.definitions[method_symbol.to_sym]}) was added to the run_context without calling Chef::DSL::Definitions.add_definition(#{method_symbol.to_sym.inspect}).  This will become required in Chef 13.")
+          Chef::DSL::Definitions.add_definition(method_symbol)
+          return send(method_symbol, *args, &block)
+        end
+
+        #
+        # See if the resource exists anyway.  If the user had set
+        # Chef::Resource::Blah = <resource>, a deprecation warning will be
+        # emitted and the DSL method 'blah' will be added to the DSL.
+        #
+        resource_class = Chef::ResourceResolver.resolve(method_symbol, node: run_context ? run_context.node : nil)
+        if resource_class
+          Chef::DSL::Resources.add_resource_dsl(method_symbol)
+          return send(method_symbol, *args, &block)
+        end
+
+        begin
+          super
+        rescue NoMethodError
+          raise NoMethodError, "No resource or method named `#{method_symbol}' for #{describe_self_for_error}"
+        rescue NameError
+          raise NameError, "No resource, method, or local variable named `#{method_symbol}' for #{describe_self_for_error}"
+        end
+      end
+
+      module FullDSL
+        require 'chef/dsl/data_query'
+        require 'chef/dsl/platform_introspection'
+        require 'chef/dsl/include_recipe'
+        require 'chef/dsl/registry_helper'
+        require 'chef/dsl/reboot_pending'
+        require 'chef/dsl/audit'
+        require 'chef/dsl/powershell'
+        include Chef::DSL::DataQuery
+        include Chef::DSL::PlatformIntrospection
+        include Chef::DSL::IncludeRecipe
+        include Chef::DSL::Recipe
+        include Chef::DSL::RegistryHelper
+        include Chef::DSL::RebootPending
+        include Chef::DSL::Audit
+        include Chef::DSL::Powershell
+      end
     end
   end
 end
-
-# We require this at the BOTTOM of this file to avoid circular requires (it is used
-# at runtime but not load time)
-require 'chef/resource'
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/recipe_definition_dsl_core. Load the file to activate the deprecation code.

@@ -23,11 +23,29 @@ class Chef
     class UserReregister < Knife
 
       deps do
-        require 'chef/user'
+        require 'chef/user_v1'
         require 'chef/json_compat'
       end
 
       banner "knife user reregister USER (options)"
+
+      def osc_11_warning
+<<-EOF
+The Chef Server you are using does not support the username field.
+This means it is an Open Source 11 Server.
+knife user reregister for Open Source 11 Server is being deprecated.
+Open Source 11 Server user commands now live under the knife osc_user namespace.
+For backwards compatibility, we will forward this request to knife osc_user reregister.
+If you are using an Open Source 11 Server, please use that command to avoid this warning.
+EOF
+      end
+
+      def run_osc_11_user_reregister
+        # run osc_user_edit with our input
+        ARGV.delete("user")
+        ARGV.unshift("osc_user")
+        Chef::Knife.run(ARGV, Chef::Application::Knife.options)
+      end
 
       option :file,
         :short => "-f FILE",
@@ -43,16 +61,29 @@ class Chef
           exit 1
         end
 
-        user = Chef::User.load(@user_name).reregister
-        Chef::Log.debug("Updated user data: #{user.inspect}")
-        key = user.private_key
-        if config[:file]
-          File.open(config[:file], "w") do |f|
-            f.print(key)
+        user = Chef::UserV1.load(@user_name)
+
+        # DEPRECATION NOTE
+        # Remove this if statement and corrosponding code post OSC 11 support.
+        #
+        # if username is nil, we are in the OSC 11 case,
+        # forward to deprecated command
+        if user.username.nil?
+          ui.warn(osc_11_warning)
+          run_osc_11_user_reregister
+        else # EC / CS 12 case
+          user.reregister
+          Chef::Log.debug("Updated user data: #{user.inspect}")
+          key = user.private_key
+          if config[:file]
+            File.open(config[:file], "w") do |f|
+              f.print(key)
+            end
+          else
+            ui.msg key
           end
-        else
-          ui.msg key
         end
+
       end
     end
   end

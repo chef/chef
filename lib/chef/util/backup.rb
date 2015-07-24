@@ -78,8 +78,16 @@ class Chef
         Chef::Log.info("#{@new_resource} removed backup at #{backup_file}")
       end
 
+      def unsorted_backup_files
+        # If you replace this with Dir[], you will probably break Windows.
+        fn = Regexp.escape(::File.basename(path))
+        Dir.entries(::File.dirname(backup_path)).select do |f|
+          !!(f =~ /\A#{fn}.chef-[0-9.]*\B/)
+        end.map {|f| ::File.join(::File.dirname(backup_path), f)}
+      end
+
       def sorted_backup_files
-        Dir[Chef::Util::PathHelper.escape_glob(prefix, ".#{path}") + ".chef-*"].sort { |a,b| b <=> a }
+        unsorted_backup_files.sort { |a,b| b <=> a }
       end
     end
   end

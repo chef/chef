@@ -22,6 +22,7 @@ class Chef
         @failed_audits = 0
         @start_time = Time.now
         @end_time = @start_time
+        @skipped_resources = 0
       end
 
       def elapsed_time
@@ -33,7 +34,7 @@ class Chef
       end
 
       def total_resources
-        @up_to_date_resources + @updated_resources
+        @up_to_date_resources + @updated_resources + @skipped_resources
       end
 
       def total_audits
@@ -179,17 +180,21 @@ class Chef
         puts_line "Starting audit phase"
       end
 
-      def audit_phase_complete
+      def audit_phase_complete(audit_output)
+        puts_line audit_output
         puts_line "Auditing complete"
       end
 
-      def audit_phase_failed(error)
+      def audit_phase_failed(error, audit_output)
+        puts_line audit_output
         puts_line ""
         puts_line "Audit phase exception:"
         indent
         puts_line "#{error.message}"
-        error.backtrace.each do |l|
-          puts_line l
+        if error.backtrace
+          error.backtrace.each do |l|
+            puts_line l
+          end
         end
       end
 
@@ -232,6 +237,7 @@ class Chef
 
       # Called when a resource action has been skipped b/c of a conditional
       def resource_skipped(resource, action, conditional)
+        @skipped_resources += 1
         # TODO: more info about conditional
         puts " (skipped due to #{conditional.short_description})", :stream => resource
         unindent

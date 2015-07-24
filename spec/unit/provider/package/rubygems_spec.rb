@@ -107,38 +107,6 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0'))).to eq(Gem::Version.new('1.3.0'))
   end
 
-  context "when rubygems was upgraded from 1.8->2.0" do
-    # https://github.com/rubygems/rubygems/issues/404
-    # tl;dr rubygems 1.8 and 2.0 can both be in the load path, which means that
-    # require "rubygems/format" will load even though rubygems 2.0 doesn't have
-    # that file.
-
-    before do
-      if defined?(Gem::Format)
-        # tests are running under rubygems 1.8, or 2.0 upgraded from 1.8
-        @remove_gem_format = false
-      else
-        Gem.const_set(:Format, Object.new)
-        @remove_gem_format = true
-      end
-      allow(Gem::Package).to receive(:respond_to?).and_call_original
-      allow(Gem::Package).to receive(:respond_to?).with(:open).and_return(false)
-    end
-
-    after do
-      if @remove_gem_format
-        Gem.send(:remove_const, :Format)
-      end
-    end
-
-    it "finds a matching gem candidate version on rubygems 2.0+ with some rubygems 1.8 code loaded" do
-      package = double("Gem::Package", :spec => "a gemspec from package")
-      expect(Gem::Package).to receive(:new).with("/path/to/package.gem").and_return(package)
-      expect(@gem_env.spec_from_file("/path/to/package.gem")).to eq("a gemspec from package")
-    end
-
-  end
-
   it "gives the candidate version as nil if none is found" do
     dep = Gem::Dependency.new('rspec', '>= 0')
     latest = []
@@ -540,7 +508,7 @@ describe Chef::Provider::Package::Rubygems do
         it "installs the gem by shelling out when options are provided as a String" do
           @new_resource.options('-i /alt/install/location')
           expected ="gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" -i /alt/install/location"
-          expect(@provider).to receive(:shell_out!).with(expected, :env => nil)
+          expect(@provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -549,7 +517,7 @@ describe Chef::Provider::Package::Rubygems do
           @new_resource.gem_binary('/foo/bar')
           @new_resource.source('http://mirror.ops.rhcloud.com/mirror/ruby')
           expected ="/foo/bar install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" --source=#{@new_resource.source} --source=https://rubygems.org"
-          expect(@provider).to receive(:shell_out!).with(expected, :env => nil)
+          expect(@provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -559,7 +527,7 @@ describe Chef::Provider::Package::Rubygems do
           @new_resource.source('http://mirror.ops.rhcloud.com/mirror/ruby')
           @new_resource.clear_sources(true)
           expected ="/foo/bar install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" --clear-sources --source=#{@new_resource.source}"
-          expect(@provider).to receive(:shell_out!).with(expected, :env => nil)
+          expect(@provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -570,7 +538,7 @@ describe Chef::Provider::Package::Rubygems do
           it "installs the gem by shelling out when options are provided but no version is given" do
             @new_resource.options('-i /alt/install/location')
             expected ="gem install rspec-core -q --no-rdoc --no-ri -v \"#{@provider.candidate_version}\" -i /alt/install/location"
-            expect(@provider).to receive(:shell_out!).with(expected, :env => nil)
+            expect(@provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
             @provider.run_action(:install)
             expect(@new_resource).to be_updated_by_last_action
           end
@@ -616,7 +584,7 @@ describe Chef::Provider::Package::Rubygems do
       describe "in an alternate gem environment" do
         it "installs the gem by shelling out to gem install" do
           @new_resource.gem_binary('/usr/weird/bin/gem')
-          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\"", :env=>nil)
+          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\"", env: nil, timeout: 900)
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -625,7 +593,7 @@ describe Chef::Provider::Package::Rubygems do
           @new_resource.gem_binary('/usr/weird/bin/gem')
           @new_resource.source(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
           @new_resource.version('>= 0')
-          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil)
+          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", env: nil, timeout: 900)
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -637,7 +605,7 @@ describe Chef::Provider::Package::Rubygems do
           @new_resource.gem_binary('/usr/weird/bin/gem')
           @new_resource.version('>= 0')
           expect(@new_resource.source).to eq(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
-          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil)
+          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", env: nil, timeout: 900)
           @provider.run_action(:install)
           expect(@new_resource).to be_updated_by_last_action
         end
@@ -676,7 +644,7 @@ describe Chef::Provider::Package::Rubygems do
 
         it "uninstalls via the gem command when options are given as a String" do
           @new_resource.options('-i /alt/install/location')
-          expect(@provider).to receive(:shell_out!).with("gem uninstall rspec -q -x -I -a -i /alt/install/location", :env=>nil)
+          expect(@provider).to receive(:shell_out!).with("gem uninstall rspec -q -x -I -a -i /alt/install/location", env: nil, timeout: 900)
           @provider.action_remove
         end
 
@@ -690,7 +658,7 @@ describe Chef::Provider::Package::Rubygems do
       describe "in an alternate gem environment" do
         it "uninstalls via the gem command" do
           @new_resource.gem_binary('/usr/weird/bin/gem')
-          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem uninstall rspec -q -x -I -a", :env=>nil)
+          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem uninstall rspec -q -x -I -a", env: nil, timeout: 900)
           @provider.action_remove
         end
       end

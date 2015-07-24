@@ -56,7 +56,7 @@ describe Chef::Provider::Package::Openbsd do
               instance_double('shellout', :stdout => "#{name}-#{version}\n"))
             expect(provider).to receive(:shell_out!).with(
               "pkg_add -r #{name}-#{version}",
-              {:env => {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}}
+              {:env => {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}, timeout: 900}
             ) {OpenStruct.new :status => true}
             provider.run_action(:install)
           end
@@ -88,7 +88,7 @@ describe Chef::Provider::Package::Openbsd do
                 instance_double('shellout', :stdout => "#{name}-#{version}-#{flavor}\n"))
               expect(provider).to receive(:shell_out!).with(
                 "pkg_add -r #{name}-#{version}-#{flavor}",
-                {:env => {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}}
+                {env: {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}, timeout: 900}
               ) {OpenStruct.new :status => true}
               provider.run_action(:install)
             end
@@ -104,7 +104,7 @@ describe Chef::Provider::Package::Openbsd do
             new_resource.version("#{version}-#{flavor_b}")
             expect(provider).to receive(:shell_out!).with(
               "pkg_add -r #{name}-#{version}-#{flavor_b}",
-              {:env => {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}}
+              {env: {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}, timeout: 900}
             ) {OpenStruct.new :status => true}
             provider.run_action(:install)
           end
@@ -123,11 +123,10 @@ describe Chef::Provider::Package::Openbsd do
     end
     it "should run the command to delete the installed package" do
       expect(@provider).to receive(:shell_out!).with(
-        "pkg_delete #{@name}", :env=>nil
+        "pkg_delete #{@name}", env: nil, timeout: 900
       ) {OpenStruct.new :status => true}
       @provider.remove_package(@name, nil)
     end
   end
 
 end
-

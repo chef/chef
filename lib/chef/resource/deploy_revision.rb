@@ -22,23 +22,9 @@ class Chef
     # Convenience class for using the deploy resource with the revision
     # deployment strategy (provider)
     class DeployRevision < Chef::Resource::Deploy
-
-      provides :deploy_revision
-
-      def initialize(*args, &block)
-        super
-        @resource_name = :deploy_revision
-      end
     end
 
     class DeployBranch < Chef::Resource::DeployRevision
-
-      provides :deploy_branch
-
-      def initialize(*args, &block)
-        super
-        @resource_name = :deploy_branch
-      end
     end
 
   end

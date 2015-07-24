@@ -1,4 +1,4 @@
-#
+
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -18,7 +18,6 @@
 
 require 'chef/config'
 require 'chef/provider/package'
-require 'chef/mixin/shell_out'
 require 'chef/mixin/which'
 require 'chef/resource/package'
 require 'singleton'
@@ -29,6 +28,7 @@ class Chef
     class Package
       class Yum < Chef::Provider::Package
 
+        provides :package, platform_family: %w(rhel fedora)
         provides :yum_package, os: "linux"
 
         class RPMUtils
@@ -647,7 +647,6 @@ class Chef
 
         # Cache for our installed and available packages, pulled in from yum-dump.py
         class YumCache
-          include Chef::Mixin::Command
           include Chef::Mixin::Which
           include Chef::Mixin::ShellOut
           include Singleton
@@ -1028,7 +1027,7 @@ class Chef
 
         def yum_command(command)
           Chef::Log.debug("#{@new_resource}: yum command: \"#{command}\"")
-          status = shell_out(command, {:timeout => Chef::Config[:yum_timeout]})
+          status = shell_out_with_timeout(command, {:timeout => Chef::Config[:yum_timeout]})
 
           # This is fun: rpm can encounter errors in the %post/%postun scripts which aren't
           # considered fatal - meaning the rpm is still successfully installed. These issue
@@ -1045,7 +1044,7 @@ class Chef
               if l =~ %r{^error: %(post|postun)\(.*\) scriptlet failed, exit status \d+$}
                 Chef::Log.warn("#{@new_resource} caught non-fatal scriptlet issue: \"#{l}\". Can't trust yum exit status " +
                                "so running install again to verify.")
-                status = shell_out(command, {:timeout => Chef::Config[:yum_timeout]})
+                status = shell_out_with_timeout(command, {:timeout => Chef::Config[:yum_timeout]})
                 break
               end
             end
@@ -1118,7 +1117,7 @@ class Chef
             end
 
             Chef::Log.debug("#{@new_resource} checking rpm status")
-            shell_out!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}", :timeout => Chef::Config[:yum_timeout]).stdout.each_line do |line|
+            shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}", :timeout => Chef::Config[:yum_timeout]).stdout.each_line do |line|
               case line
               when /([\w\d_.-]+)\s([\w\d_.-]+)/
                 @current_resource.package_name($1)

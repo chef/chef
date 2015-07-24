@@ -131,9 +131,25 @@ describe Chef::NodeMap do
       allow(node).to receive(:[]).with(:platform_version).and_return("6.0")
       expect(node_map.get(node, :thing)).to eql(nil)
     end
+
+    context "when there is a less specific definition" do
+      before do
+        node_map.set(:thing, :bar, platform_family: "rhel")
+      end
+
+      it "returns the value when the node matches" do
+        allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
+        allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
+        expect(node_map.get(node, :thing)).to eql(:foo)
+      end
+    end
   end
 
   describe "resource back-compat testing" do
+    before :each do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
     it "should handle :on_platforms => :all" do
       node_map.set(:chef_gem, :foo, :on_platforms => :all)
       allow(node).to receive(:[]).with(:platform).and_return("windows")
@@ -152,4 +168,3 @@ describe Chef::NodeMap do
   end
 
 end
-

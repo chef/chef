@@ -22,25 +22,23 @@ require 'chef/resource'
 class Chef
   class Resource
     class Package < Chef::Resource
-      provides :package
-
       identity_attr :package_name
 
       state_attrs :version, :options
 
+      default_action :install
+      allowed_actions :install, :upgrade, :remove, :purge, :reconfig
+
       def initialize(name, run_context=nil)
         super
-        @action = :install
-        @allowed_actions.push(:install, :upgrade, :remove, :purge, :reconfig)
         @candidate_version = nil
         @options = nil
         @package_name = name
-        @resource_name = :package
         @response_file = nil
         @response_file_variables = Hash.new
         @source = nil
         @version = nil
-        @timeout = 900
+        @timeout = nil
       end
 
       def package_name(arg=nil)

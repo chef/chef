@@ -22,6 +22,7 @@ class Chef
   class Provider
     class Group
       class Gpasswd < Chef::Provider::Group::Groupadd
+        provides :group
 
         def load_current_resource
           super
