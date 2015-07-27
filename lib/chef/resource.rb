@@ -1375,6 +1375,34 @@ class Chef
     end
 
     #
+    # Define a method to load up this resource's properties with the current
+    # actual values.
+    #
+    # @param load_block The block to load.  Will be run in the context of a newly
+    #   created resource with its identity values filled in.
+    #
+    def self.load_current_value(&load_block)
+      define_method(:load_current_value!, &load_block)
+    end
+
+    #
+    # Get the current actual value of this resource.
+    #
+    # This does not cache--a new value will be returned each time.
+    #
+    # @return A new copy of the resource, with values filled in from the actual
+    #   current value.
+    #
+    def current_resource
+      provider = provider_for_action(Array(action).first)
+      if provider.whyrun_mode? && !provider.whyrun_supported?
+        raise "Cannot retrieve #{self.class.current_resource} in why-run mode: #{provider} does not support why-run"
+      end
+      provider.load_current_resource
+      provider.current_resource
+    end
+
+    #
     # The action provider class is an automatic `Provider` created to handle
     # actions declared by `action :x do ... end`.
     #
@@ -1414,8 +1442,31 @@ class Chef
         use_inline_resources
         include_resource_dsl true
         define_singleton_method(:to_s) { "#{resource_class} action provider" }
-        define_singleton_method(:inspect) { to_s }
-        define_method(:load_current_resource) {}
+        def self.inspect
+          to_s
+        end
+        def load_current_resource
+          if new_resource.respond_to?(:load_current_value!)
+            # dup the resource and then reset desired-state properties.
+            current_resource = new_resource.dup
+
+            # We clear desired state in the copy, because it is supposed to be actual state.
+            # We keep identity properties and non-desired-state, which are assumed to be
+            # "control" values like `recurse: true`
+            current_resource.class.properties.each do |name,property|
+              if property.desired_state? && !property.identity? && !property.name_property?
+                property.reset(current_resource)
+              end
+            end
+
+            if current_resource.method(:load_current_value!).arity > 0
+              current_resource.load_current_value!(new_resource)
+            else
+              current_resource.load_current_value!
+            end
+          end
+          @current_resource = current_resource
+        end
       end
     end
 
