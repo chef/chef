@@ -134,8 +134,17 @@ class Chef
       end
 
       # Called when cookbook +cookbook_name+ has been sync'd
-      def synchronized_cookbook(cookbook_name)
-        puts_line "- #{cookbook_name}"
+	  #arg[0] should be the cookbook name, and arg[1] should optionally be the cookbook version
+      def synchronized_cookbook(*args)
+		cookbook_name = ''
+		cookbook_version = ''
+		if(args.length > 0)
+			cookbook_name = args[0]
+			if(args.length > 1)
+				cookbook_version = args[1];
+			end
+		end
+        puts_line "- #{cookbook_name} #{cookbook_version}"
       end
 
       # Called when an individual file in a cookbook has been updated

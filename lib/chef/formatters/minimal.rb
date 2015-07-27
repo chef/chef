@@ -110,7 +110,7 @@ class Chef
       end
 
       # Called when cookbook +cookbook_name+ has been sync'd
-      def synchronized_cookbook(cookbook_name)
+      def synchronized_cookbook(*args)
         print "."
       end
 
