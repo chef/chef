@@ -38,9 +38,11 @@ class Chef
         end
 
         def update(other_hash)
-          other_hash.each { |k, v| self[k] = v }
+          other_hash.each { |k, v| self[convert_key(k)] = convert_value(v) }
           self
         end
+
+        alias_method :merge!, :update
 
         def fetch(key, *args, &block)
           super(convert_key(key), *args, &block)

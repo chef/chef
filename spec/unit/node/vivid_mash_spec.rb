@@ -164,4 +164,20 @@ describe Chef::Node::VividMash do
       expect(seen).to eql({ 'foo' => 'bar', 'baz' => 'qux' })
     end
   end
+
+  context "#merge!" do
+    it "works in the simple case" do
+      vivid['foo'] = 'bar'
+      vivid.merge!({ 'baz' => 'qux' })
+      expect(vivid['foo']).to eql('bar')
+      expect(vivid['baz']).to eql('qux')
+    end
+
+    it "stringifies symbols" do
+      vivid[:foo] = 'bar'
+      vivid.merge!({ baz: 'qux' })
+      expect(vivid['foo']).to eql('bar')
+      expect(vivid['baz']).to eql('qux')
+    end
+  end
 end

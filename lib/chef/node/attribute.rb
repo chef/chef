@@ -101,7 +101,10 @@ class Chef
 
       alias_method :attribute?, :has_key?
       alias_method :member?, :has_key?
-      alias_method :include?, :has_key?
+
+      def include?(val)
+        wrapped_object.public_send(:include?, val)
+      end
 
       def each_attribute(&block)
         self.public_send(:each, &block)

@@ -9,7 +9,7 @@ class Chef
         end
 
         def to_json(*opts)
-          wrapped_object.to_json(*opts)
+          Chef::JSONCompat.to_json(wrapped_object, *opts)
         end
 
         def is_a?(klass)

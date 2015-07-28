@@ -81,99 +81,99 @@ describe Chef::Node::AttributeCell do
 
   context "array merging helpers" do
 
-    describe "#merged_default_zipped_array" do
-      it "merges default level arrays" do
-        cell.default = %w{a}
-        cell.env_default = %w{b c}
-        cell.role_default = %w{d}
-        cell.force_default = %w{e f}
-        expect(cell.send(:merged_default_zipped_array)).to eql([
-          { level: :default, value: 'a' },
-          { level: :env_default, value: 'b' },
-          { level: :env_default, value: 'c' },
-          { level: :role_default, value: 'd' },
-          { level: :force_default, value: 'e' },
-          { level: :force_default, value: 'f' },
-        ])
-      end
-
-      it "returns nil when no default level is an Array" do
-        cell.default = {}
-        cell.env_default = :foo
-        cell.role_default = 'bar'
-        cell.force_default = 1234
-        expect(cell.send(:merged_default_zipped_array)).to be nil
-      end
-    end
-
-    describe "#merged_override_zipped_array" do
-      it "merges override level arrays" do
-        cell.override = %w{a}
-        cell.role_override = %w{d}
-        cell.env_override = %w{b c}
-        cell.force_override = %w{e f}
-        expect(cell.send(:merged_override_zipped_array)).to eql([
-          { level: :override, value: 'a' },
-          { level: :role_override, value: 'd' },
-          { level: :env_override, value: 'b' },
-          { level: :env_override, value: 'c' },
-          { level: :force_override, value: 'e' },
-          { level: :force_override, value: 'f' },
-        ])
-      end
-
-      it "returns nil when no override level is an Array" do
-        cell.override = {}
-        cell.env_override = :foo
-        cell.role_override = 'bar'
-        cell.force_override = 1234
-        expect(cell.send(:merged_override_zipped_array)).to be nil
-      end
-    end
-
-    describe "#merged_normal_zipped_array" do
-      it "returns nil when normal is not an Array" do
-        cell.normal = {}
-        expect(cell.send(:merged_normal_zipped_array)).to be nil
-        cell.normal = :foo
-        expect(cell.send(:merged_normal_zipped_array)).to be nil
-        cell.normal = 'bar'
-        expect(cell.send(:merged_normal_zipped_array)).to be nil
-        cell.normal = 1234
-        expect(cell.send(:merged_normal_zipped_array)).to be nil
-      end
-
-      it "returns the array with the correct annotated level" do
-        cell.normal = %w{a b c}
-        expect(cell.send(:merged_normal_zipped_array)).to eql([
-          {:level=>:normal, :value=>"a"},
-          {:level=>:normal, :value=>"b"},
-          {:level=>:normal, :value=>"c"},
-        ])
-      end
-    end
-
-    describe "#merged_automatic_zipped_array" do
-      it "returns nil when automatic is not an Array" do
-        cell.automatic = {}
-        expect(cell.send(:merged_automatic_zipped_array)).to be nil
-        cell.automatic = :foo
-        expect(cell.send(:merged_automatic_zipped_array)).to be nil
-        cell.automatic = 'bar'
-        expect(cell.send(:merged_automatic_zipped_array)).to be nil
-        cell.automatic = 1234
-        expect(cell.send(:merged_automatic_zipped_array)).to be nil
-      end
-
-      it "returns the array with the correct annotated level" do
-        cell.automatic = %w{a b c}
-        expect(cell.send(:merged_automatic_zipped_array)).to eql([
-          {:level=>:automatic, :value=>"a"},
-          {:level=>:automatic, :value=>"b"},
-          {:level=>:automatic, :value=>"c"},
-        ])
-      end
-    end
+#    describe "#merged_default_zipped_array" do
+#      it "merges default level arrays" do
+#        cell.default = %w{a}
+#        cell.env_default = %w{b c}
+#        cell.role_default = %w{d}
+#        cell.force_default = %w{e f}
+#        expect(cell.send(:merged_default_zipped_array)).to eql([
+#          { level: :default, value: 'a' },
+#          { level: :env_default, value: 'b' },
+#          { level: :env_default, value: 'c' },
+#          { level: :role_default, value: 'd' },
+#          { level: :force_default, value: 'e' },
+#          { level: :force_default, value: 'f' },
+#        ])
+#      end
+#
+#      it "returns nil when no default level is an Array" do
+#        cell.default = {}
+#        cell.env_default = :foo
+#        cell.role_default = 'bar'
+#        cell.force_default = 1234
+#        expect(cell.send(:merged_default_zipped_array)).to be nil
+#      end
+#    end
+#
+#    describe "#merged_override_zipped_array" do
+#      it "merges override level arrays" do
+#        cell.override = %w{a}
+#        cell.role_override = %w{d}
+#        cell.env_override = %w{b c}
+#        cell.force_override = %w{e f}
+#        expect(cell.send(:merged_override_zipped_array)).to eql([
+#          { level: :override, value: 'a' },
+#          { level: :role_override, value: 'd' },
+#          { level: :env_override, value: 'b' },
+#          { level: :env_override, value: 'c' },
+#          { level: :force_override, value: 'e' },
+#          { level: :force_override, value: 'f' },
+#        ])
+#      end
+#
+#      it "returns nil when no override level is an Array" do
+#        cell.override = {}
+#        cell.env_override = :foo
+#        cell.role_override = 'bar'
+#        cell.force_override = 1234
+#        expect(cell.send(:merged_override_zipped_array)).to be nil
+#      end
+#    end
+#
+#    describe "#merged_normal_zipped_array" do
+#      it "returns nil when normal is not an Array" do
+#        cell.normal = {}
+#        expect(cell.send(:merged_normal_zipped_array)).to be nil
+#        cell.normal = :foo
+#        expect(cell.send(:merged_normal_zipped_array)).to be nil
+#        cell.normal = 'bar'
+#        expect(cell.send(:merged_normal_zipped_array)).to be nil
+#        cell.normal = 1234
+#        expect(cell.send(:merged_normal_zipped_array)).to be nil
+#      end
+#
+#      it "returns the array with the correct annotated level" do
+#        cell.normal = %w{a b c}
+#        expect(cell.send(:merged_normal_zipped_array)).to eql([
+#          {:level=>:normal, :value=>"a"},
+#          {:level=>:normal, :value=>"b"},
+#          {:level=>:normal, :value=>"c"},
+#        ])
+#      end
+#    end
+#
+#    describe "#merged_automatic_zipped_array" do
+#      it "returns nil when automatic is not an Array" do
+#        cell.automatic = {}
+#        expect(cell.send(:merged_automatic_zipped_array)).to be nil
+#        cell.automatic = :foo
+#        expect(cell.send(:merged_automatic_zipped_array)).to be nil
+#        cell.automatic = 'bar'
+#        expect(cell.send(:merged_automatic_zipped_array)).to be nil
+#        cell.automatic = 1234
+#        expect(cell.send(:merged_automatic_zipped_array)).to be nil
+#      end
+#
+#      it "returns the array with the correct annotated level" do
+#        cell.automatic = %w{a b c}
+#        expect(cell.send(:merged_automatic_zipped_array)).to eql([
+#          {:level=>:automatic, :value=>"a"},
+#          {:level=>:automatic, :value=>"b"},
+#          {:level=>:automatic, :value=>"c"},
+#        ])
+#      end
+#    end
   end
 
   describe "#[] on Hash-like" do
@@ -313,10 +313,10 @@ describe Chef::Node::AttributeCell do
     COMPONENTS_AS_SYMBOLS.each do |component|
       it "returns a single #{component} value" do
         cell.send(:"#{component}=", { 'port' => [ 80 ] })
-        expect( cell['port'].send(:highest_precedence_zipped_array) ).to eql([
-          {level: component, value: 80}
-        ])
-        expect( cell['port'].send(:highest_precedence_array) ).to eql([80])
+#        expect( cell['port'].send(:highest_precedence_zipped_array) ).to eql([
+#          {level: component, value: 80}
+#        ])
+#        expect( cell['port'].send(:highest_precedence_array) ).to eql([80])
         expect( cell['port'].map { |p| p } ).to eql([80])
       end
     end
@@ -326,12 +326,12 @@ describe Chef::Node::AttributeCell do
       cell.env_default = { 'port' => [ 443 ] }
       cell.role_default = { 'port' => [ 8080 ] }
       cell.force_default = { 'port' => [ 8443 ] }
-      expect( cell['port'].send(:merged_default_zipped_array) ).to eql([
-        {:level=>:default, :value=>80},
-        {:level=>:env_default, :value=>443},
-        {:level=>:role_default, :value=>8080},
-        {:level=>:force_default, :value=>8443},
-      ])
+#      expect( cell['port'].send(:merged_default_zipped_array) ).to eql([
+#        {:level=>:default, :value=>80},
+#        {:level=>:env_default, :value=>443},
+#        {:level=>:role_default, :value=>8080},
+#        {:level=>:force_default, :value=>8443},
+#      ])
       expect( cell['port'].map { |p| p } ).to eql([80, 443, 8080, 8443])
     end
 
@@ -340,12 +340,12 @@ describe Chef::Node::AttributeCell do
       cell.role_override = { 'port' => [ 8080 ] }
       cell.env_override = { 'port' => [ 443 ] }
       cell.force_override = { 'port' => [ 8443 ] }
-      expect( cell['port'].send(:merged_override_zipped_array) ).to eql([
-        {:level=>:override, :value=>80},
-        {:level=>:role_override, :value=>8080},
-        {:level=>:env_override, :value=>443},
-        {:level=>:force_override, :value=>8443}
-      ])
+#      expect( cell['port'].send(:merged_override_zipped_array) ).to eql([
+#        {:level=>:override, :value=>80},
+#        {:level=>:role_override, :value=>8080},
+#        {:level=>:env_override, :value=>443},
+#        {:level=>:force_override, :value=>8443}
+#      ])
       expect( cell['port'].map { |p| p } ).to eql([80, 8080, 443, 8443])
     end
   end

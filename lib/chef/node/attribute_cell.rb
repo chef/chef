@@ -115,7 +115,7 @@ class Chef
       end
 
       def respond_to?(method, include_private = false)
-        as_simple_object.respond_to?(method, include_private) || key?(method.to_s)
+        as_simple_object.respond_to?(method, include_private) || is_a?(Hash) && key?(method.to_s)
       end
 
       def [](key)
