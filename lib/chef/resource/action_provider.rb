@@ -47,57 +47,6 @@ class Chef
         @current_resource = current_resource
       end
 
-      #
-      # Handle patchy convergence safely.
-      #
-      # - Does *not* call the block if the current_resource's properties match
-      #   the properties the user specified on the resource.
-      # - Calls the block if current_resource does not exist
-      # - Calls the block if the user has specified any properties in the resource
-      #   whose values are *different* from current_resource.
-      # - Does *not* call the block if why-run is enabled (just prints out text).
-      # - Prints out automatic green text saying what properties have changed.
-      #
-      # @param properties An optional list of property names (symbols). If not
-      #   specified, `new_resource.class.state_properties` will be used.
-      # @param converge_block The block to do the converging in.
-      #
-      # @return [Boolean] whether the block was executed.
-      #
-      def converge_if_changed(*properties, &converge_block)
-        properties = new_resource.class.state_properties.map { |p| p.name } if properties.empty?
-        properties = properties.map { |p| p.to_sym }
-        if current_resource
-          # Collect the list of modified properties
-          specified_properties = properties.select { |property| new_resource.property_is_set?(property) }
-          modified = specified_properties.select { |p| new_resource.send(p) != current_resource.send(p) }
-          if modified.empty?
-            Chef::Log.debug("Skipping update of #{new_resource.to_s}: has not changed any of the specified properties #{specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")}.")
-            return false
-          end
-
-          # Print the pretty green text and run the block
-          property_size = modified.map { |p| p.size }.max
-          modified = modified.map { |p| "  set #{p.to_s.ljust(property_size)} to #{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})" }
-          converge_by([ "update #{new_resource.to_s}" ] + modified, &converge_block)
-
-        else
-          # The resource doesn't exist. Mark that we are *creating* this, and
-          # write down any properties we are setting.
-          created = []
-          properties.each do |property|
-            if new_resource.property_is_set?(property)
-              created << "      set #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect}"
-            else
-              created << "  default #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect}"
-            end
-          end
-
-          converge_by([ "create #{new_resource.to_s}" ] + created, &converge_block)
-        end
-        true
-      end
-
       def self.included(other)
         other.extend(ClassMethods)
         other.use_inline_resources
