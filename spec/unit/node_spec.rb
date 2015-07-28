@@ -570,39 +570,58 @@ describe Chef::Node do
     end
 
     describe "granular replacing attributes" do
-      it "removes everything at the level of the last key" do
-        node.default["mysql"]["server"]["port"] = 2345
+      describe "#default!" do
+        it "removes everything at the level of the last key" do
+          node.default["mysql"]["server"]["port"] = 2345
 
-        node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+          node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
 
-        expect( node["mysql"]["server"] ).to eql({ "data_dir" => "/my_raid_volume/lib/mysql" })
+          expect( node["mysql"]["server"] ).to eql({ "data_dir" => "/my_raid_volume/lib/mysql" })
+        end
+
+        it "replaces a value at the cookbook sub-level of the attributes only" do
+          node.default["mysql"]["server"]["port"] = 2345
+          node.default["mysql"]["server"]["service_name"] = "fancypants-sql"
+          node.role_default["mysql"]["server"]["port"] = 1234
+          node.force_default["mysql"]["server"]["port"] = 3456
+
+          node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+
+          expect( node["mysql"]["server"]["port"] ).to eql(3456)
+          expect( node["mysql"]["server"]["service_name"] ).to be_nil
+          expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+          expect( node["mysql"]["server"] ).to eql({ "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
+        end
+
+        it "higher precedence values aren't removed" do
+          node.role_default["mysql"]["server"]["port"] = 1234
+          node.default["mysql"]["server"]["port"] = 2345
+          node.force_default["mysql"]["server"]["port"] = 3456
+          node.override["mysql"]["server"]["service_name"] = "fancypants-sql"
+
+          node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+
+          expect( node["mysql"]["server"]["port"] ).to eql(3456)
+          expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+          expect( node["mysql"]["server"] ).to eql({ "service_name" => "fancypants-sql", "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
+        end
       end
 
-      it "replaces a value at the cookbook sub-level of the atributes only" do
-        node.default["mysql"]["server"]["port"] = 2345
-        node.default["mysql"]["server"]["service_name"] = "fancypants-sql"
-        node.role_default["mysql"]["server"]["port"] = 1234
-        node.force_default["mysql"]["server"]["port"] = 3456
+      describe "#normal!" do
+        it "removes everything at the level of the last key" do
+          node.normal["mysql"]["server"]["port"] = 2345
 
-        node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+          node.normal!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
 
-        expect( node["mysql"]["server"]["port"] ).to eql(3456)
-        expect( node["mysql"]["server"]["service_name"] ).to be_nil
-        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
-        expect( node["mysql"]["server"] ).to eql({ "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
-      end
+          expect( node["mysql"]["server"] ).to eql({ "data_dir" => "/my_raid_volume/lib/mysql" })
+        end
 
-      it "higher precedence values aren't removed" do
-        node.role_default["mysql"]["server"]["port"] = 1234
-        node.default["mysql"]["server"]["port"] = 2345
-        node.force_default["mysql"]["server"]["port"] = 3456
-        node.override["mysql"]["server"]["service_name"] = "fancypants-sql"
-
-        node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
-
-        expect( node["mysql"]["server"]["port"] ).to eql(3456)
-        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
-        expect( node["mysql"]["server"] ).to eql({ "service_name" => "fancypants-sql", "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
+        it "will autovivify" do
+          node.normal!["mysql"]["server"] = {
+            "data_dir" => "/my_raid_volume/lib/mysql",
+          }
+          expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+        end
       end
     end
 

@@ -20,6 +20,7 @@
 require 'chef/node/attribute_constants'
 require 'chef/node/attribute_cell'
 require 'chef/node/set_unless'
+require 'chef/node/un_method_chain'
 require 'chef/node/attribute_trait/decorator'
 require 'chef/node/attribute_trait/convert_value'
 require 'chef/node/attribute_trait/stringize'
@@ -244,41 +245,59 @@ class Chef
 
       private :args_to_cell
 
+      def write_value(level, *args)
+        value = args.pop
+        last = args.pop
+        chain = args.inject(self.send(level)) do |memo, arg|
+          memo[arg]
+        end
+        chain[last] = value
+      end
+
       # sets default attributes without merging.
       #
       # - this API autovivifies (and cannot tranwreck)
-      def default!
-        raise "unimplemented"
+      def default!(*args)
+        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :default!) unless args.length > 0
+        write_value(:default, *args)
+      end
+
+      # set normal attributes without merging.
+      #
+      # - this API autovivifies (and cannot tranwreck)
+      def normal!(*args)
+        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :normal!) unless args.length > 0
+        write_value(:normal, *args)
       end
 
       # set override attributes without merging.
       #
       # - this API autovivifies (and cannot tranwreck)
-      def normal!
-        raise "unimplemented"
-      end
-
-      # set override attributes without merging.
-      #
-      # - this API autovivifies (and cannot tranwreck)
-      def override!
-        raise "unimplemented"
+      def override!(*args)
+        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :override!) unless args.length > 0
+        write_value(:override, *args)
       end
 
       # set force_default attributes without merging.
       #
       # - this also clears all of the other default levels as well.
       # - this API autovivifies (and cannot tranwreck)
-      def force_default!
-        raise "unimplemented"
+      def force_default!(*args)
+        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :force_default!) unless args.length > 0
+        value = args.pop
+        rm_default(*args)
+        write_value(:force_default, *args, value)
       end
 
       # set force_override attributes without merging.
       #
       # - this also clears all of the other override levels as well.
       # - this API autovivifies (and cannot tranwreck)
-      def force_override!
-        raise "unimplemented"
+      def force_override!(*args)
+        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :force_override!) unless args.length > 0
+        value = args.pop
+        rm_override(*args)
+        write_value(:force_override, *args, value)
       end
     end
   end
