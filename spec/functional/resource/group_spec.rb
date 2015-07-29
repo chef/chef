@@ -234,6 +234,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       group_should_exist(group_name)
     end
 
+    after(:each) do
+      group_resource.run_action(:remove)
+    end
+
     describe "when updating membership" do
       it "raises an error for a non well-formed domain name" do
         group_resource.members [invalid_domain_user_name]
