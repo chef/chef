@@ -291,7 +291,7 @@ class Chef
       def _pv_regex(opts, key, regex)
         value = _pv_opts_lookup(opts, key)
         if !value.nil?
-          Array(regex).each do |r|
+          Array(regex).flatten.each do |r|
             return true if r.match(value.to_s)
           end
           raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}"

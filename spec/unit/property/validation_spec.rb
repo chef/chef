@@ -402,6 +402,11 @@ describe "Chef::Resource.property validation" do
       [ 'gbh', 123 ],
       [ nil ]
 
+    validation_test 'regex: [ [ /z/, /abc/ ], [ /n/ ] ]',
+      [ 'xabcy', 'aza', 'ana' ],
+      [ 'gbh', 123 ],
+      [ nil ]
+
     validation_test 'regex: []',
       [],
       [ :a ],
