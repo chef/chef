@@ -86,4 +86,5 @@ compress :dmg
 package :msi do
   upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
   wix_candle_extension 'WixUtilExtension'
+  signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
 end

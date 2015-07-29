@@ -48,4 +48,5 @@ compress :dmg
 
 package :msi do
   upgrade_code "D7FDDC1A-7668-404E-AD2F-61F875632A9C"
+  signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
 end
