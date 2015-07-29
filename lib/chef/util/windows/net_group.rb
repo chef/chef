@@ -17,6 +17,7 @@
 #
 
 require 'chef/util/windows'
+require 'chef/win32/net'
 
 #wrapper around a subset of the NetGroup* APIs.
 #nothing Chef specific, but not complete enough to be its own gem, so util for now.
@@ -43,6 +44,7 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
 
   def initialize(groupname)
     @name = multi_to_wide(groupname)
+    @groupname = groupname
   end
 
   def local_get_members
@@ -79,9 +81,10 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
   end
 
   def local_add
-    rc = NetLocalGroupAdd.call(nil, 0, pack_str(@name), nil)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_add(nil, @groupname)
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
   end
 

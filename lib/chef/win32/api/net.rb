@@ -136,6 +136,18 @@ class Chef
           layout :lgrmi3_domainandname, :LPWSTR
         end
 
+        class LOCALGROUP_INFO_0 < FFI::Struct
+          layout :lgrpi0_name, :LPWSTR
+        end
+
+#NET_API_STATUS NetLocalGroupAdd(
+  #_In_  LPCWSTR servername,
+  #_In_  DWORD   level,
+  #_In_  LPBYTE  buf,
+  #_Out_ LPDWORD parm_err
+#);
+        safe_attach_function :NetLocalGroupAdd, [ :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
+
 # NET_API_STATUS NetUserEnum(
 #   _In_     LPCWSTR servername,
 #   _In_     DWORD level,

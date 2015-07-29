@@ -106,6 +106,19 @@ END
         raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
       end
 
+      def self.net_local_group_add(server_name, group_name)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        buf = LOCALGROUP_INFO_0.new
+        buf[:lgrpi0_name] = FFI::MemoryPointer.from_string(group_name)
+
+        rc = NetLocalGroupAdd(server_name, 0, buf, nil)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
+
       def self.net_user_add_l3(server_name, args)
         buf = default_user_info_3
 
