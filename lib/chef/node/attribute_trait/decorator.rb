@@ -106,8 +106,14 @@ class Chef
               yield self[i]
             end
           elsif wrapped_object.is_a?(Hash)
-            wrapped_object.each do |key, value|
-              yield key, self[key]
+            if block.arity == 1
+              wrapped_object.each do |key, value|
+                yield [ key, self[key] ]
+              end
+            else
+              wrapped_object.each do |key, value|
+                yield key, self[key]
+              end
             end
           else
             # dunno...
