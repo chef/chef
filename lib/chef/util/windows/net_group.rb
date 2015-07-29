@@ -83,8 +83,8 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
   def local_add
     begin
       Chef::ReservedNames::Win32::NetUser::net_local_group_add(nil, @groupname)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
     end
   end
 
@@ -103,8 +103,8 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
   def local_delete
     begin
       Chef::ReservedNames::Win32::NetUser::net_local_group_del(nil, @groupname)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
     end
   end
 end

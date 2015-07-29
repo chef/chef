@@ -97,13 +97,7 @@ END
           "Received unknown error code (#{code})"
         end
 
-        formatted_message = ""
-        formatted_message << "---- Begin Win32 API output ----\n"
-        formatted_message << "Net Api Error Code: #{code}\n"
-        formatted_message << "Net Api Error Message: #{msg}\n"
-        formatted_message << "---- End Win32 API output ----\n"
-
-        raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
+        raise Chef::Exceptions::Win32NetAPIError.new(msg, code)
       end
 
       def self.net_local_group_add(server_name, group_name)
