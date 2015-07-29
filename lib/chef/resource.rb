@@ -18,6 +18,7 @@
 # limitations under the License.
 #
 
+require 'chef/exceptions'
 require 'chef/mixin/params_validate'
 require 'chef/dsl/platform_introspection'
 require 'chef/dsl/data_query'
@@ -1384,7 +1385,14 @@ class Chef
     #   created resource with its identity values filled in.
     #
     def self.load_current_value(&load_block)
+      include LoadCurrentValueDSL
       define_method(:load_current_value!, &load_block)
+    end
+
+    module LoadCurrentValueDSL
+      def current_value_does_not_exist!
+        raise Chef::Exceptions::CurrentValueDoesNotExist
+      end
     end
 
     #

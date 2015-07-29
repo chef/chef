@@ -207,11 +207,12 @@ class Chef
         # Print the pretty green text and run the block
         property_size = modified.map { |p| p.size }.max
         modified = modified.map { |p| "  set #{p.to_s.ljust(property_size)} to #{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})" }
-        converge_by([ "update #{new_resource.to_s}" ] + modified, &converge_block)
+        converge_by([ "update #{current_resource.identity}" ] + modified, &converge_block)
 
       else
         # The resource doesn't exist. Mark that we are *creating* this, and
         # write down any properties we are setting.
+        property_size = properties.map { |p| p.size }.max
         created = []
         properties.each do |property|
           if new_resource.property_is_set?(property)
@@ -221,7 +222,7 @@ class Chef
           end
         end
 
-        converge_by([ "create #{new_resource.to_s}" ] + created, &converge_block)
+        converge_by([ "create #{new_resource.identity}" ] + created, &converge_block)
       end
       true
     end

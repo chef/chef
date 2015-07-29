@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/exceptions'
+
 class Chef
   class Resource
     module ActionProvider
@@ -36,14 +38,19 @@ class Chef
             end
           end
 
-          if current_resource.method(:load_current_value!).arity > 0
-            current_resource.load_current_value!(new_resource)
-          else
-            current_resource.load_current_value!
+          # Call the actual load_current_value! method. If it raises
+          # CurrentValueDoesNotExist, set current_resource to `nil`.
+          begin
+            if current_resource.method(:load_current_value!).arity > 0
+              current_resource.load_current_value!(new_resource)
+            else
+              current_resource.load_current_value!
+            end
+          rescue Chef::Exceptions::CurrentValueDoesNotExist
+            current_resource = nil
           end
-        elsif superclass.public_instance_method?(:load_current_resource)
-          super
         end
+
         @current_resource = current_resource
       end
 

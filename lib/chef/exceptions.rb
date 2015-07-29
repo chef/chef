@@ -105,6 +105,9 @@ class Chef
     class VerificationNotFound < RuntimeError; end
     class InvalidEventType < ArgumentError; end
     class MultipleIdentityError < RuntimeError; end
+    # Used in Resource::ActionProvider#load_current_resource to denote that
+    # the resource doesn't actually exist (for example, the file does not exist)
+    class CurrentValueDoesNotExist < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
     class NoSuchResourceType < NameError
