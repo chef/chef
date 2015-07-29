@@ -119,6 +119,16 @@ END
         end
       end
 
+      def self.net_local_group_del(server_name, group_name)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        rc = NetLocalGroupDel(server_name, group_name)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
+
       def self.net_user_add_l3(server_name, args)
         buf = default_user_info_3
 

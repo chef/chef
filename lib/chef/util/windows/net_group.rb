@@ -101,9 +101,10 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
   end
 
   def local_delete
-    rc = NetLocalGroupDel.call(nil, @name)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_del(nil, @groupname)
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
   end
 end

@@ -148,6 +148,12 @@ class Chef
 #);
         safe_attach_function :NetLocalGroupAdd, [ :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
 
+#NET_API_STATUS NetLocalGroupDel(
+  #_In_ LPCWSTR servername,
+  #_In_ LPCWSTR groupname
+#);
+        safe_attach_function :NetLocalGroupDel, [ :LPCWSTR, :LPCWSTR], :DWORD
+
 # NET_API_STATUS NetUserEnum(
 #   _In_     LPCWSTR servername,
 #   _In_     DWORD level,
