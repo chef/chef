@@ -216,9 +216,9 @@ class Chef
         created = []
         properties.each do |property|
           if new_resource.property_is_set?(property)
-            created << "      set #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect}"
+            created << "  set #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect}"
           else
-            created << "  default #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect}"
+            created << "  set #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect} (default value)"
           end
         end
 

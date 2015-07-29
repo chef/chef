@@ -3,16 +3,6 @@ require 'support/shared/integration/integration_helper'
 describe "Resource.action" do
   include IntegrationSupport
 
-  def converge(str=nil, file=nil, line=nil, &block)
-    if block
-      super(&block)
-    else
-      super() do
-        eval(str, nil, file, line)
-      end
-    end
-  end
-
   shared_context "ActionJackson" do
     it "The default action is the first declared action" do
       converge <<-EOM, __FILE__, __LINE__+1

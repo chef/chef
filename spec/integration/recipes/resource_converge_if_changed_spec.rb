@@ -3,16 +3,6 @@ require 'support/shared/integration/integration_helper'
 describe "Resource::ActionProvider#converge_if_changed" do
   include IntegrationSupport
 
-  def converge(str=nil, file=nil, line=nil, &block)
-    if block
-      super(&block)
-    else
-      super() do
-        eval(str, nil, file, line)
-      end
-    end
-  end
-
   module Namer
     extend self
     attr_accessor :current_index
@@ -46,9 +36,8 @@ describe "Resource::ActionProvider#converge_if_changed" do
       result.resource_name resource_name
       result
     }
-    let(:resource) {
-      converge_recipe.resources.first
-    }
+    let(:converged_recipe) { converge(converge_recipe) }
+    let(:resource) { converged_recipe.resources.first }
 
     context "and converge_if_changed with no parameters" do
       before :each do
@@ -68,122 +57,107 @@ describe "Resource::ActionProvider#converge_if_changed" do
         end
 
         context "and nothing is set" do
-          let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah')
-            }
-          }
+          let(:converge_recipe) { "#{resource_name} 'blah'" }
 
           it "the resource updates nothing" do
             expect(resource.converged).to eq 0
             expect(resource.updated?).to  be_falsey
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create (up to date)
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create (up to date)
             EOM
           end
         end
 
         context "and state1 is set to a new value" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 state1 'new_state1'
               end
-            }
+            EOM
           }
 
           it "the resource updates state1" do
             expect(resource.converged).to eq 1
             expect(resource.updated?).to  be_truthy
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create
-    - update default_identity1
-    -   set state1 to "new_state1" (was "current_state1")
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - update default_identity1
+  -   set state1 to "new_state1" (was "current_state1")
               EOM
           end
         end
 
         context "and state1 and state2 are set to new values" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 state1 'new_state1'
                 state2 'new_state2'
               end
-            }
+            EOM
           }
 
           it "the resource updates state1 and state2" do
             expect(resource.converged).to eq 1
             expect(resource.updated?).to  be_truthy
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create
-    - update default_identity1
-    -   set state1 to "new_state1" (was "current_state1")
-    -   set state2 to "new_state2" (was "current_state2")
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - update default_identity1
+  -   set state1 to "new_state1" (was "current_state1")
+  -   set state2 to "new_state2" (was "current_state2")
 EOM
           end
         end
 
         context "and state1 is set to its current value but state2 is set to a new value" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 state1 'current_state1'
                 state2 'new_state2'
               end
-            }
+            EOM
           }
 
           it "the resource updates state2" do
             expect(resource.converged).to eq 1
             expect(resource.updated?).to  be_truthy
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create
-    - update default_identity1
-    -   set state2 to "new_state2" (was "current_state2")
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - update default_identity1
+  -   set state2 to "new_state2" (was "current_state2")
 EOM
           end
         end
 
         context "and state1 and state2 are set to their current values" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 state1 'current_state1'
                 state2 'current_state2'
               end
-            }
+            EOM
           }
 
           it "the resource updates nothing" do
             expect(resource.converged).to eq 0
             expect(resource.updated?).to  be_falsey
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create (up to date)
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create (up to date)
 EOM
           end
         end
 
         context "and identity1 and control1 are set to new values" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 identity1 'new_identity1'
                 control1 'new_control1'
               end
-            }
+            EOM
           }
 
           # Because the identity value is copied over to the new resource, by
@@ -191,9 +165,8 @@ EOM
           it "the resource updates nothing" do
             expect(resource.converged).to eq 0
             expect(resource.updated?).to  be_falsey
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create (up to date)
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create (up to date)
 EOM
           end
         end
@@ -209,13 +182,12 @@ EOM
 
         context "and identity1 and control1 are set to new values" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 identity1 'new_identity1'
                 control1 'new_control1'
               end
-            }
+            EOM
           }
 
           # Control values are not desired state and are therefore not considered
@@ -223,11 +195,10 @@ EOM
           it "the resource updates identity1" do
             expect(resource.converged).to eq 1
             expect(resource.updated?).to  be_truthy
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create
-    - update current_identity1
-    -   set identity1 to "new_identity1" (was "current_identity1")
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - update current_identity1
+  -   set identity1 to "new_identity1" (was "current_identity1")
             EOM
           end
         end
@@ -241,48 +212,40 @@ Recipe: basic_chef_client::block
         end
 
         context "and nothing is set" do
-          let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah')
-            }
-          }
+          let(:converge_recipe) { "#{resource_name} 'blah'" }
 
           it "the resource is created" do
             expect(resource.converged).to eq 1
             expect(resource.updated?).to  be_truthy
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create
-    - create default_identity1
-    -   default identity1 to "default_identity1"
-    -   default state1    to "default_state1"
-    -   default state2    to "default_state2"
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - create default_identity1
+  -   set identity1 to "default_identity1" (default value)
+  -   set state1    to "default_state1" (default value)
+  -   set state2    to "default_state2" (default value)
 EOM
           end
         end
 
         context "and state1 and state2 are set" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 state1 'new_state1'
                 state2 'new_state2'
               end
-            }
+            EOM
           }
 
           it "the resource is created" do
             expect(resource.converged).to eq 1
             expect(resource.updated?).to  be_truthy
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create
-    - create default_identity1
-    -   default identity1 to "default_identity1"
-    -       set state1    to "new_state1"
-    -       set state2    to "new_state2"
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - create default_identity1
+  -   set identity1 to "default_identity1" (default value)
+  -   set state1    to "new_state1"
+  -   set state2    to "new_state2"
 EOM
           end
         end
@@ -310,161 +273,150 @@ EOM
         end
 
         context "and nothing is set" do
-          let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah')
-            }
-          }
+          let(:converge_recipe) { "#{resource_name} 'blah'" }
 
           it "the resource updates nothing" do
             expect(resource.converged).to eq 0
             expect(resource.updated?).to  be_falsey
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create (up to date)
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create (up to date)
 EOM
           end
         end
 
         context "and state1 is set to a new value" do
+
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 state1 'new_state1'
               end
-            }
+            EOM
           }
 
           it "the resource updates state1" do
             expect(resource.converged).to eq 1
             expect(resource.updated?).to  be_truthy
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create
-    - update default_identity1
-    -   set state1 to "new_state1" (was "current_state1")
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - update default_identity1
+  -   set state1 to "new_state1" (was "current_state1")
 EOM
           end
         end
 
         context "and state1 and state2 are set to new values" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 state1 'new_state1'
                 state2 'new_state2'
               end
-            }
+            EOM
           }
 
           it "the resource updates state1 and state2" do
             expect(resource.converged).to eq 2
             expect(resource.updated?).to  be_truthy
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create
-    - update default_identity1
-    -   set state1 to "new_state1" (was "current_state1")
-    - update default_identity1
-    -   set state2 to "new_state2" (was "current_state2")
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - update default_identity1
+  -   set state1 to "new_state1" (was "current_state1")
+  - update default_identity1
+  -   set state2 to "new_state2" (was "current_state2")
 EOM
           end
         end
 
         context "and state1 is set to its current value but state2 is set to a new value" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 state1 'current_state1'
                 state2 'new_state2'
               end
-            }
+            EOM
           }
 
           it "the resource updates state2" do
             expect(resource.converged).to eq 1
             expect(resource.updated?).to  be_truthy
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create
-    - update default_identity1
-    -   set state2 to "new_state2" (was "current_state2")
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - update default_identity1
+  -   set state2 to "new_state2" (was "current_state2")
 EOM
           end
         end
 
         context "and state1 and state2 are set to their current values" do
           let(:converge_recipe) {
-            resource_name = self.resource_name
-            converge {
-              public_send(resource_name, 'blah') do
+            <<-EOM
+              #{resource_name} 'blah' do
                 state1 'current_state1'
                 state2 'current_state2'
               end
-            }
+            EOM
           }
 
           it "the resource updates nothing" do
             expect(resource.converged).to eq 0
             expect(resource.updated?).to  be_falsey
-            expect(converge_recipe.stdout).to eq <<-EOM
-Recipe: basic_chef_client::block
-  * #{resource_name}[blah] action create (up to date)
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create (up to date)
 EOM
           end
         end
       end
 
-#       context "and no current_resource" do
-#         before :each do
-#           resource_class.load_current_value do
-#             resource_does_not_exist!
-#           end
-#         end
-#
-#         context "and nothing is set" do
-#           let(:converge_recipe) {
-#             resource_name = self.resource_name
-#             converge {
-#               public_send(resource_name, 'blah')
-#             }
-#           }
-#
-#           it "the resource is created" do
-#             expect(resource.converged).to eq 2
-#             expect(resource.updated?).to  be_truthy
-#             expect(converge_recipe.stdout).to eq <<-EOM
-# Recipe: basic_chef_client::block
-# * #{resource_name}[blah] action create (up to date)
-# EOM
-#           end
-#         end
-#
-#         context "and state1 and state2 are set to their current values" do
-#           let(:converge_recipe) {
-#             resource_name = self.resource_name
-#             converge {
-#               public_send(resource_name, 'blah') do
-#                 state1 'current_state1'
-#                 state2 'current_state2'
-#               end
-#             }
-#           }
-#
-#           it "the resource is created" do
-#             expect(resource.converged).to eq 2
-#             expect(resource.updated?).to  be_truthy
-#             expect(converge_recipe.stdout).to eq <<-EOM
-# Recipe: basic_chef_client::block
-# * #{resource_name}[blah] action create (up to date)
-# EOM
-#           end
-#         end
-#       end
+      context "and no current_resource" do
+        before :each do
+          resource_class.load_current_value do
+            current_value_does_not_exist!
+          end
+        end
+
+        context "and nothing is set" do
+          let(:converge_recipe) {
+            "#{resource_name} 'blah'"
+          }
+
+          it "the resource is created" do
+            expect(resource.converged).to eq 2
+            expect(resource.updated?).to  be_truthy
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - create default_identity1
+  -   set state1 to "default_state1" (default value)
+  - create default_identity1
+  -   set state2 to "default_state2" (default value)
+EOM
+          end
+        end
+
+        context "and state1 and state2 are set to new values" do
+          let(:converge_recipe) {
+            <<-EOM
+              #{resource_name} 'blah' do
+                state1 'new_state1'
+                state2 'new_state2'
+              end
+            EOM
+          }
+
+          it "the resource is created" do
+            expect(resource.converged).to eq 2
+            expect(resource.updated?).to  be_truthy
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - create default_identity1
+  -   set state1 to "new_state1"
+  - create default_identity1
+  -   set state2 to "new_state2"
+EOM
+          end
+        end
+      end
     end
 
   end
