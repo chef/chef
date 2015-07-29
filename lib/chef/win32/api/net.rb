@@ -49,7 +49,9 @@ class Chef
         NERR_BadPassword = 2203
         NERR_PasswordTooShort = 2245
         NERR_UserNotFound = 2221
+        NERR_GroupNotFound = 2220
         ERROR_ACCESS_DENIED = 5
+        ERROR_MORE_DATA = 234
 
         ffi_lib "netapi32"
 
@@ -132,6 +134,10 @@ class Chef
           end
         end
 
+        class LOCALGROUP_MEMBERS_INFO_0 < FFI::Struct
+          layout :lgrmi0_sid, :PSID
+        end
+
         class LOCALGROUP_MEMBERS_INFO_3 < FFI::Struct
           layout :lgrmi3_domainandname, :LPWSTR
         end
@@ -153,6 +159,21 @@ class Chef
   #_In_ LPCWSTR groupname
 #);
         safe_attach_function :NetLocalGroupDel, [ :LPCWSTR, :LPCWSTR], :DWORD
+
+#NET_API_STATUS NetLocalGroupGetMembers(
+  #_In_    LPCWSTR    servername,
+  #_In_    LPCWSTR    localgroupname,
+  #_In_    DWORD      level,
+  #_Out_   LPBYTE     *bufptr,
+  #_In_    DWORD      prefmaxlen,
+  #_Out_   LPDWORD    entriesread,
+  #_Out_   LPDWORD    totalentries,
+  #_Inout_ PDWORD_PTR resumehandle
+#);
+        safe_attach_function :NetLocalGroupGetMembers, [ 
+          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD,
+          :LPDWORD, :LPDWORD, :PDWORD_PTR
+        ], :DWORD
 
 # NET_API_STATUS NetUserEnum(
 #   _In_     LPCWSTR servername,

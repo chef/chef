@@ -48,36 +48,11 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
   end
 
   def local_get_members
-    group_members = []
-    handle = 0.chr * PTR_SIZE
-    rc = ERROR_MORE_DATA
-
-    while rc == ERROR_MORE_DATA
-      ptr   = 0.chr * PTR_SIZE
-      nread = 0.chr * PTR_SIZE
-      total = 0.chr * PTR_SIZE
-
-      rc = NetLocalGroupGetMembers.call(nil, @name, 0, ptr, -1,
-                                        nread, total, handle)
-      if (rc == NERR_Success) || (rc == ERROR_MORE_DATA)
-        ptr = ptr.unpack('L')[0]
-        nread = nread.unpack('i')[0]
-        members = 0.chr * (nread * PTR_SIZE ) #nread * sizeof(LOCALGROUP_MEMBERS_INFO_0)
-        memcpy(members, ptr, members.size)
-
-        # 1 pointer field in LOCALGROUP_MEMBERS_INFO_0, offset 0 is lgrmi0_sid
-        nread.times do |i|
-          sid_address = members[i * PTR_SIZE, PTR_SIZE].unpack('L')[0]
-          sid_ptr = FFI::Pointer.new(sid_address)
-          member_sid = Chef::ReservedNames::Win32::Security::SID.new(sid_ptr)
-          group_members << member_sid.to_s
-        end
-        NetApiBufferFree(ptr)
-      else
-        raise ArgumentError, get_last_error(rc)
-      end
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_get_members(nil, @groupname)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
     end
-    group_members
   end
 
   def local_add
