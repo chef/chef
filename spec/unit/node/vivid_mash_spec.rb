@@ -163,6 +163,11 @@ describe Chef::Node::VividMash do
       vivid.each { |key, value| seen[key] = value }
       expect(seen).to eql({ 'foo' => 'bar', 'baz' => 'qux' })
     end
+
+    it "returns vividmashes, not hashes" do
+      vivid['foo']['bar'] = 'baz'
+      vivid.each { |key, value| expect(value).to be_a_kind_of(Chef::Node::VividMash) }
+    end
   end
 
   context "#merge!" do

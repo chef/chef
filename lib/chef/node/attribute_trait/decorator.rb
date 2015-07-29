@@ -99,8 +99,22 @@ class Chef
           wrapped_object.key?(key)
         end
 
+        # we need to be careful to return decorated values when appropriate
         def each(&block)
-          wrapped_object.each(&block)
+          if wrapped_object.is_a?(Array)
+            wrapped_object.each_with_index do |value, i|
+              yield self[i]
+            end
+          elsif wrapped_object.is_a?(Hash)
+            wrapped_object.each do |key, value|
+              yield key, self[key]
+            end
+          else
+            # dunno...
+            wrapped_object.each do |*args|
+              yield *args
+            end
+          end
         end
 
         #def hash
