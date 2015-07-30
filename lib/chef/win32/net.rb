@@ -238,6 +238,28 @@ END
         end
       end
 
+      def self.members_to_lgrmi3(members)
+        buf = FFI::MemoryPointer.new(LOCALGROUP_MEMBERS_INFO_3, members.size)
+        members.size.times.collect do |i|
+          member_info = LOCALGROUP_MEMBERS_INFO_3.new(
+            buf + i * LOCALGROUP_MEMBERS_INFO_3.size)
+          member_info[:lgrmi3_domainandname] = FFI::MemoryPointer.from_string(wstring(members[i]))
+          member_info
+        end
+      end
+
+      def self.net_local_group_add_members(server_name, group_name, members)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        lgrmi3s = members_to_lgrmi3(members)
+        rc = NetLocalGroupAddMembers(
+          server_name, group_name, 3, lgrmi3s[0], members.size)
+
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
     end
   end
 end

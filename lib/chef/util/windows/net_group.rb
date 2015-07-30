@@ -68,7 +68,11 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
   end
 
   def local_add_members(members)
-    modify_members(members, NetLocalGroupAddMembers)
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_add_members(nil, @groupname, members)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
+    end
   end
 
   def local_delete_members(members)
