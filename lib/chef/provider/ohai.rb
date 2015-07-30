@@ -40,9 +40,7 @@ class Chef
           # Note that any changes to plugins, or new plugins placed on
           # the path are picked up by ohai.
           ohai.all_plugins @new_resource.plugin
-          pp node.automatic_attrs
           node.automatic_attrs.merge! ohai.data
-          pp node.automatic_attrs
           Chef::Log.info("#{@new_resource} reloaded")
         end
       end
