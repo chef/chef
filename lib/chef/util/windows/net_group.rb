@@ -20,36 +20,23 @@ require 'chef/util/windows'
 require 'chef/win32/net'
 
 #wrapper around a subset of the NetGroup* APIs.
-#nothing Chef specific, but not complete enough to be its own gem, so util for now.
-class Chef::Util::Windows::NetGroup < Chef::Util::Windows
+class Chef::Util::Windows::NetGroup
 
   private
 
-  def pack_str(s)
-    [str_to_ptr(s)].pack('L')
-  end
-
-  def modify_members(members, func)
-    buffer = 0.chr * (members.size * PTR_SIZE)
-    members.each_with_index do |member,offset|
-      buffer[offset*PTR_SIZE,PTR_SIZE] = pack_str(multi_to_wide(member))
-    end
-    rc = func.call(nil, @name, 3, buffer, members.size)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
-    end
+  def groupname
+    @groupname
   end
 
   public
 
   def initialize(groupname)
-    @name = multi_to_wide(groupname)
     @groupname = groupname
   end
 
   def local_get_members
     begin
-      Chef::ReservedNames::Win32::NetUser::net_local_group_get_members(nil, @groupname)
+      Chef::ReservedNames::Win32::NetUser::net_local_group_get_members(nil, groupname)
     rescue Chef::Exceptions::Win32NetAPIError => e
       raise ArgumentError, e.msg
     end
@@ -57,7 +44,7 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
 
   def local_add
     begin
-      Chef::ReservedNames::Win32::NetUser::net_local_group_add(nil, @groupname)
+      Chef::ReservedNames::Win32::NetUser::net_local_group_add(nil, groupname)
     rescue Chef::Exceptions::Win32NetAPIError => e
       raise ArgumentError, e.msg
     end
@@ -65,7 +52,7 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
 
   def local_set_members(members)
     begin
-      Chef::ReservedNames::Win32::NetUser::net_local_group_set_members(nil, @groupname, members)
+      Chef::ReservedNames::Win32::NetUser::net_local_group_set_members(nil, groupname, members)
     rescue Chef::Exceptions::Win32NetAPIError => e
       raise ArgumentError, e.msg
     end
@@ -73,7 +60,7 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
 
   def local_add_members(members)
     begin
-      Chef::ReservedNames::Win32::NetUser::net_local_group_add_members(nil, @groupname, members)
+      Chef::ReservedNames::Win32::NetUser::net_local_group_add_members(nil, groupname, members)
     rescue Chef::Exceptions::Win32NetAPIError => e
       raise ArgumentError, e.msg
     end
@@ -81,7 +68,7 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
 
   def local_delete_members(members)
     begin
-      Chef::ReservedNames::Win32::NetUser::net_local_group_del_members(nil, @groupname, members)
+      Chef::ReservedNames::Win32::NetUser::net_local_group_del_members(nil, groupname, members)
     rescue Chef::Exceptions::Win32NetAPIError => e
       raise ArgumentError, e.msg
     end
@@ -90,7 +77,7 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
 
   def local_delete
     begin
-      Chef::ReservedNames::Win32::NetUser::net_local_group_del(nil, @groupname)
+      Chef::ReservedNames::Win32::NetUser::net_local_group_del(nil, groupname)
     rescue Chef::Exceptions::Win32NetAPIError => e
       raise ArgumentError, e.msg
     end
