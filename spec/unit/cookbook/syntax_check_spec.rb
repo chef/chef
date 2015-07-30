@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,23 +46,12 @@ describe Chef::Cookbook::SyntaxCheck do
     @original_log_level = Chef::Log.level
     Chef::Log.level = :warn # suppress "Syntax OK" messages
 
-    @attr_files = %w{default.rb smokey.rb}.map { |f| File.join(cookbook_path, 'attributes', f) }
-    @libr_files = %w{openldap.rb openldap/version.rb}.map { |f| File.join(cookbook_path, 'libraries', f) }
-    @defn_files = %w{client.rb server.rb}.map { |f| File.join(cookbook_path, 'definitions', f)}
-    @recipes = %w{default.rb gigantor.rb one.rb return.rb}.map { |f| File.join(cookbook_path, 'recipes', f) }
+    @attr_files = Dir[File.join(cookbook_path, 'attributes', '*.rb')]
+    @libr_files = Dir[File.join(cookbook_path, 'libraries', '**', '*.rb')]
+    @defn_files = Dir[File.join(cookbook_path, 'definitions', '*.rb')]
+    @recipes = Dir[File.join(cookbook_path, 'recipes', '*.rb')]
     @ruby_files = @attr_files + @libr_files + @defn_files + @recipes + [File.join(cookbook_path, "metadata.rb")]
-    basenames = %w{ helpers_via_partial_test.erb
-                    helper_test.erb
-                    helpers.erb
-                    openldap_stuff.conf.erb
-                    nested_openldap_partials.erb
-                    nested_partial.erb
-                    openldap_variable_stuff.conf.erb
-                    test.erb
-                    some_windows_line_endings.erb
-                    all_windows_line_endings.erb
-                    no_windows_line_endings.erb }
-    @template_files = basenames.map { |f| File.join(cookbook_path, 'templates', 'default', f)}
+    @template_files = Dir[File.join(cookbook_path, 'templates', 'default', '*')]
   end
 
   after do
