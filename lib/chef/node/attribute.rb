@@ -245,14 +245,33 @@ class Chef
 
       private :args_to_cell
 
+      # FIXME: should probably be another decorator behavior that changes :[] and :[]= to wipe
+      # out intermediate non-hash things and replace them with hashes in addition to autovivifying
+      # and/or add #hashifying_accessor and #hashifying_writer methods directly to VividMash.
       def write_value(level, *args)
         value = args.pop
         last = args.pop
+        previous_memo = previous_arg = nil
+        my_level = self.send(level)
         chain = args.inject(self.send(level)) do |memo, arg|
+          unless memo.respond_to?(:[])
+            # The public API will never get previous_memo set to nil, so we do not care.
+            previous_memo[previous_arg] = {}
+            memo = previous_memo[previous_arg]
+          end
+          previous_memo = memo
+          previous_arg = arg
           memo[arg]
+        end
+        unless chain.respond_to?(:[]=)
+          # The public API will never get previous_memo set to nil, so we do not care.
+          previous_memo[previous_arg] = {}
+          chain = previous_memo[previous_arg]
         end
         chain[last] = value
       end
+
+      private :write_value
 
       # sets default attributes without merging.
       #

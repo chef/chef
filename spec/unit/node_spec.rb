@@ -697,13 +697,25 @@ describe Chef::Node do
         })
       end
 
-      it "when overwriting a non-hash/array" do
+      it "when overwriting a non-hash/array with :[]=" do
         node.override["mysql"] = false
         node.force_override["mysql"] = true
         node.force_override!["mysql"]["server"] = {
           "data_dir" => "/my_raid_volume/lib/mysql",
         }
         expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+      end
+
+      it "when overwriting a non-hash/array with :[]" do
+        node.override["mysql"] = false
+        node.force_override["mysql"] = true
+        node.force_override!["mysql"]["foo"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+        node["mysql"]
+        node["mysql"]["foo"]
+        node["mysql"]["foo"]["server"]
+        expect( node["mysql"]["foo"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
       end
 
       it "when overwriting an array with a hash" do
