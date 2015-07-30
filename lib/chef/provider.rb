@@ -297,17 +297,34 @@ class Chef
         # compile the resources, converging them, and then checking if any
         # were updated (and updating new-resource if so)
         def action(name, &block)
-          class_eval <<-EOM, __FILE__, __LINE__+1
-            def action_#{name}
-              return_value = compile_action_#{name}
-              Chef::Runner.new(run_context).converge
-              return_value
-            ensure
-              if run_context.resource_collection.any? {|r| r.updated? }
-                new_resource.updated_by_last_action(true)
+          # We first try to create the method using "def method_name", which is
+          # preferred because it actually shows up in stack traces. If that
+          # fails, we try define_method.
+          begin
+            class_eval <<-EOM, __FILE__, __LINE__+1
+              def action_#{name}
+                return_value = compile_action_#{name}
+                Chef::Runner.new(run_context).converge
+                return_value
+              ensure
+                if run_context.resource_collection.any? {|r| r.updated? }
+                  new_resource.updated_by_last_action(true)
+                end
+              end
+            EOM
+          rescue SyntaxError
+            define_method("action_#{name}") do
+              begin
+                return_value = send("compile_action_#{name}")
+                Chef::Runner.new(run_context).converge
+                return_value
+              ensure
+                if run_context.resource_collection.any? {|r| r.updated? }
+                  new_resource.updated_by_last_action(true)
+                end
               end
             end
-          EOM
+          end
           # We put the action in its own method so that super() works.
           define_method("compile_action_#{name}", &block)
         end

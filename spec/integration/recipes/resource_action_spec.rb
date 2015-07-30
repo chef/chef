@@ -340,4 +340,27 @@ describe "Resource.action" do
       expect(NoActionJackson.action_was).to eq [:nothing]
     end
   end
+
+  context "With a resource with action a-b-c d" do
+    before(:context) {
+      class WeirdActionJackson < Chef::Resource
+        use_automatic_resource_name
+
+        class <<self
+          attr_accessor :action_was
+        end
+
+        action "a-b-c d" do
+          WeirdActionJackson.action_was = action
+        end
+      end
+    }
+
+    it "Running the action works" do
+      expect_recipe {
+        weird_action_jackson 'hi'
+      }.to be_up_to_date
+      expect(WeirdActionJackson.action_was).to eq :"a-b-c d"
+    end
+  end
 end
