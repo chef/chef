@@ -260,6 +260,19 @@ END
           net_api_error!(rc)
         end
       end
+
+      def self.net_local_group_set_members(server_name, group_name, members)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        lgrmi3s = members_to_lgrmi3(members)
+        rc = NetLocalGroupSetMembers(
+          server_name, group_name, 3, lgrmi3s[0], members.size)
+
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
     end
   end
 end

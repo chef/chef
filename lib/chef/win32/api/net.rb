@@ -209,6 +209,24 @@ class Chef
 #);
         safe_attach_function :NetLocalGroupAddMembers, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD ], :DWORD
 
+#NET_API_STATUS NetLocalGroupSetMembers(
+#  _In_ LPCWSTR servername,
+#  _In_ LPCWSTR groupname,
+#  _In_ DWORD   level,
+#  _In_ LPBYTE  buf,
+#  _In_ DWORD   totalentries
+#);
+        safe_attach_function :NetLocalGroupSetMembers, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD ], :DWORD
+
+#NET_API_STATUS NetLocalGroupDelMembers(
+#  _In_ LPCWSTR servername,
+#  _In_ LPCWSTR groupname,
+#  _In_ DWORD   level,
+#  _In_ LPBYTE  buf,
+#  _In_ DWORD   totalentries
+#);
+        safe_attach_function :NetLocalGroupDelMembers, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD ], :DWORD
+
 #NET_API_STATUS NetUserGetInfo(
 #  _In_  LPCWSTR servername,
 #  _In_  LPCWSTR username,
