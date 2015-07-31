@@ -46,5 +46,8 @@ class Chef
       end
     end
 
+    def self.unconfigured?
+      @logger.nil?
+    end
   end
 end
