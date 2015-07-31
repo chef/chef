@@ -9,11 +9,11 @@ class Chef
         end
 
         def to_json(*opts)
-          Chef::JSONCompat.to_json(for_json, *opts)
+          wrapped_object.to_json(*opts)
         end
 
         def for_json
-          is_a?(Hash) ? to_hash : to_a
+          wrapped_object.for_json
         end
 
         def is_a?(klass)
