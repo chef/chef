@@ -20,6 +20,7 @@ require 'chef/node'
 require 'chef/rest'
 require 'chef/api_client/registration'
 require 'chef/api_client'
+require 'chef/knife/bootstrap'
 require 'tmpdir'
 
 class Chef
