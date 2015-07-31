@@ -89,9 +89,6 @@ class Chef
       options[:name_property] = options.delete(:name_attribute) if options.has_key?(:name_attribute) && !options.has_key?(:name_property)
       @options = options
 
-      if options.has_key?(:default)
-        options[:default] = options[:default].freeze
-      end
       options[:name] = options[:name].to_sym if options[:name]
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
     end
@@ -285,7 +282,7 @@ class Chef
           # If the value is mutable (non-frozen), we set it on the instance
           # so that people can mutate it.  (All constant default values are
           # frozen.)
-          if !value.frozen?
+          if !value.frozen? && !value.nil?
             set_value(resource, value)
           end
 
