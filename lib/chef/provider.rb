@@ -193,6 +193,10 @@ class Chef
     # @return [Boolean] whether the block was executed.
     #
     def converge_if_changed(*properties, &converge_block)
+      if !converge_block
+        raise ArgumentError, "converge_if_changed must be passed a block!"
+      end
+
       properties = new_resource.class.state_properties.map { |p| p.name } if properties.empty?
       properties = properties.map { |p| p.to_sym }
       if current_resource

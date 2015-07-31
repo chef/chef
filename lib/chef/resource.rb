@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: John Keiser (<jkeiser@chef.io)
-# Copyright:: Copyright (c) 2008-2015 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -1385,14 +1385,17 @@ class Chef
     #   created resource with its identity values filled in.
     #
     def self.load_current_value(&load_block)
-      include LoadCurrentValueDSL
       define_method(:load_current_value!, &load_block)
     end
 
-    module LoadCurrentValueDSL
-      def current_value_does_not_exist!
-        raise Chef::Exceptions::CurrentValueDoesNotExist
-      end
+    #
+    # Call this in `load_current_value` to indicate that the value does not
+    # exist and that `current_resource` should therefore be `nil`.
+    #
+    # @raise Chef::Exceptions::CurrentValueDoesNotExist
+    #
+    def current_value_does_not_exist!
+      raise Chef::Exceptions::CurrentValueDoesNotExist
     end
 
     #

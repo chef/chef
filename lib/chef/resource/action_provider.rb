@@ -41,6 +41,8 @@ class Chef
           # Call the actual load_current_value! method. If it raises
           # CurrentValueDoesNotExist, set current_resource to `nil`.
           begin
+            # If the user specifies load_current_value do |desired_resource|, we
+            # pass in the desired resource as well as the current one.
             if current_resource.method(:load_current_value!).arity > 0
               current_resource.load_current_value!(new_resource)
             else
