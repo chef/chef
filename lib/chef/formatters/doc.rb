@@ -134,7 +134,7 @@ class Chef
       end
 
       # Called when cookbook +cookbook+ has been sync'd
-      def synchronized_cookbook(cookbook)
+      def synchronized_cookbook(cookbook_name, cookbook)
         puts_line "- #{cookbook.name} (#{cookbook.version})"
       end
 

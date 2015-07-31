@@ -119,7 +119,7 @@ class Chef
       end
 
       # Called when cookbook +cookbook+ has been sync'd
-      def synchronized_cookbook(cookbook)
+      def synchronized_cookbook(cookbook_name, cookbook)
       end
 
       # Called when an individual file in a cookbook has been updated
