@@ -118,8 +118,8 @@ class Chef
       def cookbook_sync_start(cookbook_count)
       end
 
-      # Called when cookbook +cookbook_name+ has been sync'd
-      def synchronized_cookbook(cookbook_name)
+      # Called when cookbook +cookbook+ has been sync'd
+      def synchronized_cookbook(cookbook_name, cookbook)
       end
 
       # Called when an individual file in a cookbook has been updated

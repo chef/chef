@@ -133,9 +133,9 @@ class Chef
         indent
       end
 
-      # Called when cookbook +cookbook_name+ has been sync'd
-      def synchronized_cookbook(cookbook_name)
-        puts_line "- #{cookbook_name}"
+      # Called when cookbook +cookbook+ has been sync'd
+      def synchronized_cookbook(cookbook_name, cookbook)
+        puts_line "- #{cookbook.name} (#{cookbook.version})"
       end
 
       # Called when an individual file in a cookbook has been updated

@@ -109,8 +109,8 @@ class Chef
         puts "Synchronizing cookbooks"
       end
 
-      # Called when cookbook +cookbook_name+ has been sync'd
-      def synchronized_cookbook(cookbook_name)
+      # Called when cookbook +cookbook+ has been sync'd
+      def synchronized_cookbook(cookbook_name, cookbook)
         print "."
       end
 

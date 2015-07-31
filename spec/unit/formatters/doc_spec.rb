@@ -43,4 +43,10 @@ describe Chef::Formatters::Base do
     expect(out.string).to include("Using policy 'jenkins' at revision '613f803bdd035d574df7fa6da525b38df45a74ca82b38b79655efed8a189e073'")
   end
 
+  it "prints cookbook name and version" do
+    cookbook_version = double(name: "apache2", version: "1.2.3")
+    formatter.synchronized_cookbook("apache2", cookbook_version)
+    expect(out.string).to include("- apache2 (1.2.3")
+  end
+
 end

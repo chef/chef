@@ -47,12 +47,31 @@ describe Chef::EventDispatch::Dispatcher do
       expect(event_sink).to receive(:run_start).with("12.4.0")
       dispatcher.run_start("12.4.0")
 
-      expect(event_sink).to receive(:synchronized_cookbook).with("apache2")
-      dispatcher.synchronized_cookbook("apache2")
+      cookbook_version = double("cookbook_version")
+      expect(event_sink).to receive(:synchronized_cookbook).with("apache2", cookbook_version)
+      dispatcher.synchronized_cookbook("apache2", cookbook_version)
 
       exception = StandardError.new("foo")
       expect(event_sink).to receive(:recipe_file_load_failed).with("/path/to/file.rb", exception)
       dispatcher.recipe_file_load_failed("/path/to/file.rb", exception)
+    end
+
+    context "when an event sink has fewer arguments for an event" do
+      # Can't use a double because they don't report arity correctly.
+      let(:event_sink) do
+        Class.new(Chef::EventDispatch::Base) do
+          attr_reader :synchronized_cookbook_args
+          def synchronized_cookbook(cookbook_name)
+            @synchronized_cookbook_args = [cookbook_name]
+          end
+        end.new
+      end
+
+      it "trims the arugment list" do
+        cookbook_version = double("cookbook_version")
+        dispatcher.synchronized_cookbook("apache2", cookbook_version)
+        expect(event_sink.synchronized_cookbook_args).to eq ["apache2"]
+      end
     end
 
   end
