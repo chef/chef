@@ -28,7 +28,17 @@ class Chef
       # Define a method that will be forwarded to all
       def self.def_forwarding_method(method_name)
         define_method(method_name) do |*args|
-          @subscribers.each { |s| s.send(method_name, *args) }
+          @subscribers.each do |s|
+            # Skip new/unsupported event names.
+            if s.respond_to?(method_name)
+              mth = s.method(method_name)
+              # Anything with a *args is arity -1, so use all arguments.
+              arity = mth.arity < 0 ? args.length : mth.arity
+              # Trim arguments to match what the subscriber expects to allow
+              # adding new arguments without breaking compat.
+              mth.call(*args.take(arity))
+            end
+          end
         end
       end
 
