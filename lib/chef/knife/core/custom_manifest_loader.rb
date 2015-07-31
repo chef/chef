@@ -1,4 +1,3 @@
-# Author:: Steven Danna (<steve@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
@@ -45,7 +44,7 @@ class Chef
         #     }
         #   }
         #
-        # Extraneous content in this file is ignored. This intentional so that we
+        # Extraneous content in this file is ignored. This is intentional so that we
         # can adapt the file format for potential behavior changes to knife in
         # the future.
         def find_subcommands_via_manifest
