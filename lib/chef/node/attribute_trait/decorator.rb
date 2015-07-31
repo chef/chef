@@ -9,7 +9,11 @@ class Chef
         end
 
         def to_json(*opts)
-          Chef::JSONCompat.to_json(wrapped_object, *opts)
+          Chef::JSONCompat.to_json(for_json, *opts)
+        end
+
+        def for_json
+          is_a?(Hash) ? to_hash : to_a
         end
 
         def is_a?(klass)
@@ -73,11 +77,6 @@ class Chef
         end
 
         # http://blog.rubybestpractices.com/posts/rklemme/018-Complete_Class.html
-
-        #def to_json
-        #end
-        #def for_json
-        #end
 
         def eql?(other)
           wrapped_object.eql?(other)
