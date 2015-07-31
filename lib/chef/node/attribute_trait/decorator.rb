@@ -8,6 +8,10 @@ class Chef
           @wrapped_object = wrapped_object
         end
 
+        def ffi_yajl(*args)
+          wrapped_object.ffi_yajl(*args)
+        end
+
         def to_json(*opts)
           wrapped_object.to_json(*opts)
         end
