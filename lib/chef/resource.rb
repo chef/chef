@@ -1,7 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io)
+# Copyright:: Copyright (c) 2008-2015 Chef, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +18,7 @@
 # limitations under the License.
 #
 
+require 'chef/exceptions'
 require 'chef/mixin/params_validate'
 require 'chef/dsl/platform_introspection'
 require 'chef/dsl/data_query'
@@ -27,6 +29,7 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
+require 'chef/resource/action_provider'
 require 'chef/resource_collection'
 require 'chef/node_map'
 require 'chef/node'
@@ -1386,6 +1389,16 @@ class Chef
     end
 
     #
+    # Call this in `load_current_value` to indicate that the value does not
+    # exist and that `current_resource` should therefore be `nil`.
+    #
+    # @raise Chef::Exceptions::CurrentValueDoesNotExist
+    #
+    def current_value_does_not_exist!
+      raise Chef::Exceptions::CurrentValueDoesNotExist
+    end
+
+    #
     # Get the current actual value of this resource.
     #
     # This does not cache--a new value will be returned each time.
@@ -1439,35 +1452,13 @@ class Chef
 
       resource_class = self
       @action_provider_class = Class.new(base_provider) do
-        use_inline_resources
-        include_resource_dsl true
+        include ActionProvider
         define_singleton_method(:to_s) { "#{resource_class} action provider" }
         def self.inspect
           to_s
         end
-        def load_current_resource
-          if new_resource.respond_to?(:load_current_value!)
-            # dup the resource and then reset desired-state properties.
-            current_resource = new_resource.dup
-
-            # We clear desired state in the copy, because it is supposed to be actual state.
-            # We keep identity properties and non-desired-state, which are assumed to be
-            # "control" values like `recurse: true`
-            current_resource.class.properties.each do |name,property|
-              if property.desired_state? && !property.identity? && !property.name_property?
-                property.reset(current_resource)
-              end
-            end
-
-            if current_resource.method(:load_current_value!).arity > 0
-              current_resource.load_current_value!(new_resource)
-            else
-              current_resource.load_current_value!
-            end
-          end
-          @current_resource = current_resource
-        end
       end
+      @action_provider_class
     end
 
     #

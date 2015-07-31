@@ -288,5 +288,79 @@ end
 Now, the above recipe knows what the current homepage is, and will not change it!
 
 This capability is also used for several other things, including reporting (to
-describe what changed) and deeper custom resources (ones that don't use recipes,
-which we'll cover later).
+describe what changed) and pure Ruby actions.
+
+#### Pure Ruby Actions
+
+Some resources need to talk directly to Ruby to do their dirty work, rather than using other resources. In those cases, you need to:
+
+- Make the updates only if the user specified properties that *need* to change.
+- Make sure and call updates if the resource does not exist (need to be created).
+- Print useful green text if the update is happening.
+- Not actually make any changes in why-run mode!
+
+`converge_if_changed` handles all of the above by comparing the user's desired
+property values against the *current* value as loaded by `load_current_value`.
+Simply wrap the part of your recipe that does a set in `converge_if_changed`.
+As an example, here is a basic `my_file` resource that creates a file with the
+given content:
+
+```ruby
+# resources/my_file.rb
+property :path, String, name_property: true
+property :content, String
+
+load_current_value do
+  if File.exist?(path)
+    content IO.read(path)
+  end
+end
+
+action :create do
+  converge_if_changed do
+    IO.write(path, content)
+  end
+end
+```
+
+The above code will only call `IO.write` if the file does not exist, or if the
+user specified content that is different from what is on disk. It will print out
+something like this, showing the changes:
+
+```ruby
+Recipe: basic_chef_client::block
+  * my_file[blah] action create
+    - update my_file[blah]
+    -   set content to "hola mundo" (was "hello world")
+ ```
+
+##### Handling Multiple Operations
+
+If you have two separate, expensive operations to handle converge, `converge_if_changed`
+can be called multiple times with multiple properties. Adding `mode` to `my_file`
+demonstrates this:
+
+```ruby
+# resources/my_file.rb
+property :path, String, name_property: true
+property :content, String
+property :mode, String
+
+load_current_value do
+  if File.exist?(path)
+    content IO.read(path)
+    mode File.stat(path).mode
+  end
+end
+
+action :create do
+  # Only change content here
+  converge_if_changed :content do
+    IO.write(path, content)
+  end
+  # Only change mode here
+  converge_if_changed :mode do
+    File.chmod(mode, path)
+  end
+end
+```
