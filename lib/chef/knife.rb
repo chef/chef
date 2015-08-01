@@ -230,7 +230,7 @@ class Chef
       # Mention rehash when the subcommands cache(plugin_manifest.json) is used
       if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader) ||
          subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::CustomManifestLoader)
-        ui.info("If this is a recently installed plugin, please rehash to update the subcommands cache.")
+        ui.info("If this is a recently installed plugin, please run 'knife rehash' to update the subcommands cache.")
       end
 
       if category_commands = guess_category(args)
