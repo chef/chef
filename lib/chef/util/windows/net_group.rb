@@ -17,90 +17,69 @@
 #
 
 require 'chef/util/windows'
+require 'chef/win32/net'
 
 #wrapper around a subset of the NetGroup* APIs.
-#nothing Chef specific, but not complete enough to be its own gem, so util for now.
-class Chef::Util::Windows::NetGroup < Chef::Util::Windows
+class Chef::Util::Windows::NetGroup
 
   private
 
-  def pack_str(s)
-    [str_to_ptr(s)].pack('L')
-  end
-
-  def modify_members(members, func)
-    buffer = 0.chr * (members.size * PTR_SIZE)
-    members.each_with_index do |member,offset|
-      buffer[offset*PTR_SIZE,PTR_SIZE] = pack_str(multi_to_wide(member))
-    end
-    rc = func.call(nil, @name, 3, buffer, members.size)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
-    end
+  def groupname
+    @groupname
   end
 
   public
 
   def initialize(groupname)
-    @name = multi_to_wide(groupname)
+    @groupname = groupname
   end
 
   def local_get_members
-    group_members = []
-    handle = 0.chr * PTR_SIZE
-    rc = ERROR_MORE_DATA
-
-    while rc == ERROR_MORE_DATA
-      ptr   = 0.chr * PTR_SIZE
-      nread = 0.chr * PTR_SIZE
-      total = 0.chr * PTR_SIZE
-
-      rc = NetLocalGroupGetMembers.call(nil, @name, 0, ptr, -1,
-                                        nread, total, handle)
-      if (rc == NERR_Success) || (rc == ERROR_MORE_DATA)
-        ptr = ptr.unpack('L')[0]
-        nread = nread.unpack('i')[0]
-        members = 0.chr * (nread * PTR_SIZE ) #nread * sizeof(LOCALGROUP_MEMBERS_INFO_0)
-        memcpy(members, ptr, members.size)
-
-        # 1 pointer field in LOCALGROUP_MEMBERS_INFO_0, offset 0 is lgrmi0_sid
-        nread.times do |i|
-          sid_address = members[i * PTR_SIZE, PTR_SIZE].unpack('L')[0]
-          sid_ptr = FFI::Pointer.new(sid_address)
-          member_sid = Chef::ReservedNames::Win32::Security::SID.new(sid_ptr)
-          group_members << member_sid.to_s
-        end
-        NetApiBufferFree(ptr)
-      else
-        raise ArgumentError, get_last_error(rc)
-      end
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_get_members(nil, groupname)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
     end
-    group_members
   end
 
   def local_add
-    rc = NetLocalGroupAdd.call(nil, 0, pack_str(@name), nil)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_add(nil, groupname)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
     end
   end
 
   def local_set_members(members)
-    modify_members(members, NetLocalGroupSetMembers)
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_set_members(nil, groupname, members)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
+    end
   end
 
   def local_add_members(members)
-    modify_members(members, NetLocalGroupAddMembers)
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_add_members(nil, groupname, members)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
+    end
   end
 
   def local_delete_members(members)
-    modify_members(members, NetLocalGroupDelMembers)
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_del_members(nil, groupname, members)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
+    end
+
   end
 
   def local_delete
-    rc = NetLocalGroupDel.call(nil, @name)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_local_group_del(nil, groupname)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
     end
   end
 end

@@ -91,19 +91,72 @@ The password is shorter than required. (The password could also be too
 long, be too recent in its change history, not have enough unique characters,
 or not meet another password policy requirement.)
 END
+        when NERR_GroupNotFound
+          "The group name could not be found."
         when ERROR_ACCESS_DENIED
           "The user does not have access to the requested information."
         else
           "Received unknown error code (#{code})"
         end
 
-        formatted_message = ""
-        formatted_message << "---- Begin Win32 API output ----\n"
-        formatted_message << "Net Api Error Code: #{code}\n"
-        formatted_message << "Net Api Error Message: #{msg}\n"
-        formatted_message << "---- End Win32 API output ----\n"
+        raise Chef::Exceptions::Win32NetAPIError.new(msg, code)
+      end
 
-        raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
+      def self.net_local_group_add(server_name, group_name)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        buf = LOCALGROUP_INFO_0.new
+        buf[:lgrpi0_name] = FFI::MemoryPointer.from_string(group_name)
+
+        rc = NetLocalGroupAdd(server_name, 0, buf, nil)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
+
+      def self.net_local_group_del(server_name, group_name)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        rc = NetLocalGroupDel(server_name, group_name)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
+
+      def self.net_local_group_get_members(server_name, group_name)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        buf = FFI::MemoryPointer.new(:pointer)
+        entries_read_ptr = FFI::MemoryPointer.new(:long)
+        total_read_ptr = FFI::MemoryPointer.new(:long)
+        resume_handle_ptr = FFI::MemoryPointer.new(:pointer)
+
+        rc = ERROR_MORE_DATA
+        group_members = []
+        while rc == ERROR_MORE_DATA
+          rc = NetLocalGroupGetMembers(
+            server_name, group_name, 0, buf, -1,
+            entries_read_ptr, total_read_ptr, resume_handle_ptr
+          )
+
+          nread = entries_read_ptr.read_long
+          nread.times do |i|
+            member = LOCALGROUP_MEMBERS_INFO_0.new(buf.read_pointer +
+                       (i * LOCALGROUP_MEMBERS_INFO_0.size))
+            member_sid = Chef::ReservedNames::Win32::Security::SID.new(member[:lgrmi0_sid])
+            group_members << member_sid.to_s
+          end
+          NetApiBufferFree(buf.read_pointer)
+        end
+
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+
+        group_members
       end
 
       def self.net_user_add_l3(server_name, args)
@@ -185,6 +238,54 @@ END
         end
       end
 
+      def self.members_to_lgrmi3(members)
+        buf = FFI::MemoryPointer.new(LOCALGROUP_MEMBERS_INFO_3, members.size)
+        members.size.times.collect do |i|
+          member_info = LOCALGROUP_MEMBERS_INFO_3.new(
+            buf + i * LOCALGROUP_MEMBERS_INFO_3.size)
+          member_info[:lgrmi3_domainandname] = FFI::MemoryPointer.from_string(wstring(members[i]))
+          member_info
+        end
+      end
+
+      def self.net_local_group_add_members(server_name, group_name, members)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        lgrmi3s = members_to_lgrmi3(members)
+        rc = NetLocalGroupAddMembers(
+          server_name, group_name, 3, lgrmi3s[0], members.size)
+
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
+
+      def self.net_local_group_set_members(server_name, group_name, members)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        lgrmi3s = members_to_lgrmi3(members)
+        rc = NetLocalGroupSetMembers(
+          server_name, group_name, 3, lgrmi3s[0], members.size)
+
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
+
+      def self.net_local_group_del_members(server_name, group_name, members)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        lgrmi3s = members_to_lgrmi3(members)
+        rc = NetLocalGroupDelMembers(
+          server_name, group_name, 3, lgrmi3s[0], members.size)
+
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
     end
   end
 end

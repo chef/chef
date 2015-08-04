@@ -188,6 +188,7 @@ class Chef
         host.typedef :pointer, :PCRYPTPROTECT_PROMPTSTRUCT # Pointer to a CRYPTOPROTECT_PROMPTSTRUCT.
         host.typedef :pointer, :PDATA_BLOB # Pointer to a DATA_BLOB.
         host.typedef :pointer, :PTSTR # A PWSTR if UNICODE is defined, a PSTR otherwise.
+        host.typedef :pointer, :PSID
         host.typedef :pointer, :PUCHAR # Pointer to a UCHAR.
         host.typedef :pointer, :PUHALF_PTR # Pointer to a UHALF_PTR.
         host.typedef :pointer, :PUINT # Pointer to a UINT.

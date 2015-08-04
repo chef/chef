@@ -207,13 +207,16 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       describe "when the users doesn't exist" do
         describe "when append is not set" do
           it "should raise an error" do
-            expect { @grp_resource.run_action(tested_action) }.to raise_error
+            expect { group_resource.run_action(tested_action) }.to raise_error(Chef::Exceptions::Win32APIError)
           end
         end
 
         describe "when append is set" do
+          before do
+            group_resource.append(true)
+          end
           it "should raise an error" do
-            expect { @grp_resource.run_action(tested_action) }.to raise_error
+            expect { group_resource.run_action(tested_action) }.to raise_error(Chef::Exceptions::Win32APIError)
           end
         end
       end
@@ -229,6 +232,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       group_resource.append(true)
       group_resource.run_action(:create)
       group_should_exist(group_name)
+    end
+
+    after(:each) do
+      group_resource.run_action(:remove)
     end
 
     describe "when updating membership" do
@@ -256,7 +263,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
   end
 
-  let(:group_name) { "t-#{SecureRandom.random_number(9999)}" }
+  let(:group_name) { "group#{SecureRandom.random_number(9999)}" }
   let(:included_members) { nil }
   let(:excluded_members) { nil }
   let(:group_resource) {
@@ -300,7 +307,7 @@ theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
 downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
       it "should not create a group" do
-        expect { group_resource.run_action(:create) }.to raise_error
+        expect { group_resource.run_action(:create) }.to raise_error(ArgumentError)
         group_should_not_exist(group_name)
       end
     end
