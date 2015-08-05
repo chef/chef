@@ -63,7 +63,7 @@ build do
     'rubocop'           => '0.31.0',
     'knife-spork'       => '1.5.0',
     'winrm-transport'   => '1.0.2',
-    'knife-windows'     => '0.8.6.rc.0',
+    'knife-windows'     => '0.8.6',
     # Strainer build is hosed on windows
     # 'strainer'        => '0.15.0',
   }.each do |name, version|
