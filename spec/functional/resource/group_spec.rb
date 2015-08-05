@@ -205,9 +205,12 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       end
 
       describe "when the users doesn't exist" do
+        let (:append_expected_exception) do
+          ohai[:platform_family] == "windows" ? Chef::Exceptions::Win32APIError : Mixlib::ShellOut::ShellCommandFailed
+        end
         describe "when append is not set" do
           it "should raise an error" do
-            expect { group_resource.run_action(tested_action) }.to raise_error(Chef::Exceptions::Win32APIError)
+            expect { group_resource.run_action(tested_action) }.to raise_error(append_expected_exception)
           end
         end
 
@@ -216,7 +219,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
             group_resource.append(true)
           end
           it "should raise an error" do
-            expect { group_resource.run_action(tested_action) }.to raise_error(Chef::Exceptions::Win32APIError)
+            expect { group_resource.run_action(tested_action) }.to raise_error(append_expected_exception)
           end
         end
       end
