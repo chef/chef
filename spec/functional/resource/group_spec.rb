@@ -95,7 +95,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
 
   def create_user(username)
     user(username).run_action(:create) if ! windows_domain_user?(username)
-    # TODO: User shouldn't exist
+    # TODO: User should exist
   end
 
   def remove_user(username)
@@ -135,44 +135,75 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       group_should_not_exist(group_name)
     end
 
-    describe "when append is not set" do
-      let(:included_members) { [spec_members[1]] }
+    # dscl doesn't perform any error checking and will let you add users that don't exist.
+    describe "when no users exist", :not_supported_on_mac_osx do
+      describe "when append is not set" do
+        # excluded_members can only be used when append is set.  It is ignored otherwise.
+        let(:excluded_members) { [] }
 
-      before do
-        create_user(spec_members[1])
-        create_user(spec_members[0])
-        add_members_to_group([spec_members[0]])
+        it "should raise an error" do
+          expect { group_resource.run_action(tested_action) }.to raise_error(Chef::Exceptions::Win32APIError)
+        end
       end
 
-      after do
-        remove_user(spec_members[1])
-        remove_user(spec_members[0])
-      end
+      describe "when append is set" do
+        before do
+          group_resource.append(true)
+        end
 
-      it "should remove the existing users and add the new users to the group" do
-        group_resource.run_action(tested_action)
-
-        expect(user_exist_in_group?(spec_members[1])).to eq(true)
-        expect(user_exist_in_group?(spec_members[0])).to eq(false)
+        it "should raise an error" do
+          expect { group_resource.run_action(tested_action) }.to raise_error(Chef::Exceptions::Win32APIError)
+        end
       end
     end
 
-    describe "when append is set" do
-      before(:each) do
-        group_resource.append(true)
+    describe "when the users exist" do
+      before do
+        (spec_members).each do |member|
+          create_user(member)
+        end
       end
 
-      describe "when the users exist" do
-        before do
-          (included_members + excluded_members).each do |member|
-            create_user(member)
+      after do
+        (spec_members).each do |member|
+          remove_user(member)
+        end
+      end
+
+      describe "when append is not set" do
+        it "should set the group to to contain given members" do
+          group_resource.run_action(tested_action)
+
+          included_members.each do |member|
+            expect(user_exist_in_group?(member)).to eq(true)
+          end
+          (spec_members - included_members).each do |member|
+            expect(user_exist_in_group?(member)).to eq(false)
           end
         end
 
-        after do
-          (included_members + excluded_members).each do |member|
-            remove_user(member)
+        describe "when group already contains some users" do
+          before do
+            add_members_to_group([included_members[0]])
+            add_members_to_group(spec_members - included_members)
           end
+
+          it "should remove all existing users and only add the new users to the group" do
+            group_resource.run_action(tested_action)
+
+            included_members.each do |member|
+              expect(user_exist_in_group?(member)).to eq(true)
+            end
+            (spec_members - included_members).each do |member|
+              expect(user_exist_in_group?(member)).to eq(false)
+            end
+          end
+        end
+      end
+
+      describe "when append is set" do
+        before(:each) do
+          group_resource.append(true)
         end
 
         it "should add included members to the group" do
@@ -186,9 +217,9 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
           end
         end
 
-        describe "when group contains some users" do
+        describe "when group already contains some users" do
           before(:each) do
-            add_members_to_group([ spec_members[0], spec_members[2] ])
+            add_members_to_group([included_members[0], excluded_members[0]])
           end
 
           it "should add the included users and remove excluded users" do
@@ -200,26 +231,6 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
             excluded_members.each do |member|
               expect(user_exist_in_group?(member)).to eq(false)
             end
-          end
-        end
-      end
-
-      describe "when the users doesn't exist" do
-        let (:append_expected_exception) do
-          ohai[:platform_family] == "windows" ? Chef::Exceptions::Win32APIError : Mixlib::ShellOut::ShellCommandFailed
-        end
-        describe "when append is not set" do
-          it "should raise an error" do
-            expect { group_resource.run_action(tested_action) }.to raise_error(append_expected_exception)
-          end
-        end
-
-        describe "when append is set" do
-          before do
-            group_resource.append(true)
-          end
-          it "should raise an error" do
-            expect { group_resource.run_action(tested_action) }.to raise_error(append_expected_exception)
           end
         end
       end
