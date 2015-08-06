@@ -37,21 +37,14 @@ class Chef
         attr_reader :chefignore
 
         def children
-          begin
-            Dir.entries(file_path).sort.
-                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| make_child_entry(child_name) }.
-                select do |entry|
-                  # empty cookbooks and cookbook directories are ignored
-                  if !entry.can_upload?
-                    Chef::Log.warn("Cookbook '#{entry.name}' is empty or entirely chefignored at #{entry.path_for_printing}")
-                    false
-                  else
-                    true
-                  end
-                end
-          rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          super.select do |entry|
+            # empty cookbooks and cookbook directories are ignored
+            if !entry.can_upload?
+              Chef::Log.warn("Cookbook '#{entry.name}' is empty or entirely chefignored at #{entry.path_for_printing}")
+              false
+            else
+              true
+            end
           end
         end
 

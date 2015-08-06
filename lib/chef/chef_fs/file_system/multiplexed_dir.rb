@@ -35,7 +35,7 @@ class Chef
           end
         end
 
-        def child(name)
+        def make_child_entry(name)
           result = nil
           multiplexed_dirs.each do |dir|
             child_entry = dir.child(name)
@@ -47,7 +47,7 @@ class Chef
               end
             end
           end
-          result || NonexistentFSObject.new(name, self)
+          result
         end
 
         def can_have_child?(name, is_dir)

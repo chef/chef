@@ -36,13 +36,9 @@ class Chef
           super("cookbooks", parent)
         end
 
-        def child(name)
-          result = @children.select { |child| child.name == name }.first if @children
-          result || super
-        end
-
         def make_child_entry(name)
-          CookbookDir.new(name, self)
+          result = @children.select { |child| child.name == name }.first if @children
+          result || CookbookDir.new(name, self)
         end
 
         def children

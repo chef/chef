@@ -95,9 +95,10 @@ class Chef
         # directly perform a network request to retrieve the y.json data bag.  No
         # network request was necessary to retrieve
         def child(name)
-          (can_have_child?(name, true) || can_have_child?(name, false)) ?
-            make_child_entry(name) :
-            NonexistentFSObject.new(name, self)
+          if can_have_child?(name, true) || can_have_child?(name, false)
+            result = make_child_entry(name)
+          end
+          result || NonexistentFSObject.new(name, self)
         end
 
         # Override children to report your *actual* list of children as an array.

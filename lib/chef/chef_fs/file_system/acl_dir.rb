@@ -28,9 +28,9 @@ class Chef
           parent.parent.child(name).api_path
         end
 
-        def child(name)
+        def make_child_entry(name, exists = nil)
           result = @children.select { |child| child.name == name }.first if @children
-          result || super
+          result || AclEntry.new(name, self, exists)
         end
 
         def can_have_child?(name, is_dir)
@@ -41,7 +41,7 @@ class Chef
           if @children.nil?
             # Grab the ACTUAL children (/nodes, /containers, etc.) and get their names
             names = parent.parent.child(name).children.map { |child| child.dir? ? "#{child.name}.json" : child.name }
-            @children = names.map { |name| AclEntry.new(name, self, true) }
+            @children = names.map { |name| make_child_entry(name, true) }
           end
           @children
         end

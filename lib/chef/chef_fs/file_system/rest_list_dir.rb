@@ -33,11 +33,6 @@ class Chef
         attr_reader :api_path
         attr_reader :data_handler
 
-        def child(name)
-          result = @children.select { |child| child.name == name }.first if @children
-          result || super
-        end
-
         def can_have_child?(name, is_dir)
           name =~ /\.json$/ && !is_dir
         end
@@ -106,6 +101,7 @@ class Chef
         end
 
         def make_child_entry(name, exists = nil)
+          @children.select { |child| child.name == name }.first if @children
           RestListEntry.new(name, self, exists)
         end
       end

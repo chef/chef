@@ -40,8 +40,11 @@ class Chef
         end
 
         def children
+          # Except cookbooks and data bag dirs, all things must be json files
           begin
-            Dir.entries(file_path).sort.select { |entry| entry != '.' && entry != '..' }.map { |entry| make_child_entry(entry) }
+            Dir.entries(file_path).sort.
+                map { |child_name| make_child_entry(child_name) }.
+                select { |child| child && can_have_child?(child.name, child.dir?) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
