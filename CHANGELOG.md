@@ -17,6 +17,7 @@
 * [pr#3683](https://github.com/chef/chef/pull/3683) Correct Windows reboot command to delay in minutes, per the property.
 * [pr#3698](https://github.com/chef/chef/pull/3698) Add ability to specify dependencies in chef-service-manager.
 * [pr#3728](https://github.com/chef/chef/pull/3728) Rewrite NetLocalGroup things to use FFI
+* [pr#3754](https://github.com/chef/chef/pull/3754) Fix functional tests for group resource - fix #3728
 
 ## 12.4.1
 
