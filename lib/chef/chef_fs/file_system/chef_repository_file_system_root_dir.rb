@@ -72,7 +72,7 @@ class Chef
 
         def children
           @children ||= begin
-            result = child_paths.keys.sort.map { |name| make_child_entry(name) }.select { |child| !child.nil? }
+            result = child_paths.keys.sort.map { |name| make_child_entry(name) }.select { |child| child.exists? }
             result += root_dir.children.select { |c| CHILDREN.include?(c.name) } if root_dir
             result.sort_by { |c| c.name }
           end
@@ -153,7 +153,7 @@ class Chef
             File.exists?(path)
           end
           if paths.size == 0
-            return nil
+            return NonexistentFSObject.new(name, self)
           end
           if name == 'cookbooks'
             dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
