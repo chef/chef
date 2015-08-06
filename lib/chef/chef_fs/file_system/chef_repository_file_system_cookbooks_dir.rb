@@ -40,7 +40,7 @@ class Chef
           begin
             Dir.entries(file_path).sort.
                 select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| make_child(child_name) }.
+                map { |child_name| make_child_entry(child_name) }.
                 select do |entry|
                   # empty cookbooks and cookbook directories are ignored
                   if !entry.can_upload?
@@ -61,7 +61,7 @@ class Chef
 
         def write_cookbook(cookbook_path, cookbook_version_json, from_fs)
           cookbook_name = File.basename(cookbook_path)
-          child = make_child(cookbook_name)
+          child = make_child_entry(cookbook_name)
 
           # Use the copy/diff algorithm to copy it down so we don't destroy
           # chefignored data.  This is terribly un-thread-safe.
@@ -80,7 +80,7 @@ class Chef
 
         protected
 
-        def make_child(child_name)
+        def make_child_entry(child_name)
           ChefRepositoryFileSystemCookbookDir.new(child_name, self)
         end
       end

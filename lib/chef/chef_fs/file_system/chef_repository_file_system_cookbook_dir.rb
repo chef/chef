@@ -61,7 +61,7 @@ class Chef
           begin
             Dir.entries(file_path).sort.
                 select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| make_child(child_name) }.
+                map { |child_name| make_child_entry(child_name) }.
                 select { |entry| !(entry.dir? && entry.children.size == 0) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
@@ -99,7 +99,7 @@ class Chef
 
         protected
 
-        def make_child(child_name)
+        def make_child_entry(child_name)
           segment_info = CookbookDir::COOKBOOK_SEGMENT_INFO[child_name.to_sym] || {}
           ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, segment_info[:ruby_only], segment_info[:recursive])
         end

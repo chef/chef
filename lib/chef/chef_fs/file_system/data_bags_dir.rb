@@ -29,7 +29,7 @@ class Chef
 
         def child(name)
           result = @children.select { |child| child.name == name }.first if @children
-          result || DataBagDir.new(name, self)
+          result || super
         end
 
         def children

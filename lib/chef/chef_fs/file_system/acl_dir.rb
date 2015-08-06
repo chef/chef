@@ -30,8 +30,7 @@ class Chef
 
         def child(name)
           result = @children.select { |child| child.name == name }.first if @children
-          result ||= can_have_child?(name, false) ?
-                     AclEntry.new(name, self) : NonexistentFSObject.new(name, self)
+          result || super
         end
 
         def can_have_child?(name, is_dir)

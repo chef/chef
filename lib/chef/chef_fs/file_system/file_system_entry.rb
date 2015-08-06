@@ -41,18 +41,14 @@ class Chef
 
         def children
           begin
-            Dir.entries(file_path).sort.select { |entry| entry != '.' && entry != '..' }.map { |entry| make_child(entry) }
+            Dir.entries(file_path).sort.select { |entry| entry != '.' && entry != '..' }.map { |entry| make_child_entry(entry) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
         end
 
-        def child(name)
-          make_child(name)
-        end
-
         def create_child(child_name, file_contents=nil)
-          child = make_child(child_name)
+          child = make_child_entry(child_name)
           if child.exists?
             raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
           end
@@ -103,7 +99,7 @@ class Chef
 
         protected
 
-        def make_child(child_name)
+        def make_child_entry(child_name)
           FileSystemEntry.new(child_name, self)
         end
       end

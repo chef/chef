@@ -37,16 +37,12 @@ class Chef
         end
 
         def child(name)
-          if @children
-            result = self.children.select { |child| child.name == name }.first
-            if result
-              result
-            else
-              NonexistentFSObject.new(name, self)
-            end
-          else
-            CookbookDir.new(name, self)
-          end
+          result = @children.select { |child| child.name == name }.first if @children
+          result || super
+        end
+
+        def make_child_entry(name)
+          CookbookDir.new(name, self)
         end
 
         def children

@@ -31,11 +31,6 @@ class Chef
           true
         end
 
-        # Override child(name) to provide a child object by name without the network read
-        def child(name)
-          children.select { |child| child.name == name }.first || NonexistentFSObject.new(name, self)
-        end
-
         def can_have_child?(name, is_dir)
           true
         end

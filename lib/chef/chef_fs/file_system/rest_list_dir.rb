@@ -35,8 +35,7 @@ class Chef
 
         def child(name)
           result = @children.select { |child| child.name == name }.first if @children
-          result ||= can_have_child?(name, false) ?
-                     _make_child_entry(name) : NonexistentFSObject.new(name, self)
+          result || super
         end
 
         def can_have_child?(name, is_dir)
@@ -46,7 +45,7 @@ class Chef
         def children
           begin
             @children ||= root.get_json(api_path).keys.sort.map do |key|
-              _make_child_entry("#{key}.json", true)
+              make_child_entry("#{key}.json", true)
             end
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "Timeout retrieving children: #{e}"
@@ -66,7 +65,7 @@ class Chef
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Parse error reading JSON creating child '#{name}': #{e}"
           end
 
-          result = _make_child_entry(name, true)
+          result = make_child_entry(name, true)
 
           if data_handler
             object = data_handler.normalize_for_post(object, result)
@@ -106,7 +105,7 @@ class Chef
           parent.rest
         end
 
-        def _make_child_entry(name, exists = nil)
+        def make_child_entry(name, exists = nil)
           RestListEntry.new(name, self, exists)
         end
       end

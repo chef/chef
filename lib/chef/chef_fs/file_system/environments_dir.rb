@@ -30,7 +30,7 @@ class Chef
           super("environments", parent, nil, Chef::ChefFS::DataHandler::EnvironmentDataHandler.new)
         end
 
-        def _make_child_entry(name, exists = nil)
+        def make_child_entry(name, exists = nil)
           if name == '_default.json'
             DefaultEnvironmentEntry.new(name, self, exists)
           else

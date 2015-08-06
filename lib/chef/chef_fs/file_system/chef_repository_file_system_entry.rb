@@ -75,7 +75,7 @@ class Chef
           begin
             Dir.entries(file_path).sort.
                 select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| make_child(child_name) }
+                map { |child_name| make_child_entry(child_name) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
@@ -83,7 +83,7 @@ class Chef
 
         protected
 
-        def make_child(child_name)
+        def make_child_entry(child_name)
           ChefRepositoryFileSystemEntry.new(child_name, self)
         end
       end
