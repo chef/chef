@@ -72,7 +72,7 @@ class Chef
 
         def children
           # Except cookbooks and data bag dirs, all things must be json files
-          begin
+          @children ||= begin
             Dir.entries(file_path).sort.
                 select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
                 map { |child_name| make_child(child_name) }
