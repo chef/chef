@@ -110,6 +110,32 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       end
     end
 
+    context "when the error is a RuntimeError about frozen object" do
+      let(:exception) do
+        e = RuntimeError.new("can't modify frozen Array")
+        e.set_backtrace(trace)
+        e
+      end
+
+      let(:path_to_failed_file) { "/tmp/kitchen/cache/cookbooks/foo/recipes/default.rb" }
+
+      let(:trace) do
+        [
+          "/tmp/kitchen/cache/cookbooks/foo/recipes/default.rb:2:in `block in from_file'",
+          "/tmp/kitchen/cache/cookbooks/foo/recipes/default.rb:1:in `from_file'"
+        ]
+      end
+
+      describe "when explaining a runtime error in the compile phase" do
+        it "correctly detects RuntimeError for frozen objects" do
+          expect(inspector.exception_message_modifying_frozen?).to be(true)
+        end
+
+        # could also test for description.section to be called, but would have
+        # to adjust every other test to begin using a test double for description
+      end
+    end
+
     context "when the error does not contain any lines from cookbooks" do
 
       let(:trace) do
