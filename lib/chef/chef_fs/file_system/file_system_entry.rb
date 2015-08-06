@@ -80,7 +80,7 @@ class Chef
         end
 
         def exists?
-          File.exists?(file_path)
+          File.exists?(file_path) && parent.can_have_child?(name, dir?)
         end
 
         def read
