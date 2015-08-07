@@ -31,7 +31,7 @@ class Chef
         def children
           if @children.nil?
             names = parent.parent.child(name).children.map { |child| "#{child.cookbook_name}.json" }
-            @children = names.uniq.map { |name| AclEntry.new(name, self, true) }
+            @children = names.uniq.map { |name| make_child_entry(name, true) }
           end
           @children
         end

@@ -95,7 +95,10 @@ class Chef
         # directly perform a network request to retrieve the y.json data bag.  No
         # network request was necessary to retrieve
         def child(name)
-          NonexistentFSObject.new(name, self)
+          if can_have_child?(name, true) || can_have_child?(name, false)
+            result = make_child_entry(name)
+          end
+          result || NonexistentFSObject.new(name, self)
         end
 
         # Override children to report your *actual* list of children as an array.
@@ -171,7 +174,7 @@ class Chef
 
         # Important directory attributes: name, parent, path, root
         # Overridable attributes: dir?, child(name), path_for_printing
-        # Abstract: read, write, delete, children, can_have_child?, create_child, compare_to
+        # Abstract: read, write, delete, children, can_have_child?, create_child, compare_to, make_child_entry
       end # class BaseFsObject
     end
   end

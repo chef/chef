@@ -27,16 +27,14 @@ class Chef
           super("data_bags", parent, "data")
         end
 
-        def child(name)
+        def make_child_entry(name, exists = false)
           result = @children.select { |child| child.name == name }.first if @children
-          result || DataBagDir.new(name, self)
+          result || DataBagDir.new(name, self, exists)
         end
 
         def children
           begin
-            @children ||= root.get_json(api_path).keys.sort.map do |entry|
-              DataBagDir.new(entry, self, true)
-            end
+            @children ||= root.get_json(api_path).keys.sort.map { |entry| make_child_entry(entry, true) }
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "Timeout getting children: #{e}"
           rescue Net::HTTPServerException => e

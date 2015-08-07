@@ -1,5 +1,4 @@
 require 'chef/chef_fs/file_system/base_fs_dir'
-require 'chef/chef_fs/file_system/nonexistent_fs_object'
 require 'chef/chef_fs/file_system/memory_file'
 
 class Chef
@@ -13,8 +12,8 @@ class Chef
 
         attr_reader :children
 
-        def child(name)
-          @children.select { |child| child.name == name }.first || Chef::ChefFS::FileSystem::NonexistentFSObject.new(name, self)
+        def make_child_entry(name)
+          @children.select { |child| child.name == name }.first
         end
 
         def add_child(child)

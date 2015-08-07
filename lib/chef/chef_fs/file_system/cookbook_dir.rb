@@ -72,16 +72,15 @@ class Chef
           "#{parent.api_path}/#{cookbook_name}/#{version || "_latest"}"
         end
 
-        def child(name)
+        def make_child_entry(name)
           # Since we're ignoring the rules and doing a network request here,
           # we need to make sure we don't rethrow the exception.  (child(name)
           # is not supposed to fail.)
           begin
-            result = children.select { |child| child.name == name }.first
-            return result if result
+            children.select { |child| child.name == name }.first
           rescue Chef::ChefFS::FileSystem::NotFoundError
+            nil
           end
-          return NonexistentFSObject.new(name, self)
         end
 
         def can_have_child?(name, is_dir)

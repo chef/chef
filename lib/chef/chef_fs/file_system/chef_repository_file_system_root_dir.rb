@@ -68,13 +68,13 @@ class Chef
         attr_reader :child_paths
         attr_reader :versioned_cookbooks
 
-        CHILDREN = %w(invitations.json members.json org.json)
+        CHILDREN = %w(org.json invitations.json members.json)
 
         def children
           @children ||= begin
-            result = child_paths.keys.sort.map { |name| make_child_entry(name) }.select { |child| !child.nil? }
-            result += root_dir.children.select { |c| CHILDREN.include?(c.name) } if root_dir
-            result.sort_by { |c| c.name }
+            result = child_paths.keys.sort.map { |name| make_child_entry(name) }
+            result += CHILDREN.map { |name| make_child_entry(name) }
+            result.select { |c| c && c.exists? }.sort_by { |c| c.name }
           end
         end
 
@@ -149,19 +149,23 @@ class Chef
         # cookbooks from all of them when you list or grab them).
         #
         def make_child_entry(name)
-          paths = child_paths[name].select do |path|
-            File.exists?(path)
+          if CHILDREN.include?(name)
+            return nil if !root_dir
+            return root_dir.child(name)
           end
+
+          paths = (child_paths[name] || []).select { |path| File.exists?(path) }
           if paths.size == 0
-            return nil
+            return NonexistentFSObject.new(name, self)
           end
-          if name == 'cookbooks'
+          case name
+          when 'cookbooks'
             dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
-          elsif name == 'data_bags'
+          when 'data_bags'
             dirs = paths.map { |path| ChefRepositoryFileSystemDataBagsDir.new(name, self, path) }
-          elsif name == 'policies'
+          when 'policies'
             dirs = paths.map { |path| ChefRepositoryFileSystemPoliciesDir.new(name, self, path) }
-          elsif name == 'acls'
+          when 'acls'
             dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
           else
             data_handler = case name

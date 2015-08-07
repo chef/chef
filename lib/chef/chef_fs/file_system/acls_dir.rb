@@ -40,8 +40,12 @@ class Chef
           parent.api_path
         end
 
+        def make_child_entry(name)
+          children.select { |child| child.name == name }.first
+        end
+
         def can_have_child?(name, is_dir)
-          is_dir ? ENTITY_TYPES.include(name) : name == 'organization.json'
+          is_dir ? ENTITY_TYPES.include?(name) : name == 'organization.json'
         end
 
         def children

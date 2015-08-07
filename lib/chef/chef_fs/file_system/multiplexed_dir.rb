@@ -35,6 +35,21 @@ class Chef
           end
         end
 
+        def make_child_entry(name)
+          result = nil
+          multiplexed_dirs.each do |dir|
+            child_entry = dir.child(name)
+            if child_entry.exists?
+              if result
+                Chef::Log.warn("Child with name '#{child_entry.name}' found in multiple directories: #{result.parent.path_for_printing} and #{child_entry.parent.path_for_printing}")
+              else
+                result = child_entry
+              end
+            end
+          end
+          result
+        end
+
         def can_have_child?(name, is_dir)
           write_dir.can_have_child?(name, is_dir)
         end

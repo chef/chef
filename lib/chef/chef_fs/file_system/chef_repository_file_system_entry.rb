@@ -70,20 +70,9 @@ class Chef
           Chef::JSONCompat.to_json_pretty(object)
         end
 
-        def children
-          # Except cookbooks and data bag dirs, all things must be json files
-          begin
-            Dir.entries(file_path).sort.
-                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| make_child(child_name) }
-          rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-          end
-        end
-
         protected
 
-        def make_child(child_name)
+        def make_child_entry(child_name)
           ChefRepositoryFileSystemEntry.new(child_name, self)
         end
       end

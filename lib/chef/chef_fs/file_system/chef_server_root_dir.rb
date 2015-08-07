@@ -110,7 +110,8 @@ class Chef
         end
 
         def can_have_child?(name, is_dir)
-          is_dir && children.any? { |child| child.name == name }
+          result = children.select { |child| child.name == name }.first
+          result && !!result.dir? == !!is_dir
         end
 
         def org
@@ -122,6 +123,10 @@ class Chef
               nil
             end
           end
+        end
+
+        def make_child_entry(name)
+          children.select { |child| child.name == name }.first
         end
 
         def children
