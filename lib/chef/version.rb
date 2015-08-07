@@ -29,6 +29,6 @@ end
 #
 # NOTE: DO NOT Use the Chef::Version class on Chef::VERSIONs.  The
 #       Chef::Version class is for _cookbooks_ only, and cannot handle
-#       pre-release chef-client versions like "10.14.0.rc.2".  Please
-#       use Rubygem's Gem::Version class instead.
+#       pre-release versions like "10.14.0.rc.2".  Please use Rubygem's
+#       Gem::Version class instead.
 #
