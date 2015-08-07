@@ -26,6 +26,7 @@ require 'chef/node/attribute_trait/convert_value'
 require 'chef/node/attribute_trait/stringize'
 require 'chef/node/attribute_trait/methodize'
 require 'chef/node/attribute_trait/immutablize'
+require 'chef/node/attribute_trait/deep_merge_cache'
 
 class Chef
   class Node
@@ -35,10 +36,14 @@ class Chef
       include AttributeTrait::Stringize
       include AttributeTrait::Methodize
       include AttributeTrait::Immutablize
+      include AttributeTrait::DeepMergeCache
       include AttributeConstants
 
-      def initialize(normal, default, override, automatic)
-        @wrapped_object = AttributeCell.new(
+      deep_merge_cache_populator
+
+      def initialize(normal, default, override, automatic, **args)
+        super(**args)
+        @wrapped_object ||= AttributeCell.new(
             default: default,
             env_default: {},
             role_default: {},
@@ -164,10 +169,6 @@ class Chef
 
       def kind_of?(klass)
         wrapped_object.kind_of?(klass) || super(klass)
-      end
-
-      def inspect
-        wrapped_object.inspect
       end
 
       # clears attributes from all precedence levels

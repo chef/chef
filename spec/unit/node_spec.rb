@@ -226,6 +226,11 @@ describe Chef::Node do
       expect  { node["secret"] = "shush" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
+    it "does not allow you to set an attribute via node[]= at the second level" do
+      node.default["locust"] = {}
+      expect  { node["locust"]["secret"] = "shush" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+    end
+
     it "should allow you to query whether an attribute exists with attribute?" do
       node.default["locust"] = "something"
       expect(node.attribute?("locust")).to eql(true)

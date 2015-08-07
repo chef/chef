@@ -59,10 +59,6 @@ class Chef
           wrapped_object.respond_to?(method, include_private) || super
         end
 
-        def inspect
-          "#{self.class.to_s}: #{wrapped_object.inspect}\n"
-        end
-
         def to_s
           wrapped_object.to_s
         end
@@ -142,8 +138,8 @@ class Chef
           e
         end
 
-        def new_decorator(wrapped_object: nil)
-          self.class.new_decorator(wrapped_object: wrapped_object)
+        def new_decorator(*args)
+          self.class.new_decorator(*args)
         end
 
         def self.included(base)
