@@ -40,10 +40,11 @@ module ChefConfig
 
     # This is the module name as it appears on the path "lib/module/".
     # e.g. for module_name  "ChefDK", you'd want module_path_name to be "chef-dk".
+    # The default is module_name but lower-cased.
     attr_writer :module_path_name
 
     def module_path_name
-      @module_path_name || module_name
+      @module_path_name || module_name.downcase
     end
 
     # Path to a VERSION file with a single string that contains the package version.
