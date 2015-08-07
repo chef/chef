@@ -49,10 +49,18 @@ class Chef
 
         def method_missing(method, *args, &block)
           if wrapped_object.respond_to?(method, false)
+            # we can't define_method here because then we'll always respond_to? the
+            # method and in some cases we mutate and no longer respond_to? something
             wrapped_object.public_send(method, *args, &block)
           else
             super
           end
+        end
+
+        # speed improvement, avoid method_missing, we could do this for all Enumerable
+        # methods and/or all methods which are common to Array + Hash
+        def map(&block)
+          wrapped_object.map(&block)
         end
 
         def respond_to?(method, include_private = false)
@@ -147,6 +155,8 @@ class Chef
         end
 
         module DecoratorClassMethods
+          # this is for convert_value support in order to be able to internally short-circuit
+          # convert_value'ing the wrapped_object again
           def new_decorator(wrapped_object: nil)
             dec = allocate
             dec.wrapped_object = wrapped_object
