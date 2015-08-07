@@ -309,7 +309,7 @@ shared_examples_for "a securable resource without existing target" do
     end
 
     it "fails to set owner when owner has invalid characters" do
-      expect { resource.owner 'Lance "The Nose" Glindenberry III' }.to raise_error#(Chef::Exceptions::ValidationFailed)
+      expect { resource.owner 'Lance "The Nose" Glindenberry III' }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "sets owner when owner is specified with a \\" do

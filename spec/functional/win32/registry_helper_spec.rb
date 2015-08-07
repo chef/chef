@@ -282,11 +282,11 @@ describe 'Chef::Win32::Registry', :windows_only do
     # we are validating that the data gets .to_a called on it when type is a :multi_string
 
     it "throws an exception when a multi-string is passed a number" do
-      expect {@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldThrow", :type=>:multi_string, :data=>65535})}.to raise_error
+      expect {@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldThrow", :type=>:multi_string, :data=>65535})}.to raise_error(Chef::Exceptions::Win32RegTypesMismatch)
     end
 
     it "throws an exception when a multi-string is passed a string" do
-      expect {@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBeWat", :type=>:multi_string, :data=>"foo"})}.to raise_error
+      expect {@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBeWat", :type=>:multi_string, :data=>"foo"})}.to raise_error(Chef::Exceptions::Win32RegTypesMismatch)
     end
   end
 
