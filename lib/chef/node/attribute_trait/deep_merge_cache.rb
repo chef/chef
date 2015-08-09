@@ -12,22 +12,21 @@ class Chef
         end
 
         def [](key)
-          ret = if is_a?(Hash) && self.class.deep_merge_cache_population
-                  if __deep_merge_cache.key?(key) && __deep_merge_cache[key][:__deep_merge_cache]
-                     __deep_merge_cache[key][:__deep_merge_cache]
-                  else
-                    val = super
-                    __deep_merge_cache[key] ||= Chef::Node::Mash.new(wrapped_object: {})
-                    __deep_merge_cache[key].regular_writer(:__deep_merge_cache, val)
-                    val
-                  end
-                else
-                  super
-                end
-          if ret.is_a?(DeepMergeCache)
-            ret.__deep_merge_cache = __deep_merge_cache[key]
+          if is_a?(Hash) && self.class.deep_merge_cache_population
+            if __deep_merge_cache.key?(key) && __deep_merge_cache[key][:__deep_merge_cache]
+              return __deep_merge_cache[key].regular_reader(:__deep_merge_cache)
+            else
+              val = super
+              __deep_merge_cache[key] ||= Chef::Node::Mash.new(wrapped_object: {})
+              __deep_merge_cache[key].regular_writer(:__deep_merge_cache, val)
+              val.__deep_merge_cache = __deep_merge_cache[key] if val.is_a?(DeepMergeCache)
+              return val
+            end
+          else
+            val = super
+            val.__deep_merge_cache = __deep_merge_cache[key] if val.is_a?(DeepMergeCache)
+            return val
           end
-          ret
         end
 
         def []=(key, value)
