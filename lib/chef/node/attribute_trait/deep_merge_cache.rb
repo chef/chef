@@ -18,7 +18,7 @@ class Chef
 
           if is_a?(Hash) && self.class.deep_merge_cache_population
             val = super
-            __deep_merge_cache[key] ||= Chef::Node::Mash.new(wrapped_object: {})
+            __deep_merge_cache[key] = Chef::Node::Mash.new(wrapped_object: {}) unless __deep_merge_cache.key?(key)
             __deep_merge_cache[key].regular_writer(:__deep_merge_cache, val)
             val.__deep_merge_cache = __deep_merge_cache[key] if val.is_a?(DeepMergeCache)
             return val
