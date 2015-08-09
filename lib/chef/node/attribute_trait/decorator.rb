@@ -2,6 +2,8 @@ class Chef
   class Node
     class AttributeTrait
       module Decorator
+        include Enumerable
+
         attr_accessor :wrapped_object
 
         def initialize(wrapped_object: nil)
@@ -55,12 +57,6 @@ class Chef
           else
             super
           end
-        end
-
-        # speed improvement, avoid method_missing, we could do this for all Enumerable
-        # methods and/or all methods which are common to Array + Hash
-        def map(&block)
-          wrapped_object.map(&block)
         end
 
         def respond_to?(method, include_private = false)
