@@ -26,7 +26,7 @@ require 'chef/node/attribute_trait/convert_value'
 require 'chef/node/attribute_trait/stringize'
 require 'chef/node/attribute_trait/methodize'
 require 'chef/node/attribute_trait/immutablize'
-require 'chef/node/attribute_trait/deep_merge_cache'
+#require 'chef/node/attribute_trait/deep_merge_cache'
 
 class Chef
   class Node
@@ -36,10 +36,10 @@ class Chef
       include AttributeTrait::Stringize
       include AttributeTrait::Methodize
       include AttributeTrait::Immutablize
-      include AttributeTrait::DeepMergeCache
+      #include AttributeTrait::DeepMergeCache
       include AttributeConstants
 
-      deep_merge_cache_populator
+      #deep_merge_cache_populator
 
       def initialize(normal, default, override, automatic, **args)
         super(**args)

@@ -26,13 +26,14 @@ class Chef
       attr_accessor :env_override
       attr_accessor :force_override
       attr_accessor :automatic
-      attr_accessor :deep_merge_cache
+#      attr_accessor :deep_merge_cache
 
       def initialize(default: nil, env_default: nil, role_default: nil, force_default: nil,
                      normal: nil,
                      override: nil, role_override: nil, env_override: nil, force_override: nil,
-                     automatic: nil,
-                     deep_merge_cache: nil)
+                     automatic: nil
+#                     deep_merge_cache: nil)
+                    )
         self.default        = default
         self.env_default    = env_default
         self.role_default   = role_default
@@ -43,7 +44,7 @@ class Chef
         self.env_override   = env_override
         self.force_override = force_override
         self.automatic      = automatic
-        @deep_merge_cache   = deep_merge_cache
+#        @deep_merge_cache   = deep_merge_cache
       end
 
       COMPONENTS_AS_SYMBOLS.each do |component|
