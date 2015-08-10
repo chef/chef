@@ -36,7 +36,9 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::Directory.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
-        if ::File.exists?(@current_resource.path) && @action != :create_if_missing
+        if !@new_resource.path.is_a?(Array) &&
+           ::File.exists?(@current_resource.path) &&
+           @action != :create_if_missing
           load_resource_attributes_from_file(@current_resource)
         end
         @current_resource
@@ -49,50 +51,64 @@ class Chef
         requirements.assert(:create) do |a|
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
-          parent_directory = ::File.dirname(@new_resource.path)
-          a.assertion { @new_resource.recursive || ::File.directory?(parent_directory) }
-          a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist, cannot create #{@new_resource.path}")
-          a.whyrun("Assuming directory #{parent_directory} would have been created")
+          badpath = ''
+          a.assertion do
+            paths = @new_resource.path.is_a?(Array) ? @new_resource.path : [@new_resource.path]
+            badpath = paths.find do |path|
+              parent_directory = ::File.dirname(path)
+              !@new_resource.recursive && !::File.directory?(parent_directory)
+            end
+            badpath.nil?
+          end
+          a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{badpath} does not exist, cannot create #{badpath}")
+          a.whyrun("Assuming directory #{badpath} would have been created")
         end
 
         requirements.assert(:create) do |a|
-          parent_directory = ::File.dirname(@new_resource.path)
+          badpath = ''
           a.assertion do
-            if @new_resource.recursive
-              # find the lowest-level directory in @new_resource.path that already exists
-              # make sure we have write permissions to that directory
-              is_parent_writable = lambda do |base_dir|
-                base_dir = ::File.dirname(base_dir)
-                if ::File.exists?(base_dir)
-                  Chef::FileAccessControl.writable?(base_dir)
-                else
-                  is_parent_writable.call(base_dir)
+            # We want to fail the assertion if *any* of the files are going to fail
+            paths = @new_resource.path.is_a?(Array) ? @new_resource.path : [@new_resource.path]
+            badpath = paths.find do |path|
+              parent_directory = ::File.dirname(path)
+              if @new_resource.recursive
+                # find the lowest-level directory in @new_resource.path that already exists
+                # make sure we have write permissions to that directory
+                is_parent_writable = lambda do |base_dir|
+                  base_dir = ::File.dirname(base_dir)
+                  if ::File.exists?(base_dir)
+                    Chef::FileAccessControl.writable?(base_dir)
+                  else
+                    is_parent_writable.call(base_dir)
+                  end
+                end
+                !is_parent_writable.call(path)
+              else
+                # in why run mode & parent directory does not exist no permissions check is required
+                # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
+                if !whyrun_mode? || ::File.exists?(parent_directory)
+                  !Chef::FileAccessControl.writable?(parent_directory)
                 end
               end
-              is_parent_writable.call(@new_resource.path)
-            else
-              # in why run mode & parent directory does not exist no permissions check is required
-              # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
-              if !whyrun_mode? || ::File.exists?(parent_directory)
-                Chef::FileAccessControl.writable?(parent_directory)
-              else
-                true
-              end
             end
+            badpath.nil?
           end
           a.failure_message(Chef::Exceptions::InsufficientPermissions,
-            "Cannot create #{@new_resource} at #{@new_resource.path} due to insufficient permissions")
+            "Cannot create #{@new_resource} at #{badpath} due to insufficient permissions")
         end
 
         requirements.assert(:delete) do |a|
+          badpath = ''
           a.assertion do
-            if ::File.exists?(@new_resource.path)
-              ::File.directory?(@new_resource.path) && Chef::FileAccessControl.writable?(@new_resource.path)
-            else
-              true
+            paths = @new_resource.path.is_a?(Array) ? @new_resource.path : [@new_resource.path]
+            badpath = paths.find do |path|
+              if ::File.exists?(path)
+                !::File.directory?(path) || !Chef::FileAccessControl.writable?(path)
+              end
             end
+            badpath.nil?
           end
-          a.failure_message(RuntimeError, "Cannot delete #{@new_resource} at #{@new_resource.path}!")
+          a.failure_message(RuntimeError, "Cannot delete #{@new_resource} at #{badpath}!")
           # No why-run handling here:
           #  * if we don't have permissions, this is unlikely to be changed earlier in the run
           #  * if the target is a file (not a dir), there's no reasonable path by which this would have been changed
@@ -100,30 +116,41 @@ class Chef
       end
 
       def action_create
-        unless ::File.exists?(@new_resource.path)
-          converge_by("create new directory #{@new_resource.path}") do
-            if @new_resource.recursive == true
-              ::FileUtils.mkdir_p(@new_resource.path)
-            else
-              ::Dir.mkdir(@new_resource.path)
+        paths = @new_resource.path.is_a?(Array) ? @new_resource.path : [@new_resource.path]
+        paths.each do |path|
+          unless ::File.exists?(path)
+            converge_by("create new directory #{path}") do
+              if @new_resource.recursive == true
+                ::FileUtils.mkdir_p(path)
+              else
+                ::Dir.mkdir(path)
+              end
+              Chef::Log.info("#{@new_resource} created directory #{path}")
             end
-            Chef::Log.info("#{@new_resource} created directory #{@new_resource.path}")
           end
         end
         do_acl_changes
         do_selinux(true)
-        load_resource_attributes_from_file(@new_resource)
+
+        # For now, we trample existing file permissions when working with a path array
+        # because a) load_resource_attributes_from_file takes a resource as an argument
+        # (which would be hard to provide here) and b) the logic might be confusing to
+        # the end user.
+        load_resource_attributes_from_file(@new_resource) unless @new_resource.path.is_a?(Array)
       end
 
       def action_delete
-        if ::File.exists?(@new_resource.path)
-          converge_by("delete existing directory #{@new_resource.path}") do
-            if @new_resource.recursive == true
-              FileUtils.rm_rf(@new_resource.path)
-              Chef::Log.info("#{@new_resource} deleted #{@new_resource.path} recursively")
-            else
-              ::Dir.delete(@new_resource.path)
-              Chef::Log.info("#{@new_resource} deleted #{@new_resource.path}")
+        paths = @new_resource.path.is_a?(Array) ? @new_resource.path : [@new_resource.path]
+        paths.each do |path|
+          if ::File.exists?(path)
+            converge_by("delete existing directory #{path}") do
+              if @new_resource.recursive == true
+                FileUtils.rm_rf(path)
+                Chef::Log.info("#{@new_resource} deleted #{path} recursively")
+              else
+                ::Dir.delete(path)
+                Chef::Log.info("#{@new_resource} deleted #{path}")
+              end
             end
           end
         end

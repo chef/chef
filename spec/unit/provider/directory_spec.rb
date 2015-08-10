@@ -21,6 +21,7 @@ require 'tmpdir'
 
 describe Chef::Provider::Directory do
   let(:tmp_dir) { Dir.mktmpdir }
+  let(:tmp_dir_array) { Array.new(2) { Dir.mktmpdir } }
   let(:new_resource) { Chef::Resource::Directory.new(tmp_dir) }
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
@@ -138,114 +139,321 @@ describe Chef::Provider::Directory do
   end
 
   describe "#run_action(:create)" do
-    describe "when the directory exists" do
-      it "does not create the directory" do
-        expect(Dir).not_to receive(:mkdir).with(new_resource.path)
-        directory.run_action(:create)
+    describe "when the path is a string" do
+      describe "and the directory exists" do
+        it "does not create the directory" do
+          expect(Dir).not_to receive(:mkdir).with(new_resource.path)
+          directory.run_action(:create)
+        end
+
+        it "should not set the resource as updated" do
+          directory.run_action(:create)
+          expect(new_resource).not_to be_updated
+        end
       end
 
-      it "should not set the resource as updated" do
-        directory.run_action(:create)
-        expect(new_resource).not_to be_updated
+      describe "and the directory does not exist" do
+        before do
+          FileUtils.rmdir tmp_dir
+        end
+
+        it "creates the directory" do
+          directory.run_action(:create)
+          expect(File.exist?(tmp_dir)).to be true
+        end
+
+        it "sets the new resource as updated" do
+          directory.run_action(:create)
+          expect(new_resource).to be_updated
+        end
+      end
+
+      describe "and the parent directory does not exist" do
+        before do
+          new_resource.path "#{tmp_dir}/foobar"
+          FileUtils.rmdir tmp_dir
+        end
+
+        it "raises an exception when recursive is false" do
+          new_resource.recursive false
+          expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+        end
+
+        it "creates the directories when recursive is true" do
+          new_resource.recursive true
+          directory.run_action(:create)
+          expect(new_resource).to be_updated
+          expect(File.exist?("#{tmp_dir}/foobar")).to be true
+        end
+
+        it "raises an exception when the parent directory is a file and recursive is true" do
+          FileUtils.touch tmp_dir
+          new_resource.recursive true
+          expect { directory.run_action(:create) }.to raise_error
+        end
+
+        it "raises the right exception when the parent directory is a file and recursive is true" do
+          pending "this seems to return the wrong error"  # FIXME
+          FileUtils.touch tmp_dir
+          new_resource.recursive true
+          expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+        end
       end
     end
 
-    describe "when the directory does not exist" do
+    describe "when the path is an array" do
       before do
-        FileUtils.rmdir tmp_dir
+        new_resource.name 'Array of directories'
+        new_resource.path tmp_dir_array
       end
 
-      it "creates the directory" do
-        directory.run_action(:create)
-        expect(File.exist?(tmp_dir)).to be true
+      describe "and both directories exist" do
+        it "does not create any directories" do
+          tmp_dir_array.each { |d| expect(Dir).not_to receive(:mkdir).with(d) }
+          directory.run_action(:create)
+        end
+
+        it "should not set the resource as updated" do
+          directory.run_action(:create)
+          expect(new_resource).not_to be_updated
+        end
       end
 
-      it "sets the new resource as updated" do
-        directory.run_action(:create)
-        expect(new_resource).to be_updated
-      end
-    end
+      describe "and only one directory exists" do
+        before do
+          FileUtils.rmdir tmp_dir_array.first
+        end
 
-    describe "when the parent directory does not exist" do
-      before do
-        new_resource.path "#{tmp_dir}/foobar"
-        FileUtils.rmdir tmp_dir
-      end
+        it "creates the missing directory" do
+          directory.run_action(:create)
+          File.exist?(tmp_dir_array.first)
+        end
 
-      it "raises an exception when recursive is false" do
-        new_resource.recursive false
-        expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
-      end
-
-      it "creates the directories when recursive is true" do
-        new_resource.recursive true
-        directory.run_action(:create)
-        expect(new_resource).to be_updated
-        expect(File.exist?("#{tmp_dir}/foobar")).to be true
+        it "sets the new resource as updated" do
+          directory.run_action(:create)
+          expect(new_resource).to be_updated
+        end
       end
 
-      it "raises an exception when the parent directory is a file and recursive is true" do
-        FileUtils.touch tmp_dir
-        new_resource.recursive true
-        expect { directory.run_action(:create) }.to raise_error
+      describe "and neither directory exists" do
+        before do
+          tmp_dir_array.each { |d| FileUtils.rmdir d }
+        end
+
+        it "creates two directories" do
+          directory.run_action(:create)
+          tmp_dir_array.each do |dir|
+            expect(File.exist?(dir)).to be true
+          end
+        end
+
+        it "sets the new resource as updated" do
+          directory.run_action(:create)
+          expect(new_resource).to be_updated
+        end
       end
 
-      it "raises the right exception when the parent directory is a file and recursive is true" do
-        pending "this seems to return the wrong error"  # FIXME
-        FileUtils.touch tmp_dir
-        new_resource.recursive true
-        expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+      describe "and the parent directory does not exist" do
+        before do
+          new_resource.path tmp_dir_array.map { |d| "#{d}/foobar" }
+          tmp_dir_array.each { |d| FileUtils.rmdir d }
+        end
+
+        it "raises an exception when recursive is false" do
+          new_resource.recursive false
+          expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+        end
+
+        it "creates the directories when recursive is true" do
+          new_resource.recursive true
+          directory.run_action(:create)
+          expect(new_resource).to be_updated
+          tmp_dir_array.map { |d| "#{d}/foobar" }.each do |dir|
+            expect(File.exist?(dir)).to be true
+          end
+        end
+
+        it "raises an exception when the parent directory is a file and recursive is true" do
+          tmp_dir_array.each { |d| FileUtils.touch d }
+          new_resource.recursive true
+          expect { directory.run_action(:create) }.to raise_error
+        end
+
+        it "raises the right exception when the parent directory is a file and recursive is true" do
+          pending "this seems to return the wrong error"  # FIXME
+          FileUtils.touch tmp_dir
+          new_resource.recursive true
+          expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+        end
+      end
+
+      describe "and one parent directory does not exist" do
+        before do
+          new_resource.path tmp_dir_array.map { |d| "#{d}/foobar" }
+          FileUtils.rmdir tmp_dir_array.first
+        end
+
+        it "raises an exception when recursive is false" do
+          new_resource.recursive false
+          expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+        end
+
+        it "creates the directories when recursive is true" do
+          new_resource.recursive true
+          directory.run_action(:create)
+          expect(new_resource).to be_updated
+          tmp_dir_array.map { |d| "#{d}/foobar" }.each do |dir|
+            expect(File.exist?(dir)).to be true
+          end
+        end
+
+        it "raises an exception when one parent directory is a file and recursive is true" do
+          FileUtils.touch tmp_dir_array.first
+          new_resource.recursive true
+          expect { directory.run_action(:create) }.to raise_error
+        end
       end
     end
   end
 
-  describe "#run_action(:create)" do
-    describe "when the directory exists" do
-      it "deletes the directory" do
-        directory.run_action(:delete)
-        expect(File.exist?(tmp_dir)).to be false
+  describe "#run_action(:delete)" do
+    describe "when the path is a string" do
+      describe "and the directory exists" do
+        it "deletes the directory" do
+          directory.run_action(:delete)
+          expect(File.exist?(tmp_dir)).to be false
+        end
+
+        it "sets the new resource as updated" do
+          directory.run_action(:delete)
+          expect(new_resource).to be_updated
+        end
       end
 
-      it "sets the new resource as updated" do
-        directory.run_action(:delete)
-        expect(new_resource).to be_updated
+      describe "and the directory does not exist" do
+        before do
+          FileUtils.rmdir tmp_dir
+        end
+
+        it "does not delete the directory" do
+          expect(Dir).not_to receive(:delete).with(new_resource.path)
+          directory.run_action(:delete)
+        end
+
+        it "does nto set the new resource as updated" do
+          directory.run_action(:delete)
+          expect(new_resource).not_to be_updated
+        end
+      end
+
+      describe "and the directory is not writable" do
+        before do
+          allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
+        end
+
+        it "cannot delete it and raises an exception" do
+          expect { directory.run_action(:delete) }.to raise_error(RuntimeError)
+        end
+      end
+
+      describe "and the target directory is a file" do
+        before do
+          FileUtils.rmdir tmp_dir
+          FileUtils.touch tmp_dir
+        end
+
+        it "cannot delete it and raises an exception" do
+          expect { directory.run_action(:delete) }.to raise_error(RuntimeError)
+        end
       end
     end
 
-    describe "when the directory does not exist" do
+    describe "when the path is an array" do
       before do
-        FileUtils.rmdir tmp_dir
+        new_resource.name 'Array of directories'
+        new_resource.path tmp_dir_array
       end
 
-      it "does not delete the directory" do
-        expect(Dir).not_to receive(:delete).with(new_resource.path)
-        directory.run_action(:delete)
+      describe "and both directories exist" do
+        it "deletes both directories" do
+          directory.run_action(:delete)
+          tmp_dir_array.each do |dir|
+            expect(File.exist?(dir)).to be false
+          end
+        end
+
+        it "sets the new resource as updated" do
+          directory.run_action(:delete)
+          expect(new_resource).to be_updated
+        end
       end
 
-      it "sets the new resource as updated" do
-        directory.run_action(:delete)
-        expect(new_resource).not_to be_updated
-      end
-    end
+      describe "and neither directory exists" do
+        before do
+          tmp_dir_array.each { |d| FileUtils.rmdir d }
+        end
 
-    describe "when the directory is not writable" do
-      before do
-        allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
-      end
+        it "does not delete the directory" do
+          tmp_dir_array.each { |d| expect(Dir).not_to receive(:delete).with(d) }
+          directory.run_action(:delete)
+        end
 
-      it "cannot delete it and raises an exception" do
-        expect {  directory.run_action(:delete) }.to raise_error(RuntimeError)
-      end
-    end
-
-    describe "when the target directory is a file" do
-      before do
-        FileUtils.rmdir tmp_dir
-        FileUtils.touch tmp_dir
+        it "does not set the new resource as updated" do
+          directory.run_action(:delete)
+          expect(new_resource).not_to be_updated
+        end
       end
 
-      it "cannot delete it and raises an exception" do
-        expect {  directory.run_action(:delete) }.to raise_error(RuntimeError)
+      describe "and one directory does not exist" do
+        before do
+          FileUtils.rmdir tmp_dir_array.first
+        end
+
+        it "deletes all remaining directories" do
+          directory.run_action(:delete)
+          tmp_dir_array.each do |dir|
+            expect(File.exist?(dir)).to be false
+          end
+        end
+
+        it "sets the new resource as updated" do
+          directory.run_action(:delete)
+          expect(new_resource).to be_updated
+        end
+      end
+
+      describe "and neither directory is writable" do
+        before do
+          allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
+        end
+
+        it "cannot delete it and raises an exception" do
+          expect { directory.run_action(:delete) }.to raise_error(RuntimeError)
+        end
+      end
+
+      describe "and both target directories are files" do
+        before do
+          tmp_dir_array.each do |d|
+            FileUtils.rmdir d
+            FileUtils.touch d
+          end
+        end
+
+        it "cannot delete them and raises an exception" do
+          expect { directory.run_action(:delete) }.to raise_error(RuntimeError)
+        end
+      end
+
+      describe "and one of the target directories is a file" do
+        before do
+          FileUtils.rmdir tmp_dir_array.first
+          FileUtils.touch tmp_dir_array.first
+        end
+
+        it "cannot delete it and raises an exception" do
+          expect { directory.run_action(:delete) }.to raise_error(RuntimeError)
+        end
       end
     end
   end
