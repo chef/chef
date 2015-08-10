@@ -128,7 +128,7 @@ module ChefConfig
       if chef_repo_path.kind_of?(String)
         PathHelper.join(chef_repo_path, child_path)
       else
-        chef_repo_path.map { |path| PathHelper.join(path, child_path)}
+        chef_repo_path.uniq.map { |path| PathHelper.join(path, child_path)}
       end
     end
 
