@@ -102,27 +102,31 @@ class Chef
           wrapped_object.key?(key)
         end
 
+        # when we're a Hash pick up Hash#select which is different from Enuemrable#select
+        def select(&block)
+          wrapped_object.select(&block)
+        end
+
         # we need to be careful to return decorated values when appropriate
         def each(&block)
+          return enum_for(:each) unless block_given?
           if wrapped_object.is_a?(Array)
             wrapped_object.each_with_index do |value, i|
               yield self[i]
             end
           elsif wrapped_object.is_a?(Hash)
-            if block.arity == 1
+            if block.arity > 1
               wrapped_object.each do |key, value|
-                yield [ key, self[key] ]
+                yield key, self[key]
               end
             else
               wrapped_object.each do |key, value|
-                yield key, self[key]
+                yield [ key, self[key] ]
               end
             end
           else
             # dunno...
-            wrapped_object.each do |*args|
-              yield *args
-            end
+            wrapped_object.each(&block)
           end
         end
 
