@@ -75,6 +75,10 @@ class Chef
           wrapped_object.to_a
         end
 
+        def to_ary
+          wrapped_object.to_ary
+        end
+
         def initialize_copy(source)
           super
           @wrapped_object = safe_dup(source.wrapped_object)

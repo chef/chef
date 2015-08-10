@@ -245,6 +245,20 @@ describe Chef::Node::Attribute do
       expect { @attributes.default.to_ary }.to raise_error(NoMethodError)
     end
 
+    it "acts like in array in puts when it is an array with values" do
+      out = StringIO.new
+      @attributes.default['honey'] = [ 'diary', 'arithmetic' ]
+      out.puts @attributes['honey']
+      expect(out.string).to eql("diary\narithmetic\n")
+    end
+
+    it "acts like an array in puts when its the empty array" do
+      out = StringIO.new
+      @attributes.default['toes'] = []
+      out.puts @attributes['toes']
+      expect(out.string).to eql("")
+    end
+
   end
 
   describe "when debugging attributes" do

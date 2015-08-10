@@ -168,15 +168,15 @@ class Chef
       end
 
       def to_json(*opts)
-        Chef::JSONCompat.to_json(to_hash, *opts)
+        Chef::JSONCompat.to_json(to_h, *opts)
       end
 
-      def to_hash
+      def to_h
         if self.is_a?(Hash)
           h = {}
           each do |key, value|
             if value.is_a?(Hash)
-              h[key] = value.to_hash
+              h[key] = value.to_h
             elsif value.is_a?(Array)
               h[key] = value.to_a
             else
@@ -187,9 +187,11 @@ class Chef
         elsif self.is_a?(Array)
           raise # FIXME
         else
-          highest_precedence.to_hash
+          highest_precedence.to_h
         end
       end
+
+      alias_method :to_hash, :to_h
 
       def to_a
         if self.is_a?(Hash)
@@ -198,7 +200,7 @@ class Chef
           a = []
           each do |value|
             if value.is_a?(Hash)
-              a.push(value.to_hash)
+              a.push(value.to_h)
             elsif value.is_a?(Array)
               a.push(value.to_a)
             else

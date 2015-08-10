@@ -57,6 +57,14 @@ class Chef
           Marshal.load(Marshal.dump(super))
         end
 
+        def to_ary
+          Marshal.load(Marshal.dump(super))
+        end
+
+        def to_h
+          Marshal.load(Marshal.dump(super))
+        end
+
         def to_hash
           Marshal.load(Marshal.dump(super))
         end
