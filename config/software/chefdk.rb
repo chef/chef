@@ -59,7 +59,7 @@ build do
   # Perform multiple gem installs to better isolate/debug failures
   {
     'chefspec'          => '4.3.0',
-    'fauxhai'           => '2.2.0',
+    'fauxhai'           => '2.3.0',
     'rubocop'           => '0.31.0',
     'knife-spork'       => '1.5.0',
     'winrm-transport'   => '1.0.2',
