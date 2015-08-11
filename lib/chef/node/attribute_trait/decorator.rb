@@ -182,6 +182,8 @@ end
 # things that directly inherit from Array or Hash can be matched in a
 # case statement.  TODO:  supply a patch to ruby to fix its behavior.
 #
+# Please see the implementation of Module.=== in the ruby source code
+#
 class Hash
   def self.===(other)
     other.kind_of?(Chef::Node::AttributeTrait::Decorator) || super
