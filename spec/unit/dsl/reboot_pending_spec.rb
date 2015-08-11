@@ -46,7 +46,7 @@ describe Chef::DSL::RebootPending do
         end
   
         it 'should return true if key "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired" exists' do
-          allow(recipe).to receive(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired').and_return(true)
+          allow(recipe).to receive(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending').and_return(true)
           expect(recipe.reboot_pending?).to be_truthy
         end
   
