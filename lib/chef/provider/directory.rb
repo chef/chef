@@ -64,7 +64,13 @@ class Chef
               is_parent_writable = lambda do |base_dir|
                 base_dir = ::File.dirname(base_dir)
                 if ::File.exists?(base_dir)
-                  Chef::FileAccessControl.writable?(base_dir)
+                  if Chef::FileAccessControl.writable?(base_dir)
+                    true
+                  elsif Chef::Util::PathHelper.is_sip_path?(base_dir, node)
+                    Chef::Util::PathHelper.writable_sip_path?(base_dir)
+                  else
+                    false
+                  end
                 else
                   is_parent_writable.call(base_dir)
                 end
@@ -74,7 +80,13 @@ class Chef
               # in why run mode & parent directory does not exist no permissions check is required
               # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
               if !whyrun_mode? || ::File.exists?(parent_directory)
-                Chef::FileAccessControl.writable?(parent_directory)
+                if Chef::FileAccessControl.writable?(parent_directory)
+                  true
+                elsif Chef::Util::PathHelper.is_sip_path?(parent_directory, node)
+                  Chef::Util::PathHelper.writable_sip_path?(@new_resource.path)
+                else
+                  false
+                end
               else
                 true
               end
