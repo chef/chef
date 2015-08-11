@@ -175,3 +175,21 @@ class Chef
     end
   end
 end
+
+#
+# Ruby is arguably buggy here.  The Module.=== operator does not call
+# kind_of? or is_a? but only looks up the ancestor heirarchy, so only
+# things that directly inherit from Array or Hash can be matched in a
+# case statement.  TODO:  supply a patch to ruby to fix its behavior.
+#
+class Hash
+  def self.===(other)
+    other.kind_of?(Chef::Node::AttributeTrait::Decorator) || super
+  end
+end
+
+class Array
+  def self.===(other)
+    other.kind_of?(Chef::Node::AttributeTrait::Decorator) || super
+  end
+end

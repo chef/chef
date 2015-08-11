@@ -60,10 +60,6 @@ class Chef
         end
       end
 
-      def kind_of?(klass)
-        highest_precedence.kind_of?(klass) || super(klass)
-      end
-
       def is_a?(klass)
         highest_precedence.is_a?(klass) || super(klass)
       end

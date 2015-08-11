@@ -159,10 +159,6 @@ class Chef
         wrapped_object == other
       end
 
-      def kind_of?(klass)
-        wrapped_object.kind_of?(klass) || super(klass)
-      end
-
       def is_a?(klass)
         wrapped_object.is_a?(klass) || super(klass)
       end

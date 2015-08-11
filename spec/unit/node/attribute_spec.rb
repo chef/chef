@@ -1259,4 +1259,46 @@ describe Chef::Node::Attribute do
       expect{ @attributes.new_key.trainwreck }.to raise_error(NoMethodError)
     end
   end
+
+  describe "when doing a case statement on the type" do
+    it "works like an array on merged attributes" do
+      @attributes.default['blame'] = [ 'salt', 'satire' ]
+      expect(
+        case @attributes['blame']
+        when Array
+          true
+        end
+      ).to be true
+    end
+
+    it "works like an array on individual attribute levels" do
+      @attributes.default['blame'] = [ 'salt', 'satire' ]
+      expect(
+        case @attributes.default['blame']
+        when Array
+          true
+        end
+      ).to be true
+    end
+
+    it "works like a hash on merged attributes" do
+      @attributes.default['hook']['label'] = 'pension'
+      expect(
+        case @attributes['hook']
+        when Hash
+          true
+        end
+      ).to be true
+    end
+
+    it "works like a hash on individual attribute levels" do
+      @attributes.default['hook']['label'] = 'pension'
+      expect(
+        case @attributes.default['hook']
+        when Hash
+          true
+        end
+      ).to be true
+    end
+  end
 end
