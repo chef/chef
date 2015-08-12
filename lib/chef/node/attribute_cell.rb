@@ -181,18 +181,29 @@ class Chef
           end
           h
         elsif self.is_a?(Array)
-          raise # FIXME
+          h = {}
+          each do |elem|
+            unless elem.is_a?(Array)
+              raise TypeError "wrong element type, expected Array"
+            end
+            h[elem[0]] = elem[1]
+          end
+          h
         else
           highest_precedence.to_h
         end
       end
 
-      alias_method :to_hash, :to_h
+      def to_hash
+        if self.is_a?(Hash)
+          to_h
+        else
+          raise NoMethodError, "undefined method `to_hash` for #{self}"
+        end
+      end
 
       def to_a
-        if self.is_a?(Hash)
-          raise # FIXME
-        elsif self.is_a?(Array)
+        if self.is_a?(Hash) || self.is_a?(Array)
           a = []
           each do |value|
             if value.is_a?(Hash)
@@ -209,7 +220,13 @@ class Chef
         end
       end
 
-      alias_method :to_ary, :to_a
+      def to_ary
+        if self.is_a?(Array)
+          to_a
+        else
+          raise NoMethodError, "undefined method `to_ary` for #{self}"
+        end
+      end
 
       private
 
