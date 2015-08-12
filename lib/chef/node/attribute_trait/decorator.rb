@@ -1,7 +1,10 @@
+require 'chef/node/attribute_trait/base'
+
 class Chef
   class Node
     class AttributeTrait
       module Decorator
+        include Base
         include Enumerable
 
         attr_accessor :wrapped_object

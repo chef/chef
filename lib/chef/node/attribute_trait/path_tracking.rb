@@ -4,9 +4,8 @@ class Chef
       module PathTracking
         attr_accessor :__path
 
-        def initialize(**args)
-          @__path = []
-          super
+        def __path
+          @__path ||= []
         end
 
         def [](key)

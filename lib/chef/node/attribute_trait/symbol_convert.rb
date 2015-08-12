@@ -1,3 +1,5 @@
+require 'chef/node/attribute_trait/convert_value'
+
 class Chef
   class Node
     class AttributeTrait
