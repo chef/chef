@@ -37,32 +37,6 @@ class Chef
 #            end
 #          end
         end
-
-        def new_decorator(**args)
-          self.class.new_decorator(**args)
-        end
-
-        def self.included(base)
-          base.extend(DeepMergeCacheClassMethods)
-        end
-
-        module DeepMergeCacheClassMethods
-          attr_accessor :deep_merge_cache_invalidation
-          attr_accessor :deep_merge_cache_population
-
-          # FIXME: remove
-          def new_decorator(**args)
-            super(**args)
-          end
-
-          def deep_merge_cache_invalidator
-            @deep_merge_cache_invalidation = true
-          end
-
-          def deep_merge_cache_populator
-            @deep_merge_cache_population = true
-          end
-        end
       end
     end
   end

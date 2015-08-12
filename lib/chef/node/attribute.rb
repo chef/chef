@@ -41,19 +41,19 @@ class Chef
 
       #deep_merge_cache_populator
 
-      def initialize(normal, default, override, automatic, **args)
+      def initialize(normal: nil, default: nil, override: nil, automatic: nil, **args)
         super(**args)
         @wrapped_object ||= AttributeCell.new(
-            default: default,
+            default: default || {},
             env_default: {},
             role_default: {},
             force_default: {},
-            normal: normal,
-            override: override,
+            normal: normal || {},
+            override: override || {},
             role_override: {},
             env_override: {},
             force_override: {},
-            automatic: automatic,
+            automatic: automatic || {},
         )
       end
 
@@ -78,15 +78,15 @@ class Chef
       end
 
       def normal_unless
-        SetUnless.new_decorator(wrapped_object: wrapped_object.normal)
+        SetUnless.new(wrapped_object: wrapped_object.normal, convert_value: false)
       end
 
       def default_unless
-        SetUnless.new_decorator(wrapped_object: wrapped_object.default)
+        SetUnless.new(wrapped_object: wrapped_object.default, convert_value: false)
       end
 
       def override_unless
-        SetUnless.new_decorator(wrapped_object: wrapped_object.override)
+        SetUnless.new(wrapped_object: wrapped_object.override, convert_value: false)
       end
 
       # should deprecate all of these, epecially #set
@@ -274,7 +274,7 @@ class Chef
       #
       # - this API autovivifies (and cannot tranwreck)
       def default!(*args)
-        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :default!) unless args.length > 0
+        return UnMethodChain.new(wrapped_object: self, method_to_call: :default!, convert_value: false) unless args.length > 0
         write_value(:default, *args)
       end
 
@@ -282,7 +282,7 @@ class Chef
       #
       # - this API autovivifies (and cannot tranwreck)
       def normal!(*args)
-        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :normal!) unless args.length > 0
+        return UnMethodChain.new(wrapped_object: self, method_to_call: :normal!, convert_value: false) unless args.length > 0
         write_value(:normal, *args)
       end
 
@@ -290,7 +290,7 @@ class Chef
       #
       # - this API autovivifies (and cannot tranwreck)
       def override!(*args)
-        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :override!) unless args.length > 0
+        return UnMethodChain.new(wrapped_object: self, method_to_call: :override!, convert_value: false) unless args.length > 0
         write_value(:override, *args)
       end
 
@@ -299,7 +299,7 @@ class Chef
       # - this also clears all of the other default levels as well.
       # - this API autovivifies (and cannot tranwreck)
       def force_default!(*args)
-        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :force_default!) unless args.length > 0
+        return UnMethodChain.new(wrapped_object: self, method_to_call: :force_default!, convert_value: false) unless args.length > 0
         value = args.pop
         rm_default(*args)
         write_value(:force_default, *args, value)
@@ -310,7 +310,7 @@ class Chef
       # - this also clears all of the other override levels as well.
       # - this API autovivifies (and cannot tranwreck)
       def force_override!(*args)
-        return UnMethodChain.new_decorator(wrapped_object: self, method_to_call: :force_override!) unless args.length > 0
+        return UnMethodChain.new(wrapped_object: self, method_to_call: :force_override!, convert_value: false) unless args.length > 0
         value = args.pop
         rm_override(*args)
         write_value(:force_override, *args, value)

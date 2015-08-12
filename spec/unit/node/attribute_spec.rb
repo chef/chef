@@ -210,7 +210,7 @@ describe Chef::Node::Attribute do
       }
     }
     @automatic_hash = {"week" => "friday"}
-    @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash)
+    @attributes = Chef::Node::Attribute.new(normal: @attribute_hash, default: @default_hash, override: @override_hash, automatic: @automatic_hash)
   end
 
   describe "initialize" do
@@ -219,12 +219,12 @@ describe Chef::Node::Attribute do
     end
 
     it "should take an Automatioc, Normal, Default and Override hash" do
-      expect { Chef::Node::Attribute.new({}, {}, {}, {}) }.not_to raise_error
+      expect { Chef::Node::Attribute.new(normal: {}, default: {}, override: {}, automatic: {}) }.not_to raise_error
     end
 
     [ :normal, :default, :override, :automatic ].each do |accessor|
       it "should set #{accessor}" do
-        na = Chef::Node::Attribute.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
+        na = Chef::Node::Attribute.new(normal: { :normal => true }, default: { :default => true }, override: { :override => true }, automatic: { :automatic => true })
         expect(na.send(accessor)).to eq({ accessor.to_s => true })
       end
     end
@@ -367,7 +367,7 @@ describe Chef::Node::Attribute do
     end
 
     it "merges nested hashes between precedence levels" do
-      @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
+      @attributes = Chef::Node::Attribute.new
       @attributes.env_default = {"a" => {"b" => {"default" => "default"}}}
       @attributes.normal = {"a" => {"b" => {"normal" => "normal"}}}
       @attributes.override = {"a" => {"override" => "role"}}
@@ -606,20 +606,20 @@ describe Chef::Node::Attribute do
   describe "keys" do
     before(:each) do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  { "two" => "three" },
           "hut" =>  { "two" => "three" },
           "place" => { }
         },
-        {
+        default: {
           "one" =>  { "four" => "five" },
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" =>  { "six" => "seven" },
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -655,19 +655,19 @@ describe Chef::Node::Attribute do
   describe "each" do
     before(:each) do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -693,19 +693,19 @@ describe Chef::Node::Attribute do
   describe "each_key" do
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -729,19 +729,19 @@ describe Chef::Node::Attribute do
   describe "each_pair" do
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -765,19 +765,19 @@ describe Chef::Node::Attribute do
   describe "each_value" do
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -809,21 +809,21 @@ describe Chef::Node::Attribute do
   describe "empty?" do
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
-      @empty = Chef::Node::Attribute.new({}, {}, {}, {})
+      @empty = Chef::Node::Attribute.new
     end
 
     it "should respond to empty?" do
@@ -843,19 +843,19 @@ describe Chef::Node::Attribute do
   describe "fetch" do
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -900,19 +900,19 @@ describe Chef::Node::Attribute do
   describe "has_value?" do
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -945,19 +945,19 @@ describe Chef::Node::Attribute do
 
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -986,19 +986,19 @@ describe Chef::Node::Attribute do
   describe "values" do
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -1022,19 +1022,19 @@ describe Chef::Node::Attribute do
   describe "select" do
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
     end
 
@@ -1072,22 +1072,22 @@ describe Chef::Node::Attribute do
   describe "size" do
     before do
       @attributes = Chef::Node::Attribute.new(
-        {
+        normal: {
           "one" =>  "two",
           "hut" =>  "three",
         },
-        {
+        default: {
           "one" =>  "four",
           "snakes" => "on a plane"
         },
-        {
+        override: {
           "one" => "six",
           "snack" => "cookies"
         },
-        {}
+        automatic: {}
       )
 
-      @empty = Chef::Node::Attribute.new({},{},{},{})
+      @empty = Chef::Node::Attribute.new
     end
 
     it "should respond to size" do
@@ -1128,7 +1128,7 @@ describe Chef::Node::Attribute do
 
   describe "to_s" do
     it "should output simple attributes" do
-      attributes = Chef::Node::Attribute.new(nil, nil, nil, nil)
+      attributes = Chef::Node::Attribute.new
       expect(attributes.to_s).to eq("{}")
     end
 
@@ -1141,7 +1141,7 @@ describe Chef::Node::Attribute do
           "b" => 3,
           "c" => 4
       }
-      attributes = Chef::Node::Attribute.new(nil, default_hash, override_hash, nil)
+      attributes = Chef::Node::Attribute.new(default: default_hash, override: override_hash)
       expect(attributes.to_s).to eq('{"a"=>1, "b"=>3, "c"=>4}')
     end
   end

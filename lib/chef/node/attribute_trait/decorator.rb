@@ -6,7 +6,7 @@ class Chef
 
         attr_accessor :wrapped_object
 
-        def initialize(wrapped_object: nil)
+        def initialize(wrapped_object: nil, **args)
           @wrapped_object = wrapped_object
         end
 
@@ -43,7 +43,7 @@ class Chef
         def [](key)
           ret = wrapped_object[key]
           if ret.is_a?(Hash) || ret.is_a?(Array)
-            new_decorator(wrapped_object: ret)
+            self.class.new(wrapped_object: ret, convert_value: false)
           else
             ret
           end
@@ -148,28 +148,6 @@ class Chef
           e.dup
         rescue TypeError
           e
-        end
-
-        def new_decorator(*args)
-          self.class.new_decorator(*args)
-        end
-
-        def self.included(base)
-          base.extend(DecoratorClassMethods)
-        end
-
-        module DecoratorClassMethods
-          # this is for convert_value support in order to be able to internally short-circuit
-          # convert_value'ing the wrapped_object again
-          def new_decorator(wrapped_object: nil)
-            dec = allocate
-            dec.wrapped_object = wrapped_object
-            dec
-          end
-
-          def mixins
-            @mixins ||= []
-          end
         end
       end
     end

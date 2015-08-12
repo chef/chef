@@ -41,7 +41,7 @@ class Chef
         private
 
         def autovivizing?
-          self.class.mixins.include?(:autovivize)
+          self.class.ancestors.include?(Chef::Node::AttributeTrait::Autovivize)
         end
 
       end

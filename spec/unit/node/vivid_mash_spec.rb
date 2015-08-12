@@ -141,16 +141,10 @@ describe Chef::Node::VividMash do
     end
   end
 
-  context "new_decorator" do
-    it "as a class method, retains the same object and does not mutate it" do
+  context "convert_value: false option in the constructor" do
+    it "retains the same object and does not mutate it" do
       hash = { :foo.freeze => 'bar'.freeze }.freeze
-      vivid2 = Chef::Node::VividMash.new_decorator(wrapped_object: hash)
-      expect(vivid2.wrapped_object).to equal(hash)
-    end
-
-    it "as an instance method, retains the same object and does not mutate it" do
-      hash = { :foo.freeze => 'bar'.freeze }.freeze
-      vivid2 = vivid.new_decorator(wrapped_object: hash)
+      vivid2 = Chef::Node::VividMash.new(wrapped_object: hash, convert_value: false)
       expect(vivid2.wrapped_object).to equal(hash)
     end
   end

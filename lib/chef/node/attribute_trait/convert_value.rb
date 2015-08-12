@@ -3,8 +3,8 @@ class Chef
     class AttributeTrait
       module ConvertValue
 
-        def initialize(wrapped_object: nil)
-          super(wrapped_object: convert_value(wrapped_object))
+        def initialize(wrapped_object: nil, convert_value: true)
+          super(wrapped_object: convert_value ? convert_value(wrapped_object) : wrapped_object)
         end
 
         def regular_writer(*path, value)
