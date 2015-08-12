@@ -4,7 +4,6 @@ class Chef
   class Node
     class VividMash
       include AttributeTrait::Decorator
-      include AttributeTrait::ConvertValue
       include AttributeTrait::Autovivify
       include AttributeTrait::SymbolConvert
       include AttributeTrait::MethodMissing

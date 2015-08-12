@@ -4,7 +4,6 @@ class Chef
   class Node
     class Mash
       include AttributeTrait::Decorator
-      include AttributeTrait::ConvertValue
       include AttributeTrait::SymbolConvert
     end
   end

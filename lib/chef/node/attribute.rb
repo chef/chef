@@ -27,7 +27,6 @@ class Chef
   class Node
     class Attribute
       include AttributeTrait::Decorator
-      include AttributeTrait::ConvertValue
       include AttributeTrait::SymbolConvert
       include AttributeTrait::MethodMissing
       include AttributeTrait::Immutable

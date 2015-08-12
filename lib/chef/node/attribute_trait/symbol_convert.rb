@@ -2,6 +2,7 @@ class Chef
   class Node
     class AttributeTrait
       module SymbolConvert
+        include ConvertValue
 
         private
 
