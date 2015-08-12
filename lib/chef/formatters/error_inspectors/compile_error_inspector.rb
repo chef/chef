@@ -44,6 +44,18 @@ class Chef
             error_description.section("Cookbook Trace:", traceback)
             error_description.section("Relevant File Content:", context)
           end
+
+          if exception_message_modifying_frozen?
+            msg = <<-MESSAGE
+            Chef calls the freeze method on certain ruby objects to prevent
+            pollution across multiple instances. Specifically, resource
+            properties have frozen default values to avoid modifying the
+            property for all instances of a resource. Try modifying the
+            particular instance variable or using an instance accessor instead.
+            MESSAGE
+
+            error_description.section("Additional information:", msg.gsub(/^ {6}/, ''))
+          end
         end
 
         def context
@@ -109,6 +121,10 @@ class Chef
               Chef::Log.debug("filtered backtrace of compile error: #{r.join(",")}")
               r
             end
+        end
+
+        def exception_message_modifying_frozen?
+          exception.message.include?("can't modify frozen")
         end
 
       end
