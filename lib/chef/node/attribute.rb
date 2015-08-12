@@ -19,7 +19,6 @@
 
 require 'chef/node/attribute_constants'
 require 'chef/node/attribute_cell'
-require 'chef/node/set_unless'
 require 'chef/node/un_method_chain'
 require 'chef/node/attribute_traits'
 
@@ -71,16 +70,19 @@ class Chef
         wrapped_object.combined_override
       end
 
-      def normal_unless
-        SetUnless.new(wrapped_object: wrapped_object.normal, convert_value: false)
+      def normal_unless(*args)
+        return UnMethodChain.new(wrapped_object: self, method_to_call: :normal_unless) unless args.length > 0
+        write_value(:normal, *args) if args_to_cell(*args).nil?
       end
 
-      def default_unless
-        SetUnless.new(wrapped_object: wrapped_object.default, convert_value: false)
+      def default_unless(*args)
+        return UnMethodChain.new(wrapped_object: self, method_to_call: :default_unless) unless args.length > 0
+        write_value(:default, *args) if args_to_cell(*args).nil?
       end
 
-      def override_unless
-        SetUnless.new(wrapped_object: wrapped_object.override, convert_value: false)
+      def override_unless(*args)
+        return UnMethodChain.new(wrapped_object: self, method_to_call: :override_unless) unless args.length > 0
+        write_value(:override, *args) if args_to_cell(*args).nil?
       end
 
       # should deprecate all of these, epecially #set
