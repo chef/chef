@@ -1,7 +1,7 @@
 class Chef
   class Node
     class AttributeTrait
-      module Methodize
+      module MethodMissing
 
         def method_missing(symbol, *args, &block)
           if self.is_a?(Hash)
@@ -41,7 +41,7 @@ class Chef
         private
 
         def autovivizing?
-          self.class.ancestors.include?(Chef::Node::AttributeTrait::Autovivize)
+          self.class.ancestors.include?(Chef::Node::AttributeTrait::Autovivify)
         end
 
       end

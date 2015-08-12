@@ -4,8 +4,7 @@ require 'chef/exceptions'
 class Chef
   class Node
     class AttributeTrait
-      module Immutablize
-
+      module Immutable
         MUTATOR_METHODS = [
           :<<,
           :[]=,

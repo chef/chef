@@ -1,5 +1,4 @@
 require 'chef/node/attribute_constants'
-require 'chef/node/attribute_trait/immutablize'
 require 'chef/node/vivid_mash'
 
 class Chef

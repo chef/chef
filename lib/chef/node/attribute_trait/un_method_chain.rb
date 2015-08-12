@@ -1,7 +1,7 @@
 class Chef
   class Node
     class AttributeTrait
-      module UnMethodChainize
+      module UnMethodChain
         attr_accessor :wrapped_object
         attr_accessor :__path
         attr_accessor :__method_to_call

@@ -1,10 +1,9 @@
 class Chef
   class Node
     class AttributeTrait
-      module Autovivize
-
+      module Autovivify
         def initialize(wrapped_object: {}, **args)
-          super(wrapped_object: wrapped_object, **args)
+          super
         end
 
         def [](key)

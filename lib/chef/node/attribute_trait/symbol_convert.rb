@@ -1,11 +1,9 @@
-# NOTE you must include ConvertValue before this in order to use it
-# (fixing to include here is annoying due to the class method)
 class Chef
   class Node
     class AttributeTrait
-      module Stringize
+      module SymbolConvert
 
-        protected
+        private
 
         def convert_key(key)
           key.kind_of?(Symbol) ? key.to_s : key

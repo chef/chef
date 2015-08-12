@@ -1,5 +1,3 @@
-require 'chef/node/mash'
-
 class Chef
   class Node
     class AttributeTrait
@@ -41,3 +39,6 @@ class Chef
     end
   end
 end
+
+# FIXME: dep inject the mash
+#require 'chef/node/mash'

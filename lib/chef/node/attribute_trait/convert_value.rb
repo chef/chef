@@ -2,9 +2,8 @@ class Chef
   class Node
     class AttributeTrait
       module ConvertValue
-
-        def initialize(wrapped_object: nil, convert_value: true)
-          super(wrapped_object: convert_value ? convert_value(wrapped_object) : wrapped_object)
+        def initialize(wrapped_object: nil, convert_value: true, **args)
+          super(wrapped_object: convert_value ? convert_value(wrapped_object) : wrapped_object, **args)
         end
 
         def regular_writer(*path, value)
@@ -64,7 +63,7 @@ class Chef
           new(wrapped_object: hash)
         end
 
-        protected
+        private
 
         def convert_key(key)
           key

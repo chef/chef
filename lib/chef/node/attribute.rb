@@ -21,21 +21,16 @@ require 'chef/node/attribute_constants'
 require 'chef/node/attribute_cell'
 require 'chef/node/set_unless'
 require 'chef/node/un_method_chain'
-require 'chef/node/attribute_trait/decorator'
-require 'chef/node/attribute_trait/convert_value'
-require 'chef/node/attribute_trait/stringize'
-require 'chef/node/attribute_trait/methodize'
-require 'chef/node/attribute_trait/immutablize'
-#require 'chef/node/attribute_trait/deep_merge_cache'
+require 'chef/node/attribute_traits'
 
 class Chef
   class Node
     class Attribute
       include AttributeTrait::Decorator
       include AttributeTrait::ConvertValue
-      include AttributeTrait::Stringize
-      include AttributeTrait::Methodize
-      include AttributeTrait::Immutablize
+      include AttributeTrait::SymbolConvert
+      include AttributeTrait::MethodMissing
+      include AttributeTrait::Immutable
       #include AttributeTrait::DeepMergeCache
       include AttributeConstants
 
