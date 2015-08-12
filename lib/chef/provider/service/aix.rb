@@ -116,7 +116,7 @@ class Chef
         end
 
         def is_resource_group?
-          so = shell_out!("lssrc -g #{@new_resource.service_name}")
+          so = shell_out("lssrc -g #{@new_resource.service_name}")
           if so.exitstatus == 0
             Chef::Log.debug("#{@new_resource.service_name} is a group")
             @is_resource_group = true

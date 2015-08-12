@@ -94,7 +94,7 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "service is a group" do
-        expect(@provider).to receive(:shell_out!).with("lssrc -g chef").and_return(@status)
+        expect(@provider).to receive(:shell_out).with("lssrc -g chef").and_return(@status)
         @provider.load_current_resource
         expect(@provider.instance_eval("@is_resource_group")).to be_truthy
       end
@@ -106,7 +106,7 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "service is a group" do
-        expect(@provider).to receive(:shell_out!).with("lssrc -g chef").and_return(@status)
+        expect(@provider).to receive(:shell_out).with("lssrc -g chef").and_return(@status)
         @provider.load_current_resource
         expect(@provider.instance_eval("@is_resource_group")).to be_truthy
       end
@@ -119,7 +119,7 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "service is a subsystem" do
-        expect(@provider).to receive(:shell_out!).with("lssrc -g chef").and_return(@group_status)
+        expect(@provider).to receive(:shell_out).with("lssrc -g chef").and_return(@group_status)
         expect(@provider).to receive(:shell_out!).with("lssrc -s chef").and_return(@service_status)
         @provider.load_current_resource
         expect(@provider.instance_eval("@is_resource_group")).to be_falsey
