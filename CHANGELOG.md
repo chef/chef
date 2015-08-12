@@ -19,6 +19,7 @@
 * [pr#3728](https://github.com/chef/chef/pull/3728) Rewrite NetLocalGroup things to use FFI
 * [pr#3754](https://github.com/chef/chef/pull/3754) Fix functional tests for group resource - fix #3728
 * [pr#3498](https://github.com/chef/chef/pull/3498) Use dpkg-deb directly rather than regex
+* [pr#3759](https://github.com/chef/chef/pull/3759) Repair service convergence test on AIX
 
 ## 12.4.1
 
