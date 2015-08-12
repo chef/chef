@@ -39,7 +39,10 @@ override :chef,           version: "12.4.1"
 override :ohai,           version: '8.5.1'
 override :chefdk,         version: '0.7.0'
 
-override :berkshelf,      version: "v3.2.4"
+# Celluloid 0.16.1 (patch release) broke berkshelf unit tests, so using
+# branch we made that pins the dependency until its fixed
+# https://github.com/berkshelf/berkshelf/issues/1448
+override :berkshelf,      version: "3.2.4-plus-lock-celluloid", source: { git: "git://github.com/danielsdeleo/berkshelf" }
 override :bundler,        version: "1.10.0"
 override :'chef-vault',   version: "v2.6.1"
 
