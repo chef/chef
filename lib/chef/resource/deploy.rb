@@ -27,6 +27,7 @@
 #   migration_command "rake db:migrate"
 #   environment "RAILS_ENV" => "production", "OTHER_ENV" => "foo"
 #   shallow_clone true
+#   depth 1
 #   action :deploy # or :rollback
 #   restart_command "touch tmp/restart.txt"
 #   git_ssh_wrapper "wrap-ssh4git.sh"
@@ -74,6 +75,7 @@ class Chef
         @remote = "origin"
         @enable_submodules = false
         @shallow_clone = false
+        @depth = nil
         @scm_provider = Chef::Provider::Git
         @svn_force_export = false
         @additional_remotes = Hash[]
@@ -97,8 +99,12 @@ class Chef
         @current_path ||= @deploy_to + "/current"
       end
 
-      def depth
-        @shallow_clone ? "5" : nil
+      def depth(arg=@shallow_clone ? 5 : nil)
+        set_or_return(
+          :depth,
+          arg,
+          :kind_of => [ Integer ]
+        )
       end
 
       # note: deploy_to is your application "meta-root."
