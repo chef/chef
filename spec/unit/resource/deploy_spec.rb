@@ -148,10 +148,16 @@ describe Chef::Resource::Deploy do
     expect(@resource.current_path).to eql("/my/deploy/dir/current")
   end
 
+  it "allows depth to be set via integer" do
+    expect(@resource.depth).to be_nil
+    @resource.depth 1
+    expect(@resource.depth).to eql(1)
+  end
+
   it "gives #depth as 5 if shallow clone is true, nil otherwise" do
     expect(@resource.depth).to be_nil
     @resource.shallow_clone true
-    expect(@resource.depth).to eql("5")
+    expect(@resource.depth).to eql(5)
   end
 
   it "aliases repo as repository" do
