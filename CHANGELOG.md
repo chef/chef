@@ -7,7 +7,14 @@
   [pr#3443](https://github.com/chef/chef/pull/3443) remove extraneous space
 * [**margueritepd**](https://github.com/margueritepd):
   [pr#3693](https://github.com/chef/chef/pull/3693) Interpolate `%{path}` in verify command
-
+* [**Jeremy Fleischman**](https://github.com/jfly):
+  [pr#3383](https://github.com/chef/chef/pull/3383) gem\_package should install to the systemwide Ruby when using ChefDK
+* [**Stefano Rivera**](https://github.com/stefanor):
+  [pr#3657](https://github.com/chef/chef/pull/3657) fix upstart status\_commands
+* [**ABE Satoru**](https://github.com/polamjag):
+  [pr#3764](https://github.com/chef/chef/pull/3764) uniquify chef\_repo\_path
+* [**Renan Vicente**](https://github.com/renanvicente):
+  [pr#3771](https://github.com/chef/chef/pull/3771) add depth property for deploy resource
 
 * [pr#3455](https://github.com/chef/chef/pull/3455) powershell\_script: do not allow suppression of syntax errors
 * [pr#3519](https://github.com/chef/chef/pull/3519) The wording seemed odd.
@@ -22,6 +29,10 @@
 * [pr#3754](https://github.com/chef/chef/pull/3754) Fix functional tests for group resource - fix #3728
 * [pr#3498](https://github.com/chef/chef/pull/3498) Use dpkg-deb directly rather than regex
 * [pr#3759](https://github.com/chef/chef/pull/3759) Repair service convergence test on AIX
+* [pr#3329](https://github.com/chef/chef/pull/3329) Use ifconfig target property
+* [pr#3652](https://github.com/chef/chef/pull/3652) Fix explanation for configuring audit mode in client.rb
+* [pr#3687](https://github.com/chef/chef/pull/3687) Add formatter and force-logger/formatter options to chef-apply
+* [pr#3768](https://github.com/chef/chef/pull/3768) Make reboot\_pending? look for CBS RebootPending
 
 ## 12.4.1
 
