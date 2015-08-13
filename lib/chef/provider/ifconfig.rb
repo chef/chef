@@ -194,7 +194,7 @@ class Chef
 
       private
       def add_command
-        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command = "ifconfig #{@new_resource.device} #{@new_resource.target}"
         command << " netmask #{@new_resource.mask}" if @new_resource.mask
         command << " metric #{@new_resource.metric}" if @new_resource.metric
         command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
@@ -202,7 +202,7 @@ class Chef
       end
 
       def enable_command
-        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command = "ifconfig #{@new_resource.device} #{@new_resource.target}"
         command << " netmask #{@new_resource.mask}" if @new_resource.mask
         command << " metric #{@new_resource.metric}" if @new_resource.metric
         command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
