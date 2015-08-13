@@ -986,7 +986,7 @@ class Chef
         end
 
         def yum_binary
-          new_resource.yum_binary
+          new_resource.is_a?(Chef::Resource::YumPackage) ?  new_resource.yum_binary : "yum"
         end
 
         # Extra attributes
