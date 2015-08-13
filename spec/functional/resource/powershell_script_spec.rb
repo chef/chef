@@ -229,8 +229,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
   end
 
-  context "when running on a 32-bit version of Windows", :windows32_only do
-
+  context "when running on a 32-bit version of Ruby", :ruby32_only do
     it "executes a script with a 32-bit process if process architecture :i386 is specified" do
       resource.code(processor_architecture_script_content + " | out-file -encoding ASCII #{script_output_path}")
       resource.architecture(:i386)
@@ -240,15 +239,28 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       expect(source_contains_case_insensitive_content?( get_script_output, 'x86' )).to eq(true)
     end
 
-    it "raises an exception if :x86_64 process architecture is specified" do
-      begin
-        expect(resource.architecture(:x86_64)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
-      rescue Chef::Exceptions::Win32ArchitectureIncorrect
+    context "when running on a 64-bit version of Windows", :windows64_only do
+      it "executes a script with a 64-bit process if :x86_64 arch is specified" do
+        resource.code(processor_architecture_script_content + " | out-file -encoding ASCII #{script_output_path}")
+        resource.architecture(:x86_64)
+        resource.returns(0)
+        resource.run_action(:run)
+
+        expect(source_contains_case_insensitive_content?( get_script_output, 'AMD64' )).to eq(true)
+      end
+    end
+
+    context "when running on a 32-bit version of Windows", :windows32_only do
+      it "raises an exception if :x86_64 process architecture is specified" do
+        begin
+          expect(resource.architecture(:x86_64)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
+        rescue Chef::Exceptions::Win32ArchitectureIncorrect
+        end
       end
     end
   end
 
-  context "when running on a 64-bit version of Windows", :windows64_only do
+  context "when running on a 64-bit version of Ruby", :ruby64_only do
     it "executes a script with a 64-bit process if :x86_64 arch is specified" do
       resource.code(processor_architecture_script_content + " | out-file -encoding ASCII #{script_output_path}")
       resource.architecture(:x86_64)

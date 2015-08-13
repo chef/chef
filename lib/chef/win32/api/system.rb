@@ -187,6 +187,29 @@ int WINAPI GetSystemMetrics(
         safe_attach_function :GetSystemMetrics, [:int], :int
 
 =begin
+UINT WINAPI GetSystemWow64Directory(
+  _Out_ LPTSTR lpBuffer,
+  _In_  UINT   uSize
+);
+=end
+        safe_attach_function :GetSystemWow64DirectoryW, [:LPTSTR, :UINT], :UINT
+        safe_attach_function :GetSystemWow64DirectoryA, [:LPTSTR, :UINT], :UINT
+
+=begin
+BOOL WINAPI Wow64DisableWow64FsRedirection(
+  _Out_ PVOID *OldValue
+);
+=end
+        safe_attach_function :Wow64DisableWow64FsRedirection, [:PVOID], :BOOL
+
+=begin
+BOOL WINAPI Wow64RevertWow64FsRedirection(
+  _In_ PVOID OldValue
+);
+=end
+        safe_attach_function :Wow64RevertWow64FsRedirection, [:PVOID], :BOOL
+
+=begin
 LRESULT WINAPI SendMessageTimeout(
   _In_       HWND hWnd,
   _In_       UINT Msg,
