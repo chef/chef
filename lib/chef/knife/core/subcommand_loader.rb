@@ -149,7 +149,7 @@ class Chef
       # to get in the past.
       #
       def subcommand_files
-        Chef::Log.warn "DEPRECATED: Using Chef::Knife::SubcommandLoader directly is deprecated.
+        Chef::Log.deprecation "Using Chef::Knife::SubcommandLoader directly is deprecated.
 Please use Chef::Knife::SubcommandLoader.for_config(chef_config_dir, env)"
         @subcommand_files ||= if Chef::Knife::SubcommandLoader.plugin_manifest?
                                 Chef::Knife::SubcommandLoader::CustomManifestLoader.new(chef_config_dir, env).subcommand_files
