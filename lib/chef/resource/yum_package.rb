@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ class Chef
         super
         @flush_cache = { :before => false, :after => false }
         @allow_downgrade = false
+        @yum_binary = File.exist?("/usr/bin/yum-deprecated") ? "yum-deprecated" : "yum"
       end
 
       # Install a specific arch
@@ -54,6 +55,14 @@ class Chef
           :allow_downgrade,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def yum_binary(arg=nil)
+        set_or_return(
+          :yum_binary,
+          arg,
+          :kind_of => [ String ]
         )
       end
 
