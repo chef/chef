@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,5 +76,24 @@ describe Chef::Resource::YumPackage, "allow_downgrade" do
     expect { @resource.allow_downgrade true }.not_to raise_error
     expect { @resource.allow_downgrade false }.not_to raise_error
     expect { @resource.allow_downgrade "monkey" }.to raise_error(ArgumentError)
+  end
+end
+
+describe Chef::Resource::YumPackage, "yum_binary" do
+  let(:resource) { Chef::Resource::YumPackage.new("foo") }
+
+  it "defaults to yum if yum-deprecated does not exist" do
+    expect(::File).to receive(:exist?).with("/usr/bin/yum-deprecated").and_return(false)
+    expect(resource.yum_binary).to eql("yum")
+  end
+
+  it "defaults to yum-deprecated if yum-deprecated does exist" do
+    expect(::File).to receive(:exist?).with("/usr/bin/yum-deprecated").and_return(true)
+    expect(resource.yum_binary).to eql("yum-deprecated")
+  end
+
+  it "should allow you to specify whether allow_downgrade is true or false" do
+    resource.yum_binary "/usr/bin/yum-something"
+    expect(resource.yum_binary).to eql("/usr/bin/yum-something")
   end
 end
