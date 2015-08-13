@@ -24,7 +24,7 @@ describe Chef::Provider::Package::Yum do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Package.new('cups')
+    @new_resource = Chef::Resource::YumPackage.new('cups')
     @status = double("Status", :exitstatus => 0)
     @yum_cache = double(
       'Chef::Provider::Yum::YumCache',
@@ -789,6 +789,19 @@ describe Chef::Provider::Package::Yum do
       )
       # will still raise an exception, can't stub out the subsequent call
       expect { @provider.yum_command("-d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
+    end
+
+    it "should pass the yum_binary to the command if its specified" do
+      @new_resource.yum_binary "yum-deprecated"
+      expect(@yum_cache).to receive(:yum_binary=).with("yum-deprecated")
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @status = double("Status", :exitstatus => 0, :stdout => "", :stderr => "")
+      allow(@provider).to receive(:shell_out).and_return(@status)
+      expect(@provider).to receive(:shell_out).once.with(
+        "yum-deprecated -d0 -e0 -y install emacs-1.0",
+        {:timeout => Chef::Config[:yum_timeout]}
+      )
+      @provider.yum_command("-d0 -e0 -y install emacs-1.0")
     end
   end
 end
