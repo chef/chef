@@ -651,6 +651,8 @@ class Chef
           include Chef::Mixin::ShellOut
           include Singleton
 
+          attr_accessor :yum_binary
+
           def initialize
             @rpmdb = RPMDb.new
 
@@ -980,6 +982,7 @@ class Chef
           super
 
           @yum = YumCache.instance
+          @yum.yum_binary = yum_binary
         end
 
         def yum_binary
