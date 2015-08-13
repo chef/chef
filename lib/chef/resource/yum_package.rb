@@ -28,7 +28,7 @@ class Chef
         super
         @flush_cache = { :before => false, :after => false }
         @allow_downgrade = false
-        @yum_binary = File.exist?("/usr/bin/yum-deprecated") ? "yum-deprecated" : "yum"
+        @yum_binary = ::File.exist?("/usr/bin/yum-deprecated") ? "yum-deprecated" : "yum"
       end
 
       # Install a specific arch
