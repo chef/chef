@@ -46,10 +46,14 @@ class Chef
         def [](key)
           ret = wrapped_object[key]
           if ret.is_a?(Hash) || ret.is_a?(Array)
-            self.class.new(wrapped_object: ret, convert_value: false)
+            new_decorator(wrapped_object: ret)
           else
             ret
           end
+        end
+
+        def new_decorator(**args)
+          self.class.new(**args)
         end
 
         def method_missing(method, *args, &block)

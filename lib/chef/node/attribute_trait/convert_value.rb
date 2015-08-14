@@ -65,6 +65,11 @@ class Chef
 
         private
 
+        def new_decorator(**args)
+          args[:convert_value] = false
+          super(**args)
+        end
+
         def convert_key(key)
           key
         end
