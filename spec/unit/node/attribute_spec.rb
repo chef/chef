@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -1300,5 +1300,64 @@ describe Chef::Node::Attribute do
         end
       ).to be true
     end
+  end
+
+  describe "it tracks the path" do
+    it "is accessible through #__path" do
+      @attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(@attributes['foo']['bar'].__path).to eql(['foo', 'bar'])
+    end
+
+    it "does not mutate the state of the top level" do
+      @attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(@attributes['foo']['bar'].__path).to eql(['foo', 'bar'])
+      expect(@attributes['foo'].__path).to eql(['foo'])
+    end
+
+    it "converts symbols" do
+      @attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(@attributes[:foo][:bar].__path).to eql(['foo', 'bar'])
+    end
+
+    it "works with arrays" do
+      @attributes.default[:foo] = [ { bar: 'baz' } ]
+      expect(@attributes[:foo][0].__path).to eql(['foo', 0])
+    end
+
+    it "works through arrays" do
+      @attributes.default[:foo] = [ { bar: { baz: 'qux' } } ]
+      expect(@attributes[:foo][0]['bar'].__path).to eql(['foo', 0, 'bar'])
+    end
+
+    it "works through the default accessor" do
+      @attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(@attributes.default['foo']['bar'].__path).to eql(['foo', 'bar'])
+    end
+
+    it "works through the normal accessor" do
+      @attributes.normal['foo']['bar']['baz'] = 'qux'
+      expect(@attributes.normal['foo']['bar'].__path).to eql(['foo', 'bar'])
+    end
+
+    it "works through the override accessor" do
+      @attributes.override['foo']['bar']['baz'] = 'qux'
+      expect(@attributes.override['foo']['bar'].__path).to eql(['foo', 'bar'])
+    end
+
+    it "works through an intermediate default accessor" do
+      @attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(@attributes['foo'].default['bar'].__path).to eql(['foo', 'bar'])
+    end
+
+    it "works through the normal accessor" do
+      @attributes.normal['foo']['bar']['baz'] = 'qux'
+      expect(@attributes['foo'].normal['bar'].__path).to eql(['foo', 'bar'])
+    end
+
+    it "works through the override accessor" do
+      @attributes.override['foo']['bar']['baz'] = 'qux'
+      expect(@attributes['foo'].override['bar'].__path).to eql(['foo', 'bar'])
+    end
+
   end
 end

@@ -179,4 +179,29 @@ describe Chef::Node::VividMash do
       expect(vivid['baz']).to eql('qux')
     end
   end
+
+  context "path tracking" do
+    it "is accessible through #__path" do
+      expect(vivid['foo']['bar'].__path).to eql(['foo', 'bar'])
+    end
+
+    it "does not mutate the state of the top level" do
+      expect(vivid['foo']['bar'].__path).to eql(['foo', 'bar'])
+      expect(vivid['foo'].__path).to eql(['foo'])
+    end
+
+    it "converts symbols" do
+      expect(vivid[:foo][:bar].__path).to eql(['foo', 'bar'])
+    end
+
+    it "works with arrays" do
+      vivid[:foo] = [ { bar: 'baz' } ]
+      expect(vivid[:foo][0].__path).to eql(['foo', 0])
+    end
+
+    it "works through arrays" do
+      vivid[:foo] = [ { bar: { baz: 'qux' } } ]
+      expect(vivid[:foo][0]['baz'].__path).to eql(['foo', 0, 'baz'])
+    end
+  end
 end

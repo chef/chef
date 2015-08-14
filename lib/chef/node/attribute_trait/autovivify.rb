@@ -9,7 +9,7 @@ class Chef
 
         def [](key)
           if is_a?(Hash) && !key?(key)
-            self.class.new(wrapped_object: regular_writer(key, {}), convert_value: false)
+            new_decorator(wrapped_object: regular_writer(key, {}))
           else
             super
           end

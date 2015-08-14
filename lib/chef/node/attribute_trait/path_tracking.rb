@@ -3,6 +3,7 @@ class Chef
     class AttributeTrait
       module PathTracking
         attr_accessor :__path
+        attr_accessor :__next_path
 
         def initialize(path: nil, **args)
           super(**args)
@@ -14,17 +15,19 @@ class Chef
         end
 
         def [](key)
-          __path.push(key)
+          @__next_path = __path + [ convert_key(key) ]
           super
         end
 
         def []=(key, value)
-          __path.push(key)
+          @__next_path = __path + [ convert_key(key) ]
           super
         end
 
+        private
+
         def new_decorator(**args)
-          args[:path] = __path
+          args[:path] = __next_path
           super(**args)
         end
       end

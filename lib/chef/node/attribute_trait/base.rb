@@ -16,6 +16,12 @@ class Chef
 
         def [](key)
         end
+
+        def convert_key(key)
+        end
+
+        def convert_value(value)
+        end
       end
     end
   end

@@ -30,6 +30,7 @@ class Chef
       include AttributeTrait::MethodMissing
       include AttributeTrait::Immutable
       #include AttributeTrait::DeepMergeCache
+      include AttributeTrait::PathTracking
       include AttributeConstants
 
       #deep_merge_cache_populator
