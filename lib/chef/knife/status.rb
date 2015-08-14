@@ -41,10 +41,10 @@ class Chef
         :long => "--sort-reverse",
         :description => "Sort the status list by last run time descending"
 
-      option :hide_healthy,
-        :short => "-H",
-        :long => "--hide-healthy",
-        :description => "Hide nodes that have run chef in the last hour"
+      option :hide_by_mins,
+        :short => "-H MINS",
+        :long => "--hide-by-mins MINS",
+        :description => "Hide nodes that have run chef in the last MINS minutes"
 
       def append_to_query(term)
         @query << " AND " unless @query.empty?
@@ -67,11 +67,12 @@ class Chef
         append_to_query(@name_args[0]) if @name_args[0]
         append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
 
-        if config[:hide_healthy]
+        if config[:hide_by_mins]
+          hidemins = config[:hide_by_mins].to_i
           time = Time.now.to_i
           # AND NOT is not valid lucene syntax, so don't use append_to_query
           @query << " " unless @query.empty?
-          @query << "NOT ohai_time:[#{(time - 60*60).to_s} TO #{time.to_s}]"
+          @query << "NOT ohai_time:[#{(time - hidemins*60).to_s} TO #{time.to_s}]"
         end
 
         @query = @query.empty? ? "*:*" : @query
