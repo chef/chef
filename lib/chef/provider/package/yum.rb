@@ -986,7 +986,11 @@ class Chef
         end
 
         def yum_binary
-          new_resource.is_a?(Chef::Resource::YumPackage) ?  new_resource.yum_binary : "yum"
+          @yum_binary ||=
+            begin
+              yum_binary = new_resource.yum_binary if new_resource.is_a?(Chef::Resource::YumPackage)
+              yum_binary ||= ::File.exist?("/usr/bin/yum-deprecated") ? "yum-deprecated" : "yum"
+            end
         end
 
         # Extra attributes

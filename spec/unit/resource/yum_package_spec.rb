@@ -82,17 +82,7 @@ end
 describe Chef::Resource::YumPackage, "yum_binary" do
   let(:resource) { Chef::Resource::YumPackage.new("foo") }
 
-  it "defaults to yum if yum-deprecated does not exist" do
-    expect(::File).to receive(:exist?).with("/usr/bin/yum-deprecated").and_return(false)
-    expect(resource.yum_binary).to eql("yum")
-  end
-
-  it "defaults to yum-deprecated if yum-deprecated does exist" do
-    expect(::File).to receive(:exist?).with("/usr/bin/yum-deprecated").and_return(true)
-    expect(resource.yum_binary).to eql("yum-deprecated")
-  end
-
-  it "should allow you to specify whether allow_downgrade is true or false" do
+  it "should allow you to specify the yum_binary" do
     resource.yum_binary "/usr/bin/yum-something"
     expect(resource.yum_binary).to eql("/usr/bin/yum-something")
   end

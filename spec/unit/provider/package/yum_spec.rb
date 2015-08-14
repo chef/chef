@@ -89,6 +89,46 @@ describe Chef::Provider::Package::Yum do
       end
     end
 
+    describe "yum_binary accessor" do
+      it "when yum-deprecated exists" do
+        expect(File).to receive(:exist?).with("/usr/bin/yum-deprecated").and_return(true)
+        expect(@yum_cache).to receive(:yum_binary=).with("yum-deprecated")
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        expect(@provider.yum_binary).to eql("yum-deprecated")
+      end
+
+      it "when yum-deprecated does not exist" do
+        expect(File).to receive(:exist?).with("/usr/bin/yum-deprecated").and_return(false)
+        expect(@yum_cache).to receive(:yum_binary=).with("yum")
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        expect(@provider.yum_binary).to eql("yum")
+      end
+
+      it "when the yum_binary is set on the resource" do
+        @new_resource.yum_binary "/usr/bin/yum-something"
+        expect(File).not_to receive(:exist?)
+        expect(@yum_cache).to receive(:yum_binary=).with("/usr/bin/yum-something")
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        expect(@provider.yum_binary).to eql("/usr/bin/yum-something")
+      end
+
+      it "when the new_resource is a vanilla package class and yum-deprecated exists" do
+        @new_resource = Chef::Resource::Package.new('cups')
+        expect(File).to receive(:exist?).with("/usr/bin/yum-deprecated").and_return(true)
+        expect(@yum_cache).to receive(:yum_binary=).with("yum-deprecated")
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        expect(@provider.yum_binary).to eql("yum-deprecated")
+      end
+
+      it "when the new_resource is a vanilla package class and yum-deprecated does not exist" do
+        @new_resource = Chef::Resource::Package.new('cups')
+        expect(File).to receive(:exist?).with("/usr/bin/yum-deprecated").and_return(false)
+        expect(@yum_cache).to receive(:yum_binary=).with("yum")
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        expect(@provider.yum_binary).to eql("yum")
+      end
+    end
+
     describe "when arch in package_name" do
       it "should set the arch if no existing package_name is found and new_package_name+new_arch is available" do
         @new_resource = Chef::Resource::YumPackage.new('testing.noarch')
