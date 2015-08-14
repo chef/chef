@@ -66,7 +66,7 @@ class Chef
       # the logger API.
       def msg(message)
         begin
-          stdout.puts message
+          stdout.puts message unless message.empty?
         rescue Errno::EPIPE => e
           raise e if @config[:verbosity] >= 2
           exit 0
@@ -76,7 +76,7 @@ class Chef
       # Prints a msg to stderr. Used for info, warn, error, and fatal.
       def log(message)
         begin
-          stderr.puts message
+          stderr.puts message unless message.empty?
         rescue Errno::EPIPE => e
           raise e if @config[:verbosity] >= 2
           exit 0
@@ -156,7 +156,7 @@ class Chef
 
       def pretty_print(data)
         begin
-          stdout.puts data
+          stdout.puts data unless data.empty?
         rescue Errno::EPIPE => e
           raise e if @config[:verbosity] >= 2
           exit 0
