@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,15 +57,15 @@ class Chef
 
       def highline
         @highline ||= begin
-          require "highline"
-          HighLine.new
-        end
+                        require "highline"
+                        HighLine.new
+                      end
       end
 
       # Prints a message to stdout. Aliased as +info+ for compatibility with
       # the logger API.
       def msg(message)
-        stdout.puts message
+        stdout.puts message unless message.empty?
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
         exit 0
@@ -73,7 +73,7 @@ class Chef
 
       # Prints a msg to stderr. Used for info, warn, error, and fatal.
       def log(message)
-        stderr.puts message
+        stderr.puts message unless message.empty?
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
         exit 0
@@ -151,7 +151,7 @@ class Chef
       end
 
       def pretty_print(data)
-        stdout.puts data
+        stdout.puts data unless data.empty?
       rescue Errno::EPIPE => e
         raise e if @config[:verbosity] >= 2
         exit 0
