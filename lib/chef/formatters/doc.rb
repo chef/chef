@@ -383,6 +383,11 @@ class Chef
         puts_line("* setting #{precedence}#{key_str} = #{value}", :bright_pink)
       end
 
+      def attribute_changed(precedence, keys, value)
+        key_str = "['#{keys.join("']['")}']"
+        puts_line("    * setting #{precedence}#{key_str} = #{value}", [ :cyan ])
+      end
+
       def indent
         indent_by(2)
       end
