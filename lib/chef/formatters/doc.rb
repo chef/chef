@@ -378,6 +378,11 @@ class Chef
         deprecations[message] << location
       end
 
+      def attribute_updated(precedence, keys, value)
+        key_str = "[#{keys.join("][")}]"
+        puts_line("* setting #{precedence}#{key_str} = #{value}", :bright_pink)
+      end
+
       def indent
         indent_by(2)
       end

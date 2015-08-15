@@ -76,7 +76,7 @@ class Chef
       @policy_name = nil
       @policy_group = nil
 
-      @attributes = Chef::Node::Attribute.new
+      @attributes = Chef::Node::Attribute.new(node: self)
 
       @run_state = {}
     end

@@ -1303,61 +1303,99 @@ describe Chef::Node::Attribute do
   end
 
   describe "it tracks the path" do
+    let(:attributes) { Chef::Node::Attribute.new() }
+
     it "is accessible through #__path" do
-      @attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(@attributes['foo']['bar'].__path).to eql(['foo', 'bar'])
+      attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(attributes['foo']['bar'].__path).to eql(['foo', 'bar'])
     end
 
     it "does not mutate the state of the top level" do
-      @attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(@attributes['foo']['bar'].__path).to eql(['foo', 'bar'])
-      expect(@attributes['foo'].__path).to eql(['foo'])
+      attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(attributes['foo']['bar'].__path).to eql(['foo', 'bar'])
+      expect(attributes['foo'].__path).to eql(['foo'])
     end
 
     it "converts symbols" do
-      @attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(@attributes[:foo][:bar].__path).to eql(['foo', 'bar'])
+      attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(attributes[:foo][:bar].__path).to eql(['foo', 'bar'])
     end
 
     it "works with arrays" do
-      @attributes.default[:foo] = [ { bar: 'baz' } ]
-      expect(@attributes[:foo][0].__path).to eql(['foo', 0])
+      attributes.default[:foo] = [ { bar: 'baz' } ]
+      expect(attributes[:foo][0].__path).to eql(['foo', 0])
     end
 
     it "works through arrays" do
-      @attributes.default[:foo] = [ { bar: { baz: 'qux' } } ]
-      expect(@attributes[:foo][0]['bar'].__path).to eql(['foo', 0, 'bar'])
+      attributes.default[:foo] = [ { bar: { baz: 'qux' } } ]
+      expect(attributes[:foo][0]['bar'].__path).to eql(['foo', 0, 'bar'])
     end
 
     it "works through the default accessor" do
-      @attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(@attributes.default['foo']['bar'].__path).to eql(['foo', 'bar'])
+      attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(attributes.default['foo']['bar'].__path).to eql(['foo', 'bar'])
     end
 
     it "works through the normal accessor" do
-      @attributes.normal['foo']['bar']['baz'] = 'qux'
-      expect(@attributes.normal['foo']['bar'].__path).to eql(['foo', 'bar'])
+      attributes.normal['foo']['bar']['baz'] = 'qux'
+      expect(attributes.normal['foo']['bar'].__path).to eql(['foo', 'bar'])
     end
 
     it "works through the override accessor" do
-      @attributes.override['foo']['bar']['baz'] = 'qux'
-      expect(@attributes.override['foo']['bar'].__path).to eql(['foo', 'bar'])
+      attributes.override['foo']['bar']['baz'] = 'qux'
+      expect(attributes.override['foo']['bar'].__path).to eql(['foo', 'bar'])
     end
 
     it "works through an intermediate default accessor" do
-      @attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(@attributes['foo'].default['bar'].__path).to eql(['foo', 'bar'])
+      attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(attributes.default['foo']['bar'].__path).to eql(['foo', 'bar'])
+      expect(attributes['foo']['bar'].default.__path).to eql(['foo', 'bar'])
     end
 
     it "works through the normal accessor" do
-      @attributes.normal['foo']['bar']['baz'] = 'qux'
-      expect(@attributes['foo'].normal['bar'].__path).to eql(['foo', 'bar'])
+      attributes.normal['foo']['bar']['baz'] = 'qux'
+      expect(attributes.normal['foo']['bar'].__path).to eql(['foo', 'bar'])
+      expect(attributes['foo']['bar'].normal.__path).to eql(['foo', 'bar'])
     end
 
     it "works through the override accessor" do
+      attributes.override['foo']['bar']['baz'] = 'qux'
+      expect(attributes.override['foo']['bar'].__path).to eql(['foo', 'bar'])
+      expect(attributes['foo']['bar'].override.__path).to eql(['foo', 'bar'])
+    end
+  end
+
+  describe "precedence tracking" do
+    it "is not defined with merged attributes" do
       @attributes.override['foo']['bar']['baz'] = 'qux'
-      expect(@attributes['foo'].override['bar'].__path).to eql(['foo', 'bar'])
+      expect(@attributes['foo']['bar'].__precedence).to be nil
     end
 
+    [:normal, :override, :default, :automatic].each do |precedence|
+      it "is defined for #{precedence} level" do
+        @attributes.send(precedence)['foo']['bar']['baz'] = 'qux'
+        expect(@attributes['foo'].send(precedence)['bar'].__precedence).to eql(precedence)
+        expect(@attributes['foo'].send(precedence).__precedence).to eql(precedence)
+        expect(@attributes.send(precedence)['foo'].__precedence).to eql(precedence)
+      end
+    end
+  end
+
+  describe "tracking the parent node" do
+    let(:node) { double('Chef::Node') }
+
+    let(:attributes) { Chef::Node::Attribute.new(node: node) }
+
+    it "is accessible via attributes" do
+      pp attributes
+      attributes.default['foo']['bar']['baz'] = 'qux'
+      expect(attributes['foo']['bar'].__node).to eq(node)
+    end
+
+    it "is accessible at precedence levels" do
+      attributes.default['foo']['bar']['baz'] = 'qux'
+      pp attributes
+      expect(attributes.default['foo']['bar'].__node).to eq(node)
+    end
   end
 end

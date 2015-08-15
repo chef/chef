@@ -38,16 +38,17 @@ class Chef
       def initialize(normal: nil, default: nil, override: nil, automatic: nil, **args)
         super(**args)
         @wrapped_object ||= AttributeCell.new(
-            default: default || {},
-            env_default: {},
-            role_default: {},
-            force_default: {},
-            normal: normal || {},
-            override: override || {},
-            role_override: {},
-            env_override: {},
-            force_override: {},
-            automatic: automatic || {},
+          default: default || {},
+          env_default: {},
+          role_default: {},
+          force_default: {},
+          normal: normal || {},
+          override: override || {},
+          role_override: {},
+          env_override: {},
+          force_override: {},
+          automatic: automatic || {},
+          node: __node
         )
       end
 
