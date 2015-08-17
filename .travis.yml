@@ -1,7 +1,6 @@
 language: ruby
 cache: bundler
 
-sudo: false
 # Early warning system to catch if Rubygems breaks something
 before_install:
   # the new 2.5.0 rubygems is busted with 1.7.6 bundler, the
@@ -19,7 +18,8 @@ branches:
 # do not run expensive spec tests on PRs, only on branches
 script: "
 echo '--color\n-fp' > .rspec;
-bundle exec rake spec;
+sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers;
+sudo -E $(which bundle) exec rake spec;
 "
 
 env:
