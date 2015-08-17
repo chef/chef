@@ -83,5 +83,6 @@ describe Chef::Mixin::WindowsArchitectureHelper do
       @valid_architectures.each do | architecture |
         yield new_node, architecture if block_given?
       end
+    end
   end
 end
