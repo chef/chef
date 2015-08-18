@@ -111,6 +111,20 @@ describe Chef::Provider::Mount::Windows do
         allow(@current_resource).to receive(:mounted).and_return(true)
         @provider.mount_fs
       end
+
+      it "should remount the filesystem if it is mounted and the options have changed" do
+        expect(@vol).to receive(:add).with(:remote => @new_resource.device,
+                                       :username => @new_resource.username,
+                                       :domainname => @new_resource.domain,
+                                       :password => @new_resource.password)
+        @provider.mount_fs
+      end
+
+      it "should not mount the filesystem if it is mounted and the options have not changed" do
+        expect(@vol).to_not receive(:add)
+        allow(@current_resource).to receive(:mounted).and_return(true)
+        @provider.mount_fs
+      end
     end
 
     describe "when unmounting a file system" do

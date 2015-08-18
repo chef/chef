@@ -126,9 +126,10 @@ ENABLED
       @provider.run_action(:mount)
     end
 
-    it "should not mount resource if it is already mounted" do
+    it "should not mount resource if it is already mounted and the options have not changed" do
       stub_mounted_enabled(@provider, @mounted_output, "")
 
+      allow(@provider).to receive(:mount_options_unchanged?).and_return(true)
       expect(@provider).not_to receive(:mount_fs)
 
       @provider.run_action(:mount)

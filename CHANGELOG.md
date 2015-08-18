@@ -15,6 +15,9 @@
   [pr#3764](https://github.com/chef/chef/pull/3764) uniquify chef\_repo\_path
 * [**Renan Vicente**](https://github.com/renanvicente):
   [pr#3771](https://github.com/chef/chef/pull/3771) add depth property for deploy resource
+* [**James Belchamber**](https://github.com/JamesBelchamber):
+  [pr#1796](https://github.com/chef/chef/pull/1796): make mount options aware
+
 
 * [pr#2460](https://github.com/chef/chef/pull/2460) add privacy flag
 * [pr#1259](https://github.com/chef/chef/pull/1259) CHEF-5012: add methods for template breadcrumbs
