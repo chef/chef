@@ -68,11 +68,11 @@ read the
 
 The general development process is:
 
-1. Fork this repo and clone it to your workstation
-2. Create a feature branch for your change
-3. Write code and tests
+1. Fork this repo and clone it to your workstation.
+2. Create a feature branch for your change.
+3. Write code and tests.
 4. Push your feature branch to github and open a pull request against
-   master
+   master.
 
 Once your repository is set up, you can start working on the code. We do use
 TDD with RSpec, so you'll need to get a development environment running.
