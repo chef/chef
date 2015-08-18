@@ -45,7 +45,6 @@ class Chef
         @priority = nil
         @timeout = nil
         @run_levels = nil
-        @action = "nothing"
         @supports = { :restart => false, :reload => false, :status => false }
       end
 
