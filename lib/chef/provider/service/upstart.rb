@@ -26,13 +26,11 @@ class Chef
     class Service
       class Upstart < Chef::Provider::Service::Simple
 
-        provides :service, platform_family: 'debian', override: true
+        provides :service, platform_family: 'debian', override: true do |node|
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
+        end
 
         UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
-
-        def self.provides?(node, resource)
-          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
-        end
 
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)

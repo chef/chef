@@ -23,14 +23,12 @@ class Chef
     class Service
       class Redhat < Chef::Provider::Service::Init
 
-        provides :service, platform_family: %w(rhel fedora suse)
+        provides :service, platform_family: %w(rhel fedora suse) do |node|
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
+        end
 
         CHKCONFIG_ON = /\d:on/
         CHKCONFIG_MISSING = /No such/
-
-        def self.provides?(node, resource)
-          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
-        end
 
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)

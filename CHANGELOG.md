@@ -16,6 +16,7 @@
 * [**Renan Vicente**](https://github.com/renanvicente):
   [pr#3771](https://github.com/chef/chef/pull/3771) add depth property for deploy resource
 
+* [pr#3656](https://github.com/chef/chef/pull/3656) remove use of self.provides?
 * [pr#3455](https://github.com/chef/chef/pull/3455) powershell\_script: do not allow suppression of syntax errors
 * [pr#3519](https://github.com/chef/chef/pull/3519) The wording seemed odd.
 * [pr#3208](https://github.com/chef/chef/pull/3208) Missing require (require what you use).
