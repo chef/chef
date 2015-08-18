@@ -53,6 +53,7 @@ describe Chef::Cookbook::SyntaxCheck do
     @ruby_files = @attr_files + @libr_files + @defn_files + @recipes + [File.join(cookbook_path, "metadata.rb")]
     basenames = %w{ helpers_via_partial_test.erb
                     helper_test.erb
+                    helpers.erb
                     openldap_stuff.conf.erb
                     openldap_variable_stuff.conf.erb
                     test.erb

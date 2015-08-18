@@ -39,6 +39,16 @@ class Chef
           context = TemplateContext.new(@new_resource.variables)
           context[:node] = @run_context.node
           context[:template_finder] = template_finder
+
+          # helper variables
+          context[:cookbook_name] = @new_resource.cookbook_name unless context.keys.include?(:coookbook_name)
+          context[:recipe_name] = @new_resource.recipe_name unless context.keys.include?(:recipe_name)
+          context[:recipe_line_string] = @new_resource.source_line unless context.keys.include?(:recipe_line_string)
+          context[:recipe_path] = @new_resource.source_line_file unless context.keys.include?(:recipe_path)
+          context[:recipe_line] = @new_resource.source_line_number unless context.keys.include?(:recipe_line)
+          context[:template_name] = @new_resource.source unless context.keys.include?(:template_name)
+          context[:template_path] = template_location unless context.keys.include?(:template_path)
+
           context._extend_modules(@new_resource.helper_modules)
           output = context.render_template(template_location)
 

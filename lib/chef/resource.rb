@@ -1627,16 +1627,31 @@ class Chef
       run_context.delayed_notifications(self)
     end
 
+    def source_line_file
+      if source_line
+        source_line.match(/(.*):(\d+):?.*$/).to_a[1]
+      else
+        nil
+      end
+    end
+
+    def source_line_number
+      if source_line
+        source_line.match(/(.*):(\d+):?.*$/).to_a[2]
+      else
+        nil
+      end
+    end
+
     def defined_at
       # The following regexp should match these two sourceline formats:
       #   /some/path/to/file.rb:80:in `wombat_tears'
       #   C:/some/path/to/file.rb:80 in 1`wombat_tears'
       # extracting the path to the source file and the line number.
-      (file, line_no) = source_line.match(/(.*):(\d+):?.*$/).to_a[1,2] if source_line
       if cookbook_name && recipe_name && source_line
-        "#{cookbook_name}::#{recipe_name} line #{line_no}"
+        "#{cookbook_name}::#{recipe_name} line #{source_line_number}"
       elsif source_line
-        "#{file} line #{line_no}"
+        "#{source_line_file} line #{source_line_number}"
       else
         "dynamically defined"
       end
