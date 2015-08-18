@@ -30,7 +30,7 @@ describe Chef::Cookbook::Metadata do
                   :maintainer_email, :license, :platforms, :dependencies,
                   :recommendations, :suggestions, :conflicting, :providing,
                   :replacing, :attributes, :groupings, :recipes, :version,
-                  :source_url, :issues_url ]
+                  :source_url, :issues_url, :privacy ]
     end
 
     it "does not depend on object identity for equality" do
@@ -148,6 +148,10 @@ describe Chef::Cookbook::Metadata do
     it "has an empty issues_url string" do
       expect(metadata.issues_url).to eq('')
     end
+
+    it "is not private" do
+      expect(metadata.privacy).to eq(false)
+    end
   end
 
   describe "validation" do
@@ -198,7 +202,8 @@ describe Chef::Cookbook::Metadata do
       :long_description => "Much Longer\nSeriously",
       :version => "0.6.0",
       :source_url => "http://example.com",
-      :issues_url => "http://example.com/issues"
+      :issues_url => "http://example.com/issues",
+      :privacy => true
     }
     params.sort { |a,b| a.to_s <=> b.to_s }.each do |field, field_value|
       describe field do
@@ -360,7 +365,8 @@ describe Chef::Cookbook::Metadata do
         "recipes" => [ "mysql::server", "mysql::master" ],
         "default" => [ ],
         "source_url" => "http://example.com",
-        "issues_url" => "http://example.com/issues"
+        "issues_url" => "http://example.com/issues",
+        "privacy" => true
       }
       expect(metadata.attribute("/db/mysql/databases", attrs)).to eq(attrs)
     end
@@ -398,6 +404,18 @@ describe Chef::Cookbook::Metadata do
       }.not_to raise_error
       expect {
         metadata.attribute("db/mysql/databases", :issues_url => Hash.new)
+      }.to raise_error(ArgumentError)
+    end
+
+    it "should not accept anything but true or false for the privacy flag" do
+      expect {
+        metadata.attribute("db/mysql/databases", :privacy => true)
+      }.not_to raise_error
+      expect {
+        metadata.attribute("db/mysql/databases", :privacy => false)
+      }.not_to raise_error
+      expect {
+        metadata.attribute("db/mysql/databases", :privacy => 'true')
       }.to raise_error(ArgumentError)
     end
 
@@ -699,6 +717,7 @@ describe Chef::Cookbook::Metadata do
         version
         source_url
         issues_url
+        privacy
       }.each do |t|
         it "should include '#{t}'" do
           expect(deserialized_metadata[t]).to eq(metadata.send(t.to_sym))
@@ -734,6 +753,7 @@ describe Chef::Cookbook::Metadata do
         version
         source_url
         issues_url
+        privacy
       }.each do |t|
         it "should match '#{t}'" do
           expect(deserialized_metadata.send(t.to_sym)).to eq(metadata.send(t.to_sym))

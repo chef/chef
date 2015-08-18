@@ -54,12 +54,13 @@ class Chef
       VERSION                = 'version'.freeze
       SOURCE_URL             = 'source_url'.freeze
       ISSUES_URL             = 'issues_url'.freeze
+      PRIVACY                = 'privacy'.freeze
 
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
                             :maintainer_email, :license, :platforms, :dependencies,
                             :recommendations, :suggestions, :conflicting, :providing,
                             :replacing, :attributes, :groupings, :recipes, :version,
-                            :source_url, :issues_url ]
+                            :source_url, :issues_url, :privacy ]
 
       VERSION_CONSTRAINTS = {:depends     => DEPENDENCIES,
                              :recommends  => RECOMMENDATIONS,
@@ -116,6 +117,7 @@ class Chef
         @version = Version.new("0.0.0")
         @source_url = ''
         @issues_url = ''
+        @privacy = false
 
         @errors = []
       end
@@ -454,7 +456,8 @@ class Chef
             :recipes => { :kind_of => [ Array ], :default => [] },
             :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] },
             :source_url => { :kind_of => String },
-            :issues_url => { :kind_of => String }
+            :issues_url => { :kind_of => String },
+            :privacy => { :kind_of => [ TrueClass, FalseClass ] }
           }
         )
         options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
@@ -498,7 +501,8 @@ class Chef
           RECIPES                => self.recipes,
           VERSION                => self.version,
           SOURCE_URL             => self.source_url,
-          ISSUES_URL             => self.issues_url
+          ISSUES_URL             => self.issues_url,
+          PRIVACY                => self.privacy
         }
       end
 
@@ -532,6 +536,7 @@ class Chef
         @version                      = o[VERSION] if o.has_key?(VERSION)
         @source_url                   = o[SOURCE_URL] if o.has_key?(SOURCE_URL)
         @issues_url                   = o[ISSUES_URL] if o.has_key?(ISSUES_URL)
+        @privacy                      = o[PRIVACY] if o.has_key?(PRIVACY)
         self
       end
 
@@ -587,6 +592,23 @@ class Chef
           :issues_url,
           arg,
           :kind_of => [ String ]
+        )
+      end
+
+      #
+      # Sets the cookbook's privacy flag, or returns it.
+      #
+      # === Parameters
+      # privacy<TrueClass,FalseClass>:: Whether this cookbook is private or not
+      #
+      # === Returns
+      # privacy<TrueClass,FalseClass>:: Whether this cookbook is private or not
+      #
+      def privacy(arg=nil)
+        set_or_return(
+          :privacy,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 

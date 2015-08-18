@@ -16,6 +16,7 @@
 * [**Renan Vicente**](https://github.com/renanvicente):
   [pr#3771](https://github.com/chef/chef/pull/3771) add depth property for deploy resource
 
+* [pr#2460](https://github.com/chef/chef/pull/2460) add privacy flag
 * [pr#1259](https://github.com/chef/chef/pull/1259) CHEF-5012: add methods for template breadcrumbs
 * [pr#3656](https://github.com/chef/chef/pull/3656) remove use of self.provides?
 * [pr#3455](https://github.com/chef/chef/pull/3455) powershell\_script: do not allow suppression of syntax errors
