@@ -201,7 +201,7 @@ EOM
 
     it "formats empty hashes appropriately" do
       @ui.output({})
-      expect(@out.string).to eq("\n")
+      expect(@out.string).to eq("")
     end
 
     it "formats arrays appropriately" do
@@ -214,7 +214,7 @@ EOM
 
     it "formats empty arrays appropriately" do
       @ui.output([ ])
-      expect(@out.string).to eq("\n")
+      expect(@out.string).to eq("")
     end
 
     it "formats single-member arrays appropriately" do
