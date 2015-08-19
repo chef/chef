@@ -17,8 +17,9 @@
   [pr#3771](https://github.com/chef/chef/pull/3771) add depth property for deploy resource
 * [**James Belchamber**](https://github.com/JamesBelchamber):
   [pr#1796](https://github.com/chef/chef/pull/1796): make mount options aware
-
-
+* [**Nate Walck**](https://github.com/natewalck):
+ * [pr#3594](https://github.com/chef/chef/pull/3594): update service provider for OSX 10.11
+ * [pr#3704](https://github.com/chef/chef/pull/3704): Add SIP (OS X 10.11) support
 * [pr#2460](https://github.com/chef/chef/pull/2460) add privacy flag
 * [pr#1259](https://github.com/chef/chef/pull/1259) CHEF-5012: add methods for template breadcrumbs
 * [pr#3656](https://github.com/chef/chef/pull/3656) remove use of self.provides?
