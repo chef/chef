@@ -25,6 +25,8 @@ env:
 matrix:
   include:
   - rvm: 2.1
+    os: osx
+  - rvm: 2.1
   - rvm: 2.2
   - rvm: 2.1
     gemfile: pedant.gemfile
