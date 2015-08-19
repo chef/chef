@@ -468,6 +468,7 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:knife][:forward_agent] = true
         Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
         Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
+        Chef::Config[:knife][:ssh_gateway_identity] = "~/.ssh/gateway.rsa"
         Chef::Config[:knife][:host_key_verify] = true
         allow(knife).to receive(:render_template).and_return("")
         knife.config = {}
@@ -493,6 +494,10 @@ describe Chef::Knife::Bootstrap do
 
       it "configures the ssh gateway" do
         expect(knife_ssh.config[:ssh_gateway]).to eq('towel.blinkenlights.nl')
+      end
+
+      it "configures the ssh gateway identity" do
+        expect(knife_ssh.config[:ssh_gateway_identity]).to eq('~/.ssh/gateway.rsa')
       end
 
       it "configures the host key verify mode" do
