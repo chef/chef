@@ -67,8 +67,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
     node = Chef::Node.new
     node.automatic['platform'] = 'windows'
     node.automatic['platform_version'] = '6.1'
-    node.automatic['kernel'][:machine] =
-      is_i386_process_on_x86_64_windows? ? :x86_64 : :i386
+    node.automatic['kernel'][:machine] = :x86_64  # Only 64-bit architecture is supported
     node.automatic[:languages][:powershell][:version] = '4.0'
     empty_events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, empty_events)
