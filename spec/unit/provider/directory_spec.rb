@@ -203,6 +203,7 @@ describe Chef::Provider::Directory do
         allow(node).to receive(:[]).with("platform").and_return('mac_os_x')
         new_resource.path "/usr/bin/chef_test"
         new_resource.recursive false
+        allow_any_instance_of(Chef::Provider::File).to receive(:do_selinux)
       end
 
       it "os x 10.10 can write to sip locations" do
