@@ -18,7 +18,7 @@
 * [**James Belchamber**](https://github.com/JamesBelchamber):
   [pr#1796](https://github.com/chef/chef/pull/1796): make mount options aware
 
-
+* [pr#3793](https://github.com/chef/chef/pull/3793) CHEF-5372: Support specific `run_levels` for RedHat service
 * [pr#2460](https://github.com/chef/chef/pull/2460) add privacy flag
 * [pr#1259](https://github.com/chef/chef/pull/1259) CHEF-5012: add methods for template breadcrumbs
 * [pr#3656](https://github.com/chef/chef/pull/3656) remove use of self.provides?
