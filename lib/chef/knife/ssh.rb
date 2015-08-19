@@ -98,9 +98,8 @@ class Chef
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
-       option :gateway_identity_file,
-        :short => "-I IDENTITY_FILE",
-        :long => "--gateway-identity-file IDENTITY_FILE",
+       option :ssh_gateway_identity,
+        :long => "--ssh-gateway-identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication on the gateway"
 
       option :host_key_verify,
@@ -138,7 +137,7 @@ class Chef
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
           gw_port_opt = gw_port ? { :port => gw_port } : {}
-          gw_keys_opt = config[:gateway_identity_file] ? { :keys => config[:gateway_identity_file] } : {}
+          gw_keys_opt = config[:ssh_gateway_identity] ? { :keys => config[:ssh_gateway_identity] } : {}
 
           session.via(gw_host, gw_user || config[:ssh_user], gw_port_opt.merge(gw_keys_opt))
         end
