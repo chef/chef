@@ -23,6 +23,11 @@ class Chef
     class Service
       class Redhat < Chef::Provider::Service::Init
 
+        # @api private
+        attr_accessor :service_missing
+        # @api private
+        attr_accessor :current_run_levels
+
         provides :service, platform_family: %w(rhel fedora suse) do |node|
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
         end
@@ -36,11 +41,15 @@ class Chef
 
         def initialize(new_resource, run_context)
           super
-          @init_command = "/sbin/service #{@new_resource.service_name}"
-          @new_resource.supports[:status] = true
+          @init_command = "/sbin/service #{new_resource.service_name}"
+          new_resource.supports[:status] = true
           @service_missing = false
           @current_run_levels = []
-          @run_levels = @new_resource.run_levels
+        end
+
+        # @api private
+        def run_levels
+          new_resource.run_levels
         end
 
         def define_resource_requirements
@@ -49,12 +58,12 @@ class Chef
           requirements.assert(:all_actions) do |a|
             chkconfig_file = "/sbin/chkconfig"
             a.assertion { ::File.exists? chkconfig_file  }
-            a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} does not exist!"
+            a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} dbleoes not exist!"
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { !@service_missing }
-            a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the init.d script!"
+            a.failure_message Chef::Exceptions::Service, "#{new_resource}: unable to locate the init.d script!"
             a.whyrun "Assuming service would be disabled. The init script is not presently installed."
           end
         end
@@ -63,44 +72,44 @@ class Chef
           super
 
           if ::File.exists?("/sbin/chkconfig")
-            chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
-            unless @run_levels.nil? or @run_levels.empty?
-              all_levels_enabled = true
-              chkconfig.split(/\s+/)[1..-1].each do |level|
+            chkconfig = shell_out!("/sbin/chkconfig --list #{current_resource.service_name}", :returns => [0,1])
+            unless run_levels.nil? or run_levels.empty?
+              all_levels_match = true
+              chkconfig.stdout.split(/\s+/)[1..-1].each do |level|
                 index = level.split(':').first
                 status = level.split(':').last
-                if @run_levels.include?(index)
-                  if status =~ CHKCONFIG_ON
-                    @current_run_levels << index
-                  else
-                    all_levels_enabled = false
-                  end
+                if level =~ CHKCONFIG_ON
+                  @current_run_levels << index.to_i
+                  all_levels_match = false unless run_levels.include?(index.to_i)
+                else
+                  all_levels_match = false if run_levels.include?(index.to_i)
                 end
               end
-              @current_resource.enabled(all_levels_enabled)
+              current_resource.enabled(all_levels_match)
             else
-              @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
+              current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
             end
             @service_missing = !!(chkconfig.stderr =~ CHKCONFIG_MISSING)
           end
 
-          @current_resource
+          current_resource
         end
 
+        # @api private
         def levels
-          (@run_levels.nil? or @run_levels.empty?) ? "" : "--level #{@run_levels.join('')} "
+          (run_levels.nil? or run_levels.empty?) ? "" : "--level #{run_levels.join('')} "
         end
 
         def enable_service()
-          unless @run_levels.nil? or @run_levels.empty?
-            disable_levels = @current_run_levels - @run_levels
-            shell_out! "/sbin/chkconfig --level #{disable_levels.join('')} #{@new_resource.service_name} off" unless disable_levels.empty?
+          unless run_levels.nil? or run_levels.empty?
+            disable_levels = current_run_levels - run_levels
+            shell_out! "/sbin/chkconfig --level #{disable_levels.join('')} #{new_resource.service_name} off" unless disable_levels.empty?
           end
-          shell_out! "/sbin/chkconfig #{levels}#{@new_resource.service_name} on"
+          shell_out! "/sbin/chkconfig #{levels}#{new_resource.service_name} on"
         end
 
         def disable_service()
-          shell_out! "/sbin/chkconfig #{levels}#{@new_resource.service_name} off"
+          shell_out! "/sbin/chkconfig #{levels}#{new_resource.service_name} off"
         end
       end
     end
