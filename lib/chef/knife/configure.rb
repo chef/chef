@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -105,17 +105,17 @@ EOH
           user_create.run
         else
           ui.msg("*****")
-          ui.msg("")
+          ui.msg("\n")
           ui.msg("You must place your client key in:")
           ui.msg("  #{new_client_key}")
           ui.msg("Before running commands with Knife")
-          ui.msg("")
+          ui.msg("\n")
           ui.msg("*****")
-          ui.msg("")
+          ui.msg("\n")
           ui.msg("You must place your validation key in:")
           ui.msg("  #{validation_key}")
           ui.msg("Before generating instance data with Knife")
-          ui.msg("")
+          ui.msg("\n")
           ui.msg("*****")
         end
 
