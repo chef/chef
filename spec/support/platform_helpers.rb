@@ -26,6 +26,14 @@ def ruby_20?
   !!(RUBY_VERSION =~ /^2.0/)
 end
 
+def ruby_64bit?
+  !!(RbConfig::CONFIG['host_cpu'] =~ /x86_64/)
+end
+
+def ruby_32bit?
+  !!(RbConfig::CONFIG['host_cpu'] =~ /i686/)
+end
+
 def windows?
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end

@@ -69,6 +69,19 @@ class Chef
         result
       end
 
+      def self.is_wow64_process
+        is_64_bit_process_result = FFI::MemoryPointer.new(:int)
+
+        # The return value of IsWow64Process is nonzero value if the API call succeeds.
+        # The result data are returned in the last parameter, not the return value.
+        call_succeeded = IsWow64Process(GetCurrentProcess(), is_64_bit_process_result)
+
+        # The result is nonzero if IsWow64Process's calling process, in the case here
+        # this process, is running under WOW64, i.e. the result is nonzero if this
+        # process is 32-bit (aka :i386).
+        (call_succeeded != 0) && (is_64_bit_process_result.get_int(0) != 0)
+      end
+
         # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
         # AND the PROCESS_VM_READ right
       def self.get_process_memory_info(handle)

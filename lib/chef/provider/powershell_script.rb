@@ -34,6 +34,15 @@ class Chef
         super
       end
 
+      def command
+        basepath = is_forced_32bit ? wow64_directory : run_context.node.kernel.os_info.system_directory
+
+        # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
+        interpreter_path = Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", interpreter)
+
+        "\"#{interpreter_path}\" #{flags} \"#{script_file.path}\""
+      end
+
       def flags
         # Must use -File rather than -Command to launch the script
         # file created by the base class that contains the script
