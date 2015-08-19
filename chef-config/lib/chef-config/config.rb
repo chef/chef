@@ -527,6 +527,7 @@ module ChefConfig
       default :ssh_user, nil
       default :ssh_attribute, nil
       default :ssh_gateway, nil
+      default :ssh_gateway_identity, nil
       default :bootstrap_version, nil
       default :bootstrap_proxy, nil
       default :bootstrap_template, nil

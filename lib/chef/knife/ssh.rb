@@ -87,6 +87,12 @@ class Chef
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
 
+      option :ssh_gateway_identity,
+        :short => "-I SSH_GATEWAY_IDENTITY",
+        :long => "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
+        :description => "The SSH identity file used for gateway authentication",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway_identity] = key.strip }
+
       option :forward_agent,
         :short => "-A",
         :long => "--forward-agent",
@@ -97,10 +103,6 @@ class Chef
         :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
-
-       option :ssh_gateway_identity,
-        :long => "--ssh-gateway-identity-file IDENTITY_FILE",
-        :description => "The SSH identity file used for authentication on the gateway"
 
       option :host_key_verify,
         :long => "--[no-]host-key-verify",
@@ -137,9 +139,11 @@ class Chef
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
           gw_port_opt = gw_port ? { :port => gw_port } : {}
+          config[:ssh_gateway_identity] ||= Chef::Config[:knife][:ssh_gateway_identity]
           gw_keys_opt = config[:ssh_gateway_identity] ? { :keys => config[:ssh_gateway_identity] } : {}
+          gw_opt = gw_port_opt.merge(gw_keys_opt)
 
-          session.via(gw_host, gw_user || config[:ssh_user], gw_port_opt.merge(gw_keys_opt))
+          session.via(gw_host, gw_user || config[:ssh_user], gw_opt)
         end
       rescue Net::SSH::AuthenticationFailed
         user = gw_user || config[:ssh_user]
