@@ -21,6 +21,8 @@
   [pr#3594](https://github.com/chef/chef/pull/3594): Update service provider for OSX 10.11
 * [**Nate Walck**](https://github.com/natewalck):
   [pr#3704](https://github.com/chef/chef/pull/3704): Add SIP (OS X 10.11) support
+
+* [pr#3774](https://github.com/chef/chef/pull/3774) Add support for yum-deprecated in yum provider
 * [pr#3793](https://github.com/chef/chef/pull/3793) CHEF-5372: Support specific `run_levels` for RedHat service
 * [pr#2460](https://github.com/chef/chef/pull/2460) add privacy flag
 * [pr#1259](https://github.com/chef/chef/pull/1259) CHEF-5012: add methods for template breadcrumbs
