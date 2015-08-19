@@ -24,8 +24,8 @@ env:
 
 matrix:
   include:
-  - rvm: 2.1
-    os: osx
+   - os: osx
+     rvm: 2.1
 notifications:
   on_change: true
   on_failure: true
