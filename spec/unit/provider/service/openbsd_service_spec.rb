@@ -35,10 +35,12 @@ describe Chef::Provider::Service::Openbsd do
     node
   end
 
+  let(:supports) { {:status => false} }
+
   let(:new_resource) do
     new_resource = Chef::Resource::Service.new("sndiod")
     new_resource.pattern("sndiod")
-    new_resource.supports({:status => false})
+    new_resource.supports(supports)
     new_resource
   end
 
@@ -106,9 +108,7 @@ describe Chef::Provider::Service::Openbsd do
     context "when the service supports status" do
       let(:status) { double(:stdout => "", :exitstatus => 0) }
 
-      before do
-        new_resource.supports({:status => true})
-      end
+      let(:supports) { { :status => true } }
 
       it "should run '/etc/rc.d/service_name status'" do
         expect(provider).to receive(:shell_out).with("/etc/rc.d/#{new_resource.service_name} check").and_return(status)
@@ -305,10 +305,12 @@ describe Chef::Provider::Service::Openbsd do
     end
 
     describe Chef::Provider::Service::Openbsd, "restart_service" do
-      it "should call 'restart' on the service_name if the resource supports it" do
-        new_resource.supports({:restart => true})
-        expect(provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{new_resource.service_name} restart")
-        provider.restart_service()
+      context "when the new_resource supports restart" do
+        let(:supports) { { restart: true } }
+        it "should call 'restart' on the service_name if the resource supports it" do
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{new_resource.service_name} restart")
+          provider.restart_service()
+        end
       end
 
       it "should call the restart_command if one has been specified" do

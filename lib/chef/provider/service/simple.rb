@@ -76,7 +76,7 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @new_resource.status_command or @new_resource.supports[:status] or
+            a.assertion { @new_resource.status_command or supports[:status] or
               (!ps_cmd.nil? and !ps_cmd.empty?) }
             a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this node's 'command.ps' attribute"
           end
@@ -127,7 +127,7 @@ class Chef
               nil
             end
 
-          elsif @new_resource.supports[:status]
+          elsif supports[:status]
             Chef::Log.debug("#{@new_resource} supports status, running")
             begin
               if shell_out("#{default_init_command} status").exitstatus == 0

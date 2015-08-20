@@ -1,7 +1,7 @@
 #
 # Author:: Lee Jensen (<ljensen@engineyard.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,9 +26,9 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
   provides :service, platform_family: "gentoo"
 
   def load_current_resource
+    supports[:status] = true if supports[:status].nil?
+    supports[:restart] = true if supports[:restart].nil?
 
-    @new_resource.supports[:status] = true
-    @new_resource.supports[:restart] = true
     @found_script = false
     super
 

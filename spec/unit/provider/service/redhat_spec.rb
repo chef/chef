@@ -64,9 +64,33 @@ describe "Chef::Provider::Service::Redhat" do
     end
 
     describe "load current resource" do
-      it "sets the current enabled status to true if the service is enabled for any run level" do
+      before do
         status = double("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
-        expect(@provider).to receive(:shell_out).with("/sbin/service chef status").and_return(status)
+        allow(@provider).to receive(:shell_out).with("/sbin/service chef status").and_return(status)
+      end
+
+      it "sets supports[:status] to true by default" do
+        chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:on  6:off", :stderr => "")
+        expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
+        expect(@provider.service_missing).to be false
+        @provider.load_current_resource
+        expect(@provider.supports[:status]).to be true
+      end
+
+      it "lets the user override supports[:status] in the new_resource" do
+        @new_resource.supports( { status: false } )
+        @new_resource.pattern "myservice"
+        chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:on  6:off", :stderr => "")
+        expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
+        foo_out = double("ps_command", :exitstatus => 0, :stdout => "a line that matches myservice", :stderr => "")
+        expect(@provider).to receive(:shell_out!).with("foo").and_return(foo_out)
+        expect(@provider.service_missing).to be false
+        expect(@provider).not_to receive(:shell_out).with("/sbin/service chef status")
+        @provider.load_current_resource
+        expect(@provider.supports[:status]).to be false
+      end
+
+      it "sets the current enabled status to true if the service is enabled for any run level" do
         chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:on  6:off", :stderr => "")
         expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
         expect(@provider.service_missing).to be false
@@ -75,8 +99,6 @@ describe "Chef::Provider::Service::Redhat" do
       end
 
       it "sets the current enabled status to false if the regex does not match" do
-        status = double("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
-        expect(@provider).to receive(:shell_out).with("/sbin/service chef status").and_return(status)
         chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:off   6:off", :stderr => "")
         expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
         expect(@provider.service_missing).to be false
@@ -85,9 +107,7 @@ describe "Chef::Provider::Service::Redhat" do
       end
 
       it "sets the current enabled status to true if the service is enabled at specified run levels" do
-        status = double("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
         @new_resource.run_levels([1, 2])
-        expect(@provider).to receive(:shell_out).with("/sbin/service chef status").and_return(status)
         chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:on   2:on   3:off   4:off   5:off   6:off", :stderr => "")
         expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
         expect(@provider.service_missing).to be false
@@ -97,9 +117,7 @@ describe "Chef::Provider::Service::Redhat" do
       end
 
       it "sets the current enabled status to false if the service is enabled at a run level it should not" do
-        status = double("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
         @new_resource.run_levels([1, 2])
-        expect(@provider).to receive(:shell_out).with("/sbin/service chef status").and_return(status)
         chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:on   2:on   3:on   4:off   5:off   6:off", :stderr => "")
         expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
         expect(@provider.service_missing).to be false
@@ -109,9 +127,7 @@ describe "Chef::Provider::Service::Redhat" do
       end
 
       it "sets the current enabled status to false if the service is not enabled at specified run levels" do
-        status = double("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
         @new_resource.run_levels([ 2 ])
-        expect(@provider).to receive(:shell_out).with("/sbin/service chef status").and_return(status)
         chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:on   2:off   3:off   4:off   5:off   6:off", :stderr => "")
         expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
         expect(@provider.service_missing).to be false

@@ -99,7 +99,7 @@ class Chef
         def restart_service
           if new_resource.restart_command
             super
-          elsif new_resource.supports[:restart]
+          elsif supports[:restart]
             shell_out_with_systems_locale!("#{init_command} fastrestart")
           else
             stop_service

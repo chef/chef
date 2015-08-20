@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,7 +72,7 @@ class Chef
         def restart_service
           if @new_resource.restart_command
             super
-          elsif @new_resource.supports[:restart]
+          elsif supports[:restart]
             shell_out_with_systems_locale!("#{default_init_command} restart")
           else
             stop_service
@@ -84,7 +84,7 @@ class Chef
         def reload_service
           if @new_resource.reload_command
             super
-          elsif @new_resource.supports[:reload]
+          elsif supports[:reload]
             shell_out_with_systems_locale!("#{default_init_command} reload")
           end
         end

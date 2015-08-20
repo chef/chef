@@ -42,7 +42,6 @@ class Chef
         def initialize(new_resource, run_context)
           super
           @init_command = "/sbin/service #{new_resource.service_name}"
-          new_resource.supports[:status] = true
           @service_missing = false
           @current_run_levels = []
         end
@@ -69,6 +68,8 @@ class Chef
         end
 
         def load_current_resource
+          supports[:status] = true if supports[:status].nil?
+
           super
 
           if ::File.exists?("/sbin/chkconfig")

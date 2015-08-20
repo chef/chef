@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -139,14 +139,14 @@ describe Chef::Resource::Service do
       expect { @resource.send(attrib, "poop") }.to raise_error(ArgumentError)
     end
 
-    it "should default all the feature support to false" do
-      support_hash = { :status => false, :restart => false, :reload=> false }
+    it "should default all the feature support to nil" do
+      support_hash = { :status => nil, :restart => nil, :reload=> nil }
       expect(@resource.supports).to eq(support_hash)
     end
 
     it "should allow you to set what features this resource supports as a array" do
       support_array = [ :status, :restart ]
-      support_hash = { :status => true, :restart => true, :reload => false }
+      support_hash = { :status => true, :restart => true, :reload => nil }
       @resource.supports(support_array)
       expect(@resource.supports).to eq(support_hash)
     end

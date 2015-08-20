@@ -45,7 +45,7 @@ class Chef
         @priority = nil
         @timeout = nil
         @run_levels = nil
-        @supports = { :restart => false, :reload => false, :status => false }
+        @supports = { :restart => nil, :reload => nil, :status => nil }
       end
 
       def service_name(arg=nil)
