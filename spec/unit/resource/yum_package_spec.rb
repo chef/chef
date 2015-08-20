@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,5 +76,14 @@ describe Chef::Resource::YumPackage, "allow_downgrade" do
     expect { @resource.allow_downgrade true }.not_to raise_error
     expect { @resource.allow_downgrade false }.not_to raise_error
     expect { @resource.allow_downgrade "monkey" }.to raise_error(ArgumentError)
+  end
+end
+
+describe Chef::Resource::YumPackage, "yum_binary" do
+  let(:resource) { Chef::Resource::YumPackage.new("foo") }
+
+  it "should allow you to specify the yum_binary" do
+    resource.yum_binary "/usr/bin/yum-something"
+    expect(resource.yum_binary).to eql("/usr/bin/yum-something")
   end
 end

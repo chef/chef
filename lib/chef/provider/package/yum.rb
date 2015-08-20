@@ -1,6 +1,6 @@
 
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -651,6 +651,8 @@ class Chef
           include Chef::Mixin::ShellOut
           include Singleton
 
+          attr_accessor :yum_binary
+
           def initialize
             @rpmdb = RPMDb.new
 
@@ -781,7 +783,7 @@ class Chef
           end
 
           def python_bin
-            yum_executable = which("yum")
+            yum_executable = which(yum_binary)
             if yum_executable && shabang?(yum_executable)
               extract_interpreter(yum_executable)
             else
@@ -980,6 +982,15 @@ class Chef
           super
 
           @yum = YumCache.instance
+          @yum.yum_binary = yum_binary
+        end
+
+        def yum_binary
+          @yum_binary ||=
+            begin
+              yum_binary = new_resource.yum_binary if new_resource.is_a?(Chef::Resource::YumPackage)
+              yum_binary ||= ::File.exist?("/usr/bin/yum-deprecated") ? "yum-deprecated" : "yum"
+            end
         end
 
         # Extra attributes
@@ -1026,6 +1037,7 @@ class Chef
         end
 
         def yum_command(command)
+          command = "#{yum_binary} #{command}"
           Chef::Log.debug("#{@new_resource}: yum command: \"#{command}\"")
           status = shell_out_with_timeout(command, {:timeout => Chef::Config[:yum_timeout]})
 
@@ -1233,7 +1245,7 @@ class Chef
             end
             pkg_string = pkg_string_bits.join(' ')
             Chef::Log.info("#{@new_resource} #{log_method} #{repos.join(' ')}")
-            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{pkg_string}")
+            yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{pkg_string}")
           else
             raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
                                              "and release? (version-release, e.g. 1.84-10.fc6)"
@@ -1242,7 +1254,7 @@ class Chef
 
         def install_package(name, version)
           if @new_resource.source
-            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}")
+            yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}")
           else
             install_remote_package(name, version)
           end
@@ -1290,7 +1302,7 @@ class Chef
               "#{n}#{yum_arch(a)}"
             end.join(' ')
           end
-          yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{remove_str}")
+          yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} remove #{remove_str}")
 
           if flush_cache[:after]
             @yum.reload
