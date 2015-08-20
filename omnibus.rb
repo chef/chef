@@ -24,6 +24,11 @@
 # package_dir   './local/omnibus/pkg'
 # package_tmp   './local/omnibus/pkg-tmp'
 
+# Windows architecture defaults - set to x86 unless otherwise specified.
+# ------------------------------
+windows_arch   %w{x86 x64}.include?(ENV['OMNIBUS_WINDOWS_ARCH'].downcase) ?
+                ENV['OMNIBUS_WINDOWS_ARCH'].donwcase.to_sym : :x86
+
 # Disable git caching
 # ------------------------------
 # use_git_caching false

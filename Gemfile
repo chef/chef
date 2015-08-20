@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'omnibus', github: 'opscode/omnibus'
-gem 'omnibus-software', github: 'opscode/omnibus-software'
+gem 'omnibus', github: 'chef/omnibus'
+gem 'omnibus-software', github: 'chef/omnibus-software'
 
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
@@ -12,7 +12,7 @@ group :development do
   gem 'berkshelf', '~> 3.0'
 
   # Use Test Kitchen with Vagrant for converging the build environment
-  gem 'test-kitchen',    '~> 1.4.0.rc.1'
-  gem 'kitchen-vagrant', '~> 0.17.0.rc.1'
+  gem 'test-kitchen',    '~> 1.4.0'
+  gem 'kitchen-vagrant', '~> 0.17.0'
   gem 'winrm-transport', '~> 1.0'
 end
