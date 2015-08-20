@@ -1,29 +1,39 @@
+require 'chef/node/attribute_trait/path_tracking'
+
 class Chef
   class Node
     class AttributeTrait
       module DeepMergeCache
+        include PathTracking
+
         attr_accessor :__deep_merge_cache
 
-        def initialize(deep_merge_cache: Chef::Node::Mash.new(wrapped_object: {}), **args)
+        def initialize(deep_merge_cache: nil, **args)
           super(**args)
           @__deep_merge_cache = deep_merge_cache
         end
 
-        def [](key)
-          if __deep_merge_cache.key?(key) && __deep_merge_cache[key][:__deep_merge_cache]
-            return __deep_merge_cache[key].regular_reader(:__deep_merge_cache)
-          end
+        def __deep_merge_cache
+          @__deep_merge_cache ||=
+            begin
+              require 'chef/node/mash'
+              Chef::Node::Mash.new(wrapped_object: {})
+            end
+        end
 
-          if is_a?(Hash) && self.class.deep_merge_cache_population
+        def [](key)
+          #if __deep_merge_cache.regular_reader(__path) && __deep_merge_cache[key][:__deep_merge_cache]
+          #  return __deep_merge_cache[key].regular_reader(:__deep_merge_cache)
+          #end
+
+          if is_a?(Chef::Node::Attribute)
             val = super
-            __deep_merge_cache[key] = Chef::Node::Mash.new(wrapped_object: {}) unless __deep_merge_cache.key?(key)
-            __deep_merge_cache[key].regular_writer(:__deep_merge_cache, val)
-            val.__deep_merge_cache = __deep_merge_cache[key] if val.is_a?(DeepMergeCache)
+            cache = __deep_merge_cache.regular_reader(*__path)
+            cache[key] = Chef::Node::Mash.new(wrapped_object: {}) unless cache.include?(key)
+            cache[key].regular_writer(:__deep_merge_cache, val)
             return val
           else
-            val = super
-            val.__deep_merge_cache = __deep_merge_cache[key] if val.is_a?(DeepMergeCache)
-            return val
+            super
           end
         end
 
@@ -35,10 +45,12 @@ class Chef
 #            end
 #          end
         end
+
+        def new_decorator(**args)
+          args[:deep_merge_cache] = __deep_merge_cache
+          super(**args)
+        end
       end
     end
   end
 end
-
-# FIXME: dep inject the mash
-#require 'chef/node/mash'

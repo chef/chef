@@ -25,17 +25,17 @@ class Chef
       attr_accessor :env_override
       attr_accessor :force_override
       attr_accessor :automatic
-#      attr_accessor :deep_merge_cache
       attr_accessor :__node
+      attr_accessor :__deep_merge_cache
 
       def initialize(default: nil, env_default: nil, role_default: nil, force_default: nil,
                      normal: nil,
                      override: nil, role_override: nil, env_override: nil, force_override: nil,
                      automatic: nil,
-                     node: nil
-#                     deep_merge_cache: nil)
-                    )
+                     node: nil,
+                     deep_merge_cache: nil)
         @__node = node
+        @__deep_merge_cache = deep_merge_cache
         self.default        = default
         self.env_default    = env_default
         self.role_default   = role_default
@@ -46,7 +46,6 @@ class Chef
         self.env_override   = env_override
         self.force_override = force_override
         self.automatic      = automatic
-#        @deep_merge_cache   = deep_merge_cache
       end
 
       COMPONENTS_AS_SYMBOLS.each do |component|
@@ -54,7 +53,12 @@ class Chef
           instance_variable_set(
             :"@#{component}",
             if value.is_a?(Hash) || value.is_a?(Array)
-              Chef::Node::VividMash.new(wrapped_object: value, precedence: component, node: __node)
+              Chef::Node::VividMash.new(
+                wrapped_object: value,
+                precedence: component,
+                node: __node,
+                deep_merge_cache: __deep_merge_cache
+              )
             else
               value
             end

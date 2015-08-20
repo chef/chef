@@ -7,6 +7,7 @@ class Chef
       include AttributeTrait::Autovivify
       include AttributeTrait::SymbolConvert
       include AttributeTrait::MethodMissing
+      include AttributeTrait::DeepMergeCache
       include AttributeTrait::PathTracking
     end
   end

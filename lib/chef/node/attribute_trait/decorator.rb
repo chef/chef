@@ -40,15 +40,20 @@ class Chef
         end
 
         def regular_reader(*path)
-          path.inject(wrapped_object) { |memo, key| memo[key] }
+          maybe_decorated_value(
+            path.inject(wrapped_object) { |memo, key| memo[key] }
+          )
         end
 
         def [](key)
-          ret = wrapped_object[key]
-          if ret.is_a?(Hash) || ret.is_a?(Array)
-            new_decorator(wrapped_object: ret)
+          maybe_decorated_value(wrapped_object[key])
+        end
+
+        def maybe_decorated_value(val)
+          if val.is_a?(Hash) || val.is_a?(Array)
+            new_decorator(wrapped_object: val)
           else
-            ret
+            val
           end
         end
 
