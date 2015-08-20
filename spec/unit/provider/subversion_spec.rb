@@ -63,28 +63,18 @@ describe Chef::Provider::Subversion do
                           "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
       expect(::File).to receive(:exist?).at_least(1).times.with("/my/deploy/dir/.svn").and_return(true)
-      expect(::File).to receive(:directory?).with("/my/deploy/dir").and_return(true)
-      expect(::Dir).to receive(:chdir).with("/my/deploy/dir").and_yield
-      allow(@stdout).to receive(:string).and_return(example_svn_info)
-      allow(@stderr).to receive(:string).and_return("")
-      allow(@exitstatus).to receive(:exitstatus).and_return(0)
-      expected_command = ["svn info", {:cwd=>"/my/deploy/dir"}]
-      expect(@provider).to receive(:popen4).with(*expected_command).
-                                        and_yield("no-pid", "no-stdin", @stdout,@stderr).
-                                        and_return(@exitstatus)
+      expected_command = ["svn info", {:cwd => '/my/deploy/dir', :returns => [0,1]}]
+      expect(@provider).to receive(:shell_out!).with(*expected_command).
+                             and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
       expect(@provider.find_current_revision).to eql("11410")
     end
 
     it "gives nil as the current revision if the deploy dir isn't a SVN working copy" do
       example_svn_info = "svn: '/tmp/deploydir' is not a working copy\n"
       expect(::File).to receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
-      expect(::File).to receive(:directory?).with("/my/deploy/dir").and_return(true)
-      expect(::Dir).to receive(:chdir).with("/my/deploy/dir").and_yield
-      allow(@stdout).to receive(:string).and_return(example_svn_info)
-      allow(@stderr).to receive(:string).and_return("")
-      allow(@exitstatus).to receive(:exitstatus).and_return(1)
-      expect(@provider).to receive(:popen4).and_yield("no-pid", "no-stdin", @stdout,@stderr).
-                                        and_return(@exitstatus)
+      expected_command = ["svn info", {:cwd => '/my/deploy/dir', :returns => [0,1]}]
+      expect(@provider).to receive(:shell_out!).with(*expected_command).
+                             and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
       expect(@provider.find_current_revision).to be_nil
     end
 
@@ -127,28 +117,20 @@ describe Chef::Provider::Subversion do
                           "Last Changed Author: codeninja\n" +
                           "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
-      exitstatus = double("exitstatus")
-      allow(exitstatus).to receive(:exitstatus).and_return(0)
       @resource.revision "HEAD"
-      allow(@stdout).to receive(:string).and_return(example_svn_info)
-      allow(@stderr).to receive(:string).and_return("")
-      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd=>Dir.tmpdir}]
-      expect(@provider).to receive(:popen4).with(*expected_command).
-                                        and_yield("no-pid","no-stdin",@stdout,@stderr).
-                                        and_return(exitstatus)
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd => '/my/deploy/dir', :returns => [0,1]}]
+      expect(@provider).to receive(:shell_out!).with(*expected_command).
+                                        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
       expect(@provider.revision_int).to eql("11410")
     end
 
     it "returns a helpful message if data from `svn info` can't be parsed" do
       example_svn_info =  "some random text from an error message\n"
-      exitstatus = double("exitstatus")
-      allow(exitstatus).to receive(:exitstatus).and_return(0)
       @resource.revision "HEAD"
-      allow(@stdout).to receive(:string).and_return(example_svn_info)
-      allow(@stderr).to receive(:string).and_return("")
-      expect(@provider).to receive(:popen4).and_yield("no-pid","no-stdin",@stdout,@stderr).
-                                        and_return(exitstatus)
-      expect {@provider.revision_int}.to raise_error(RuntimeError, "Could not parse `svn info` data: some random text from an error message")
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd => '/my/deploy/dir', :returns => [0,1]}]
+      expect(@provider).to receive(:shell_out!).with(*expected_command).
+                             and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+      expect {@provider.revision_int}.to raise_error(RuntimeError, "Could not parse `svn info` data: some random text from an error message\n")
 
     end
 

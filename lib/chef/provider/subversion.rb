@@ -130,8 +130,8 @@ class Chef
             @new_resource.revision
           else
             command = scm(:info, @new_resource.repository, @new_resource.svn_info_args, authentication, "-r#{@new_resource.revision}")
-            status, svn_info, error_message = output_of_command(command, run_options)
-            handle_command_failures(status, "STDOUT: #{svn_info}\nSTDERR: #{error_message}")
+            svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0,1])).stdout
+
             extract_revision_info(svn_info)
           end
         end
@@ -142,11 +142,8 @@ class Chef
       def find_current_revision
         return nil unless ::File.exist?(::File.join(@new_resource.destination, ".svn"))
         command = scm(:info)
-        status, svn_info, error_message = output_of_command(command, run_options(:cwd => cwd))
+        svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0,1])).stdout
 
-        unless [0,1].include?(status.exitstatus)
-          handle_command_failures(status, "STDOUT: #{svn_info}\nSTDERR: #{error_message}")
-        end
         extract_revision_info(svn_info)
       end
 
