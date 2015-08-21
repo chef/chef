@@ -66,6 +66,12 @@ class Chef
         end
       end
 
+      Enumerable.instance_methods.each do |method|
+        define_method method do |*args, &block|
+          as_simple_object.public_send(method, *args, &block)
+        end
+      end
+
       def is_a?(klass)
         highest_precedence.is_a?(klass) || super(klass)
       end
@@ -130,7 +136,6 @@ class Chef
         elsif self.is_a?(Array)
           merged_array[key]
         else
-          # this probably makes no sense at all
           return highest_precedence[key]
         end
       end
