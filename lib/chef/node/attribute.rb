@@ -59,6 +59,7 @@ class Chef
         end
 
         define_method :"#{component}=" do |value|
+          __deep_merge_cache.clear
           wrapped_object.public_send(:"#{component}=", value)
         end
       end
