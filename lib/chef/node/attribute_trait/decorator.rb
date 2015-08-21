@@ -8,6 +8,7 @@ class Chef
 
         attr_accessor :wrapped_object
 
+        # for performance we delegate Enumerable methods rather than implementing it
         Enumerable.instance_methods.each do |method|
           define_method method do |*args, &block|
             wrapped_object.public_send(method, *args, &block)

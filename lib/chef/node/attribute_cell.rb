@@ -66,6 +66,7 @@ class Chef
         end
       end
 
+      # for performance we delegate Enumerable methods rather than implementing it
       Enumerable.instance_methods.each do |method|
         define_method method do |*args, &block|
           as_simple_object.public_send(method, *args, &block)
