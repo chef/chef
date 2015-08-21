@@ -119,7 +119,7 @@ describe "Recipe DSL methods" do
             recipe = converge {
               backcompat_thingy 'blah' do; end
             }
-            expect(recipe.logged_warnings).to match(/Class Chef::Provider::BackcompatThingy does not declare 'resource_name :backcompat_thingy'./)
+            expect(recipe.logged_warnings).to match(/Class Chef::Provider::BackcompatThingy does not declare 'provides :backcompat_thingy'./)
             expect(BaseThingy.created_resource).not_to be_nil
           end
         end
