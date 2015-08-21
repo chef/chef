@@ -22,13 +22,13 @@ class Chef
         end
 
         def [](key)
-          #if __deep_merge_cache.regular_reader(__path) && __deep_merge_cache[key][:__deep_merge_cache]
-          #  return __deep_merge_cache[key].regular_reader(:__deep_merge_cache)
-          #end
+          cache = __deep_merge_cache.regular_reader(*__path)
+
+          cache_val = cache && cache[key] && cache[key][:__deep_merge_cache]
+          return cache_val if cache_val
 
           if is_a?(Chef::Node::Attribute)
             val = super
-            cache = __deep_merge_cache.regular_reader(*__path)
             cache[key] = Chef::Node::Mash.new(wrapped_object: {}) unless cache.include?(key)
             cache[key].regular_writer(:__deep_merge_cache, val)
             return val
