@@ -6,6 +6,51 @@ class Chef
       module DeepMergeCache
         include PathTracking
 
+        MUTATOR_METHODS = [
+          :<<,
+          :[]=,
+          :clear,
+          :collect!,
+          :compact!,
+          :default=,
+          :default_proc=,
+          :delete,
+          :delete_at,
+          :delete_if,
+          :fill,
+          :flatten!,
+          :insert,
+          :keep_if,
+          :map!,
+          :merge!,
+          :pop,
+          :push,
+          :update,
+          :reject!,
+          :reverse!,
+          :replace,
+          :select!,
+          :shift,
+          :slice!,
+          :sort!,
+          :sort_by!,
+          :uniq!,
+          :unshift
+        ]
+
+        MUTATOR_METHODS.each do |method|
+          define_method method do |*args|
+            if is_a?(Chef::Node::VividMash)
+              # FIXME: should probably add some kind of safe_regular_reader that doesn't rescue Exceptions
+              cache = __deep_merge_cache.regular_reader(*__path) rescue nil
+              if cache && cache[:__deep_merge_cache]
+                cache.delete(:__deep_merge_cache)
+              end
+            end
+            super(*args)
+          end
+        end
+
         attr_accessor :__deep_merge_cache
 
         def initialize(deep_merge_cache: nil, **args)
@@ -38,12 +83,14 @@ class Chef
         end
 
         def []=(key, value)
+          if is_a?(Chef::Node::VividMash)
+            # FIXME: should probably add some kind of safe_regular_reader that doesn't rescue Exceptions
+            cache = __deep_merge_cache.regular_reader(*__path) rescue nil
+            if cache && cache[key] && cache[key][:__deep_merge_cache]
+              cache[key].delete(:__deep_merge_cache)
+            end
+          end
           super
-#          if is_a?(Hash) && self.class.deep_merge_cache_invalidation
-#            unless key == :__deep_merge_cache
-#              self[:__deep_merge_cache] = nil
-#            end
-#          end
         end
 
         def new_decorator(**args)
