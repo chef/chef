@@ -5,9 +5,14 @@ class Chef
     class AttributeTrait
       module Decorator
         include Base
-        include Enumerable
 
         attr_accessor :wrapped_object
+
+        Enumerable.instance_methods.each do |method|
+          define_method method do |*args, &block|
+            wrapped_object.public_send(method, *args, &block)
+          end
+        end
 
         def initialize(wrapped_object: nil, **args)
           @wrapped_object = wrapped_object
