@@ -29,7 +29,7 @@ class Chef
             return cache_val if cache_val
 
             val = super
-            cache[key] = Chef::Node::Mash.new(wrapped_object: {}) unless cache.include?(key)
+            cache.regular_writer(key, {}) unless cache.include?(key)
             cache[key].regular_writer(:__deep_merge_cache, val)
             return val
           else
