@@ -65,7 +65,7 @@ class Chef
           pkg.stdout.each_line do |line|
             case line
             when /^#{new_resource.package_name}/
-              name, version = line.split(/[; ]/)[0].split(/-([^-]+)$/)
+              name, version = line.split(/[; ]/)[0].split(/-([^-]+)$/) if line =~ /.*[<=].*/
             end
           end
           @candidate_version = version
