@@ -28,7 +28,6 @@ class Chef
           wrapped_object.key?(convert_key(key))
         end
 
-        alias_method :include?, :key?
         alias_method :has_key?, :key?
         alias_method :member?, :key?
 
