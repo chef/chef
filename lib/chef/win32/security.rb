@@ -239,7 +239,7 @@ class Chef
         security_descriptor = FFI::MemoryPointer.new :pointer
         hr = GetNamedSecurityInfoW(path.to_wstring, type, info, nil, nil, nil, nil, security_descriptor)
         if hr != ERROR_SUCCESS
-          Chef::ReservedNames::Win32::Error.raise!("get_named_security_info(#{path}, #{type}, #{info})")
+          Chef::ReservedNames::Win32::Error.raise!("get_named_security_info(#{path}, #{type}, #{info})", hr)
         end
 
         result_pointer = security_descriptor.read_pointer
@@ -538,7 +538,7 @@ class Chef
 
         hr = SetNamedSecurityInfoW(path.to_wstring, type, security_information, owner, group, dacl, sacl)
         if hr != ERROR_SUCCESS
-          Chef::ReservedNames::Win32::Error.raise!
+          Chef::ReservedNames::Win32::Error.raise! nil, hr
         end
       end
 
