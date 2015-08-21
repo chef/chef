@@ -315,7 +315,7 @@ class Chef
         value = _pv_opts_lookup(opts, key)
         if !value.nil?
           callbacks.each do |message, zeproc|
-            if zeproc.call(value) != true
+            unless zeproc.call(value)
               raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} #{message}!"
             end
           end
