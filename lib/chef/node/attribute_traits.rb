@@ -1,5 +1,4 @@
 require 'chef/node/attribute_trait/autovivify'
-require 'chef/node/attribute_trait/base'
 require 'chef/node/attribute_trait/convert_value'
 require 'chef/node/attribute_trait/decorator'
 require 'chef/node/attribute_trait/deep_merge_cache'

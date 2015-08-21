@@ -1,11 +1,7 @@
-require 'chef/node/attribute_trait/base'
-
 class Chef
   class Node
     class AttributeTrait
       module Decorator
-        include Base
-
         attr_accessor :wrapped_object
 
         # for performance we delegate Enumerable methods rather than implementing it
