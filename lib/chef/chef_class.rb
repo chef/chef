@@ -52,6 +52,14 @@ class Chef
     #
     attr_reader :run_context
 
+    #
+    # Get the run context
+    #
+    # @return [Chef::Telemetry::Processor] telemetry processor for the chef-client run
+    #
+    attr_reader :telemetry_processor
+
+
     # Register an event handler with user specified block
     #
     # @return[Chef::EventDispatch::Base] handler object
@@ -115,6 +123,11 @@ class Chef
       result
     end
 
+
+   def telemetry
+     yield telemetry_processor
+   end
+
     #
     # Dependency Injection API (Private not Public)
     # [ in the ruby sense these have to be public methods, but they are
@@ -139,6 +152,14 @@ class Chef
     # @api private
     def set_provider_priority_map(provider_priority_map)
       @provider_priority_map = provider_priority_map
+    end
+    #
+    # Sets the telemetry object
+    #
+    # @api private
+    # @param telemetry_processor [Chef::Telemetry::Processor]
+    def set_telemetry_processor(telemetry_processor)
+      @telemetry_processor = telemetry_processor
     end
 
     #

@@ -25,6 +25,7 @@ require 'chef/log'
 require 'chef/config_fetcher'
 require 'chef/handler/error_report'
 require 'chef/workstation_config_loader'
+require 'chef/telemetry'
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
@@ -36,6 +37,12 @@ class Chef::Application::Client < Chef::Application
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
     :description => "The configuration file to use"
+
+  option :enable_telemetry,
+    :short => "-T",
+    :long  => "--enable-telemetry",
+    :default => false,
+    :description => "Enable chef telemetry subsystem"
 
   option :formatter,
     :short        => "-F FORMATTER",
@@ -371,6 +378,7 @@ class Chef::Application::Client < Chef::Application
 
     if !Chef::Config[:client_fork] || Chef::Config[:once]
       begin
+        Chef::Telemetry.init if Chef::Telemetry.enabled?
         # run immediately without interval sleep, or splay
         run_chef_client(Chef::Config[:specific_recipes])
       rescue SystemExit
@@ -399,6 +407,7 @@ class Chef::Application::Client < Chef::Application
         end
 
         @signal = nil
+        Chef::Telemetry.init if Chef::Telemetry.enabled?
         run_chef_client(Chef::Config[:specific_recipes])
 
         Chef::Application.exit!("Exiting", 0) if !Chef::Config[:interval]
