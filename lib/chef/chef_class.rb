@@ -125,7 +125,7 @@ class Chef
 
 
    def telemetry
-     yield telemetry_processor
+     yield telemetry_processor if block_given?
    end
 
     #

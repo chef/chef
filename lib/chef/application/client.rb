@@ -378,7 +378,6 @@ class Chef::Application::Client < Chef::Application
 
     if !Chef::Config[:client_fork] || Chef::Config[:once]
       begin
-        Chef::Telemetry.init if Chef::Telemetry.enabled?
         # run immediately without interval sleep, or splay
         run_chef_client(Chef::Config[:specific_recipes])
       rescue SystemExit
@@ -407,7 +406,6 @@ class Chef::Application::Client < Chef::Application
         end
 
         @signal = nil
-        Chef::Telemetry.init if Chef::Telemetry.enabled?
         run_chef_client(Chef::Config[:specific_recipes])
 
         Chef::Application.exit!("Exiting", 0) if !Chef::Config[:interval]

@@ -29,7 +29,11 @@ class Chef
     end
 
     def self.publishers
-      Chef::Config[:telemetry][:publish_using]
+      if Chef::Config[:telemetry][:publish_using].empty?
+        [ Chef::Telemetry::Publisher::Doc.new ]
+      else
+        Chef::Config[:telemetry][:publish_using]
+      end
     end
 
     def self.create_processor
@@ -38,14 +42,10 @@ class Chef
       publishers.each do |publisher|
         processor.add_publisher(publisher)
       end
-      if publishers.empty?
-        processor.add_publisher(Chef::Telemetry::Publisher::Doc.new)
-      end
-      Chef.set_telemetry_processor(processor)
       processor
     end
 
-    def self.init
+    def self.load
       processor = create_processor unless Chef.telemetry_processor
       if Chef::Config[:telemetry][:resource]
         gather_resource_metrics(processor)
@@ -56,6 +56,7 @@ class Chef
           processor.publish
         end
       end
+      Chef.set_telemetry_processor(processor)
     end
 
     def self.gather_resource_metrics(processor)

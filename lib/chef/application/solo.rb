@@ -24,7 +24,6 @@ require 'chef/daemon'
 require 'chef/log'
 require 'chef/rest'
 require 'chef/config_fetcher'
-require 'chef/telemetry'
 require 'fileutils'
 
 class Chef::Application::Solo < Chef::Application
@@ -243,7 +242,6 @@ class Chef::Application::Solo < Chef::Application
     if !Chef::Config[:client_fork] || Chef::Config[:once]
       # Run immediately without interval sleep or splay
       begin
-        Chef::Telemetry.init if Chef::Telemetry.enabled?
         run_chef_client(Chef::Config[:specific_recipes])
       rescue SystemExit
         raise
@@ -284,7 +282,6 @@ EOH
           sleep(sleep_sec)
         end
 
-        Chef::Telemetry.init if Chef::Telemetry.enabled?
         run_chef_client
         if !Chef::Config[:interval]
           Chef::Application.exit! "Exiting", 0
