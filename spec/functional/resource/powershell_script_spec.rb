@@ -227,6 +227,22 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       expect { resource.should_skip?(:run) }.to raise_error(ArgumentError, /guard_interpreter does not support blocks/)
     end
 
+    context "when dsc is supported", :windows_powershell_dsc_only do
+      it "can execute LCM configuration code" do
+        resource.code <<-EOF
+configuration LCM
+{
+  param ($thumbprint)
+  localconfigurationmanager
+  {
+    RebootNodeIfNeeded = $false
+    ConfigurationMode = 'ApplyOnly'
+  }
+}
+        EOF
+        expect { resource.run_action(:run) }.not_to raise_error
+      end
+    end
   end
 
   context "when running on a 32-bit version of Ruby", :ruby32_only do
