@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -302,7 +302,6 @@ class Chef
         @run_status = nil
         run_context = nil
         runlock.release
-        GC.start
       end
 
       # Raise audit, converge, and other errors here so that we exit
