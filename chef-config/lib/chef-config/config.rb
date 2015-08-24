@@ -524,6 +524,7 @@ module ChefConfig
     config_context :telemetry do
       default :resource, true
       default :recipe, true
+      default :cookbook, true
       default :gc, true
       default :process, true
       default :client_run, true

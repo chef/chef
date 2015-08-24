@@ -24,6 +24,21 @@ class Chef
   module Telemetry
     class Processor
       class Metric < Struct.new(:name, :hook, :value); end
+
+      def self.create(publishers)
+        processor = Chef::Telemetry::Processor.new
+        publishers.each do |publisher|
+          processor.add_publisher(publisher)
+        end
+        Chef.event_handler do
+          on :run_completed do
+            processor.gather
+            processor.publish
+          end
+        end
+        processor
+      end
+
       def initialize
         @metrics = []
         @publishers = []

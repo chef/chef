@@ -24,11 +24,13 @@ require 'chef/telemetry/publisher/doc'
 
 class Chef
   module Telemetry
-    def self.enabled?
+    extend self
+
+    def enabled?
       Chef::Config[:enable_telemetry]
     end
 
-    def self.publishers
+    def publishers
       if Chef::Config[:telemetry][:publish_using].empty?
         [ Chef::Telemetry::Publisher::Doc.new ]
       else
@@ -36,36 +38,42 @@ class Chef
       end
     end
 
-    def self.create_processor
-      Chef::Log.debug('Telemetry. Loading processor')
-      processor = Chef::Telemetry::Processor.new
-      publishers.each do |publisher|
-        processor.add_publisher(publisher)
-      end
-      processor
-    end
-
-    def self.load
-      processor = create_processor unless Chef.telemetry_processor
-      if Chef::Config[:telemetry][:resource]
-        gather_resource_metrics(processor)
-      end
-      Chef.event_handler do
-        on :run_completed do
-          processor.gather
-          processor.publish
+    def configure
+      builtin_metrics = []
+      %i(resource recipe gc process client_run cookbook).each do |metric|
+        if Chef::Config[:telemetry][metric]
+          Chef::Log.debug("Built-in metric #{metric} enabled")
+          builtin_metrics << metric
         end
       end
-      Chef.set_telemetry_processor(processor)
+      gather_builtin_metrics(builtin_metrics)
     end
 
-    def self.gather_resource_metrics(processor)
-      processor.add_metric 'resource' do
-        metric = {}
-        Chef.run_context.resource_collection.all_resources.each do |r|
-          metric["#{r.resource_name}[#{r.name}]"] = r.elapsed_time
+    def load
+      unless Chef.telemetry_processor
+        processor = Chef::Telemetry::Processor.create(publishers)
+        Chef.set_telemetry_processor(processor)
+      end
+      configure
+    end
+
+    def gather_builtin_metrics(metrics)
+      Chef.telemetry do |meter|
+        meter.add_metric 'builtin' do
+          resource_metric = {}
+          cookbook_metric = Hash.new(0)
+          recipe_metric = Hash.new(0)
+          Chef.run_context.resource_collection.all_resources.each do |r|
+            resource_metric["#{r.resource_name}[#{r.name}]"] = r.elapsed_time if metrics.include?(:resource)
+            cookbook_metric[r.cookbook_name] += r.elapsed_time if metrics.include?(:cookbook)
+            recipe_metric["#{r.cookbook_name}::#{r.recipe_name}"] += r.elapsed_time if metrics.include?(:recipe)
+          end
+          value = {}
+          value['resource'] = resource_metric if metrics.include?(:resource)
+          value['cookbook'] = cookbook_metric if metrics.include?(:cookbook)
+          value['recipe'] = recipe_metric if metrics.include?(:recipe)
+          value
         end
-        metric
       end
     end
   end
