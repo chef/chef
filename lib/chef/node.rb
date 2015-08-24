@@ -260,7 +260,7 @@ class Chef
       Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
       consume_attributes(json_cli_attrs)
 
-      self.automatic_attrs = ohai_data
+      wrap_automatic_attrs(ohai_data)
 
       platform, version = Chef::Platform.find_platform_and_version(self)
       Chef::Log.debug("Platform is #{platform} version #{version}")

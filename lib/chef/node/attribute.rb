@@ -64,6 +64,11 @@ class Chef
         end
       end
 
+      def wrap_automatic_attrs(value)
+        __deep_merge_cache.clear
+        wrapped_object.wrap_automatic_attrs(value)
+      end
+
       def combined_default
         wrapped_object.combined_default
       end

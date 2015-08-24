@@ -66,6 +66,16 @@ class Chef
         end
       end
 
+      def wrap_automatic_attrs(value)
+        @automatic = Chef::Node::VividMash.new(
+          wrapped_object: value,
+          precedence: :automatic,
+          node: __node,
+          deep_merge_cache: __deep_merge_cache,
+          convert_value: false
+        )
+      end
+
       # for performance we delegate Enumerable methods rather than implementing it
       Enumerable.instance_methods.each do |method|
         define_method method do |*args, &block|
@@ -121,6 +131,15 @@ class Chef
 
       def to_s
         as_simple_object.to_s
+      end
+
+      # perf
+      def key?(key)
+        if self.is_a?(Hash)
+          merged_hash_has_key?(key)
+        else
+          as_simple_object.key?(key)
+        end
       end
 
       def method_missing(method, *args, &block)
@@ -251,6 +270,15 @@ class Chef
           # in normal usage we never wrap non-containers, so this should never happen
           highest_precedence
         end
+      end
+
+      def merged_hash_has_key?(key)
+        COMPONENTS_AS_SYMBOLS.reverse.each do |component|
+          hash = instance_variable_get(:"@#{component}")
+          next unless hash.is_a?(Hash)
+          return true if hash.key?(key)
+        end
+        return false
       end
 
       def merged_hash_key(key)

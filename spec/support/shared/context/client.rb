@@ -11,11 +11,11 @@ shared_context "client" do
 
   let(:ohai_data) do
     {
-      :fqdn =>             fqdn,
-      :hostname =>         hostname,
-      :machinename =>      machinename,
-      :platform =>         platform,
-      :platform_version => platform_version
+      'fqdn' =>             fqdn,
+      'hostname' =>         hostname,
+      'machinename' =>      machinename,
+      'platform' =>         platform,
+      'platform_version' => platform_version
     }
   end
 

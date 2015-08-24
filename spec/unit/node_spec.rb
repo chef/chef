@@ -786,7 +786,7 @@ describe Chef::Node do
   describe "consuming json" do
 
     before do
-      @ohai_data = {:platform => 'foo', :platform_version => 'bar'}
+      @ohai_data = {'platform' => 'foo', 'platform_version' => 'bar'}
     end
 
     it "consumes the run list portion of a collection of attributes and returns the remainder" do
@@ -878,7 +878,7 @@ describe Chef::Node do
 
   describe "preparing for a chef client run" do
     before do
-      @ohai_data = {:platform => 'foobuntu', :platform_version => '23.42'}
+      @ohai_data = {'platform' => 'foobuntu', 'platform_version' => '23.42'}
     end
 
     it "sets its platform according to platform detection" do
