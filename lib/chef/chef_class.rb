@@ -158,8 +158,8 @@ class Chef
     #
     # @api private
     # @param telemetry_processor [Chef::Telemetry::Processor]
-    def set_telemetry_processor(telemetry_processor)
-      @telemetry_processor = telemetry_processor
+    def set_telemetry_processor(processor)
+      @telemetry_processor = processor
     end
 
     #
