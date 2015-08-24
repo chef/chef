@@ -25,7 +25,6 @@ require 'chef/log'
 require 'chef/config_fetcher'
 require 'chef/handler/error_report'
 require 'chef/workstation_config_loader'
-require 'chef/telemetry'
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut

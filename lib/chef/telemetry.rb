@@ -38,15 +38,10 @@ class Chef
       end
     end
 
-    def configure
-      builtin_metrics = []
-      %i(resource recipe gc process client_run cookbook).each do |metric|
-        if Chef::Config[:telemetry][metric]
-          Chef::Log.debug("Built-in metric #{metric} enabled")
-          builtin_metrics << metric
-        end
+    def enabled_builtin_metrics
+      %i(resource recipe gc process client_run cookbook).select do |metric|
+        Chef::Config[:telemetry][metric]
       end
-      gather_builtin_metrics(builtin_metrics)
     end
 
     def load
@@ -54,10 +49,11 @@ class Chef
         processor = Chef::Telemetry::Processor.create(publishers)
         Chef.set_telemetry_processor(processor)
       end
-      configure
+      gather_builtin_metrics
     end
 
-    def gather_builtin_metrics(metrics)
+    def gather_builtin_metrics
+      metrics = enabled_builtin_metrics
       Chef.telemetry do |meter|
         meter.add_metric 'builtin' do
           resource_metric = {}
