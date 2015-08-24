@@ -19,6 +19,7 @@
 require 'spec_helper'
 require 'chef/mixin/shell_out'
 require 'chef/mixin/windows_architecture_helper'
+require 'support/shared/integration/integration_helper'
 
 describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   include Chef::Mixin::WindowsArchitectureHelper
@@ -377,5 +378,94 @@ EOH
     it_behaves_like 'a dsc_script with configuration data that uses environment variables'
     it_behaves_like 'a dsc_script with configuration data that takes parameters'
     it_behaves_like 'a dsc_script without configuration data that takes parameters'
+  end
+
+  context 'when using ps_credential' do
+    include IntegrationSupport
+
+    before(:each) do
+      delete_user(dsc_user)
+      ohai_reader = Ohai::System.new
+      ohai_reader.all_plugins(["platform", "os", "languages/powershell"])
+      dsc_test_run_context.node.consume_external_attrs(ohai_reader.data,{})
+    end
+
+    let(:configuration_data_path) { 'C:\\configurationdata.psd1' }
+
+    let(:self_signed_cert_path) do
+      File.join(CHEF_SPEC_DATA, 'dsc_lcm.pfx')
+    end
+
+    let(:dsc_configuration_script) do
+      <<-MYCODE
+cd c:\\
+configuration LCM
+{
+  param ($thumbprint)
+  localconfigurationmanager
+  {
+    RebootNodeIfNeeded = $false
+    ConfigurationMode = 'ApplyOnly'
+    CertificateID = $thumbprint
+  }
+}
+$cert = ls Cert:\\LocalMachine\\My\\ |
+  Where-Object {$_.Subject -match "ChefTest"} |
+  Select -first 1
+
+if($cert -eq $null) {
+  $pfxpath = '#{self_signed_cert_path}'
+  $password = ''
+  $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($pfxpath, $password, ([System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::PersistKeySet -bor [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::MachineKeyset))
+  $store = New-Object System.Security.Cryptography.X509Certificates.X509Store "My", ([System.Security.Cryptography.X509Certificates.StoreLocation]::LocalMachine)
+  $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite)
+  $store.Add($cert)
+  $store.Close()
+}
+
+lcm -thumbprint $cert.thumbprint
+set-dsclocalconfigurationmanager -path ./LCM  
+$ConfigurationData = @"
+@{
+AllNodes = @( 
+  @{  
+  NodeName = "localhost"; 
+  CertificateID = '$($cert.thumbprint)';
+  };
+);
+}
+"@
+$ConfigurationData | out-file '#{configuration_data_path}' -force
+  MYCODE
+    end
+
+    let(:powershell_script_resource) do
+      Chef::Resource::PowershellScript.new('configure-lcm', dsc_test_run_context).tap do |r|
+        r.code(dsc_configuration_script)
+        r.architecture(:x86_64)
+      end
+    end
+
+    let(:dsc_script_resource) do
+      dsc_test_resource_base.tap do |r|
+        r.code <<-EOF
+User dsctestusercreate
+{
+    UserName = '#{dsc_user}'
+    Password = #{r.ps_credential('jf9a8m49jrajf4#')}
+    Ensure = "Present"
+}
+EOF
+        r.configuration_data_script(configuration_data_path)
+      end
+    end
+
+    it 'allows the use of ps_credential' do
+      expect(user_exists?(dsc_user)).to eq(false)
+      powershell_script_resource.run_action(:run)
+      expect(File).to exist(configuration_data_path)
+      dsc_script_resource.run_action(:run)
+      expect(user_exists?(dsc_user)).to eq(true)
+    end
   end
 end
