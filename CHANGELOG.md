@@ -49,6 +49,7 @@
 * [pr#3687](https://github.com/chef/chef/pull/3687) Add formatter and force-logger/formatter options to chef-apply
 * [pr#3768](https://github.com/chef/chef/pull/3768) Make reboot\_pending? look for CBS RebootPending
 * [pr#3815](https://github.com/chef/chef/pull/3815) Fix `powershell_script` validation to use correct architecture
+* [pr#3772](https://github.com/chef/chef/pull/3772) Add `ps_credential` dsl method to `dsc_script`
 
 ## 12.4.1
 
