@@ -32,7 +32,7 @@ class Chef
         elsif time < 3600 then  
           message = Time.at(time).utc.strftime("%M minutes %S seconds")
         else
-          message = Time.at(time).utc.strftime("%H hour %M minutes %S seconds")
+          message = Time.at(time).utc.strftime("%H hours %M minutes %S seconds")
         end
         message
       end
