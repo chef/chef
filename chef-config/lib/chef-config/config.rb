@@ -526,7 +526,7 @@ module ChefConfig
       default :recipe, true
       default :cookbook, true
       default :gc, true
-      default :process, true
+      default :process, false
       default :client_run, true
       default :publish_using, []
     end
