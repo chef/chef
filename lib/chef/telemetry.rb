@@ -27,7 +27,7 @@ class Chef
     extend self
 
     def enabled?
-      Chef::Config[:enable_telemetry]
+      !! Chef::Config[:enable_telemetry]
     end
 
     def publishers
