@@ -17,10 +17,12 @@
 #
 
 require 'chef/exceptions'
+require 'chef/dsl/powershell'
 
 class Chef
   class Resource
     class DscScript < Chef::Resource
+      include Chef::DSL::Powershell
 
       provides :dsc_script, os: "windows"
 

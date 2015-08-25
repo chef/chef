@@ -70,6 +70,10 @@ describe Chef::Resource::DscScript do
       expect(dsc_test_resource.configuration_data_script).to eq(configuration_data_script)
     end
 
+    it "has the ps_credential helper method" do
+      expect(dsc_test_resource).to respond_to(:ps_credential)
+    end
+
     context "when calling imports" do
       let(:module_name)   { 'FooModule' }
       let(:module_name_b)   { 'BarModule' }
