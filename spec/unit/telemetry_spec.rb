@@ -26,7 +26,7 @@ describe Chef::Telemetry do
     it 'resturns list of publishers if any of them are assigned' do
       Chef::Config.reset!
       expect(Chef::Telemetry.publishers.size).to be(1)
-      expect(Chef::Telemetry.publishers.first).to be_kind_of(Chef::Telemetry::Publisher::Doc)
+      expect(Chef::Telemetry.publishers.first).to be_kind_of(Chef::Telemetry::Publisher::Log)
     end
 
     it 'resturns list with only doc publisher if none of them are assigned' do
