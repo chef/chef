@@ -20,7 +20,7 @@
 # Telemetry class provides API for chef run related metrics gathering
 #
 require 'chef/telemetry/processor'
-require 'chef/telemetry/publisher/doc'
+require 'chef/telemetry/publisher/log'
 
 class Chef
   module Telemetry
@@ -32,7 +32,7 @@ class Chef
 
     def publishers
       if Chef::Config[:telemetry][:publish_using].empty?
-        [ Chef::Telemetry::Publisher::Doc.new ]
+        [ Chef::Telemetry::Publisher::Log.new ]
       else
         Chef::Config[:telemetry][:publish_using]
       end

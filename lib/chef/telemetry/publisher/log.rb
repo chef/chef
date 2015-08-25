@@ -24,7 +24,7 @@ require 'pp'
 class Chef
   module Telemetry
     module Publisher
-      class Doc
+      class Log
         def publish(metrics)
           desc = "Telemetry Data:"
           metrics.each do |metric|
