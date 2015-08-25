@@ -27,6 +27,10 @@ describe "Chef class" do
     node
   end
 
+  let(:processor) do
+    Chef::Telemetry::Processor.new
+  end
+
   let(:run_context) do
     Chef::RunContext.new(node, nil, nil)
   end
@@ -44,6 +48,7 @@ describe "Chef class" do
     Chef.set_node(node)
     Chef.set_resource_priority_map(resource_priority_map)
     Chef.set_provider_priority_map(provider_priority_map)
+    Chef.set_telemetry_processor(processor)
   end
 
   after do
@@ -109,6 +114,14 @@ describe "Chef class" do
           end
         end
       end.to raise_error(Chef::Exceptions::InvalidEventType)
+    end
+  end
+
+  context '#telemetry' do
+    it 'returns the injected telemetry processor object' do
+      Chef.telemetry do |meter|
+        expect(meter).to eq(processor)
+      end
     end
   end
 end
