@@ -1,6 +1,18 @@
 # Chef Client Release Notes 12.5.0:
 * OSX 10.11 support (support for SIP and service changes)
 
+## New `knife rehash` for faster command loading
+
+The new `knife rehash` command speeds up day-to-day knife usage by
+caching information about installed plugins and available commands.
+Initial testing has shown substantial improvements in `knife` startup
+times for users with a large number of Gems installed and Windows
+users.
+
+To use this feature, simply run `knife rehash` and continue using
+`knife`.  When you install or remove gems that provide knife plugins,
+run `knife rehash` again to keep the cache up to date.
+
 ## Support for `/usr/bin/yum-deprecated` in the yum provider
 
 In Fedora 22 yum has been deprecated in favor of DNF.  Unfortunately, while DNF tries to be backwards
