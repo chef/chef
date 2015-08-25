@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,10 @@ class Chef
 
       include Chef::Mixin::Command
 
+      def supports
+        @supports ||= new_resource.supports.dup
+      end
+
       def initialize(new_resource, run_context)
         super
         @enabled = nil
@@ -32,6 +36,12 @@ class Chef
 
       def whyrun_supported?
         true
+      end
+
+      def load_current_resource
+        supports[:status] = false if supports[:status].nil?
+        supports[:reload] = false if supports[:reload].nil?
+        supports[:restart] = false if supports[:restart].nil?
       end
 
      def load_new_resource_state
@@ -50,7 +60,7 @@ class Chef
 
       def define_resource_requirements
        requirements.assert(:reload) do |a|
-         a.assertion { @new_resource.supports[:reload] || @new_resource.reload_command }
+         a.assertion { supports[:reload] || @new_resource.reload_command }
          a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
          # if a service is not declared to support reload, that won't
          # typically change during the course of a run - so no whyrun

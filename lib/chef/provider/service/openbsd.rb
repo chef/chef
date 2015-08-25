@@ -40,11 +40,12 @@ class Chef
           @rc_conf = ::File.read(RC_CONF_PATH) rescue ''
           @rc_conf_local = ::File.read(RC_CONF_LOCAL_PATH) rescue ''
           @init_command = ::File.exist?(rcd_script_path) ? rcd_script_path : nil
-          new_resource.supports[:status] = true
           new_resource.status_command("#{default_init_command} check")
         end
 
         def load_current_resource
+          supports[:status] = true if supports[:status].nil?
+
           @current_resource = Chef::Resource::Service.new(new_resource.name)
           current_resource.service_name(new_resource.service_name)
 
