@@ -19,15 +19,19 @@
 #
 # Telemtry::Publisher::Doc class prints telemetry data using Chef::Log API
 #
+require 'pp'
 
 class Chef
   module Telemetry
     module Publisher
       class Doc
         def publish(metrics)
+          desc = "Telemetry Data:"
           metrics.each do |metric|
-            Chef::Log.warn("Telemetry[#{metric.name}]  Value: #{metric.value.inspect}")
+            desc << "\nMetric[#{metric.name}]\t Value: "
+            desc << PP.pp(metric.value, "")
           end
+          Chef::Log.info(desc)
         end
       end
     end
