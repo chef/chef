@@ -23,6 +23,7 @@
   [pr#3704](https://github.com/chef/chef/pull/3704): Add SIP (OS X 10.11) support
 * [**Phil Dibowitz**](https://github.com/jaymzh):
 
+* [pr#3799](https://github.com/chef/chef/pull/3799) fix supports hash issues in service providers
 * [pr#3817](https://github.com/chef/chef/pull/3817) Remove now-useless forcing of ruby Garbage Collector run
 * [pr#3805](https://github.com/chef/chef/pull/3805) LWRP parameter validators should use truthiness
 * [pr#3774](https://github.com/chef/chef/pull/3774) Add support for yum-deprecated in yum provider
