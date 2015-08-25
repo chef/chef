@@ -6,6 +6,37 @@ Example Doc Change:
 Description of the required change.
 -->
 
+### PSCredential Support for `dsc_script`
+
+`dsc_script` now supports the use of `ps_credential` to create a PSCredential
+object similar to `dsc_resource`. The `ps_credential` helper function takes in
+a string and when `to_s` is called on it, produces an object that can be embedded
+in your `dsc_script`. For example, you can write:
+
+```ruby
+dsc_script 'create-foo-user' do
+  code <<-EOH
+     User FooUser
+     {
+       UserName = 'FooUser'
+       Password = #{ps_credential('FooBarBaz1!')}
+     }
+  EOH
+  configuration_data <<-EOH
+    @{
+      AllNodes = @(
+        @{
+          NodeName = "localhost";
+          CertificateID = 'A8DB81D8059F349F7EF19104399B898F701D4167'
+        }
+      )
+    }
+  EOH
+end
+```
+
+Note, you still need to configure the CertificateID in the LCM.
+
 ### chef-client -j JSON
 Add to the [description of chef-client options](https://docs.chef.io/ctl_chef_client.html#options):
 
