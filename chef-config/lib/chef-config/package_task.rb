@@ -24,7 +24,7 @@ module ChefConfig
   class PackageTask < Rake::TaskLib
 
     # Full path to root of top-level repository.  All other files (like VERSION or
-    # lib/<module_path_name>/version.rb are rooted at this path).
+    # lib/<module_path>/version.rb are rooted at this path).
     attr_accessor :root_path
 
     # Name of the top-level module/library build built.  This is used to define
@@ -39,12 +39,12 @@ module ChefConfig
     attr_accessor :component_paths
 
     # This is the module name as it appears on the path "lib/module/".
-    # e.g. for module_name  "ChefDK", you'd want module_path_name to be "chef-dk".
+    # e.g. for module_name  "ChefDK", you'd want module_path to be "chef-dk".
     # The default is module_name but lower-cased.
-    attr_writer :module_path_name
+    attr_writer :module_path
 
-    def module_path_name
-      @module_path_name || module_name.downcase
+    def module_path
+      @module_path || module_name.downcase
     end
 
     # Path to a VERSION file with a single string that contains the package version.
@@ -69,7 +69,7 @@ module ChefConfig
       @root_path = root_path
       @module_name = module_name
       @component_paths = []
-      @module_path_name = nil
+      @module_path = nil
       @version_file_path = 'VERSION'
       @package_dir = 'pkg'
       @git_remote = 'origin'
@@ -81,7 +81,7 @@ module ChefConfig
     end
 
     def version_rb_path
-      File.expand_path("lib/#{module_path_name}/version.rb", root_path)
+      File.expand_path("lib/#{module_path}/version.rb", root_path)
     end
 
     def version
@@ -149,7 +149,7 @@ module ChefConfig
         end
       end
 
-      desc 'Regenerate lib/#{@module_path_name}/version.rb from VERSION file'
+      desc 'Regenerate lib/#{@module_path}/version.rb from VERSION file'
       task :version => :update_components_versions do
         contents = <<-VERSION_RB
 # Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
@@ -197,16 +197,16 @@ end
         end
       end
 
-      desc "Build and install a #{module_path_name} gem"
+      desc "Build and install a #{module_path} gem"
       task :install => [:package] do
         with_clean_env do
-          module_path = File.join(full_package_dir, module_path_name)
-          sh %{gem install #{module_path}-#{version}.gem --no-rdoc --no-ri}
+          full_module_path = File.join(full_package_dir, module_path)
+          sh %{gem install #{full_module_path}-#{version}.gem --no-rdoc --no-ri}
         end
       end
 
       task :uninstall do
-        sh %{gem uninstall #{module_path_name} -x -v #{version} }
+        sh %{gem uninstall #{module_path} -x -v #{version} }
       end
 
       desc 'Build it, tag it and ship it'
