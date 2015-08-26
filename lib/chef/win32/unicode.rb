@@ -53,3 +53,30 @@ class String
     Chef::ReservedNames::Win32::Unicode.utf8_to_wide(self)
   end
 end
+
+# https://bugs.ruby-lang.org/issues/11439
+if RUBY_VERSION =~ /^2\.1/
+  module Win32
+    class Registry
+      def write(name, type, data)
+        case type
+        when REG_SZ, REG_EXPAND_SZ
+          data = data.to_s.encode(WCHAR) + WCHAR_NUL
+        when REG_MULTI_SZ
+          data = data.to_a.map {|s| s.encode(WCHAR)}.join(WCHAR_NUL) << WCHAR_NUL << WCHAR_NUL
+        when REG_BINARY
+          data = data.to_s
+        when REG_DWORD
+          data = API.packdw(data.to_i)
+        when REG_DWORD_BIG_ENDIAN
+          data = [data.to_i].pack('N')
+        when REG_QWORD
+          data = API.packqw(data.to_i)
+        else
+          raise TypeError, "Unsupported type #{type}"
+        end
+        API.SetValue(@hkey, name, type, data, data.bytesize)
+      end
+    end
+  end
+end
