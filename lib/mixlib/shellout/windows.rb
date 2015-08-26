@@ -19,19 +19,14 @@
 #
 
 require 'win32/process'
-require 'windows/handle'
-require 'windows/process'
-require 'windows/synchronize'
-
 require 'mixlib/shellout/windows/core_ext'
 
 module Mixlib
   class ShellOut
     module Windows
 
-      include ::Windows::Handle
-      include ::Windows::Process
-      include ::Windows::Synchronize
+      include Process::Functions
+      include Process::Constants
 
       TIME_SLICE = 0.05
 
