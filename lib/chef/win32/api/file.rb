@@ -462,6 +462,13 @@ BOOL WINAPI DeviceIoControl(
 #);
         safe_attach_function :SetVolumeMountPointW, [:LPCTSTR, :LPCTSTR], :BOOL
 
+#BOOL WINAPI GetVolumeNameForVolumeMountPoint(
+  #_In_  LPCTSTR lpszVolumeMountPoint,
+  #_Out_ LPTSTR  lpszVolumeName,
+  #_In_  DWORD   cchBufferLength
+#);
+        safe_attach_function :GetVolumeNameForVolumeMountPointW, [:LPCTSTR, :LPTSTR, :DWORD], :BOOL
+
         ###############################################
         # Helpers
         ###############################################

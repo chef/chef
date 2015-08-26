@@ -35,11 +35,10 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
   end
 
   def device
-    buffer = 0.chr * 256
-    if GetVolumeNameForVolumeMountPoint(@name, buffer, buffer.size)
-      return buffer[0,buffer.size].unpack("Z*")[0]
-    else
-      raise ArgumentError, get_last_error
+    begin
+      Chef::ReservedNames::Win32::File.get_volume_name_for_volume_mount_point(@name)
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
   end
 

@@ -192,6 +192,13 @@ class Chef
         end
       end
 
+      def self.get_volume_name_for_volume_mount_point(mount_point)
+        buffer = FFI::MemoryPointer.new(2, 128)
+        unless GetVolumeNameForVolumeMountPointW(wstring(mount_point), buffer, buffer.size/buffer.type_size)
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+        buffer.read_wstring
+      end
 
       # ::File compat
       class << self
