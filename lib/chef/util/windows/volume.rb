@@ -22,16 +22,16 @@ require 'chef/win32/api/file'
 require 'chef/util/windows'
 
 class Chef::Util::Windows::Volume < Chef::Util::Windows
-  public
+  attr_reader :mount_point
 
   def initialize(name)
     name += "\\" unless name =~ /\\$/ #trailing slash required
-    @name = name
+    @mount_point = name
   end
 
   def device
     begin
-      Chef::ReservedNames::Win32::File.get_volume_name_for_volume_mount_point(@name)
+      Chef::ReservedNames::Win32::File.get_volume_name_for_volume_mount_point(mount_point)
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -39,7 +39,7 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
 
   def delete
     begin
-      Chef::ReservedNames::Win32::File.delete_volume_mount_point(@name)
+      Chef::ReservedNames::Win32::File.delete_volume_mount_point(mount_point)
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -47,9 +47,13 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
 
   def add(args)
     begin
-      Chef::ReservedNames::Win32::File.set_volume_mount_point(@name, args[:remote])
+      Chef::ReservedNames::Win32::File.set_volume_mount_point(mount_point, args[:remote])
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
+  end
+
+  def mount_point
+    @mount_point
   end
 end
