@@ -186,6 +186,13 @@ class Chef
         end
       end
 
+      def self.set_volume_mount_point(mount_point, name)
+        unless SetVolumeMountPointW(wstring(mount_point), wstring(name))
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+      end
+
+
       # ::File compat
       class << self
         alias :stat :info

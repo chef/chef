@@ -52,8 +52,10 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
   end
 
   def add(args)
-    unless SetVolumeMountPoint(@name, args[:remote])
-      raise ArgumentError, get_last_error
+    begin
+      Chef::ReservedNames::Win32::File.set_volume_mount_point(@name, args[:remote])
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
   end
 end

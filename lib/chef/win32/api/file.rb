@@ -456,6 +456,12 @@ BOOL WINAPI DeviceIoControl(
 #);
         safe_attach_function :DeleteVolumeMountPointW, [:LPCTSTR], :BOOL
 
+#BOOL WINAPI SetVolumeMountPoint(
+  #_In_ LPCTSTR lpszVolumeMountPoint,
+  #_In_ LPCTSTR lpszVolumeName
+#);
+        safe_attach_function :SetVolumeMountPointW, [:LPCTSTR, :LPCTSTR], :BOOL
+
         ###############################################
         # Helpers
         ###############################################
