@@ -20,12 +20,16 @@
 require 'chef/win32/api/file'
 require 'chef/win32/api/security'
 require 'chef/win32/error'
+require 'chef/mixin/wstring'
 
 class Chef
   module ReservedNames::Win32
     class File
       include Chef::ReservedNames::Win32::API::File
       extend Chef::ReservedNames::Win32::API::File
+
+      include Chef::Mixin::WideString
+      extend Chef::Mixin::WideString
 
       # Creates a symbolic link called +new_name+ for the file or directory
       # +old_name+.
@@ -174,6 +178,12 @@ class Chef
 
         Chef::ReservedNames::Win32::Security.access_check(security_descriptor, duplicate_token, 
                                                           desired_access, mapping)
+      end
+
+      def self.delete_volume_mount_point(mount_point)
+        unless DeleteVolumeMountPointW(wstring(mount_point))
+          Chef::ReservedNames::Win32::Error.raise!
+        end
       end
 
       # ::File compat

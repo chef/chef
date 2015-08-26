@@ -18,6 +18,7 @@
 
 #simple wrapper around Volume APIs. might be possible with WMI, but possibly more complex.
 
+require 'chef/win32/api/file'
 require 'chef/util/windows'
 require 'windows/volume'
 
@@ -25,9 +26,6 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
 
   private
   include Windows::Volume
-  #XXX not defined in the current windows-pr release
-  DeleteVolumeMountPoint =
-    Windows::API.new('DeleteVolumeMountPoint', 'S', 'B') unless defined? DeleteVolumeMountPoint
 
   public
 
@@ -46,8 +44,10 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
   end
 
   def delete
-    unless DeleteVolumeMountPoint.call(@name)
-      raise ArgumentError, get_last_error
+    begin
+      Chef::ReservedNames::Win32::File.delete_volume_mount_point(@name)
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
   end
 
