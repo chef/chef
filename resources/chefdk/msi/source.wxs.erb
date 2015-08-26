@@ -39,6 +39,9 @@
                 <Environment Id="Environment"
                              Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATIONBIN]" />
               </Component>
+              <Component Id="StartChefDk" Guid="{A8378BA1-85D7-4F11-B1C0-52BF84B4730A}" >
+                <File Id="StartChefDkScript" Source="Resources\assets\start-chefdk.ps1" KeyPath="yes" />
+              </Component>
             </Directory>
             <Directory Id="PSMODULES" Name="modules" >
               <Directory Id="PSMODULESCHEF" Name="chef" >
@@ -62,19 +65,30 @@
           </Directory>
         </Directory>
       </Directory>
+      
+      <Directory Id="ProgramMenuFolder">
+        <Component Id="StartMenuShortcut" Guid="{6DD3FFF3-E009-40E7-B1C2-EF606B941CCD}">
+            <Shortcut Id="StartMenuShortcutDef" 
+                      Name="!(loc.ChefDkStartMenuShortcutDefName)"
+                      Description="!(loc.ChefDkStartMenuShortcutDefDescription)"
+                      Target="[#StartChefDkScript]"/>
+        </Component>
+      </Directory>
     </Directory>
 
     <!-- Set the components defined in our fragment files that will be used for our feature  -->
     <Feature Id="ChefDkFeature" Title="!(loc.FeatureMainName)" Absent="disallow" AllowAdvertise="no" Level="1" ConfigurableDirectory="INSTALLLOCATION">
       <ComponentGroupRef Id="ProjectDir" />
       <ComponentRef Id="ChefDkPath" />
-    </Feature>
-
-    <Feature Id="ChefPSModuleFeature" Title="!(loc.FeaturePSModuleName)" Level="1000" AllowAdvertise="no">
       <ComponentRef Id="ChefPSModuleFile" />
       <ComponentRef Id="ChefPSModulePath" />
     </Feature>
 
+    <Feature Id="ChefDkStartMenuShortcutFeature" Title="!(loc.FeatureChefDkStartMenuShortcut)" Description="!(loc.FeatureChefDkStartMenuShortcutDescription)" Level="1" AllowAdvertise="no" >
+      <ComponentRef Id="StartChefDk" />
+      <ComponentRef Id="StartMenuShortcut" />
+    </Feature>
+ 
     <Feature Id="ChefDkEnvHacks" Title="!(loc.FeatureChefDkEnvHacks)" Description="!(loc.FeatureChefDkEnvHacksDesc)" Level="1000" AllowAdvertise="no">
       <ComponentRef Id="ChefDkEnvHacks" />
     </Feature>
