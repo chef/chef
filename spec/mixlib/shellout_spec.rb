@@ -1075,6 +1075,16 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { "fd = File.for_fd(#{@test_file.to_i}) rescue nil; if fd; fd.seek(0); puts fd.read(5); end" }
 
         it "should not see file descriptors of the parent" do
+          # The reason this test goes through the effor of writing out
+          # a file and checking the contents along side the presence of
+          # a file descriptor is because on Windows, we're seeing that
+          # a there is a file descriptor present, but it's not the same
+          # file. That means that if we just check for the presence of
+          # a file descriptor, the test would fail as that slot would
+          # have something.
+          #
+          # See https://github.com/chef/mixlib-shellout/pull/103
+          #
           expect(stdout.chomp).not_to eql("hello")
         end
       end
