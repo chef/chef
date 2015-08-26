@@ -20,6 +20,15 @@
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 module ChefConfig
+  CHEFCONFIG_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
   VERSION = '12.5.0.current.0'
 end
 
+#
+# NOTE: the Chef::Version class is defined in version_class.rb
+#
+# NOTE: DO NOT Use the Chef::Version class on ChefConfig::VERSIONs.  The
+#       Chef::Version class is for _cookbooks_ only, and cannot handle
+#       pre-release versions like "10.14.0.rc.2".  Please use Rubygem's
+#       Gem::Version class instead.
+#
