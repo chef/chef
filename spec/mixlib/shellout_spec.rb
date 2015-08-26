@@ -1064,16 +1064,28 @@ describe Mixlib::ShellOut do
       context 'with open files for parent process' do
         before do
           @test_file = Tempfile.new('fd_test')
+          @test_file.write("hello")
+          @test_file.flush
         end
 
         after do
           @test_file.close if @test_file
         end
 
-        let(:ruby_code) { "fd = File.for_fd(#{@test_file.to_i}) rescue nil; puts fd.nil?" }
+        let(:ruby_code) { "fd = File.for_fd(#{@test_file.to_i}) rescue nil; if fd; fd.seek(0); puts fd.read(5); end" }
 
         it "should not see file descriptors of the parent" do
-          expect(stdout.chomp).to eql("true")
+          # The reason this test goes through the effor of writing out
+          # a file and checking the contents along side the presence of
+          # a file descriptor is because on Windows, we're seeing that
+          # a there is a file descriptor present, but it's not the same
+          # file. That means that if we just check for the presence of
+          # a file descriptor, the test would fail as that slot would
+          # have something.
+          #
+          # See https://github.com/chef/mixlib-shellout/pull/103
+          #
+          expect(stdout.chomp).not_to eql("hello")
         end
       end
 
