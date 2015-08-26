@@ -20,13 +20,8 @@
 
 require 'chef/win32/api/file'
 require 'chef/util/windows'
-require 'windows/volume'
 
 class Chef::Util::Windows::Volume < Chef::Util::Windows
-
-  private
-  include Windows::Volume
-
   public
 
   def initialize(name)
