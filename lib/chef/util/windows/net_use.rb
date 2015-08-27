@@ -24,59 +24,7 @@ require 'chef/util/windows'
 require 'chef/win32/net'
 
 class Chef::Util::Windows::NetUse < Chef::Util::Windows
-
-  private
-
-  USE_NOFORCE = 0
-  USE_FORCE = 1
-  USE_LOTS_OF_FORCE = 2 #every windows API should support this flag
-
-  USE_INFO_2 = [
-    [:local, nil],
-    [:remote, nil],
-    [:password, nil],
-    [:status, 0],
-    [:asg_type, 0],
-    [:refcount, 0],
-    [:usecount, 0],
-    [:username, nil],
-    [:domainname, nil]
-  ]
-
-  USE_INFO_2_TEMPLATE =
-    USE_INFO_2.collect { |field| field[1].class == Fixnum ? 'i' : 'L' }.join
-
-  SIZEOF_USE_INFO_2 = #sizeof(USE_INFO_2)
-    USE_INFO_2.inject(0) do |sum, item|
-      sum + (item[1].class == Fixnum ? 4 : PTR_SIZE)
-    end
-
-  def use_info_2(args)
-    USE_INFO_2.collect { |field|
-      args.include?(field[0]) ? args[field[0]] : field[1]
-    }
-  end
-
-  def use_info_2_pack(use)
-    use.collect { |v|
-      v.class == Fixnum ? v : str_to_ptr(multi_to_wide(v))
-    }.pack(USE_INFO_2_TEMPLATE)
-  end
-
-  def use_info_2_unpack(buffer)
-    use = Hash.new
-    USE_INFO_2.each_with_index do |field,offset|
-      use[field[0]] = field[1].class == Fixnum ?
-      dword_to_i(buffer, offset) : lpwstr_to_s(buffer, offset)
-    end
-    use
-  end
-
-  public
-
   def initialize(localname)
-    @localname = localname
-    @name = multi_to_wide(localname)
     @use_name = localname
   end
 
@@ -93,7 +41,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
       args = Hash.new
       args[:remote] = remote
     end
-    args[:local] ||= @localname
+    args[:local] ||= use_name
     ui2_hash = to_ui2_struct(args)
 
     begin
