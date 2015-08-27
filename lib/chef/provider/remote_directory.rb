@@ -67,7 +67,7 @@ class Chef
                  ::File::FNM_DOTMATCH)
 
         # Remove current directory and previous directory
-        files.reject! do |name|
+        files = files.reject do |name|
           basename = Pathname.new(name).basename().to_s
           ['.', '..'].include?(basename)
         end
