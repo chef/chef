@@ -15,42 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#requires: gem install windows-pr
-require 'windows/api'
-require 'windows/error'
-require 'windows/handle'
-require 'windows/unicode'
-require 'windows/msvcrt/buffer'
-require 'windows/msvcrt/string'
-require 'windows/network/management'
 
 class Chef
   class Util
     class Windows
-      protected
-
-      include ::Windows::Error
-      include ::Windows::Unicode
-      include ::Windows::MSVCRT::Buffer
-      include ::Windows::MSVCRT::String
-      include ::Windows::Network::Management
-
-      PTR_SIZE = 4 #XXX 64-bit
-
-      def lpwstr_to_s(buffer, offset)
-        str = 0.chr * (256 * 2) #XXX unhardcode this length (*2 for WCHAR)
-        wcscpy str, buffer[offset*PTR_SIZE,PTR_SIZE].unpack('L')[0]
-        wide_to_multi str
-      end
-
-      def dword_to_i(buffer, offset)
-        buffer[offset*PTR_SIZE,PTR_SIZE].unpack('i')[0] || 0
-      end
-
-      #return pointer for use with pack('L')
-      def str_to_ptr(v)
-        [v].pack('p*').unpack('L')[0]
-      end
     end
   end
 end
