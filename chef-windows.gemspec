@@ -12,7 +12,6 @@ gemspec.add_dependency "win32-mutex", "~> 0.4.2"
 gemspec.add_dependency "win32-process", "~> 0.7.5"
 gemspec.add_dependency "win32-service", "~> 0.8.7"
 gemspec.add_dependency "windows-api", "~> 0.4.4"
-gemspec.add_dependency "windows-pr", "~> 1.2.4"
 gemspec.add_dependency "wmi-lite", "~> 1.0"
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
 gemspec.files += %w(ext/win32-eventlog/Rakefile ext/win32-eventlog/chef-log.man)
