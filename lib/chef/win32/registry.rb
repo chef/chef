@@ -17,12 +17,10 @@
 # limitations under the License.
 #
 require 'chef/reserved_names'
+require 'win32/registry'
+require 'win32/api'
 require 'chef/win32/api/registry'
-
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'win32/registry'
-  require 'win32/api'
-end
+require 'chef/mixin/wstring'
 
 class Chef
   class Win32
@@ -30,6 +28,9 @@ class Chef
 
       include Chef::ReservedNames::Win32::API::Registry
       extend Chef::ReservedNames::Win32::API::Registry
+
+      include Chef::Mixin::WideString
+      extend Chef::Mixin::WideString
 
       attr_accessor :run_context
       attr_accessor :architecture
@@ -148,7 +149,7 @@ class Chef
       def delete_key_ex(hive, key)
         hive_num = hive.hkey - (1 << 32)
         begin
-          RegDeleteKeyExA(hive_num, key, ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0)
+          RegDeleteKeyExW(hive_num, wstring(key), ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0)
           return true
         rescue ::Win32::Registry::Error => e
           return false

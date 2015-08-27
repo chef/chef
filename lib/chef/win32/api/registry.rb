@@ -30,6 +30,13 @@ class Chef
 
         ffi_lib 'advapi32'
 
+        # LONG WINAPI RegDeleteKeyEx(
+        #   _In_       HKEY    hKey,
+        #   _In_       LPCTSTR lpSubKey,
+        #   _In_       REGSAM  samDesired,
+        #   _Reserved_ DWORD   Reserved
+        # );
+        safe_attach_function :RegDeleteKeyExW, [ :HKEY, :LPCTSTR, :LONG, :DWORD ], :LONG
         safe_attach_function :RegDeleteKeyExA, [ :HKEY, :LPCTSTR, :LONG, :DWORD ], :LONG
 
       end

@@ -25,7 +25,10 @@ require 'chef/provider'
 require 'etc'
 require 'fileutils'
 require 'chef/scan_access_control'
-require 'chef/win32/registry'
+
+if Chef::Platform::windows?
+  require 'chef/win32/registry'
+end
 
 class Chef
 
