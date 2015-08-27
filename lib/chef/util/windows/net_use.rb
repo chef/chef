@@ -80,6 +80,13 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
     @use_name = localname
   end
 
+  def to_ui2_struct(use_info)
+    use_info.inject({}) do |memo, (k,v)|
+      memo["ui2_#{k}".to_sym] = v
+      memo
+    end
+  end
+
   def add(args)
     if args.class == String
       remote = args
@@ -87,11 +94,12 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
       args[:remote] = remote
     end
     args[:local] ||= @localname
-    use = use_info_2(args)
-    buffer = use_info_2_pack(use)
-    rc = NetUseAdd.call(nil, 2, buffer, nil)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+    ui2_hash = to_ui2_struct(args)
+
+    begin
+      Chef::ReservedNames::Win32::Net.net_use_add_l2(nil, ui2_hash)
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
   end
 

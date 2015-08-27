@@ -322,6 +322,22 @@ END
 
         ui2
       end
+
+      def self.net_use_add_l2(server_name, ui2_hash)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        buf = USE_INFO_2.new
+
+        ui2_hash.each do |(k,v)|
+          buf.set(k,v)
+        end
+
+        rc = NetUseAdd(server_name, 2, buf, nil)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
     end
     NetUser = Net # For backwards compatibility
   end

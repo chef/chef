@@ -309,6 +309,14 @@ class Chef
   #_Out_ LPBYTE *BufPtr
 #);
         safe_attach_function :NetUseGetInfo, [:LMSTR, :LMSTR, :DWORD, :pointer], :DWORD
+
+#NET_API_STATUS NetUseAdd(
+  #_In_  LMSTR   UncServerName,
+  #_In_  DWORD   Level,
+  #_In_  LPBYTE  Buf,
+  #_Out_ LPDWORD ParmError
+#);
+        safe_attach_function :NetUseAdd, [:LMSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
       end
     end
   end
