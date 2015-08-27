@@ -306,6 +306,22 @@ END
           net_api_error!(rc)
         end
       end
+
+      def self.net_use_get_info_l2(server_name, use_name)
+        server_name = wstring(server_name)
+        use_name = wstring(use_name)
+        ui2_p = FFI::MemoryPointer.new(:pointer)
+
+        rc = NetUseGetInfo(server_name, use_name, 2, ui2_p)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+
+        ui2 = USE_INFO_2.new(ui2_p.read_pointer).as_ruby
+        NetApiBufferFree(ui2_p.read_pointer)
+
+        ui2
+      end
     end
     NetUser = Net # For backwards compatibility
   end

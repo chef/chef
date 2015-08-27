@@ -95,19 +95,20 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
     end
   end
 
-  def get_info
-    ptr  = 0.chr * PTR_SIZE
-    rc = NetUseGetInfo.call(nil, @name, 2, ptr)
-
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+  def from_use_info_struct(ui2_hash)
+    ui2_hash.inject({}) do |memo, (k,v)|
+      memo[k.to_s.sub('ui2_', '').to_sym] = v
+      memo
     end
+  end
 
-    ptr = ptr.unpack('L')[0]
-    buffer = 0.chr * SIZEOF_USE_INFO_2
-    memcpy(buffer, ptr, buffer.size)
-    NetApiBufferFree(ptr)
-    use_info_2_unpack(buffer)
+  def get_info
+    begin
+      ui2 = Chef::ReservedNames::Win32::Net.net_use_get_info_l2(nil, use_name)
+      from_use_info_struct(ui2)
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
+    end
   end
 
   def device

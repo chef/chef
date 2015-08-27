@@ -154,6 +154,21 @@ class Chef
           layout :lgrpi0_name, :LPWSTR
         end
 
+        class USE_INFO_2 < FFI::Struct
+          include StructHelpers
+
+          layout :ui2_local, :LMSTR,
+            :ui2_remote, :LMSTR,
+            :ui2_password, :LMSTR,
+            :ui2_status, :DWORD,
+            :ui2_asg_type, :DWORD,
+            :ui2_refcount, :DWORD,
+            :ui2_usecount, :DWORD,
+            :ui2_username, :LPWSTR,
+            :ui2_domainname, :LMSTR
+        end
+
+
 #NET_API_STATUS NetLocalGroupAdd(
   #_In_  LPCWSTR servername,
   #_In_  DWORD   level,
@@ -287,6 +302,13 @@ class Chef
 #);
         safe_attach_function :NetUseDel, [:LMSTR, :LMSTR, :DWORD], :DWORD
 
+#NET_API_STATUS NetUseGetInfo(
+  #_In_  LMSTR  UncServerName,
+  #_In_  LMSTR  UseName,
+  #_In_  DWORD  Level,
+  #_Out_ LPBYTE *BufPtr
+#);
+        safe_attach_function :NetUseGetInfo, [:LMSTR, :LMSTR, :DWORD, :pointer], :DWORD
       end
     end
   end
