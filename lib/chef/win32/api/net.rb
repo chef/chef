@@ -40,6 +40,10 @@ class Chef
         UF_NORMAL_ACCOUNT      = 0x000200
         UF_DONT_EXPIRE_PASSWD  = 0x010000
 
+        USE_NOFORCE = 0
+        USE_FORCE = 1
+        USE_LOTS_OF_FORCE = 2 #every windows API should support this flag
+
         NERR_Success = 0
         NERR_InvalidComputer = 2351
         NERR_NotPrimary = 2226
@@ -271,6 +275,13 @@ class Chef
 #  _In_ LPCWSTR username
 #);
         safe_attach_function :NetUserDel, [:LPCWSTR, :LPCWSTR], :DWORD
+
+#NET_API_STATUS NetUseDel(
+  #_In_ LMSTR UncServerName,
+  #_In_ LMSTR UseName,
+  #_In_ DWORD ForceCond
+#);
+        safe_attach_function :NetUseDel, [:LMSTR, :LMSTR, :DWORD], :DWORD
 
       end
     end

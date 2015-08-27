@@ -286,6 +286,26 @@ END
           net_api_error!(rc)
         end
       end
+
+      def self.net_use_del(server_name, use_name, force=:use_noforce)
+        server_name = wstring(server_name)
+        use_name = wstring(use_name)
+        force_const = case force
+                      when :use_noforce
+                        USE_NOFORCE
+                      when :use_force
+                        USE_FORCE
+                      when :use_lots_of_force
+                        USE_LOTS_OF_FORCE
+                      else
+                        raise ArgumentError, "force must be one of [:use_noforce, :use_force, or :use_lots_of_force]"
+                      end
+
+        rc = NetUseDel(server_name, use_name, force_const)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
     end
     NetUser = Net # For backwards compatibility
   end

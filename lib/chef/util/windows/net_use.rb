@@ -21,6 +21,7 @@
 #see also cmd.exe: net use /?
 
 require 'chef/util/windows'
+require 'chef/win32/net'
 
 class Chef::Util::Windows::NetUse < Chef::Util::Windows
 
@@ -76,6 +77,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def initialize(localname)
     @localname = localname
     @name = multi_to_wide(localname)
+    @use_name = localname
   end
 
   def add(args)
@@ -111,11 +113,16 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def device
     get_info()[:remote]
   end
-  #XXX should we use some FORCE here?
+
   def delete
-    rc = NetUseDel.call(nil, @name, USE_NOFORCE)
-    if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+    begin
+      Chef::ReservedNames::Win32::Net.net_use_del(nil, use_name, :use_noforce)
+    rescue Chef::Exceptions::Win32APIError => e
+      raise ArgumentError, e
     end
+  end
+
+  def use_name
+    @use_name
   end
 end
