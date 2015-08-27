@@ -22,7 +22,7 @@ require 'chef/mixin/wstring'
 
 class Chef
   module ReservedNames::Win32
-    class NetUser
+    class Net
       include Chef::ReservedNames::Win32::API::Error
       extend Chef::ReservedNames::Win32::API::Error
 
@@ -287,5 +287,6 @@ END
         end
       end
     end
+    NetUser = Net # For backwards compatibility
   end
 end
