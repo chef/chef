@@ -24,7 +24,13 @@ module Process::Constants
   LOGON32_LOGON_INTERACTIVE = 0x00000002
   LOGON32_PROVIDER_DEFAULT  = 0x00000000
   UOI_NAME = 0x00000002
-end  
+
+  WAIT_OBJECT_0    = 0
+  WAIT_TIMEOUT     = 0x102
+  WAIT_ABANDONED   = 128
+  WAIT_ABANDONED_0 = WAIT_ABANDONED
+  WAIT_FAILED      = 0xFFFFFFFF
+end
 
 # Define the functions needed to check with Service windows station
 module Process::Functions
