@@ -111,7 +111,8 @@ The specific components of Chef related to a given platform - including (but not
         maintainers = [
           "jdmundrawala",
           "ksubrama",
-          "smurawski"
+          "smurawski",
+          "chefsalim"
         ]
 
       [Org.Components.Subsystems.Solaris]
@@ -300,3 +301,7 @@ The specific components of Chef related to a given platform - including (but not
   [people.ryancragun]
     Name = "Ryan Cragun"
     GitHub = "ryancragun"
+
+  [people.chefsalim]
+    Name = "Salim Alam"
+    GitHub = "chefsalim"
