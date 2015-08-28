@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::RegistryKey, "initialize" do
+describe Chef::Resource::RegistryKey, "initialize", :windows_only do
   before(:each) do
     @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
   end

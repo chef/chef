@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::RegistryKey do
+describe Chef::Provider::RegistryKey, :windows_only do
 
   let(:value1) { { :name => "one", :type => :string, :data => "1" } }
   let(:value1_upcase_name) { {:name => "ONE", :type => :string, :data => "1"} }
