@@ -16,9 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'chef/mixin/wstring'
 require 'chef/reserved_names'
 require 'chef/win32/api'
-require 'chef/mixin/wstring'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'chef/win32/api/registry'
@@ -91,7 +91,7 @@ class Chef
             return true
           end
           hive.open(key, ::Win32::Registry::KEY_SET_VALUE | registry_system_architecture) do |reg|
-            reg.delete_value(value[:name])
+            reg_delete_value(reg, value[:name])
             Chef::Log.debug("Deleted value #{value[:name]} from registry key #{key_path}")
           end
         else
@@ -394,6 +394,15 @@ class Chef
         key = reg_path.join("\\")
       end
 
+      # ::Win32::Registry#delete_value is broken in Ruby 2.1
+      # (up to Ruby 2.1.6p336). This should be resolved a
+      # later release (see note #9 in link below).
+      # https://bugs.ruby-lang.org/issues/10820
+      def reg_delete_value(reg, value)
+        unless RegDeleteValueW(reg.hkey, wstring(value))
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+      end
     end
   end
 end
