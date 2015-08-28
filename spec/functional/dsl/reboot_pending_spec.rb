@@ -17,7 +17,11 @@
 #
 
 require "chef/dsl/reboot_pending"
-require "chef/win32/registry"
+
+if Chef::Platform::windows?
+  require "chef/win32/registry"
+end
+
 require "spec_helper"
 
 describe Chef::DSL::RebootPending, :windows_only do

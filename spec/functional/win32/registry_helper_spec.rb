@@ -18,7 +18,10 @@
 #
 
 require 'spec_helper'
-require 'chef/win32/registry'
+
+if Chef::Platform::windows?
+  require 'chef/win32/registry'
+end
 
 describe Chef::Resource::RegistryKey, :unix_only do
   before(:all) do
