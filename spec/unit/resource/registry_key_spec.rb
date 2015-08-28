@@ -55,7 +55,7 @@ describe Chef::Resource::RegistryKey, "initialize", :windows_only do
   end
 end
 
-describe Chef::Resource::RegistryKey, "key" do
+describe Chef::Resource::RegistryKey, "key", :windows_only do
   before(:each) do
     @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
   end
@@ -74,7 +74,7 @@ describe Chef::Resource::RegistryKey, "key" do
   end
 end
 
-describe Chef::Resource::RegistryKey, "values" do
+describe Chef::Resource::RegistryKey, "values", :windows_only do
   before(:each) do
     @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
   end
@@ -119,7 +119,7 @@ describe Chef::Resource::RegistryKey, "values" do
   end
 end
 
-describe Chef::Resource::RegistryKey, "recursive" do
+describe Chef::Resource::RegistryKey, "recursive". :windows_only do
   before(:each) do
     @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
   end
@@ -146,7 +146,7 @@ describe Chef::Resource::RegistryKey, "recursive" do
   end
 end
 
-describe Chef::Resource::RegistryKey, "architecture" do
+describe Chef::Resource::RegistryKey, "architecture", :windows_only do
   before(:each) do
     @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
   end
@@ -175,7 +175,7 @@ describe Chef::Resource::RegistryKey, "architecture" do
   end
 end
 
-describe Chef::Resource::RegistryKey, ":unscrubbed_values" do
+describe Chef::Resource::RegistryKey, ":unscrubbed_values", :windows_only do
   before(:each) do
     @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
   end
@@ -187,7 +187,7 @@ describe Chef::Resource::RegistryKey, ":unscrubbed_values" do
   end
 end
 
-describe Chef::Resource::RegistryKey, "state" do
+describe Chef::Resource::RegistryKey, "state", :windows_only do
   before(:each) do
     @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
   end
