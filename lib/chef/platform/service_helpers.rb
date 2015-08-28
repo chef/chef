@@ -68,7 +68,6 @@ class Chef
 
           if ::File.exist?("/etc/init.d/#{service_name}")
             configs << :initd
-            configs << :systemd if systemd_is_init?
           end
 
           if ::File.exist?("/etc/init/#{service_name}.conf")
