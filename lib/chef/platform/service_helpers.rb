@@ -96,7 +96,7 @@ class Chef
         private
 
         def systemd_is_init?
-          File.exist?("/proc/1/comm") &&
+          ::File.exist?("/proc/1/comm") &&
             IO.read("/proc/1/comm").chomp == "systemd"
         end
 
