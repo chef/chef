@@ -16,18 +16,10 @@
 # limitations under the License.
 #
 
-# XXX: mixing shellout into a mixin into classes has to be code smell
-require 'chef/mixin/shell_out'
-require 'chef/mixin/which'
-
 class Chef
   class Platform
     class ServiceHelpers
       class << self
-
-        include Chef::Mixin::ShellOut
-        include Chef::Mixin::Which
-
         # This helper is mostly used to sort out the mess of different
         # linux mechanisms that can be used to start services.  It does
         # not necessarily need to linux-specific, but currently all our
@@ -56,8 +48,7 @@ class Chef
               service_resource_providers << :insserv
             end
 
-            # debian >= 6.0 has /etc/init but does not have upstart
-            if ::File.exist?("/etc/init") && ::File.exist?("/sbin/start")
+            if ::File.exist?("/sbin/initctl")
               service_resource_providers << :upstart
             end
 
@@ -65,7 +56,7 @@ class Chef
               service_resource_providers << :redhat
             end
 
-            if systemd_sanity_check?
+            if systemd_is_init?
               service_resource_providers << :systemd
             end
 
@@ -95,7 +86,7 @@ class Chef
             configs << :usr_local_etc_rcd
           end
 
-          if systemd_sanity_check? && platform_has_systemd_unit?(service_name)
+          if has_systemd_service_unit?(service_name)
             configs << :systemd
           end
 
@@ -104,37 +95,15 @@ class Chef
 
         private
 
-        def systemctl_path
-          if @systemctl_path.nil?
-            @systemctl_path = which("systemctl")
+        def systemd_is_init?
+          File.exist?("/proc/1/comm") &&
+            IO.read("/proc/1/comm").chomp == "systemd"
+        end
+
+        def has_systemd_service_unit?(svc_name)
+          %w( /etc /run /usr/lib ).any? do |cfg_base|
+            ::File.exist?("#{cfg_base}/systemd/system/#{svc_name}.service")
           end
-          @systemctl_path
-        end
-
-        def systemd_sanity_check?
-          systemctl_path && File.exist?("/proc/1/comm") && File.open("/proc/1/comm").gets.chomp == "systemd"
-        end
-
-        def extract_systemd_services(command)
-          output = shell_out!(command).stdout
-          # first line finds e.g. "sshd.service"
-          services = []
-          output.each_line do |line|
-            fields = line.split
-            services << fields[0] if fields[1] == "loaded" || fields[1] == "not-found"
-          end
-          # this splits off the suffix after the last dot to return "sshd"
-          services += services.select {|s| s.match(/\.service$/) }.map { |s| s.sub(/(.*)\.service$/, '\1') }
-        rescue Mixlib::ShellOut::ShellCommandFailed
-          false
-        end
-
-        def platform_has_systemd_unit?(service_name)
-          services = extract_systemd_services("#{systemctl_path} --all") +
-            extract_systemd_services("#{systemctl_path} list-unit-files")
-          services.include?(service_name)
-        rescue Mixlib::ShellOut::ShellCommandFailed
-          false
         end
       end
     end
