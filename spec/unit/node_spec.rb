@@ -208,6 +208,7 @@ describe Chef::Node do
   end
 
   describe "attributes" do
+
     it "should have attributes" do
       expect(node.attribute).to be_a_kind_of(Hash)
     end
@@ -375,6 +376,12 @@ describe Chef::Node do
       it "auto-vivifies attributes created via method syntax" do
         node.override.fuu.bahrr.baz = "qux"
         expect(node.fuu.bahrr.baz).to eq("qux")
+      end
+
+      it "allows nil override" do
+        node.normal['overriden_by_nil'] = 'cool value!'
+        node.override['overriden_by_nil'] = nil
+        expect(node['overriden_by_nil']).to be nil
       end
     end
 
