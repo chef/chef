@@ -153,13 +153,13 @@ describe Chef::Provider::Service::Systemd do
         end
 
         it "should call '#{systemctl_path} start service_name' if no start command is specified" do
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} start #{service_name}").and_return(shell_out_success)
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} start #{service_name}.service").and_return(shell_out_success)
           provider.start_service
         end
 
         it "should not call '#{systemctl_path} start service_name' if it is already running" do
           current_resource.running(true)
-          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} start #{service_name}")
+          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} start #{service_name}.service")
           provider.start_service
         end
 
@@ -172,7 +172,7 @@ describe Chef::Provider::Service::Systemd do
 
         it "should call '#{systemctl_path} restart service_name' if no restart command is specified" do
           current_resource.running(true)
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} restart #{service_name}").and_return(shell_out_success)
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} restart #{service_name}.service").and_return(shell_out_success)
           provider.restart_service
         end
 
@@ -189,7 +189,7 @@ describe Chef::Provider::Service::Systemd do
           context "when a reload command is not specified" do
             it "should call '#{systemctl_path} reload service_name' if the service is running" do
               current_resource.running(true)
-              expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} reload #{service_name}").and_return(shell_out_success)
+              expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} reload #{service_name}.service").and_return(shell_out_success)
               provider.reload_service
             end
 
@@ -210,13 +210,13 @@ describe Chef::Provider::Service::Systemd do
 
         it "should call '#{systemctl_path} stop service_name' if no stop command is specified" do
           current_resource.running(true)
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} stop #{service_name}").and_return(shell_out_success)
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} stop #{service_name}.service").and_return(shell_out_success)
           provider.stop_service
         end
 
         it "should not call '#{systemctl_path} stop service_name' if it is already stopped" do
           current_resource.running(false)
-          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} stop #{service_name}")
+          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} stop #{service_name}.service")
           provider.stop_service
         end
       end
@@ -229,12 +229,12 @@ describe Chef::Provider::Service::Systemd do
         end
 
         it "should call '#{systemctl_path} enable service_name' to enable the service" do
-          expect(provider).to receive(:shell_out!).with("#{systemctl_path} enable #{service_name}").and_return(shell_out_success)
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} enable #{service_name}.service").and_return(shell_out_success)
           provider.enable_service
         end
 
         it "should call '#{systemctl_path} disable service_name' to disable the service" do
-          expect(provider).to receive(:shell_out!).with("#{systemctl_path} disable #{service_name}").and_return(shell_out_success)
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} disable #{service_name}.service").and_return(shell_out_success)
           provider.disable_service
         end
       end
@@ -247,12 +247,12 @@ describe Chef::Provider::Service::Systemd do
         end
 
         it "should return true if '#{systemctl_path} is-active service_name' returns 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name} --quiet").and_return(shell_out_success)
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name}.service --quiet").and_return(shell_out_success)
           expect(provider.is_active?).to be true
         end
 
         it "should return false if '#{systemctl_path} is-active service_name' returns anything except 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name} --quiet").and_return(shell_out_failure)
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name}.service --quiet").and_return(shell_out_failure)
           expect(provider.is_active?).to be false
         end
       end
@@ -265,12 +265,12 @@ describe Chef::Provider::Service::Systemd do
         end
 
         it "should return true if '#{systemctl_path} is-enabled service_name' returns 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_success)
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}.service --quiet").and_return(shell_out_success)
           expect(provider.is_enabled?).to be true
         end
 
         it "should return false if '#{systemctl_path} is-enabled service_name' returns anything except 0" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_failure)
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}.service --quiet").and_return(shell_out_failure)
           expect(provider.is_enabled?).to be false
         end
       end
