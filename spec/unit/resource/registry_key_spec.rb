@@ -119,7 +119,7 @@ describe Chef::Resource::RegistryKey, "values", :windows_only do
   end
 end
 
-describe Chef::Resource::RegistryKey, "recursive". :windows_only do
+describe Chef::Resource::RegistryKey, "recursive", :windows_only do
   before(:each) do
     @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
   end
