@@ -164,6 +164,7 @@ helpers.erb
 #{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
 EOF
     end
+  end
 
   it "node subtrees sent into the variables argument renders correctly" do
     allow(new_resource).to receive(:source).and_return("render_test.conf.erb")
