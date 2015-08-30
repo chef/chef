@@ -17,17 +17,23 @@
 # limitations under the License.
 #
 require 'chef/reserved_names'
-require 'win32/registry'
-require 'win32/api'
-require 'chef/win32/api/registry'
+require 'chef/win32/api'
 require 'chef/mixin/wstring'
+
+if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+  require 'chef/win32/api/registry'
+  require 'win32/registry'
+  require 'win32/api'
+end
 
 class Chef
   class Win32
     class Registry
 
-      include Chef::ReservedNames::Win32::API::Registry
-      extend Chef::ReservedNames::Win32::API::Registry
+      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+        include Chef::ReservedNames::Win32::API::Registry
+        extend Chef::ReservedNames::Win32::API::Registry
+      end
 
       include Chef::Mixin::WideString
       extend Chef::Mixin::WideString
