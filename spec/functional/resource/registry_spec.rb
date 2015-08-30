@@ -17,12 +17,9 @@
 # limitations under the License.
 #
 
+require "chef/win32/registry"
 require "chef/resource_reporter"
 require "spec_helper"
-
-if Chef::Platform::windows?
-  require "chef/win32/registry"
-end
 
 describe Chef::Resource::RegistryKey, :unix_only do
   before(:all) do
