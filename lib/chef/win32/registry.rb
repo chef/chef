@@ -17,8 +17,11 @@
 # limitations under the License.
 #
 require 'chef/reserved_names'
+require 'chef/win32/api'
+require 'chef/mixin/wstring'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+  require 'chef/win32/api/registry'
   require 'win32/registry'
   require 'win32/api'
 end
@@ -26,6 +29,14 @@ end
 class Chef
   class Win32
     class Registry
+
+      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+        include Chef::ReservedNames::Win32::API::Registry
+        extend Chef::ReservedNames::Win32::API::Registry
+      end
+
+      include Chef::Mixin::WideString
+      extend Chef::Mixin::WideString
 
       attr_accessor :run_context
       attr_accessor :architecture
@@ -142,9 +153,8 @@ class Chef
       #Using the 'RegDeleteKeyEx' Windows API that correctly supports WOW64 systems (Win2003)
       #instead of the 'RegDeleteKey'
       def delete_key_ex(hive, key)
-        regDeleteKeyEx = ::Win32::API.new('RegDeleteKeyEx', 'LPLL', 'L', 'advapi32')
         hive_num = hive.hkey - (1 << 32)
-        regDeleteKeyEx.call(hive_num, key, ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0)
+        RegDeleteKeyExW(hive_num, wstring(key), ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0) == ERROR_SUCCESS
       end
 
       def key_exists?(key_path)
