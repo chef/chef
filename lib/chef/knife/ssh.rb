@@ -94,8 +94,12 @@ class Chef
         :boolean => true
 
       option :identity_file,
-        :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication. [DEPRECATED] Use --ssh-identity-file instead."
+
+      option :ssh_identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--ssh-identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
       option :host_key_verify,
