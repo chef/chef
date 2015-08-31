@@ -61,24 +61,27 @@ describe Chef::Formatters::Base do
   it "prints only seconds when elapsed time is less than 60 seconds" do
     Timecop.freeze(2008, 9, 9, 9, 9, 19) do
       formatter.run_completed(nil)
-      expect(formatter.elapsed_time).to include("10 seconds")
-      expect(formatter.elapsed_time).not_to include("minutes")
-      expect(formatter.elapsed_time).not_to include("hours")
+      expect(formatter.elapsed_time).to eql(10.0)
+      expect(formatter.pretty_elapsed_time).to include("10 seconds")
+      expect(formatter.pretty_elapsed_time).not_to include("minutes")
+      expect(formatter.pretty_elapsed_time).not_to include("hours")
     end
   end
 
   it "prints minutes and seconds when elapsed time is more than 60 seconds" do
     Timecop.freeze(2008, 9, 9, 9, 19, 19) do
       formatter.run_completed(nil)
-      expect(formatter.elapsed_time).to include("10 minutes 10 seconds")
-      expect(formatter.elapsed_time).not_to include("hours")
+      expect(formatter.elapsed_time).to eql(610.0)
+      expect(formatter.pretty_elapsed_time).to include("10 minutes 10 seconds")
+      expect(formatter.pretty_elapsed_time).not_to include("hours")
     end
   end
 
   it "prints hours, minutes and seconds when elapsed time is more than 3600 seconds" do
     Timecop.freeze(2008, 9, 9, 19, 19, 19) do
       formatter.run_completed(nil)
-      expect(formatter.elapsed_time).to include("10 hours 10 minutes 10 seconds")
+      expect(formatter.elapsed_time).to eql(36610.0)
+      expect(formatter.pretty_elapsed_time).to include("10 hours 10 minutes 10 seconds")
     end
   end
 end
