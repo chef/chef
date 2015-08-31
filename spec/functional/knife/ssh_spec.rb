@@ -56,7 +56,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_identity_file" do
         @knife.run
-        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
+        expect(@knife.config[:ssh_identity_file]).to eq("~/.ssh/aws.rsa")
       end
     end
 
@@ -68,7 +68,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_identity_file" do
         @knife.run
-        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
+        expect(@knife.config[:ssh_identity_file]).to eq("~/.ssh/aws.rsa")
       end
     end
 
@@ -80,13 +80,13 @@ describe Chef::Knife::Ssh do
 
       it "should use the value on the command line" do
         @knife.run
-        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
+        expect(@knife.config[:ssh_identity_file]).to eq("~/.ssh/aws.rsa")
       end
 
       it "should override what is set in knife.rb" do
         Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/other.rsa"
         @knife.run
-        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
+        expect(@knife.config[:ssh_identity_file]).to eq("~/.ssh/aws.rsa")
       end
     end
 
@@ -98,7 +98,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the default" do
         @knife.run
-        expect(@knife.config[:identity_file]).to eq(nil)
+        expect(@knife.config[:ssh_identity_file]).to eq(nil)
       end
     end
   end
