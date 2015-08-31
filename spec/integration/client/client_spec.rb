@@ -303,6 +303,59 @@ EOM
 
   end
 
+  when_the_repository "has a cookbook that generates deprecation warnings" do
+    before do
+      file 'cookbooks/x/recipes/default.rb', <<-EOM
+        class ::MyResource < Chef::Resource
+          use_automatic_resource_name
+          property :x, default: []
+          property :y, default: {}
+        end
+
+        my_resource 'blah' do
+          1.upto(10) do
+            x nil
+          end
+          x nil
+        end
+      EOM
+    end
+
+    def match_indices(regex, str)
+      result = []
+      pos = 0
+      while match = regex.match(str, pos)
+        result << match.begin(0)
+        pos = match.end(0) + 1
+      end
+      result
+    end
+
+    it "should output each deprecation warning only once, at the end of the run" do
+      file 'config/client.rb', <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+# Mimick what happens when you are on the console
+formatters << :doc
+log_level :warn
+EOM
+
+      ENV.delete('CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS')
+
+      result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      expect(result.error?).to be_falsey
+
+      # Search to the end of the client run in the output
+      run_complete = result.stdout.index("Running handlers complete")
+      expect(run_complete).to be >= 0
+
+      # Make sure there is exactly one result for each, and that it occurs *after* the complete message.
+      expect(match_indices(/MyResource.x has an array or hash default/, result.stdout)).to match([ be > run_complete ])
+      expect(match_indices(/MyResource.y has an array or hash default/, result.stdout)).to match([ be > run_complete ])
+      expect(match_indices(/nil currently does not overwrite the value of/, result.stdout)).to match([ be > run_complete ])
+    end
+  end
+
   when_the_repository "has a cookbook with only an audit recipe" do
 
     before do

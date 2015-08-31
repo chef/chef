@@ -190,6 +190,22 @@ class Chef
     def resource_handler_map
       @resource_handler_map ||= Chef::Platform::ResourceHandlerMap.instance
     end
+
+    #
+    # @overload log
+    # Get the current log object.
+    #
+    # @return An object that supports `deprecation(message)`
+    #
+    # @example
+    #     run_context.log.deprecation("Deprecated!")
+    #
+    # @api private
+    def log
+      # `run_context.events` is the primary deprecation target if we're in a run. If we
+      # are not yet in a run, print to `Chef::Log`.
+      (run_context && run_context.events) || Chef::Log
+    end
   end
 
   reset!

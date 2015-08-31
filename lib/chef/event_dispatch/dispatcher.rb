@@ -28,6 +28,9 @@ class Chef
       # Define a method that will be forwarded to all
       def self.def_forwarding_method(method_name)
         define_method(method_name) do |*args|
+          if method_name == :deprecation && args.size == 1
+            args << caller(2..2)[0]
+          end
           @subscribers.each do |s|
             # Skip new/unsupported event names.
             if s.respond_to?(method_name)
@@ -49,4 +52,3 @@ class Chef
     end
   end
 end
-

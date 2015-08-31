@@ -462,22 +462,26 @@ describe "Chef::Resource.property" do
     end
 
     context "hash default" do
-      with_property ':x, default: {}' do
-        it "when x is not set, it returns {}" do
-          expect(resource.x).to eq({})
-        end
-        it "The same exact value is returned multiple times in a row" do
-          value = resource.x
-          expect(value).to eq({})
-          expect(resource.x.object_id).to eq(value.object_id)
-        end
-        it "Multiple instances of x receive the exact same value" do
-          expect(resource.x.object_id).to eq(resource_class.new('blah2').x.object_id)
+      context "(deprecations allowed)" do
+        before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
+
+        with_property ':x, default: {}' do
+          it "when x is not set, it returns {}" do
+            expect(resource.x).to eq({})
+          end
+          it "The same exact value is returned multiple times in a row" do
+            value = resource.x
+            expect(value).to eq({})
+            expect(resource.x.object_id).to eq(value.object_id)
+          end
+          it "Multiple instances of x receive the exact same value" do
+            expect(resource.x.object_id).to eq(resource_class.new('blah2').x.object_id)
+          end
         end
       end
 
       it "when a property is declared with default: {}, a warning is issued" do
-        expect(Chef::Log).to receive(:warn).with(match(/^Property .+\.x has an array or hash default \(\{\}\)\. This means that if one resource modifies or appends to it, all other resources of the same type will also see the changes\. Either freeze the constant with \`\.freeze\` to prevent appending, or use lazy \{ \{\} \}\.$/))
+        expect(Chef::Log).to receive(:deprecation).with(match(/^Property .+\.x has an array or hash default \(\{\}\)\. This means that if one resource modifies or appends to it, all other resources of the same type will also see the changes\. Either freeze the constant with \`\.freeze\` to prevent appending, or use lazy \{ \{\} \}\.$/))
         resource_class.class_eval("property :x, default: {}", __FILE__, __LINE__)
         expect(resource.x).to eq({})
       end
