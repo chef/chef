@@ -40,15 +40,13 @@ class Chef
       def_delegators :@new_resource, :files_rights, :files_mode, :files_group, :files_owner, :files_backup
       def_delegators :@new_resource, :rights, :mode, :group, :owner
 
-      attr_accessor :overwrite
-
       # The overwrite property on the resource.  Delegates to new_resource but can be mutated.
       #
       # @return [Boolean] if we are overwriting
       #
-      def overwrite
+      def overwrite?
         @overwrite = new_resource.overwrite if @overwrite.nil?
-        @overwrite
+        !!@overwrite
       end
 
       attr_accessor :managed_files
@@ -56,10 +54,10 @@ class Chef
       # Hash containing keys of the paths for all the files that we sync, plus all their
       # parent directories.
       #
-      # @return [Hash{String => TrueClass}] Hash of files we've managed.
+      # @return [Set] Ruby Set of the files that we manage
       #
       def managed_files
-        @managed_files ||= {}
+        @managed_files ||= Set.new
       end
 
       # Handle action :create.
@@ -95,12 +93,12 @@ class Chef
       def add_managed_file(cookbook_file_relative_path)
         if purge
           Pathname.new(Chef::Util::PathHelper.cleanpath(::File.join(path, cookbook_file_relative_path))).descend do |d|
-            managed_files[d.to_s] = true
+            managed_files.add(d.to_s)
           end
         end
       end
 
-      # Remove all files not in the managed_files Hash.
+      # Remove all files not in the managed_files Set.
       #
       # @api private
       #
@@ -183,7 +181,7 @@ class Chef
       # @api private
       #
       def action_for_cookbook_file
-        overwrite ? :create : :create_if_missing
+        overwrite? ? :create : :create_if_missing
       end
 
       # This creates and uses a cookbook_file resource to sync a single file from the cookbook.
