@@ -1,6 +1,8 @@
 # mixlib-shellout Changelog
 
-## Unreleased
+## 2.2.0 Unreleased
+
+* Remove windows-pr dependency
 
 ## Release 2.1.0
 
