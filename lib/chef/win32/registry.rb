@@ -94,7 +94,7 @@ class Chef
             # ::Win32::Registry#delete_value is broken in Ruby 2.1 (up to Ruby 2.1.6p336).
             # This should be resolved a later release (see note #9 in link below).
             # https://bugs.ruby-lang.org/issues/10820
-            if RegDeleteValueW(reg.hkey, wstring(value[:name]))
+            if RegDeleteValueW(reg.hkey, wstring(value[:name])) == 0
               Chef::Log.debug("Deleted value #{value[:name]} from registry key #{key_path}")
             else
               Chef::Log.debug("Unable to delete value #{value[:name]} from registry key #{key_path}")
