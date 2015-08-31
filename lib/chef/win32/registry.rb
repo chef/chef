@@ -154,7 +154,7 @@ class Chef
       #instead of the 'RegDeleteKey'
       def delete_key_ex(hive, key)
         hive_num = hive.hkey - (1 << 32)
-        RegDeleteKeyExW(hive_num, wstring(key), ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0) == ERROR_SUCCESS
+        RegDeleteKeyExW(hive_num, wstring(key), ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0) == 0
       end
 
       def key_exists?(key_path)
