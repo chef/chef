@@ -25,7 +25,7 @@ class Chef
       # == Deprecation::Provider::Mixin::Template
       # This module contains the deprecated functions of
       # Chef::Mixin::Template. These functions are refactored to different
-      # components. They are frozen and will be removed in Chef 12.
+      # components. They are frozen and will be removed in Chef 13.
       #
 
       module Template
@@ -46,4 +46,3 @@ class Chef
     end
   end
 end
-

@@ -25,7 +25,7 @@ class Chef
           m = instance_method(name)
           define_method(name) do |*args|
             message = []
-            message << "Method '#{name}' of '#{self.class}' is deprecated. It will be removed in Chef 12."
+            message << "Method '#{name}' of '#{self.class}' is deprecated. It will be removed in Chef 13."
             message << "Please update your cookbooks accordingly."
             Chef.log.deprecation(message, caller(0..3))
             super(*args)

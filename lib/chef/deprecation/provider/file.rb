@@ -25,7 +25,7 @@ class Chef
       # == Deprecation::Provider::File
       # This module contains the deprecated functions of
       # Chef::Provider::File. These functions are refactored to different
-      # components. They are frozen and will be removed in Chef 12.
+      # components. They are frozen and will be removed in Chef 13.
       #
       module File
 
