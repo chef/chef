@@ -45,8 +45,8 @@ describe Chef::Knife::Status do
     end
 
     it "should filter by nodes older than some mins" do
-      @knife.config[:hide_by_mins] = 60
-      expect(@query).to receive(:search).with(:node, "NOT ohai_time:[1428569820 TO 1428573420]", opts)
+      @knife.config[:hide_by_mins] = 59
+      expect(@query).to receive(:search).with(:node, "NOT ohai_time:[1428569880 TO 1428573420]", opts)
       @knife.run
     end
 
@@ -58,8 +58,8 @@ describe Chef::Knife::Status do
 
     it "should filter by environment and nodes older than some mins" do
       @knife.config[:environment] = "production"
-      @knife.config[:hide_by_mins] = 60
-      expect(@query).to receive(:search).with(:node, "chef_environment:production NOT ohai_time:[1428569820 TO 1428573420]", opts)
+      @knife.config[:hide_by_mins] = 59
+      expect(@query).to receive(:search).with(:node, "chef_environment:production NOT ohai_time:[1428569880 TO 1428573420]", opts)
       @knife.run
     end
 
@@ -80,8 +80,8 @@ describe Chef::Knife::Status do
       end
 
       it "should filter by nodes older than some mins with nodename specified" do
-        @knife.config[:hide_by_mins] = 60
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name NOT ohai_time:[1428569820 TO 1428573420]", opts)
+        @knife.config[:hide_by_mins] = 59
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name NOT ohai_time:[1428569880 TO 1428573420]", opts)
         @knife.run
       end
 
@@ -93,8 +93,8 @@ describe Chef::Knife::Status do
 
       it "should filter by environment and nodes older than some mins with nodename specified" do
         @knife.config[:environment] = "production"
-        @knife.config[:hide_by_mins] = 60
-        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production NOT ohai_time:[1428569820 TO 1428573420]", opts)
+        @knife.config[:hide_by_mins] = 59
+        expect(@query).to receive(:search).with(:node, "name:my_custom_name AND chef_environment:production NOT ohai_time:[1428569880 TO 1428573420]", opts)
         @knife.run
       end
     end
