@@ -45,7 +45,7 @@ describe Chef::Provider::RegistryKey do
     Win32::Registry::Error = Class.new(RuntimeError)
 
     @hive_mock = double("::Win32::Registry::HKEY_CURRENT_USER")
-    @reg_mock = double("reg")
+    @reg_mock = double("reg", :hkey => 0)
   end
 
   describe "get_values" do
@@ -118,7 +118,8 @@ describe Chef::Provider::RegistryKey do
       expect(@registry).to receive(:value_exists?).with(key_path, value1).and_return(true)
       expect(@registry).to receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])
       expect(@hive_mock).to receive(:open).with(key, ::Win32::Registry::KEY_SET_VALUE | @registry.registry_system_architecture).and_yield(@reg_mock)
-      expect(@reg_mock).to receive(:delete_value).with("one").and_return(true)
+      expect(value1[:name]).to receive(:to_wstring).and_return(value1[:name])
+      expect(@registry).to receive(:RegDeleteValueW).with(@reg_mock.hkey, value1[:name]).and_return(true)
       @registry.delete_value(key_path, value1)
     end
 
