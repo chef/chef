@@ -18,22 +18,13 @@
 #
 
 require 'spec_helper'
-require 'timecop'
 
 describe Chef::Formatters::Base do
 
   let(:out) { StringIO.new }
   let(:err) { StringIO.new }
 
-  after do
-    Timecop.return
-  end
-
-  subject(:formatter) { 
-    Timecop.freeze(Time.local(2008, 9, 9, 9, 9, 9)) do
-      Chef::Formatters::Doc.new(out, err) 
-    end
-  }
+  subject(:formatter) { Chef::Formatters::Doc.new(out, err) }
 
   it "prints a policyfile's name and revision ID" do
     minimal_policyfile = {
@@ -59,29 +50,29 @@ describe Chef::Formatters::Base do
   end
 
   it "prints only seconds when elapsed time is less than 60 seconds" do
-    Timecop.freeze(2008, 9, 9, 9, 9, 19) do
-      formatter.run_completed(nil)
-      expect(formatter.elapsed_time).to eql(10.0)
-      expect(formatter.pretty_elapsed_time).to include("10 seconds")
-      expect(formatter.pretty_elapsed_time).not_to include("minutes")
-      expect(formatter.pretty_elapsed_time).not_to include("hours")
-    end
+    @now = Time.now
+    allow(Time).to receive(:now).and_return(@now, @now + 10.0)
+    formatter.run_completed(nil)
+    expect(formatter.elapsed_time).to eql(10.0)
+    expect(formatter.pretty_elapsed_time).to include("10 seconds")
+    expect(formatter.pretty_elapsed_time).not_to include("minutes")
+    expect(formatter.pretty_elapsed_time).not_to include("hours")
   end
 
   it "prints minutes and seconds when elapsed time is more than 60 seconds" do
-    Timecop.freeze(2008, 9, 9, 9, 19, 19) do
-      formatter.run_completed(nil)
-      expect(formatter.elapsed_time).to eql(610.0)
-      expect(formatter.pretty_elapsed_time).to include("10 minutes 10 seconds")
-      expect(formatter.pretty_elapsed_time).not_to include("hours")
-    end
+    @now = Time.now
+    allow(Time).to receive(:now).and_return(@now, @now + 610.0)
+    formatter.run_completed(nil)
+    expect(formatter.elapsed_time).to eql(610.0)
+    expect(formatter.pretty_elapsed_time).to include("10 minutes 10 seconds")
+    expect(formatter.pretty_elapsed_time).not_to include("hours")
   end
 
   it "prints hours, minutes and seconds when elapsed time is more than 3600 seconds" do
-    Timecop.freeze(2008, 9, 9, 19, 19, 19) do
-      formatter.run_completed(nil)
-      expect(formatter.elapsed_time).to eql(36610.0)
-      expect(formatter.pretty_elapsed_time).to include("10 hours 10 minutes 10 seconds")
-    end
+    @now = Time.now
+    allow(Time).to receive(:now).and_return(@now, @now + 36610.0)
+    formatter.run_completed(nil)
+    expect(formatter.elapsed_time).to eql(36610.0)
+    expect(formatter.pretty_elapsed_time).to include("10 hours 10 minutes 10 seconds")
   end
 end
