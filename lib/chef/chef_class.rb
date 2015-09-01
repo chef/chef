@@ -192,19 +192,26 @@ class Chef
     end
 
     #
-    # @overload log
-    # Get the current log object.
+    # Emit a deprecation message.
     #
-    # @return An object that supports `deprecation(message)`
+    # @param message The message to send.
+    # @param location The location. Defaults to the caller who called you (since
+    #   generally the person who triggered the check is the one that needs to be
+    #   fixed).
     #
     # @example
-    #     run_context.log.deprecation("Deprecated!")
+    #     Chef.deprecation("Deprecated!")
     #
-    # @api private
-    def log
-      # `run_context.events` is the primary deprecation target if we're in a run. If we
-      # are not yet in a run, print to `Chef::Log`.
-      (run_context && run_context.events) || Chef::Log
+    # @api private this will likely be removed in favor of an as-yet unwritten
+    #      `Chef.log`
+    def log_deprecation(message, location=caller(2..2)[0])
+      # `run_context.events` is the primary deprecation target if we're in a
+      # run. If we are not yet in a run, print to `Chef::Log`.
+      if run_context && run_context.events
+        run_context.events.deprecation(message, location)
+      else
+        Chef::Log.deprecation(message, location)
+      end
     end
   end
 

@@ -533,22 +533,22 @@ ERROR_MESSAGE
       # These need to be settable so deploy can run a resource_collection
       # independent of any cookbooks via +recipe_eval+
       def resource_collection=(value)
-        Chef.log.deprecation("Setting run_context.resource_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
+        Chef.log_deprecation("Setting run_context.resource_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
         @resource_collection = value
       end
 
       def audits=(value)
-        Chef.log.deprecation("Setting run_context.audits will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
+        Chef.log_deprecation("Setting run_context.audits will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
         @audits = value
       end
 
       def immediate_notification_collection=(value)
-        Chef.log.deprecation("Setting run_context.immediate_notification_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
+        Chef.log_deprecation("Setting run_context.immediate_notification_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
         @immediate_notification_collection = value
       end
 
       def delayed_notification_collection=(value)
-        Chef.log.deprecation("Setting run_context.delayed_notification_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
+        Chef.log_deprecation("Setting run_context.delayed_notification_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
         @delayed_notification_collection = value
       end
     end
