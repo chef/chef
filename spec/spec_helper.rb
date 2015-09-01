@@ -185,6 +185,8 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 
   config.before(:each) do
+    Chef.reset!
+
     Chef::Config.reset
 
     # By default, treat deprecation warnings as errors in tests.
