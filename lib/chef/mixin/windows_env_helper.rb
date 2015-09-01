@@ -18,6 +18,7 @@
 
 
 require 'chef/exceptions'
+require 'chef/mixin/wide_string'
 require 'chef/platform/query_helpers'
 require 'chef/win32/error' if Chef::Platform.windows?
 require 'chef/win32/api/system' if Chef::Platform.windows?
@@ -26,6 +27,8 @@ require 'chef/win32/api/unicode' if Chef::Platform.windows?
 class Chef
   module Mixin
     module WindowsEnvHelper
+      include Chef::Mixin::WideString
+
       if Chef::Platform.windows?
         include Chef::ReservedNames::Win32::API::System
       end
@@ -45,7 +48,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
         if ( SendMessageTimeoutW(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string(
-            Chef::ReservedNames::Win32::Unicode.utf8_to_wide('Environment')
+            utf8_to_wide('Environment')
         ).address, flags, 5000, nil) == 0 )
           Chef::ReservedNames::Win32::Error.raise!
         end

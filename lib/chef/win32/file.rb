@@ -17,10 +17,11 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/wide_string'
 require 'chef/win32/api/file'
 require 'chef/win32/api/security'
 require 'chef/win32/error'
-require 'chef/mixin/wstring'
+require 'chef/win32/unicode'
 
 class Chef
   module ReservedNames::Win32
@@ -161,9 +162,9 @@ class Chef
 
       def self.file_access_check(path, desired_access)
         security_descriptor = Chef::ReservedNames::Win32::Security.get_file_security(path)
-        token_rights = Chef::ReservedNames::Win32::Security::TOKEN_IMPERSONATE | 
+        token_rights = Chef::ReservedNames::Win32::Security::TOKEN_IMPERSONATE |
                        Chef::ReservedNames::Win32::Security::TOKEN_QUERY |
-                       Chef::ReservedNames::Win32::Security::TOKEN_DUPLICATE | 
+                       Chef::ReservedNames::Win32::Security::TOKEN_DUPLICATE |
                        Chef::ReservedNames::Win32::Security::STANDARD_RIGHTS_READ
         token = Chef::ReservedNames::Win32::Security.open_process_token(
           Chef::ReservedNames::Win32::Process.get_current_process,
@@ -176,7 +177,7 @@ class Chef
         mapping[:GenericExecute] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_EXECUTE
         mapping[:GenericAll] = Chef::ReservedNames::Win32::Security::FILE_ALL_ACCESS
 
-        Chef::ReservedNames::Win32::Security.access_check(security_descriptor, duplicate_token, 
+        Chef::ReservedNames::Win32::Security.access_check(security_descriptor, duplicate_token,
                                                           desired_access, mapping)
       end
 
