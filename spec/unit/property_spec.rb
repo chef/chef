@@ -476,8 +476,8 @@ describe "Chef::Resource.property" do
         end
       end
 
-      it "when a property is declared with default: {}, a debug level warning is issued" do
-        expect(Chef::Log).to receive(:debug).with(match(/^Property .+\.x has an array or hash default \(\{\}\)\. This means that if one resource modifies or appends to it, all other resources of the same type will also see the changes\. Either freeze the constant with \`\.freeze\` to prevent appending, or use lazy \{ \{\} \}\.$/))
+      it "when a property is declared with default: {}, a warning is issued" do
+        expect(Chef::Log).to receive(:warn).with(match(/^Property .+\.x has an array or hash default \(\{\}\)\. This means that if one resource modifies or appends to it, all other resources of the same type will also see the changes\. Either freeze the constant with \`\.freeze\` to prevent appending, or use lazy \{ \{\} \}\.$/))
         resource_class.class_eval("property :x, default: {}", __FILE__, __LINE__)
         expect(resource.x).to eq({})
       end
