@@ -22,6 +22,7 @@ require 'chef/win32/api'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'chef/win32/api/registry'
+  require 'chef/win32/unicode'
   require 'win32/registry'
   require 'win32/api'
 end
