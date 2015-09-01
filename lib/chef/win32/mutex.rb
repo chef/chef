@@ -17,6 +17,7 @@
 #
 
 require 'chef/win32/api/synchronization'
+require 'chef/win32/unicode'
 
 class Chef
   module ReservedNames::Win32
@@ -113,5 +114,3 @@ if the mutex is attempted to be acquired by other threads.")
     end
   end
 end
-
-

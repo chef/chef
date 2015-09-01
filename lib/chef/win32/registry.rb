@@ -18,7 +18,7 @@
 #
 require 'chef/reserved_names'
 require 'chef/win32/api'
-require 'chef/mixin/wstring'
+require 'chef/mixin/wide_string'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'chef/win32/api/registry'

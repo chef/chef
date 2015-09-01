@@ -18,7 +18,7 @@
 
 require 'chef/win32/security'
 require 'chef/win32/api/security'
-
+require 'chef/win32/unicode'
 require 'ffi'
 
 class Chef

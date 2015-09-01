@@ -22,7 +22,7 @@ require 'chef/win32/memory'
 require 'chef/win32/process'
 require 'chef/win32/unicode'
 require 'chef/win32/security/token'
-require 'chef/mixin/wstring'
+require 'chef/mixin/wide_string'
 
 class Chef
   module ReservedNames::Win32
