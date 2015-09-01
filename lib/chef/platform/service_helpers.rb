@@ -102,7 +102,8 @@ class Chef
 
         def has_systemd_service_unit?(svc_name)
           %w( /etc /run /usr/lib ).any? do |cfg_base|
-            ::File.exist?("#{cfg_base}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service")
+            ::File.exist?("#{cfg_base}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service") ||
+              ::File.exist?("#{cfg_base}/systemd/system/#{svc_name}") # TODO: Stop supporting non-service units
           end
         end
       end
