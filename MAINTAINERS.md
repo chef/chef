@@ -40,6 +40,7 @@ another component.
 * [Steven Murawski](https://github.com/smurawski)
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Ranjib Dey](https://github.com/ranjib)
+* [Matt Wrock](https://github.com/mwrock)
 
 ## Dev Tools
 
@@ -102,6 +103,7 @@ The specific components of Chef related to a given platform - including (but not
 * [Kartik Cating-Subramanian](https://github.com/ksubrama)
 * [Steven Murawski](https://github.com/smurawski)
 * [Salim Alam](https://github.com/chefsalim)
+* [Matt Wrock](https://github.com/mwrock)
 
 ## Solaris
 
