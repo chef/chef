@@ -29,6 +29,18 @@ class Chef
         end_time - start_time
       end
 
+      def pretty_elapsed_time
+        time = elapsed_time
+        if time < 60 then
+          message = Time.at(time).utc.strftime("%S seconds")
+        elsif time < 3600 then
+          message = Time.at(time).utc.strftime("%M minutes %S seconds")
+        else
+          message = Time.at(time).utc.strftime("%H hours %M minutes %S seconds")
+        end
+        message
+      end
+
       def run_start(version)
         puts_line "Starting Chef Client, version #{version}"
       end
@@ -66,7 +78,7 @@ class Chef
         if Chef::Config[:why_run]
           puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
           if total_audits > 0
             puts_line "  #{successful_audits}/#{total_audits} controls succeeded"
           end
@@ -78,7 +90,7 @@ class Chef
         if Chef::Config[:why_run]
           puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
-          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
           if total_audits > 0
             puts_line "  #{successful_audits} controls succeeded"
           end
