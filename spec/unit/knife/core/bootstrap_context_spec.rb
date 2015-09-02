@@ -91,7 +91,7 @@ EXPECTED
   end
 
   describe "when bootstrapping into a specific environment" do
-    let(:chef_config){ {:environment => "prodtastic"} }
+    let(:config){ {:environment => "prodtastic"} }
     it "starts chef in the configured environment" do
       expect(bootstrap_context.start_chef).to eq('chef-client -j /etc/chef/first-boot.json -E prodtastic')
     end
