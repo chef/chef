@@ -141,7 +141,7 @@ class Chef
             prompt = "Enter the password for #{user}@#{gw_host}: "
             gw_opts[:password] = prompt_for_password(prompt)
             # Try again with a password.
-            session.via(gw_host, user, gw_opts)
+            session.via(gw_host, gw_opts[:user], gw_opts)
           end
         end
       end
