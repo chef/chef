@@ -31,6 +31,11 @@ describe Chef::Knife::Ssh do
     @server.stop
   end
 
+  let(:ssh_config) { Hash.new }
+  before do
+    allow(Net::SSH).to receive(:configuration_for).and_return(ssh_config)
+  end
+
   describe "identity file" do
     context "when knife[:ssh_identity_file] is set" do
       before do
