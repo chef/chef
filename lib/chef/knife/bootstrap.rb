@@ -143,6 +143,12 @@ class Chef
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
 
+      option :tags,
+        :long => "--tags TAGS",
+        :description => "Comma separated list of tags to apply to the node",
+        :proc => lambda { |o| o.split(/[\s,]+/) },
+        :default => []
+
       option :first_boot_attributes,
         :short => "-j JSON_ATTRIBS",
         :long => "--json-attributes",

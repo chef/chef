@@ -163,11 +163,14 @@ CONFIG
         end
 
         def first_boot
-          (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+          (@config[:first_boot_attributes] || {}).tap do |attributes|
+            attributes.merge!(:run_list => @run_list)
+            attributes.merge!(:tags => @config[:tags]) if @config[:tags] && !@config[:tags].empty?
+          end
         end
 
         private
-       
+
         # Returns a string for copying the trusted certificates on the workstation to the system being bootstrapped
         # This string should contain both the commands necessary to both create the files, as well as their content
         def trusted_certs_content

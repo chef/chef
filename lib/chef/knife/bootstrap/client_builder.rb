@@ -141,6 +141,9 @@ class Chef
               node.run_list(normalized_run_list)
               node.normal_attrs = first_boot_attributes if first_boot_attributes
               node.environment(environment) if environment
+              (knife_config[:tags] || []).each do |tag|
+                node.tags << tag
+              end
               node
             end
         end
