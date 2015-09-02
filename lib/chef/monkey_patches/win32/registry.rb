@@ -11,11 +11,20 @@ module Win32
 
       module_function
 
-      # ::Win32::Registry#delete_value is broken in Ruby 2.1 (up to Ruby 2.1.6p336).
-      # This should be resolved a later release (see note #9 in link below).
-      # https://bugs.ruby-lang.org/issues/10820
-      def DeleteValue(hkey, name)
-        check RegDeleteValueW(hkey, name.to_wstring)
+      if RUBY_VERSION =~ /^2\.1/
+        # ::Win32::Registry#delete_value is broken in Ruby 2.1 (up to Ruby 2.1.6).
+        # This should be resolved in a later release (see note #9 in link below).
+        # https://bugs.ruby-lang.org/issues/10820
+        def DeleteValue(hkey, name)
+          check RegDeleteValueW(hkey, name.to_wstring)
+        end
+      end
+
+      # ::Win32::Registry#delete_key uses RegDeleteKeyW. We need to use
+      # RegDeleteKeyExW to properly support WOW64 systems.
+      def DeleteKey(hkey, name)
+        arch_mask = win64? ? 0x0100 : 0x0200
+        check RegDeleteKeyExW(hkey, name.to_wstring, KEY_WRITE | arch_mask, 0)
       end
       
     end

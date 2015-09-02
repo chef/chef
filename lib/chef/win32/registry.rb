@@ -21,10 +21,7 @@ require 'chef/win32/api'
 require 'chef/mixin/wide_string'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  if RUBY_VERSION =~ /^2\.1/
-    require 'chef/monkey_patches/win32/registry'
-  end
-  
+  require 'chef/monkey_patches/win32/registry'
   require 'chef/win32/api/registry'
   require 'win32/registry'
   require 'win32/api'
