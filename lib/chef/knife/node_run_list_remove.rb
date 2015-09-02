@@ -42,7 +42,18 @@ class Chef
           entries = @name_args[1].split(',').map { |e| e.strip }
         end
 
-        entries.each { |e| node.run_list.remove(e) }
+        # iterate over the list of things to remove,
+        # warning if one of them was not found
+        entries.each do |e|
+          if node.run_list.find { |rli| e == rli.to_s }
+            node.run_list.remove(e)
+          else
+            ui.warn "#{e} is not in the run list"
+            unless e =~ /^(recipe|role)\[/
+              ui.warn '(did you forget recipe[] or role[] around it?)'
+            end
+          end
+        end
 
         node.save
 
