@@ -18,13 +18,25 @@
 * [**James Belchamber**](https://github.com/JamesBelchamber):
   [pr#1796](https://github.com/chef/chef/pull/1796): make mount options aware
 * [**Nate Walck**](https://github.com/natewalck):
-  [pr#3594](https://github.com/chef/chef/pull/3594): Update service provider for OSX 10.11
-* [**Nate Walck**](https://github.com/natewalck):
-  [pr#3704](https://github.com/chef/chef/pull/3704): Add SIP (OS X 10.11) support
+  - [pr#3594](https://github.com/chef/chef/pull/3594): Update service provider for OSX 10.11
+  - [pr#3704](https://github.com/chef/chef/pull/3704): Add SIP (OS X 10.11) support
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   [pr#3805](https://github.com/chef/chef/pull/3805) LWRP parameter validators should use truthiness
 * [**Igor Shpakov**](https://github.com/Igorshp):
   [pr#3743](https://github.com/chef/chef/pull/3743) speed improvement for `remote_directory` resource
+* [**James FitzGibbon**](https://github.com/jf647):
+  [pr#3027](https://github.com/chef/chef/pull/3027) Add warnings to 'knife node run list remove ...'
+* [**Backslasher**](https://github.com/backslasher):
+  [pr#3172](https://github.com/chef/chef/pull/3172) Migrated deploy resource to use shell\_out instead of run\_command
+* [**Sean Walberg**](https://github.com/swalberg):
+  [pr#3190](https://github.com/chef/chef/pull/3190) Allow tags to be set on a node during bootstrap
+* [**ckaushik**](https://github.com/ckaushik) and [**Sam Dunne**](https://github.com/samdunne):
+  [pr#3510](https://github.com/chef/chef/pull/3510) Fix broken rendering
+of partial templates.
+* [**Simon Detheridge**](https://github.com/gh2k):
+  [pr#3806](https://github.com/chef/chef/pull/3806) Replace output\_of\_command with shell\_out! in subversion provider
+* [**Joel Handwell**](https://github.com/joelhandwell):
+  [pr#3821](https://github.com/chef/chef/pull/3821) Human friendly elapsed time in log
 
 * [pr#3799](https://github.com/chef/chef/pull/3799) fix supports hash issues in service providers
 * [pr#3817](https://github.com/chef/chef/pull/3817) Remove now-useless forcing of ruby Garbage Collector run
