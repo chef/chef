@@ -132,15 +132,18 @@ class Chef
         if config[:ssh_gateway]
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
-          gw_opts = gw_port ? { :port => gw_port } : {}
+          gw_opts = session_options(gw_host, gw_port, gw_user)
 
-          session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
+          begin
+            # Try to connect with a key.
+            session.via(gw_host, gw_opts[:user], gw_opts)
+          rescue Net::SSH::AuthenticationFailed
+            prompt = "Enter the password for #{user}@#{gw_host}: "
+            gw_opts[:password] = prompt_for_password(prompt)
+            # Try again with a password.
+            session.via(gw_host, user, gw_opts)
+          end
         end
-      rescue Net::SSH::AuthenticationFailed
-        user = gw_user || config[:ssh_user]
-        prompt = "Enter the password for #{user}@#{gw_host}: "
-        gw_opts.merge!(:password => prompt_for_password(prompt))
-        session.via(gw_host, user, gw_opts)
       end
 
       def configure_session
@@ -204,32 +207,45 @@ class Chef
         list
       end
 
+      # Net::SSH session options hash for global options. These should be
+      # options that will apply to the gateway connection in addition to the
+      # main one.
+      #
+      # @since 12.5.0
+      # @param host [String] Hostname for this session.
+      # @param port [String] SSH port for this session.
+      # @param user [String] Optional username for this session.
+      # @return [Hash<Symbol, Object>]
+      def session_options(host, port, user=nil)
+        ssh_config = Net::SSH.configuration_for(host)
+        {}.tap do |opts|
+          # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
+          opts[:user] = user || config[:ssh_user] || ssh_config[:user]
+          if config[:identity_file]
+            opts[:keys] = File.expand_path(config[:identity_file])
+            opts[:keys_only] = true
+          end
+          opts[:forward_agent] = config[:forward_agent] || ssh_config[:forward_agent]
+          opts[:port] = port || ssh_config[:port]
+          opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
+          if !config[:host_key_verify]
+            opts[:paranoid] = false
+            opts[:user_known_hosts_file] = '/dev/null'
+          end
+        end
+      end
+
       def session_from_list(list)
         list.each do |item|
           host, ssh_port = item
           Chef::Log.debug("Adding #{host}")
-          session_opts = {}
-
-          ssh_config = Net::SSH.configuration_for(host)
-
-          # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
-          user = config[:ssh_user] || ssh_config[:user]
-          hostspec = user ? "#{user}@#{host}" : host
-          session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
-          session_opts[:keys_only] = true if config[:identity_file]
-          session_opts[:password] = config[:ssh_password] if config[:ssh_password]
-          session_opts[:forward_agent] = config[:forward_agent]
-          session_opts[:port] = config[:ssh_port] ||
-                                ssh_port || # Use cloud port if available
-                                Chef::Config[:knife][:ssh_port] ||
-                                ssh_config[:port]
-          session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
-
-          if !config[:host_key_verify]
-            session_opts[:paranoid] = false
-            session_opts[:user_known_hosts_file] = "/dev/null"
-          end
-
+          session_opts = session_options(host, ssh_port)
+          # Handle port overrides for the main connection.
+          session_opts[:port] = Chef::Config[:knife][:ssh_port] if Chef::Config[:knife][:ssh_port]
+          session_opts[:port] = config[:ssh_port] if config[:ssh_port]
+          # Create the hostspec.
+          hostspec = session_opts[:user] ? "#{session_opts[:user]}@#{host}" : host
+          # Connect a new session on the multi.
           session.use(hostspec, session_opts)
 
           @longest = host.length if host.length > @longest
