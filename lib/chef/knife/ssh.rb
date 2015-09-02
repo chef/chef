@@ -133,15 +133,16 @@ class Chef
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
           gw_opts = session_options(gw_host, gw_port, gw_user)
+          user = gw_opts.delete(:user)
 
           begin
             # Try to connect with a key.
-            session.via(gw_host, gw_opts[:user], gw_opts)
+            session.via(gw_host, user, gw_opts)
           rescue Net::SSH::AuthenticationFailed
             prompt = "Enter the password for #{user}@#{gw_host}: "
             gw_opts[:password] = prompt_for_password(prompt)
             # Try again with a password.
-            session.via(gw_host, gw_opts[:user], gw_opts)
+            session.via(gw_host, user, gw_opts)
           end
         end
       end
@@ -225,8 +226,11 @@ class Chef
             opts[:keys] = File.expand_path(config[:identity_file])
             opts[:keys_only] = true
           end
-          opts[:forward_agent] = config[:forward_agent] || ssh_config[:forward_agent]
-          opts[:port] = port || ssh_config[:port]
+          # Don't set the keys to nil if we don't have them.
+          forward_agent = config[:forward_agent] || ssh_config[:forward_agent]
+          opts[:forward_agent] = forward_agent unless forward_agent.nil?
+          port ||= ssh_config[:port]
+          opts[:port] = port unless port.nil?
           opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
           if !config[:host_key_verify]
             opts[:paranoid] = false
@@ -244,7 +248,7 @@ class Chef
           session_opts[:port] = Chef::Config[:knife][:ssh_port] if Chef::Config[:knife][:ssh_port]
           session_opts[:port] = config[:ssh_port] if config[:ssh_port]
           # Create the hostspec.
-          hostspec = session_opts[:user] ? "#{session_opts[:user]}@#{host}" : host
+          hostspec = session_opts[:user] ? "#{session_opts.delete(:user)}@#{host}" : host
           # Connect a new session on the multi.
           session.use(hostspec, session_opts)
 
