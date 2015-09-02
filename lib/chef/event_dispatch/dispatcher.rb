@@ -25,28 +25,30 @@ class Chef
       # define the forwarding in one go:
       #
 
-      # Define a method that will be forwarded to all
-      def self.def_forwarding_method(method_name)
-        define_method(method_name) do |*args|
-          @subscribers.each do |s|
-            # Skip new/unsupported event names.
-            if s.respond_to?(method_name)
-              mth = s.method(method_name)
-              # Anything with a *args is arity -1, so use all arguments.
-              arity = mth.arity < 0 ? args.length : mth.arity
-              # Trim arguments to match what the subscriber expects to allow
-              # adding new arguments without breaking compat.
-              mth.call(*args.take(arity))
-            end
-          end
+      def call_subscribers(method_name, *args)
+        @subscribers.each do |s|
+          # Skip new/unsupported event names.
+          next if !s.respond_to?(method_name)
+          mth = s.method(method_name)
+          # Trim arguments to match what the subscriber expects to allow
+          # adding new arguments without breaking compat.
+          args = args.take(mth.arity) if mth.arity < args.size && mth.arity >= 0
+          mth.call(*args)
         end
       end
 
       (Base.instance_methods - Object.instance_methods).each do |method_name|
-        def_forwarding_method(method_name)
+        class_eval <<-EOM
+          def #{method_name}(*args)
+            call_subscribers(#{method_name.inspect}, *args)
+          end
+        EOM
       end
 
+      # Special case deprecation, since it needs to know its caller
+      def deprecation(message, location=caller(2..2)[0])
+        call_subscribers(:deprecation, message, location)
+      end
     end
   end
 end
-

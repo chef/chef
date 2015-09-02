@@ -23,7 +23,7 @@ class Chef
       # == Deprecation::Provider::RemoteFile
       # This module contains the deprecated functions of
       # Chef::Provider::RemoteFile. These functions are refactored to different
-      # components. They are frozen and will be removed in Chef 12.
+      # components. They are frozen and will be removed in Chef 13.
       #
       module RemoteFile
 
@@ -83,4 +83,3 @@ class Chef
     end
   end
 end
-

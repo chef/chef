@@ -228,7 +228,7 @@ class Chef
       if value.nil? && !explicitly_accepts_nil?(resource)
         # If you say "my_property nil" and the property explicitly accepts
         # nil values, we consider this a get.
-        Chef::Log.deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
+        Chef.log_deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
         return get(resource)
       end
 

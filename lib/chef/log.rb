@@ -37,7 +37,11 @@ class Chef
       end
     end
 
-    def self.deprecation(msg=nil, &block)
+    def self.deprecation(msg=nil, location=caller(2..2)[0], &block)
+      if msg
+        msg << " at #{Array(location).join("\n")}"
+        msg = msg.join("") if msg.respond_to?(:join)
+      end
       if Chef::Config[:treat_deprecation_warnings_as_errors]
         error(msg, &block)
         raise Chef::Exceptions::DeprecatedFeatureError.new(msg)

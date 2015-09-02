@@ -46,10 +46,6 @@ describe "Chef class" do
     Chef.set_provider_priority_map(provider_priority_map)
   end
 
-  after do
-    Chef.reset!
-  end
-
   context "priority maps" do
     context "#get_provider_priority_array" do
       it "should use the current node to get the right priority_map" do

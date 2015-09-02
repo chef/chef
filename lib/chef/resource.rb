@@ -809,7 +809,7 @@ class Chef
       end
 
       if !options[:default].frozen? && (options[:default].is_a?(Array) || options[:default].is_a?(Hash))
-        Chef::Log.warn("Property #{self}.#{name} has an array or hash default (#{options[:default]}). This means that if one resource modifies or appends to it, all other resources of the same type will also see the changes. Either freeze the constant with `.freeze` to prevent appending, or use lazy { #{options[:default].inspect} }.")
+        Chef.log_deprecation("Property #{self}.#{name} has an array or hash default (#{options[:default]}). This means that if one resource modifies or appends to it, all other resources of the same type will also see the changes. Either freeze the constant with `.freeze` to prevent appending, or use lazy { #{options[:default].inspect} }.")
       end
 
       local_properties = properties(false)
@@ -1211,7 +1211,7 @@ class Chef
     # @deprecated Use resource_name instead.
     #
     def self.dsl_name
-      Chef::Log.deprecation "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead."
+      Chef.log_deprecation "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead."
       if name
         name = self.name.split('::')[-1]
         convert_to_snake_case(name)
@@ -1288,7 +1288,7 @@ class Chef
     #
     def self.provider_base(arg=nil)
       if arg
-        Chef::Log.deprecation("Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
+        Chef.log_deprecation("Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
       end
       @provider_base ||= arg || Chef::Provider
     end
