@@ -88,7 +88,6 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def initialize(username)
     @username = username
-    @name = multi_to_wide(username)
   end
 
   LOGON32_PROVIDER_DEFAULT = Security::LOGON32_PROVIDER_DEFAULT
