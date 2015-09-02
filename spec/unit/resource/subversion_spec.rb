@@ -54,6 +54,10 @@ describe Chef::Resource::Subversion do
     expect(@svn.svn_arguments).to eq('--no-auth-cache')
   end
 
+  it "sets svn binary to nil by default" do
+    expect(@svn.svn_binary).to be_nil
+  end
+
   it "resets svn arguments to nil when given false in the setter" do
     @svn.svn_arguments(false)
     expect(@svn.svn_arguments).to be_nil
