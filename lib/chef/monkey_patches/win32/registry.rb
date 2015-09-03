@@ -23,8 +23,7 @@ module Win32
       # ::Win32::Registry#delete_key uses RegDeleteKeyW. We need to use
       # RegDeleteKeyExW to properly support WOW64 systems.
       def DeleteKey(hkey, name)
-        arch_mask = win64? ? 0x0100 : 0x0200
-        check RegDeleteKeyExW(hkey, name.to_wstring, KEY_WRITE | arch_mask, 0)
+        check RegDeleteKeyExW(hkey, name.to_wstring, 0, 0)
       end
       
     end

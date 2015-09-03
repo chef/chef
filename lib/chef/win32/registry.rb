@@ -154,8 +154,7 @@ class Chef
       #Using the 'RegDeleteKeyEx' Windows API that correctly supports WOW64 systems (Win2003)
       #instead of the 'RegDeleteKey'
       def delete_key_ex(hive, key)
-        hive_num = hive.hkey - (1 << 32)
-        RegDeleteKeyExW(hive_num, wstring(key), ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0) == 0
+        RegDeleteKeyExW(hive.hkey, wstring(key), 0, 0) == 0
       end
 
       def key_exists?(key_path)
