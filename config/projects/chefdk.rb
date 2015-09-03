@@ -20,10 +20,7 @@ maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
 
 build_iteration 1
-build_version do
-  source :git, from_dependency: 'chefdk'
-  output_format :semver
-end
+build_version '0.8.0'
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
