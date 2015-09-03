@@ -68,6 +68,8 @@ class Chef
         end
 
         def respond_to?(method, include_private = false)
+          return false if is_a?(Array) && method == :to_hash
+          return false if is_a?(Hash) && method == :to_ary
           wrapped_object.respond_to?(method, include_private) || super
         end
 

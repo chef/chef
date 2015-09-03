@@ -204,4 +204,99 @@ describe Chef::Node::VividMash do
       expect(vivid[:foo][0]['baz'].__path).to eql(['foo', 0, 'baz'])
     end
   end
+
+  context "puts" do
+    it "works on a Hash" do
+      vivid['foo'] = 'bar'
+      puts vivid
+    end
+  end
+
+  context "#to_ary" do
+    it "should not be implemented on a Hash" do
+      vivid['foo'] = 'bar'
+      expect { vivid.to_ary }.to raise_error(NoMethodError)
+    end
+
+    it "should not respond_to? :to_ary for a Hash" do
+      vivid['foo'] = 'bar'
+      expect(vivid.respond_to?(:to_ary)).to be false
+    end
+
+    it "should be implemented on an Array" do
+      vivid['foo'] = [0,1]
+      expect(vivid['foo'].to_ary).to eql([0,1])
+    end
+
+    it "should respond_to? :to_ary for an Array " do
+      vivid['foo'] = [0,1]
+      expect(vivid['foo'].respond_to?(:to_ary)).to be true
+    end
+  end
+
+  context "#to_a" do
+    it "should be implemented on a Hash" do
+      vivid['foo'] = 'bar'
+      expect(vivid.to_a).to eql([["foo", "bar"]])
+    end
+
+    it "should respond_to? :to_a for a Hash" do
+      vivid['foo'] = 'bar'
+      expect(vivid.respond_to?(:to_a)).to be true
+    end
+
+    it "should be implemented on a Array" do
+      vivid['foo'] = [0,1]
+      expect(vivid['foo'].to_a).to eql([0,1])
+    end
+
+    it "should respond_to? :to_a for a Hash" do
+      vivid['foo'] = 'bar'
+      expect(vivid.respond_to?(:to_a)).to be true
+    end
+  end
+
+  context "#to_hash" do
+    it "should be implemented on a Hash" do
+      vivid['foo'] = 'bar'
+      expect(vivid.to_hash).to eql({'foo' => 'bar'})
+    end
+
+    it "should respond_to? :to_hash for a Hash" do
+      vivid['foo'] = 'bar'
+      expect(vivid.respond_to?(:to_hash)).to be true
+    end
+
+    it "should not be implemented on an Array" do
+      vivid['foo'] = [[0,1]]
+      expect { vivid['foo'].to_hash }.to raise_error(NoMethodError)
+    end
+
+    it "should not respond_to? :to_hash for an Array " do
+      vivid['foo'] = [[0,1]]
+      expect(vivid['foo'].respond_to?(:to_hash)).to be false
+    end
+  end
+
+  context "#to_h" do
+    it "should be implemented on a Hash" do
+      vivid['foo'] = 'bar'
+      expect(vivid.to_h).to eql({'foo' => 'bar'})
+    end
+
+    it "should respond_to? :to_h for a Hash" do
+      vivid['foo'] = 'bar'
+      expect(vivid.respond_to?(:to_h)).to be true
+    end
+
+    it "should be implemented on an Array" do
+      vivid['foo'] = [[0,1]]
+      expect(vivid['foo'].to_h).to eql({0=>1})
+    end
+
+    it "should respond_to? :to_h for an Array" do
+      vivid['foo'] = [[0,1]]
+      expect(vivid.respond_to?(:to_h)).to be true
+    end
+  end
 end
