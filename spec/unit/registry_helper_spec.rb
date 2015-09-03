@@ -176,28 +176,25 @@ describe Chef::Provider::RegistryKey do
   describe "delete_key", :windows_only do
     it "deletes key if it has subkeys and recursive is set to true" do
       expect(@registry).to receive(:key_exists?).with(key_path).and_return(true)
-      expect(@registry).to receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])
       expect(@registry).to receive(:has_subkeys?).with(key_path).and_return(true)
-      expect(@registry).to receive(:get_subkeys).with(key_path).and_return([sub_key])
-      expect(@registry).to receive(:key_exists?).with(key_path+"\\"+sub_key).and_return(true)
-      expect(@registry).to receive(:get_hive_and_key).with(key_path+"\\"+sub_key).and_return([@hive_mock, key+"\\"+sub_key])
-      expect(@registry).to receive(:has_subkeys?).with(key_path+"\\"+sub_key).and_return(false)
-      expect(@registry).to receive(:delete_key_ex).twice
+      expect(@registry).to receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])
+      expect(@hive_mock).to receive(:open).with(key_parent, ::Win32::Registry::KEY_WRITE | @registry.registry_system_architecture).and_yield(@reg_mock)
+      expect(@reg_mock).to receive(:delete_key).with(key_to_delete, true).and_return(true)
       @registry.delete_key(key_path, true)
     end
 
     it "raises an exception if it has subkeys but recursive is set to false" do
       expect(@registry).to receive(:key_exists?).with(key_path).and_return(true)
-      expect(@registry).to receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])
       expect(@registry).to receive(:has_subkeys?).with(key_path).and_return(true)
       expect{@registry.delete_key(key_path, false)}.to raise_error(Chef::Exceptions::Win32RegNoRecursive)
     end
 
     it "deletes key if the key exists and has no subkeys" do
       expect(@registry).to receive(:key_exists?).with(key_path).and_return(true)
-      expect(@registry).to receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])
       expect(@registry).to receive(:has_subkeys?).with(key_path).and_return(false)
-      expect(@registry).to receive(:delete_key_ex)
+      expect(@registry).to receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])
+      expect(@hive_mock).to receive(:open).with(key_parent, ::Win32::Registry::KEY_WRITE | @registry.registry_system_architecture).and_yield(@reg_mock)
+      expect(@reg_mock).to receive(:delete_key).with(key_to_delete, true).and_return(true)
       @registry.delete_key(key_path, true)
     end
   end
