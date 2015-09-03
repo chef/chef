@@ -29,20 +29,6 @@ class Chef
         add_exit_status_wrapper
       end
 
-      def action_run
-        validate_script_syntax!
-        super
-      end
-
-      def command
-        basepath = is_forced_32bit ? wow64_directory : run_context.node.kernel.os_info.system_directory
-
-        # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
-        interpreter_path = Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", interpreter)
-
-        "\"#{interpreter_path}\" #{flags} \"#{script_file.path}\""
-      end
-
       def flags
         # Must use -File rather than -Command to launch the script
         # file created by the base class that contains the script
@@ -66,44 +52,6 @@ class Chef
         self.code = wrapper_script
         Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
         Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
-      end
-
-      def validate_script_syntax!
-        interpreter_arguments = default_interpreter_flags.join(' ')
-        Tempfile.open(['chef_powershell_script-user-code', '.ps1']) do | user_script_file |
-          # Wrap the user's code in a PowerShell script block so that
-          # it isn't executed. However, syntactically invalid script
-          # in that block will still trigger a syntax error which is
-          # exactly what we want here -- verify the syntax without
-          # actually running the script.
-          user_code_wrapped_in_powershell_script_block = <<-EOH
-{
-  #{@new_resource.code}
-}
-EOH
-          user_script_file.puts user_code_wrapped_in_powershell_script_block
-
-          # A .close or explicit .flush required to ensure the file is
-          # written to the file system at this point, which is required since
-          # the intent is to execute the code just written to it.
-          user_script_file.close
-          validation_command = "\"#{interpreter}\" #{interpreter_arguments} -Command #{user_script_file.path}"
-
-          # Note that other script providers like bash allow syntax errors
-          # to be suppressed by setting 'returns' to a value that the
-          # interpreter would return as a status code in the syntax
-          # error case. We explicitly don't do this here -- syntax
-          # errors will not be suppressed, since doing so could make
-          # it harder for users to detect / debug invalid scripts.
-
-          # Therefore, the only return value for a syntactically valid
-          # script is 0. If an exception is raised by shellout, this
-          # means a non-zero return and thus a syntactically invalid script.
-
-          with_os_architecture(node, architecture: new_resource.architecture) do
-            shell_out!(validation_command, {returns: [0]})
-          end
-        end
       end
 
       def default_interpreter_flags
@@ -154,14 +102,17 @@ new-variable -name chefscriptresult -visibility private
 # Initialize a variable we use to capture $? inside a block
 $global:lastcmdlet = $null
 
-# Execute the user's code in a script block --
-$chefscriptresult =
-{
- #{@new_resource.code}
+# Create a scriptblock with the user's code
+# This will validate the syntax of the PowerShell provided
+$UserScriptBlock =  $ExecutionContext.InvokeCommand.NewScriptBlock(@'
+  #{@new_resource.code}
 
- # This assignment doesn't affect the block's return value
- $global:lastcmdlet = $?
-}.invokereturnasis()
+  # This assignment doesn't affect the block's return value
+  $global:lastcmdlet = $?
+'@)
+
+# Execute the user's code in a script block --
+$chefscriptresult = $UserScriptBlock.invokereturnasis()
 
 # Assume failure status of 1 -- success cases
 # will have to override this
@@ -193,6 +144,7 @@ elseif ( $LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0 )
 # launched with -Command, it will be 0 if $exitstatus was 0,
 # 1 (i.e. failed) otherwise.
 exit $exitstatus
+
 EOH
       end
 
