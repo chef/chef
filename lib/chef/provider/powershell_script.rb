@@ -104,15 +104,20 @@ $global:lastcmdlet = $null
 
 # Create a scriptblock with the user's code
 # This will validate the syntax of the PowerShell provided
-$UserScriptBlock =  $ExecutionContext.InvokeCommand.NewScriptBlock(@'
+function New-UserScriptBlock {
+  try {
+    $ExecutionContext.InvokeCommand.NewScriptBlock(@'
   #{@new_resource.code}
 
   # This assignment doesn't affect the block's return value
   $global:lastcmdlet = $?
 '@)
+  }
+  catch {write-error ($_.Exception.Message);exit 5}
+}
 
 # Execute the user's code in a script block --
-$chefscriptresult = $UserScriptBlock.invokereturnasis()
+$chefscriptresult = (New-UserScriptBlock).invokereturnasis()
 
 # Assume failure status of 1 -- success cases
 # will have to override this
