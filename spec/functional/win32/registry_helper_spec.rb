@@ -556,11 +556,11 @@ describe 'Chef::Win32::Registry', :windows_only do
       end
 
       after(:all) do
-        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
-          reg.delete_key("Trunk", true)
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software", ::Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
+          reg.delete_key("Root", true)
         end
-        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0200) do |reg|
-          reg.delete_key("Trunk", true)
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software", ::Win32::Registry::KEY_ALL_ACCESS | 0x0200) do |reg|
+          reg.delete_key("Root", true)
         end
       end
 
