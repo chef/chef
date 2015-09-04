@@ -73,6 +73,16 @@ class Chef
           wrapped_object.respond_to?(method, include_private) || super
         end
 
+        # avoid method_missing perf hit
+        def delete(key)
+          wrapped_object.delete(key)
+        end
+
+        # avoid method_missing perf hit
+        def clear
+          wrapped_object.clear
+        end
+
         def to_s
           wrapped_object.to_s
         end
