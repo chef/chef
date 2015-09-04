@@ -39,6 +39,8 @@ of partial templates.
 * [**Joel Handwell**](https://github.com/joelhandwell):
   [pr#3821](https://github.com/chef/chef/pull/3821) Human friendly elapsed time in log
 
+* [pr#3875](https://github.com/chef/chef/pull/3875) Patch Win32::Registry#delete_key, #delete_value to use wide (W) APIs
+* [pr#3850](https://github.com/chef/chef/pull/3850) Patch Win32::Registry#write to fix encoding errors
 * [pr#3837](https://github.com/chef/chef/pull/3837) refactor remote_directory provider for mem+perf improvement
 * [pr#3799](https://github.com/chef/chef/pull/3799) fix supports hash issues in service providers
 * [pr#3817](https://github.com/chef/chef/pull/3817) Remove now-useless forcing of ruby Garbage Collector run
