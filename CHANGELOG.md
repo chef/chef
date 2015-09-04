@@ -43,7 +43,9 @@ of partial templates.
 * [pr#3850](https://github.com/chef/chef/pull/3850) Patch Win32::Registry#write to fix encoding errors
 * [pr#3837](https://github.com/chef/chef/pull/3837) refactor remote_directory provider for mem+perf improvement
 * [pr#3799](https://github.com/chef/chef/pull/3799) fix supports hash issues in service providers
+* [pr#3797](https://github.com/chef/chef/pull/3797) Fix dsc_script spec failure on 64-bit Ruby
 * [pr#3817](https://github.com/chef/chef/pull/3817) Remove now-useless forcing of ruby Garbage Collector run
+* [pr#3775](https://github.com/chef/chef/pull/3775) Enable 64-bit support for Powershell and Batch scripts
 * [pr#3774](https://github.com/chef/chef/pull/3774) Add support for yum-deprecated in yum provider
 * [pr#3793](https://github.com/chef/chef/pull/3793) CHEF-5372: Support specific `run_levels` for RedHat service
 * [pr#2460](https://github.com/chef/chef/pull/2460) add privacy flag
