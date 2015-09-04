@@ -68,14 +68,17 @@ class Chef
 
         def [](key)
           if is_a?(Chef::Node::Attribute)
-            cache = __deep_merge_cache.regular_reader(*__path)
-
-            cache_val = cache && cache[key] && cache[key][:__deep_merge_cache]
-            return cache_val if cache_val
+            cache_val = __deep_merge_cache.regular_reader(*__path, key, :__deep_merge_cache) rescue nil
+            if cache_val
+              return cache_val.respond_to?(:wrapped_object) ? cache_val.wrapped_object : cache_val
+            end
+            cache = __deep_merge_cache.regular_reader(*__path) rescue nil
 
             val = super
-            cache.regular_writer(key, {}) unless cache.include?(key)
-            cache[key].regular_writer(:__deep_merge_cache, val)
+            if cache
+              cache.regular_writer(key, {}) unless cache.include?(key)
+              cache[key].regular_writer(:__deep_merge_cache, val)
+            end
             return val
           else
             super
@@ -86,7 +89,7 @@ class Chef
           if is_a?(Chef::Node::VividMash)
             # FIXME: should probably add some kind of safe_regular_reader that doesn't rescue Exceptions
             cache = __deep_merge_cache.regular_reader(*__path) rescue nil
-            if cache && cache[key] && cache[key][:__deep_merge_cache]
+            if cache && cache[key] && cache[key].key?(:__deep_merge_cache)
               cache[key].delete(:__deep_merge_cache)
             end
           end
