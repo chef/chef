@@ -94,7 +94,7 @@ EOH
           Chef::Config[:chef_server_url] = chef_server
           Chef::Config[:node_name] = admin_client_name
           Chef::Config[:client_key] = admin_client_key
-          user_create = Chef::Knife::UserCreate.new
+          user_create = Chef::Knife::OscUserCreate.new
           user_create.name_args = [ new_client_name ]
           user_create.config[:user_password] = config[:user_password] ||
             ui.ask("Please enter a password for the new user: ") {|q| q.echo = false}

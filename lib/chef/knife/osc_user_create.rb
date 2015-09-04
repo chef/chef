@@ -17,6 +17,7 @@
 #
 
 require 'chef/knife'
+require 'chef/user'
 
 # DEPRECATION NOTE
 # This code only remains to support users still operating with
