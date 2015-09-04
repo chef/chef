@@ -66,6 +66,16 @@ class Chef
             end
         end
 
+        def regular_writer(*path, value)
+          if is_a?(Chef::Node::VividMash)
+            cache = __deep_merge_cache.regular_reader(*__path, *path) rescue nil
+            if cache && cache.key?(:__deep_merge_cache)
+              cache.delete(:__deep_merge_cache)
+            end
+          end
+          super
+        end
+
         def [](key)
           if is_a?(Chef::Node::Attribute)
             cache_val = __deep_merge_cache.regular_reader(*__path, key, :__deep_merge_cache) rescue nil
