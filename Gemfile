@@ -18,10 +18,7 @@ group(:development, :test) do
   gem "simplecov"
   gem 'rack', "~> 1.5.1"
 
-  #gem 'cheffish', "~> 1.3"
-  # We are pinning cheffish to 1.3.1 until https://github.com/chef/cheffish/pull/73
-  # is released
-  gem 'cheffish', "~> 1.3.1"
+  gem 'cheffish', github: 'chef/cheffish', branch: 'jk/cheffish_fix' # "~> 1.3"
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 end
