@@ -29,6 +29,10 @@ class Chef
           __attribute_changed(__precedence, __next_path, value)
         end
 
+        def pretty_print_instance_variables
+          instance_variables.sort - [ :@__node ]
+        end
+
         private
 
         def __attribute_changed(*args)
