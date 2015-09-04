@@ -299,4 +299,30 @@ describe Chef::Node::VividMash do
       expect(vivid.respond_to?(:to_h)).to be true
     end
   end
+
+  context "#delete" do
+    it "should delete hash keys" do
+      vivid['foo'] = 'bar'
+      expect(vivid.delete('foo')).to eql('bar')
+      expect(vivid).to eql({})
+    end
+
+    it "should delete with symbols converted to strings" do
+      vivid['foo'] = 'bar'
+      expect(vivid.delete(:foo)).to eql('bar')
+      expect(vivid).to eql({})
+    end
+
+    it "should delete hash keys set to nil" do
+      vivid['foo'] = nil
+      expect(vivid.delete('foo')).to eql(nil)
+      expect(vivid).to eql({})
+    end
+
+    it "should delete hash keys set to nil with symbols converted to strings" do
+      vivid['foo'] = nil
+      expect(vivid.delete(:foo)).to eql(nil)
+      expect(vivid).to eql({})
+    end
+  end
 end
