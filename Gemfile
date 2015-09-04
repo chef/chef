@@ -5,6 +5,10 @@ gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
 gem 'chef-config', path: "chef-config"
 
+# We are pinning chef-zero to 4.2.x until ChefFS can deal
+# with V1 api calls or chef-zero supports both v0 and v1
+gem "chef-zero", "~> 4.2.3"
+
 group(:docgen) do
   gem "tomlrb"
   gem "yard"
@@ -13,7 +17,11 @@ end
 group(:development, :test) do
   gem "simplecov"
   gem 'rack', "~> 1.5.1"
-  gem 'cheffish', "~> 1.3"
+
+  #gem 'cheffish', "~> 1.3"
+  # We are pinning cheffish to 1.3.1 until https://github.com/chef/cheffish/pull/73
+  # is released
+  gem 'cheffish', "~> 1.3.1"
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 end
