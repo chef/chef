@@ -98,7 +98,32 @@ dsc_script 'create-foo-user' do
 end
 ```
 
-Note, you still need to configure the CertificateID in the LCM.
+Note, you **MUST** still do a one-time configuration of the `CertificateID` used in the recipe above with the DSC Local Configuration Manager (LCM) before this recipe fragment will succeed. The following Chef code could be used to configure the LCM to use the certificate `A8DB81D8059F349F7EF19104399B898F701D4167` stored in the Windows certificate store location `cert:localmachine\my`:
+
+```ruby
+lcm_cert_thumbprint = 'A8DB81D8059F349F7EF19104399B898F701D4167'
+
+powershell_script 'lcm_cert_script' do
+  code <<-EOH
+Configuration 'lcm_cert_configuration' {
+    node 'localhost' {
+        localconfigurationmanager {
+            CertificateID = "#{lcm_cert_thumbprint}"
+            ConfigurationMode = 'ApplyOnly'
+            RebootNodeIfNeeded = $false
+            RefreshMode = 'PUSH'
+        }
+    }
+}
+
+lcm_cert_configuration
+
+set-dsclocalconfigurationmanager -path .\\lcm_cert_configuration
+EOH
+
+  not_if "(Get-DscLocalConfigurationManager).certificateid -eq '#{lcm_cert_thumbprint}'"
+end
+```
 
 ### chef-client -j JSON
 Add to the [description of chef-client options](https://docs.chef.io/ctl_chef_client.html#options):
