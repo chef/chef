@@ -43,7 +43,7 @@ class Chef
             if is_a?(Chef::Node::VividMash)
               # FIXME: should probably add some kind of safe_regular_reader that doesn't rescue Exceptions
               cache = __deep_merge_cache.regular_reader(*__path) rescue nil
-              if cache && cache[:__deep_merge_cache]
+              if cache && cache.key?(:__deep_merge_cache)
                 cache.delete(:__deep_merge_cache)
               end
             end
@@ -88,9 +88,9 @@ class Chef
         def []=(key, value)
           if is_a?(Chef::Node::VividMash)
             # FIXME: should probably add some kind of safe_regular_reader that doesn't rescue Exceptions
-            cache = __deep_merge_cache.regular_reader(*__path) rescue nil
-            if cache && cache[key] && cache[key].key?(:__deep_merge_cache)
-              cache[key].delete(:__deep_merge_cache)
+            cache = __deep_merge_cache.regular_reader(*__path, key) rescue nil
+            if cache && cache.key?(:__deep_merge_cache)
+              cache.delete(:__deep_merge_cache)
             end
           end
           super
