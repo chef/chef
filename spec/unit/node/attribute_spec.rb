@@ -1387,15 +1387,25 @@ describe Chef::Node::Attribute do
     let(:attributes) { Chef::Node::Attribute.new(node: node) }
 
     it "is accessible via attributes" do
-      pp attributes
       attributes.default['foo']['bar']['baz'] = 'qux'
       expect(attributes['foo']['bar'].__node).to eq(node)
     end
 
     it "is accessible at precedence levels" do
       attributes.default['foo']['bar']['baz'] = 'qux'
-      pp attributes
       expect(attributes.default['foo']['bar'].__node).to eq(node)
+    end
+  end
+
+  describe "deep_merge_cache invalidation" do
+    it "correctly invalidates autovivized interior nodes" do
+      @attributes.automatic['foo']['bar'] = 'baz'
+      # next line creates cache for @attributes['foo'] and @attributes['foo']['bar']
+      expect(@attributes['foo']['bar']).to eql('baz')
+      # this will autovivize @attributes.default['foo'] and must invalidate the @attributes['foo'] cache
+      @attributes.default['foo']['baz'] = 'qux'
+      # this will fail if @attributes['foo'] is still cached and only has the automatic level
+      expect(@attributes['foo']['baz']).to eql('qux')
     end
   end
 end
