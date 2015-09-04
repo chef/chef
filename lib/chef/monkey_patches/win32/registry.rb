@@ -21,8 +21,9 @@ require 'win32/registry'
 
 module Win32
   class Registry
+
     module API
-      
+
       extend Chef::ReservedNames::Win32::API::Registry
 
       module_function
@@ -41,7 +42,31 @@ module Win32
       def DeleteKey(hkey, name)
         check RegDeleteKeyExW(hkey, name.to_wstring, 0, 0)
       end
-      
+
+    end
+
+    if RUBY_VERSION =~ /^2.1/
+      # ::Win32::Registry#write does not correctly handle data in Ruby 2.1 (up to Ruby 2.1.6).
+      # https://bugs.ruby-lang.org/issues/11439
+      def write(name, type, data)
+        case type
+        when REG_SZ, REG_EXPAND_SZ
+          data = data.to_s.encode(WCHAR) + WCHAR_NUL
+        when REG_MULTI_SZ
+          data = data.to_a.map {|s| s.encode(WCHAR)}.join(WCHAR_NUL) << WCHAR_NUL << WCHAR_NUL
+        when REG_BINARY
+          data = data.to_s
+        when REG_DWORD
+          data = API.packdw(data.to_i)
+        when REG_DWORD_BIG_ENDIAN
+          data = [data.to_i].pack('N')
+        when REG_QWORD
+          data = API.packqw(data.to_i)
+        else
+          raise TypeError, "Unsupported type #{type}"
+        end
+        API.SetValue(@hkey, name, type, data, data.bytesize)
+      end
     end
   end
 end
