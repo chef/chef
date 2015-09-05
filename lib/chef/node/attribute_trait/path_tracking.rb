@@ -30,7 +30,7 @@ class Chef
         end
 
         def pretty_print_instance_variables
-          instance_variables.sort - [ :@__node ]
+          super - [ :@__node ]
         end
 
         private

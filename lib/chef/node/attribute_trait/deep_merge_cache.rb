@@ -106,6 +106,10 @@ class Chef
           super
         end
 
+        def pretty_print_instance_variables
+          super - [ :@__deep_merge_cache ]
+        end
+
         def new_decorator(**args)
           args[:deep_merge_cache] = __deep_merge_cache
           super(**args)
