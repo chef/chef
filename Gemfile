@@ -10,11 +10,19 @@ gem 'chef-config', path: "chef-config"
 gem "chef-zero", "~> 4.2.3"
 
 group(:docgen) do
-  gem "tomlrb"
   gem "yard"
 end
 
+group(:maintenance) do
+  gem "tomlrb"
+
+  # To sync maintainers with github
+  gem "octokit"
+  gem "netrc"
+end
+
 group(:development, :test) do
+
   gem "simplecov"
   gem 'rack', "~> 1.5.1"
 

@@ -22,6 +22,8 @@ Handles the core parts of the Chef DSL, base resource and provider
 infrastructure, the Chef applications and [omnibus-chef](https://github.com/chef/omnibus-chef). Includes anything not covered by
 another component.
 
+To mention the team, use @chef/client-core
+
 ### Lieutenant
 
 * [Thom May](https://github.com/thommay)
@@ -33,7 +35,7 @@ another component.
 * [Daniel DeLeo](https://github.com/danielsdeleo)
 * [AJ Christensen](https://github.com/fujin)
 * [Phil Dibowitz](https://github.com/jaymzh)
-* [Jay Mundrawala](https://github.com/jdmundrawala)
+* [Jay Mundrawala](https://github.com/jaym)
 * [Jon Cowie](https://github.com/jonlives)
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Claire McQuin](https://github.com/mcquin)
@@ -44,6 +46,8 @@ another component.
 ## Dev Tools
 
 Chef Zero, Knife, Chef Apply and Chef Shell.
+To mention the team, use @chef/client-dev-tools
+
 ### Maintainers
 
 * [Daniel DeLeo](https://github.com/danielsdeleo)
@@ -54,6 +58,8 @@ Chef Zero, Knife, Chef Apply and Chef Shell.
 ## Test Tools
 
 ChefSpec
+To mention the team, use @chef/client-test-tools
+
 ### Lieutenant
 
 * [Seth Vargo](https://github.com/sethvargo)
@@ -70,6 +76,8 @@ The specific components of Chef related to a given platform - including (but not
 
 ## Enterprise Linux
 
+To mention the team, use @chef/client-enterprise-linux
+
 ### Lieutenant
 
 * [Jon Cowie](https://github.com/jonlives)
@@ -80,6 +88,8 @@ The specific components of Chef related to a given platform - including (but not
 * [Lamont Granquist](https://github.com/lamont-granquist)
 
 ## Ubuntu
+
+To mention the team, use @chef/client-ubuntu
 
 ### Lieutenant
 
@@ -92,18 +102,22 @@ The specific components of Chef related to a given platform - including (but not
 
 ## Windows
 
+To mention the team, use @chef/client-windows
+
 ### Lieutenant
 
 * [Bryan McLellan](https://github.com/btm)
 
 ### Maintainers
 
-* [Jay Mundrawala](https://github.com/jdmundrawala)
+* [Jay Mundrawala](https://github.com/jaym)
 * [Kartik Cating-Subramanian](https://github.com/ksubrama)
 * [Steven Murawski](https://github.com/smurawski)
 * [Salim Alam](https://github.com/chefsalim)
 
 ## Solaris
+
+To mention the team, use @chef/client-solaris
 
 ### Lieutenant
 
@@ -115,11 +129,15 @@ The specific components of Chef related to a given platform - including (but not
 
 ## AIX
 
+To mention the team, use @chef/client-aix
+
 ### Lieutenant
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 
 ## Mac OS X
+
+To mention the team, use @chef/client-os-x
 
 ### Lieutenant
 
@@ -131,6 +149,8 @@ The specific components of Chef related to a given platform - including (but not
 
 ## Debian
 
+To mention the team, use @chef/client-debian
+
 ### Lieutenant
 
 * [Thom May](https://github.com/thommay)
@@ -141,11 +161,15 @@ The specific components of Chef related to a given platform - including (but not
 
 ## Fedora
 
+To mention the team, use @chef/client-fedora
+
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 
 ## openSUSE
+
+To mention the team, use @chef/client-opensuse
 
 ### Maintainers
 
@@ -153,11 +177,15 @@ The specific components of Chef related to a given platform - including (but not
 
 ## SUSE Enterprise Linux Server
 
+To mention the team, use @chef/client-suse
+
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 
 ## FreeBSD
+
+To mention the team, use @chef/client-freebsd
 
 ### Lieutenant
 
@@ -170,11 +198,15 @@ The specific components of Chef related to a given platform - including (but not
 
 ## OpenBSD
 
+To mention the team, use @chef/client-openbsd
+
 ### Lieutenant
 
 * [Joe Miller](https://github.com/joemiller)
 
 ## Gentoo
+
+To mention the team, use @chef/client-gentoo
 
 ### Maintainers
 
@@ -182,11 +214,15 @@ The specific components of Chef related to a given platform - including (but not
 
 ## OmniOS
 
+To mention the team, use @chef/client-omnios
+
 ### Maintainers
 
 * [Thom May](https://github.com/thommay)
 
 ## ArchLinux
+
+To mention the team, use @chef/client-archlinux
 
 ### Maintainers
 

@@ -1,5 +1,7 @@
 #
 # This file is structured to be consumed by both humans and computers.
+# To update the generated Markdown, run `bundle exec rake maintainers:generate`
+# To synchronize the maintainers with the github teams, run `bundle exec rake maintainers:synchronize`
 # It is a TOML document containing Markdown
 #
 [Preamble]
@@ -24,6 +26,7 @@ a maintainer, lieutenant, or the project lead.
 
     [Org.Components.Core]
       title = "Chef Core"
+      team = "client-core"
       text = """
 Handles the core parts of the Chef DSL, base resource and provider
 infrastructure, the Chef applications and [omnibus-chef](https://github.com/chef/omnibus-chef). Includes anything not covered by
@@ -38,7 +41,7 @@ another component.
         "danielsdeleo",
         "fujin",
         "jaymzh",
-        "jdmundrawala",
+        "jaym",
         "jonlives",
         "lamont-granquist",
         "mcquin",
@@ -49,6 +52,7 @@ another component.
 
     [Org.Components.DevTools]
       title = "Dev Tools"
+      team = "client-dev-tools"
       text = "Chef Zero, Knife, Chef Apply and Chef Shell."
 
       paths = [
@@ -68,6 +72,7 @@ another component.
 
     [Org.Components.TestTools]
       title = "Test Tools"
+      team = "client-test-tools"
       text = "ChefSpec"
 
       lieutenant = "sethvargo"
@@ -86,6 +91,7 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems."Enterprise Linux"]
         title = "Enterprise Linux"
+        team = "client-enterprise-linux"
 
         lieutenant = "jonlives"
 
@@ -96,6 +102,7 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.Ubuntu]
         title = "Ubuntu"
+        team = "client-ubuntu"
 
         lieutenant = "ranjib"
 
@@ -106,10 +113,11 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.Windows]
         title = "Windows"
+        team = "client-windows"
 
         lieutenant = "btm"
         maintainers = [
-          "jdmundrawala",
+          "jaym",
           "ksubrama",
           "smurawski",
           "chefsalim"
@@ -117,6 +125,7 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.Solaris]
         title = "Solaris"
+        team = "client-solaris"
 
         lieutenant = "thommay"
 
@@ -126,11 +135,13 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.AIX]
         title = "AIX"
+        team = "client-aix"
 
         lieutenant = "lamont-granquist"
 
       [Org.Components.Subsystems."Mac OS X"]
         title = "Mac OS X"
+        team = "client-os-x"
 
         lieutenant = "jtimberman"
 
@@ -140,6 +151,7 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.Debian]
         title = "Debian"
+        team = "client-debian"
 
         lieutenant = "thommay"
 
@@ -149,6 +161,7 @@ The specific components of Chef related to a given platform - including (but not
 
     [Org.Components.Subsystems.Fedora]
         title = "Fedora"
+        team = "client-fedora"
 
         maintainers = [
           "lamont-granquist"
@@ -156,6 +169,7 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.openSUSE]
         title = "openSUSE"
+        team = "client-opensuse"
 
         maintainers = [
           "lamont-granquist"
@@ -163,6 +177,7 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems."SUSE Enterprise Linux"]
         title = "SUSE Enterprise Linux Server"
+        team = "client-suse"
 
         maintainers = [
           "lamont-granquist"
@@ -170,6 +185,7 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.FreeBSD]
         title = "FreeBSD"
+        team = "client-freebsd"
 
         lieutenant = "martinisoft"
 
@@ -180,11 +196,13 @@ The specific components of Chef related to a given platform - including (but not
 
       [Org.Components.Subsystems.OpenBSD]
         title = "OpenBSD"
+        team = "client-openbsd"
 
         lieutenant = "joemiller"
 
     [Org.Components.Subsystems.Gentoo]
         title = "Gentoo"
+        team = "client-gentoo"
 
         maintainers = [
           "lamont-granquist"
@@ -192,6 +210,7 @@ The specific components of Chef related to a given platform - including (but not
 
     [Org.Components.Subsystems.OmniOS]
         title = "OmniOS"
+        team = "client-omnios"
 
         maintainers = [
           "thommay"
@@ -199,6 +218,7 @@ The specific components of Chef related to a given platform - including (but not
 
     [Org.Components.Subsystems.ArchLinux]
         title = "ArchLinux"
+        team = "client-archlinux"
 
         maintainers = [
           "lamont-granquist",
@@ -230,9 +250,9 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Phil Dibowitz"
     GitHub = "jaymzh"
 
-  [people.jdmundrawala]
+  [people.jaym]
     Name = "Jay Mundrawala"
-    GitHub = "jdmundrawala"
+    GitHub = "jaym"
 
   [people.jonlives]
     Name = "Jon Cowie"
