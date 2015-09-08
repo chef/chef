@@ -30,7 +30,7 @@ class Chef
 
       def self.encrypt(str, &block)
         data_blob = CRYPT_INTEGER_BLOB.new
-        unless CryptProtectData(CRYPT_INTEGER_BLOB.new(str.to_wstring), nil, nil, nil, nil, 0, data_blob)
+        unless CryptProtectData(CRYPT_INTEGER_BLOB.new(str.to_wstring), nil, nil, nil, nil, CRYPTPROTECT_LOCAL_MACHINE, data_blob)
           Chef::ReservedNames::Win32::Error.raise!
         end
         bytes = data_blob[:pbData].get_bytes(0, data_blob[:cbData])
