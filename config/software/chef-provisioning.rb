@@ -24,9 +24,9 @@ if windows?
   dependency "ruby-windows-devkit"
 else
   dependency "ruby"
-  dependency "rubygems"
 end
 
+dependency "rubygems"
 dependency "bundler"
 dependency "chef"
 

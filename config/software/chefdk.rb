@@ -21,22 +21,28 @@ source git: "git://github.com/chef/chef-dk.git"
 
 relative_path "chef-dk"
 
-dependency "libffi" if debian?
 
+if windows?
+  dependency "ruby-windows"
+  dependency "ruby-windows-devkit"
+else
+  dependency "libffi" if debian?
+  dependency "ruby"
+end
+
+dependency "rubygems"
+dependency "bundler"
 dependency "bundler"
 dependency "appbundler"
+dependency "chef"
 dependency "berkshelf"
 dependency "chef-vault"
 dependency "foodcritic"
 dependency "ohai"
 dependency "test-kitchen"
 dependency "kitchen-vagrant"
-dependency "chef"
 dependency "openssl-customization"
 
-# The devkit has to be installed after rubygems-customization so the
-# file it installs gets patched.
-dependency "ruby-windows-devkit" if windows?
 dependency "chefdk-env-customization" if windows?
 
 build do

@@ -23,8 +23,9 @@ if windows?
   dependency "ruby-windows"
 else
   dependency "ruby"
-  dependency "rubygems"
 end
+
+dependency "rubygems"
 
 build do
   block "Add Rubygems customization file" do
