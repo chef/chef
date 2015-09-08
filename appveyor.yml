@@ -1,6 +1,6 @@
 version: "master-{build}"
 
-os: Windows Server 2012
+os: Windows Server 2012 R2
 platform:
   - x64
 
@@ -22,6 +22,7 @@ cache:
   - C:\Ruby200\bin
 
 install:
+  - systeminfo
   - winrm quickconfig -q
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - echo %PATH%
