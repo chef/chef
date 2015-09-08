@@ -65,16 +65,20 @@
           </Directory>
         </Directory>
       </Directory>
-      
+
       <Directory Id="ProgramMenuFolder">
         <Component Id="StartMenuShortcut" Guid="{6DD3FFF3-E009-40E7-B1C2-EF606B941CCD}">
-            <Shortcut Id="StartMenuShortcutDef" 
-                      Name="!(loc.ChefDkStartMenuShortcutDefName)"
-                      Description="!(loc.ChefDkStartMenuShortcutDefDescription)"
-                      Target="[#StartChefDkScript]"/>
+          <Shortcut Id="StartMenuShortcutDef"
+                    Name="!(loc.ChefDkStartMenuShortcutDefName)"
+                    Description="!(loc.ChefDkStartMenuShortcutDefDescription)"
+                    Target="[WindowsFolder]\System32\WindowsPowerShell\v1.0\powershell.exe"
+                    Arguments="-file [#StartChefDkScript]"
+                    Icon="oc.ico"/>
         </Component>
       </Directory>
     </Directory>
+
+    <Icon Id="oc.ico" SourceFile="Resources\assets\oc_16x16.ico"/>
 
     <!-- Set the components defined in our fragment files that will be used for our feature  -->
     <Feature Id="ChefDkFeature" Title="!(loc.FeatureMainName)" Absent="disallow" AllowAdvertise="no" Level="1" ConfigurableDirectory="INSTALLLOCATION">
@@ -88,7 +92,7 @@
       <ComponentRef Id="StartChefDk" />
       <ComponentRef Id="StartMenuShortcut" />
     </Feature>
- 
+
     <Feature Id="ChefDkEnvHacks" Title="!(loc.FeatureChefDkEnvHacks)" Description="!(loc.FeatureChefDkEnvHacksDesc)" Level="1000" AllowAdvertise="no">
       <ComponentRef Id="ChefDkEnvHacks" />
     </Feature>
@@ -96,7 +100,6 @@
     <!--
       UI Stuff
     -->
-    <Icon Id="oc.ico" SourceFile="Resources\assets\oc_16x16.ico"/>
     <Property Id="ARPPRODUCTICON" Value="oc.ico" />
     <Property Id="ARPHELPLINK" Value="http://www.getchef.com/support/" />
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
