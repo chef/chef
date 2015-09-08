@@ -556,6 +556,12 @@ describe Chef::Node::Attribute do
       @attributes.default[:foo] = %w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
       @attributes.default[:foo].dup
     end
+
+    it "allows modifications to dup'd data" do
+      @attributes.default['foo'] = %w[foo bar baz]
+      myarray = @attributes['foo'].dup
+      myarray << 'qux'
+    end
   end
 
   describe "has_key?" do
