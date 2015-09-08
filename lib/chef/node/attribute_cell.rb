@@ -353,7 +353,7 @@ class Chef
         @normal.map do |value|
           if value.is_a?(Hash) || value.is_a?(Array)
             cell = self.class.allocate
-            cell.instance_variable_set(:"@#{component}", value)
+            cell.instance_variable_set(:@normal, value)
             cell
           else
             value
@@ -388,7 +388,7 @@ class Chef
         @automatic.map do |value|
           if value.is_a?(Hash) || value.is_a?(Array)
             cell = self.class.allocate
-            cell.instance_variable_set(:"@#{component}", value)
+            cell.instance_variable_set(:@automatic, value)
             cell
           else
             value

@@ -531,6 +531,24 @@ describe Chef::Node::Attribute do
       expect(hash).to eql({"bar"=>{"baz"=>"fizzbuzz"}})
       expect(@attributes.default['foo']).to eql({"bar"=>{"baz"=>"fizz"}})
     end
+
+    it "works on normal attributes" do
+      @attributes.normal['foo']['bar'] = [{'fizz'=>'buzz'},{'baz' => 'qux'}]
+      hash = @attributes['foo'].to_hash
+      expect(hash).to eql({"bar"=>[{'fizz'=>'buzz'},{'baz' => 'qux'}]})
+    end
+
+    it "works on override attributes" do
+      @attributes.override['foo']['bar'] = [{'fizz'=>'buzz'},{'baz' => 'qux'}]
+      hash = @attributes['foo'].to_hash
+      expect(hash).to eql({"bar"=>[{'fizz'=>'buzz'},{'baz' => 'qux'}]})
+    end
+
+    it "works on automatic attributes" do
+      @attributes.automatic['foo']['bar'] = [{'fizz'=>'buzz'},{'baz' => 'qux'}]
+      hash = @attributes['foo'].to_hash
+      expect(hash).to eql({"bar"=>[{'fizz'=>'buzz'},{'baz' => 'qux'}]})
+    end
   end
 
   describe "dup" do
