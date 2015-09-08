@@ -70,6 +70,7 @@ of partial templates.
 * [pr#3768](https://github.com/chef/chef/pull/3768) Make reboot\_pending? look for CBS RebootPending
 * [pr#3815](https://github.com/chef/chef/pull/3815) Fix `powershell_script` validation to use correct architecture
 * [pr#3772](https://github.com/chef/chef/pull/3772) Add `ps_credential` dsl method to `dsc_script`
+* [pr#3462](https://github.com/chef/chef/pull/3462) Fix issue where `ps_credential` does not work over winrm
 
 ## 12.4.1
 
