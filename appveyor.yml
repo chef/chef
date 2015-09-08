@@ -8,6 +8,10 @@ environment:
   matrix:
     - ruby_version: "200"
     - ruby_version: "200-x64"
+    - ruby_version: "21"
+    - ruby_version: "21-x64"
+    - ruby_version: "22"
+    - ruby_version: "22-x64"
 
 clone_folder: c:\projects\chef
 clone_depth: 1
@@ -15,11 +19,20 @@ skip_tags: true
 branches:
   only:
     - master
-    - 12.4-stable
 
 cache:
   - C:\Ruby200\lib\ruby\gems\2.0.0
   - C:\Ruby200\bin
+  - C:\Ruby200-x64\lib\ruby\gems\2.0.0
+  - C:\Ruby200\bin
+  - C:\Ruby21\lib\ruby\gems\2.1.0
+  - C:\Ruby21\bin
+  - C:\Ruby21-x64\lib\ruby\gems\2.1.0
+  - C:\Ruby21\bin
+  - C:\Ruby22\lib\ruby\gems\2.2.0
+  - C:\Ruby22\bin
+  - C:\Ruby22-x64\lib\ruby\gems\2.2.0
+  - C:\Ruby22\bin
 
 install:
   - systeminfo
