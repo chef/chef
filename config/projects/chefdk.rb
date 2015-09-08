@@ -56,11 +56,14 @@ override :'openssl-windows', version: "1.0.1m"
 ######
 
 ######
-# rubygems 2.4.5 is not working on windows.
-# See https://github.com/rubygems/rubygems/issues/1120
-# Once this is fixed, we can bump the version
-override :rubygems,       version: "2.4.4"
-######
+# This points to jay's patched version for now to avoid a security
+# vulnerability and to allow pry to get installed on windows builds.
+# See the software definition for details.
+if windows?
+  override :rubygems,     version: "jdm/2.4.8-patched"
+else
+  override :rubygems,     version: "2.4.8"
+end
 
 override :'test-kitchen', version: "v1.4.2"
 override :'kitchen-vagrant', version: "v0.18.0"
