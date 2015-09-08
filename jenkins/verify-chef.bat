@@ -45,4 +45,11 @@ SET PATH=C:\opscode\%PROJECT_NAME%\bin;C:\opscode\%PROJECT_NAME%\embedded\bin;%P
 
 REM ; Test against the appbundle'd Chef
 cd c:\opscode\%PROJECT_NAME%\embedded\apps\chef
+
+IF "%PIPELINE_NAME%" == "chef-13" (
+REM ; Running unit and functional tests
+call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/unit spec/functional
+) ELSE (
+REM ; Running unit tests 
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/unit
+)
