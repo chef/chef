@@ -52,6 +52,16 @@ class Chef
           end
         end
 
+        def dup
+          if is_a?(Array)
+            to_a
+          elsif is_a?(Hash)
+            to_h
+          else
+            safe_dup
+          end
+        end
+
         def to_a
           Marshal.load(Marshal.dump(super))
         end
