@@ -7,6 +7,7 @@ platform:
 environment:
   matrix:
     - ruby_version: "200"
+    - ruby_version: "200-x64"
 
 clone_folder: c:\projects\chef
 clone_depth: 1
