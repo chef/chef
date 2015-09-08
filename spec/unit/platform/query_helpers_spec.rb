@@ -75,7 +75,7 @@ describe 'Chef::Platform#supports_dsc_invoke_resource?' do
   end
 end
 
-describe 'Chef::Platform#refresh_mode_disabled?' do
+describe 'Chef::Platform#dsc_refresh_mode_disabled?' do
   let(:node) { instance_double('Chef::Node') }
   let(:cmdlet) { instance_double('Chef::Util::Powershell::Cmdlet') }
   let(:cmdlet_result) { instance_double('Chef::Util::Powershell::CmdletResult')}
@@ -86,7 +86,7 @@ describe 'Chef::Platform#refresh_mode_disabled?' do
       and_return(cmdlet)
     expect(cmdlet).to receive(:run!).and_return(cmdlet_result)
     expect(cmdlet_result).to receive(:return_value).and_return({ 'RefreshMode' => 'Disabled' })
-    expect(Chef::Platform.refresh_mode_disabled?(node)).to be true
+    expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be true
   end
   
   it "returns false when RefreshMode is not Disabled" do
@@ -95,7 +95,7 @@ describe 'Chef::Platform#refresh_mode_disabled?' do
       and_return(cmdlet)
     expect(cmdlet).to receive(:run!).and_return(cmdlet_result)
     expect(cmdlet_result).to receive(:return_value).and_return({ 'RefreshMode' => 'LaLaLa' })
-    expect(Chef::Platform.refresh_mode_disabled?(node)).to be false    
+    expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be false    
   end
 end
 

@@ -51,7 +51,7 @@ describe Chef::Provider::DscResource do
 
     context 'when RefreshMode is not set to Disabled' do
       it 'raises an exception' do
-        expect(provider).to receive(:refresh_mode_disabled?).and_return(false)
+        expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(false)
         expect { provider.run_action(:run) }.to raise_error(
           Chef::Exceptions::ProviderNotFound, /Disabled/)
       end
@@ -59,14 +59,14 @@ describe Chef::Provider::DscResource do
 
     context 'when RefreshMode is set to Disabled' do
       it 'does not update the resource if it is up to date' do
-        expect(provider).to receive(:refresh_mode_disabled?).and_return(true)
+        expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
         expect(provider).to receive(:test_resource).and_return(true)
         provider.run_action(:run)
         expect(resource).not_to be_updated
       end
 
       it 'converges the resource if it is not up to date' do
-        expect(provider).to receive(:refresh_mode_disabled?).and_return(true)
+        expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
         expect(provider).to receive(:test_resource).and_return(false)
         expect(provider).to receive(:set_resource)
         provider.run_action(:run)

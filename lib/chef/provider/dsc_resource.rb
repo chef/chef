@@ -59,7 +59,7 @@ class Chef
           a.block_action!
         end
         requirements.assert(:run) do |a|
-          a.assertion { refresh_mode_disabled? }
+          a.assertion { dsc_refresh_mode_disabled? }
           err = ["The LCM must have its RefreshMode set to Disabled. "]
           a.failure_message Chef::Exceptions::ProviderNotFound, err.join(' ')
           a.whyrun err + ["Assuming a previous resource sets the RefreshMode."]
@@ -84,8 +84,8 @@ class Chef
         run_context && Chef::Platform.supports_dsc_invoke_resource?(node)
       end
       
-      def refresh_mode_disabled?
-        Chef::Platform.refresh_mode_disabled?(node)
+      def dsc_refresh_mode_disabled?
+        Chef::Platform.dsc_refresh_mode_disabled?(node)
       end
 
       def generate_description

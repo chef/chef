@@ -53,7 +53,7 @@ class Chef
             Gem::Version.new("5.0.10018.0")
       end
       
-      def refresh_mode_disabled?(node)
+      def dsc_refresh_mode_disabled?(node)
         require 'chef/util/powershell/cmdlet'
         cmdlet = Chef::Util::Powershell::Cmdlet.new(node, "Get-DscLocalConfigurationManager", :object)
         metadata = cmdlet.run!.return_value
