@@ -372,7 +372,7 @@ class Chef
         exec("screen -c #{tf.path}")
       end
 
-      def tmux
+      def tmux(split = false)
         ssh_dest = lambda do |server|
           identity = "-i #{config[:identity_file]} " if config[:identity_file]
           prefix = server.user ? "#{server.user}@" : ""
@@ -382,7 +382,11 @@ class Chef
         new_window_cmds = lambda do
           if session.servers_for.size > 1
             [""] + session.servers_for[1..-1].map do |server|
-              "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+              if split
+                "split-window #{ssh_dest.call(server)}; tmux select-layout tiled"
+              else
+                "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+              end
             end
           else
             []
@@ -512,6 +516,8 @@ class Chef
           screen
         when "tmux"
           tmux
+        when "tmux-split"
+          tmux(true)
         when "macterm"
           macterm
         when "cssh"
