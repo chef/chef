@@ -321,6 +321,7 @@ EOS
       end
 
       def render_template
+        @config[:first_boot_attributes].merge!(@config[:first_boot_attributes_from_file]) if @config[:first_boot_attributes_from_file]
         template_file = find_template
         template = IO.read(template_file).chomp
         Erubis::Eruby.new(template).evaluate(bootstrap_context)
@@ -330,7 +331,6 @@ EOS
         if @config[:first_boot_attributes].any? && @config[:first_boot_attributes_from_file]
           raise Chef::Exceptions::BootstrapCommandInputError, jsonstring_and_jsonfile_msg
         end
-        @config[:first_boot_attributes].merge!(@config[:first_boot_attributes_from_file]) if @config[:first_boot_attributes_from_file]
 
         validate_name_args!
 

@@ -235,12 +235,39 @@ describe Chef::Knife::Bootstrap do
       expect(knife.render_template).to eq('{"run_list":["role[base]","recipe[cupcakes]"]}')
     end
 
-    it "should have foo => {bar => baz} in the first_boot" do
-      knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
-      knife.merge_configs
-      expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
-      actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
-      expect(actual_hash).to eq(expected_hash)
+    context "with bootstrap_attribute options" do
+      let(:jsonfile) {
+        file = Tempfile.new (['node', '.json'])
+        File.open(file.path, "w") {|f| f.puts '{"foo":{"bar":"baz"}}' }
+        file
+      }
+
+      it "should have foo => {bar => baz} in the first_boot from cli" do
+        knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
+        knife.merge_configs
+        expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
+        actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
+        expect(actual_hash).to eq(expected_hash)
+      end
+
+      it "should have foo => {bar => baz} in the first_boot from file" do
+        knife.parse_options(["--json-attribute-file", jsonfile.path])
+        knife.merge_configs
+        expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
+        actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
+        expect(actual_hash).to eq(expected_hash)
+        jsonfile.close
+      end
+
+      context "when --json-attributes and --json-attribute-file were both passed" do
+        it "raises a Chef::Exceptions::BootstrapCommandInputError with the proper error message" do
+          knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
+          knife.parse_options(["--json-attribute-file", jsonfile.path])
+          knife.merge_configs
+          expect{ knife.run }.to raise_error(Chef::Exceptions::BootstrapCommandInputError)
+          jsonfile.close
+        end
+      end
     end
   end
 
