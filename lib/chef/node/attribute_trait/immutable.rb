@@ -61,22 +61,6 @@ class Chef
             safe_dup
           end
         end
-
-        def to_a
-          Marshal.load(Marshal.dump(super))
-        end
-
-        def to_ary
-          Marshal.load(Marshal.dump(super))
-        end
-
-        def to_h
-          Marshal.load(Marshal.dump(super))
-        end
-
-        def to_hash
-          Marshal.load(Marshal.dump(super))
-        end
       end
     end
   end
