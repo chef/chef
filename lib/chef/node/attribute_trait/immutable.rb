@@ -43,6 +43,57 @@ class Chef
           end
         end
 
+        def to_a
+          if is_a?(Array)
+            dup
+          else
+            a = []
+            each do |value|
+              if value.is_a?(Hash)
+                a.push(value.to_h)
+              elsif value.is_a?(Array)
+                a.push(value.to_a)
+              else
+                a.push(safe_dup(value))
+              end
+            end
+            a
+          end
+        end
+
+        def to_h
+          if is_a?(Hash)
+            dup
+          else
+            h = {}
+            each do |elem|
+              unless elem.is_a?(Array)
+                raise TypeError "wrong element type, expected Array"
+              end
+              h[safe_dup(elem[0])] = safe_dup(elem[1])
+            end
+            h
+          end
+        end
+
+        def to_ary
+          if is_a?(Array)
+            dup
+          else
+            # should raise NoMethodError
+            wrapped_object.to_ary
+          end
+        end
+
+        def to_hash
+          if is_a?(Hash)
+            dup
+          else
+            # should raise NoMethodError
+            wrapped_object.to_hash
+          end
+        end
+
         def [](key)
           value = super
           if value.is_a?(Hash) || value.is_a?(Array)
@@ -52,15 +103,6 @@ class Chef
           end
         end
 
-        def dup
-          if is_a?(Array)
-            to_a
-          elsif is_a?(Hash)
-            to_h
-          else
-            safe_dup
-          end
-        end
       end
     end
   end

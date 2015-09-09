@@ -198,67 +198,6 @@ class Chef
         Chef::JSONCompat.to_json(to_h, *opts)
       end
 
-      def to_h
-        if self.is_a?(Hash)
-          h = {}
-          each do |key, value|
-            if value.is_a?(Hash)
-              h[key] = value.to_h
-            elsif value.is_a?(Array)
-              h[key] = value.to_a
-            else
-              h[key] = value
-            end
-          end
-          h
-        elsif self.is_a?(Array)
-          h = {}
-          each do |elem|
-            unless elem.is_a?(Array)
-              raise TypeError "wrong element type, expected Array"
-            end
-            h[elem[0]] = elem[1]
-          end
-          h
-        else
-          highest_precedence.to_h
-        end
-      end
-
-      def to_hash
-        if self.is_a?(Hash)
-          to_h
-        else
-          raise NoMethodError, "undefined method `to_hash` for #{self}"
-        end
-      end
-
-      def to_a
-        if self.is_a?(Hash) || self.is_a?(Array)
-          a = []
-          each do |value|
-            if value.is_a?(Hash)
-              a.push(value.to_h)
-            elsif value.is_a?(Array)
-              a.push(value.to_a)
-            else
-              a.push(value)
-            end
-          end
-          a
-        else
-          highest_precedence.to_a
-        end
-      end
-
-      def to_ary
-        if self.is_a?(Array)
-          to_a
-        else
-          raise NoMethodError, "undefined method `to_ary` for #{self}"
-        end
-      end
-
       private
 
       def as_simple_object

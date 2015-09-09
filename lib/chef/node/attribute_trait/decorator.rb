@@ -70,6 +70,7 @@ class Chef
         def respond_to?(method, include_private = false)
           return false if is_a?(Array) && method == :to_hash
           return false if is_a?(Hash) && method == :to_ary
+          return false if is_a?(Array) && method == :each_pair
           wrapped_object.respond_to?(method, include_private) || super
         end
 
@@ -154,14 +155,7 @@ class Chef
           end
         end
 
-        #def hash
-        #end
-
-        #def <=>
-        #end
-
-        #def freeze
-        #end
+        alias_method :each_pair, :each
 
         # nil, true, false and Fixnums are not dup'able
         def safe_dup(e)
@@ -169,6 +163,23 @@ class Chef
         rescue TypeError
           e
         end
+
+        def dup
+          if is_a?(Array)
+            Array.new(map { |e|
+              safe_dup(e)
+            })
+          elsif is_a?(Hash)
+            h = Hash.new
+            each do |k, v|
+              h[safe_dup(k)] = safe_dup(v)
+            end
+            h
+          else
+            safe_dup(wrapped_object)
+          end
+        end
+
       end
     end
   end

@@ -276,6 +276,15 @@ describe Chef::Node::VividMash do
       vivid['foo'] = [[0,1]]
       expect(vivid['foo'].respond_to?(:to_hash)).to be false
     end
+
+    it "should not dup the contents and will mutate the original" do
+      vivid['foo']['bar']['baz'] = 'fizz'
+      hash = vivid['foo'].to_hash
+      expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
+      hash['bar']['baz'] << 'buzz'
+      expect(hash).to eql({"bar"=>{"baz"=>"fizzbuzz"}})
+      expect(vivid['foo']).to eql({"bar"=>{"baz"=>"fizzbuzz"}})
+    end
   end
 
   context "#to_h" do
@@ -323,6 +332,46 @@ describe Chef::Node::VividMash do
       vivid['foo'] = nil
       expect(vivid.delete(:foo)).to eql(nil)
       expect(vivid).to eql({})
+    end
+  end
+
+  context "#dup" do
+    it "should deep-dup" do
+      vivid['foo']['bar'] = 'fizz'
+      dup = vivid.dup
+      dup['foo']['bar'] << 'buzz'
+      expect(vivid['foo']['bar']).to eql('fizz')
+      expect(dup['foo']['bar']).to eql('fizzbuzz')
+    end
+
+    it "should not fail on false value" do
+      vivid['foo']['bar'] = false
+      expect(vivid.dup['foo']['bar']).to be false
+    end
+
+    it "should not fail on true value" do
+      vivid['foo']['bar'] = true
+      expect(vivid.dup['foo']['bar']).to be true
+    end
+
+    it "should not fail on nil value" do
+      vivid['foo']['bar'] = nil
+      expect(vivid.dup['foo']['bar']).to be nil
+    end
+
+    it "should not fail on false key" do
+      vivid['foo'][false] = 'bar'
+      expect(vivid.dup['foo'][false]).to eql('bar')
+    end
+
+    it "should not fail on true key" do
+      vivid['foo'][true] = 'bar'
+      expect(vivid.dup['foo'][true]).to eql('bar')
+    end
+
+    it "should not fail on nil key" do
+      vivid['foo'][nil] = 'bar'
+      expect(vivid.dup['foo'][nil]).to eql('bar')
     end
   end
 end
