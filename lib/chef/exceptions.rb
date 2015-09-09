@@ -74,6 +74,7 @@ class Chef
     class InvalidPrivateKey < ArgumentError; end
     class MissingKeyAttribute < ArgumentError; end
     class KeyCommandInputError < ArgumentError; end
+    class BootstrapCommandInputError < ArgumentError; end
     class InvalidKeyArgument < ArgumentError; end
     class InvalidKeyAttribute < ArgumentError; end
     class InvalidUserAttribute < ArgumentError; end

@@ -156,6 +156,12 @@ class Chef
         :proc => lambda { |o| Chef::JSONCompat.parse(o) },
         :default => {}
 
+      option :first_boot_attributes_from_file,
+        :long => "--json-attribute-file FILE",
+        :description => "A JSON file to be used to the first run of chef-client",
+        :proc => lambda { |o| Chef::JSONCompat.parse(File.read(o)) },
+        :default => nil
+
       option :host_key_verify,
         :long => "--[no-]host-key-verify",
         :description => "Verify host key, enabled by default.",
@@ -238,6 +244,13 @@ class Chef
         )
       end
 
+      def jsonstring_and_jsonfile_msg
+<<EOS
+You cannot pass both --json-attributes and --json-attribute-file.
+Please pass one or none.
+EOS
+      end
+
       # The default bootstrap template to use to bootstrap a server This is a public API hook
       # which knife plugins use or inherit and override.
       #
@@ -314,6 +327,11 @@ class Chef
       end
 
       def run
+        if @config[:first_boot_attributes].any? && @config[:first_boot_attributes_from_file]
+          raise Chef::Exceptions::BootstrapCommandInputError, jsonstring_and_jsonfile_msg
+        end
+        @config[:first_boot_attributes].merge!(@config[:first_boot_attributes_from_file]) if @config[:first_boot_attributes_from_file]
+
         validate_name_args!
 
         $stdout.sync = true
