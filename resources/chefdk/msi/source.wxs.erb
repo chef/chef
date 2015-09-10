@@ -65,13 +65,26 @@
           </Directory>
         </Directory>
       </Directory>
-      
+
       <Directory Id="ProgramMenuFolder">
         <Component Id="StartMenuShortcut" Guid="{6DD3FFF3-E009-40E7-B1C2-EF606B941CCD}">
-            <Shortcut Id="StartMenuShortcutDef" 
-                      Name="!(loc.ChefDkStartMenuShortcutDefName)"
-                      Description="!(loc.ChefDkStartMenuShortcutDefDescription)"
-                      Target="[#StartChefDkScript]"/>
+          <Shortcut Id="StartMenuShortcutDef"
+                    Name="!(loc.ChefDkShortcutDefName)"
+                    Description="!(loc.ChefDkShortcutDefDescription)"
+                    Target="[WindowsFolder]\System32\WindowsPowerShell\v1.0\powershell.exe"
+                    Arguments="-file [#StartChefDkScript]"
+                    Icon="oc.ico"/>
+        </Component>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop">
+        <Component Id="DesktopShortcut" Guid="{396E22A6-A7B6-4AA1-B63C-83A3DD7007A8}">
+          <Shortcut Id="DesktopShortcutDef"
+                    Name="!(loc.ChefDkShortcutDefName)"
+                    Description="!(loc.ChefDkShortcutDefDescription)"
+                    Target="[WindowsFolder]\System32\WindowsPowerShell\v1.0\powershell.exe"
+                    Arguments="-file [#StartChefDkScript]"
+                    Icon="oc.ico"/>
         </Component>
       </Directory>
     </Directory>
@@ -88,7 +101,12 @@
       <ComponentRef Id="StartChefDk" />
       <ComponentRef Id="StartMenuShortcut" />
     </Feature>
- 
+
+    <Feature Id="ChefDkDesktopShortcutFeature" Title="!(loc.FeatureChefDkDesktopShortcut)" Description="!(loc.FeatureChefDkDesktopShortcutDescription)" Level="1" AllowAdvertise="no" >
+      <ComponentRef Id="StartChefDk" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+
     <Feature Id="ChefDkEnvHacks" Title="!(loc.FeatureChefDkEnvHacks)" Description="!(loc.FeatureChefDkEnvHacksDesc)" Level="1000" AllowAdvertise="no">
       <ComponentRef Id="ChefDkEnvHacks" />
     </Feature>
@@ -96,8 +114,10 @@
     <!--
       UI Stuff
     -->
-    <Icon Id="oc.ico" SourceFile="Resources\assets\oc_16x16.ico"/>
-    <Property Id="ARPPRODUCTICON" Value="oc.ico" />
+    <Icon Id="oc16.ico" SourceFile="Resources\assets\oc_16x16.ico"/>
+    <Icon Id="oc32.ico" SourceFile="Resources\assets\oc_32x32.ico"/>
+    <Icon Id="oc.ico" SourceFile="Resources\assets\oc.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="oc16.ico" />
     <Property Id="ARPHELPLINK" Value="http://www.getchef.com/support/" />
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
 
