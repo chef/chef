@@ -63,6 +63,8 @@ class Chef
 
     include Chef::Mixin::ParamsValidate
 
+    NULL_ARG = Object.new
+
     # Create a new Chef::Node object.
     def initialize(chef_server_rest: nil)
       @chef_server_rest = chef_server_rest
@@ -71,6 +73,9 @@ class Chef
       @chef_environment = '_default'
       @primary_runlist = Chef::RunList.new
       @override_runlist = Chef::RunList.new
+
+      @policy_name = nil
+      @policy_group = nil
 
       @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
 
@@ -131,6 +136,50 @@ class Chef
     end
 
     alias :environment :chef_environment
+
+    # The `policy_name` for this node. Setting this to a non-nil value will
+    # enable policyfile mode when `chef-client` is run. If set in the config
+    # file or in node json, running `chef-client` will update this value.
+    #
+    # @see Chef::PolicyBuilder::Dynamic
+    # @see Chef::PolicyBuilder::Policyfile
+    #
+    # @param arg [String] the new policy_name value
+    # @return [String] the current policy_name, or the one you just set
+    def policy_name(arg=NULL_ARG)
+      return @policy_name if arg.equal?(NULL_ARG)
+      validate({policy_name: arg}, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
+      @policy_name = arg
+    end
+
+    # A "non-DSL-style" setter for `policy_name`
+    #
+    # @see #policy_name
+    def policy_name=(policy_name)
+      policy_name(policy_name)
+    end
+
+    # The `policy_group` for this node. Setting this to a non-nil value will
+    # enable policyfile mode when `chef-client` is run. If set in the config
+    # file or in node json, running `chef-client` will update this value.
+    #
+    # @see Chef::PolicyBuilder::Dynamic
+    # @see Chef::PolicyBuilder::Policyfile
+    #
+    # @param arg [String] the new policy_group value
+    # @return [String] the current policy_group, or the one you just set
+    def policy_group(arg=NULL_ARG)
+      return @policy_group if arg.equal?(NULL_ARG)
+      validate({policy_group: arg}, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
+      @policy_group = arg
+    end
+
+    # A "non-DSL-style" setter for `policy_group`
+    #
+    # @see #policy_group
+    def policy_group=(policy_group)
+      policy_group(policy_group)
+    end
 
     def attributes
       @attributes

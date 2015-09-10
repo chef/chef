@@ -127,6 +127,78 @@ describe Chef::Node do
     end
   end
 
+  describe "policy_name" do
+
+    it "defaults to nil" do
+      expect(node.policy_name).to be_nil
+    end
+
+    it "sets policy_name with a regular setter" do
+      node.policy_name = "example-policy"
+      expect(node.policy_name).to eq("example-policy")
+    end
+
+    it "allows policy_name with every valid character" do
+      expect { node.policy_name = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:.' }.to_not raise_error
+    end
+
+    it "sets policy_name when given an argument" do
+      node.policy_name("example-policy")
+      expect(node.policy_name).to eq("example-policy")
+    end
+
+    it "sets policy_name to nil when given nil" do
+      node.policy_name = "example-policy"
+      node.policy_name = nil
+      expect(node.policy_name).to be_nil
+    end
+
+    it "disallows non-strings" do
+      expect { node.policy_name(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_name(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "cannot be blank" do
+      expect { node.policy_name("")}.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
+  describe "policy_group" do
+
+    it "defaults to nil" do
+      expect(node.policy_group).to be_nil
+    end
+
+    it "sets policy_group with a regular setter" do
+      node.policy_group = "staging"
+      expect(node.policy_group).to eq("staging")
+    end
+
+    it "allows policy_group with every valid character" do
+      expect { node.policy_group = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:.' }.to_not raise_error
+    end
+
+    it "sets an environment with chef_environment(something)" do
+      node.policy_group("staging")
+      expect(node.policy_group).to eq("staging")
+    end
+
+    it "sets policy_group to nil when given nil" do
+      node.policy_group = "staging"
+      node.policy_group = nil
+      expect(node.policy_group).to be_nil
+    end
+
+    it "disallows non-strings" do
+      expect { node.policy_group(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_group(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "cannot be blank" do
+      expect { node.policy_group("")}.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
   describe "attributes" do
     it "should have attributes" do
       expect(node.attribute).to be_a_kind_of(Hash)
