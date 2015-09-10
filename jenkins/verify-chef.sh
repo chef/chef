@@ -10,16 +10,10 @@ export PATH
 EMBEDDED_BIN_DIR=/opt/$PROJECT_NAME/embedded/bin
 export EMBEDDED_BIN_DIR
 
-# If we are on Mac 10.11 our symlinks are located under /usr/local/bin
+# If we are on Mac our symlinks are located under /usr/local/bin
 # otherwise they are under /usr/bin
 if [ -a /usr/bin/sw_vers ]; then
-  platform_version=`sw_vers | awk '/^ProductVersion:/ { print $2 }' | cut -d. -f1,2`
-
-  if [ $platform_version == "10.11" ]; then
-    USR_BIN_DIR="/usr/local/bin"
-  else
-    USR_BIN_DIR="/usr/bin"
-  fi
+  USR_BIN_DIR="/usr/local/bin"
 else
   USR_BIN_DIR="/usr/bin"
 fi
