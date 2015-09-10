@@ -10,24 +10,39 @@ export PATH
 EMBEDDED_BIN_DIR=/opt/$PROJECT_NAME/embedded/bin
 export EMBEDDED_BIN_DIR
 
+# If we are on Mac 10.11 our symlinks are located under /usr/local/bin
+# otherwise they are under /usr/bin
+if [ -a /usr/bin/sw_vers ]; then
+  platform_version=`sw_vers | awk '/^ProductVersion:/ { print $2 }' | cut -d. -f1,2`
+
+  if [ $platform_version == "10.11" ]; then
+    USR_BIN_DIR="/usr/local/bin"
+  else
+    USR_BIN_DIR="/usr/bin"
+  fi
+else
+  USR_BIN_DIR="/usr/bin"
+fi
+export USR_BIN_DIR
+
 # sanity check that we're getting symlinks from the pre-install script
-if [ ! -L "/usr/bin/chef-client" ]; then
-  echo "/usr/bin/chef-client symlink was not installed by pre-install script!"
+if [ ! -L $USR_BIN_DIR/chef-client ]; then
+  echo "$USR_BIN_DIR/chef-client symlink was not installed by pre-install script!"
   exit 1
 fi
 
-if [ ! -L "/usr/bin/knife" ]; then
-  echo "/usr/bin/knife symlink was not installed by pre-install script!"
+if [ ! -L "$USR_BIN_DIR/knife" ]; then
+  echo "$USR_BIN_DIR/knife symlink was not installed by pre-install script!"
   exit 1
 fi
 
-if [ ! -L "/usr/bin/chef-solo" ]; then
-  echo "/usr/bin/chef-solo symlink was not installed by pre-install script!"
+if [ ! -L "$USR_BIN_DIR/chef-solo" ]; then
+  echo "$USR_BIN_DIR/chef-solo symlink was not installed by pre-install script!"
   exit 1
 fi
 
-if [ ! -L "/usr/bin/ohai" ]; then
-  echo "/usr/bin/ohai symlink was not installed by pre-install script!"
+if [ ! -L "$USR_BIN_DIR/ohai" ]; then
+  echo "$USR_BIN_DIR/ohai symlink was not installed by pre-install script!"
   exit 1
 fi
 
