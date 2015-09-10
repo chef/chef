@@ -194,10 +194,6 @@ class Chef
         end
       end
 
-      def to_json(*opts)
-        Chef::JSONCompat.to_json(to_h, *opts)
-      end
-
       private
 
       def as_simple_object

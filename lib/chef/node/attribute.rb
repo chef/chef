@@ -51,6 +51,10 @@ class Chef
         )
       end
 
+      def to_json(*opts)
+        Chef::JSONCompat.to_json(to_h, *opts)
+      end
+
       COMPONENTS_AS_SYMBOLS.each do |component|
         attr_writer component
 
