@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_gem_only do
+describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_gem_only, :appveyor_only do
 
   include_context "using Win32::Service"
 
