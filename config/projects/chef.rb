@@ -20,13 +20,7 @@ maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
 
 build_iteration 1
-build_version do
-  # Use chef to determine the build version
-  source :git, from_dependency: 'chef'
-
-  # Output a SemVer compliant version string
-  output_format :semver
-end
+build_version '12.5.0'
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
