@@ -24,11 +24,13 @@ if windows?
   dependency "ruby-windows-devkit"
 else
   dependency "ruby"
-  dependency "rubygems"
 end
 
-dependency "bundler"
+dependency "rubygems"
 dependency "nokogiri"
+dependency "bundler"
+dependency "chef"
+
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)

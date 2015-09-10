@@ -23,6 +23,7 @@ source git: "git://github.com/opscode/opscode-pushy-client"
 
 relative_path "opscode-pushy-client"
 
+dependency "rubygems"
 dependency "bundler"
 dependency "appbundler"
 dependency "chef"
