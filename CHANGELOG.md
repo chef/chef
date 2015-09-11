@@ -1,5 +1,9 @@
 # mixlib-shellout Changelog
 
+## Release 2.2.1
+
+* Fix executable resolution on Windows when a directory exists with the same name as the command to run
+
 ## Release 2.2.0
 
 * Remove windows-pr dependency
