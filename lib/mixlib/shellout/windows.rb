@@ -301,13 +301,17 @@ module Mixlib
         # The OS will search through valid the extensions and look
         # for a binary there.
         def self.find_executable(path)
-          return path if File.executable? path
+          return path if executable? path
 
           pathext.each do |ext|
             exe = "#{path}#{ext}"
-            return exe if File.executable? exe
+            return exe if executable? exe
           end
           return nil
+        end
+
+        def self.executable?(path)
+          File.executable?(path) && !File.directory?(path)
         end
       end
     end # class
