@@ -170,6 +170,7 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
           allow(ENV).to receive(:[]).with('COMSPEC').and_return('C:\Windows\system32\cmd.exe')
           allow(File).to receive(:executable?).and_return(false)
           allow(File).to receive(:executable?).with(executable_path).and_return(true)
+          allow(File).to receive(:directory?).and_return(false)            
         end
 
         it 'should return with full path with extension' do
@@ -180,6 +181,7 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
           before do
             # File.executable? returns true for directories
             allow(File).to receive(:executable?).with(cmd).and_return(true)
+            allow(File).to receive(:directory?).with(cmd).and_return(true)            
           end
 
           it 'should return with full path with extension' do
