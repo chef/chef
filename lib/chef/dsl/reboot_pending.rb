@@ -49,7 +49,8 @@ class Chef
 
           # The mere existence of the UpdateExeVolatile key should indicate a pending restart for certain updates
           # http://support.microsoft.com/kb/832475
-          (registry_key_exists?('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile') &&
+          Chef::Platform.windows_server_2003? &&
+                (registry_key_exists?('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile') &&
                 !registry_get_values('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').select { |v| v[:name] == "Flags" }[0].nil? &&
                 [1,2,3].include?(registry_get_values('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').select { |v| v[:name] == "Flags" }[0][:data]))
         elsif platform?("ubuntu")
