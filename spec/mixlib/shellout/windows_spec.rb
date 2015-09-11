@@ -159,6 +159,35 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
         end
       end
 
+      context 'with extensionless executable' do
+        let(:stubbed_shell_out) { shell_out }
+        let(:executable_path) { 'C:\Windows\system32/ping.EXE' }
+        let(:cmd) { 'ping' }
+
+        before do
+          allow(ENV).to receive(:[]).with('PATH').and_return('C:\Windows\system32')
+          allow(ENV).to receive(:[]).with('PATHEXT').and_return('.EXE')
+          allow(ENV).to receive(:[]).with('COMSPEC').and_return('C:\Windows\system32\cmd.exe')
+          allow(File).to receive(:executable?).and_return(false)
+          allow(File).to receive(:executable?).with(executable_path).and_return(true)
+        end
+
+        it 'should return with full path with extension' do
+          is_expected.to eql([executable_path, cmd])
+        end
+
+        context 'there is a directory named after command' do
+          before do
+            # File.executable? returns true for directories
+            allow(File).to receive(:executable?).with(cmd).and_return(true)
+          end
+
+          it 'should return with full path with extension' do
+            is_expected.to eql([executable_path, cmd])
+          end
+        end
+      end
+
       context 'with batch files' do
         let(:stubbed_shell_out) { shell_out.tap(&with_valid_exe_at_location) }
         let(:cmd_invocation) { "cmd /c \"#{cmd}\"" }
