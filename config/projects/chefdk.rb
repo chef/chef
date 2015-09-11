@@ -55,7 +55,15 @@ override :'ruby-windows-devkit', version: "4.7.2-20130224"
 override :'openssl-windows', version: "1.0.1m"
 ######
 
-override :rubygems,       version: "2.4.4"
+######
+# This points to jay's patched version for now to avoid a security
+# vulnerability and to allow pry to get installed on windows builds.
+# See the software definition for details.
+if windows?
+  override :rubygems,     version: "jdm/2.4.8-patched"
+else
+  override :rubygems,     version: "2.4.8"
+end
 
 override :'test-kitchen', version: "v1.4.2"
 override :'kitchen-vagrant', version: "v0.18.0"
