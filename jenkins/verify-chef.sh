@@ -12,7 +12,7 @@ export EMBEDDED_BIN_DIR
 
 # If we are on Mac our symlinks are located under /usr/local/bin
 # otherwise they are under /usr/bin
-if [ -a /usr/bin/sw_vers ]; then
+if [ -f /usr/bin/sw_vers ]; then
   USR_BIN_DIR="/usr/local/bin"
 else
   USR_BIN_DIR="/usr/bin"
