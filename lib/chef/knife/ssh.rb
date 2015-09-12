@@ -87,6 +87,12 @@ class Chef
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
 
+      option :ssh_gateway_identity,
+        :short => "-I SSH_GATEWAY_IDENTITY",
+        :long => "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
+        :description => "The SSH identity file used for gateway authentication",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway_identity] = key.strip }
+
       option :forward_agent,
         :short => "-A",
         :long => "--forward-agent",
@@ -132,15 +138,18 @@ class Chef
         if config[:ssh_gateway]
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
-          gw_opts = gw_port ? { :port => gw_port } : {}
+          gw_port_opt = gw_port ? { :port => gw_port } : {}
+          config[:ssh_gateway_identity] ||= Chef::Config[:knife][:ssh_gateway_identity]
+          gw_keys_opt = config[:ssh_gateway_identity] ? { :keys => config[:ssh_gateway_identity] } : {}
+          gw_opt = gw_port_opt.merge(gw_keys_opt)
 
-          session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
+          session.via(gw_host, gw_user || config[:ssh_user], gw_opt)
         end
       rescue Net::SSH::AuthenticationFailed
         user = gw_user || config[:ssh_user]
         prompt = "Enter the password for #{user}@#{gw_host}: "
-        gw_opts.merge!(:password => prompt_for_password(prompt))
-        session.via(gw_host, user, gw_opts)
+        gw_port_opt.merge!(:password => prompt_for_password(prompt))
+        session.via(gw_host, user, gw_port_opt)
       end
 
       def configure_session
