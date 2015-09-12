@@ -112,18 +112,10 @@ class Chef
 
       ## PolicyBuilder API ##
 
-      # Loads the node state from the server.
-      def load_node
-        events.node_load_start(node_name, Chef::Config)
-        Chef::Log.debug("Building node object for #{node_name}")
-
-        @node = Chef::Node.find_or_create(node_name)
+      def finish_load_node(node)
+        @node = node
         validate_policyfile
         events.policyfile_loaded(policy)
-        node
-      rescue Exception => e
-        events.node_load_failed(node_name, e, Chef::Config)
-        raise
       end
 
       # Applies environment, external JSON attributes, and override run list to

@@ -364,6 +364,8 @@ describe Chef::Client do
       expect(node[:expanded_run_list]).to be_nil
 
       allow(client.policy_builder).to receive(:node).and_return(node)
+      client.policy_builder.select_implementation(node)
+      allow(client.policy_builder.implementation).to receive(:node).and_return(node)
 
       # chefspec and possibly others use the return value of this method
       expect(client.build_node).to eq(node)
@@ -391,6 +393,8 @@ describe Chef::Client do
       expect(mock_chef_rest).to receive(:get_rest).with("environments/A").and_return(test_env)
       expect(Chef::REST).to receive(:new).and_return(mock_chef_rest)
       allow(client.policy_builder).to receive(:node).and_return(node)
+      client.policy_builder.select_implementation(node)
+      allow(client.policy_builder.implementation).to receive(:node).and_return(node)
       expect(client.build_node).to eq(node)
 
       expect(node.chef_environment).to eq("A")

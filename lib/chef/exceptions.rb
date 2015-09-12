@@ -116,6 +116,8 @@ class Chef
       end
     end
 
+    class InvalidPolicybuilderCall < ArgumentError; end
+
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
     class IllegalChecksumRevert < RuntimeError; end

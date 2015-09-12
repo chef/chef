@@ -34,8 +34,8 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:node)
     end
 
-    it "implements a load_node method" do
-      expect(policy_builder).to respond_to(:load_node)
+    it "implements a finish_load_node method" do
+      expect(policy_builder).to respond_to(:finish_load_node)
     end
 
     it "implements  a build_node method" do
@@ -63,39 +63,13 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:temporary_policy?)
     end
 
-    describe "loading the node" do
+    describe "finishing loading the node" do
 
-      context "on chef-solo" do
+      let(:node) { Chef::Node.new.tap { |n| n.name(node_name) } }
 
-        before do
-          Chef::Config[:solo] = true
-        end
-
-        it "creates a new in-memory node object with the given name" do
-          policy_builder.load_node
-          expect(policy_builder.node.name).to eq(node_name)
-        end
-
-      end
-
-      context "on chef-client" do
-
-        let(:node) { Chef::Node.new.tap { |n| n.name(node_name) } }
-
-        it "loads or creates a node on the server" do
-          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-          policy_builder.load_node
-          expect(policy_builder.node).to eq(node)
-        end
-
-      end
-    end
-
-    describe "building the node" do
-
-      # XXX: Chef::Client just needs to be able to call this, it doesn't depend on the return value.
-      it "builds the node and returns the updated node object" do
-        skip
+      it "stores the node" do
+        policy_builder.finish_load_node(node)
+        expect(policy_builder.node).to eq(node)
       end
 
     end
@@ -133,8 +107,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     end
 
     before do
-      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-      policy_builder.load_node
+      policy_builder.finish_load_node(node)
     end
 
     it "expands the run_list" do
@@ -167,8 +140,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
     before do
       Chef::Config[:environment] = configured_environment
-      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-      policy_builder.load_node
+      policy_builder.finish_load_node(node)
       policy_builder.build_node
     end
 
@@ -302,11 +274,9 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     let(:cookbook_synchronizer) { double("CookbookSynchronizer") }
 
     before do
-      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-
       allow(policy_builder).to receive(:api_service).and_return(chef_http)
 
-      policy_builder.load_node
+      policy_builder.finish_load_node(node)
       policy_builder.build_node
 
       run_list_expansion = policy_builder.run_list_expansion

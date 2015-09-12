@@ -93,25 +93,9 @@ class Chef
         run_context
       end
 
-
-      # In client-server operation, loads the node state from the server. In
-      # chef-solo operation, builds a new node object.
-      def load_node
-        events.node_load_start(node_name, Chef::Config)
-        Chef::Log.debug("Building node object for #{node_name}")
-
-        if Chef::Config[:solo]
-          @node = Chef::Node.build(node_name)
-        else
-          @node = Chef::Node.find_or_create(node_name)
-        end
-      rescue Exception => e
-        # TODO: wrap this exception so useful error info can be given to the
-        # user.
-        events.node_load_failed(node_name, e, Chef::Config)
-        raise
+      def finish_load_node(node)
+        @node = node
       end
-
 
       # Applies environment, external JSON attributes, and override run list to
       # the node, Then expands the run_list.

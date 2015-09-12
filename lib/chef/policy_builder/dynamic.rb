@@ -21,6 +21,7 @@ require 'chef/rest'
 require 'chef/run_context'
 require 'chef/config'
 require 'chef/node'
+require 'chef/exceptions'
 
 class Chef
   module PolicyBuilder
@@ -56,7 +57,12 @@ class Chef
         events.node_load_start(node_name, config)
         Chef::Log.debug("Building node object for #{node_name}")
 
-        node = Chef::Node.find_or_create(node_name)
+        @node =
+          if Chef::Config[:solo]
+            Chef::Node.build(node_name)
+          else
+            Chef::Node.find_or_create(node_name)
+          end
         select_implementation(node)
         implementation.finish_load_node(node)
         node
@@ -102,7 +108,7 @@ class Chef
       ## Internal Public API ##
 
       def implementation
-        @implementation
+        @implementation or raise Exceptions::InvalidPolicybuilderCall, "#load_node must be called before other policy builder methods"
       end
 
       def select_implementation(node)

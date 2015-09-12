@@ -190,15 +190,66 @@ describe Chef::PolicyBuilder::Dynamic do
 
       before do
         allow(policy_builder).to receive(:implementation).and_return(implementation)
-
-        expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-        expect(policy_builder).to receive(:select_implementation).with(node)
-        expect(implementation).to receive(:finish_load_node).with(node)
       end
 
-      context "when successful" do
+      context "when not running chef solo" do
 
-        it "selects the backend implementation and continues node loading", :pending do
+
+        context "when successful" do
+
+          before do
+            expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
+            expect(policy_builder).to receive(:select_implementation).with(node)
+            expect(implementation).to receive(:finish_load_node).with(node)
+          end
+
+          it "selects the backend implementation and continues node loading" do
+            policy_builder.load_node
+          end
+
+        end
+
+        context "when an error occurs finding the node" do
+
+          before do
+            expect(Chef::Node).to receive(:find_or_create).with(node_name).and_raise("oops")
+          end
+
+          it "sends a node_load_failed event and re-raises" do
+            expect(events).to receive(:node_load_failed)
+            expect { policy_builder.load_node }.to raise_error("oops")
+          end
+
+        end
+
+        context "when an error occurs in the implementation's finish_load_node call" do
+
+          before do
+            expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
+            expect(policy_builder).to receive(:select_implementation).with(node)
+            expect(implementation).to receive(:finish_load_node).and_raise("oops")
+          end
+
+
+          it "sends a node_load_failed event and re-raises" do
+            expect(events).to receive(:node_load_failed)
+            expect { policy_builder.load_node }.to raise_error("oops")
+          end
+
+        end
+
+      end
+
+      context "when running chef solo" do
+
+        before do
+          Chef::Config[:solo] = true
+          expect(Chef::Node).to receive(:build).with(node_name).and_return(node)
+          expect(policy_builder).to receive(:select_implementation).with(node)
+          expect(implementation).to receive(:finish_load_node).with(node)
+        end
+
+        it "selects the backend implementation and continues node loading" do
           policy_builder.load_node
         end
 

@@ -181,19 +181,13 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:error404) { Net::HTTPServerException.new("404 message", :body) }
 
         before do
-          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
           expect(http_api).to receive(:get).
             with("data/policyfiles/example-policy-stage").
             and_raise(error404)
         end
 
         it "raises an error" do
-          expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
-        end
-
-        it "sends error message to the event system" do
-          expect(events).to receive(:node_load_failed).with(node_name, an_instance_of(err_namespace::ConfigurationError), Chef::Config)
-          expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
+          expect { policy_builder.finish_load_node(node) }.to raise_error(err_namespace::ConfigurationError)
         end
 
       end
@@ -201,20 +195,12 @@ describe Chef::PolicyBuilder::Policyfile do
       context "when the deployment_group is not configured" do
         before do
           Chef::Config[:deployment_group] = nil
-          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
         end
 
         it "errors while loading the node" do
-          expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
+          expect { policy_builder.finish_load_node(node) }.to raise_error(err_namespace::ConfigurationError)
         end
 
-
-        it "passes error information to the event system" do
-          # TODO: also make sure something acceptable happens with the error formatters
-          err_class = err_namespace::ConfigurationError
-          expect(events).to receive(:node_load_failed).with(node_name, an_instance_of(err_class), Chef::Config)
-          expect { policy_builder.load_node }.to raise_error(err_class)
-        end
       end
 
       context "when deployment_group is correctly configured" do
@@ -307,8 +293,7 @@ describe Chef::PolicyBuilder::Policyfile do
       end
 
       it "implements #expand_run_list in a manner compatible with ExpandNodeObject" do
-        expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-        policy_builder.load_node
+        policy_builder.finish_load_node(node)
         expect(policy_builder.expand_run_list).to respond_to(:recipes)
         expect(policy_builder.expand_run_list.recipes).to eq(["example1::default", "example2::server"])
         expect(policy_builder.expand_run_list.roles).to eq([])
@@ -346,9 +331,7 @@ describe Chef::PolicyBuilder::Policyfile do
       describe "building the node object" do
 
         before do
-          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-
-          policy_builder.load_node
+          policy_builder.finish_load_node(node)
           policy_builder.build_node
         end
 
@@ -414,9 +397,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:error404) { Net::HTTPServerException.new("404 message", :body) }
 
             before do
-              expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-
-              policy_builder.load_node
+              policy_builder.finish_load_node(node)
               policy_builder.build_node
 
               expect(http_api).to receive(:get).with(cookbook1_url).
@@ -433,9 +414,7 @@ describe Chef::PolicyBuilder::Policyfile do
         shared_examples_for "fetching cookbooks when they exist" do
           context "and the cookbooks can be fetched" do
             before do
-              expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-
-              policy_builder.load_node
+              policy_builder.finish_load_node(node)
               policy_builder.build_node
 
               allow(Chef::CookbookSynchronizer).to receive(:new).

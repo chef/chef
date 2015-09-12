@@ -38,13 +38,5 @@ class Chef
   # * cookbook_hash is stored in run_context
   module PolicyBuilder
 
-    def self.strategy
-      if Chef::Config[:use_policyfile]
-        Policyfile
-      else
-        ExpandNodeObject
-      end
-    end
-
   end
 end
