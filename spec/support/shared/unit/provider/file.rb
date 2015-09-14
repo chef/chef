@@ -466,10 +466,12 @@ shared_examples_for Chef::Provider::File do
       }
 
       let(:verification) { double("Verification") }
+      let(:verification_fail) { double("Verification Fail") }
 
       context "with user-supplied verifications" do
         it "calls #verify on each verification with tempfile path" do
-          allow(Chef::Resource::File::Verification).to receive(:new).and_return(verification)
+          allow(Chef::Resource::File::Verification).to(
+            receive(:new).with(anything(), "true", anything()).and_return(verification))
           provider.new_resource.verify "true"
           provider.new_resource.verify "true"
           expect(verification).to receive(:verify).with(tempfile.path).twice.and_return(true)
@@ -477,10 +479,14 @@ shared_examples_for Chef::Provider::File do
         end
 
         it "raises an exception if any verification fails" do
+          allow(Chef::Resource::File::Verification).to(
+            receive(:new).with(anything(), "true", anything()).and_return(verification))
+          allow(Chef::Resource::File::Verification).to(
+            receive(:new).with(anything(), "false", anything()).and_return(verification_fail))
           provider.new_resource.verify "true"
           provider.new_resource.verify "false"
-          allow(verification).to receive(:verify).with("true").and_return(true)
-          allow(verification).to receive(:verify).with("false").and_return(false)
+          expect(verification).to receive(:verify).with(tempfile.path).and_return(true)
+          expect(verification_fail).to receive(:verify).with(tempfile.path).and_return(false)
           expect{provider.send(:do_validate_content)}.to raise_error(Chef::Exceptions::ValidationFailed)
         end
       end
