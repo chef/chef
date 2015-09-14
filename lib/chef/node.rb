@@ -610,8 +610,16 @@ class Chef
           chef_server_rest.put_rest("nodes/#{name}", data_for_save)
         end
       rescue Net::HTTPServerException => e
-        raise e unless e.response.code == "404"
-        chef_server_rest.post_rest("nodes", data_for_save)
+        if e.response.code == "404"
+          chef_server_rest.post_rest("nodes", data_for_save)
+        # Chef Server before 12.3 rejects node JSON with 'policy_name' or
+        # 'policy_group' keys, but 'policy_name' will be detected first.
+        # Backcompat can be removed in 13.0
+        elsif e.response.code == "400" && e.response.body.include?("Invalid key policy_name")
+          save_without_policyfile_attrs
+        else
+          raise
+        end
       end
       self
     end
@@ -620,6 +628,15 @@ class Chef
     def create
       chef_server_rest.post_rest("nodes", data_for_save)
       self
+    rescue Net::HTTPServerException => e
+      # Chef Server before 12.3 rejects node JSON with 'policy_name' or
+      # 'policy_group' keys, but 'policy_name' will be detected first.
+      # Backcompat can be removed in 13.0
+      if e.response.code == "400" && e.response.body.include?("Invalid key policy_name")
+        chef_server_rest.post_rest("nodes", data_for_save_without_policyfile_attrs)
+      else
+        raise
+      end
     end
 
     def to_s
@@ -631,6 +648,22 @@ class Chef
     end
 
     private
+
+    def save_without_policyfile_attrs
+      trimmed_data = data_for_save_without_policyfile_attrs
+
+      chef_server_rest.put_rest("nodes/#{name}", trimmed_data)
+    rescue Net::HTTPServerException => e
+      raise e unless e.response.code == "404"
+      chef_server_rest.post_rest("nodes", trimmed_data)
+    end
+
+    def data_for_save_without_policyfile_attrs
+      data_for_save.tap do |trimmed_data|
+        trimmed_data.delete("policy_name")
+        trimmed_data.delete("policy_group")
+      end
+    end
 
     def data_for_save
       data = for_json
