@@ -65,6 +65,7 @@ build do
         f.rewind
         f.write("\nrequire 'ssl_env_hack'\n")
         f.write(unpatched_openssl_rb)
+        f.write("\nOpenSSL.fips_mode = true\n")
       end
     end
   end
