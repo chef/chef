@@ -510,6 +510,14 @@ class Chef
         #Render correctly for run_list items so malformed json does not result
         "run_list" => @primary_runlist.run_list.map { |item| item.to_s }
       }
+      # Chef Server rejects node JSON with extra keys; prior to 12.3,
+      # "policy_name" and "policy_group" are unknown; after 12.3 they are
+      # optional, therefore only including them in the JSON if present
+      # maximizes compatibility for most people.
+      unless policy_group.nil? && policy_name.nil?
+        result["policy_name"] = policy_name
+        result["policy_group"] = policy_group
+      end
       result
     end
 

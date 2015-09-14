@@ -1185,6 +1185,35 @@ describe Chef::Node do
       expect(serialized_node.run_list).to eq(node.run_list)
     end
 
+    context "when policyfile attributes are not present" do
+
+      it "does not have a policy_name key in the json" do
+        expect(node.for_json.keys).to_not include("policy_name")
+      end
+
+      it "does not have a policy_group key in the json" do
+        expect(node.for_json.keys).to_not include("policy_name")
+      end
+    end
+
+    context "when policyfile attributes are present" do
+
+      before do
+        node.policy_name = "my-application"
+        node.policy_group = "staging"
+      end
+
+      it "includes policy_name key in the json" do
+        expect(node.for_json).to have_key("policy_name")
+        expect(node.for_json["policy_name"]).to eq("my-application")
+      end
+
+      it "includes a policy_group key in the json" do
+        expect(node.for_json).to have_key("policy_group")
+        expect(node.for_json["policy_group"]).to eq("staging")
+      end
+    end
+
     include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) {
         node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
@@ -1380,6 +1409,7 @@ describe Chef::Node do
           node.save
         end
       end
+
     end
   end
 
