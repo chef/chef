@@ -465,8 +465,8 @@ shared_examples_for Chef::Provider::File do
         t
       }
 
-      let(:verification) { double("Verification") }
-      let(:verification_fail) { double("Verification Fail") }
+      let(:verification) { instance_double(Chef::Resource::File::Verification) }
+      let(:verification_fail) { instance_double(Chef::Resource::File::Verification) }
 
       context "with user-supplied verifications" do
         it "calls #verify on each verification with tempfile path" do
