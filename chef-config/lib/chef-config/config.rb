@@ -339,10 +339,27 @@ module ChefConfig
     # most of our testing scenarios)
     default :minimal_ohai, false
 
+    ###
+    # Policyfile Settings
+    #
     # Policyfile is a feature where a node gets its run list and cookbook
     # version set from a single document on the server instead of expanding the
     # run list and having the server compute the cookbook version set based on
     # environment constraints.
+    #
+    # Policyfiles are auto-versioned. The user groups nodes by `policy_name`,
+    # which generally describes a hosts's functional role, and `policy_group`,
+    # which generally groups nodes by deployment phase (a.k.a., "environment").
+    # The Chef Server maps a given set of `policy_name` plus `policy_group` to
+    # a particular revision of a policy.
+
+    default :policy_name, nil
+    default :policy_group, nil
+
+    # During initial development, users were required to set `use_policyfile true`
+    # in `client.rb` to opt-in to policyfile use. Chef Client now examines
+    # configuration, node json, and the stored node to determine if policyfile
+    # usage is desired. This flag is still honored if set, but is unnecessary.
     default :use_policyfile, false
 
     # Policyfiles can be used in a native mode (default) or compatibility mode.
@@ -355,6 +372,16 @@ module ChefConfig
     # compatibility mode. Compatibility mode remains available so you can use
     # policyfiles with servers that don't yet support the native endpoints.
     default :policy_document_native_api, true
+
+    # When policyfiles are used in compatibility mode, `policy_name` and
+    # `policy_group` are instead specified using a combined configuration
+    # setting, `deployment_group`. For example, if policy_name should be
+    # "webserver" and policy_group should be "staging", then `deployment_group`
+    # should be set to "webserver-staging", which is the name of the data bag
+    # item that the policy will be stored as. NOTE: this setting only has an
+    # effect if `policy_document_native_api` is set to `false`.
+    default :deployment_group, nil
+
 
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
