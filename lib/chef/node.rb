@@ -549,6 +549,10 @@ class Chef
       else
         o["recipes"].each { |r| node.recipes << r }
       end
+
+      node.policy_name = o["policy_name"] if o.has_key?("policy_name")
+      node.policy_group = o["policy_group"] if o.has_key?("policy_group")
+
       node
     end
 

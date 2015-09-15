@@ -1212,6 +1212,14 @@ describe Chef::Node do
         expect(node.for_json).to have_key("policy_group")
         expect(node.for_json["policy_group"]).to eq("staging")
       end
+
+      it "parses policyfile attributes from JSON" do
+        round_tripped_node = Chef::Node.json_create(node.for_json)
+
+        expect(round_tripped_node.policy_name).to eq("my-application")
+        expect(round_tripped_node.policy_group).to eq("staging")
+      end
+
     end
 
     include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
