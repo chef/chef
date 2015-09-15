@@ -112,7 +112,10 @@ class Chef
       end
 
       def select_implementation(node)
-        if policyfile_set_in_config? || policyfile_attribs_in_node_json? || node_has_policyfile_attrs?(node)
+        if policyfile_set_in_config? ||
+            policyfile_attribs_in_node_json? ||
+            node_has_policyfile_attrs?(node) ||
+            policyfile_compat_mode_config?
           @implementation = Policyfile.new(node_name, ohai_data, json_attribs, override_runlist, events)
         else
           @implementation = ExpandNodeObject.new(node_name, ohai_data, json_attribs, override_runlist, events)
@@ -135,6 +138,10 @@ class Chef
 
       def policyfile_set_in_config?
         config[:use_policyfile] || config[:policy_name] || config[:policy_group]
+      end
+
+      def policyfile_compat_mode_config?
+        config[:deployment_group] && !config[:policy_document_native_api]
       end
 
     end
