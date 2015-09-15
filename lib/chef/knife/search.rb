@@ -160,7 +160,7 @@ class Chef
 
       def fuzzify_query
         if @query !~ /:/
-          @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}*"
+          @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}* OR policy_name:*#{@query}* OR policy_group:*#{@query}*"
         end
       end
 
