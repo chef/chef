@@ -114,6 +114,7 @@ class Chef
 
       def finish_load_node(node)
         @node = node
+        select_policy_name_and_group
         validate_policyfile
         events.policyfile_loaded(policy)
       end
@@ -293,6 +294,48 @@ class Chef
 
       def policy_name
         Chef::Config[:policy_name]
+      end
+
+      def select_policy_name_and_group
+        policy_name_to_set =
+          policy_name_from_json_attribs ||
+          policy_name_from_config ||
+          policy_name_from_node
+
+        policy_group_to_set =
+          policy_group_from_json_attribs ||
+          policy_group_from_config ||
+          policy_group_from_node
+
+        node.policy_name = policy_name_to_set
+        node.policy_group = policy_group_to_set
+
+        Chef::Config[:policy_name] = policy_name_to_set
+        Chef::Config[:policy_group] = policy_group_to_set
+      end
+
+      def policy_group_from_json_attribs
+        json_attribs["policy_group"]
+      end
+
+      def policy_name_from_json_attribs
+        json_attribs["policy_name"]
+      end
+
+      def policy_group_from_config
+        Chef::Config[:policy_group]
+      end
+
+      def policy_name_from_config
+        Chef::Config[:policy_name]
+      end
+
+      def policy_group_from_node
+        node.policy_group
+      end
+
+      def policy_name_from_node
+        node.policy_name
       end
 
       # Builds a 'cookbook_hash' map of the form

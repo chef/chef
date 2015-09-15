@@ -330,9 +330,167 @@ describe Chef::PolicyBuilder::Policyfile do
 
       describe "building the node object" do
 
+        let(:extra_chef_config) { {} }
+
         before do
+          # must be set before #build_node is called to have the proper effect
+          extra_chef_config.each do |key, value|
+            Chef::Config[key] = value
+          end
+
           policy_builder.finish_load_node(node)
           policy_builder.build_node
+        end
+
+        # it sets policy_name and policy_group in the following priority order:
+        # -j JSON > config file > node object
+
+        describe "selecting policy_name and policy_group from the various sources" do
+
+          context "when only set in node JSON" do
+
+            let(:json_attribs) do
+              {
+                "policy_name" => "policy_name_from_node_json",
+                "policy_group" => "policy_group_from_node_json"
+              }
+            end
+
+            it "sets policy_name and policy_group on Chef::Config" do
+              expect(Chef::Config[:policy_name]).to eq("policy_name_from_node_json")
+              expect(Chef::Config[:policy_group]).to eq("policy_group_from_node_json")
+            end
+
+            it "sets policy_name and policy_group on the node object" do
+              expect(node.policy_name).to eq("policy_name_from_node_json")
+              expect(node.policy_group).to eq("policy_group_from_node_json")
+            end
+
+          end
+
+          context "when only set in Chef::Config" do
+
+            let(:extra_chef_config) do
+              {
+                policy_name: "policy_name_from_config",
+                policy_group: "policy_group_from_config"
+              }
+            end
+
+            it "sets policy_name and policy_group on the node object" do
+              expect(node.policy_name).to eq("policy_name_from_config")
+              expect(node.policy_group).to eq("policy_group_from_config")
+            end
+
+          end
+
+          context "when only set on the node" do
+
+            let(:node) do
+              node = Chef::Node.new
+              node.name(node_name)
+              node.policy_name = "policy_name_from_node"
+              node.policy_group = "policy_group_from_node"
+              node
+            end
+
+            it "sets policy_name and policy_group on Chef::Config" do
+              expect(Chef::Config[:policy_name]).to eq("policy_name_from_node")
+              expect(Chef::Config[:policy_group]).to eq("policy_group_from_node")
+            end
+
+          end
+
+          context "when set in Chef::Config and the fetched node" do
+
+            let(:node) do
+              node = Chef::Node.new
+              node.name(node_name)
+              node.policy_name = "policy_name_from_node"
+              node.policy_group = "policy_group_from_node"
+              node
+            end
+
+            let(:extra_chef_config) do
+              {
+                policy_name: "policy_name_from_config",
+                policy_group: "policy_group_from_config"
+              }
+            end
+
+            it "prefers the policy_name and policy_group from Chef::Config" do
+              expect(node.policy_name).to eq("policy_name_from_config")
+              expect(node.policy_group).to eq("policy_group_from_config")
+            end
+
+          end
+
+          context "when set in node json and the fetched node" do
+
+            let(:json_attribs) do
+              {
+                "policy_name" => "policy_name_from_node_json",
+                "policy_group" => "policy_group_from_node_json"
+              }
+            end
+
+            let(:node) do
+              node = Chef::Node.new
+              node.name(node_name)
+              node.policy_name = "policy_name_from_node"
+              node.policy_group = "policy_group_from_node"
+              node
+            end
+
+
+            it "prefers the policy_name and policy_group from the node json" do
+              expect(policy_builder.policy_name).to eq("policy_name_from_node_json")
+              expect(policy_builder.policy_group).to eq("policy_group_from_node_json")
+
+              expect(Chef::Config[:policy_name]).to eq("policy_name_from_node_json")
+              expect(Chef::Config[:policy_group]).to eq("policy_group_from_node_json")
+              expect(node.policy_name).to eq("policy_name_from_node_json")
+              expect(node.policy_group).to eq("policy_group_from_node_json")
+            end
+
+          end
+
+          context "when set in all sources" do
+
+            let(:json_attribs) do
+              {
+                "policy_name" => "policy_name_from_node_json",
+                "policy_group" => "policy_group_from_node_json"
+              }
+            end
+
+            let(:node) do
+              node = Chef::Node.new
+              node.name(node_name)
+              node.policy_name = "policy_name_from_node"
+              node.policy_group = "policy_group_from_node"
+              node
+            end
+
+            let(:extra_chef_config) do
+              {
+                policy_name: "policy_name_from_config",
+                policy_group: "policy_group_from_config"
+              }
+            end
+
+            it "prefers the policy_name and group from node json" do
+              expect(policy_builder.policy_name).to eq("policy_name_from_node_json")
+              expect(policy_builder.policy_group).to eq("policy_group_from_node_json")
+
+              expect(Chef::Config[:policy_name]).to eq("policy_name_from_node_json")
+              expect(Chef::Config[:policy_group]).to eq("policy_group_from_node_json")
+              expect(node.policy_name).to eq("policy_name_from_node_json")
+              expect(node.policy_group).to eq("policy_group_from_node_json")
+            end
+
+          end
+
         end
 
         it "resets default and override data" do
