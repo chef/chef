@@ -808,10 +808,6 @@ class Chef
         property = property_type(**options)
       end
 
-      if !options[:default].frozen? && (options[:default].is_a?(Array) || options[:default].is_a?(Hash))
-        Chef.log_deprecation("Property #{self}.#{name} has an array or hash default (#{options[:default]}). This means that if one resource modifies or appends to it, all other resources of the same type will also see the changes. Either freeze the constant with `.freeze` to prevent appending, or use lazy { #{options[:default].inspect} }.")
-      end
-
       local_properties = properties(false)
       local_properties[name] = property
 

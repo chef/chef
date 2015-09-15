@@ -350,8 +350,6 @@ EOM
       expect(run_complete).to be >= 0
 
       # Make sure there is exactly one result for each, and that it occurs *after* the complete message.
-      expect(match_indices(/MyResource.x has an array or hash default/, result.stdout)).to match([ be > run_complete ])
-      expect(match_indices(/MyResource.y has an array or hash default/, result.stdout)).to match([ be > run_complete ])
       expect(match_indices(/nil currently does not overwrite the value of/, result.stdout)).to match([ be > run_complete ])
     end
   end

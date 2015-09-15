@@ -480,12 +480,6 @@ describe "Chef::Resource.property" do
         end
       end
 
-      it "when a property is declared with default: {}, a warning is issued" do
-        expect(Chef::Log).to receive(:deprecation).with( /^Property .+\.x has an array or hash default \(\{\}\)\. This means that if one resource modifies or appends to it, all other resources of the same type will also see the changes\. Either freeze the constant with \`\.freeze\` to prevent appending, or use lazy \{ \{\} \}\.$/, /property_spec\.rb/ )
-        resource_class.class_eval("property :x, default: {}", __FILE__, __LINE__)
-        expect(resource.x).to eq({})
-      end
-
       with_property ':x, default: lazy { {} }' do
         it "when x is not set, it returns {}" do
           expect(resource.x).to eq({})
