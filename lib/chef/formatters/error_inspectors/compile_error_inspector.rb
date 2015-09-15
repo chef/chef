@@ -47,11 +47,31 @@ class Chef
 
           if exception_message_modifying_frozen?
             msg = <<-MESSAGE
-            Chef calls the freeze method on certain ruby objects to prevent
-            pollution across multiple instances. Specifically, resource
-            properties have frozen default values to avoid modifying the
-            property for all instances of a resource. Try modifying the
-            particular instance variable or using an instance accessor instead.
+            Ruby objects are often frozen to prevent further modifications
+            when they would negatively impact the process (e.g. values inside
+            Ruby's ENV class) or to prevent polluting other objects when default
+            values are passed by reference to many instances of an object (e.g.
+            the empty Array as a Chef resource default, passed by reference
+            to every instance of the resource).
+
+            Chef uses Object#freeze to ensure the default values of properties
+            inside Chef resources are not modified, so that when a new instance
+            of a Chef resource is created, and Object#dup copies values by
+            reference, the new resource is not receiving a default value that
+            has been by a previous instance of that resource.
+
+            Instead of modifying an object that contains a default value for all
+            instances of a Chef resource, create a new object and assign it to
+            the resource's parameter, e.g.:
+
+            fruit_basket = resource(:fruit_basket, 'default')
+
+            # BAD: modifies 'contents' object for all new fruit_basket instances
+            fruit_basket.contents << 'apple'
+
+            # GOOD: allocates new array only owned by this fruit_basket instance
+            fruit_basket.contents %w(apple)
+
             MESSAGE
 
             error_description.section("Additional information:", msg.gsub(/^ {6}/, ''))
