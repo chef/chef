@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'forwardable'
+
 require 'chef/log'
 require 'chef/rest'
 require 'chef/run_context'
@@ -29,6 +31,8 @@ class Chef
     # PolicyBuilder that selects either a Policyfile or non-Policyfile
     # implementation based on the content of the node object.
     class Dynamic
+
+      extend Forwardable
 
       attr_reader :node
       attr_reader :node_name
@@ -71,39 +75,16 @@ class Chef
         raise
       end
 
-      ## Delegated Methods ##
+      ## Delegated Public API Methods ##
 
-      def original_runlist
-        implementation.original_runlist
-      end
-
-      def run_context
-        implementation.run_context
-      end
-
-      def run_list_expansion
-        implementation.run_list_expansion
-      end
-
-      def build_node
-        implementation.build_node
-      end
-
-      def setup_run_context(specific_recipes=nil)
-        implementation.setup_run_context(specific_recipes)
-      end
-
-      def expand_run_list
-        implementation.expand_run_list
-      end
-
-      def sync_cookbooks
-        implementation.sync_cookbooks
-      end
-
-      def temporary_policy?
-        implementation.temporary_policy?
-      end
+      def_delegator :implementation, :original_runlist
+      def_delegator :implementation, :run_context
+      def_delegator :implementation, :run_list_expansion
+      def_delegator :implementation, :build_node
+      def_delegator :implementation, :setup_run_context
+      def_delegator :implementation, :expand_run_list
+      def_delegator :implementation, :sync_cookbooks
+      def_delegator :implementation, :temporary_policy?
 
       ## Internal Public API ##
 
