@@ -60,6 +60,12 @@ RSpec.describe ChefConfig::Config do
         expect(ChefConfig::Config.chef_server_url).to eq("https://junglist.gen.nz")
       end
     end
+
+    context "when the url is invalid" do
+      it "raises an exception" do
+        expect { ChefConfig::Config.chef_server_url = "127.0.0.1" }.to raise_error(ChefConfig::ConfigurationError)
+      end
+    end
   end
 
   describe "when configuring formatters" do

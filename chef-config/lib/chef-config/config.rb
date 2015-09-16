@@ -76,12 +76,21 @@ module ChefConfig
 
     default :formatters, []
 
+    def self.is_valid_url? uri
+      url = uri.to_s.strip
+      /^http:\/\// =~ url || /^https:\/\// =~ url || /^chefzero:/ =~ url
+    end
     # Override the config dispatch to set the value of multiple server options simultaneously
     #
     # === Parameters
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
-    configurable(:chef_server_url).writes_value { |url| url.to_s.strip }
+    configurable(:chef_server_url).writes_value do |uri|
+      unless is_valid_url? uri
+        raise ConfigurationError, "#{url} is an invalid chef_server_url."
+      end
+      uri.to_s.strip
+    end
 
     # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.
     # So while this is basically identical to what method_missing would do, we pull
@@ -300,7 +309,7 @@ module ChefConfig
       default :host, 'localhost'
       default :port, 8889.upto(9999) # Will try ports from 8889-9999 until one works
     end
-    default :chef_server_url,   "https://localhost:443"
+    default :chef_server_url, "https://localhost:443"
 
     default(:chef_server_root) do
       # if the chef_server_url is a path to an organization, aka
