@@ -32,7 +32,6 @@ end
 
 dependency "rubygems"
 dependency "bundler"
-dependency "bundler"
 dependency "appbundler"
 dependency "chef"
 dependency "berkshelf"
