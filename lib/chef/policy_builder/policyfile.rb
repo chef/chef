@@ -170,6 +170,8 @@ class Chef
       #
       # @return [RunListExpansionIsh] A RunListExpansion duck-type.
       def expand_run_list
+        CookbookCacheCleaner.instance.skip_removal = true if named_run_list_requested?
+
         node.run_list(run_list)
         node.automatic_attrs[:roles] = []
         node.automatic_attrs[:recipes] = run_list_expansion_ish.recipes
@@ -253,7 +255,14 @@ class Chef
 
       # @api private
       def run_list
-        policy["run_list"]
+        if named_run_list_requested?
+          named_run_list or
+            raise ConfigurationError,
+            "Policy '#{retrieved_policy_name}' revision '#{revision_id}' does not have named_run_list '#{named_run_list_name}'" +
+            "(available named_run_lists: [#{available_named_run_lists.join(', ')}])"
+        else
+          policy["run_list"]
+        end
       end
 
       # @api private
@@ -441,6 +450,11 @@ class Chef
       end
 
       # @api private
+      def revision_id
+        policy["revision_id"]
+      end
+
+      # @api private
       def http_api
         @api_service ||= Chef::REST.new(config[:chef_server_url])
       end
@@ -460,6 +474,26 @@ class Chef
       # @param run_context [Chef::RunContext] the run_context to inject
       def setup_chef_class(run_context)
         Chef.set_run_context(run_context)
+      end
+
+      def retrieved_policy_name
+        policy["name"]
+      end
+
+      def named_run_list
+        policy["named_run_lists"] && policy["named_run_lists"][named_run_list_name]
+      end
+
+      def available_named_run_lists
+        (policy["named_run_lists"] || {}).keys
+      end
+
+      def named_run_list_requested?
+        !!Chef::Config[:named_run_list]
+      end
+
+      def named_run_list_name
+        Chef::Config[:named_run_list]
       end
 
       def compat_mode_manifest_for(cookbook_name, lock_data)

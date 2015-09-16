@@ -76,8 +76,11 @@ describe Chef::PolicyBuilder::Policyfile do
 
   let(:policyfile_run_list) { ["recipe[example1::default]", "recipe[example2::server]"] }
 
-  let(:parsed_policyfile_json) do
+  let(:basic_valid_policy_data) do
     {
+      "name" => "example-policy",
+      "revision_id" => "123abc",
+
       "run_list" => policyfile_run_list,
 
       "cookbook_locks" => {
@@ -89,6 +92,8 @@ describe Chef::PolicyBuilder::Policyfile do
       "override_attributes" => policyfile_override_attributes
     }
   end
+
+  let(:parsed_policyfile_json) { basic_valid_policy_data }
 
   let(:err_namespace) { Chef::PolicyBuilder::Policyfile }
 
@@ -498,34 +503,93 @@ describe Chef::PolicyBuilder::Policyfile do
           expect(node["override_key"]).to be_nil
         end
 
-        it "applies ohai data" do
-          expect(ohai_data).to_not be_empty # ensure test is testing something
-          ohai_data.each do |key, value|
-            expect(node.automatic_attrs[key]).to eq(value)
+        describe "setting attribute values" do
+
+          before do
+            policy_builder.build_node
+          end
+
+          it "resets default and override data" do
+            expect(node["default_key"]).to be_nil
+            expect(node["override_key"]).to be_nil
+          end
+
+          it "applies ohai data" do
+            expect(ohai_data).to_not be_empty # ensure test is testing something
+            ohai_data.each do |key, value|
+              expect(node.automatic_attrs[key]).to eq(value)
+            end
+          end
+
+          it "applies attributes from json file" do
+            expect(node["custom_attr"]).to eq("custom_attr_value")
+          end
+
+          it "applies attributes from the policyfile" do
+            expect(node["policyfile_default_attr"]).to eq("policyfile_default_value")
+            expect(node["policyfile_override_attr"]).to eq("policyfile_override_value")
+          end
+
+          it "sets the policyfile's run_list on the node object" do
+            expect(node.run_list).to eq(policyfile_run_list)
+          end
+
+          it "creates node.automatic_attrs[:roles]" do
+            expect(node.automatic_attrs[:roles]).to eq([])
+          end
+
+          it "create node.automatic_attrs[:recipes]" do
+            expect(node.automatic_attrs[:recipes]).to eq(["example1::default", "example2::server"])
           end
         end
 
-        it "applies attributes from json file" do
-          expect(node["custom_attr"]).to eq("custom_attr_value")
-        end
+        context "when a named run_list is given" do
 
-        it "applies attributes from the policyfile" do
-          expect(node["policyfile_default_attr"]).to eq("policyfile_default_value")
-          expect(node["policyfile_override_attr"]).to eq("policyfile_override_value")
-        end
+          before do
+            Chef::Config[:named_run_list] = "deploy-app"
+          end
 
-        it "sets the policyfile's run_list on the node object" do
-          expect(node.run_list).to eq(policyfile_run_list)
-        end
+          context "and the named run_list is not present in the policy" do
 
-        it "creates node.automatic_attrs[:roles]" do
-          expect(node.automatic_attrs[:roles]).to eq([])
-        end
+            it "raises a ConfigurationError" do
+              err_class = Chef::PolicyBuilder::Policyfile::ConfigurationError
+              err_text = "Policy 'example-policy' revision '123abc' does not have named_run_list 'deploy-app'(available named_run_lists: [])"
+              expect { policy_builder.build_node }.to raise_error(err_class, err_text)
+            end
 
-        it "create node.automatic_attrs[:recipes]" do
-          expect(node.automatic_attrs[:recipes]).to eq(["example1::default", "example2::server"])
-        end
+          end
 
+          context "and the named run_list is present in the policy" do
+
+            let(:parsed_policyfile_json) do
+              basic_valid_policy_data.dup.tap do |p|
+                p["named_run_lists"] = {
+                  "deploy-app" => [ "recipe[example1::default]" ]
+                }
+              end
+            end
+
+            before do
+              policy_builder.build_node
+            end
+
+            it "sets the run list to the desired named run list" do
+              expect(policy_builder.run_list).to eq([ "recipe[example1::default]" ])
+              expected_expansion = Chef::PolicyBuilder::Policyfile::RunListExpansionIsh.new([ "example1::default" ], [])
+              expect(policy_builder.run_list_expansion).to eq(expected_expansion)
+              expect(policy_builder.run_list_with_versions_for_display).to eq(["example1::default@2.3.5 (168d210)"])
+              expect(node.run_list).to eq([ Chef::RunList::RunListItem.new("recipe[example1::default]") ])
+              expect(node[:roles]).to eq( [] )
+              expect(node[:recipes]).to eq( ["example1::default"] )
+            end
+
+            it "disables the cookbook cache cleaner" do
+              expect(Chef::CookbookCacheCleaner.instance.skip_removal).to be(true)
+            end
+
+          end
+
+        end
       end
 
 
