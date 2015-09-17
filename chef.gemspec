@@ -15,13 +15,13 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 2.0.0"
 
-  s.add_dependency "chef-config", "= #{Chef::VERSION}"
+  s.add_dependency "chef-config", "= 12.4.1"
 
   s.add_dependency "mixlib-cli", "~> 1.4"
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.3"
   s.add_dependency "mixlib-shellout", ">= 2.0.0.rc.0", "< 3.0"
-  s.add_dependency "ohai", "~> 8.0"
+  s.add_dependency "ohai", "~> 8.0", "< 8.6"
 
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-ssh", "~> 2.6"
