@@ -57,6 +57,9 @@ class Chef
 
       # This method injects the run_context and into the Chef class.
       #
+      # NOTE: This is duplicated with the Policyfile implementation. If
+      # it gets any more complicated, it needs to be moved elsewhere.
+      #
       # @param run_context [Chef::RunContext] the run_context to inject
       def setup_chef_class(run_context)
         Chef.set_run_context(run_context)

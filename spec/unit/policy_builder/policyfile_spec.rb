@@ -572,12 +572,18 @@ describe Chef::PolicyBuilder::Policyfile do
         shared_examples_for "fetching cookbooks when they exist" do
           context "and the cookbooks can be fetched" do
             before do
+              Chef.reset!
+
               policy_builder.finish_load_node(node)
               policy_builder.build_node
 
               allow(Chef::CookbookSynchronizer).to receive(:new).
                 with(expected_cookbook_hash, events).
                 and_return(cookbook_synchronizer)
+            end
+
+            after do
+              Chef.reset!
             end
 
             it "builds a Hash of the form 'cookbook_name' => Chef::CookbookVersion" do
@@ -595,6 +601,13 @@ describe Chef::PolicyBuilder::Policyfile do
               run_context = policy_builder.setup_run_context
               expect(run_context.node).to eq(node)
               expect(run_context.cookbook_collection.keys).to match_array(["example1", "example2"])
+            end
+
+            it "makes the run context available via static method on Chef" do
+              expect(cookbook_synchronizer).to receive(:sync_cookbooks)
+              expect_any_instance_of(Chef::RunContext).to receive(:load).with(policy_builder.run_list_expansion_ish)
+              run_context = policy_builder.setup_run_context
+              expect(Chef.run_context).to eq(run_context)
             end
 
           end

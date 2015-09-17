@@ -147,17 +147,28 @@ class Chef
         raise
       end
 
+      # Synchronizes cookbooks and initializes the run context object for the
+      # run.
+      #
+      # @return [Chef::RunContext]
       def setup_run_context(specific_recipes=nil)
         Chef::Cookbook::FileVendor.fetch_from_remote(http_api)
         sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbooks_to_sync)
         run_context = Chef::RunContext.new(node, cookbook_collection, events)
 
+        setup_chef_class(run_context)
+
         run_context.load(run_list_expansion_ish)
 
+        setup_chef_class(run_context)
         run_context
       end
 
+      # Sets `run_list` on the node from the policy, sets `roles` and `recipes`
+      # attributes on the node accordingly.
+      #
+      # @return [RunListExpansionIsh] A RunListExpansion duck-type.
       def expand_run_list
         node.run_list(run_list)
         node.automatic_attrs[:roles] = []
@@ -165,7 +176,11 @@ class Chef
         run_list_expansion_ish
       end
 
-
+      # Synchronizes cookbooks. In a normal chef-client run, this is handled by
+      # #setup_run_context, but may be called directly in some circumstances.
+      #
+      # @return [Hash{String => Chef::CookbookManifest}] A map of
+      #   CookbookManifest objects by cookbook name.
       def sync_cookbooks
         Chef::Log.debug("Synchronizing cookbooks")
         synchronizer = Chef::CookbookSynchronizer.new(cookbooks_to_sync, events)
@@ -179,12 +194,18 @@ class Chef
 
       # Whether or not this is a temporary policy. Since PolicyBuilder doesn't
       # support override_runlist, this is always false.
+      #
+      # @return [false]
       def temporary_policy?
         false
       end
 
       ## Internal Public API ##
 
+      # @api private
+      #
+      # Generates an array of strings with recipe names including version and
+      # identifier info.
       def run_list_with_versions_for_display
         run_list.map do |recipe_spec|
           cookbook, recipe = parse_recipe_spec(recipe_spec)
@@ -194,6 +215,11 @@ class Chef
         end
       end
 
+      # @api private
+      #
+      # Sets up a RunListExpansionIsh object so that it can be used in place of
+      # a RunListExpansion object, to satisfy the API contract of
+      # #expand_run_list
       def run_list_expansion_ish
         recipes = run_list.map do |recipe_spec|
           cookbook, recipe = parse_recipe_spec(recipe_spec)
@@ -202,11 +228,15 @@ class Chef
         RunListExpansionIsh.new(recipes, [])
       end
 
+      # @api private
+      #
+      # Sets attributes from the policyfile on the node, using the role priority.
       def apply_policyfile_attributes
         node.attributes.role_default = policy["default_attributes"]
         node.attributes.role_override = policy["override_attributes"]
       end
 
+      # @api private
       def parse_recipe_spec(recipe_spec)
         rmatch = recipe_spec.match(/recipe\[([^:]+)::([^:]+)\]/)
         if rmatch.nil?
@@ -216,20 +246,24 @@ class Chef
         end
       end
 
+      # @api private
       def cookbook_lock_for(cookbook_name)
         cookbook_locks[cookbook_name]
       end
 
+      # @api private
       def run_list
         policy["run_list"]
       end
 
+      # @api private
       def policy
         @policy ||= http_api.get(policyfile_location)
       rescue Net::HTTPServerException => e
         raise ConfigurationError, "Error loading policyfile from `#{policyfile_location}': #{e.class} - #{e.message}"
       end
 
+      # @api private
       def policyfile_location
         if Chef::Config[:policy_document_native_api]
           validate_policy_config!
@@ -266,6 +300,7 @@ class Chef
         end
       end
 
+      # @api private
       def validate_recipe_spec(recipe_spec)
         parse_recipe_spec(recipe_spec)
         nil
@@ -275,11 +310,13 @@ class Chef
 
       class ConfigurationError < StandardError; end
 
+      # @api private
       def deployment_group
         Chef::Config[:deployment_group] or
           raise ConfigurationError, "Setting `deployment_group` is not configured."
       end
 
+      # @api private
       def validate_policy_config!
         policy_group or
           raise ConfigurationError, "Setting `policy_group` is not configured."
@@ -288,14 +325,26 @@ class Chef
           raise ConfigurationError, "Setting `policy_name` is not configured."
       end
 
+      # @api private
       def policy_group
         Chef::Config[:policy_group]
       end
 
+      # @api private
       def policy_name
         Chef::Config[:policy_name]
       end
 
+      # @api private
+      #
+      # Selects the `policy_name` and `policy_group` from the following sources
+      # in priority order:
+      #
+      # 1. JSON attribs (i.e., `-j JSON_FILE`)
+      # 2. `Chef::Config`
+      # 3. The node object
+      #
+      # The selected values are then copied to `Chef::Config` and the node.
       def select_policy_name_and_group
         policy_name_to_set =
           policy_name_from_json_attribs ||
@@ -314,30 +363,37 @@ class Chef
         Chef::Config[:policy_group] = policy_group_to_set
       end
 
+      # @api private
       def policy_group_from_json_attribs
         json_attribs["policy_group"]
       end
 
+      # @api private
       def policy_name_from_json_attribs
         json_attribs["policy_name"]
       end
 
+      # @api private
       def policy_group_from_config
         Chef::Config[:policy_group]
       end
 
+      # @api private
       def policy_name_from_config
         Chef::Config[:policy_name]
       end
 
+      # @api private
       def policy_group_from_node
         node.policy_group
       end
 
+      # @api private
       def policy_name_from_node
         node.policy_name
       end
 
+      # @api private
       # Builds a 'cookbook_hash' map of the form
       #   "COOKBOOK_NAME" => "IDENTIFIER"
       #
@@ -365,6 +421,7 @@ class Chef
         raise
       end
 
+      # @api private
       # Fetches the CookbookVersion object for the given name and identifer
       # specified in the lock_data.
       # TODO: This only implements Chef 11 compatibility mode, which means that
@@ -378,19 +435,32 @@ class Chef
         end
       end
 
+      # @api private
       def cookbook_locks
         policy["cookbook_locks"]
       end
 
+      # @api private
       def http_api
         @api_service ||= Chef::REST.new(config[:chef_server_url])
       end
 
+      # @api private
       def config
         Chef::Config
       end
 
       private
+
+      # This method injects the run_context and into the Chef class.
+      #
+      # NOTE: This is duplicated with the ExpandNodeObject implementation. If
+      # it gets any more complicated, it needs to be moved elsewhere.
+      #
+      # @param run_context [Chef::RunContext] the run_context to inject
+      def setup_chef_class(run_context)
+        Chef.set_run_context(run_context)
+      end
 
       def compat_mode_manifest_for(cookbook_name, lock_data)
         xyz_version = lock_data["dotted_decimal_identifier"]
