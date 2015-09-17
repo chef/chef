@@ -47,6 +47,19 @@ describe Chef::Application::Client, "reconfigure" do
       expect(app).to receive(:set_specific_recipes).and_return(true)
       app.reconfigure
     end
+
+    context "when given a named_run_list" do
+
+      before do
+        ARGV.replace( %w[ --named-run-list arglebargle-example ] )
+        app.reconfigure
+      end
+
+      it "sets named_run_list in Chef::Config" do
+        expect(Chef::Config[:named_run_list]).to eq("arglebargle-example")
+      end
+
+    end
   end
 
   describe "when configured to not fork the client process" do

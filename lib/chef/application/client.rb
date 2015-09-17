@@ -160,6 +160,12 @@ class Chef::Application::Client < Chef::Application
     :description  => "Set the client key file location",
     :proc         => nil
 
+  option :named_run_list,
+    :short        => "-n NAMED_RUN_LIST",
+    :long         => "--named-run-list NAMED_RUN_LIST",
+    :description  => "Use a policyfile's named run list instead of the default run list",
+    :default      => nil
+
   option :environment,
     :short        => '-E ENVIRONMENT',
     :long         => '--environment ENVIRONMENT',

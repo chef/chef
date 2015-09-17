@@ -356,6 +356,12 @@ module ChefConfig
     default :policy_name, nil
     default :policy_group, nil
 
+    # Policyfiles can have multiple run lists, via the named run list feature.
+    # Generally this will be set by a CLI option via Chef::Application::Client,
+    # but it could be set in client.rb if desired.
+
+    default :named_run_list, nil
+
     # During initial development, users were required to set `use_policyfile true`
     # in `client.rb` to opt-in to policyfile use. Chef Client now examines
     # configuration, node json, and the stored node to determine if policyfile
