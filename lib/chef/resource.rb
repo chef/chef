@@ -1406,7 +1406,7 @@ class Chef
     # @return A new copy of the resource, with values filled in from the actual
     #   current value.
     #
-    def current_resource
+    def current_value
       provider = provider_for_action(Array(action).first)
       if provider.whyrun_mode? && !provider.whyrun_supported?
         raise "Cannot retrieve #{self.class.current_resource} in why-run mode: #{provider} does not support why-run"
