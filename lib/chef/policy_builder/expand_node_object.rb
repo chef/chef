@@ -55,9 +55,7 @@ class Chef
         @run_list_expansion = nil
       end
 
-      # This method injects the run_context and provider and resource priority
-      # maps into the Chef class.  The run_context has to be injected here, the provider and
-      # resource maps could be moved if a better place can be found to do this work.
+      # This method injects the run_context and into the Chef class.
       #
       # @param run_context [Chef::RunContext] the run_context to inject
       def setup_chef_class(run_context)
