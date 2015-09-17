@@ -33,17 +33,38 @@ end
 
 describe "Chef::Platform#windows_nano_server?" do
   let(:key) { "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Server\\ServerLevels" }
-  let(:access) { 0x0001 | 0x0100 }
+  let(:key_query_value) { 0x0001 }
+  let(:access) { key_query_value | 0x0100 }
   let(:hive) { double("Win32::Registry::HKEY_LOCAL_MACHINE") }
   let(:registry) { double("Win32::Registry") }
 
-  before do
-    Object.send(:remove_const, 'Win32') if defined?(Win32)
+  before(:all) do
+    @original_win32 = if defined?(Win32)
+      win32 = Object.send(:const_get, 'Win32')
+      Object.send(:remove_const, 'Win32')
+      win32
+    else
+      nil
+    end
     Win32 = Module.new
     Win32::Registry = Class.new
     Win32::Registry::Error = Class.new(RuntimeError)
+
+  end
+
+  before do
     Win32::Registry::HKEY_LOCAL_MACHINE = hive
-    Win32::Registry::KEY_QUERY_VALUE = 0x0001
+    Win32::Registry::KEY_QUERY_VALUE = key_query_value
+  end
+
+  after do
+    Win32::Registry.send(:remove_const, 'HKEY_LOCAL_MACHINE') if defined?(Win32::Registry::HKEY_LOCAL_MACHINE)
+    Win32::Registry.send(:remove_const, 'KEY_QUERY_VALUE') if defined?(Win32::Registry::KEY_QUERY_VALUE)
+  end
+
+  after(:all) do
+    Object.send(:remove_const, 'Win32') if defined?(Win32)
+    Object.send(:const_set, 'Win32', @original_win32) if @original_win32
   end
 
   it "returns false early when not on windows" do
