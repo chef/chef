@@ -36,7 +36,7 @@ override :chef,           version: "stable"
 override :ohai,           version: '8.5.1'
 
 override :berkshelf,      version: "v3.3.0"
-override :bundler,        version: "1.10.6"
+override :bundler,        version: "1.10.7.depsolverfix.0"
 override :'chef-vault',   version: "v2.6.1"
 
 # TODO: Can we bump default versions in omnibus-software?
