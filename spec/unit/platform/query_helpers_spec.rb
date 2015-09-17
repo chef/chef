@@ -21,7 +21,7 @@ require 'spec_helper'
 describe "Chef::Platform#windows_server_2003?" do
   it "returns false early when not on windows" do
     allow(ChefConfig).to receive(:windows?).and_return(false)
-    expect(Chef::Platform).not_to receive(:require) 
+    expect(Chef::Platform).not_to receive(:require)
     expect(Chef::Platform.windows_server_2003?).to be_falsey
   end
 
@@ -31,7 +31,69 @@ describe "Chef::Platform#windows_server_2003?" do
   end
 end
 
-describe 'Chef::Platform#supports_dsc?' do 
+describe "Chef::Platform#windows_nano_server?" do
+  let(:key) { "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Server\\ServerLevels" }
+  let(:access) { 0x0001 | 0x0100 }
+  let(:hive) { double("Win32::Registry::HKEY_LOCAL_MACHINE") }
+  let(:registry) { double("Win32::Registry") }
+
+  before do
+    Object.send(:remove_const, 'Win32') if defined?(Win32)
+    Win32 = Module.new
+    Win32::Registry = Class.new
+    Win32::Registry::Error = Class.new(RuntimeError)
+    Win32::Registry::HKEY_LOCAL_MACHINE = hive
+    Win32::Registry::KEY_QUERY_VALUE = 0x0001
+  end
+
+  it "returns false early when not on windows" do
+    allow(ChefConfig).to receive(:windows?).and_return(false)
+    expect(Chef::Platform).to_not receive(:require)
+    expect(Chef::Platform.windows_nano_server?).to be false
+  end
+
+  it "returns true when the registry value is 1" do
+    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(Chef::Platform).to receive(:require).with('win32/registry')
+    expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open).
+      with(key, access).
+      and_yield(registry)
+    expect(registry).to receive(:[]).with("NanoServer").and_return(1)
+    expect(Chef::Platform.windows_nano_server?).to be true
+  end
+
+  it "returns false when the registry value is not 1" do
+    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(Chef::Platform).to receive(:require).with('win32/registry')
+    expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open).
+      with(key, access).
+      and_yield(registry)
+    expect(registry).to receive(:[]).with("NanoServer").and_return(0)
+    expect(Chef::Platform.windows_nano_server?).to be false
+  end
+
+  it "returns false when the registry value does not exist" do
+    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(Chef::Platform).to receive(:require).with('win32/registry')
+    expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open).
+      with(key, access).
+      and_yield(registry)
+    expect(registry).to receive(:[]).with("NanoServer").
+      and_raise(Win32::Registry::Error, "The system cannot find the file specified.")
+    expect(Chef::Platform.windows_nano_server?).to be false
+  end
+
+  it "returns false when the registry key does not exist" do
+    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(Chef::Platform).to receive(:require).with('win32/registry')
+    expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open).
+      with(key, access).
+      and_raise(Win32::Registry::Error, "The system cannot find the file specified.")
+    expect(Chef::Platform.windows_nano_server?).to be false
+  end
+end
+
+describe 'Chef::Platform#supports_dsc?' do
   it 'returns false if powershell is not present' do
     node = Chef::Node.new
     expect(Chef::Platform.supports_dsc?(node)).to be_falsey
@@ -54,7 +116,7 @@ describe 'Chef::Platform#supports_dsc?' do
   end
 end
 
-describe 'Chef::Platform#supports_dsc_invoke_resource?' do 
+describe 'Chef::Platform#supports_dsc_invoke_resource?' do
   it 'returns false if powershell is not present' do
     node = Chef::Node.new
     expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey
@@ -79,7 +141,7 @@ describe 'Chef::Platform#dsc_refresh_mode_disabled?' do
   let(:node) { instance_double('Chef::Node') }
   let(:cmdlet) { instance_double('Chef::Util::Powershell::Cmdlet') }
   let(:cmdlet_result) { instance_double('Chef::Util::Powershell::CmdletResult')}
-  
+
   it "returns true when RefreshMode is Disabled" do
     expect(Chef::Util::Powershell::Cmdlet).to receive(:new).
       with(node, "Get-DscLocalConfigurationManager", :object).
@@ -88,14 +150,13 @@ describe 'Chef::Platform#dsc_refresh_mode_disabled?' do
     expect(cmdlet_result).to receive(:return_value).and_return({ 'RefreshMode' => 'Disabled' })
     expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be true
   end
-  
+
   it "returns false when RefreshMode is not Disabled" do
     expect(Chef::Util::Powershell::Cmdlet).to receive(:new).
       with(node, "Get-DscLocalConfigurationManager", :object).
       and_return(cmdlet)
     expect(cmdlet).to receive(:run!).and_return(cmdlet_result)
     expect(cmdlet_result).to receive(:return_value).and_return({ 'RefreshMode' => 'LaLaLa' })
-    expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be false    
+    expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be false
   end
 end
-
