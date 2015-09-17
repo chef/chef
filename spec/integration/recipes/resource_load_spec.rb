@@ -63,17 +63,17 @@ describe "Resource.load_current_value" do
       end
 
       it "current_resource is passed name but not x" do
-        expect(resource.current_resource.x).to eq 'loaded 2 (name=blah)'
+        expect(resource.current_value.x).to eq 'loaded 2 (name=blah)'
       end
 
-      it "resource.current_resource returns a different resource" do
-        expect(resource.current_resource.x).to eq 'loaded 2 (name=blah)'
+      it "resource.current_value returns a different resource" do
+        expect(resource.current_value.x).to eq 'loaded 2 (name=blah)'
         expect(resource.x).to eq 'desired'
       end
 
-      it "resource.current_resource constructs the resource anew each time" do
-        expect(resource.current_resource.x).to eq 'loaded 2 (name=blah)'
-        expect(resource.current_resource.x).to eq 'loaded 3 (name=blah)'
+      it "resource.current_value constructs the resource anew each time" do
+        expect(resource.current_value.x).to eq 'loaded 2 (name=blah)'
+        expect(resource.current_value.x).to eq 'loaded 3 (name=blah)'
       end
 
       it "the provider accesses the current value of x" do
@@ -94,7 +94,7 @@ describe "Resource.load_current_value" do
         }
 
         it "i, name and d are passed to load_current_value, but not x" do
-          expect(resource.current_resource.x).to eq 'loaded 2 (d=desired_d, i=desired_i, name=blah)'
+          expect(resource.current_value.x).to eq 'loaded 2 (d=desired_d, i=desired_i, name=blah)'
         end
       end
 
@@ -112,7 +112,7 @@ describe "Resource.load_current_value" do
         }
 
         it "i, name and d are passed to load_current_value, but not x" do
-          expect(resource.current_resource.x).to eq 'loaded 2 (d=desired_d, i=desired_i, name=blah)'
+          expect(resource.current_value.x).to eq 'loaded 2 (d=desired_d, i=desired_i, name=blah)'
         end
       end
     end
@@ -160,10 +160,10 @@ describe "Resource.load_current_value" do
 
     context "and a child resource class with no load_current_value" do
       it "the parent load_current_value is used" do
-        expect(subresource.current_resource.x).to eq 'loaded 2 (name=blah)'
+        expect(subresource.current_value.x).to eq 'loaded 2 (name=blah)'
       end
       it "load_current_value yields a copy of the child class" do
-        expect(subresource.current_resource).to be_kind_of(subresource_class)
+        expect(subresource.current_value).to be_kind_of(subresource_class)
       end
     end
 
@@ -178,7 +178,7 @@ describe "Resource.load_current_value" do
       }
 
       it "the overridden load_current_value is used" do
-        current_resource = subresource.current_resource
+        current_resource = subresource.current_value
         expect(current_resource.x).to eq 'default 3'
         expect(current_resource.y).to eq 'loaded_y 2 (name=blah)'
       end
@@ -196,7 +196,7 @@ describe "Resource.load_current_value" do
       }
 
       it "the original load_current_value is called as well as the child one" do
-        current_resource = subresource.current_resource
+        current_resource = subresource.current_value
         expect(current_resource.x).to eq 'loaded 3 (name=blah)'
         expect(current_resource.y).to eq 'loaded_y 4 (name=blah, x=loaded 3 (name=blah))'
       end
