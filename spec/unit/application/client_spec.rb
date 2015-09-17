@@ -250,7 +250,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
 
     it "should throw an exception" do
-      expect { @app.reconfigure }.to raise_error
+      expect { app.reconfigure }.to raise_error(Chef::Exceptions::PIDFileLockfileMatch)
     end
   end
 end
