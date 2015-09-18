@@ -1,23 +1,22 @@
-## Unreleased
+## 12.4.2
+
+* [**John Keiser**](https://github.com/jkeiser): Pin ohai to 0.8.6
+
+## 12.4.1
+
 * [**Ranjib Dey**](https://github.com/ranjib):
   [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
 * [**John Kerry**](https://github.com/jkerry):
   [pr#3539](https://github.com/chef/chef/pull/3539) Fix issue: registry_key resource is case sensitive in chef but not on windows
 * [**David Eddy**](https://github.com/bahamas10):
   [pr#3443](https://github.com/chef/chef/pull/3443) remove extraneous space
-
-
 * [pr#3455](https://github.com/chef/chef/pull/3455) powershell_script: do not allow suppression of syntax errors
 * [pr#3519](https://github.com/chef/chef/pull/3519) The wording seemed odd.
 * [pr#3208](https://github.com/chef/chef/pull/3208) Missing require (require what you use).
 * [pr#3449](https://github.com/chef/chef/pull/3449) correcting minor typo in user_edit knife action
 * [pr#3572](https://github.com/chef/chef/pull/3572) Use windows paths without case-sensitivity.
-
-## 12.4.1
-
 * [**Noah Kantrowitz**](https://github.com/coderanger):
   [pr#3605](https://github.com/chef/chef/pull/3605) Rework `Resource#action` to match 12.3 API
-
 * [pr#3586](https://github.com/chef/chef/issues/3586) Fix bug preventing light weight resources from being used with heavy weight providers
 * [Issue #3593](https://github.com/chef/chef/issues/3593) Fix bug where provider priority map did not take into consideration a provided block
 * [pr#3630](https://github.com/chef/chef/pull/3630) Restore Chef::User and Chef::ApiClient namespace to API V0 functionality and move new functionality into Chef::UserV1 and Chef::ApiClientV1 until Chef 13.
