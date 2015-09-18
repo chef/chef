@@ -102,6 +102,55 @@ describe "Chef::Platform#windows_nano_server?" do
   end
 end
 
+describe "Chef::Platform#supports_msi?" do
+  include_context "Win32"  # clear and restore Win32:: namespace
+
+  let(:key) { "System\\CurrentControlSet\\Services\\msiserver" }
+  let(:key_query_value) { 0x0001 }
+  let(:access) { key_query_value }
+  let(:hive) { double("Win32::Registry::HKEY_LOCAL_MACHINE") }
+  let(:registry) { double("Win32::Registry") }
+
+  before(:all) do
+    Win32::Registry = Class.new
+    Win32::Registry::Error = Class.new(RuntimeError)
+  end
+
+  before do
+    Win32::Registry::HKEY_LOCAL_MACHINE = hive
+    Win32::Registry::KEY_QUERY_VALUE = key_query_value
+  end
+
+  after do
+    Win32::Registry.send(:remove_const, 'HKEY_LOCAL_MACHINE') if defined?(Win32::Registry::HKEY_LOCAL_MACHINE)
+    Win32::Registry.send(:remove_const, 'KEY_QUERY_VALUE') if defined?(Win32::Registry::KEY_QUERY_VALUE)
+  end
+
+  it "returns false early when not on windows" do
+    allow(ChefConfig).to receive(:windows?).and_return(false)
+    expect(Chef::Platform).to_not receive(:require)
+    expect(Chef::Platform.supports_msi?).to be false
+  end
+
+  it "returns true when the registry key exists" do
+    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(Chef::Platform).to receive(:require).with('win32/registry')
+    expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open).
+      with(key, access).
+      and_yield(registry)
+    expect(Chef::Platform.supports_msi?).to be true
+  end
+
+  it "returns false when the registry key does not exist" do
+    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(Chef::Platform).to receive(:require).with('win32/registry')
+    expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open).
+      with(key, access).
+      and_raise(Win32::Registry::Error, "The system cannot find the file specified.")
+    expect(Chef::Platform.supports_msi?).to be false
+  end
+end
+
 describe 'Chef::Platform#supports_dsc?' do
   it 'returns false if powershell is not present' do
     node = Chef::Node.new

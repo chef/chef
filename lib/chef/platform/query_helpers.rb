@@ -58,6 +58,22 @@ class Chef
         return nano == 1
       end
 
+      def supports_msi?
+        return false unless windows?
+        require 'win32/registry'
+
+        key = "System\\CurrentControlSet\\Services\\msiserver"
+        access = ::Win32::Registry::KEY_QUERY_VALUE
+
+        begin
+          ::Win32::Registry::HKEY_LOCAL_MACHINE.open(key, access) do |reg|
+            true
+          end
+        rescue ::Win32::Registry::Error
+          false
+        end
+      end
+
       def supports_powershell_execution_bypass?(node)
         node[:languages] && node[:languages][:powershell] &&
           node[:languages][:powershell][:version].to_i >= 3
