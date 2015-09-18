@@ -15,7 +15,7 @@
 #
 
 name "foodcritic"
-default_version "v4.0.0"
+default_version "v5.0.0"
 
 source git: "git://github.com/acrmp/foodcritic.git"
 
