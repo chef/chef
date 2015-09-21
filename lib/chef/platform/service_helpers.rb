@@ -126,7 +126,7 @@ class Chef
           # this splits off the suffix after the last dot to return "sshd"
           services += services.select {|s| s.match(/\.service$/) }.map { |s| s.sub(/(.*)\.service$/, '\1') }
         rescue Mixlib::ShellOut::ShellCommandFailed
-          false
+          []
         end
 
         def platform_has_systemd_unit?(service_name)
