@@ -43,7 +43,6 @@ describe "Chef::Platform#windows_nano_server?" do
   before(:all) do
     Win32::Registry = Class.new
     Win32::Registry::Error = Class.new(RuntimeError)
-
   end
 
   before do

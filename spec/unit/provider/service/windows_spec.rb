@@ -167,7 +167,6 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     end
   end
 
-
   describe Chef::Provider::Service::Windows, "stop_service" do
 
     before(:each) do
