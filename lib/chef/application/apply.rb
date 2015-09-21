@@ -100,7 +100,7 @@ class Chef::Application::Apply < Chef::Application
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,
-    :default      => !Chef::Platform.windows?,
+    :default      => true,
     :description  => "Use colored output, defaults to enabled"
 
   option :minimal_ohai,

@@ -288,9 +288,9 @@ describe Chef::Application::Client, "configure_chef" do
     ARGV.replace(@original_argv)
   end
 
-  it "should set the colored output to false by default on windows and true otherwise" do
+  it "should set the colored output to true by default on windows and true on all other platforms as well" do
     if windows?
-      expect(Chef::Config[:color]).to be_falsey
+      expect(Chef::Config[:color]).to be_truthy
     else
       expect(Chef::Config[:color]).to be_truthy
     end

@@ -70,13 +70,13 @@ describe Chef::Application::Knife do
     end
   end
 
-  it "should set the colored output to false by default on windows and true otherwise" do
+  it "should set the colored output to true by default on windows and true on all other platforms as well" do
     with_argv(*%w{noop knife command}) do
       expect(@knife).to receive(:exit).with(0)
       @knife.run
     end
     if windows?
-      expect(Chef::Config[:color]).to be_falsey
+      expect(Chef::Config[:color]).to be_truthy
     else
       expect(Chef::Config[:color]).to be_truthy
     end
