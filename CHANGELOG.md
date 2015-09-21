@@ -39,6 +39,8 @@ of partial templates.
 * [**Joel Handwell**](https://github.com/joelhandwell):
   [pr#3821](https://github.com/chef/chef/pull/3821) Human friendly elapsed time in log
 
+* [pr#3928](https://github.com/chef/chef/pull/3928) Add named run list support when using policyfiles
+* [pr#3913](https://github.com/chef/chef/pull/3913) Add `policy_name`and `policy_group` fields to the node object
 * [pr#3875](https://github.com/chef/chef/pull/3875) Patch Win32::Registry#delete_key, #delete_value to use wide (W) APIs
 * [pr#3850](https://github.com/chef/chef/pull/3850) Patch Win32::Registry#write to fix encoding errors
 * [pr#3837](https://github.com/chef/chef/pull/3837) refactor remote_directory provider for mem+perf improvement
