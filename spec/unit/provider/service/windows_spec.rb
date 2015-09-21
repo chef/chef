@@ -21,6 +21,12 @@ require 'spec_helper'
 require 'mixlib/shellout'
 
 describe Chef::Provider::Service::Windows, "load_current_resource" do
+  include_context "Win32"
+
+  before(:all) do
+    Win32::Service = Class.new
+  end
+
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -28,18 +34,23 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     @new_resource = Chef::Resource::WindowsService.new("chef")
     @provider = Chef::Provider::Service::Windows.new(@new_resource, @run_context)
     @provider.current_resource = Chef::Resource::WindowsService.new("current-chef")
-    Object.send(:remove_const, 'Win32') if defined?(Win32)
-    Win32 = Module.new
-    Win32::Service = Class.new
+
     Win32::Service::AUTO_START = 0x00000002
     Win32::Service::DEMAND_START = 0x00000003
     Win32::Service::DISABLED = 0x00000004
+
     allow(Win32::Service).to receive(:status).with(@new_resource.service_name).and_return(
       double("StatusStruct", :current_state => "running"))
     allow(Win32::Service).to receive(:config_info).with(@new_resource.service_name).and_return(
       double("ConfigStruct", :start_type => "auto start"))
     allow(Win32::Service).to receive(:exists?).and_return(true)
     allow(Win32::Service).to receive(:configure).and_return(Win32::Service)
+  end
+
+  after(:each) do
+    Win32::Service.send(:remove_const, 'AUTO_START') if defined?(Win32::Service::AUTO_START)
+    Win32::Service.send(:remove_const, 'DEMAND_START') if defined?(Win32::Service::DEMAND_START)
+    Win32::Service.send(:remove_const, 'DISABLED') if defined?(Win32::Service::DISABLED)
   end
 
   it "should set the current resources service name to the new resources service name" do

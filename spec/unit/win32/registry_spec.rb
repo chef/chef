@@ -19,6 +19,7 @@
 require 'spec_helper'
 
 describe Chef::Win32::Registry do
+  include_context "Win32"
 
   let(:value1) { { :name => "one", :type => :string, :data => "1" } }
   let(:value1_upcase_name) { {:name => "ONE", :type => :string, :data => "1"} }
@@ -29,23 +30,30 @@ describe Chef::Win32::Registry do
   let(:sub_key) {'OpscodePrimes'}
   let(:missing_key_path) {'HKCU\Software'}
 
+  before(:all) do
+    Win32::Registry = Class.new
+    Win32::Registry::Error = Class.new(RuntimeError)
+  end
+
   before(:each) do
     allow_any_instance_of(Chef::Win32::Registry).to receive(:machine_architecture).and_return(:x86_64)
     @registry = Chef::Win32::Registry.new()
 
     #Making the values for registry constants available on unix
-    Object.send(:remove_const, 'Win32') if defined?(Win32)
-    Win32 = Module.new
-    Win32::Registry = Class.new
     Win32::Registry::KEY_SET_VALUE = 0x0002
     Win32::Registry::KEY_QUERY_VALUE = 0x0001
     Win32::Registry::KEY_WRITE = 0x00020000 | 0x0002 | 0x0004
     Win32::Registry::KEY_READ = 0x00020000 | 0x0001 | 0x0008 | 0x0010
 
-    Win32::Registry::Error = Class.new(RuntimeError)
-
     @hive_mock = double("::Win32::Registry::HKEY_CURRENT_USER")
     @reg_mock = double("reg")
+  end
+
+  after(:each) do
+    Win32::Registry.send(:remove_const, 'KEY_SET_VALUE') if defined?(Win32::Registry::KEY_SET_VALUE)
+    Win32::Registry.send(:remove_const, 'KEY_QUERY_VALUE') if defined?(Win32::Registry::KEY_QUERY_VALUE)
+    Win32::Registry.send(:remove_const, 'KEY_READ') if defined?(Win32::Registry::KEY_READ)
+    Win32::Registry.send(:remove_const, 'KEY_WRITE') if defined?(Win32::Registry::KEY_WRITE)
   end
 
   describe "get_values" do
