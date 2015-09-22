@@ -38,7 +38,11 @@ class Chef
     end
 
     def generate_checksum(file)
-      checksum_file(file, OpenSSL::Digest::SHA256.new)
+      if file.is_a?(StringIO)
+        checksum_io(file, OpenSSL::Digest::SHA256.new)
+      else
+        checksum_file(file, OpenSSL::Digest::SHA256.new)
+      end
     end
 
     def self.generate_md5_checksum_for_file(*args)
