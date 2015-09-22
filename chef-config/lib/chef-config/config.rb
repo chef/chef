@@ -690,6 +690,11 @@ module ChefConfig
       default :watchdog_timeout, 2 * (60 * 60) # 2 hours
     end
 
+    # Only use fips compliant algorithms
+    default( :fips_mode ) do
+      OpenSSL::OPENSSL_FIPS
+    end
+
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
     # to use the 'locale -a' command and search through a list of preferences until we
     # find one that we can use.  On Ubuntu systems we should find 'C.UTF-8' and be
