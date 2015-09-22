@@ -117,6 +117,16 @@ EXPECTED
     end
   end
 
+  describe "when policy_name and policy_group are present in config" do
+
+    let(:config) { { policy_name: "my_app_server", policy_group: "staging" } }
+
+    it "includes them in the first_boot data and excludes run_list" do
+      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json(config))
+    end
+
+  end
+
   describe "when an encrypted_data_bag_secret is provided" do
     let(:secret) { "supersekret" }
     it "reads the encrypted_data_bag_secret" do
