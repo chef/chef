@@ -153,7 +153,15 @@ class Chef
           # human-readable but within the bounds of local file system
           # path length limits
           scrubbed_uri = uri.gsub(/\W/, '_')[0..63]
-          uri_md5 = Chef::Digester.instance.generate_md5_checksum(StringIO.new(uri))
+          uri_md5 = if Chef::Config.fips_mode
+                      # We can probably just use sha256 everywhere. The problem
+                      # is that uri_md5 would change, and that means people upgrading
+                      # would have the resource converge again, even though the file
+                      # could be there
+                      Chef::Digester.instance.generate_checksum(StringIO.new(uri))
+                    else
+                      Chef::Digester.instance.generate_md5_checksum(StringIO.new(uri))
+                    end
           "#{scrubbed_uri}-#{uri_md5}.json"
         end
 
