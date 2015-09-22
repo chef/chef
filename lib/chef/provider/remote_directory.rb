@@ -161,7 +161,7 @@ class Chef
       def files_to_transfer
         cookbook = run_context.cookbook_collection[resource_cookbook]
         files = cookbook.relative_filenames_in_preferred_directory(node, :files, source)
-        files.sort!.reverse!
+        files.sort_by! { |x| x.split(::File::SEPARATOR).count }
       end
 
       # Either the explicit cookbook that the user sets on the resource, or the implicit
