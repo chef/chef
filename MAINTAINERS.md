@@ -42,6 +42,7 @@ To mention the team, use @chef/client-core
 * [Steven Murawski](https://github.com/smurawski)
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Ranjib Dey](https://github.com/ranjib)
+* [Matt Wrock](https://github.com/mwrock)
 
 ## Dev Tools
 
@@ -114,6 +115,7 @@ To mention the team, use @chef/client-windows
 * [Kartik Cating-Subramanian](https://github.com/ksubrama)
 * [Steven Murawski](https://github.com/smurawski)
 * [Salim Alam](https://github.com/chefsalim)
+* [Matt Wrock](https://github.com/mwrock)
 
 ## Solaris
 
