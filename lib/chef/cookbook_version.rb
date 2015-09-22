@@ -96,7 +96,13 @@ class Chef
     # This is the one and only method that knows how cookbook files'
     # checksums are generated.
     def self.checksum_cookbook_file(filepath)
-      Chef::Digester.generate_md5_checksum_for_file(filepath)
+      if Chef::Config.fips_mode
+        # This will require a chef server that can handle
+        # sha256 checksums
+        Chef::Digester.generate_checksum_for_file(filepath)
+      else
+        Chef::Digester.generate_md5_checksum_for_file(filepath)
+      end
     rescue Errno::ENOENT
       Chef::Log.debug("File #{filepath} does not exist, so there is no checksum to generate")
       nil
