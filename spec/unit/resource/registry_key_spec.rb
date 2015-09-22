@@ -91,7 +91,7 @@ describe Chef::Resource::RegistryKey, "values" do
 
   it "should return checksummed data if the type is unsafe" do
     @resource.values( { :name => 'poosh', :type => :binary, :data => 255.chr * 1 })
-    expect(@resource.values).to eql([ { :name => 'poosh', :type => :binary, :data => "00594fd4f42ba43fc1ca0427a0576295" } ])
+    expect(@resource.values).to eql([ { :name => 'poosh', :type => :binary, :data => 'a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89' } ])
   end
 
   it "should throw an exception if the name field is missing" do
@@ -194,6 +194,6 @@ describe Chef::Resource::RegistryKey, "state" do
 
   it "should return scrubbed values" do
     @resource.values([ { :name => 'poosh', :type => :binary, :data => 255.chr * 1 } ])
-    expect(@resource.state).to eql( { :values => [{ :name => 'poosh', :type => :binary, :data => "00594fd4f42ba43fc1ca0427a0576295" }] } )
+    expect(@resource.state).to eql( { :values => [{ :name => 'poosh', :type => :binary, :data => 'a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89'}] } )
   end
 end
