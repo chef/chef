@@ -405,7 +405,7 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:knife][:ssh_user] = nil
         Chef::Config[:knife][:ssh_port] = nil
         knife.config[:forward_agent] = true
-        knife.config[:identity_file] = "~/.ssh/me.rsa"
+        knife.config[:ssh_identity_file] = "~/.ssh/me.rsa"
         allow(knife).to receive(:render_template).and_return("")
         knife.knife_ssh
       end
@@ -431,7 +431,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh identity file" do
-        expect(knife_ssh.config[:identity_file]).to eq('~/.ssh/me.rsa')
+        expect(knife_ssh.config[:ssh_identity_file]).to eq('~/.ssh/me.rsa')
       end
     end
 
@@ -466,7 +466,7 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:knife][:ssh_user] = "curiosity"
         Chef::Config[:knife][:ssh_port] = "2430"
         Chef::Config[:knife][:forward_agent] = true
-        Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
+        Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/you.rsa"
         Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
         Chef::Config[:knife][:host_key_verify] = true
         allow(knife).to receive(:render_template).and_return("")
@@ -488,7 +488,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh identity file" do
-        expect(knife_ssh.config[:identity_file]).to eq('~/.ssh/you.rsa')
+        expect(knife_ssh.config[:ssh_identity_file]).to eq('~/.ssh/you.rsa')
       end
 
       it "configures the ssh gateway" do
@@ -504,7 +504,7 @@ describe Chef::Knife::Bootstrap do
       let(:knife_ssh_with_password_auth) do
         knife.name_args = ["foo.example.com"]
         knife.config[:ssh_user]      = "rooty"
-        knife.config[:identity_file] = "~/.ssh/me.rsa"
+        knife.config[:ssh_identity_file] = "~/.ssh/me.rsa"
         allow(knife).to receive(:render_template).and_return("")
         k = knife.knife_ssh
         allow(k).to receive(:get_password).and_return('typed_in_password')
@@ -517,7 +517,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures knife not to use the identity file that didn't work previously" do
-        expect(knife_ssh_with_password_auth.config[:identity_file]).to be_nil
+        expect(knife_ssh_with_password_auth.config[:ssh_identity_file]).to be_nil
       end
     end
   end
@@ -533,7 +533,7 @@ describe Chef::Knife::Bootstrap do
       knife.name_args = ["foo.example.com"]
       knife.config[:chef_node_name] = "foo.example.com"
       knife.config[:ssh_user]      = "rooty"
-      knife.config[:identity_file] = "~/.ssh/me.rsa"
+      knife.config[:ssh_identity_file] = "~/.ssh/me.rsa"
       allow(knife).to receive(:render_template).and_return("")
       knife_ssh = knife.knife_ssh
       allow(knife).to receive(:knife_ssh).and_return(knife_ssh)

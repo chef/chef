@@ -94,8 +94,12 @@ class Chef
         :boolean => true
 
       option :identity_file,
-        :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication. [DEPRECATED] Use --ssh-identity-file instead."
+
+      option :ssh_identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--ssh-identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
       option :host_key_verify,
@@ -215,8 +219,8 @@ class Chef
           # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
           user = config[:ssh_user] || ssh_config[:user]
           hostspec = user ? "#{user}@#{host}" : host
-          session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
-          session_opts[:keys_only] = true if config[:identity_file]
+          session_opts[:keys] = File.expand_path(config[:ssh_identity_file]) if config[:ssh_identity_file]
+          session_opts[:keys_only] = true if config[:ssh_identity_file]
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
           session_opts[:forward_agent] = config[:forward_agent]
           session_opts[:port] = config[:ssh_port] ||
@@ -364,7 +368,7 @@ class Chef
         window = 0
         session.servers_for.each do |server|
           tf.print("screen -t \"#{server.host}\" #{window} ssh ")
-          tf.print("-i #{config[:identity_file]} ") if config[:identity_file]
+          tf.print("-i #{config[:ssh_identity_file]} ") if config[:ssh_identity_file]
           server.user ? tf.puts("#{server.user}@#{server.host}") : tf.puts(server.host)
           window += 1
         end
@@ -374,7 +378,7 @@ class Chef
 
       def tmux
         ssh_dest = lambda do |server|
-          identity = "-i #{config[:identity_file]} " if config[:identity_file]
+          identity = "-i #{config[:ssh_identity_file]} " if config[:ssh_identity_file]
           prefix = server.user ? "#{server.user}@" : ""
           "'ssh #{identity}#{prefix}#{server.host}'"
         end
@@ -437,9 +441,9 @@ class Chef
         end
         raise Chef::Exceptions::Exec, "no command found for cssh" unless cssh_cmd
 
-        # pass in the consolidated itentity file option to cssh(X)
-        if config[:identity_file]
-          cssh_cmd << " --ssh_args '-i #{File.expand_path(config[:identity_file])}'"
+        # pass in the consolidated identity file option to cssh(X)
+        if config[:ssh_identity_file]
+          cssh_cmd << " --ssh_args '-i #{File.expand_path(config[:ssh_identity_file])}'"
         end
 
         session.servers_for.each do |server|
@@ -484,9 +488,9 @@ class Chef
         end
       end
 
-      def configure_identity_file
-        config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] ||
-                             Chef::Config[:knife][:ssh_identity_file])
+      def configure_ssh_identity_file
+        # config[:identity_file] is DEPRECATED in favor of :ssh_identity_file
+        config[:ssh_identity_file] = get_stripped_unfrozen_value(config[:ssh_identity_file] || config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
       end
 
       def extract_nested_value(data_structure, path_spec)
@@ -500,7 +504,7 @@ class Chef
 
         configure_user
         configure_password
-        configure_identity_file
+        configure_ssh_identity_file
         configure_gateway
         configure_session
 

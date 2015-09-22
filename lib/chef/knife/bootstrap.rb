@@ -74,8 +74,12 @@ class Chef
         :boolean => true
 
       option :identity_file,
-        :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication. [DEPRECATED] Use --ssh-identity-file instead."
+
+      option :ssh_identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--ssh-identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
       option :chef_node_name,
@@ -372,7 +376,7 @@ class Chef
         ssh.config[:ssh_port] = config[:ssh_port]
         ssh.config[:ssh_gateway] = config[:ssh_gateway]
         ssh.config[:forward_agent] = config[:forward_agent]
-        ssh.config[:identity_file] = config[:identity_file]
+        ssh.config[:ssh_identity_file] = config[:ssh_identity_file] || config[:identity_file]
         ssh.config[:manual] = true
         ssh.config[:host_key_verify] = config[:host_key_verify]
         ssh.config[:on_error] = :raise
@@ -381,7 +385,7 @@ class Chef
 
       def knife_ssh_with_password_auth
         ssh = knife_ssh
-        ssh.config[:identity_file] = nil
+        ssh.config[:ssh_identity_file] = nil
         ssh.config[:ssh_password] = ssh.get_password
         ssh
       end
