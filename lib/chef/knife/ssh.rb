@@ -111,8 +111,23 @@ class Chef
         :boolean => true,
         :proc => Proc.new { :raise }
 
+      option :ssh_timeout,
+        :short => "-T TIMEOUT",
+        :long => "--ssh-socket-timeout TIMEOUT",
+        :description => "SSH socket timeout (default is 0)",
+        :default => 0, # This is principle-of-least-surprise default in Net::SSH
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_socket_timeout] = key.strip }
+
+      option :ssh_retries,
+        :short => "-R THIS_MANY_TIMES",
+        :long => "--ssh-socket-retries THIS_MANY_TIMES",
+        :description => "SSH socket retries (default is 0)",
+        :default => 0,
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_socket_retries] = key.strip }
+
       def session
         config[:on_error] ||= :skip
+        config[:on_error] = :retry_times unless config[:ssh_retries].to_i.zero?
         ssh_error_handler = Proc.new do |server|
           case config[:on_error]
           when :skip
@@ -121,10 +136,12 @@ class Chef
           when :raise
             #Net::SSH::Multi magic to force exception to be re-raised.
             throw :go, :raise
+          when :retry_times
+            throw :go, :retry_times
           end
         end
 
-        @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
+        @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler, :retries_max => config[:ssh_retries].to_i)
       end
 
       def configure_gateway
@@ -224,6 +241,17 @@ class Chef
                                 Chef::Config[:knife][:ssh_port] ||
                                 ssh_config[:port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
+          #
+          # Net::SSH socket open code is wrapped in Ruby's Timeout and
+          # and it's set to 0 by default(principle of least surprise). With home
+          # inernet or overloaded boxes, this is often not a good idea.
+          # And, more importantly, frequently results in misleading errors
+          # like "No route to host" or "Name or service not known"
+          #
+          # By default, code behaviour shouldn't change (default :ssh_timeout is 0).
+          # But in conjunction with :ssh_retries it allows some mitigation
+          # of aforementioned errors.
+          session_opts[:timeout] = config[:ssh_timeout].to_i
 
           if !config[:host_key_verify]
             session_opts[:paranoid] = false
