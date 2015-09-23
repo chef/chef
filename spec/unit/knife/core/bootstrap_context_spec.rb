@@ -38,14 +38,14 @@ describe Chef::Knife::Core::BootstrapContext do
     expect{described_class.new(config, run_list, chef_config)}.not_to raise_error
   end
 
-  it "runs chef with the first-boot.json in the _default environment" do
-    expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -E _default"
+  it "runs chef with the first-boot.json with no environment specified" do
+    expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json"
   end
 
   describe "when in verbosity mode" do
     let(:config) { {:verbosity => 2} }
     it "adds '-l debug' when verbosity is >= 2" do
-      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug -E _default"
+      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug"
     end
   end
 
@@ -70,7 +70,7 @@ EXPECTED
   describe "alternate chef-client path" do
     let(:chef_config){ {:chef_client_path => '/usr/local/bin/chef-client'} }
     it "runs chef-client from another path when specified" do
-      expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json -E _default"
+      expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json"
     end
   end
 

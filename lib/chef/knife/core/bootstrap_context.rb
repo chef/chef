@@ -40,7 +40,7 @@ class Chef
         end
 
         def bootstrap_environment
-          @chef_config[:environment] || '_default'
+          @chef_config[:environment]
         end
 
         def validation_key
@@ -128,7 +128,7 @@ CONFIG
           client_path = @chef_config[:chef_client_path] || 'chef-client'
           s = "#{client_path} -j /etc/chef/first-boot.json"
           s << ' -l debug' if @config[:verbosity] and @config[:verbosity] >= 2
-          s << " -E #{bootstrap_environment}"
+          s << " -E #{bootstrap_environment}" unless bootstrap_environment.nil?
           s
         end
 
