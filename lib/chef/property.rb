@@ -86,6 +86,21 @@ class Chef
     #
     def initialize(**options)
       options.each { |k,v| options[k.to_sym] = v if k.is_a?(String) }
+      # Only pick the first of :default, :name_property and :name_attribute if
+      # more than one is specified.
+      found_default = false
+      options.reject! do |k,v|
+        if [ :name_property, :name_attribute, :default ].include?(k)
+          if found_default
+            true
+          else
+            found_default = true
+            false
+          end
+        else
+          false
+        end
+      end
       options[:name_property] = options.delete(:name_attribute) if options.has_key?(:name_attribute) && !options.has_key?(:name_property)
       @options = options
 

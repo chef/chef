@@ -952,8 +952,8 @@ describe "Chef::Resource.property" do
         end
       end
       with_property ":x, #{name}: true, default: 10" do
-        it "chooses default over #{name}" do
-          expect(resource.x).to eq 10
+        it "chooses #{name} over default" do
+          expect(resource.x).to eq 'blah'
         end
       end
       with_property ":x, #{name}: true, required: true" do
