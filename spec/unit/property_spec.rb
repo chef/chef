@@ -946,14 +946,27 @@ describe "Chef::Resource.property" do
           expect(resource.x).to eq 'blah'
         end
       end
-      with_property ":x, default: 10, #{name}: true" do
-        it "chooses default over #{name}" do
-          expect(resource.x).to eq 10
+      context "default ordering deprecation warnings" do
+        it "emits a deprecation warning for property :x, default: 10, #{name}: true" do
+          expect { resource_class.property :x, :default => 10, name.to_sym => true }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Cannot specify keys default, #{name} together on property x--only the first one \(default\) will be obeyed. Please pick one./
+        end
+        it "emits a deprecation warning for property :x, #{name}: true, default: 10" do
+          expect { resource_class.property :x, name.to_sym => true, :default => 10 }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Cannot specify keys #{name}, default together on property x--only the first one \(#{name}\) will be obeyed. Please pick one./
         end
       end
-      with_property ":x, #{name}: true, default: 10" do
-        it "chooses #{name} over default" do
-          expect(resource.x).to eq 'blah'
+      context "default ordering" do
+        before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
+        with_property ":x, default: 10, #{name}: true" do
+          it "chooses default over #{name}" do
+            expect(resource.x).to eq 10
+          end
+        end
+        with_property ":x, #{name}: true, default: 10" do
+          it "chooses #{name} over default" do
+            expect(resource.x).to eq 'blah'
+          end
         end
       end
       with_property ":x, #{name}: true, required: true" do
