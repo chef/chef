@@ -702,11 +702,13 @@ foo-validator.json
 /acls/containers:
 clients.json
 containers.json
+cookbook_artifacts.json
 cookbooks.json
 data.json
 environments.json
 groups.json
 nodes.json
+policies.json
 roles.json
 sandboxes.json
 
@@ -733,11 +735,13 @@ foo-validator.json
 /containers:
 clients.json
 containers.json
+cookbook_artifacts.json
 cookbooks.json
 data.json
 environments.json
 groups.json
 nodes.json
+policies.json
 roles.json
 sandboxes.json
 
@@ -804,11 +808,13 @@ foo-validator.json
 /acls/containers:
 clients.json
 containers.json
+cookbook_artifacts.json
 cookbooks.json
 data.json
 environments.json
 groups.json
 nodes.json
+policies.json
 roles.json
 sandboxes.json
 
@@ -835,11 +841,13 @@ foo-validator.json
 /containers:
 clients.json
 containers.json
+cookbook_artifacts.json
 cookbooks.json
 data.json
 environments.json
 groups.json
 nodes.json
+policies.json
 roles.json
 sandboxes.json
 

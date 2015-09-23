@@ -39,9 +39,9 @@ class Chef
           members = minimize_value(_read_json)
           (desired_members - members).each do |member|
             begin
-              rest.post(File.join(api_path, member), {})
+              rest.post(api_path, 'username' => member)
             rescue Net::HTTPServerException => e
-              if e.response.code == '404'
+              if %w(404 405).include?(e.response.code)
                 raise "Chef server at #{api_path} does not allow you to directly add members.  Please either upgrade your Chef server or move the users you want into invitations.json instead of members.json."
               else
                 raise

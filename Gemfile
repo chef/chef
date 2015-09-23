@@ -5,10 +5,6 @@ gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
 gem 'chef-config', path: "chef-config"
 
-# We are pinning chef-zero to 4.2.x until ChefFS can deal
-# with V1 api calls or chef-zero supports both v0 and v1
-gem "chef-zero", "~> 4.2.3"
-
 group(:docgen) do
   gem "yard"
 end
