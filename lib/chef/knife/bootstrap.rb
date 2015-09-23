@@ -169,7 +169,7 @@ class Chef
         :long => "--json-attributes",
         :description => "A JSON string to be added to the first run of chef-client",
         :proc => lambda { |o| Chef::JSONCompat.parse(o) },
-        :default => {}
+        :default => nil
 
       option :first_boot_attributes_from_file,
         :long => "--json-attribute-file FILE",
@@ -259,13 +259,6 @@ class Chef
         )
       end
 
-      def jsonstring_and_jsonfile_msg
-<<EOS
-You cannot pass both --json-attributes and --json-attribute-file.
-Please pass one or none.
-EOS
-      end
-
       # The default bootstrap template to use to bootstrap a server This is a public API hook
       # which knife plugins use or inherit and override.
       #
@@ -347,16 +340,20 @@ EOS
         )
       end
 
+      def first_boot_attributes
+        @config[:first_boot_attributes] || @config[:first_boot_attributes_from_file] || {}
+      end
+
       def render_template
-        @config[:first_boot_attributes].merge!(@config[:first_boot_attributes_from_file]) if @config[:first_boot_attributes_from_file]
+        @config[:first_boot_attributes] = first_boot_attributes
         template_file = find_template
         template = IO.read(template_file).chomp
         Erubis::Eruby.new(template).evaluate(bootstrap_context)
       end
 
       def run
-        if @config[:first_boot_attributes].any? && @config[:first_boot_attributes_from_file]
-          raise Chef::Exceptions::BootstrapCommandInputError, jsonstring_and_jsonfile_msg
+        if @config[:first_boot_attributes] && @config[:first_boot_attributes_from_file]
+          raise Chef::Exceptions::BootstrapCommandInputError
         end
 
         validate_name_args!
