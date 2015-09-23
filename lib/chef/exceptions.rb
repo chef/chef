@@ -74,7 +74,11 @@ class Chef
     class InvalidPrivateKey < ArgumentError; end
     class MissingKeyAttribute < ArgumentError; end
     class KeyCommandInputError < ArgumentError; end
-    class BootstrapCommandInputError < ArgumentError; end
+    class BootstrapCommandInputError < ArgumentError
+      def initialize
+        super "You cannot pass both --json-attributes and --json-attribute-file. Please pass one or none."
+      end
+    end
     class InvalidKeyArgument < ArgumentError; end
     class InvalidKeyAttribute < ArgumentError; end
     class InvalidUserAttribute < ArgumentError; end
