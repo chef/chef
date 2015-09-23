@@ -782,6 +782,8 @@ class Chef
     def self.property(name, type=NOT_PASSED, **options)
       name = name.to_sym
 
+      options.each { |k,v| options[k.to_sym] = v if k.is_a?(String) }
+
       options[:instance_variable_name] = :"@#{name}" if !options.has_key?(:instance_variable_name)
       options.merge!(name: name, declared_in: self)
 

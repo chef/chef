@@ -86,7 +86,24 @@ class Chef
     #
     def initialize(**options)
       options.each { |k,v| options[k.to_sym] = v if k.is_a?(String) }
+
+      # Only pick the first of :default, :name_property and :name_attribute if
+      # more than one is specified.
+      found_defaults = []
+      options.reject! do |k,v|
+        if [ :name_property, :name_attribute, :default ].include?(k)
+          found_defaults << k
+          # Reject all but the first default key you find
+          found_defaults.size > 1
+        else
+          false
+        end
+      end
+      if found_defaults.size > 1
+        Chef::Log.deprecation("Cannot specify keys #{found_defaults.join(", ")} together on property #{options[:name]}--only the first one (#{found_defaults[0]}) will be obeyed. Please pick one.", caller(5..5)[0])
+      end
       options[:name_property] = options.delete(:name_attribute) if options.has_key?(:name_attribute) && !options.has_key?(:name_property)
+
       @options = options
 
       options[:name] = options[:name].to_sym if options[:name]
