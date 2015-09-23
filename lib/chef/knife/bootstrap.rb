@@ -143,6 +143,16 @@ class Chef
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
 
+      option :policy_name,
+        :long         => "--policy-name POLICY_NAME",
+        :description  => "Policyfile name to use (--policy-group must also be given)",
+        :default      => nil
+
+      option :policy_group,
+        :long         => "--policy-group POLICY_GROUP",
+        :description  => "Policy group name to use (--policy-name must also be given)",
+        :default      => nil
+
       option :tags,
         :long => "--tags TAGS",
         :description => "Comma separated list of tags to apply to the node",
@@ -315,6 +325,7 @@ class Chef
 
       def run
         validate_name_args!
+        validate_options!
 
         $stdout.sync = true
 
@@ -363,6 +374,17 @@ class Chef
         end
       end
 
+      def validate_options!
+        if incomplete_policyfile_options?
+          ui.error("--policy-name and --policy-group must be specified together")
+          exit 1
+        elsif policyfile_and_run_list_given?
+          ui.error("Policyfile options and --run-list are exclusive")
+          exit 1
+        end
+        true
+      end
+
       def knife_ssh
         ssh = Chef::Knife::Ssh.new
         ssh.ui = ui
@@ -395,6 +417,19 @@ class Chef
 
         command
       end
+
+      private
+
+      # True if policy_name and run_list are both given
+      def policyfile_and_run_list_given?
+        !config[:run_list].empty? && !!config[:policy_name]
+      end
+
+      # True if one of policy_name or policy_group was given, but not both
+      def incomplete_policyfile_options?
+        (!!config[:policy_name] ^ config[:policy_group])
+      end
+
     end
   end
 end

@@ -250,14 +250,14 @@ describe Chef::Knife::Bootstrap do
     it "should create a hint file when told to" do
       knife.parse_options(["--hint", "openstack"])
       knife.merge_configs
-      expect(knife.render_template).to match /\/etc\/chef\/ohai\/hints\/openstack.json/
+      expect(knife.render_template).to match(/\/etc\/chef\/ohai\/hints\/openstack.json/)
     end
 
     it "should populate a hint file with JSON when given a file to read" do
       allow(::File).to receive(:read).and_return('{ "foo" : "bar" }')
       knife.parse_options(["--hint", "openstack=hints/openstack.json"])
       knife.merge_configs
-      expect(knife.render_template).to match /\{\"foo\":\"bar\"\}/
+      expect(knife.render_template).to match(/\{\"foo\":\"bar\"\}/)
     end
   end
 
@@ -395,6 +395,58 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  describe "handling policyfile options" do
+
+    context "when only policy_name is given" do
+
+      let(:bootstrap_cli_options) { %w[ --policy-name my-app-server ] }
+
+      it "returns an error stating that policy_name and policy_group must be given together" do
+        expect { knife.validate_options! }.to raise_error(SystemExit)
+        expect(stderr.string).to include("ERROR: --policy-name and --policy-group must be specified together")
+      end
+
+    end
+
+    context "when only policy_group is given" do
+
+      let(:bootstrap_cli_options) { %w[ --policy-group staging ] }
+
+      it "returns an error stating that policy_name and policy_group must be given together" do
+        expect { knife.validate_options! }.to raise_error(SystemExit)
+        expect(stderr.string).to include("ERROR: --policy-name and --policy-group must be specified together")
+      end
+
+    end
+
+    context "when both policy_name and policy_group are given, but run list is also given" do
+
+      let(:bootstrap_cli_options) { %w[ --policy-name my-app --policy-group staging --run-list cookbook ] }
+
+      it "returns an error stating that policyfile and run_list are exclusive" do
+        expect { knife.validate_options! }.to raise_error(SystemExit)
+        expect(stderr.string).to include("ERROR: Policyfile options and --run-list are exclusive")
+      end
+
+    end
+
+    context "when policy_name and policy_group are given with no conflicting options" do
+
+      let(:bootstrap_cli_options) { %w[ --policy-name my-app --policy-group staging ] }
+
+      it "passes options validation" do
+        expect { knife.validate_options! }.to_not raise_error
+      end
+
+      it "passes them into the bootstrap context" do
+        expect(knife.bootstrap_context.first_boot).to have_key(:policy_name)
+        expect(knife.bootstrap_context.first_boot).to have_key(:policy_group)
+      end
+
+    end
+
+  end
+
   describe "when configuring the underlying knife ssh command" do
     context "from the command line" do
       let(:knife_ssh) do
@@ -525,7 +577,7 @@ describe Chef::Knife::Bootstrap do
   it "verifies that a server to bootstrap was given as a command line arg" do
     knife.name_args = nil
     expect { knife.run }.to raise_error(SystemExit)
-    expect(stderr.string).to match /ERROR:.+FQDN or ip/
+    expect(stderr.string).to match(/ERROR:.+FQDN or ip/)
   end
 
   describe "when running the bootstrap" do
