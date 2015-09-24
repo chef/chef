@@ -225,6 +225,8 @@ class Chef
           if config[:identity_file]
             opts[:keys] = File.expand_path(config[:identity_file])
             opts[:keys_only] = true
+          elsif config[:ssh_password]
+            opts[:password] = config[:ssh_password]
           end
           # Don't set the keys to nil if we don't have them.
           forward_agent = config[:forward_agent] || ssh_config[:forward_agent]
