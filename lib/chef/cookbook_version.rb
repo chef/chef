@@ -99,7 +99,7 @@ class Chef
       if Chef::Config.fips_mode
         # This will require a chef server that can handle
         # sha256 checksums
-        Chef::Digester.generate_checksum_for_file(filepath)
+        Chef::Digester.checksum_for_file(filepath)
       else
         Chef::Digester.generate_md5_checksum_for_file(filepath)
       end
