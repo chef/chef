@@ -68,22 +68,20 @@ class Chef
 
         @node = nil
 
-        Chef::Log.warn("Using experimental Policyfile feature")
-
         if Chef::Config[:solo]
-          raise UnsupportedFeature, "Policyfile does not support chef-solo at this time."
+          raise UnsupportedFeature, "Policyfile does not support chef-solo. Use chef-client local mode instead."
         end
 
         if override_runlist
-          raise UnsupportedFeature, "Policyfile does not support override run lists at this time"
+          raise UnsupportedFeature, "Policyfile does not support override run lists. Use named run_lists instead."
         end
 
         if json_attribs && json_attribs.key?("run_list")
-          raise UnsupportedFeature, "Policyfile does not support setting the run_list in json data at this time"
+          raise UnsupportedFeature, "Policyfile does not support setting the run_list in json data."
         end
 
         if Chef::Config[:environment] && !Chef::Config[:environment].chomp.empty?
-          raise UnsupportedFeature, "Policyfile does not work with Chef Environments"
+          raise UnsupportedFeature, "Policyfile does not work with Chef Environments."
         end
       end
 
