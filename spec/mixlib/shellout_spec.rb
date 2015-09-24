@@ -621,7 +621,7 @@ describe Mixlib::ShellOut do
     end
 
     context "when running under Windows", :windows_only do
-      let(:cmd) { 'whoami.exe' }
+      let(:cmd) { '%windir%/system32/whoami.exe' }
       let(:running_user) { shell_cmd.run_command.stdout.strip.downcase }
 
       context "when no user is set" do
@@ -629,7 +629,7 @@ describe Mixlib::ShellOut do
         # to match how whoami returns the information
 
         it "should run as current user" do
-          expect(running_user).to eql("#{ENV['COMPUTERNAME'].downcase}\\#{ENV['USERNAME'].downcase}")
+          expect(running_user).to eql("#{ENV['USERDOMAIN'].downcase}\\#{ENV['USERNAME'].downcase}")
         end
       end
 
