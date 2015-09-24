@@ -91,6 +91,16 @@ class Chef
           knife_config[:run_list]
         end
 
+        # @return [String] policy_name from the knife_config
+        def policy_name
+          knife_config[:policy_name]
+        end
+
+        # @return [String] policy_group from the knife_config
+        def policy_group
+          knife_config[:policy_group]
+        end
+
         # @return [Hash,Array] Object representation of json first-boot attributes from the knife_config
         def first_boot_attributes
           knife_config[:first_boot_attributes]
@@ -141,6 +151,8 @@ class Chef
               node.run_list(normalized_run_list)
               node.normal_attrs = first_boot_attributes if first_boot_attributes
               node.environment(environment) if environment
+              node.policy_name = policy_name if policy_name
+              node.policy_group = policy_group if policy_group
               (knife_config[:tags] || []).each do |tag|
                 node.tags << tag
               end

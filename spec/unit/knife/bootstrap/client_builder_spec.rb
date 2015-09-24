@@ -190,5 +190,16 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       expect(node).to receive(:run_list).with([])
       client_builder.run
     end
+
+    it "builds a node with policy_name and policy_group when given" do
+      knife_config[:policy_name] = "my-app"
+      knife_config[:policy_group] = "staging"
+
+      expect(node).to receive(:run_list).with([])
+      expect(node).to receive(:policy_name=).with("my-app")
+      expect(node).to receive(:policy_group=).with("staging")
+
+      client_builder.run
+    end
   end
 end
