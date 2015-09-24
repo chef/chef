@@ -68,7 +68,7 @@ module ChefConfig
 
     default(:config_dir) do
       if config_file
-        PathHelper.dirname(config_file)
+        PathHelper.dirname(PathHelper.canonical_path(config_file, false))
       else
         PathHelper.join(user_home, ".chef", "")
       end
