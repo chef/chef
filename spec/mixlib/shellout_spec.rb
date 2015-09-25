@@ -1116,8 +1116,21 @@ describe Mixlib::ShellOut do
             'powershell -c "sleep 10"'
           end
 
+          before do
+            require "wmi-lite/wmi"
+            allow(WmiLite::Wmi).to receive(:new)
+            allow(Mixlib::ShellOut::Windows::Utils).to receive(:kill_process_tree)
+          end
+
           it "should raise CommandTimeout" do
             Timeout::timeout(5) do
+              expect { executed_cmd }.to raise_error(Mixlib::ShellOut::CommandTimeout)
+            end
+          end
+
+          context 'and child processes should be killed' do
+            it 'kills the child processes' do
+              expect(Mixlib::ShellOut::Windows::Utils).to receive(:kill_process_tree)
               expect { executed_cmd }.to raise_error(Mixlib::ShellOut::CommandTimeout)
             end
           end

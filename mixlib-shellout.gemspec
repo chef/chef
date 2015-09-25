@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 1.9.3"
 
+  s.add_dependency "wmi-lite", "~> 1.0"
   s.add_development_dependency "rspec", "~> 3.0"
 
   s.bindir       = "bin"

@@ -107,6 +107,9 @@ module Mixlib
                 # Kill the process
                 if (Time.now - start_wait) > timeout
                   begin
+                    require 'wmi-lite/wmi'
+                    wmi = WmiLite::Wmi.new
+                    Utils.kill_process_tree(process.process_id, wmi)
                     Process.kill(:KILL, process.process_id)
                   rescue Errno::EIO
                     logger.warn("Failed to kill timed out process #{process.process_id}") if logger
@@ -312,6 +315,18 @@ module Mixlib
 
         def self.executable?(path)
           File.executable?(path) && !File.directory?(path)
+        end
+
+        def self.kill_process_tree(pid, wmi)
+          wmi.query("select ProcessID, Name from Win32_Process where ParentProcessID=#{pid}").each do |instance|
+            child_pid = instance.wmi_ole_object.processid
+            kill_process_tree(child_pid, wmi)
+            begin
+              Process.kill(:kill, child_pid)
+            rescue Errno::EIO
+              logger.warn("Failed to kill child process #{child_pid}::#{instance.wmi_ole_object.Name} of parent #{pid}") if logger
+            end
+          end
         end
       end
     end # class
