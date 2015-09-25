@@ -94,7 +94,7 @@ class Chef
           raise ArgumentError, "Cannot specify both name_property and name_attribute together on property #{options[:name]}#{options[:declared_in] ? " of resource #{options[:declared_in].resource_name}" : ""}."
         end
         # replace name_property with name_attribute in place
-        options = options.map { |k,v| k == :name_attribute ? [ :name_property, v ] : [ k,v ] }.to_h
+        options = Hash[options.map { |k,v| k == :name_attribute ? [ :name_property, v ] : [ k,v ] }]
       end
 
       # Only pick the first of :default, :name_property and :name_attribute if
