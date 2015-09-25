@@ -384,6 +384,9 @@ class Chef
       def deprecation(message, location=caller(2..2)[0])
       end
 
+      def run_list_expanded(run_list_expansion)
+      end
+
       # An uncategorized message. This supports the case that a user needs to
       # pass output that doesn't fit into one of the callbacks above. Note that
       # there's no semantic information about the content or importance of the
