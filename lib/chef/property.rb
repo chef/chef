@@ -89,18 +89,19 @@ class Chef
 
       # Only pick the first of :default, :name_property and :name_attribute if
       # more than one is specified.
-      found_defaults = []
-      options.reject! do |k,v|
-        if [ :name_property, :name_attribute, :default ].include?(k)
-          found_defaults << k
-          # Reject all but the first default key you find
-          found_defaults.size > 1
-        else
-          false
-        end
-      end
+      found_defaults = options.keys.select { |k| [ :default, :name_attribute, :name_property ].include?(k) }
       if found_defaults.size > 1
-        Chef::Log.deprecation("Cannot specify keys #{found_defaults.join(", ")} together on property #{options[:name]}--only the first one (#{found_defaults[0]}) will be obeyed. Please pick one.", caller(5..5)[0])
+        preferred_default = found_defaults[0]
+        # We do *not* prefer `default: nil` even if it's first, because earlier
+        # versions of Chef (backcompat) treat specifying something as `nil` the
+        # same as not specifying it at all. In Chef 13 we can switch this behavior
+        # back to normal, since only one default will be specifiable.
+        if preferred_default == :default && options[:default].nil?
+          preferred_default = found_defaults[1]
+        end
+        Chef::Log.deprecation("Cannot specify keys #{found_defaults.join(", ")} together on property #{options[:name]}--only one (#{preferred_default}) will be obeyed. In Chef 13, specifying multiple defaults will become an error.", caller(5..5)[0])
+        # Only honor the preferred default
+        options.reject! { |k,v| found_defaults.include?(k) && k != preferred_default }
       end
       options[:name_property] = options.delete(:name_attribute) if options.has_key?(:name_attribute) && !options.has_key?(:name_property)
 

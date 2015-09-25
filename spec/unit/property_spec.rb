@@ -949,11 +949,19 @@ describe "Chef::Resource.property" do
       context "default ordering deprecation warnings" do
         it "emits a deprecation warning for property :x, default: 10, #{name}: true" do
           expect { resource_class.property :x, :default => 10, name.to_sym => true }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify keys default, #{name} together on property x--only the first one \(default\) will be obeyed. Please pick one./
+            /Cannot specify keys default, #{name} together on property x--only one \(default\) will be obeyed./
+        end
+        it "emits a deprecation warning for property :x, default: nil, #{name}: true" do
+          expect { resource_class.property :x, :default => nil, name.to_sym => true }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Cannot specify keys default, #{name} together on property x--only one \(#{name}\) will be obeyed./
         end
         it "emits a deprecation warning for property :x, #{name}: true, default: 10" do
           expect { resource_class.property :x, name.to_sym => true, :default => 10 }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify keys #{name}, default together on property x--only the first one \(#{name}\) will be obeyed. Please pick one./
+            /Cannot specify keys #{name}, default together on property x--only one \(#{name}\) will be obeyed./
+        end
+        it "emits a deprecation warning for property :x, #{name}: true, default: nil" do
+          expect { resource_class.property :x, name.to_sym => true, :default => nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Cannot specify keys #{name}, default together on property x--only one \(#{name}\) will be obeyed./
         end
       end
       context "default ordering" do
@@ -963,7 +971,17 @@ describe "Chef::Resource.property" do
             expect(resource.x).to eq 10
           end
         end
+        with_property ":x, default: nil, #{name}: true" do
+          it "chooses #{name} over default" do
+            expect(resource.x).to eq 'blah'
+          end
+        end
         with_property ":x, #{name}: true, default: 10" do
+          it "chooses #{name} over default" do
+            expect(resource.x).to eq 'blah'
+          end
+        end
+        with_property ":x, #{name}: true, default: nil" do
           it "chooses #{name} over default" do
             expect(resource.x).to eq 'blah'
           end
