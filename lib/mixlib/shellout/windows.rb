@@ -322,6 +322,7 @@ module Mixlib
             child_pid = instance.wmi_ole_object.processid
             kill_process_tree(child_pid, wmi)
             begin
+              logger.warn("killing child process #{child_pid}::#{instance.wmi_ole_object.Name} of parent #{pid}") if logger
               Process.kill(:kill, child_pid)
             rescue Errno::EIO
               logger.warn("Failed to kill child process #{child_pid}::#{instance.wmi_ole_object.Name} of parent #{pid}") if logger
