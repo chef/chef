@@ -219,9 +219,9 @@ class Chef
       # @return [Hash<Symbol, Object>]
       def session_options(host, port, user=nil)
         ssh_config = Net::SSH.configuration_for(host)
-        {}.tap do |opts|
+        ssh_config.tap do |opts|
           # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
-          opts[:user] = user || config[:ssh_user] || ssh_config[:user]
+          opts[:user] = user || config[:ssh_user] || opts[:user]
           if config[:identity_file]
             opts[:keys] = File.expand_path(config[:identity_file])
             opts[:keys_only] = true
@@ -229,15 +229,18 @@ class Chef
             opts[:password] = config[:ssh_password]
           end
           # Don't set the keys to nil if we don't have them.
-          forward_agent = config[:forward_agent] || ssh_config[:forward_agent]
+          forward_agent = config[:forward_agent] || opts[:forward_agent]
           opts[:forward_agent] = forward_agent unless forward_agent.nil?
-          port ||= ssh_config[:port]
+          port ||= config[:ssh_port] || opts[:port]
           opts[:port] = port unless port.nil?
           opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
           if !config[:host_key_verify]
             opts[:paranoid] = false
             opts[:user_known_hosts_file] = '/dev/null'
           end
+
+          # Don't include send_env from ssh_config.
+          opts.delete(:send_env)
         end
       end
 
