@@ -89,7 +89,11 @@ class Chef
 
       # Only pick the first of :default, :name_property and :name_attribute if
       # more than one is specified.
-      found_defaults = options.keys.select { |k| [ :default, :name_attribute, :name_property ].include?(k) }
+      found_defaults = options.keys.select do |k|
+         # Only treat name_property or name_attribute as a default if they are `true`
+        k == :default ||
+        ((k == :name_property || k == :name_attribute) && options[k])
+      end
       if found_defaults.size > 1
         preferred_default = found_defaults[0]
         # We do *not* prefer `default: nil` even if it's first, because earlier
