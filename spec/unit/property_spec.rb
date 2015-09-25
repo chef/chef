@@ -949,19 +949,19 @@ describe "Chef::Resource.property" do
       context "default ordering deprecation warnings" do
         it "emits a deprecation warning for property :x, default: 10, #{name}: true" do
           expect { resource_class.property :x, :default => 10, name.to_sym => true }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify keys default, #{name} together on property x--only one \(default\) will be obeyed./
+            /Cannot specify keys default, #{name} together on property x. Only one \(default\) will be obeyed./
         end
         it "emits a deprecation warning for property :x, default: nil, #{name}: true" do
           expect { resource_class.property :x, :default => nil, name.to_sym => true }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify keys default, #{name} together on property x--only one \(#{name}\) will be obeyed./
+            /Cannot specify keys default, #{name} together on property x. Only one \(#{name}\) will be obeyed./
         end
         it "emits a deprecation warning for property :x, #{name}: true, default: 10" do
           expect { resource_class.property :x, name.to_sym => true, :default => 10 }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify keys #{name}, default together on property x--only one \(#{name}\) will be obeyed./
+            /Cannot specify keys #{name}, default together on property x. Only one \(#{name}\) will be obeyed./
         end
         it "emits a deprecation warning for property :x, #{name}: true, default: nil" do
           expect { resource_class.property :x, name.to_sym => true, :default => nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify keys #{name}, default together on property x--only one \(#{name}\) will be obeyed./
+            /Cannot specify keys #{name}, default together on property x. Only one \(#{name}\) will be obeyed./
         end
       end
       context "default ordering" do

@@ -99,7 +99,7 @@ class Chef
         if preferred_default == :default && options[:default].nil?
           preferred_default = found_defaults[1]
         end
-        Chef::Log.deprecation("Cannot specify keys #{found_defaults.join(", ")} together on property #{options[:name]}--only one (#{preferred_default}) will be obeyed. In Chef 13, specifying multiple defaults will become an error.", caller(5..5)[0])
+        Chef.log_deprecation("Cannot specify keys #{found_defaults.join(", ")} together on property #{options[:name]}#{options[:resource_class] ? " of resource #{options[:resource_class].resource_name}" : ""}. Only one (#{preferred_default}) will be obeyed. In Chef 13, specifying multiple defaults will become an error.")
         # Only honor the preferred default
         options.reject! { |k,v| found_defaults.include?(k) && k != preferred_default }
       end
