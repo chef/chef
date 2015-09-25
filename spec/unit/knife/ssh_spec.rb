@@ -149,6 +149,71 @@ describe Chef::Knife::Ssh do
     end
   end
 
+  describe "#session_options" do
+    let(:ssh_default_config) do
+      {:compression_level => 9, :timeout => 50, :user => "locutus", :port => 23}
+    end
+
+    before do
+      ssh_config = {:compression_level => 9, :timeout => 50, :user => "locutus", :port => 23}
+      allow(Net::SSH).to receive(:configuration_for).with('the.b.org').and_return(ssh_config)
+    end
+
+    it "should return default settings" do
+      expect(@knife.session_options("the.b.org", nil)).to a_hash_including(ssh_default_config)
+    end
+
+    it "should set keys and keys_only" do
+      @knife.config[:identity_file] = "/tmp/mykey"
+      expect(@knife.session_options("the.b.org", nil)).to a_hash_including(
+        :keys => '/tmp/mykey',
+        :keys_only => true
+      )
+    end
+
+    it "should set password" do
+      @knife.config[:ssh_password] = "mysekretpassw0rd"
+      expect(@knife.session_options("the.b.org", nil)).to a_hash_including(:password => "mysekretpassw0rd")
+    end
+
+    it "should placed set identity_file avove password" do
+      @knife.config[:identity_file] = "/tmp/mykey"
+      @knife.config[:ssh_password] = "mysekretpassw0rd"
+      expect(@knife.session_options("the.b.org", nil)).not_to a_hash_including(:password => "mysekretpassw0rd")
+    end
+
+    it "should set paranoid and user_known_hosts_file" do
+      @knife.config[:host_key_verify] = false
+      expect(@knife.session_options("the.b.org", nil)).to a_hash_including(
+        :paranoid => false,
+        :user_known_hosts_file => '/dev/null'
+      )
+    end
+
+    context "override ssh options from config" do
+      it "should override user" do
+        @knife.config[:ssh_user] = "dog"
+        expect(@knife.session_options("the.b.org", nil)).to a_hash_including(:user => "dog")
+      end
+
+      it "should override port" do
+        @knife.config[:ssh_port] = 9022
+        expect(@knife.session_options("the.b.org", nil)).to a_hash_including(:port => 9022)
+      end
+    end
+
+    context "remove few options from ssh_config provides by NET::SSH" do
+      before do
+        ssh_config = {:compression_level => 9, :timeout => 50, :user => "locutus", :port => 23, :send_env=>[/^LANG$/, /^LC_.*$/]}
+        allow(Net::SSH).to receive(:configuration_for).with('the.b.org').and_return(ssh_config)
+      end
+
+      it "should remove send_env" do
+        expect(@knife.session_options("the.b.org", nil)).not_to have_key(:send_env)
+      end
+    end
+  end
+
   describe "#get_ssh_attribute" do
     # Order of precedence for ssh target
     # 1) command line attribute
