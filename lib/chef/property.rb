@@ -87,27 +87,28 @@ class Chef
     def initialize(**options)
       options.each { |k,v| options[k.to_sym] = v if k.is_a?(String) }
 
+      # Replace name_attribute with name_property
+      if options.has_key?(:name_attribute)
+        # If we have both name_attribute and name_property and they differ, raise an error
+        if options.has_key?(:name_property)
+          raise ArgumentError, "Cannot specify both name_property and name_attribute together on property #{options[:name]}#{options[:declared_in] ? " of resource #{options[:declared_in].resource_name}" : ""}."
+        end
+        # replace name_property with name_attribute in place
+        options = options.map { |k,v| k == :name_attribute ? [ :name_property, v ] : [ k,v ] }.to_h
+      end
+
       # Only pick the first of :default, :name_property and :name_attribute if
       # more than one is specified.
-      found_defaults = options.keys.select do |k|
-         # Only treat name_property or name_attribute as a default if they are `true`
-        k == :default ||
-        ((k == :name_property || k == :name_attribute) && options[k])
-      end
-      if found_defaults.size > 1
-        preferred_default = found_defaults[0]
-        # We do *not* prefer `default: nil` even if it's first, because earlier
-        # versions of Chef (backcompat) treat specifying something as `nil` the
-        # same as not specifying it at all. In Chef 13 we can switch this behavior
-        # back to normal, since only one default will be specifiable.
-        if preferred_default == :default && options[:default].nil?
-          preferred_default = found_defaults[1]
+      if options.has_key?(:default) && options[:name_property]
+        if options[:default].nil? || options.keys.index(:name_property) < options.keys.index(:default)
+          options.delete(:default)
+          preferred_default = :name_property
+        else
+          options.delete(:name_property)
+          preferred_default = :default
         end
-        Chef.log_deprecation("Cannot specify keys #{found_defaults.join(", ")} together on property #{options[:name]}#{options[:resource_class] ? " of resource #{options[:resource_class].resource_name}" : ""}. Only one (#{preferred_default}) will be obeyed. In Chef 13, specifying multiple defaults will become an error.")
-        # Only honor the preferred default
-        options.reject! { |k,v| found_defaults.include?(k) && k != preferred_default }
+        Chef.log_deprecation("Cannot specify both default and name_property together on property #{options[:name]}#{options[:declared_in] ? " of resource #{options[:declared_in].resource_name}" : ""}. Only one (#{preferred_default}) will be obeyed. In Chef 13, this will become an error.")
       end
-      options[:name_property] = options.delete(:name_attribute) if options.has_key?(:name_attribute) && !options.has_key?(:name_property)
 
       @options = options
 
@@ -446,10 +447,10 @@ class Chef
       EOM
     rescue SyntaxError
       # If the name is not a valid ruby name, we use define_method.
-      resource_class.define_method(name) do |value=NOT_PASSED|
+      declared_in.define_method(name) do |value=NOT_PASSED|
         self.class.properties[name].call(self, value)
       end
-      resource_class.define_method("#{name}=") do |value|
+      declared_in.define_method("#{name}=") do |value|
         self.class.properties[name].set(self, value)
       end
     end
