@@ -38,7 +38,7 @@ describe Chef::Digester do
       expect(@cache.checksum_for_file(fixture_file)).to eq(expected)
     end
 
-    it "generates a checksum from a non-file IO object" do
+    it "generates a checksum from a non-file IO object", :not_fips do
       io = StringIO.new("riseofthemachines\nriseofthechefs\n")
       expected_md5 = '0e157ac1e2dd73191b76067fb6b4bceb'
       expect(@cache.generate_md5_checksum(io)).to eq(expected_md5)

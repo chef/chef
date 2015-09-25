@@ -74,7 +74,12 @@ class Chef
         private
 
         def calc_checksum(value)
-          OpenSSL::Digest::MD5.hexdigest(value)
+          alg = if Chef::Config.fips_mode
+                  OpenSSL::Digest::SHA256
+                else
+                  OpenSSL::Digest::MD5
+                end
+          alg.new.hexdigest(value)
         end
       end
     end
