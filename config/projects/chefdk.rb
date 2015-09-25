@@ -52,7 +52,6 @@ override :ruby,           version: "2.1.6"
 # Going to leave 2.1.5 for now since there is a workaround
 override :'ruby-windows', version: "2.1.6"
 override :'ruby-windows-devkit', version: "4.7.2-20130224"
-override :'openssl-windows', version: "1.0.1m"
 ######
 
 ######
