@@ -241,6 +241,9 @@ class Chef
 
           # Don't include send_env from ssh_config.
           opts.delete(:send_env)
+
+          # Ignores ProxyCommand if passed GW
+          opts[:proxy] = nil if config[:ssh_gateway]
         end
       end
 
