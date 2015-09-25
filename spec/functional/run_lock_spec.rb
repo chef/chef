@@ -35,15 +35,17 @@ describe Chef::RunLock do
 
     # make sure to start with a clean slate.
     before(:each){ FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
-    after(:each){ FileUtils.rm_r(random_temp_root) }
+    after(:each){ FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
 
+    WAIT_ON_LOCK_TIME = 1.0
     def wait_on_lock
-      tries = 0
-      until File.exist?(lockfile)
-        raise "Lockfile never created, abandoning test" if tries > 10
-        tries += 1
-        sleep 0.1
+      Timeout::timeout(WAIT_ON_LOCK_TIME) do
+        until File.exist?(lockfile)
+          sleep 0.1
+        end
       end
+    rescue Timeout::Error
+      raise "Lockfile never created, abandoning test"
     end
 
     ##
@@ -142,103 +144,143 @@ describe Chef::RunLock do
       results_write.close unless results_write.closed?
     end
 
-    # writes the message to the results pipe for later checking.
-    # note that nothing accounts for the pipe filling and waiting forever on a
-    # read or write call, so don't put too much data in.
-    def record(message)
-      results_write.puts(message)
-      results_write.flush
+    CLIENT_PROCESS_TIMEOUT = 2
+    BREATHING_ROOM = 1
+
+    # ClientProcess is defined below
+    let!(:p1) { ClientProcess.new(self, 'p1') }
+    let!(:p2) { ClientProcess.new(self, 'p2') }
+    after do
+      p1.stop
+      p2.stop
     end
 
-    def results
-      results_write.flush
-      results_write.close
-      message = results_read.read
-      results_read.close
-      message
-    end
+    context "when the lockfile does not already exist" do
+      context "when a client acquires the lock but has not yet saved the pid" do
+        before { p1.run_to("acquired lock") }
 
-    ##
-    # Run lock is the system under test
-    let!(:run_lock) { Chef::RunLock.new(lockfile) }
+        it "the lockfile is created" do
+          expect(File.exist?(lockfile)).to be_truthy
+        end
 
-    it "creates the full path to the lockfile" do
-      expect { run_lock.acquire }.not_to raise_error
-      expect(File).to exist(lockfile)
-    end
+        it "the lockfile is locked" do
+          run_lock = Chef::RunLock.new(lockfile)
+          begin
+            expect(run_lock.test).to be_falsey
+          ensure
+            run_lock.release
+          end
+        end
 
-    it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
-      run_lock.acquire
-      expect(run_lock.runlock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).to eq(Fcntl::FD_CLOEXEC)
-    end
+        it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
+          run_lock = File.open(lockfile)
+          expect(run_lock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).to eq(Fcntl::FD_CLOEXEC)
+        end
 
-    it "allows only one chef client run per lockfile" do
-      # First process, gets the lock and keeps it.
-      p1 = fork do
-        run_lock.acquire
-        record "p1 has lock"
-        # Wait until the other process is trying to get the lock:
-        sync_wait
-        # sleep a little bit to make process p2 wait on the lock
-        sleep 2
-        record "p1 releasing lock"
-        run_lock.release
-        exit!(0)
+        it "the lockfile is empty" do
+          expect(IO.read(lockfile)).to eq('')
+        end
+
+        it "and a second client tries to acquire the lock, it doesn't get the lock until *after* the first client exits" do
+          # Start p2 and tell it to move forward in the background
+          p2.run_to("acquired lock") do
+            # While p2 is trying to acquire, wait a bit and then let p1 complete
+            sleep(BREATHING_ROOM)
+            expect(p2.last_event).to eq("started")
+            p1.run_to_completion
+          end
+
+          p2.run_to_completion
+        end
+
+        it "and a second client tries to get the lock and the first is killed, the second client gets the lock immediately" do
+          p2.run_to("acquired lock") do
+            sleep BREATHING_ROOM
+            expect(p2.last_event).to eq("started")
+            p1.stop
+          end
+          p2.run_to_completion
+        end
       end
 
-      # Wait until p1 creates the lockfile
-      wait_on_lock
+      context "when a client acquires the lock and saves the pid" do
+        before { p1.run_to("saved pid") }
 
-      p2 = fork do
-        # inform process p1 that we're trying to get the lock
-        sync_send
-        run_lock.acquire
-        record "p2 has lock"
-        run_lock.release
-        exit!(0)
+        it "the lockfile is created" do
+          expect(File.exist?(lockfile)).to be_truthy
+        end
+
+        it "the lockfile is locked" do
+          run_lock = Chef::RunLock.new(lockfile)
+          begin
+            expect(run_lock.test).to be_falsey
+          ensure
+            run_lock.release
+          end
+        end
+
+        it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
+          run_lock = File.open(lockfile)
+          expect(run_lock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).to eq(Fcntl::FD_CLOEXEC)
+        end
+
+        it "the PID is in the lockfile" do
+          expect(IO.read(lockfile)).to eq p1.pid.to_s
+        end
+
+        it "and a second client tries to acquire the lock, it doesn't get the lock until *after* the first client exits" do
+          # Start p2 and tell it to move forward in the background
+          p2.run_to("acquired lock") do
+            # While p2 is trying to acquire, wait a bit and then let p1 complete
+            sleep(BREATHING_ROOM)
+            expect(p2.last_event).to eq("started")
+            p1.run_to_completion
+          end
+
+          p2.run_to_completion
+        end
+
+        it "when a second client tries to get the lock and the first is killed, the second client gets the lock immediately" do
+          p2.run_to("acquired lock") do
+            sleep BREATHING_ROOM
+            expect(p2.last_event).to eq("started")
+            p1.stop
+          end
+          p2.run_to_completion
+        end
       end
 
-      Process.waitpid2(p1)
-      Process.waitpid2(p2)
+      context "when a client acquires a lock and exits normally" do
+        before { p1.run_to_completion }
 
-      raise_side_channel_error!
+        it "the lockfile remains" do
+          expect(File.exist?(lockfile)).to be_truthy
+        end
 
-      expected=<<-E
-p1 has lock
-p1 releasing lock
-p2 has lock
-E
-      expect(results).to eq(expected)
-    end
+        it "the lockfile is not locked" do
+          run_lock = Chef::RunLock.new(lockfile)
+          begin
+            expect(run_lock.test).to be_truthy
+          ensure
+            run_lock.release
+          end
+        end
 
-    it "clears the lock if the process dies unexpectedly" do
-      p1 = fork do
-        run_lock.acquire
-        record "p1 has lock"
-        sleep 60
-        record "p1 still has lock"
-        exit! 1
+        it "the PID is in the lockfile" do
+          expect(IO.read(lockfile)).to eq p1.pid.to_s
+        end
+
+        it "and a second client tries to acquire the lock, it gets the lock immediately" do
+          p2.run_to_completion
+        end
       end
-
-      wait_on_lock
-      Process.kill(:KILL, p1)
-      Process.waitpid2(p1)
-
-      p2 = fork do
-        run_lock.acquire
-        record "p2 has lock"
-        run_lock.release
-        exit! 0
-      end
-
-      Process.waitpid2(p2)
-
-      expect(results).to match(/p2 has lock\Z/)
     end
 
     it "test returns true and acquires the lock" do
+      run_lock = Chef::RunLock.new(lockfile)
       p1 = fork do
         expect(run_lock.test).to eq(true)
+        run_lock.save_pid
         sleep 2
         exit! 1
       end
@@ -255,8 +297,10 @@ E
     end
 
     it "test returns without waiting when the lock is acquired" do
+      run_lock = Chef::RunLock.new(lockfile)
       p1 = fork do
         run_lock.acquire
+        run_lock.save_pid
         sleep 2
         exit! 1
       end
@@ -267,20 +311,136 @@ E
       Process.waitpid2(p1)
     end
 
-    it "doesn't truncate the lock file so that contents can be read" do
-      p1 = fork do
-        run_lock.acquire
-        run_lock.save_pid
-        sleep 2
-        exit! 1
-      end
+  end
 
-      wait_on_lock
-      sleep 0.5 # Possible race condition on Solaris which pid is observed as 0
-      expect(File.read(lockfile)).to eq(p1.to_s)
-
-      Process.waitpid2(p1)
+  #
+  # Runs a process in the background that will:
+  #
+  # 1. start up (`started` event)
+  # 2. acquire the runlock file (`acquired lock` event)
+  # 3. save the pid to the lockfile (`saved pid` event)
+  # 4. exit
+  #
+  # You control exactly how far the client process goes with the `run_to`
+  # method: it will stop at any given spot so you can test for race conditions.
+  #
+  # It uses a pair of pipes to communicate with the process. The tests will
+  # send an event name over to the process, which gives the process permission
+  # to run until it reaches that event (at which point it waits for another event
+  # name). The process sends the name of each event it reaches back to the tests.
+  #
+  class ClientProcess
+    def initialize(example, name)
+      @example = example
+      @name = name
+      @read_from_process, @write_to_tests = IO.pipe
+      @read_from_tests, @write_to_process = IO.pipe
     end
 
+    attr_reader :example
+    attr_reader :name
+    attr_reader :pid
+
+    def fire_event(event)
+      # Let the caller know what event we've reached
+      write_to_tests.puts(event)
+
+      # Block until the client tells us where to stop
+      if !@run_to_event || event == @run_to_event
+        @run_to_event = read_from_tests.gets.strip
+      end
+    end
+
+    def last_event
+      while true
+        event = readline_nonblock(read_from_process)
+        break if event.nil?
+        @last_event = event.strip
+      end
+      @last_event
+    end
+
+    def run_to(event, &background_block)
+      # Start the process if it's not started
+      start if !pid
+
+      # Tell the process what to stop at (also means it can go)
+      write_to_process.puts event
+
+      # Run the background block
+      background_block.call if background_block
+
+      # Wait until it gets there
+      Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+        until @last_event == event
+          @last_event = read_from_process.gets.strip
+        end
+      end
+    end
+
+    def run_to_completion
+      # Start the process if it's not started
+      start if !pid
+
+      # Tell the process to stop at nothing (no blocking)
+      @write_to_process.puts "nothing"
+
+      # Wait for the process to exit
+      wait_for_exit
+    end
+
+    def wait_for_exit
+      Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+        Process.wait(pid) if pid
+      end
+    end
+
+    def stop
+      if pid
+        begin
+          Process.kill(:KILL, pid)
+          Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+            Process.waitpid2(pid)
+          end
+        # Process not found is perfectly fine when we're trying to kill a process :)
+        rescue Errno::ESRCH
+        end
+      end
+    end
+
+    private
+
+    attr_reader :read_from_process
+    attr_reader :write_to_tests
+    attr_reader :read_from_tests
+    attr_reader :write_to_process
+
+    def start
+      @pid = fork do
+        Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+          run_lock = Chef::RunLock.new(example.lockfile)
+          fire_event("started")
+          run_lock.acquire
+          fire_event("acquired lock")
+          run_lock.save_pid
+          fire_event("saved pid")
+          exit!(0)
+        end
+      end
+    end
+
+    def readline_nonblock(fd)
+      buffer = ""
+      buffer << fd.read_nonblock(1) while buffer[-1] != "\n"
+
+      buffer
+    #rescue IO::EAGAINUnreadable
+    rescue IO::WaitReadable
+      unless buffer == ""
+        sleep 0.1
+        retry
+      end
+      nil
+    end
   end
 end
