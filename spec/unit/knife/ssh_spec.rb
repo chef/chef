@@ -160,7 +160,7 @@ describe Chef::Knife::Ssh do
     end
 
     it "should return default settings" do
-      expect(@knife.session_options("the.b.org", nil)).to eq(ssh_default_config)
+      expect(@knife.session_options("the.b.org", nil)).to a_hash_including(ssh_default_config)
     end
 
     it "should set keys and keys_only" do
