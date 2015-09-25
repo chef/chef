@@ -27,7 +27,7 @@ class Chef
             message = []
             message << "Method '#{name}' of '#{self.class}' is deprecated. It will be removed in Chef 13."
             message << "Please update your cookbooks accordingly."
-            Chef.log_deprecation(message, caller(0..3))
+            Chef.log_deprecation(message)
             super(*args)
           end
         end

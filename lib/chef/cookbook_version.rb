@@ -51,12 +51,12 @@ class Chef
     attr_accessor :metadata_filenames
 
     def status=(new_status)
-      Chef.log_deprecation("Deprecated method `status' called. This method will be removed.", caller(1..1))
+      Chef.log_deprecation("Deprecated method `status' called. This method will be removed.")
       @status = new_status
     end
 
     def status
-      Chef.log_deprecation("Deprecated method `status' called. This method will be removed.", caller(1..1))
+      Chef.log_deprecation("Deprecated method `status' called. This method will be removed.")
       @status
     end
 
@@ -480,7 +480,7 @@ class Chef
     # @deprecated This method was used by the Ruby Chef Server and is no longer
     #   needed. There is no replacement.
     def generate_manifest_with_urls(&url_generator)
-      Chef.log_deprecation("Deprecated method #generate_manifest_with_urls.", caller(1..1))
+      Chef.log_deprecation("Deprecated method #generate_manifest_with_urls.")
 
       rendered_manifest = manifest.dup
       COOKBOOK_SEGMENTS.each do |segment|

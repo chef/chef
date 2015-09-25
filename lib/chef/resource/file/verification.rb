@@ -110,8 +110,7 @@ class Chef
           # is interpolated. Until `file` can be deprecated, interpolate both.
           Chef.log_deprecation(
             '%{file} is deprecated in verify command and will not be '\
-            'supported in Chef 13. Please use %{path} instead.',
-            caller(2..2)[0]
+            'supported in Chef 13. Please use %{path} instead.'
           ) if @command.include?('%{file}')
           command = @command % {:file => path, :path => path}
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)

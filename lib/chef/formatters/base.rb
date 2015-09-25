@@ -213,7 +213,7 @@ class Chef
       end
 
       def deprecation(message, location=caller(2..2)[0])
-        Chef::Log.deprecation("#{message} at #{location}")
+        Chef.log_deprecation("#{message} at #{location}")
       end
     end
 
