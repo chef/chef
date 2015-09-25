@@ -690,6 +690,14 @@ module ChefConfig
       default :watchdog_timeout, 2 * (60 * 60) # 2 hours
     end
 
+    # Add an empty and non-strict config_context for chefdk. This lets the user
+    # have code like `chefdk.generator_cookbook "/path/to/cookbook"` in their
+    # config.rb, and it will be ignored by tools like knife and ohai. ChefDK
+    # itself can define the config options it accepts and enable strict mode,
+    # and that will only apply when running `chef` commands.
+    config_context :chefdk do
+    end
+
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
     # to use the 'locale -a' command and search through a list of preferences until we
     # find one that we can use.  On Ubuntu systems we should find 'C.UTF-8' and be

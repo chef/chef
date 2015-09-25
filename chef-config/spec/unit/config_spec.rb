@@ -561,6 +561,14 @@ RSpec.describe ChefConfig::Config do
     end
   end
 
+  describe "allowing chefdk configuration outside of chefdk" do
+
+    it "allows arbitrary settings in the chefdk config context" do
+      expect { ChefConfig::Config.chefdk.generator_cookbook("/path") }.to_not raise_error
+    end
+
+  end
+
   describe "Treating deprecation warnings as errors" do
 
     context "when using our default RSpec configuration" do
