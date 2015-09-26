@@ -102,6 +102,11 @@ class Chef
           configs
         end
 
+        def reset
+          @service_resource_providers = nil
+          @systemctl_path = nil
+        end
+
         private
 
         def systemctl_path

@@ -188,6 +188,7 @@ RSpec.configure do |config|
     Chef.reset!
 
     Chef::Config.reset
+    Chef::Platform::ServiceHelpers.reset
 
     # By default, treat deprecation warnings as errors in tests.
     Chef::Config.treat_deprecation_warnings_as_errors(true)

@@ -27,23 +27,23 @@
 shared_context "double world" do
   let(:world) { DoubleWorld.new }
   before do
-    allow(::File).to receive(:exists?) { |f| world.files.has_key?(f) }
+    allow(::File).to receive(:exist?)      { |f| world.files.has_key?(f) }
+    allow(::File).to receive(:exists?)     { |f| world.files.has_key?(f) }
     allow(::File).to receive(:executable?) { |f| world.files.has_key?(f) }
-    allow(::File).to receive(:open) { |f| StringIO.new(world.files[f]) }
+    allow(::File).to receive(:open)        { |f| StringIO.new(world.files[f]) }
 
-    allow(::Chef::Mixin::ShellOut).to receive(:shell_out!) do |c|
-      raise "hi"
+    allow(::Mixlib::ShellOut).to receive(:new) do |c|
       result = world.commands[c]
       case result
       when String
-        Mash.new(stdout: result)
+        result = { stdout: result }
       when Integer
-        Mash.new(exitstatus: result)
+        result = { exitstatus: result }
       when Hash
-        Mash.new(result)
       else
-        raise ArgumentError, result
+        raise ArgumentError, "Result for command #{c} unexpected or undefined: #{result.inspect}"
       end
+      DoubleShellout.new(result)
     end
   end
 
@@ -56,5 +56,24 @@ shared_context "double world" do
     end
     attr_reader :files
     attr_reader :commands
+  end
+
+  class DoubleShellout
+    def initialize(properties)
+      @properties = {
+        stdout: "",
+        stderr: "",
+        exitstatus: 0
+      }.merge(properties)
+    end
+    def method_missing(name, *args)
+      @properties[name.to_sym]
+    end
+    def error?
+      exitstatus != 0
+    end
+    def error!
+      raise Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with 0, but received #{exitstatus}" if error?
+    end
   end
 end

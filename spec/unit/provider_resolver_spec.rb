@@ -54,10 +54,11 @@ describe Chef::ProviderResolver do
     end
   end
 
+  let(:service_name) { "test" }
   let(:resource) do
     resource_class = Chef::ResourceResolver.resolve(resource_name, node: node)
     if resource_class
-      resource = resource_class.new('test', run_context)
+      resource = resource_class.new(service_name, run_context)
       resource.provider = provider if provider
     end
     resource
@@ -135,37 +136,56 @@ describe Chef::ProviderResolver do
 
   describe "resolving service resource" do
     def stub_service_providers(*services)
-      services ||= []
-      allow(Chef::Platform::ServiceHelpers).to receive(:service_resource_providers)
-        .and_return(services)
+      services.each do |service|
+        case service
+        when :debian
+          world.files["/usr/sbin/update-rc.d"] = ""
+        when :invokercd
+          world.files["/usr/sbin/invoke-rc.d"] = ""
+        when :insserv
+          world.files["/sbin/insserv"] = ""
+        when :upstart
+          world.files["/etc/init"] = ""
+          world.files["/sbin/start"] = ""
+        when :redhat
+          world.files["/sbin/chkconfig"] = ""
+        when :systemd
+          world.files["/bin/systemctl"] = ""
+          world.files["/proc/1/comm"] = "systemd\n"
+          world.commands["/bin/systemctl --all"] = ""
+          world.commands["/bin/systemctl list-unit-files"] = ""
+        else
+          raise ArgumentError, service
+        end
+      end
     end
 
     def stub_service_configs(*configs)
       configs.each do |config|
         case config
         when :initd
-          world.files["/etc/init.d/test"] ||= ""
+          world.files["/etc/init.d/#{service_name}"] = ""
         when :upstart
-          world.files["/etc/init/test.conf"] ||= ""
+          world.files["/etc/init/#{service_name}.conf"] = ""
         when :xinetd
-          world.files["/etc/xinetd.d/test"] ||= ""
+          world.files["/etc/xinetd.d/#{service_name}"] = ""
         when :etc_rcd
-          world.files["/etc/rc.d/test"] ||= ""
+          world.files["/etc/rc.d/#{service_name}"] = ""
         when :usr_local_etc_rcd
-          world.files["/usr/local/etc/rc.d/test"] ||= ""
+          world.files["/usr/local/etc/rc.d/#{service_name}"] = ""
         when :systemd
-          world.files["/bin/systemd"] ||= ""
-          world.files["/proc/1/comm"] ||= "systemd\n"
-          world.commands["/bin/systemd --all"] ||= <<-EOM
+          world.files["/bin/systemd"] = ""
+          world.files["/proc/1/comm"] = "systemd\n"
+          world.commands["/bin/systemctl --all"] = <<-EOM
 superv  loaded
 stinky  something-else
-test    loaded
+#{service_name} loaded
 blargh  not-found
 EOM
-          world.commands["/bin/systemd list-unit-files"] ||= <<-EOM
+          world.commands["/bin/systemctl list-unit-files"] = <<-EOM
 usuperv  loaded
 ustinky  something-else
-utest    loaded
+u#{service_name}    loaded
 ublargh  not-found
 EOM
         else
@@ -174,59 +194,48 @@ EOM
       end
     end
 
-    before do
-      allow(resource).to receive(:service_name).and_return("ntp")
-    end
-
     shared_examples_for "an ubuntu platform with upstart, update-rc.d and systemd" do
       before do
         stub_service_providers(:debian, :invokercd, :upstart, :systemd)
       end
 
       it "when only the SysV init script exists, it returns a Service::Debian provider" do
-        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-          .and_return( [ :initd, :systemd ] )
+        stub_service_configs(:initd, :systemd)
         expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
       end
 
       it "when both SysV and Upstart scripts exist, it returns a Service::Upstart provider" do
-        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-          .and_return( [ :initd, :upstart, :systemd ] )
+        stub_service_configs(:initd, :upstart, :systemd)
         expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
       end
 
       it "when only the Upstart script exists, it returns a Service::Upstart provider" do
-        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-          .and_return( [ :upstart, :systemd ] )
+        stub_service_configs(:upstart, :systemd)
         expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
       end
 
       it "when both do not exist, it calls the old style provider resolver and returns a Debian Provider" do
-        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-          .and_return( [ :systemd ] )
+        stub_service_configs(:systemd)
         expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
       end
+
       it "when only the SysV init script exists, it returns a Service::Debian provider" do
-        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-          .and_return( [ :initd ] )
+        stub_service_configs(:initd)
         expect(resolved_provider).to eql(Chef::Provider::Service::Debian)
       end
 
       it "when both SysV and Upstart scripts exist, it returns a Service::Upstart provider" do
-        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-          .and_return( [ :initd, :upstart ] )
+        stub_service_configs(:initd, :upstart)
         expect(resolved_provider).to eql(Chef::Provider::Service::Upstart)
       end
 
       it "when only the Upstart script exists, it returns a Service::Upstart provider" do
-        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-          .and_return( [ :upstart ] )
+        stub_service_configs(:upstart)
         expect(resolved_provider).to eql(Chef::Provider::Service::Upstart)
       end
 
       it "when both do not exist, it calls the old style provider resolver and returns a Debian Provider" do
-        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-          .and_return( [ ] )
+        stub_service_configs
         expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
       end
     end
@@ -239,8 +248,7 @@ EOM
       # needs to be handled by the highest priority init.d handler
       context "when only the SysV init script exists" do
         before do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ :initd ] )
+          stub_service_configs(:initd)
         end
 
         it "enables init, invokercd, debian and upstart providers" do
@@ -271,8 +279,7 @@ EOM
       # on ubuntu this must be handled by upstart, the init script will exit 1 and fail
       context "when both SysV and Upstart scripts exist" do
         before do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ :initd, :upstart ] )
+          stub_service_configs(:initd, :upstart)
         end
 
         it "enables init, invokercd, debian and upstart providers" do
@@ -301,8 +308,7 @@ EOM
       # this case is a pure-upstart script which is easy
       context "when only the Upstart script exists" do
         before do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ :upstart ] )
+          stub_service_configs(:upstart)
         end
 
         it "enables init, invokercd, debian and upstart providers" do
@@ -333,8 +339,7 @@ EOM
       # this case is important to get correct for why-run when no config is setup
       context "when both do not exist" do
         before do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ ] )
+          stub_service_configs
         end
 
         it "enables init, invokercd, debian and upstart providers" do
@@ -368,14 +373,12 @@ EOM
         end
 
         it "uses the Service::Insserv Provider to manage sysv init scripts" do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ :initd ] )
+          stub_service_configs(:initd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Insserv)
         end
 
         it "uses the Service::Insserv Provider when there is no config" do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ ] )
+          stub_service_configs
           expect(resolved_provider).to eql(Chef::Provider::Service::Insserv)
         end
       end
@@ -386,29 +389,29 @@ EOM
         end
 
         it "when only the SysV init script exists, it returns an Insserv  provider" do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ :initd ] )
+          stub_service_configs(:initd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Insserv)
         end
 
         it "when both SysV and Upstart scripts exist, it returns a Service::Upstart provider" do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ :initd, :upstart ] )
+          stub_service_configs(:initd, :upstart)
           expect(resolved_provider).to eql(Chef::Provider::Service::Upstart)
         end
 
         it "when only the Upstart script exists, it returns a Service::Upstart provider" do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ :upstart ] )
+          stub_service_configs(:upstart)
           expect(resolved_provider).to eql(Chef::Provider::Service::Upstart)
         end
 
         it "when both do not exist, it calls the old style provider resolver and returns a Debian Provider" do
-          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-            .and_return( [ ] )
+          stub_service_configs
           expect(resolved_provider).to eql(Chef::Provider::Service::Upstart)
         end
       end
+    end
+
+    on_platform "ubuntu", platform_version: "15.10", platform_family: "debian", os: "linux" do
+      it_behaves_like "an ubuntu platform with upstart, update-rc.d and systemd"
     end
 
     on_platform "ubuntu", platform_version: "14.10", platform_family: "debian", os: "linux" do
