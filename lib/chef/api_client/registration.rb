@@ -68,7 +68,8 @@ class Chef
 
       def assert_destination_writable!
         if (File.exists?(destination) && !File.writable?(destination)) or !File.writable?(File.dirname(destination))
-          raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?"
+          abs_path = File.expand_path(destination)
+          raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} (#{abs_path})- check permissions?"
         end
       end
 
