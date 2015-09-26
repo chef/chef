@@ -226,5 +226,10 @@ class Chef
     end
   end
 
+  # @api private Only for test dependency injection; not evenly implemented as yet.
+  def self.path_to(path)
+    path
+  end
+
   reset!
 end

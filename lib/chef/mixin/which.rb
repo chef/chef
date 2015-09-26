@@ -28,7 +28,7 @@ class Chef
         paths = ENV['PATH'].split(File::PATH_SEPARATOR) + extra_path
         paths.each do |path|
           filename = File.join(path, cmd)
-          return filename if File.executable?(filename)
+          return filename if File.executable?(Chef.path_to(filename))
         end
         false
       end

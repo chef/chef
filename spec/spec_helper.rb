@@ -73,6 +73,7 @@ require 'spec/support/local_gems.rb' if File.exists?(File.join(File.dirname(__FI
 
 # Explicitly require spec helpers that need to load first
 require 'spec/support/platform_helpers'
+require 'spec/support/shared/unit/mock_shellout'
 
 # Autoloads support files
 # Excludes support/platforms by default
@@ -98,6 +99,7 @@ TEST_PLATFORM_VERSION = TEST_NODE['platform_version']
 
 RSpec.configure do |config|
   config.include(Matchers)
+  config.include(MockShellout::RSpec)
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
 
