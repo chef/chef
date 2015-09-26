@@ -20,6 +20,7 @@ require 'spec_helper'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/provider_resolver'
 require 'chef/platform/service_helpers'
+require 'support/shared/unit/double_world'
 
 include Chef::Mixin::ConvertToClassName
 
@@ -27,6 +28,7 @@ include Chef::Mixin::ConvertToClassName
 #module Chef::Provider
 
 describe Chef::ProviderResolver do
+  include_context "double world"
 
   let(:resource_name) { :service }
   let(:provider) { nil }
@@ -139,9 +141,37 @@ describe Chef::ProviderResolver do
     end
 
     def stub_service_configs(*configs)
-      configs ||= []
-      allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
-        .and_return(configs)
+      configs.each do |config|
+        case config
+        when :initd
+          world.files["/etc/init.d/test"] ||= ""
+        when :upstart
+          world.files["/etc/init/test.conf"] ||= ""
+        when :xinetd
+          world.files["/etc/xinetd.d/test"] ||= ""
+        when :etc_rcd
+          world.files["/etc/rc.d/test"] ||= ""
+        when :usr_local_etc_rcd
+          world.files["/usr/local/etc/rc.d/test"] ||= ""
+        when :systemd
+          world.files["/bin/systemd"] ||= ""
+          world.files["/proc/1/comm"] ||= "systemd\n"
+          world.commands["/bin/systemd --all"] ||= <<-EOM
+superv  loaded
+stinky  something-else
+test    loaded
+blargh  not-found
+EOM
+          world.commands["/bin/systemd list-unit-files"] ||= <<-EOM
+usuperv  loaded
+ustinky  something-else
+utest    loaded
+ublargh  not-found
+EOM
+        else
+          raise ArgumentError, config
+        end
+      end
     end
 
     before do
@@ -413,7 +443,7 @@ describe Chef::ProviderResolver do
       it "always returns a Solaris provider" do
         # no matter what we stub on the next two lines we should get a Solaris provider
         stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-        stub_service_configs(:initd, :upstart, :xinetd, :user_local_etc_rcd, :systemd)
+        stub_service_configs(:initd, :upstart, :xinetd, :usr_local_etc_rcd, :systemd)
         expect(resolved_provider).to eql(Chef::Provider::Service::Solaris)
       end
     end
@@ -428,7 +458,7 @@ describe Chef::ProviderResolver do
       it "always returns a Windows provider" do
         # no matter what we stub on the next two lines we should get a Windows provider
         stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-        stub_service_configs(:initd, :upstart, :xinetd, :user_local_etc_rcd, :systemd)
+        stub_service_configs(:initd, :upstart, :xinetd, :usr_local_etc_rcd, :systemd)
         expect(resolved_provider).to eql(Chef::Provider::Service::Windows)
       end
     end
@@ -443,7 +473,7 @@ describe Chef::ProviderResolver do
       it "always returns a Macosx provider" do
         # no matter what we stub on the next two lines we should get a Macosx provider
         stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
-        stub_service_configs(:initd, :upstart, :xinetd, :user_local_etc_rcd, :systemd)
+        stub_service_configs(:initd, :upstart, :xinetd, :usr_local_etc_rcd, :systemd)
         expect(resolved_provider).to eql(Chef::Provider::Service::Macosx)
       end
     end
