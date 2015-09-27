@@ -48,7 +48,7 @@ class Chef
         :short => '-n',
         :boolean => true,
         :default => false,
-        :description => "Don't take action, only print what files will be upload to Supermarket."
+        :description => "Don't take action, only print what files will be uploaded to Supermarket."
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
