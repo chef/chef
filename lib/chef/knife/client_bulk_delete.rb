@@ -71,7 +71,7 @@ class Chef
           else
             ui.msg("The following validators will be deleted:")
             print_clients(validators)
-            if ui.confirm_without_exit("Are you sure you want to delete these validators")
+            if ui.confirm_without_exit("Are you sure you want to delete these validators?")
               destroy_clients(validators)
             end
           end
@@ -82,7 +82,7 @@ class Chef
         unless clients.empty?
           ui.msg("The following clients will be deleted:")
           print_clients(clients)
-          ui.confirm("Are you sure you want to delete these clients")
+          ui.confirm("Are you sure you want to delete these clients?")
           destroy_clients(clients)
         end
       end

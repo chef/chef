@@ -53,7 +53,7 @@ class Chef
         ui.msg("")
         ui.msg(ui.list(roles_to_delete.keys.sort, :columns_down))
         ui.msg("")
-        ui.confirm("Are you sure you want to delete these roles")
+        ui.confirm("Are you sure you want to delete these roles?")
 
         roles_to_delete.sort.each do |name, role|
           role.destroy
