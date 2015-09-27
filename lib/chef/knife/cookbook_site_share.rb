@@ -108,15 +108,15 @@ class Chef
 
       def get_category(cookbook_name)
         begin
-          data = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
+          data = noauth_rest.get_rest("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
           if !data["category"] && data["error_code"]
-            ui.fatal("Received an error from the Opscode Cookbook site: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
+            ui.fatal("Received an error from the Supermarket site: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
             exit(1)
           else
             data['category']
           end
         rescue => e
-          ui.fatal("Unable to reach Opscode Cookbook Site: #{e.message}. Increase log verbosity (-VV) for more information.")
+          ui.fatal("Unable to reach Supermarket site: #{e.message}. Increase log verbosity (-VV) for more information.")
           Chef::Log.debug("\n#{e.backtrace.join("\n")}")
           exit(1)
         end
@@ -136,7 +136,7 @@ class Chef
         if http_resp.code.to_i != 201
           if res['error_messages']
             if res['error_messages'][0] =~ /Version already exists/
-              ui.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
+              ui.error "The same version of this cookbook already exists on Supermarket."
               exit(1)
             else
               ui.error "#{res['error_messages'][0]}"
