@@ -48,7 +48,7 @@ class Chef
         :short => '-n',
         :boolean => true,
         :default => false,
-        :description => "Don't take action, only print what files will be upload to SuperMarket."
+        :description => "Don't take action, only print what files will be uploaded to Supermarket."
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -94,7 +94,7 @@ class Chef
             Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
             FileUtils.rm_rf tmp_cookbook_dir
           rescue => e
-            ui.error("Error uploading cookbook #{cookbook_name} to the Opscode Cookbook Site: #{e.message}. Increase log verbosity (-VV) for more information.")
+            ui.error("Error uploading cookbook #{cookbook_name} to Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
             exit(1)
           end
@@ -108,15 +108,15 @@ class Chef
 
       def get_category(cookbook_name)
         begin
-          data = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
+          data = noauth_rest.get_rest("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
           if !data["category"] && data["error_code"]
-            ui.fatal("Received an error from the Opscode Cookbook site: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
+            ui.fatal("Received an error from the Supermarket site: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
             exit(1)
           else
             data['category']
           end
         rescue => e
-          ui.fatal("Unable to reach Opscode Cookbook Site: #{e.message}. Increase log verbosity (-VV) for more information.")
+          ui.fatal("Unable to reach Supermarket site: #{e.message}. Increase log verbosity (-VV) for more information.")
           Chef::Log.debug("\n#{e.backtrace.join("\n")}")
           exit(1)
         end
@@ -136,7 +136,7 @@ class Chef
         if http_resp.code.to_i != 201
           if res['error_messages']
             if res['error_messages'][0] =~ /Version already exists/
-              ui.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
+              ui.error "The same version of this cookbook already exists on Supermarket."
               exit(1)
             else
               ui.error "#{res['error_messages'][0]}"

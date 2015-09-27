@@ -35,7 +35,7 @@ class Chef
       end
 
       def confirm!
-        @ui.confirm("Do you really want to delete the key named #{@name} for the #{@actor_field_name} named #{@actor}")
+        @ui.confirm("Do you really want to delete the key named #{@name} for the #{@actor_field_name} named #{@actor}?")
       end
 
       def print_destroyed

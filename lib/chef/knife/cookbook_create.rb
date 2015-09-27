@@ -48,7 +48,7 @@ class Chef
       option :cookbook_copyright,
         :short => "-C COPYRIGHT",
         :long => "--copyright COPYRIGHT",
-        :description => "Name of Copyright holder"
+        :description => "Name of copyright holder"
 
       option :cookbook_email,
         :short => "-m EMAIL",

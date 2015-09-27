@@ -33,7 +33,7 @@ class Chef
 <<-EOF
 The Chef Server you are using does not support the username field.
 This means it is an Open Source 11 Server.
-knife user reregister for Open Source 11 Server is being deprecated.
+knife user reregister for Open Source 11 Server is deprecated.
 Open Source 11 Server user commands now live under the knife osc_user namespace.
 For backwards compatibility, we will forward this request to knife osc_user reregister.
 If you are using an Open Source 11 Server, please use that command to avoid this warning.

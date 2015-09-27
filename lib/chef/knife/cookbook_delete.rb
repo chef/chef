@@ -35,7 +35,7 @@ class Chef
       banner "knife cookbook delete COOKBOOK VERSION (options)"
 
       def run
-        confirm("Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbook") if config[:purge]
+        confirm("Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbook?") if config[:purge]
         @cookbook_name, @version = name_args
         if @cookbook_name && @version
           delete_explicit_version
@@ -57,7 +57,7 @@ class Chef
       end
 
       def delete_all_versions
-        confirm("Do you really want to delete all versions of #{@cookbook_name}")
+        confirm("Do you really want to delete all versions of #{@cookbook_name}?")
         delete_all_without_confirmation
       end
 

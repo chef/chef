@@ -53,7 +53,7 @@ class Chef
         ui.msg("")
         ui.msg(ui.list(nodes_to_delete.keys.sort, :columns_down))
         ui.msg("")
-        ui.confirm("Are you sure you want to delete these nodes")
+        ui.confirm("Are you sure you want to delete these nodes?")
 
 
         nodes_to_delete.sort.each do |name, node|
