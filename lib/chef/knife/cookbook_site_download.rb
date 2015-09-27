@@ -84,7 +84,7 @@ class Chef
       end
 
       def download_cookbook
-        ui.info "Downloading #{@name_args[0]} from the cookbooks site at version #{version} to #{download_location}"
+        ui.info "Downloading #{@name_args[0]} from Supermarket at version #{version} to #{download_location}"
         noauth_rest.sign_on_redirect = false
         tf = noauth_rest.get_rest desired_cookbook_data["file"], true
 

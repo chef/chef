@@ -110,13 +110,13 @@ class Chef
         begin
           data = noauth_rest.get_rest("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
           if !data["category"] && data["error_code"]
-            ui.fatal("Received an error from the Supermarket site: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
+            ui.fatal("Received an error from Supermarket: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
             exit(1)
           else
             data['category']
           end
         rescue => e
-          ui.fatal("Unable to reach Supermarket site: #{e.message}. Increase log verbosity (-VV) for more information.")
+          ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
           Chef::Log.debug("\n#{e.backtrace.join("\n")}")
           exit(1)
         end
