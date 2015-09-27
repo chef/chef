@@ -48,7 +48,7 @@ class Chef
         :short => '-n',
         :boolean => true,
         :default => false,
-        :description => "Don't take action, only print what files will be upload to SuperMarket."
+        :description => "Don't take action, only print what files will be upload to Supermarket."
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -94,7 +94,7 @@ class Chef
             Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
             FileUtils.rm_rf tmp_cookbook_dir
           rescue => e
-            ui.error("Error uploading cookbook #{cookbook_name} to the Opscode Cookbook Site: #{e.message}. Increase log verbosity (-VV) for more information.")
+            ui.error("Error uploading cookbook #{cookbook_name} to Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
             exit(1)
           end
