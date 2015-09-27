@@ -136,7 +136,7 @@ class Chef
       def read_cli_args
         if config[:query]
           if @name_args[1]
-            ui.error "please specify query as an argument or an option via -q, not both"
+            ui.error "Please specify query as an argument or an option via -q, not both"
             ui.msg opt_parser
             exit 1
           end
@@ -145,7 +145,7 @@ class Chef
         else
           case name_args.size
           when 0
-            ui.error "no query specified"
+            ui.error "No query specified"
             ui.msg opt_parser
             exit 1
           when 1
