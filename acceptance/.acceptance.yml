@@ -1,0 +1,5 @@
+---
+name: chef
+channel: current # default
+version: latest # default
+kitchen_config: .kitchen.yml # default
