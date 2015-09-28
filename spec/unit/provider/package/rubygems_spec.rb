@@ -345,10 +345,16 @@ describe Chef::Provider::Package::Rubygems do
   describe "when new_resource version is nil" do
     let(:target_version) { nil }
 
-    it "target_version_already_installed? should return false so that we can search for candidates" do
+    it "target_version_already_installed? should return false so that we can search for candidates if action is :upgrade" do
+      @provider.action = :upgrade
       @provider.load_current_resource
       expect(@provider.target_version_already_installed?(@provider.current_resource.version, @new_resource.version)).to be_falsey
     end
+  end
+
+  it "target_version_already_installed? should return true so we avoid searching for other candidates" do
+    @provider.load_current_resource
+    expect(@provider.target_version_already_installed?(@provider.current_resource.version, @new_resource.version)).to be_truthy
   end
 
   describe "when new_resource version is current rspec version" do

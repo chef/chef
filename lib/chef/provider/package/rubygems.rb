@@ -494,7 +494,7 @@ class Chef
 
         def target_version_already_installed?(current_version, new_version)
           return false unless current_version
-          return false if new_version.nil?
+          return false if new_version.nil? && action == :upgrade
 
           Gem::Requirement.new(new_version).satisfied_by?(Gem::Version.new(current_version))
         end
