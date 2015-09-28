@@ -276,7 +276,7 @@ class Chef
 
       def enforce_ownership
         converge_by("force ownership of #{@new_resource.deploy_to} to #{@new_resource.group}:#{@new_resource.user}") do
-          FileUtils.chown_R(@new_resource.user, @new_resource.group, @new_resource.deploy_to)
+          FileUtils.chown_R(@new_resource.user, @new_resource.group, @new_resource.deploy_to, :force => true)
           Chef::Log.info("#{@new_resource} set user to #{@new_resource.user}") if @new_resource.user
           Chef::Log.info("#{@new_resource} set group to #{@new_resource.group}") if @new_resource.group
         end
