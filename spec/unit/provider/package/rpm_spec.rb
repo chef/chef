@@ -256,6 +256,24 @@ describe Chef::Provider::Package::Rpm do
           end
         end
 
+        context "when the package name contains a plus symbol (chef#3671)" do
+
+          let(:package_name) { "chef-server-core" }
+
+          let(:package_source) { "/tmp/chef-server-core-12.2.0+20150713220422-1.el6.x86_64.rpm" }
+
+          let(:rpm_qp_stdout) { "chef-server-core 12.2.0+20150713220422-1.el6" }
+          let(:rpm_q_stdout) { "chef-server-core 12.2.0+20150713220422-1.el6" }
+
+          let(:rpm_qp_exitstatus) { 0 }
+          let(:rpm_q_exitstatus) { 0 }
+
+          it "should correctly determine the candidate version and installed version" do
+            expect(provider.current_resource.package_name).to eq("chef-server-core")
+            expect(provider.new_resource.version).to eq("12.2.0+20150713220422-1.el6")
+          end
+        end
+
       end
 
       context "when the source is given as an URI" do
@@ -413,4 +431,3 @@ describe Chef::Provider::Package::Rpm do
 
 
 end
-
