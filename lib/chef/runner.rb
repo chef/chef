@@ -94,10 +94,14 @@ class Chef
     # Run all our :delayed actions
     def run_delayed_notifications(error=nil)
       collected_failures = Exceptions::MultipleFailures.new
-      collected_failures.client_run_failure(error) unless error.nil?
+      unless error.nil?
+        run_context.has_crashed!
+        collected_failures.client_run_failure(error)
+      end
       delayed_actions.each do |notification|
         result = run_delayed_notification(notification)
         if result.kind_of?(Exception)
+          run_context.has_crashed!
           collected_failures.notification_failure(result)
         end
       end

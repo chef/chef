@@ -144,6 +144,8 @@ class Chef
       @reboot_info = {}
       @cookbook_compiler = nil
 
+      @has_crashed = false
+
       initialize_child_state
     end
 
@@ -522,6 +524,22 @@ ERROR_MESSAGE
       ChildRunContext.new(self)
     end
 
+    #
+    # Marks the run_context as having crashed
+    #
+    def has_crashed!
+      @has_crashed = true
+    end
+
+    #
+    # Returns true if the current run has crashed
+    #
+    # @return[True/False] The current value
+    #
+    def has_crashed?
+      @has_crashed
+    end
+
     protected
 
     attr_reader :cookbook_compiler
@@ -589,6 +607,8 @@ ERROR_MESSAGE
         request_reboot
         resolve_attribute
         unreachable_cookbook?
+        has_crashed!
+        has_crashed?
       )
 
       def initialize(parent_run_context)
