@@ -1,15 +1,16 @@
 .autotest
 coverage
 .DS_Store
-pkg
+pkg/*
 tags
 */tags
 *~
+*.gem
 
 # you should check in your Gemfile.lock in applications, and not in gems
 external_tests/*.lock
-Gemfile.lock
-Gemfile.local
+/Gemfile.lock
+/Gemfile.local
 
 # Do not check in the .bundle directory, or any of the files inside it. Those files are specific to each particular machine, and are used to persist installation options between runs of the bundle install command.
 .bundle
@@ -35,7 +36,7 @@ doc/
 
 # Test Kitchen
 .kitchen/
-Berksfile.lock
+/Berksfile.lock
 
 # Vagrant
 Vagrantfile
