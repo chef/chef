@@ -356,7 +356,7 @@ describe Chef::Provider::Deploy do
   it "chowns the whole release dir to user and group specified in the resource" do
     @resource.user "foo"
     @resource.group "bar"
-    expect(FileUtils).to receive(:chown_R).with("foo", "bar", "/my/deploy/dir")
+    expect(FileUtils).to receive(:chown_R).with("foo", "bar", "/my/deploy/dir", { :force => true })
     @provider.enforce_ownership
   end
 
