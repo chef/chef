@@ -43,30 +43,34 @@ class Chef
         # different services is NOT a design concern of this module.
         #
         def service_resource_providers
+          providers = []
+
           if ::File.exist?(Chef.path_to("/usr/sbin/update-rc.d"))
-            service_resource_providers << :debian
+            providers << :debian
           end
 
           if ::File.exist?(Chef.path_to("/usr/sbin/invoke-rc.d"))
-            service_resource_providers << :invokercd
+            providers << :invokercd
           end
 
           if ::File.exist?(Chef.path_to("/sbin/insserv"))
-            service_resource_providers << :insserv
+            providers << :insserv
           end
 
           # debian >= 6.0 has /etc/init but does not have upstart
           if ::File.exist?(Chef.path_to("/etc/init")) && ::File.exist?(Chef.path_to("/sbin/start"))
-            service_resource_providers << :upstart
+            providers << :upstart
           end
 
           if ::File.exist?(Chef.path_to("/sbin/chkconfig"))
-            service_resource_providers << :redhat
+            providers << :redhat
           end
 
           if systemd_sanity_check?
-            service_resource_providers << :systemd
+            providers << :systemd
           end
+
+          providers
         end
 
         def config_for_service(service_name)
