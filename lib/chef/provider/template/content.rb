@@ -52,7 +52,7 @@ class Chef
           context._extend_modules(@new_resource.helper_modules)
           output = context.render_template(template_location)
 
-          tempfile = Tempfile.open("chef-rendered-template")
+          tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
           tempfile.binmode
           tempfile.write(output)
           tempfile.close
