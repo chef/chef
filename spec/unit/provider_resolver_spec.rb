@@ -161,6 +161,8 @@ describe Chef::ProviderResolver do
             file 'bin/systemctl', ''
             # Make systemctl executable
             File.chmod(0755, path_to('bin/systemctl'))
+            # Windows doesn't respect executable bit, do this to let Windows users see if they've broken the resolver
+            allow(::File).to receive(:executable?) { |p| p == path_to('bin/systemctl') } if windows?
             file 'proc/1/comm', "systemd\n"
             mock_shellout_command("/bin/systemctl --all", stdout: "")
             mock_shellout_command("/bin/systemctl list-unit-files", stdout: "")
@@ -187,6 +189,8 @@ describe Chef::ProviderResolver do
             file 'bin/systemctl', ''
             # Make systemctl executable
             File.chmod(0755, path_to("bin/systemctl"))
+            # Windows doesn't respect executable bit, do this to let Windows users see if they've broken the resolver
+            allow(::File).to receive(:executable?) { |p| p == path_to('bin/systemctl') } if windows?
             file 'proc/1/comm', "systemd\n"
             mock_shellout_command("/bin/systemctl --all", stdout: <<-EOM)
   superv  loaded
