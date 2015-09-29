@@ -107,6 +107,44 @@ describe "Chef::Resource.property" do
     end
   end
 
+  with_property ":x, name_property: true" do
+    context "and subclass" do
+      let(:subresource_class) do
+        new_resource_name = self.class.new_resource_name
+        Class.new(resource_class) do
+          resource_name new_resource_name
+        end
+      end
+      let(:subresource) do
+        subresource_class.new('blah')
+      end
+
+      context "with property :x on the subclass" do
+        before do
+          subresource_class.class_eval do
+            property :x
+          end
+        end
+
+        it "x is still name_property" do
+          expect(subresource.x).to eq 'blah'
+        end
+      end
+
+      context "with property :x, name_attribute: false on the subclass" do
+        before do
+          subresource_class.class_eval do
+            property :x, name_attribute: false
+          end
+        end
+
+        it "x is no longer name_property" do
+          expect(subresource.x).to be_nil
+        end
+      end
+    end
+  end
+
   with_property ":x, Integer" do
     context "and subclass" do
       let(:subresource_class) do
@@ -1031,8 +1069,14 @@ describe "Chef::Resource.property" do
     end
   end
 
-  it "raises an error if both name_property and name_attribute are specified (even if they are false or nil)" do
-    expect { resource_class.property :x, :name_property => false, :name_attribute => true }.to raise_error ArgumentError,
+  it "raises an error if both name_property and name_attribute are specified" do
+    expect { resource_class.property :x, :name_property => false, :name_attribute => 1 }.to raise_error ArgumentError,
+      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+    expect { resource_class.property :x, :name_property => false, :name_attribute => nil }.to raise_error ArgumentError,
+      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+    expect { resource_class.property :x, :name_property => false, :name_attribute => false }.to raise_error ArgumentError,
+      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+    expect { resource_class.property :x, :name_property => true, :name_attribute => true }.to raise_error ArgumentError,
       /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
   end
 end
