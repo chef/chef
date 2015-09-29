@@ -522,14 +522,14 @@ ERROR_MESSAGE
       ChildRunContext.new(self)
     end
 
+    # @api private
+    attr_writer :resource_collection
+
     protected
 
     attr_reader :cookbook_compiler
     attr_reader :loaded_attributes_hash
     attr_reader :loaded_recipes_hash
-
-    # @api private
-    attr_writer :resource_collection
 
     module Deprecated
       ###
