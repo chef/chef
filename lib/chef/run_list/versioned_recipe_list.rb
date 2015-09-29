@@ -82,6 +82,21 @@ class Chef
           qualified_recipe
         end
       end
+
+      # Get an array of strings of both fully-qualified and unexpanded recipe names
+      # in response to chef/chef#3767
+      # Chef-13 will revert to the behaviour of just including the fully-qualified name
+      #
+      # @return [Array] Array of strings with fully-qualified and unexpanded recipe names
+      def with_duplicate_names
+        self.map do |recipe_name|
+          if recipe_name.include?('::')
+            recipe_name
+          else
+            [recipe_name, "#{recipe_name}::default"]
+          end
+        end.flatten
+      end
     end
   end
 end

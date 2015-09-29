@@ -375,7 +375,8 @@ describe Chef::Client do
       expect(node[:roles].length).to eq(1)
       expect(node[:roles]).to include("role_containing_cookbook1")
       expect(node[:recipes]).not_to be_nil
-      expect(node[:recipes].length).to eq(1)
+      expect(node[:recipes].length).to eq(2)
+      expect(node[:recipes]).to include("cookbook1")
       expect(node[:recipes]).to include("cookbook1::default")
       expect(node[:expanded_run_list]).not_to be_nil
       expect(node[:expanded_run_list].length).to eq(1)
