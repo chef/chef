@@ -70,7 +70,7 @@ Chef uses [the Apache 2.0 license](https://github.com/opscode/chef/blob/master/L
 The license tells you what rights you have that are provided by the copyright holder.
   It is important that the contributor fully understands what rights they are
   licensing and agrees to them. Sometimes the copyright holder isn't the contributor,
-  most often when the contributor is doing work for a company.
+  such as when the contributor is doing work for a company.
 
 To make a good faith effort to ensure these criteria are met, Chef requires an Individual CLA
   or a Corporate CLA for contributions. This agreement helps ensure you are aware of the
@@ -134,8 +134,8 @@ There is also a listing of the various Chef products and where to file issues th
 Otherwise you can file your issue in the [Chef project](https://github.com/opscode/chef/issues)
   and we will make sure it gets filed against the appropriate project.
 
-In order to decrease the back and forth an issues and help us get to the bottom of them quickly
-  we use below issue template. You can copy paste this code into the issue you are opening and
+In order to decrease the back and forth in issues, and to help us get to the bottom of them quickly
+  we use the below issue template. You can copy/paste this template into the issue you are opening and
   edit it accordingly.
 
 <a name="issuetemplate"></a>
@@ -148,15 +148,11 @@ In order to decrease the back and forth an issues and help us get to the bottom 
 ### Scenario:
 [What you are trying to achieve and you can't?]
 
-
-
 ### Steps to Reproduce:
 [If you are filing an issue what are the things we need to do in order to repro your problem?]
 
-
 ### Expected Result:
 [What are you expecting to happen as the consequence of above reproduction steps?]
-
 
 ### Actual Result:
 [What actually happens after the reproduction steps?]
