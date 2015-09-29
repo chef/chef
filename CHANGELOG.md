@@ -39,6 +39,7 @@ of partial templates.
 * [**Joel Handwell**](https://github.com/joelhandwell):
   [pr#3821](https://github.com/chef/chef/pull/3821) Human friendly elapsed time in log
 
+* [pr#3985](https://github.com/chef/chef/pull/3985) Simplify the regex which determines the rpm version to resolve issue #3671
 * [pr#3928](https://github.com/chef/chef/pull/3928) Add named run list support when using policyfiles
 * [pr#3913](https://github.com/chef/chef/pull/3913) Add `policy_name`and `policy_group` fields to the node object
 * [pr#3875](https://github.com/chef/chef/pull/3875) Patch Win32::Registry#delete_key, #delete_value to use wide (W) APIs
