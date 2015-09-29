@@ -425,7 +425,7 @@ class Chef
         begin
           require 'appscript'
         rescue LoadError
-          STDERR.puts "you need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install"
+          STDERR.puts "You need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install"
           raise
         end
 

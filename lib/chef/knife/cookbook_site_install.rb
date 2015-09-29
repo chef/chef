@@ -93,7 +93,7 @@ class Chef
 
         # TODO: it'd be better to store these outside the cookbook repo and
         # keep them around, e.g., in ~/Library/Caches on OS X.
-        ui.info("removing downloaded tarball")
+        ui.info("Removing downloaded tarball")
         File.unlink(upstream_file)
 
         if @repo.finalize_updates_to(@cookbook_name, downloader.version)

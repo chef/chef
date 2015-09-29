@@ -26,7 +26,7 @@ require 'openssl'
 class Chef
   # == Chef::CookbookSiteStreamingUploader
   # A streaming multipart HTTP upload implementation. Used to upload cookbooks
-  # (in tarball form) to http://cookbooks.opscode.com
+  # (in tarball form) to https://supermarket.chef.io
   #
   # inspired by http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
   class CookbookSiteStreamingUploader
