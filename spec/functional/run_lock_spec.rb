@@ -80,7 +80,7 @@ describe Chef::RunLock do
       p1.last_event
       p2.last_event
       events.each_with_index.sort_by { |(message, time), index| [ time, index ] }.each do |(message, time), index|
-        puts "#{time} #{message}"
+        print "#{time} #{message}\n"
       end
     end
 
@@ -339,7 +339,7 @@ describe Chef::RunLock do
       start if !pid
 
       # Tell the process what to stop at (also means it can go)
-      write_to_process.puts to_event
+      write_to_process.print "#{to_event}\n"
 
       # Run the background block
       background_block.call if background_block
@@ -363,7 +363,7 @@ describe Chef::RunLock do
       start if !pid
 
       # Tell the process to stop at nothing (no blocking)
-      @write_to_process.puts "nothing"
+      @write_to_process.print "nothing\n"
 
       # Wait for the process to exit
       wait_for_exit
@@ -406,15 +406,15 @@ describe Chef::RunLock do
 
     def fire_event(event)
       # Let the caller know what event we've reached
-      write_to_tests.puts("after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}")
+      write_to_tests.print("after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}\n")
 
       # Block until the client tells us where to stop
       if !@run_to_event || event == @run_to_event
-        write_to_tests.puts("waiting for instructions after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}")
+        write_to_tests.print("waiting for instructions after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}\n")
         @run_to_event = read_from_tests.gets.strip
-        write_to_tests.puts("told to run to #{@run_to_event} after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}")
+        write_to_tests.print("told to run to #{@run_to_event} after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}\n")
       elsif @run_to_event
-        write_to_tests.puts("continuing until #{@run_to_event} after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}")
+        write_to_tests.print("continuing until #{@run_to_event} after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}\n")
       end
     end
 
