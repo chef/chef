@@ -528,15 +528,13 @@ ERROR_MESSAGE
     attr_reader :loaded_attributes_hash
     attr_reader :loaded_recipes_hash
 
+    # @api private
+    attr_writer :resource_collection
+
     module Deprecated
       ###
       # These need to be settable so deploy can run a resource_collection
       # independent of any cookbooks via +recipe_eval+
-      def resource_collection=(value)
-        Chef.log_deprecation("Setting run_context.resource_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
-        @resource_collection = value
-      end
-
       def audits=(value)
         Chef.log_deprecation("Setting run_context.audits will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
         @audits = value
