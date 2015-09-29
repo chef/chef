@@ -55,7 +55,7 @@ describe Chef::RunLock do
       raise "Lockfile never created, abandoning test"
     end
 
-    CLIENT_PROCESS_TIMEOUT = 2
+    CLIENT_PROCESS_TIMEOUT = 10
     BREATHING_ROOM = 1
 
     # ClientProcess is defined below
@@ -382,11 +382,20 @@ describe Chef::RunLock do
       if pid
         example.log_event("#{name}.stop (pid #{pid})")
         begin
-          Process.kill(:KILL, pid)
-          example.log_event("#{name}.stop kill signal sent (pid #{pid})")
-          Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
-            Process.waitpid2(pid)
+          # Send it the kill signal over and over until it dies
+          start_time = Time.now
+          dead = false
+          while Time.now - start_time < CLIENT_PROCESS_TIMEOUT
+            Process.kill(:KILL, pid)
+            Timeout::timeout(0.2) do
+              begin
+                Process.waitpid2(pid)
+                dead = true
+              rescue Timeout::Error
+              end
+            end
           end
+          raise Timeout::Error, "took more than 10s to kill process #{pid}" if !dead
           example.log_event("#{name}.stop finished (stopped pid #{pid})")
         # Process not found is perfectly fine when we're trying to kill a process :)
         rescue Errno::ESRCH
