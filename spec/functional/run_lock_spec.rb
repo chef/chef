@@ -383,19 +383,12 @@ describe Chef::RunLock do
         example.log_event("#{name}.stop (pid #{pid})")
         begin
           # Send it the kill signal over and over until it dies
-          start_time = Time.now
-          dead = false
-          while Time.now - start_time < CLIENT_PROCESS_TIMEOUT
+          Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
             Process.kill(:KILL, pid)
-            Timeout::timeout(0.2) do
-              begin
-                Process.waitpid2(pid)
-                dead = true
-              rescue Timeout::Error
-              end
+            while !Process.waitpid2(pid, Process::WNOHANG)
+              sleep(0.05)
             end
           end
-          raise Timeout::Error, "took more than 10s to kill process #{pid}" if !dead
           example.log_event("#{name}.stop finished (stopped pid #{pid})")
         # Process not found is perfectly fine when we're trying to kill a process :)
         rescue Errno::ESRCH
