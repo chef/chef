@@ -161,18 +161,17 @@ class Chef::Provider::Route < Chef::Provider
 
     def generate_config
       conf = Hash.new
-      case node[:platform]
-      when "centos", "redhat", "fedora"
-        # walk the collection
-        run_context.resource_collection.each do |resource|
-          if resource.is_a? Chef::Resource::Route
-            # default to eth0
-            if resource.device
-              dev = resource.device
-            else
-              dev = "eth0"
-            end
-
+      # walk the collection to find all routes
+      run_context.resource_collection.each do |resource|
+        if resource.is_a? Chef::Resource::Route
+          # default to eth0
+          if resource.device
+            dev = resource.device
+          else
+            dev = "eth0"
+          end
+          case node[:platform]
+          when "centos", "redhat", "fedora"
             conf[dev] = String.new if conf[dev].nil?
             case @action
             when :add
@@ -182,8 +181,29 @@ class Chef::Provider::Route < Chef::Provider
               # is removed
               conf[dev] << config_file_contents(:delete)
             end
+          when "ubuntu", "debian"
+            conf[dev] = String.new if conf[dev].nil?
+            case @action
+            when :add
+              target=String.new
+              long_mask=String.new
+              if resource.target.to_s.include?("/")
+                target,long_mask = resource.target.to_s.split("/",2)
+                long_mask = MASK.key(long_mask)
+              else
+                target=resource.target.to_s
+              end
+              if resource.netmask
+                long_mask = resource.netmask.to_s
+              end
+              conf[dev] << config_debian_file_contents(:add, :target => target, :netmask => long_mask, :gateway => resource.gateway, :device => resource.device)
+            end
           end
         end
+      end
+      # Now we have built all of our routes, lets write some files!
+      case node[:platform]
+      when "centos", "redhat", "fedora"
         conf.each do |k, v|
           network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
           converge_by ("write route route.#{k}\n#{conf[k]} to #{ network_file_name }") do
@@ -192,6 +212,39 @@ class Chef::Provider::Route < Chef::Provider
             Chef::Log.debug("#{@new_resource} writing route.#{k}\n#{conf[k]}")
             network_file.close
           end
+        end
+      when "ubuntu", "debian"
+        begin
+          routes_array = IO.readlines("/etc/network/routes")
+        rescue
+          routes_array = Array.new
+        end
+        inblock=false
+        file_content=String.new
+        sources_content=String.new
+        routes_array.each do |line|
+          inblock=true if line == "#CHEF MANAGED ROUTES#\n"
+          if line.start_with? "source"
+            sources_content << "#{line}"
+          else
+            file_content << "#{line}" if not inblock
+          end
+          inblock=false if line == "#END CHEF MANAGED ROUTES#\n" or line == "#END CHEF MANAGED ROUTES#"
+
+        end
+        file_content << "#CHEF MANAGED ROUTES#\n"
+        conf.each do |k, v|
+          file_content << conf[k]
+        end
+        file_content << "#END CHEF MANAGED ROUTES#\n"
+        file_content << sources_content
+
+        network_file_name = "/etc/network/routes"
+        network_file = ::File.new(network_file_name, "w")
+        converge_by ("Write:\n#{file_content}\n to #{ network_file_name }") do
+          network_file.puts(file_content)
+          Chef::Log.debug("#{@new_resource} writing \n#{file_content}\n to #{ network_file_name }")
+          network_file.close
         end
       end
     end
@@ -222,6 +275,20 @@ class Chef::Provider::Route < Chef::Provider
         content << "/#{options[:netmask]}" if options[:netmask]
         content << " via #{options[:gateway]}" if options[:gateway]
         content << "\n"
+      end
+
+      return content
+    end
+
+    def config_debian_file_contents(action, options={})
+      content=String.new
+
+      case action
+      when :add
+        content << "#{options[:target]}"
+        content << " #{options[:netmask]}"
+        content << " #{options[:gateway]}"
+        content << " any\n"
       end
 
       return content
