@@ -34,8 +34,15 @@ describe Chef::RunLock do
     let(:lockfile){ "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
 
     # make sure to start with a clean slate.
-    before(:each){ FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
-    after(:each){ FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
+    before(:each){ log_event("rm -rf before"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
+    after(:each){ log_event("rm -rf after"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
+
+    def log_event(message, time=Time.now.strftime("%H:%M:%S.%L"))
+      events << [ message, time ]
+    end
+    def events
+      @events ||= []
+    end
 
     WAIT_ON_LOCK_TIME = 1.0
     def wait_on_lock
@@ -48,118 +55,90 @@ describe Chef::RunLock do
       raise "Lockfile never created, abandoning test"
     end
 
-    ##
-    # Side channel via a pipe allows child processes to send errors to the parent
-
-    # Don't lazy create the pipe or else we might not share it with subprocesses
-    let!(:error_pipe) do
-      r,w = IO.pipe
-      w.sync = true
-      [r,w]
-    end
-
-    let(:error_read) { error_pipe[0] }
-    let(:error_write) { error_pipe[1] }
-
-    after do
-      error_read.close unless error_read.closed?
-      error_write.close unless error_write.closed?
-    end
-
-    # Send a RuntimeError from the child process to the parent process. Also
-    # prints error to $stdout, just in case something goes wrong with the error
-    # marshaling stuff.
-    def send_side_channel_error(message)
-      $stderr.puts(message)
-      $stderr.puts(caller)
-      e = RuntimeError.new(message)
-      error_write.print(Marshal.dump(e))
-    end
-
-    # Read the error (if any) from the error channel. If a marhaled error is
-    # present, it is unmarshaled and raised (which will fail the test)
-    def raise_side_channel_error!
-      error_write.close
-      err = error_read.read
-      error_read.close
-      begin
-        # ArgumentError from Marshal.load indicates no data, which we assume
-        # means no error in child process.
-        raise Marshal.load(err)
-      rescue ArgumentError
-        nil
-      end
-    end
-
-    ##
-    # Interprocess synchronization via a pipe. This allows us to control the
-    # state of the processes competing over the lock without relying on sleep.
-
-    let!(:sync_pipe) do
-      r,w = IO.pipe
-      w.sync = true
-      [r,w]
-    end
-    let(:sync_read) { sync_pipe[0] }
-    let(:sync_write) { sync_pipe[1] }
-
-    after do
-      sync_read.close unless sync_read.closed?
-      sync_write.close unless sync_write.closed?
-    end
-
-    # Wait on synchronization signal. If not received within the timeout, an
-    # error is sent via the error channel, and the process exits.
-    def sync_wait
-      if IO.select([sync_read], nil, nil, 20).nil?
-        # timeout reading from the sync pipe.
-        send_side_channel_error("Error syncing processes in run lock test (timeout)")
-        exit!(1)
-      else
-        sync_read.getc
-      end
-    end
-
-    # Sends a character in the sync pipe, which wakes ("unlocks") another
-    # process that is waiting on the sync signal
-    def sync_send
-      sync_write.putc("!")
-      sync_write.flush
-    end
-
-    ##
-    # IPC to record test results in a pipe. Tests can read pipe contents to
-    # check that operations occur in the expected order.
-
-    let!(:results_pipe) do
-      r,w = IO.pipe
-      w.sync = true
-      [r,w]
-    end
-    let(:results_read) { results_pipe[0] }
-    let(:results_write) { results_pipe[1] }
-
-    after do
-      results_read.close unless results_read.closed?
-      results_write.close unless results_write.closed?
-    end
-
-    CLIENT_PROCESS_TIMEOUT = 2
+    CLIENT_PROCESS_TIMEOUT = 10
     BREATHING_ROOM = 1
 
     # ClientProcess is defined below
     let!(:p1) { ClientProcess.new(self, 'p1') }
     let!(:p2) { ClientProcess.new(self, 'p2') }
-    after do
-      p1.stop
-      p2.stop
+    after(:each) do |example|
+      begin
+        p1.stop
+        p2.stop
+      rescue
+        example.exception = $!
+        raise
+      ensure
+        if example.exception
+          print_events
+        end
+      end
+    end
+
+    def print_events
+      # Consume any remaining events that went on the channel and print them all
+      p1.last_event
+      p2.last_event
+      events.each_with_index.sort_by { |(message, time), index| [ time, index ] }.each do |(message, time), index|
+        print "#{time} #{message}\n"
+      end
     end
 
     context "when the lockfile does not already exist" do
+      context "when a client creates the lockfile but has not yet acquired the lock" do
+        before { p1.run_to("created lock") }
+        shared_context "second client gets the lock" do
+          it "the lockfile is created" do
+            log_event("lockfile exists? #{File.exist?(lockfile)}")
+            expect(File.exist?(lockfile)).to be_truthy
+          end
+
+          it "the lockfile is not locked" do
+            run_lock = Chef::RunLock.new(lockfile)
+            begin
+              expect(run_lock.test).to be_truthy
+            ensure
+              run_lock.release
+            end
+          end
+
+          it "the lockfile is empty" do
+            expect(IO.read(lockfile)).to eq('')
+          end
+
+          context "and a second client gets the lock" do
+            before { p2.run_to("acquired lock") }
+            it "the first client does not get the lock until the second finishes" do
+              p1.run_to("acquired lock") do
+                p2.run_to_completion
+              end
+            end
+            it "and the first client tries to get the lock and the second is killed, the first client gets the lock immediately" do
+              p1.run_to("acquired lock") do
+                sleep BREATHING_ROOM
+                expect(p1.last_event).to match(/after (started|created lock)/)
+                p2.stop
+              end
+              p1.run_to_completion
+            end
+          end
+        end
+
+        context "and the second client has done nothing" do
+          include_context "second client gets the lock"
+        end
+
+        context "and the second client has created the lockfile but not yet acquired the lock" do
+          before { p2.run_to("created lock") }
+          include_context "second client gets the lock"
+        end
+      end
+
       context "when a client acquires the lock but has not yet saved the pid" do
         before { p1.run_to("acquired lock") }
 
         it "the lockfile is created" do
+          log_event("lockfile exists? #{File.exist?(lockfile)}")
           expect(File.exist?(lockfile)).to be_truthy
         end
 
@@ -186,7 +165,7 @@ describe Chef::RunLock do
           p2.run_to("acquired lock") do
             # While p2 is trying to acquire, wait a bit and then let p1 complete
             sleep(BREATHING_ROOM)
-            expect(p2.last_event).to eq("started")
+            expect(p2.last_event).to match(/after (started|created lock)/)
             p1.run_to_completion
           end
 
@@ -196,7 +175,7 @@ describe Chef::RunLock do
         it "and a second client tries to get the lock and the first is killed, the second client gets the lock immediately" do
           p2.run_to("acquired lock") do
             sleep BREATHING_ROOM
-            expect(p2.last_event).to eq("started")
+            expect(p2.last_event).to match(/after (started|created lock)/)
             p1.stop
           end
           p2.run_to_completion
@@ -233,7 +212,7 @@ describe Chef::RunLock do
           p2.run_to("acquired lock") do
             # While p2 is trying to acquire, wait a bit and then let p1 complete
             sleep(BREATHING_ROOM)
-            expect(p2.last_event).to eq("started")
+            expect(p2.last_event).to match(/after (started|created lock)/)
             p1.run_to_completion
           end
 
@@ -243,7 +222,7 @@ describe Chef::RunLock do
         it "when a second client tries to get the lock and the first is killed, the second client gets the lock immediately" do
           p2.run_to("acquired lock") do
             sleep BREATHING_ROOM
-            expect(p2.last_event).to eq("started")
+            expect(p2.last_event).to match(/after (started|created lock)/)
             p1.stop
           end
           p2.run_to_completion
@@ -341,70 +320,94 @@ describe Chef::RunLock do
     attr_reader :name
     attr_reader :pid
 
-    def fire_event(event)
-      # Let the caller know what event we've reached
-      write_to_tests.puts(event)
-
-      # Block until the client tells us where to stop
-      if !@run_to_event || event == @run_to_event
-        @run_to_event = read_from_tests.gets.strip
-      end
-    end
-
     def last_event
       while true
-        event = readline_nonblock(read_from_process)
-        break if event.nil?
-        @last_event = event.strip
+        line = readline_nonblock(read_from_process)
+        break if line.nil?
+        event, time = line.split("@")
+        example.log_event("#{name}.last_event got #{event}")
+        example.log_event("[#{name}] #{event}", time.strip)
+        @last_event = event
       end
       @last_event
     end
 
-    def run_to(event, &background_block)
+    def run_to(to_event, &background_block)
+      example.log_event("#{name}.run_to(#{to_event.inspect})")
+
       # Start the process if it's not started
       start if !pid
 
       # Tell the process what to stop at (also means it can go)
-      write_to_process.puts event
+      write_to_process.print "#{to_event}\n"
 
       # Run the background block
       background_block.call if background_block
 
       # Wait until it gets there
       Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
-        until @last_event == event
-          @last_event = read_from_process.gets.strip
+        until @last_event == "after #{to_event}"
+          got_event, time = read_from_process.gets.split("@")
+          example.log_event("#{name}.last_event got #{got_event}")
+          example.log_event("[#{name}] #{got_event}", time.strip)
+          @last_event = got_event
         end
       end
+
+      example.log_event("#{name}.run_to(#{to_event.inspect}) finished")
     end
 
     def run_to_completion
+      example.log_event("#{name}.run_to_completion")
       # Start the process if it's not started
       start if !pid
 
       # Tell the process to stop at nothing (no blocking)
-      @write_to_process.puts "nothing"
+      @write_to_process.print "nothing\n"
 
       # Wait for the process to exit
       wait_for_exit
+      example.log_event("#{name}.run_to_completion finished")
     end
 
     def wait_for_exit
+      example.log_event("#{name}.wait_for_exit (pid #{pid})")
       Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
         Process.wait(pid) if pid
       end
+      example.log_event("#{name}.wait_for_exit finished (pid #{pid})")
     end
 
     def stop
       if pid
+        example.log_event("#{name}.stop (pid #{pid})")
         begin
-          Process.kill(:KILL, pid)
+          # Send it the kill signal over and over until it dies
           Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
-            Process.waitpid2(pid)
+            Process.kill(:KILL, pid)
+            while !Process.waitpid2(pid, Process::WNOHANG)
+              sleep(0.05)
+            end
           end
+          example.log_event("#{name}.stop finished (stopped pid #{pid})")
         # Process not found is perfectly fine when we're trying to kill a process :)
         rescue Errno::ESRCH
+          example.log_event("#{name}.stop finished (pid #{pid} wasn't running)")
         end
+      end
+    end
+
+    def fire_event(event)
+      # Let the caller know what event we've reached
+      write_to_tests.print("after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}\n")
+
+      # Block until the client tells us where to stop
+      if !@run_to_event || event == @run_to_event
+        write_to_tests.print("waiting for instructions after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}\n")
+        @run_to_event = read_from_tests.gets.strip
+        write_to_tests.print("told to run to #{@run_to_event} after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}\n")
+      elsif @run_to_event
+        write_to_tests.print("continuing until #{@run_to_event} after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}\n")
       end
     end
 
@@ -415,18 +418,34 @@ describe Chef::RunLock do
     attr_reader :read_from_tests
     attr_reader :write_to_process
 
+    class TestRunLock < Chef::RunLock
+      attr_accessor :client_process
+      def create_lock
+        super
+        client_process.fire_event("created lock")
+      end
+    end
+
     def start
+      example.log_event("#{name}.start")
       @pid = fork do
-        Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
-          run_lock = Chef::RunLock.new(example.lockfile)
-          fire_event("started")
-          run_lock.acquire
-          fire_event("acquired lock")
-          run_lock.save_pid
-          fire_event("saved pid")
-          exit!(0)
+        begin
+          Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+            run_lock = TestRunLock.new(example.lockfile)
+            run_lock.client_process = self
+            fire_event("started")
+            run_lock.acquire
+            fire_event("acquired lock")
+            run_lock.save_pid
+            fire_event("saved pid")
+            exit!(0)
+          end
+        rescue
+          fire_event($!.message.lines.join(" // "))
+          raise
         end
       end
+      example.log_event("#{name}.start forked (pid #{pid})")
     end
 
     def readline_nonblock(fd)
