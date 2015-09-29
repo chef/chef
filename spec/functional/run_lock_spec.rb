@@ -85,6 +85,55 @@ describe Chef::RunLock do
     end
 
     context "when the lockfile does not already exist" do
+      context "when a client creates the lockfile but has not yet acquired the lock" do
+        before { p1.run_to("created lock") }
+        shared_context "second client gets the lock" do
+          it "the lockfile is created" do
+            log_event("lockfile exists? #{File.exist?(lockfile)}")
+            expect(File.exist?(lockfile)).to be_truthy
+          end
+
+          it "the lockfile is not locked" do
+            run_lock = Chef::RunLock.new(lockfile)
+            begin
+              expect(run_lock.test).to be_truthy
+            ensure
+              run_lock.release
+            end
+          end
+
+          it "the lockfile is empty" do
+            expect(IO.read(lockfile)).to eq('')
+          end
+
+          context "and a second client gets the lock" do
+            before { p2.run_to("acquired lock") }
+            it "the first client does not get the lock until the second finishes" do
+              p1.run_to("acquired lock") do
+                p2.run_to_completion
+              end
+            end
+            it "and the first client tries to get the lock and the second is killed, the first client gets the lock immediately" do
+              p1.run_to("acquired lock") do
+                sleep BREATHING_ROOM
+                expect(p1.last_event).to match(/after (started|created lock)/)
+                p2.stop
+              end
+              p1.run_to_completion
+            end
+          end
+        end
+
+        context "and the second client has done nothing" do
+          include_context "second client gets the lock"
+        end
+
+        context "and the second client has created the lockfile but not yet acquired the lock" do
+          before { p2.run_to("created lock") }
+          include_context "second client gets the lock"
+        end
+      end
+
       context "when a client acquires the lock but has not yet saved the pid" do
         before { p1.run_to("acquired lock") }
 
@@ -116,7 +165,7 @@ describe Chef::RunLock do
           p2.run_to("acquired lock") do
             # While p2 is trying to acquire, wait a bit and then let p1 complete
             sleep(BREATHING_ROOM)
-            expect(p2.last_event).to eq("started").or match(/from started to/)
+            expect(p2.last_event).to match(/after (started|created lock)/)
             p1.run_to_completion
           end
 
@@ -126,7 +175,7 @@ describe Chef::RunLock do
         it "and a second client tries to get the lock and the first is killed, the second client gets the lock immediately" do
           p2.run_to("acquired lock") do
             sleep BREATHING_ROOM
-            expect(p2.last_event).to eq("started").or match(/from started to/)
+            expect(p2.last_event).to match(/after (started|created lock)/)
             p1.stop
           end
           p2.run_to_completion
@@ -163,7 +212,7 @@ describe Chef::RunLock do
           p2.run_to("acquired lock") do
             # While p2 is trying to acquire, wait a bit and then let p1 complete
             sleep(BREATHING_ROOM)
-            expect(p2.last_event).to eq("started").or match(/from started to/)
+            expect(p2.last_event).to match(/after (started|created lock)/)
             p1.run_to_completion
           end
 
@@ -173,7 +222,7 @@ describe Chef::RunLock do
         it "when a second client tries to get the lock and the first is killed, the second client gets the lock immediately" do
           p2.run_to("acquired lock") do
             sleep BREATHING_ROOM
-            expect(p2.last_event).to eq("started").or match(/from started to/)
+            expect(p2.last_event).to match(/after (started|created lock)/)
             p1.stop
           end
           p2.run_to_completion
@@ -297,7 +346,7 @@ describe Chef::RunLock do
 
       # Wait until it gets there
       Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
-        until @last_event == to_event
+        until @last_event == "after #{to_event}"
           got_event, time = read_from_process.gets.split("@")
           example.log_event("#{name}.last_event got #{got_event}")
           example.log_event("[#{name}] #{got_event}", time.strip)
@@ -346,6 +395,20 @@ describe Chef::RunLock do
       end
     end
 
+    def fire_event(event)
+      # Let the caller know what event we've reached
+      write_to_tests.puts("after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}")
+
+      # Block until the client tells us where to stop
+      if !@run_to_event || event == @run_to_event
+        write_to_tests.puts("waiting for instructions after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}")
+        @run_to_event = read_from_tests.gets.strip
+        write_to_tests.puts("told to run to #{@run_to_event} after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}")
+      elsif @run_to_event
+        write_to_tests.puts("continuing until #{@run_to_event} after #{event}@#{Time.now.strftime("%H:%M:%S.%L")}")
+      end
+    end
+
     private
 
     attr_reader :read_from_process
@@ -353,12 +416,21 @@ describe Chef::RunLock do
     attr_reader :read_from_tests
     attr_reader :write_to_process
 
+    class TestRunLock < Chef::RunLock
+      attr_accessor :client_process
+      def create_lock
+        super
+        client_process.fire_event("created lock")
+      end
+    end
+
     def start
       example.log_event("#{name}.start")
       @pid = fork do
         begin
           Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
-            run_lock = Chef::RunLock.new(example.lockfile)
+            run_lock = TestRunLock.new(example.lockfile)
+            run_lock.client_process = self
             fire_event("started")
             run_lock.acquire
             fire_event("acquired lock")
@@ -367,25 +439,11 @@ describe Chef::RunLock do
             exit!(0)
           end
         rescue
-          fire_event(e.message.lines.join(" // "))
+          fire_event($!.message.lines.join(" // "))
           raise
         end
       end
       example.log_event("#{name}.start forked (pid #{pid})")
-    end
-
-    def fire_event(event)
-      # Let the caller know what event we've reached
-      write_to_tests.puts("#{event}@#{Time.now.strftime("%H:%M:%S.%L")}")
-
-      # Block until the client tells us where to stop
-      if !@run_to_event || event == @run_to_event
-        write_to_tests.puts("waiting for instructions #{event} to ?@#{Time.now.strftime("%H:%M:%S.%L")}")
-        @run_to_event = read_from_tests.gets.strip
-        write_to_tests.puts("told to run from #{event} to #{@run_to_event}@#{Time.now.strftime("%H:%M:%S.%L")}")
-      elsif @run_to_event
-        write_to_tests.puts("continuing from #{event} to #{@run_to_event}@#{Time.now.strftime("%H:%M:%S.%L")}")
-      end
     end
 
     def readline_nonblock(fd)
