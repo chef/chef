@@ -19,6 +19,7 @@
 # XXX: mixing shellout into a mixin into classes has to be code smell
 require 'chef/mixin/shell_out'
 require 'chef/mixin/which'
+require 'chef/chef_class'
 
 class Chef
   class Platform
@@ -42,56 +43,52 @@ class Chef
         # different services is NOT a design concern of this module.
         #
         def service_resource_providers
-          @service_resource_providers ||= [].tap do |service_resource_providers|
+          if ::File.exist?(Chef.path_to("/usr/sbin/update-rc.d"))
+            service_resource_providers << :debian
+          end
 
-            if ::File.exist?("/usr/sbin/update-rc.d")
-              service_resource_providers << :debian
-            end
+          if ::File.exist?(Chef.path_to("/usr/sbin/invoke-rc.d"))
+            service_resource_providers << :invokercd
+          end
 
-            if ::File.exist?("/usr/sbin/invoke-rc.d")
-              service_resource_providers << :invokercd
-            end
+          if ::File.exist?(Chef.path_to("/sbin/insserv"))
+            service_resource_providers << :insserv
+          end
 
-            if ::File.exist?("/sbin/insserv")
-              service_resource_providers << :insserv
-            end
+          # debian >= 6.0 has /etc/init but does not have upstart
+          if ::File.exist?(Chef.path_to("/etc/init")) && ::File.exist?(Chef.path_to("/sbin/start"))
+            service_resource_providers << :upstart
+          end
 
-            # debian >= 6.0 has /etc/init but does not have upstart
-            if ::File.exist?("/etc/init") && ::File.exist?("/sbin/start")
-              service_resource_providers << :upstart
-            end
+          if ::File.exist?(Chef.path_to("/sbin/chkconfig"))
+            service_resource_providers << :redhat
+          end
 
-            if ::File.exist?("/sbin/chkconfig")
-              service_resource_providers << :redhat
-            end
-
-            if systemd_sanity_check?
-              service_resource_providers << :systemd
-            end
-
+          if systemd_sanity_check?
+            service_resource_providers << :systemd
           end
         end
 
         def config_for_service(service_name)
           configs = []
 
-          if ::File.exist?("/etc/init.d/#{service_name}")
+          if ::File.exist?(Chef.path_to("/etc/init.d/#{service_name}"))
             configs << :initd
           end
 
-          if ::File.exist?("/etc/init/#{service_name}.conf")
+          if ::File.exist?(Chef.path_to("/etc/init/#{service_name}.conf"))
             configs << :upstart
           end
 
-          if ::File.exist?("/etc/xinetd.d/#{service_name}")
+          if ::File.exist?(Chef.path_to("/etc/xinetd.d/#{service_name}"))
             configs << :xinetd
           end
 
-          if ::File.exist?("/etc/rc.d/#{service_name}")
+          if ::File.exist?(Chef.path_to("/etc/rc.d/#{service_name}"))
             configs << :etc_rcd
           end
 
-          if ::File.exist?("/usr/local/etc/rc.d/#{service_name}")
+          if ::File.exist?(Chef.path_to("/usr/local/etc/rc.d/#{service_name}"))
             configs << :usr_local_etc_rcd
           end
 
@@ -105,14 +102,11 @@ class Chef
         private
 
         def systemctl_path
-          if @systemctl_path.nil?
-            @systemctl_path = which("systemctl")
-          end
-          @systemctl_path
+          which("systemctl")
         end
 
         def systemd_sanity_check?
-          systemctl_path && File.exist?("/proc/1/comm") && File.open("/proc/1/comm").gets.chomp == "systemd"
+          systemctl_path && File.exist?(Chef.path_to("/proc/1/comm")) && File.open(Chef.path_to("/proc/1/comm")).gets.chomp == "systemd"
         end
 
         def extract_systemd_services(command)
@@ -126,7 +120,7 @@ class Chef
           # this splits off the suffix after the last dot to return "sshd"
           services += services.select {|s| s.match(/\.service$/) }.map { |s| s.sub(/(.*)\.service$/, '\1') }
         rescue Mixlib::ShellOut::ShellCommandFailed
-          false
+          []
         end
 
         def platform_has_systemd_unit?(service_name)
