@@ -422,11 +422,14 @@ class Chef
     # @return [Property] The new property type.
     #
     def derive(**modified_options)
-      # Since name_property and name_attribute are aliases, if you specify either
-      # one in modified_options it overrides anything in original options.
+      # Since name_property, name_attribute and default override each other,
+      # if you specify one of them in modified_options it overrides anything in
+      # the original options.
       options = self.options
-      if modified_options.has_key?(:name_property) || modified_options.has_key?(:name_attribute)
-        options = options.reject { |k,v| k == :name_attribute || k == :name_property }
+      if modified_options.has_key?(:name_property) ||
+         modified_options.has_key?(:name_attribute) ||
+         modified_options.has_key?(:default)
+        options = options.reject { |k,v| k == :name_attribute || k == :name_property || k == :default }
       end
       Property.new(options.merge(modified_options))
     end

@@ -142,6 +142,18 @@ describe "Chef::Resource.property" do
           expect(subresource.x).to be_nil
         end
       end
+
+      context "with property :x, default: 10 on the subclass" do
+        before do
+          subresource_class.class_eval do
+            property :x, default: 10
+          end
+        end
+
+        it "x is no longer name_property" do
+          expect(subresource.x).to eq(10)
+        end
+      end
     end
   end
 
