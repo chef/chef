@@ -22,11 +22,15 @@ group(:development, :test) do
   gem "simplecov"
   gem 'rack', "~> 1.5.1"
 
-  gem 'cheffish', "~> 1.3", "!= 1.3.1"
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 
   # For external tests
+  gem 'chef-zero', github: 'chef/chef-zero'
+  gem 'cheffish', github: 'chef/cheffish'
+  gem 'chef-provisioning', github: 'chef/chef-provisioning'
+  gem 'chef-provisioning-aws', github: 'chef/chef-provisioning-aws'
+  gem 'test-kitchen'
   gem 'chefspec'
   gem 'chef-sugar'
   gem 'poise', github: 'poise/poise', branch: 'deeecb890a6a0bc2037dfb09ce0fd0a8931519aa'
