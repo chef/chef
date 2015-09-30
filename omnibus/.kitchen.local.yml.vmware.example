@@ -1,0 +1,6 @@
+driver:
+  name: vagrant
+  provider: vmware_fusion
+  customize:
+    numvcpus: 2
+    memsize: 2048
