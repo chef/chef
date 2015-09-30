@@ -52,5 +52,5 @@ Gem::Specification.new do |s|
   s.executables  = %w( chef-client chef-solo knife chef-shell chef-apply )
 
   s.require_path = 'lib'
-  s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }
+  s.files = %w(Gemfile Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }
 end

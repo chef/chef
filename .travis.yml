@@ -30,31 +30,31 @@ matrix:
     gemfile: pedant.gemfile
     script: bundle exec rake pedant
   - rvm: 2.2
-    env: GEMFILE_MOD=\"gem 'cheffish', github: 'chef/cheffish'\"
+    env: "GEMFILE_MOD=\"gem 'cheffish', github: 'chef/cheffish'\""
     script: bundle exec rake cheffish_spec
   - rvm: 2.2
-    env: GEMFILE_MOD=\"gem 'chef-provisioning', github: 'chef/chef-provisioning'\"
+    env: "GEMFILE_MOD=\"gem 'chef-provisioning', github: 'chef/chef-provisioning'\""
     script: bundle exec rake chef_provisioning_spec
   - rvm: 2.2
-    env: GEMFILE_MOD=\"gem 'chef-provisioning-aws', github: 'chef/chef-provisioning-aws'\"
+    env: "GEMFILE_MOD=\"gem 'chef-provisioning-aws', github: 'chef/chef-provisioning-aws'\""
     script: bundle exec rake chef_provisioning_aws_spec
   - rvm: 2.2
-    env: GEMFILE_MOD=\"gem 'chefspec'\"
+    env: "GEMFILE_MOD=\"gem 'chefspec'\""
     script: bundle exec rake chefspec_spec
   - rvm: 2.2
-    env: GEMFILE_MOD=\"gem 'chef-sugar'\"
+    env: "GEMFILE_MOD=\"gem 'chef-sugar'\""
     script: bundle exec rake chef_sugar_spec
   - rvm: 2.2
-    env: GEMFILE_MOD=\"gem 'chef-rewind'\"
+    env: "GEMFILE_MOD=\"gem 'chef-rewind'\""
     script: bundle exec rake chef_rewind_spec
   - rvm: 2.2
-    env: GEMFILE_MOD=\"gem 'foodcritic', github: 'acrmp/foodcritic', branch: 'v5.0.0'\"
+    env: "GEMFILE_MOD=\"gem 'foodcritic', github: 'acrmp/foodcritic', branch: 'v5.0.0'\""
     script: bundle exec rake foodcritic_spec
   - rvm: 2.2
-    env: GEMFILE_MOD=\"gem 'halite', github: 'poise/halite'\"
+    env: "GEMFILE_MOD=\"gem 'halite', github: 'poise/halite'\""
     script: bundle exec rake halite_spec
   - rvm: 2.2
-    env: GEMFILE_MOD=\"gem 'poise', github: 'poise/poise'\"
+    env: "GEMFILE_MOD=\"gem 'poise', github: 'poise/poise'\""
     script: bundle exec rake poise_spec
   # Not working yet: halite
   # - rvm: 2.2

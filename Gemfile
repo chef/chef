@@ -39,7 +39,7 @@ group(:development, :test) do
 #  gem 'chef-rewind'
 end
 
-instance_eval(ENV['GEMFILE_MOD'])
+instance_eval(ENV['GEMFILE_MOD']) if ENV['GEMFILE_MOD']
 
 # If you want to load debugging tools into the bundle exec sandbox,
 # add these additional dependencies into chef/Gemfile.local
