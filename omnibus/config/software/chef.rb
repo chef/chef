@@ -16,7 +16,9 @@
 name "chef"
 default_version "master"
 
-source git: "git://github.com/chef/chef"
+source path: "#{project.files_path}/../.."
+#TODO: Check if I need to exclude any current omnibus generated files.
+# options: {:exclude => [some paths]}
 
 relative_path "chef"
 
@@ -56,41 +58,25 @@ build do
     }.each do |target, to|
       copy "#{install_dir}/embedded/mingw/bin/#{to}", "#{install_dir}/bin/#{target}"
     end
-
-    bundle "install --without server docgen", env: env
-
-    # Install components that live inside Chef's git repo. For now this is just
-    # 'chef-config'
-    bundle "exec rake install_components", env: env
-
-    gem "build chef-{windows,x86-mingw32}.gemspec", env: env
-
-    gem "install chef*mingw32.gem" \
-        " --no-ri --no-rdoc" \
-        " --verbose", env: env
-
-    block "Build Event Log Dll" do
-      Dir.chdir software.project_dir do
-        rake = windows_safe_path("#{install_dir}/embedded/bin/rake")
-        `#{rake} -rdevkit build_eventlog"` if File.exist? "#{software.project_dir}/ext/win32-eventlog"
-      end
-    end
-  else
-
-    # install the whole bundle first
-    bundle "install --without server docgen", env: env
-
-    # Install components that live inside Chef's git repo. For now this is just
-    # 'chef-config'
-    bundle "exec rake install_components", env: env
-
-    gem "build chef.gemspec", env: env
-
-    # Don't use -n #{install_dir}/bin. Appbundler will take care of them later
-    gem "install chef*.gem " \
-        " --no-ri --no-rdoc", env: env
-
   end
+
+  # install the whole bundle first
+  bundle "install --without server docgen", env: env
+
+  # Install components that live inside Chef's git repo. For now this is just
+  # 'chef-config'
+  bundle "exec rake install_components", env: env
+
+  gemspec_name = windows? ? 'chef-windows.gemspec' : 'chef.gemspec'
+
+  gem "build #{gemspec_name}", env: env
+
+  # Don't use -n #{install_dir}/bin. Appbundler will take care of them later
+  gem "install chef*.gem " \
+      " --no-ri --no-rdoc" \
+      " --verbose", env: env
+
+  bundle "exec rake -rdevkit build_eventlog" if windows?
 
   auxiliary_gems = {}
   auxiliary_gems['ruby-shadow'] = '>= 0.0.0' unless aix? || windows?
