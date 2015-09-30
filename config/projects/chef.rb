@@ -32,7 +32,7 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-override :bundler,        version: "1.10.7.depsolverfix.0"
+override :bundler,        version: "1.10.6"
 override :ruby,           version: "2.1.6"
 
 override :'ruby-windows', version: "2.0.0-p645"
