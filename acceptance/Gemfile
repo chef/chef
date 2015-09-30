@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'chef-acceptance', git: 'git@github.com:chef/chef-acceptance.git'
+gem 'chef-acceptance', github: 'chef/chef-acceptance'
 gem 'berkshelf'
 gem 'test-kitchen', '~> 1.4.0'
 gem 'kitchen-appbundle-updater', '~> 0.0.1'

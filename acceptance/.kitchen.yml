@@ -7,6 +7,7 @@ driver:
 
 provisioner:
   name: chef_zero
+  # Will eventually be configured to download from omnitruck/current
   data_path: test/fixtures
 
 platforms:
