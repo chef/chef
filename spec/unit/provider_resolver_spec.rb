@@ -166,6 +166,8 @@ describe Chef::ProviderResolver do
             file 'proc/1/comm', "systemd\n"
             mock_shellout_command("/bin/systemctl --all", stdout: "")
             mock_shellout_command("/bin/systemctl list-unit-files", stdout: "")
+          when :rcctl
+            file 'usr/sbin/rcctl', ''
           else
             raise ArgumentError, service
           end
@@ -501,6 +503,18 @@ describe Chef::ProviderResolver do
           stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
           stub_service_configs(:initd, :upstart, :xinetd, :usr_local_etc_rcd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Macosx)
+        end
+      end
+
+      on_platform %w(openbsd) do
+        it 'returns an Openbsd service provider if /usr/sbin/rcctl bin does not exist' do
+          stub_service_providers
+          expect(resolved_provider).to eql(Chef::Provider::Service::Openbsd)
+        end
+
+        it 'returns an OpenbsdRcctl service provider if the /usr/sbin/rcctl bin exists' do
+          stub_service_providers(:rcctl)
+          expect(resolved_provider).to eql(Chef::Provider::Service::OpenbsdRcctl)
         end
       end
 
