@@ -7,24 +7,23 @@ driver:
 
 provisioner:
   name: chef_zero
-  chef_omnibus_url: https://omnitruck.chef.io/current/install.sh
   data_path: test/fixtures
 
 platforms:
   # upstream community mysql cookbook broken on 10.04
   #- name: ubuntu-10.04
   #  run_list: apt::default
-  - name: ubuntu-12.04
-    run_list: apt::default
+  # - name: ubuntu-12.04
+  #   run_list: apt::default
   - name: ubuntu-14.04
     run_list: apt::default
   # upstream community mysql cookbook also broken on 14.10
   #- name: ubuntu-14.10
   #  run_list: apt::default
-  - name: centos-6.4
-    run_list: yum-epel::default
-  - name: centos-5.10
-    run_list: yum-epel::default
+  # - name: centos-6.4
+  #   run_list: yum-epel::default
+  # - name: centos-5.10
+  #   run_list: yum-epel::default
 
 suites:
   - name: webapp
