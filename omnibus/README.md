@@ -4,8 +4,7 @@ This project creates full-stack platform-specific packages for the following pro
 
 * AngryChef
 * Chef
-* ChefDK
-* Push Jobs Client
+
 
 Installation
 ------------
