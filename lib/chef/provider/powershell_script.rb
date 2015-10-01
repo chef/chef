@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/platform/query_helpers'
 require 'chef/provider/windows_script'
 
 class Chef
@@ -49,7 +50,10 @@ class Chef
         # code -- otherwise, powershell.exe does not propagate the
         # error status of a failed Windows process that ran at the
         # end of the script, it gets changed to '1'.
-        interpreter_flags = [default_interpreter_flags, '-File'].join(' ')
+        #
+        # Nano only supports -Command
+        file_or_command = Chef::Platform.windows_nano_server? ? '-Command' : '-File'
+        interpreter_flags = [*default_interpreter_flags, file_or_command].join(' ')
 
         if ! (@new_resource.flags.nil?)
           interpreter_flags = [@new_resource.flags, interpreter_flags].join(' ')
@@ -107,6 +111,8 @@ EOH
       end
 
       def default_interpreter_flags
+        return [] if Chef::Platform.windows_nano_server?
+
         # Execution policy 'Bypass' is preferable since it doesn't require
         # user input confirmation for files such as PowerShell modules
         # downloaded from the Internet. However, 'Bypass' is not supported
