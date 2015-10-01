@@ -86,14 +86,14 @@ describe Chef::Provider::Template::Content do
 
   it "returns a tempfile in the tempdir when :file_staging_uses_destdir is not set" do
     Chef::Config[:file_staging_uses_destdir] = false
-    expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_truthy
-    expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_falsey
+    expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be true
+    expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be false
   end
 
   it "returns a tempfile in the destdir when :file_staging_uses_destdir is set" do
     Chef::Config[:file_staging_uses_destdir] = true
-    expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_falsey
-    expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_truthy
+    expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be false
+    expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be true
   end
 
   context "when creating a tempfiles in destdir fails" do
@@ -103,8 +103,8 @@ describe Chef::Provider::Template::Content do
 
     it "returns a tempfile in the tempdir when :file_deployment_uses_destdir is set to :auto" do
       Chef::Config[:file_staging_uses_destdir] = :auto
-      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_truthy
-      expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_falsey
+      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be true
+      expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be false
     end
 
     it "fails when :file_desployment_uses_destdir is set" do
@@ -113,8 +113,8 @@ describe Chef::Provider::Template::Content do
     end
 
     it "returns a tempfile in the tempdir when :file_desployment_uses_destdir is not set" do
-      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_truthy
-      expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_falsey
+      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be true
+      expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be false
     end
   end
 
