@@ -1,0 +1,14 @@
+{
+  "apache": {
+    "package": "apache2",
+    "service_name": "apache2"
+  },
+  "mysql": {
+    "server_package": "mysql-server-5.1",
+    "client_package": "mysql-client-5.1",
+    "service_name": "mysql"
+  },
+  "php" : {
+    "package": "php5"
+  }
+}
