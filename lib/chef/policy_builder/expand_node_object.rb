@@ -33,6 +33,9 @@ class Chef
     # expands the run_list on a node object and then queries the chef-server
     # to find the correct set of cookbooks, given version constraints of the
     # node's environment.
+    #
+    # Note that this class should only be used via PolicyBuilder::Dynamic and
+    # not instantiated directly.
     class ExpandNodeObject
 
       attr_reader :events
@@ -92,6 +95,33 @@ class Chef
           end
         end
         run_context
+      end
+
+      # DEPRECATED: As of Chef 12.5, chef selects either policyfile mode or
+      # "expand node" mode dynamically, based on the content of the node
+      # object, first boot JSON, and config. This happens in
+      # PolicyBuilder::Dynamic, which selects the implementation during
+      # #load_node and then delegates to either ExpandNodeObject or Policyfile
+      # implementations as appropriate. Tools authors should update their code
+      # to create a PolicyBuilder::Dynamc policy builder and allow it to select
+      # the proper implementation.
+      def load_node
+        Chef.log_deprecation("ExpandNodeObject#load_node is deprecated. Please use Chef::PolicyBuilder::Dynamic instead of using ExpandNodeObject directly")
+
+        events.node_load_start(node_name, config)
+        Chef::Log.debug("Building node object for #{node_name}")
+
+        @node =
+          if Chef::Config[:solo]
+            Chef::Node.build(node_name)
+          else
+            Chef::Node.find_or_create(node_name)
+          end
+        finish_load_node(node)
+        node
+      rescue Exception => e
+        events.node_load_failed(node_name, e, config)
+        raise
       end
 
       def finish_load_node(node)

@@ -34,6 +34,14 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:node)
     end
 
+    it "implements a load_node method for backwards compatibility until Chef 13" do
+      expect(policy_builder).to respond_to(:load_node)
+    end
+
+    it "has removed the deprecated #load_node method", :chef_gte_13_only do
+      expect(policy_builder).to_not respond_to(:load_node)
+    end
+
     it "implements a finish_load_node method" do
       expect(policy_builder).to respond_to(:finish_load_node)
     end
@@ -94,6 +102,27 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
     it "has an override_runlist" do
       expect(policy_builder.override_runlist).to eq(override_runlist)
+    end
+
+  end
+
+  context "deprecated #load_node method" do
+
+    let(:node) do
+      node = Chef::Node.new
+      node.name(node_name)
+      node.run_list(["recipe[a::default]", "recipe[b::server]"])
+      node
+    end
+
+    before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
+      policy_builder.load_node
+    end
+
+    it "loads the node" do
+      expect(policy_builder.node).to eq(node)
     end
 
   end
