@@ -23,12 +23,11 @@ require 'chef/platform/query_helpers'
 
 shared_context Chef::Resource::WindowsScript do
   before(:all) do
-
-    ohai_reader = Ohai::System.new
-    ohai_reader.all_plugins("platform")
+    @ohai_reader = Ohai::System.new
+    @ohai_reader.all_plugins(["platform", "kernel"])
 
     new_node = Chef::Node.new
-    new_node.consume_external_attrs(ohai_reader.data,{})
+    new_node.consume_external_attrs(@ohai_reader.data,{})
 
     events = Chef::EventDispatch::Dispatcher.new
 
@@ -53,14 +52,11 @@ shared_context Chef::Resource::WindowsScript do
 
   shared_examples_for "a script resource with architecture attribute" do
     context "with the given architecture attribute value" do
-      let(:resource_architecture) { architecture }
-      # TODO: Why does expected_architecture default to :i386 and not
-      # the machine architecture?
       let(:expected_architecture) do
-        if architecture
-          expected_architecture = architecture
+        if resource_architecture
+          expected_architecture = resource_architecture
         else
-          expected_architecture = :i386
+          expected_architecture = @ohai_reader.data['kernel']['machine'].to_sym
         end
       end
       let(:expected_architecture_output) do
@@ -81,20 +77,16 @@ shared_context Chef::Resource::WindowsScript do
 
       before(:each) do
         resource.code resource_command
-        (resource.architecture architecture) if architecture
+        (resource.architecture resource_architecture) if resource_architecture
         resource.returns(0)
       end
 
       it "creates a process with the expected architecture" do
-        pending "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server? && expected_architecture == :i386
-
         resource.run_action(:run)
         expect(get_process_architecture).to eq(expected_architecture_output.downcase)
       end
 
       it "executes guards with the same architecture as the resource" do
-        pending "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server? && expected_architecture == :i386
-
         resource.only_if resource_guard_command
         resource.run_action(:run)
         expect(get_process_architecture).to eq(expected_architecture_output.downcase)
@@ -102,22 +94,24 @@ shared_context Chef::Resource::WindowsScript do
         expect(get_guard_process_architecture).to eq(get_process_architecture)
       end
 
-      let (:architecture) { :x86_64 }
-      it "executes a 64-bit guard if the guard's architecture is specified as 64-bit", :windows64_only do
-        pending "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server? && expected_architecture == :i386
-
-        resource.only_if resource_guard_command, :architecture => :x86_64
-        resource.run_action(:run)
-        expect(get_guard_process_architecture).to eq('amd64')
+      context "when the guard's architecture is specified as 64-bit" do
+        let (:guard_architecture) { :x86_64 }
+        it "executes a 64-bit guard", :windows64_only do
+          resource.only_if resource_guard_command, :architecture => guard_architecture
+          resource.run_action(:run)
+          expect(get_guard_process_architecture).to eq('amd64')
+        end
       end
 
-      let (:architecture) { :i386 }
-      it "executes a 32-bit guard if the guard's architecture is specified as 32-bit" do
-        pending "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server? && expected_architecture == :i386
+      context "when the guard's architecture is specified as 32-bit" do
+        let (:guard_architecture) { :i386 }
+        it "executes a 32-bit guard" do
+          pending "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server?
 
-        resource.only_if resource_guard_command, :architecture => :i386
-        resource.run_action(:run)
-        expect(get_guard_process_architecture).to eq('x86')
+          resource.only_if resource_guard_command, :architecture => guard_architecture
+          resource.run_action(:run)
+          expect(get_guard_process_architecture).to eq('x86')
+        end
       end
     end
   end
@@ -145,17 +139,17 @@ shared_context Chef::Resource::WindowsScript do
     end
 
     context "when the architecture attribute is not set" do
-      let(:architecture) { nil }
+      let(:resource_architecture) { nil }
       it_behaves_like "a script resource with architecture attribute"
     end
 
-    context "when the architecture attribute is :i386" do
-      let(:architecture) { :i386 }
+    context "when the architecture attribute is :i386", :not_supported_on_nano do
+      let(:resource_architecture) { :i386 }
       it_behaves_like "a script resource with architecture attribute"
     end
 
     context "when the architecture attribute is :x86_64" do
-      let(:architecture) { :x86_64 }
+      let(:resource_architecture) { :x86_64 }
       it_behaves_like "a script resource with architecture attribute"
     end
   end
