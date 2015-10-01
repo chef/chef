@@ -510,17 +510,13 @@ configuration LCM
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code" do
-        pending "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server?
-
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code", :not_supported_on_nano do
         resource.architecture :i386
         resource.only_if  "exit [int32]($env:PROCESSOR_ARCHITECTURE -ne 'X86')"
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code" do
-        skip "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server?
-
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code", :not_supported_on_nano do
         resource.architecture :i386
         resource.only_if  "exit [int32]($env:PROCESSOR_ARCHITECTURE -eq 'X86')"
         expect(resource.should_skip?(:run)).to be_truthy
@@ -554,36 +550,28 @@ configuration LCM
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for only_if" do
-        pending "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server?
-
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for only_if", :not_supported_on_nano do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.only_if  "$env:PROCESSOR_ARCHITECTURE -eq 'X86'"
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for not_if" do
-        skip "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server?
-
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for not_if", :not_supported_on_nano do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.not_if  "$env:PROCESSOR_ARCHITECTURE -ne 'X86'"
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for only_if" do
-        skip "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server?
-
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for only_if", :not_supported_on_nano do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.only_if  "$env:PROCESSOR_ARCHITECTURE -ne 'X86'"
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for not_if" do
-        pending "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server?
-
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for not_if", :not_supported_on_nano do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.not_if  "$env:PROCESSOR_ARCHITECTURE -eq 'X86'"
