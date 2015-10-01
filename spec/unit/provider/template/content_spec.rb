@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Template::Content do
 
   let(:enclosing_directory) {
-    Dir.mktmpdir
+    canonicalize_path(Dir.mktmpdir)
   }
 
   let(:resource_path) {
