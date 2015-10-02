@@ -314,15 +314,19 @@ configuration LCM
       expect(source_contains_case_insensitive_content?( get_script_output, 'AMD64' )).to eq(true)
     end
 
-    it "executes a script with a 32-bit process if :i386 arch is specified" do
-      pending "executing scripts with a 32-bit process should raise an error on nano" if Chef::Platform.windows_nano_server?
-
+    it "executes a script with a 32-bit process if :i386 arch is specified", :not_supported_on_nano do
       resource.code(processor_architecture_script_content + " | out-file -encoding ASCII #{script_output_path}")
       resource.architecture(:i386)
       resource.returns(0)
       resource.run_action(:run)
 
       expect(source_contains_case_insensitive_content?( get_script_output, 'x86' )).to eq(true)
+    end
+
+    it "raises an error when executing a script with a 32-bit process on Windows Nano Server", :windows_nano_only do
+      resource.code(processor_architecture_script_content + " | out-file -encoding ASCII #{script_output_path}")
+      expect{ resource.architecture(:i386) }.to raise_error(Chef::Exceptions::Win32ArchitectureIncorrect,
+        "cannot execute script with requested architecture 'i386' on Windows Nano Server")
     end
   end
 
@@ -576,6 +580,13 @@ configuration LCM
         resource.architecture :i386
         resource.not_if  "$env:PROCESSOR_ARCHITECTURE -eq 'X86'"
         expect(resource.should_skip?(:run)).to be_truthy
+      end
+
+      it "raises an error when a 32-bit guard is used on Windows Nano Server", :windows_nano_only do
+        resource.only_if "$true", :architecture => :i386
+        expect{resource.run_action(:run)}.to raise_error(
+          Chef::Exceptions::Win32ArchitectureIncorrect,
+          /cannot execute script with requested architecture 'i386' on Windows Nano Server/)
       end
     end
   end
