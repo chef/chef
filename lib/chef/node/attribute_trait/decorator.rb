@@ -133,11 +133,17 @@ class Chef
           wrapped_object[key] = value
         end
 
+        # performance
+        def include?(key)
+          wrapped_object.key?(key)
+        end
+
+        # performance
         def key?(key)
           wrapped_object.key?(key)
         end
 
-        # when we're a Hash pick up Hash#select which is different from Enuemrable#select
+        # when we're a Hash pick up Hash#select which is different from Enumerable#select
         def select(&block)
           wrapped_object.select(&block)
         end
