@@ -51,10 +51,6 @@ class Chef
         )
       end
 
-      def to_json(*opts)
-        Chef::JSONCompat.to_json(to_h, *opts)
-      end
-
       COMPONENTS_AS_SYMBOLS.each do |component|
         attr_writer component
 
@@ -74,11 +70,11 @@ class Chef
       end
 
       def combined_default
-        wrapped_object.combined_default
+        self.class.new(wrapped_object: wrapped_object.combined_default)
       end
 
       def combined_override
-        wrapped_object.combined_override
+        self.class.new(wrapped_object: wrapped_object.combined_override)
       end
 
       def normal_unless(*args)

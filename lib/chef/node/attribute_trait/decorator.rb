@@ -9,16 +9,22 @@ class Chef
           @wrapped_object = wrapped_object
         end
 
-        def ffi_yajl(*args)
-          wrapped_object.ffi_yajl(*args)
+        def ffi_yajl(*opts)
+          for_json.ffi_yajl(*opts)
         end
 
         def to_json(*opts)
-          wrapped_object.to_json(*opts)
+          Chef::JSONCompat.to_json(for_json, *opts)
         end
 
         def for_json
-          wrapped_object.for_json
+          if is_a?(Hash)
+            to_hash
+          elsif is_a?(Array)
+            to_ary
+          else
+            wrapped_object
+          end
         end
 
         def is_a?(klass)
@@ -86,6 +92,10 @@ class Chef
 
         def to_s
           wrapped_object.to_s
+        end
+
+        def to_h
+          wrapped_object.to_h
         end
 
         def to_hash

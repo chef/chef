@@ -28,6 +28,35 @@ class Chef
       attr_accessor :__node
       attr_accessor :__deep_merge_cache
 
+      def to_json(*opts)
+        raise "BUG: should not be called"
+      end
+
+      def to_ffi_yajl(*opts)
+        raise "BUG: should not be called"
+      end
+
+      def to_ary
+        as_simple_object.to_ary
+      end
+
+      def to_a
+        as_simple_object.to_a
+      end
+
+      def to_hash
+        as_simple_object.to_hash
+      end
+
+      def to_h
+        as_simple_object.to_h
+      end
+
+      def for_json
+        as_simple_object.for_json
+      end
+
+
       def initialize(default: nil, env_default: nil, role_default: nil, force_default: nil,
                      normal: nil,
                      override: nil, role_override: nil, env_override: nil, force_override: nil,
