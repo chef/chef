@@ -440,7 +440,7 @@ class Chef
 
       self.tags # make sure they're defined
 
-      automatic_attrs[:recipes] = expansion.recipes.with_fully_qualified_names_and_version_constraints
+      automatic_attrs[:recipes] = expansion.recipes.with_duplicate_names
       automatic_attrs[:expanded_run_list] = expansion.recipes.with_fully_qualified_names_and_version_constraints
       automatic_attrs[:roles] = expansion.roles
 

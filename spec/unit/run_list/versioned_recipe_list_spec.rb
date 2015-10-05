@@ -187,4 +187,9 @@ describe Chef::RunList::VersionedRecipeList do
     end
   end
 
+  context "with duplicated names", :chef_gte_13_only do
+    it "should fail in Chef 13" do
+      expect(list).to_not respond_to(:with_duplicate_names)
+    end
+  end
 end
