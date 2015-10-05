@@ -42,6 +42,7 @@ Gem::Specification.new do |s|
   s.add_dependency "specinfra", "~> 2.10"
 
   s.add_dependency "syslog-logger", "~> 1.6"
+  s.add_dependency "uuidtools", "~> 2.1.5"
 
   s.add_dependency "proxifier", "~> 1.0"
 
