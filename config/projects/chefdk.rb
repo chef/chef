@@ -74,7 +74,7 @@ override :zlib,           version: "1.2.8"
 override :'chef-provisioning-fog', version: "v0.15.0"
 override :'chef-provisioning-vagrant', version: "v0.10.0"
 override :'chef-provisioning-azure', version: "v0.4.0"
-override :'chef-provisioning-aws', version: "v1.4.1"
+override :'chef-provisioning-aws', version: "master"
 
 dependency "preparation"
 dependency "chefdk"
