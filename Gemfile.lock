@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: f549df66638183b07aa636f687dbabab82a1bb5f
+  revision: dbdf0551de552d8d1788b556b9c95d3972784b76
   specs:
     omnibus (4.1.0)
       aws-sdk (~> 2)
