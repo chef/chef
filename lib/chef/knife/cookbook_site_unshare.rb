@@ -38,7 +38,7 @@ class Chef
           exit 1
         end
 
-        confirm "Do you really want to unshare the cookbook #{@cookbook_name}"
+        confirm "Do you really want to unshare all versions of the cookbook #{@cookbook_name}"
 
         begin
           rest.delete_rest "https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}"
@@ -48,7 +48,7 @@ class Chef
           exit 1
         end
 
-        ui.info "Unshared cookbook #{@cookbook_name}"
+        ui.info "Unshared all versions of the cookbook #{@cookbook_name}"
       end
 
     end
