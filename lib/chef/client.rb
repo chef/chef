@@ -53,11 +53,6 @@ require 'chef/platform/rebooter'
 require 'chef/mixin/deprecation'
 require 'ohai'
 require 'rbconfig'
-begin
-  require 'ruby-prof'
-rescue LoadError
-  # ruby-prof is optional.
-end
 
 class Chef
   # == Chef::Client
@@ -902,7 +897,9 @@ class Chef
     attr_reader :specific_recipes
 
     def profiling_prereqs!
-      if !defined? RubyProf
+      begin
+        require 'ruby-prof'
+      rescue LoadError
         raise "You must have the ruby-prof gem installed in order to use --profile-ruby"
       end
     end
