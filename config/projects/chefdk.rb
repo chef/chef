@@ -35,7 +35,7 @@ end
 override :chef,           version: "master"
 override :ohai,           version: "master"
 
-override :berkshelf,      version: "v3.3.0"
+override :berkshelf,      version: "v4.0.0"
 override :bundler,        version: "1.10.6"
 override :'chef-vault',   version: "v2.6.1"
 
