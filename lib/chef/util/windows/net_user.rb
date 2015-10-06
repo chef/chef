@@ -114,8 +114,10 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def add(args)
     transformed_args = transform_usri3(args)
+    group_name = transformed_args.delete(:usri3_primary_group_id)
     NetUser::net_user_add_l3(nil, transformed_args)
     NetUser::net_local_group_add_member(nil, "Users", args[:name])
+    NetUser::net_local_group_add_member(nil, group_name, args[:name]) if group_name
   end
 
   def user_modify(&proc)
