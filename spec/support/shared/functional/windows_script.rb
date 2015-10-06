@@ -128,7 +128,28 @@ shared_context Chef::Resource::WindowsScript do
 
     describe "when the run action is invoked on Windows" do
       it "executes the script code" do
-        resource.code("whoami > #{script_output_path}")
+        resource.code("whoami > \"#{script_output_path}\"")
+        resource.returns(0)
+        resource.run_action(:run)
+      end
+    end
+
+    context "when $env:TMP has a space" do
+      before(:each) do
+        @dir = Dir.mktmpdir("Jerry Smith")
+        @original_env = ENV.to_hash.dup
+        ENV.delete('TMP')
+        ENV['TMP'] = @dir
+      end
+
+      after(:each) do
+        FileUtils.remove_entry_secure(@dir)
+        ENV.clear
+        ENV.update(@original_env)
+      end
+
+      it "executes the script code" do
+        resource.code("whoami > \"#{script_output_path}\"")
         resource.returns(0)
         resource.run_action(:run)
       end

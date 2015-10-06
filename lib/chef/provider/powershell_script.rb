@@ -41,10 +41,6 @@ class Chef
         # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
         interpreter_path = Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", interpreter)
 
-        "\"#{interpreter_path}\" #{flags} \"#{script_file.path}\""
-      end
-
-      def flags
         # Must use -File rather than -Command to launch the script
         # file created by the base class that contains the script
         # code -- otherwise, powershell.exe does not propagate the
@@ -52,8 +48,17 @@ class Chef
         # end of the script, it gets changed to '1'.
         #
         # Nano only supports -Command
-        file_or_command = Chef::Platform.windows_nano_server? ? '-Command' : '-File'
-        interpreter_flags = [*default_interpreter_flags, file_or_command].join(' ')
+        cmd = "\"#{interpreter_path}\" #{flags}"
+        if Chef::Platform.windows_nano_server?
+          cmd << " -Command \". '#{script_file.path}'\""
+        else
+          cmd << " -File \"#{script_file.path}\""
+        end
+        cmd
+      end
+
+      def flags
+        interpreter_flags = [*default_interpreter_flags].join(' ')
 
         if ! (@new_resource.flags.nil?)
           interpreter_flags = [@new_resource.flags, interpreter_flags].join(' ')
@@ -91,7 +96,7 @@ EOH
           # written to the file system at this point, which is required since
           # the intent is to execute the code just written to it.
           user_script_file.close
-          validation_command = "\"#{interpreter}\" #{interpreter_arguments} -Command #{user_script_file.path}"
+          validation_command = "\"#{interpreter}\" #{interpreter_arguments} -Command \". '#{user_script_file.path}'\""
 
           # Note that other script providers like bash allow syntax errors
           # to be suppressed by setting 'returns' to a value that the
