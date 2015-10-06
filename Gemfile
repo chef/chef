@@ -18,6 +18,8 @@ group(:maintenance) do
 end
 
 group(:development, :test) do
+  # for profiling
+  gem "ruby-prof"
 
   gem "simplecov"
   gem 'rack', "~> 1.5.1"

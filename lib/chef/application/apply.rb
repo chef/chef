@@ -97,6 +97,12 @@ class Chef::Application::Apply < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :profile_ruby,
+    :long         => "--[no-]profile-ruby",
+    :description  => "Output ruby execution profile graph",
+    :boolean      => true,
+    :default      => false
+
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,

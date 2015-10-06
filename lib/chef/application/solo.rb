@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
 # Author:: Mark Mzyk (mmzyk@opscode.com)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,6 +49,12 @@ class Chef::Application::Solo < Chef::Application
   option :force_formatter,
     :long         => "--force-formatter",
     :description  => "Use formatter output instead of logger output",
+    :boolean      => true,
+    :default      => false
+
+  option :profile_ruby,
+    :long         => "--[no-]profile-ruby",
+    :description  => "Output ruby execution profile graph",
     :boolean      => true,
     :default      => false
 
