@@ -41,20 +41,30 @@ describe Chef::Provider::PowershellScript, "action_run" do
     context 'on nano' do
       before(:each) do
         allow(Chef::Platform).to receive(:windows_nano_server?).and_return(true)
+        allow(provider).to receive(:is_forced_32bit).and_return(false)
+        os_info_double = double("os_info")
+        allow(provider.run_context.node.kernel).to receive(:os_info).and_return(os_info_double)
+        allow(os_info_double).to receive(:system_directory).and_return("C:\\Windows\\system32")
       end
 
       it "sets the -Command flag as the last flag" do
-        expect(provider.flags.split(' ').pop).to eq("-Command")
+        flags = provider.command.split(' ').keep_if { |flag| flag =~ /^-/ }
+        expect(flags.pop).to eq("-Command")
       end
     end
 
     context 'not on nano' do
       before(:each) do
         allow(Chef::Platform).to receive(:windows_nano_server?).and_return(false)
+        allow(provider).to receive(:is_forced_32bit).and_return(false)
+        os_info_double = double("os_info")
+        allow(provider.run_context.node.kernel).to receive(:os_info).and_return(os_info_double)
+        allow(os_info_double).to receive(:system_directory).and_return("C:\\Windows\\system32")
       end
 
       it "sets the -File flag as the last flag" do
-        expect(provider.flags.split(' ').pop).to eq("-File")
+        flags = provider.command.split(' ').keep_if { |flag| flag =~ /^-/ }
+        expect(flags.pop).to eq("-File")
       end
 
       let(:execution_policy_flag) do
