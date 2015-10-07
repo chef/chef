@@ -179,7 +179,7 @@ END
           nread = entries_read_ptr.read_long
           nread.times do |i|
             group = LOCALGROUP_USERS_INFO_0.new(buf.read_pointer +
-                       (i * LOCALGROUP_USERS_INFO_0.size))
+                       (i * LOCALGROUP_USERS_INFO_0.size)).as_ruby
             local_groups << group[:lgrui0_name]
           end
           NetApiBufferFree(buf.read_pointer)

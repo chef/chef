@@ -152,6 +152,7 @@ class Chef
         end
 
         class LOCALGROUP_USERS_INFO_0 < FFI::Struct
+          include StructHelpers
           layout :lgrui0_name, :LPWSTR
         end
 

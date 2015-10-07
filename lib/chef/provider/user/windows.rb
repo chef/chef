@@ -72,8 +72,10 @@ class Chef
           end
 
           if @new_resource.gid
-            return true if @net_user.get_local_groups.include?(@new_resource.gid)
+            return true unless @net_user.get_local_groups.include?(@new_resource.gid)
           end
+
+          return false
         end
 
         def create_user
