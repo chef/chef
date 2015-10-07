@@ -71,6 +71,8 @@ class Chef
 
       def self.net_api_error!(code)
         msg = case code
+        when NERR_MEMBER_IN_ALIAS
+          "The specified account name is already a member of the group."
         when NERR_InvalidComputer
           "The user does not have access to the requested information."
         when NERR_NotPrimary

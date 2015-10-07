@@ -46,6 +46,7 @@ class Chef
         USE_LOTS_OF_FORCE = 2 #every windows API should support this flag
 
         NERR_Success = 0
+        NERR_MEMBER_IN_ALIAS = 1378
         NERR_InvalidComputer = 2351
         NERR_NotPrimary = 2226
         NERR_SpeGroupOp = 2234
