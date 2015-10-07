@@ -81,7 +81,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
       transformed_args = transform_usri3(args)
       group_name = transformed_args.delete(:usri3_primary_group_id)
       NetUser::net_user_set_info_l3(nil, @username, transformed_args)
-      NetUser::net_local_group_add_member(nil, group_name, args[:name]) if group_name
+      if group_name && group_name.is_a?(String)
+        NetUser::net_local_group_add_member(nil, group_name, args[:name])
+      end
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
