@@ -151,6 +151,10 @@ class Chef
           layout :lgrmi3_domainandname, :LPWSTR
         end
 
+        class LOCALGROUP_USERS_INFO_0 < FFI::Struct
+          layout :lgrui0_name, :LPWSTR
+        end
+
         class LOCALGROUP_INFO_0 < FFI::Struct
           layout :lgrpi0_name, :LPWSTR
         end
@@ -318,6 +322,18 @@ class Chef
   #_Out_ LPDWORD ParmError
 #);
         safe_attach_function :NetUseAdd, [:LMSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
+
+#NET_API_STATUS NetUserGetLocalGroups (
+  #_In_  LPCWSTR servername,
+  #_In_  LPCWSTR username,
+  #_In_  DWORD   level,
+  #_In_  DWORD   flags,
+  #_Out_ LPBYTE  *bufptr,
+  #_In_  DWORD   prefmaxlen,
+  #_Out_ LPDWORD entriesread,
+  #_Out_ LPDWORD totalentries
+#);
+        safe_attach_function :NetUserGetLocalGroups , [:LPCWSTR, :LPCWSTR, :DWORD, :DWORD, :LPBYTE, :DWORD, :LPDWORD, :LPDWORD], :DWORD
       end
     end
   end

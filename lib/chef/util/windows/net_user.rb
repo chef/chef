@@ -115,6 +115,14 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     usri3_to_hash(ui3)
   end
 
+  def get_local_groups
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_user_get_local_groups(nil, @username)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
+    end
+  end
+
   def add(args)
     transformed_args = transform_usri3(args)
     group_name = transformed_args.delete(:usri3_primary_group_id)

@@ -65,8 +65,14 @@ class Chef
             Chef::Log.debug("#{@new_resource} password has changed")
             return true
           end
-          [ :uid, :gid, :comment, :home, :shell ].any? do |user_attrib|
-            !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
+          [ :uid, :comment, :home, :shell ].any? do |user_attrib|
+            if !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
+              return true
+            end
+          end
+
+          if @new_resource.gid
+            return true if @net_user.get_local_groups.include?(@new_resource.gid)
           end
         end
 
