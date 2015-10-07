@@ -243,7 +243,7 @@ class Chef
           opts.delete(:send_env)
 
           # Ignores ProxyCommand if passed GW
-          opts[:proxy] = nil if config[:ssh_gateway]
+          opts.delete(:proxy) if config[:ssh_gateway]
         end
       end
 
