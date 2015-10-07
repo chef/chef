@@ -165,10 +165,17 @@ describe Chef::Knife::Ssh do
 
     it "should set keys and keys_only" do
       @knife.config[:identity_file] = "/tmp/mykey"
-      expect(@knife.session_options("the.b.org", nil)).to a_hash_including(
-        :keys => '/tmp/mykey',
-        :keys_only => true
-      )
+      if windows?
+        expect(@knife.session_options("the.b.org", nil)).to a_hash_including(
+          :keys => 'C:/tmp/mykey',
+          :keys_only => true
+        )
+      else
+        expect(@knife.session_options("the.b.org", nil)).to a_hash_including(
+          :keys => '/tmp/mykey',
+          :keys_only => true
+        )
+      end
     end
 
     it "should set password" do
