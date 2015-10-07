@@ -23,9 +23,7 @@ class Chef
       # Check to see if we are dispatching to a formatter
       def formatter?
         @subscribers.each do |s|
-          if s.class <= Chef::Formatters::Base && s.class != Chef::Formatters::NullFormatter
-            return true
-          end
+          return s.is_formatter? if s.respond_to?(:is_formatter?)
         end
         false
       end

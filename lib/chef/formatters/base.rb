@@ -215,6 +215,10 @@ class Chef
       def deprecation(message, location=caller(2..2)[0])
         Chef::Log.deprecation("#{message} at #{location}")
       end
+
+      def is_formatter?
+        true
+      end
     end
 
 
@@ -225,6 +229,9 @@ class Chef
 
       cli_name(:null)
 
+      def is_formatter?
+        false
+      end
     end
 
   end

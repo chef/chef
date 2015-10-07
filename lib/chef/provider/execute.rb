@@ -78,6 +78,14 @@ class Chef
         !!new_resource.sensitive
       end
 
+      def stream_to_formatter?
+        Chef::Config[:always_stream_execute] || run_context.events.formatter?
+      end
+
+      def stream_to_stdout?
+        STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
+      end
+
       def opts
         opts = {}
         opts[:timeout]     = timeout
@@ -89,10 +97,12 @@ class Chef
         opts[:umask]       = umask if umask
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s
-        if (Chef::Config[:always_stream_execute] || run_context.events.formatter?) && !sensitive?
-          opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
-        elsif STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !sensitive?
-          opts[:live_stream] = STDOUT
+        unless sensitive?
+          if stream_to_formatter?
+            opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
+          elsif stream_to_stdout?
+            opts[:live_stream] = STDOUT
+          end
         end
         opts
       end
