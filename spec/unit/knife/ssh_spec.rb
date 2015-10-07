@@ -176,7 +176,7 @@ describe Chef::Knife::Ssh do
       expect(@knife.session_options("the.b.org", nil)).to a_hash_including(:password => "mysekretpassw0rd")
     end
 
-    it "should placed set identity_file avove password" do
+    it "should prefer identity_file to password" do
       @knife.config[:identity_file] = "/tmp/mykey"
       @knife.config[:ssh_password] = "mysekretpassw0rd"
       expect(@knife.session_options("the.b.org", nil)).not_to a_hash_including(:password => "mysekretpassw0rd")
@@ -202,7 +202,7 @@ describe Chef::Knife::Ssh do
       end
     end
 
-    context "remove few options from ssh_config provides by NET::SSH" do
+    context "ignore some defaults from Net::SSH" do
       before do
         ssh_config = {:compression_level => 9, :timeout => 50, :user => "locutus", :port => 23, :send_env=>[/^LANG$/, /^LC_.*$/]}
         allow(Net::SSH).to receive(:configuration_for).with('the.b.org').and_return(ssh_config)
