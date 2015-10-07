@@ -34,7 +34,7 @@ class Chef
           :sort!,
           :sort_by!,
           :uniq!,
-          :unshift
+          :unshift,
         ]
 
         MUTATOR_METHODS.each do |method|

@@ -65,8 +65,7 @@ class Chef
 
         def method_missing(method, *args, &block)
           if wrapped_object.respond_to?(method, false)
-            # we can't define_method here because then we'll always respond_to? the
-            # method and in some cases we mutate and no longer respond_to? something
+            # cannot define_method here
             wrapped_object.public_send(method, *args, &block)
           else
             super
@@ -74,10 +73,15 @@ class Chef
         end
 
         def respond_to?(method, include_private = false)
+          # since we define these methods, :respond_to_missing? doesn't work.
           return false if is_a?(Array) && method == :to_hash
           return false if is_a?(Hash) && method == :to_ary
           return false if is_a?(Array) && method == :each_pair
-          wrapped_object.respond_to?(method, include_private) || super
+          wrapped_object.respond_to?(method, false) || super
+        end
+
+        def respond_to_missing?(method, include_private = false)
+          wrapped_object.respond_to?(method, false) || super
         end
 
         # avoid method_missing perf hit
@@ -182,15 +186,9 @@ class Chef
 
         def dup
           if is_a?(Array)
-            Array.new(map { |e|
-              safe_dup(e)
-            })
+            map(&method(:safe_dup))
           elsif is_a?(Hash)
-            h = Hash.new
-            each do |k, v|
-              h[safe_dup(k)] = safe_dup(v)
-            end
-            h
+            Hash[map { |k, v| [ safe_dup(k), safe_dup(v) ] } ]
           else
             safe_dup(wrapped_object)
           end
