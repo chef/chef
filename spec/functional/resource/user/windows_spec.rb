@@ -66,6 +66,14 @@ describe Chef::Provider::User::Windows, :windows_only do
       new_resource.run_action(:create)
       expect(new_resource).to be_updated_by_last_action
     end
+
+    context 'with a gid specified' do
+      it 'warns unsupported' do
+        expect(Chef::Log).to receive(:warn).with(/not implemented/)
+        new_resource.gid('agroup')
+        new_resource.run_action(:create)
+      end
+    end
   end
 
   describe 'action :remove' do
