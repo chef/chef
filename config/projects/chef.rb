@@ -53,8 +53,8 @@ else
 end
 
 # Chef Release version pinning
-override :chef, version: 'cdbd244f7d1de53c7228f6758866c083ae71a3c3'
-override :ohai, version: 'd2888c0f48738839c9bbf2589fc831994df8c3b4'
+override :chef, version: 'master'
+override :ohai, version: 'master'
 
 
 dependency "preparation"
