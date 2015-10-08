@@ -63,7 +63,7 @@ class Chef
         # === Returns
         # <true>:: If a change is required
         # <false>:: If the users are identical
-        def compare_user       
+        def compare_user
           unless @net_user.validate_credentials(@new_resource.password)
             Chef::Log.debug("#{@new_resource} password has changed")
             return true
