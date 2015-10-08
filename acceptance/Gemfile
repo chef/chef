@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+gem 'chef-acceptance', github: 'chef/chef-acceptance'
+gem 'test-kitchen', '~> 1.4.0'
+gem 'kitchen-vagrant', '~> 0.17.0'
+gem 'vagrant-wrapper'

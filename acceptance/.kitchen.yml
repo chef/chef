@@ -1,0 +1,16 @@
+---
+driver:
+  name: vagrant
+  customize:
+    cpus: 4
+    memory: 2048
+
+provisioner:
+  name: chef_zero
+  # Will eventually be configured to download from omnitruck/current
+
+platforms:
+  - name: ubuntu-14.04
+
+suites:
+  - name: acceptance

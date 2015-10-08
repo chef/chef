@@ -1,0 +1,4 @@
+---
+project_name: chef
+channel: <%= ENV['CHANNEL'] || 'current' %>
+version: <%= ENV['PROJECT_VERSION'] || 'latest' %>
