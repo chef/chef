@@ -35,6 +35,10 @@ class Chef
         end
 
         def load_current_resource
+          if @new_resource.gid
+            Chef::Log.warn("The 'gid' attribute is not implemented by the Windows platform. Please use the 'group' resource to assign a user th a group.")
+          end          
+
           @current_resource = Chef::Resource::User.new(@new_resource.name)
           @current_resource.username(@new_resource.username)
           user_info = nil
@@ -42,7 +46,6 @@ class Chef
             user_info = @net_user.get_info
 
             @current_resource.uid(user_info[:user_id])
-            @current_resource.gid(user_info[:primary_group_id])
             @current_resource.comment(user_info[:full_name])
             @current_resource.home(user_info[:home_dir])
             @current_resource.shell(user_info[:script_path])
@@ -60,12 +63,12 @@ class Chef
         # === Returns
         # <true>:: If a change is required
         # <false>:: If the users are identical
-        def compare_user
+        def compare_user       
           unless @net_user.validate_credentials(@new_resource.password)
             Chef::Log.debug("#{@new_resource} password has changed")
             return true
           end
-          [ :uid, :gid, :comment, :home, :shell ].any? do |user_attrib|
+          [ :uid, :comment, :home, :shell ].any? do |user_attrib|
             !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
           end
         end
@@ -100,7 +103,6 @@ class Chef
           field_list = {
             'comment' => 'full_name',
             'home' => 'home_dir',
-            'gid' => 'primary_group_id',
             'uid' => 'user_id',
             'shell' => 'script_path',
             'password' => 'password'
