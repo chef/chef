@@ -60,11 +60,41 @@ describe Chef::Provider::User::Windows, :windows_only do
       expect(new_resource).not_to be_updated_by_last_action
     end
 
-    it 'allows chaning the password' do
+    it 'allows changing the password' do
       new_resource.run_action(:create)
       new_resource.password(SecureRandom.uuid)
       new_resource.run_action(:create)
       expect(new_resource).to be_updated_by_last_action
+    end
+
+    context 'adding to a group' do
+      let(:group) {'Guests'}
+      let(:new_resource) do
+        Chef::Resource::User.new(username, run_context).tap do |r|
+          r.provider(Chef::Provider::User::Windows)
+          r.gid(group)
+          r.password(password)
+        end
+      end
+
+      it 'adds to a group when a group is given' do
+        new_resource.run_action(:create)
+        expect(new_resource).to be_updated_by_last_action
+        expect(shell_out("net localgroup \"#{group}\"").stdout).to match(/^#{username}\r$/)
+      end
+
+      it 'reports no changes if there are no changes needed' do
+        new_resource.run_action(:create)
+        new_resource.run_action(:create)
+        expect(new_resource).not_to be_updated_by_last_action
+      end
+
+      it 'allows changing the group' do
+        new_resource.run_action(:create)
+        new_resource.gid('Power Users')
+        new_resource.run_action(:create)
+        expect(shell_out("net localgroup \"Power Users\"").stdout).to match(/^#{username}\r$/)
+      end
     end
   end
 

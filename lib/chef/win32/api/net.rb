@@ -46,6 +46,7 @@ class Chef
         USE_LOTS_OF_FORCE = 2 #every windows API should support this flag
 
         NERR_Success = 0
+        NERR_MEMBER_IN_ALIAS = 1378
         NERR_InvalidComputer = 2351
         NERR_NotPrimary = 2226
         NERR_SpeGroupOp = 2234
@@ -149,6 +150,11 @@ class Chef
 
         class LOCALGROUP_MEMBERS_INFO_3 < FFI::Struct
           layout :lgrmi3_domainandname, :LPWSTR
+        end
+
+        class LOCALGROUP_USERS_INFO_0 < FFI::Struct
+          include StructHelpers
+          layout :lgrui0_name, :LPWSTR
         end
 
         class LOCALGROUP_INFO_0 < FFI::Struct
@@ -318,6 +324,18 @@ class Chef
   #_Out_ LPDWORD ParmError
 #);
         safe_attach_function :NetUseAdd, [:LMSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
+
+#NET_API_STATUS NetUserGetLocalGroups (
+  #_In_  LPCWSTR servername,
+  #_In_  LPCWSTR username,
+  #_In_  DWORD   level,
+  #_In_  DWORD   flags,
+  #_Out_ LPBYTE  *bufptr,
+  #_In_  DWORD   prefmaxlen,
+  #_Out_ LPDWORD entriesread,
+  #_Out_ LPDWORD totalentries
+#);
+        safe_attach_function :NetUserGetLocalGroups , [:LPCWSTR, :LPCWSTR, :DWORD, :DWORD, :LPBYTE, :DWORD, :LPDWORD, :LPDWORD], :DWORD
       end
     end
   end

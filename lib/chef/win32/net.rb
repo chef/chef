@@ -71,6 +71,8 @@ class Chef
 
       def self.net_api_error!(code)
         msg = case code
+        when NERR_MEMBER_IN_ALIAS
+          "The specified account name is already a member of the group."
         when NERR_InvalidComputer
           "The user does not have access to the requested information."
         when NERR_NotPrimary
@@ -157,6 +159,39 @@ END
         end
 
         group_members
+      end
+
+      def self.net_user_get_local_groups(server_name, user_name)
+        server_name = wstring(server_name)
+        user_name = wstring(user_name)
+
+        buf = FFI::MemoryPointer.new(:pointer)
+        entries_read_ptr = FFI::MemoryPointer.new(:long)
+        total_read_ptr = FFI::MemoryPointer.new(:long)
+        resume_handle_ptr = FFI::MemoryPointer.new(:pointer)
+
+        rc = ERROR_MORE_DATA
+        local_groups = []
+        while rc == ERROR_MORE_DATA
+          rc = NetUserGetLocalGroups(
+            server_name, user_name, 0, 0, buf, -1,
+            entries_read_ptr, total_read_ptr
+          )
+
+          nread = entries_read_ptr.read_long
+          nread.times do |i|
+            group = LOCALGROUP_USERS_INFO_0.new(buf.read_pointer +
+                       (i * LOCALGROUP_USERS_INFO_0.size)).as_ruby
+            local_groups << group[:lgrui0_name]
+          end
+          NetApiBufferFree(buf.read_pointer)
+        end
+
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+
+        local_groups
       end
 
       def self.net_user_add_l3(server_name, args)

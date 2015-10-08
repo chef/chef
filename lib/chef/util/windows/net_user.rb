@@ -78,7 +78,12 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def set_info(args)
     begin
-      rc = NetUser::net_user_set_info_l3(nil, @username, transform_usri3(args))
+      transformed_args = transform_usri3(args)
+      group_name = transformed_args.delete(:usri3_primary_group_id)
+      NetUser::net_user_set_info_l3(nil, @username, transformed_args)
+      if group_name && group_name.is_a?(String) && !get_local_groups.include?(group_name)
+        NetUser::net_local_group_add_member(nil, group_name, args[:name])
+      end
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -112,10 +117,20 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     usri3_to_hash(ui3)
   end
 
+  def get_local_groups
+    begin
+      Chef::ReservedNames::Win32::NetUser::net_user_get_local_groups(nil, @username)
+    rescue Chef::Exceptions::Win32NetAPIError => e
+      raise ArgumentError, e.msg
+    end
+  end
+
   def add(args)
     transformed_args = transform_usri3(args)
+    group_name = transformed_args.delete(:usri3_primary_group_id)
     NetUser::net_user_add_l3(nil, transformed_args)
     NetUser::net_local_group_add_member(nil, "Users", args[:name])
+    NetUser::net_local_group_add_member(nil, group_name, args[:name]) if group_name
   end
 
   def user_modify(&proc)
