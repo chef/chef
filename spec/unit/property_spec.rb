@@ -921,6 +921,9 @@ describe "Chef::Resource.property" do
         expect(resource.x 10).to eq "101"
         expect(Namer.current_index).to eq 1
       end
+      it "does not emit a deprecation warning if set to nil" do
+        expect(resource.x nil).to eq "1"
+      end
       it "coercion sets the value (and coercion does not run on get)" do
         expect(resource.x 10).to eq "101"
         expect(resource.x).to eq "101"
@@ -931,6 +934,11 @@ describe "Chef::Resource.property" do
         expect(Namer.current_index).to eq 1
         expect(resource.x 10).to eq "102"
         expect(Namer.current_index).to eq 2
+      end
+    end
+    with_property ':x, coerce: proc { |x| x }' do
+      it "does not emit a deprecation warning if set to nil" do
+        expect(resource.x nil).to be_nil
       end
     end
     with_property ':x, coerce: proc { |x| Namer.next_index; raise "hi" if x == 10; x }, is: proc { |x| Namer.next_index; x != 10 }' do
