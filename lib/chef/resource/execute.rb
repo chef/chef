@@ -136,11 +136,37 @@ class Chef
       end
 
       def user(arg=nil)
+        validate_credential(arg) if arg.is_a? Hash
+
         set_or_return(
           :user,
           arg,
           :kind_of => [ String, Integer ]
         )
+      end
+
+      def domain(arg=nil)
+        set_or_return(
+          :domain,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def password(arg=nil)
+        set_or_return(
+          :password,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def sensitive(args=nil)
+        if user_contains_secret?
+          true
+        else
+          super
+        end
       end
 
       def self.set_guard_inherited_attributes(*inherited_attributes)
@@ -166,6 +192,12 @@ class Chef
         :user,
         :umask
       )
+
+      private
+
+      def user_contains_secret?
+        user.is_a? Hash
+      end
 
     end
   end

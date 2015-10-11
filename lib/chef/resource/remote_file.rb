@@ -21,12 +21,14 @@ require 'uri'
 require 'chef/resource/file'
 require 'chef/provider/remote_file'
 require 'chef/mixin/securable'
+require 'chef/mixin/resource_credential_validation'
 require 'chef/mixin/uris'
 
 class Chef
   class Resource
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
+      include Chef::Mixin::ResourceCredentialValidation
 
       def initialize(name, run_context=nil)
         super
@@ -120,6 +122,24 @@ class Chef
           args,
           :kind_of => Hash
         )
+      end
+
+      def remote_credential(args=nil)
+        set_or_return(
+          :remote_credential,
+          args,
+          { :kind_of => Hash,
+            :callbacks => {
+              :validate_credential => method(:validate_credential)
+            }})
+      end
+
+      def sensitive(args=nil)
+        if remote_credential && remote_credential[:user]
+          true
+        else
+          super
+        end
       end
 
       private

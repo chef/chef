@@ -18,6 +18,7 @@
 
 require 'tempfile'
 require 'chef/provider/execute'
+require 'chef/win32/security'
 require 'forwardable'
 
 class Chef
@@ -69,8 +70,33 @@ class Chef
         # FileUtils itself implements a no-op if +user+ or +group+ are nil
         # You can prove this by running FileUtils.chown(nil,nil,'/tmp/file')
         # as an unprivileged user.
-        FileUtils.chown(new_resource.user, new_resource.group, script_file.path)
+        if ! Chef::Platform.windows?
+          FileUtils.chown(new_resource.user, new_resource.group, script_file.path)
+        else
+          grant_alternate_user_read_access
+        end
       end
+      require 'pry'
+
+      def grant_alternate_user_read_access
+        return if new_resource.user.nil?
+
+        securable_object = Chef::ReservedNames::Win32::Security::SecurableObject.new(script_file.path)
+        aces = securable_object.security_descriptor.dacl.reduce([]) { | result, current | result.push(current) }
+#        binding.pry
+        username = new_resource.user
+
+        if new_resource.domain
+          username = new_resource.domain + '\\' + new_resource.user
+        end
+
+        user_sid = Chef::ReservedNames::Win32::Security::SID.from_account(username)
+        read_ace = Chef::ReservedNames::Win32::Security::ACE.access_allowed(user_sid, Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE, 0)
+        aces.push(read_ace)
+        acl = Chef::ReservedNames::Win32::Security::ACL.create(aces)
+        securable_object.dacl = acl
+      end
+
 
       def script_file
         @script_file ||= Tempfile.open("chef-script")
