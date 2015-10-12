@@ -452,9 +452,18 @@ describe Chef::Provider::User do
 
     it "should raise an error if we can't translate the group name during resource assertions" do
       expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
+      @provider.action = :create
       @provider.define_resource_requirements
       @provider.convert_group_name
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::User)
+    end
+
+    it "does not raise an error if we can't translate the group name during resource assertions if we are removing the user" do
+      expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
+      @provider.action = :remove
+      @provider.define_resource_requirements
+      @provider.convert_group_name
+      expect { @provider.process_resource_requirements }.not_to raise_error
     end
 
     it "should set the new resources gid to the integerized version if available" do
