@@ -97,6 +97,12 @@ class Chef::Application::Apply < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :profile_ruby,
+    :long         => "--[no-]profile-ruby",
+    :description  => "Dump complete Ruby call graph stack of entire Chef run (expert only)",
+    :boolean      => true,
+    :default      => false
+
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,

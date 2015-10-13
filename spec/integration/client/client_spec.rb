@@ -301,6 +301,23 @@ EOM
       result.error!
     end
 
+    it "should complete with success when using --profile-ruby and output a profile file" do
+      file 'config/client.rb', <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+      result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z --profile-ruby", :cwd => chef_dir)
+      expect(File.exist?(path_to("config/local-mode-cache/cache/graph_profile.out"))).to be true
+    end
+
+    it "doesn't produce a profile when --profile-ruby is not present" do
+      file 'config/client.rb', <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+      result = shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
+      expect(File.exist?(path_to("config/local-mode-cache/cache/graph_profile.out"))).to be false
+    end
   end
 
   when_the_repository "has a cookbook that generates deprecation warnings" do
