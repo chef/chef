@@ -1,4 +1,10 @@
+
 ## Unreleased
+
+* [pr#4034](https://github.com/chef/chef/pull/4034) add optional ruby-profiling with --profile-ruby
+
+## 12.5.1
+
 * [**Ranjib Dey**](https://github.com/ranjib):
   [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
 * [**John Kerry**](https://github.com/jkerry):
