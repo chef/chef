@@ -171,6 +171,34 @@ class Chef
         end
       end
 
+      # perf
+      def include?(key)
+        if self.is_a?(Hash)
+          merged_hash_has_key?(key)
+        else
+          as_simple_object.include?(key)
+        end
+      end
+
+      # perf
+      def member?(key)
+        if self.is_a?(Hash)
+          merged_hash_has_key?(key)
+        else
+          as_simple_object.member?(key)
+        end
+      end
+
+      # perf
+      def has_key?(key)
+        if self.is_a?(Hash)
+          merged_hash_has_key?(key)
+        else
+          as_simple_object.has_key?(key)
+        end
+      end
+
+
       def method_missing(method, *args, &block)
         as_simple_object.public_send(method, *args, &block)
       end

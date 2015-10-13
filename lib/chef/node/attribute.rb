@@ -46,8 +46,8 @@ class Chef
           env_override: {},
           force_override: {},
           automatic: automatic || {},
-          node: __node,
-          deep_merge_cache: __deep_merge_cache
+          deep_merge_cache: __deep_merge_cache,
+          node: __node
         )
       end
 
@@ -79,17 +79,17 @@ class Chef
 
       def normal_unless(*args)
         return UnMethodChain.new(wrapped_object: self, method_to_call: :normal_unless) unless args.length > 0
-        write_value(:normal, *args) if args_to_cell(*args).nil?
+        write_value(:normal, *args) if safe_reader(*args[0...-1]).nil?
       end
 
       def default_unless(*args)
         return UnMethodChain.new(wrapped_object: self, method_to_call: :default_unless) unless args.length > 0
-        write_value(:default, *args) if args_to_cell(*args).nil?
+        write_value(:default, *args) if safe_reader(*args[0...-1]).nil?
       end
 
       def override_unless(*args)
         return UnMethodChain.new(wrapped_object: self, method_to_call: :override_unless) unless args.length > 0
-        write_value(:override, *args) if args_to_cell(*args).nil?
+        write_value(:override, *args) if safe_reader(*args[0...-1]).nil?
       end
 
       # should deprecate all of these, epecially #set
@@ -104,16 +104,8 @@ class Chef
       alias_method :automatic_attrs, :automatic
       alias_method :automatic_attrs=, :automatic=
 
-      def has_key?(key)
-        self.public_send(:key?, key)
-      end
-
-      alias_method :attribute?, :has_key?
-      alias_method :member?, :has_key?
-
-      def include?(val)
-        wrapped_object.public_send(:include?, val)
-      end
+      alias_method :attribute?, :include?
+      alias_method :member?, :include?
 
       def each_attribute(&block)
         self.public_send(:each, &block)
@@ -146,6 +138,8 @@ class Chef
         end
       end
 
+      # FIXME: doesn't decorator handle all this delgated crap now?
+      # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
       def to_s
         wrapped_object.to_s
       end
@@ -175,14 +169,22 @@ class Chef
       # - does not autovivify
       # - does not trainwreck if interior keys do not exist
       def rm(*args)
-        cell = args_to_cell(*args)
-        return nil unless cell.is_a?(Hash)
-        ret = cell[args.last]
-        rm_default(*args)
-        rm_normal(*args)
-        rm_override(*args)
+        with_deep_merged_return_value(self, *args) do
+          rm_default(*args)
+          rm_normal(*args)
+          rm_override(*args)
+        end
+      end
+
+      def with_deep_merged_return_value(obj, *args)
+        hash = obj.safe_reader(*args[0...-1])
+        return nil unless hash.is_a?(Hash)
+        ret = hash[args.last]
+        yield
         ret
       end
+
+      private :with_deep_merged_return_value
 
       # clears attributes from all default precedence levels
       #
@@ -190,16 +192,12 @@ class Chef
       # - does not autovivify
       # - does not trainwreck if interior keys do not exist
       def rm_default(*args)
-        cell = args_to_cell(*args)
-        return nil unless cell.is_a?(Hash)
-        ret = if cell.combined_default.is_a?(Hash)
-                cell.combined_default[args.last]
-              end
-        cell.default.delete(args.last) if cell.default.is_a?(Hash)
-        cell.role_default.delete(args.last) if cell.role_default.is_a?(Hash)
-        cell.env_default.delete(args.last) if cell.env_default.is_a?(Hash)
-        cell.force_default.delete(args.last) if cell.force_default.is_a?(Hash)
-        ret
+        with_deep_merged_return_value(combined_default, *args) do
+          default.safe_delete(*args)
+          role_default.safe_delete(*args)
+          env_default.safe_delete(*args)
+          force_default.safe_delete(*args)
+        end
       end
 
       # clears attributes from normal precedence
@@ -208,9 +206,7 @@ class Chef
       # - does not autovivify
       # - does not trainwreck if interior keys do not exist
       def rm_normal(*args)
-        cell = args_to_cell(*args)
-        return nil unless cell.is_a?(Hash)
-        cell.normal.delete(args.last) if cell.normal.is_a?(Hash)
+        normal.safe_delete(*args)
       end
 
       # clears attributes from all override precedence levels
@@ -219,31 +215,13 @@ class Chef
       # - does not autovivify
       # - does not trainwreck if interior keys do not exist
       def rm_override(*args)
-        cell = args_to_cell(*args)
-        return nil unless cell.is_a?(Hash)
-        ret = if cell.combined_override.is_a?(Hash)
-                cell.combined_override[args.last]
-              end
-        cell.override.delete(args.last) if cell.override.is_a?(Hash)
-        cell.role_override.delete(args.last) if cell.role_override.is_a?(Hash)
-        cell.env_override.delete(args.last) if cell.env_override.is_a?(Hash)
-        cell.force_override.delete(args.last) if cell.force_override.is_a?(Hash)
-        ret
-      end
-
-      def args_to_cell(*args)
-        begin
-          last = args.pop
-          cell = args.inject(self) do |memo, arg|
-            memo[arg]
-          end
-          cell
-        rescue NoMethodError
-          nil
+        with_deep_merged_return_value(combined_override, *args) do
+          override.safe_delete(*args)
+          role_override.safe_delete(*args)
+          env_override.safe_delete(*args)
+          force_override.safe_delete(*args)
         end
       end
-
-      private :args_to_cell
 
       # FIXME: should probably be another decorator behavior that changes :[] and :[]= to wipe
       # out intermediate non-hash things and replace them with hashes in addition to autovivifying

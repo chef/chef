@@ -3,7 +3,30 @@ class Chef
     class AttributeTrait
       module Decorator
         attr_accessor :wrapped_object
-        include Enumerable
+
+        #
+        # Delegate methods common to Array and Hash
+        # - this is done for speed over method_missing
+        # - some of these methods are overridden later with different semantics
+        #
+        methods = ( Array.instance_methods & Hash.instance_methods ) - Object.instance_methods +
+          [ :!, :!=, :<=>, :==, :===, :eql?, :to_s, :hash ]
+
+        methods.each do |method|
+          define_method method do |*args, &block|
+            wrapped_object.public_send(method, *args, &block)
+          end
+        end
+
+        def self.included(base)
+          base.extend(ClassMethods)
+        end
+
+        module ClassMethods
+          def [](*args)
+            new(wrapped_object: Hash[ *args ])
+          end
+        end
 
         def initialize(wrapped_object: nil, **args)
           @wrapped_object = wrapped_object
@@ -42,9 +65,24 @@ class Chef
         end
 
         def regular_reader(*path)
-          maybe_decorated_value(
+          ret = maybe_decorated_value(
             path.inject(wrapped_object) { |memo, key| memo[key] }
           )
+        end
+
+        def safe_reader(*path)
+          begin
+            regular_reader(*path)
+          rescue NoMethodError
+            nil
+          end
+        end
+
+        def safe_delete(*path)
+          last = path.pop
+          hash = safe_reader(*path)
+          return nil unless hash.is_a?(Hash)
+          hash.delete(last)
         end
 
         def [](key)
@@ -74,9 +112,9 @@ class Chef
 
         def respond_to?(method, include_private = false)
           # since we define these methods, :respond_to_missing? doesn't work.
-          return false if is_a?(Array) && method == :to_hash
-          return false if is_a?(Hash) && method == :to_ary
           return false if is_a?(Array) && method == :each_pair
+          return false if is_a?(Array) && method == :key?
+          return false if is_a?(Array) && method == :has_key?
           wrapped_object.respond_to?(method, false) || super
         end
 
@@ -84,62 +122,14 @@ class Chef
           wrapped_object.respond_to?(method, false) || super
         end
 
-        # avoid method_missing perf hit
-        def delete(key)
-          wrapped_object.delete(key)
-        end
-
-        # avoid method_missing perf hit
-        def clear
-          wrapped_object.clear
-        end
-
-        def to_s
-          wrapped_object.to_s
-        end
-
-        def to_h
-          wrapped_object.to_h
-        end
-
-        def to_hash
-          wrapped_object.to_hash
-        end
-
-        def to_a
-          wrapped_object.to_a
-        end
-
-        def to_ary
-          wrapped_object.to_ary
-        end
 
         def initialize_copy(source)
           super
           @wrapped_object = safe_dup(source.wrapped_object)
         end
 
-        # http://blog.rubybestpractices.com/posts/rklemme/018-Complete_Class.html
-
-        def eql?(other)
-          wrapped_object.eql?(other)
-        end
-
-        def ==(other)
-          wrapped_object == other
-        end
-
-        def ===(other)
-          wrapped_object === other
-        end
-
-        def []=(key, value)
-          wrapped_object[key] = value
-        end
-
-        # performance
         def include?(key)
-          wrapped_object.key?(key)
+          wrapped_object.include?(key)
         end
 
         # performance
@@ -147,9 +137,9 @@ class Chef
           wrapped_object.key?(key)
         end
 
-        # when we're a Hash pick up Hash#select which is different from Enumerable#select
-        def select(&block)
-          wrapped_object.select(&block)
+        # performance
+        def has_key?(key)
+          wrapped_object.has_key?(key)
         end
 
         # we need to be careful to return decorated values when appropriate
@@ -175,6 +165,7 @@ class Chef
           end
         end
 
+        # return decorated values when appropriate
         alias_method :each_pair, :each
 
         # nil, true, false and Fixnums are not dup'able
@@ -188,7 +179,9 @@ class Chef
           if is_a?(Array)
             map(&method(:safe_dup))
           elsif is_a?(Hash)
-            Hash[map { |k, v| [ safe_dup(k), safe_dup(v) ] } ]
+            h = {}
+            each { |k, v| h[safe_dup(k)] = safe_dup(v) }
+            h
           else
             safe_dup(wrapped_object)
           end

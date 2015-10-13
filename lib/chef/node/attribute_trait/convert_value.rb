@@ -30,6 +30,7 @@ class Chef
 
         alias_method :has_key?, :key?
         alias_method :member?, :key?
+        #alias_method :include?, :key?
 
         def delete(key)
           super(convert_key(key))
