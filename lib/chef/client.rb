@@ -897,11 +897,9 @@ class Chef
     attr_reader :specific_recipes
 
     def profiling_prereqs!
-      begin
-        require 'ruby-prof'
-      rescue LoadError
-        raise "You must have the ruby-prof gem installed in order to use --profile-ruby"
-      end
+      require 'ruby-prof'
+    rescue LoadError
+      raise "You must have the ruby-prof gem installed in order to use --profile-ruby"
     end
 
     def start_profiling

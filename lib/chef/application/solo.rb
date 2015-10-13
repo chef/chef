@@ -54,7 +54,7 @@ class Chef::Application::Solo < Chef::Application
 
   option :profile_ruby,
     :long         => "--[no-]profile-ruby",
-    :description  => "Output ruby execution profile graph",
+    :description  => "Dump complete Ruby call graph stack of entire Chef run (expert only)",
     :boolean      => true,
     :default      => false
 
