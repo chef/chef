@@ -27,6 +27,12 @@ require 'support/shared/integration/app_server_support'
 require 'cheffish/rspec/chef_run_support'
 require 'spec_helper'
 
+module Cheffish
+  class BasicChefClient
+    def_delegators :@run_context, :immediately_before_notifications
+  end
+end
+
 module IntegrationSupport
   include ChefZero::RSpec
 
