@@ -64,6 +64,8 @@ end
 
 # Override Process.create to check for running in the Service window station and doing
 # a full logon with LogonUser, instead of a CreateProcessWithLogon
+# Cloned from https://github.com/djberg96/win32-process/blob/ffi/lib/win32/process.rb
+# as of 2015-10-15 from commit cc066e5df25048f9806a610f54bf5f7f253e86f7
 module Process
   include Process::Constants
   include Process::Structs
@@ -144,7 +146,7 @@ module Process
     if hash['process_inherit']
       process_security = SECURITY_ATTRIBUTES.new
       process_security[:nLength] = 12
-      process_security[:bInheritHandle] = true
+      process_security[:bInheritHandle] = 1
     end
 
     # Thread SECURITY_ATTRIBUTE structure
@@ -153,7 +155,7 @@ module Process
     if hash['thread_inherit']
       thread_security = SECURITY_ATTRIBUTES.new
       thread_security[:nLength] = 12
-      thread_security[:bInheritHandle] = true
+      thread_security[:bInheritHandle] = 1
     end
 
     # Automatically handle stdin, stdout and stderr as either IO objects
@@ -236,7 +238,7 @@ module Process
       cwd = hash['cwd'].to_wide_string
     end
 
-    inherit  = hash['inherit'] || false
+    inherit = hash['inherit'] ? 1 : 0
 
     if hash['with_logon']
       logon = hash['with_logon'].to_wide_string
@@ -329,10 +331,10 @@ module Process
           startinfo,              # Startup Info
           procinfo                # Process Info
         )
-      end
 
-      unless bool
-        raise SystemCallError.new("CreateProcessWithLogonW", FFI.errno)
+        unless bool
+          raise SystemCallError.new("CreateProcessWithLogonW", FFI.errno)
+        end
       end
     else
       bool = CreateProcessW(
@@ -356,14 +358,13 @@ module Process
     # Automatically close the process and thread handles in the
     # PROCESS_INFORMATION struct unless explicitly told not to.
     if hash['close_handles']
-      CloseHandle(procinfo[:hProcess]) if procinfo[:hProcess]
-      CloseHandle(procinfo[:hThread]) if procinfo[:hThread]
-
-      # Set fields to nil so callers don't attempt to close the handle
+      CloseHandle(procinfo[:hProcess])
+      CloseHandle(procinfo[:hThread])
+      # Clear these fields so callers don't attempt to close the handle
       # which can result in the wrong handle being closed or an
-      # exception in some circumstances
-      procinfo[:hProcess] = nil
-      procinfo[:hThread] = nil
+      # exception in some circumstances.
+      procinfo[:hProcess] = 0
+      procinfo[:hThread] = 0
     end
 
     ProcessInfo.new(
@@ -373,6 +374,5 @@ module Process
       procinfo[:dwThreadId]
     )
   end
-
   module_function :create
 end
