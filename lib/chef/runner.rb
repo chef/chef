@@ -46,6 +46,29 @@ class Chef
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action, notification_type=nil, notifying_resource=nil)
+
+      # If there are any immediately_before notifications, why-run the resource
+      # and notify anyone who needs notifying
+      if !run_context.immediately_before_notifications(resource).empty?
+        whyrun_before = Chef::Config[:why_run]
+        begin
+          Chef::Config[:why_run] = true
+          Chef::Log.info("#{resource} running why-run #{action} action to support immediately_before action")
+          resource.run_action(action, notification_type, notifying_resource)
+        ensure
+          Chef::Config[:why_run] = whyrun_before
+        end
+
+        if resource.updated_by_last_action?
+          run_context.immediately_before_notifications(resource).each do |notification|
+            Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (immediately_before)")
+            run_action(notification.resource, notification.action, :immediately_before, resource)
+          end
+        end
+
+      end
+
+      # Actually run the action for realsies
       resource.run_action(action, notification_type, notifying_resource)
 
       # Execute any immediate and queue up any delayed notifications

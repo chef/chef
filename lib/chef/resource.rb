@@ -209,6 +209,8 @@ class Chef
     #     actions have been run.  This is the default.
     #   - `immediate`, `immediately`: Will run the action on the other resource
     #     immediately (before any other action is run).
+    #   - `immediately_before`: Will run the action on the other resource
+    #     immediately *before* the action is actually run.
     #
     # @example Resource by string
     #   file '/foo.txt' do
@@ -251,9 +253,11 @@ class Chef
           notifies_delayed(action, resource)
         when 'immediate', 'immediately'
           notifies_immediately(action, resource)
+        when 'immediately_before'
+          notifies_immediately_before(action, resource)
         else
           raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
-          "Valid timings are: :delayed, :immediate, :immediately"
+          "Valid timings are: :delayed, :immediate, :immediately, :immediately_before"
         end
       end
 
@@ -277,6 +281,8 @@ class Chef
     #     actions have been run.  This is the default.
     #   - `immediate`, `immediately`: The action will run immediately following
     #     the other resource being updated.
+    #   - `immediately_before`: The action will run immediately before the
+    #     other resource is updated.
     #
     # @example Resources by string
     #   file '/foo.txt' do
@@ -1238,12 +1244,20 @@ class Chef
     # resolve_resource_reference on each in turn, causing them to
     # resolve lazy/forward references.
     def resolve_notification_references
+      run_context.immediately_before_notifications(self).each { |n|
+        n.resolve_resource_reference(run_context.resource_collection)
+      }
       run_context.immediate_notifications(self).each { |n|
         n.resolve_resource_reference(run_context.resource_collection)
       }
       run_context.delayed_notifications(self).each {|n|
         n.resolve_resource_reference(run_context.resource_collection)
       }
+    end
+
+    # Helper for #notifies
+    def notifies_immediately_before(action, resource_spec)
+      run_context.notifies_immediately_before(Notification.new(resource_spec, action, self))
     end
 
     # Helper for #notifies
@@ -1339,6 +1353,10 @@ class Chef
     def declared_key
       return to_s if declared_type.nil?
       "#{declared_type}[#{@name}]"
+    end
+
+    def immediately_before_notifications
+      run_context.immediately_before_notifications(self)
     end
 
     def immediate_notifications

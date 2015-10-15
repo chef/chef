@@ -104,6 +104,15 @@ class Chef
     #
 
     #
+    # A Hash containing the immediately_before notifications triggered by resources
+    # during the converge phase of the chef run.
+    #
+    # @return [Hash[String, Array[Chef::Resource::Notification]]] A hash from
+    #   <notifying resource name> => <list of notifications it sent>
+    #
+    attr_reader :immediately_before_notification_collection
+
+    #
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
     #
@@ -164,8 +173,23 @@ class Chef
     def initialize_child_state
       @audits = {}
       @resource_collection = Chef::ResourceCollection.new
+      @immediately_before_notification_collection = Hash.new {|h,k| h[k] = []}
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
+    end
+
+    #
+    # Adds an immediately_before notification to the +immediately_before_notification_collection+.
+    #
+    # @param [Chef::Resource::Notification] The notification to add.
+    #
+    def notifies_immediately_before(notification)
+      nr = notification.notifying_resource
+      if nr.instance_of?(Chef::Resource)
+        immediately_before_notification_collection[nr.name] << notification
+      else
+        immediately_before_notification_collection[nr.declared_key] << notification
+      end
     end
 
     #
@@ -193,6 +217,22 @@ class Chef
         delayed_notification_collection[nr.name] << notification
       else
         delayed_notification_collection[nr.declared_key] << notification
+      end
+    end
+
+    #
+    # Get the list of immediately_before notifications sent by the given resource.
+    #
+    # TODO seriously, this is actually wrong.  resource.name is not unique,
+    # you need the type as well.
+    #
+    # @return [Array[Notification]]
+    #
+    def immediately_before_notifications(resource)
+      if resource.instance_of?(Chef::Resource)
+        return immediately_before_notification_collection[resource.name]
+      else
+        return immediately_before_notification_collection[resource.declared_key]
       end
     end
 
@@ -608,10 +648,13 @@ ERROR_MESSAGE
         immediate_notification_collection
         immediate_notification_collection=
         immediate_notifications
+        immediately_before_notification_collection
+        immediately_before_notifications
         include_recipe
         initialize_child_state
         load_recipe
         load_recipe_file
+        notifies_immediately_before
         notifies_immediately
         notifies_delayed
         parent_run_context
