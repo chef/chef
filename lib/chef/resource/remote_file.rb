@@ -124,18 +124,32 @@ class Chef
         )
       end
 
-      def remote_credential(args=nil)
+      def remote_user(args=nil)
         set_or_return(
-          :remote_credential,
+          :remote_user,
           args,
-          { :kind_of => Hash,
-            :callbacks => {
-              :validate_credential => method(:validate_credential)
-            }})
+          :kind_of => String
+        )
+      end
+
+      def remote_user_domain(args=nil)
+        set_or_return(
+          :remote_user_domain,
+          args,
+          :kind_of => String
+        )
+      end
+
+      def remote_user_password(args=nil)
+        set_or_return(
+          :remote_user_password,
+          args,
+          :kind_of => String
+        )
       end
 
       def sensitive(args=nil)
-        if remote_credential && remote_credential[:user]
+        if ! remote_user_password.nil?
           true
         else
           super

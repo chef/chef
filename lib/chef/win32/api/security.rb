@@ -428,6 +428,8 @@ class Chef
         safe_attach_function :SetSecurityDescriptorSacl, [ :pointer, :BOOL, :pointer, :BOOL ], :BOOL
         safe_attach_function :GetTokenInformation, [ :HANDLE, :TOKEN_INFORMATION_CLASS, :pointer, :DWORD, :PDWORD ], :BOOL
         safe_attach_function :LogonUserW, [:LPTSTR, :LPTSTR, :LPTSTR, :DWORD, :DWORD, :PHANDLE], :BOOL
+        safe_attach_function :ImpersonateLoggedOnUser, [:HANDLE], :BOOL
+        safe_attach_function :RevertToSelf, [],  :BOOL
 
       end
     end
