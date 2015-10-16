@@ -30,7 +30,7 @@ describe Chef::Cookbook::Metadata do
                   :maintainer_email, :license, :platforms, :dependencies,
                   :recommendations, :suggestions, :conflicting, :providing,
                   :replacing, :attributes, :groupings, :recipes, :version,
-                  :source_url, :issues_url, :privacy ]
+                  :source_url, :issues_url, :privacy, :ohai_versions, :chef_versions ]
     end
 
     it "does not depend on object identity for equality" do
@@ -323,6 +323,60 @@ describe Chef::Cookbook::Metadata do
       metadata.name('foo')
       expect { metadata.depends('foo') }.to raise_error
       # FIXME: add the error type
+    end
+  end
+
+  describe "chef_version" do
+    def expect_chef_version_works(*args)
+      ret = []
+      args.each do |arg|
+        metadata.send(:chef_version, *arg)
+        ret << Gem::Dependency.new("chef", *arg)
+      end
+      expect(metadata.send(:chef_versions)).to eql(ret)
+    end
+
+    it "should work with a single simple constraint" do
+      expect_chef_version_works(["~> 12"])
+    end
+
+    it "should work with a single complex constraint" do
+      expect_chef_version_works([">= 12.0.1", "< 12.5.1"])
+    end
+
+    it "should work with multiple simple constraints" do
+      expect_chef_version_works(["~> 12.5.1"],["~> 11.18.10"])
+    end
+
+    it "should work with multiple complex constraints" do
+      expect_chef_version_works([">= 11.14.2", "< 11.18.10"],[">= 12.2.1", "< 12.5.1"])
+    end
+  end
+
+  describe "ohai_version" do
+    def expect_ohai_version_works(*args)
+      ret = []
+      args.each do |arg|
+        metadata.send(:ohai_version, *arg)
+        ret << Gem::Dependency.new("ohai", *arg)
+      end
+      expect(metadata.send(:ohai_versions)).to eql(ret)
+    end
+
+    it "should work with a single simple constraint" do
+      expect_ohai_version_works(["~> 12"])
+    end
+
+    it "should work with a single complex constraint" do
+      expect_ohai_version_works([">= 12.0.1", "< 12.5.1"])
+    end
+
+    it "should work with multiple simple constraints" do
+      expect_ohai_version_works(["~> 12.5.1"],["~> 11.18.10"])
+    end
+
+    it "should work with multiple complex constraints" do
+      expect_ohai_version_works([">= 11.14.2", "< 11.18.10"],[">= 12.2.1", "< 12.5.1"])
     end
   end
 
@@ -684,9 +738,14 @@ describe Chef::Cookbook::Metadata do
       metadata.attribute "bizspark/has_login",
         :display_name => "You have nothing"
       metadata.version "1.2.3"
+      metadata.chef_version ">= 11.14.2", "< 11.18.10"
+      metadata.chef_version ">= 12.2.1", "< 12.5.1"
+      metadata.ohai_version ">= 7.1.0", "< 7.5.0"
+      metadata.ohai_version ">= 8.0.1", "< 8.6.0"
     end
 
     it "should produce the same output from to_json and Chef::JSONCompat" do
+      # XXX: fairly certain this is testing ruby method dispatch
       expect(metadata.to_json).to eq(Chef::JSONCompat.to_json(metadata))
     end
 
@@ -723,6 +782,15 @@ describe Chef::Cookbook::Metadata do
           expect(deserialized_metadata[t]).to eq(metadata.send(t.to_sym))
         end
       end
+
+      %w{
+        ohai_versions
+        chef_versions
+      }.each do |t|
+        it "should include '#{t}'" do
+          expect(deserialized_metadata[t]).to eq(metadata.gem_requirements_to_hash(*metadata.send(t.to_sym)))
+        end
+      end
     end
 
     describe "deserialize" do
@@ -754,6 +822,8 @@ describe Chef::Cookbook::Metadata do
         source_url
         issues_url
         privacy
+        chef_versions
+        ohai_versions
       }.each do |t|
         it "should match '#{t}'" do
           expect(deserialized_metadata.send(t.to_sym)).to eq(metadata.send(t.to_sym))

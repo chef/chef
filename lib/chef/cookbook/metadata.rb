@@ -55,19 +55,23 @@ class Chef
       SOURCE_URL             = 'source_url'.freeze
       ISSUES_URL             = 'issues_url'.freeze
       PRIVACY                = 'privacy'.freeze
+      CHEF_VERSIONS          = 'chef_versions'.freeze
+      OHAI_VERSIONS          = 'ohai_versions'.freeze
 
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
                             :maintainer_email, :license, :platforms, :dependencies,
                             :recommendations, :suggestions, :conflicting, :providing,
                             :replacing, :attributes, :groupings, :recipes, :version,
-                            :source_url, :issues_url, :privacy ]
+                            :source_url, :issues_url, :privacy, :chef_versions, :ohai_versions ]
 
-      VERSION_CONSTRAINTS = {:depends     => DEPENDENCIES,
-                             :recommends  => RECOMMENDATIONS,
-                             :suggests    => SUGGESTIONS,
-                             :conflicts   => CONFLICTING,
-                             :provides    => PROVIDING,
-                             :replaces    => REPLACING }
+      VERSION_CONSTRAINTS = {:depends      => DEPENDENCIES,
+                             :recommends   => RECOMMENDATIONS,
+                             :suggests     => SUGGESTIONS,
+                             :conflicts    => CONFLICTING,
+                             :provides     => PROVIDING,
+                             :replaces     => REPLACING,
+                             :chef_version => CHEF_VERSIONS,
+                             :ohai_version => OHAI_VERSIONS }
 
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
@@ -83,6 +87,8 @@ class Chef
       attr_reader :groupings
       attr_reader :recipes
       attr_reader :version
+      attr_reader :chef_versions
+      attr_reader :ohai_versions
 
       # Builds a new Chef::Cookbook::Metadata object.
       #
@@ -118,6 +124,8 @@ class Chef
         @source_url = ''
         @issues_url = ''
         @privacy = false
+        @chef_versions = []
+        @ohai_versions = []
 
         @errors = []
       end
@@ -386,6 +394,18 @@ class Chef
         @replacing[cookbook]
       end
 
+      # FIXME
+      def chef_version(*version_args)
+        @chef_versions << Gem::Dependency.new('chef', *version_args)
+        @chef_versions
+      end
+
+      # FIXME
+      def ohai_version(*version_args)
+        @ohai_versions << Gem::Dependency.new('ohai', *version_args)
+        @ohai_versions
+      end
+
       # Adds a description for a recipe.
       #
       # === Parameters
@@ -481,6 +501,20 @@ class Chef
         @groupings[name]
       end
 
+      def gem_requirements_to_hash(*deps)
+        deps.map do |dep|
+          dep.requirement.requirements.map do |op, version|
+            "#{op} #{version}"
+          end.sort
+        end
+      end
+
+      def gem_requirements_from_hash(what, hash)
+        hash.map do |dep|
+          Gem::Dependency.new(what, *dep)
+        end
+      end
+
       def to_hash
         {
           NAME                   => self.name,
@@ -502,7 +536,9 @@ class Chef
           VERSION                => self.version,
           SOURCE_URL             => self.source_url,
           ISSUES_URL             => self.issues_url,
-          PRIVACY                => self.privacy
+          PRIVACY                => self.privacy,
+          CHEF_VERSIONS          => gem_requirements_to_hash(*self.chef_versions),
+          OHAI_VERSIONS          => gem_requirements_to_hash(*self.ohai_versions)
         }
       end
 
@@ -537,6 +573,8 @@ class Chef
         @source_url                   = o[SOURCE_URL] if o.has_key?(SOURCE_URL)
         @issues_url                   = o[ISSUES_URL] if o.has_key?(ISSUES_URL)
         @privacy                      = o[PRIVACY] if o.has_key?(PRIVACY)
+        @chef_versions                = gem_requirements_from_hash("chef", o[CHEF_VERSIONS]) if o.has_key?(CHEF_VERSIONS)
+        @ohai_versions                = gem_requirements_from_hash("ohai", o[OHAI_VERSIONS]) if o.has_key?(OHAI_VERSIONS)
         self
       end
 
