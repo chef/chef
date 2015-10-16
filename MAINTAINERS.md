@@ -197,6 +197,7 @@ To mention the team, use @chef/client-freebsd
 
 * [Cory Stephenson](https://github.com/Aevin1387)
 * [David Aronsohn](https://github.com/tbunnyman)
+* [Bryant Lippert](https://github.com/AgentMeerkat)
 
 ## OpenBSD
 
