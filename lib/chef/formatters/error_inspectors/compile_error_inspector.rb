@@ -108,7 +108,7 @@ class Chef
         def culprit_backtrace_entry
           @culprit_backtrace_entry ||= begin
              bt_entry = filtered_bt.first
-             Chef::Log.debug("backtrace entry for compile error: '#{bt_entry}'")
+             Chef::Log.debug("Backtrace entry for compile error: '#{bt_entry}'")
              bt_entry
           end
         end
@@ -138,7 +138,7 @@ class Chef
             begin
               filters = Array(Chef::Config.cookbook_path).map {|p| /^#{Regexp.escape(p)}/i }
               r = exception.backtrace.select {|line| filters.any? {|filter| line =~ filter }}
-              Chef::Log.debug("filtered backtrace of compile error: #{r.join(",")}")
+              Chef::Log.debug("Filtered backtrace of compile error: #{r.join(",")}")
               r
             end
         end

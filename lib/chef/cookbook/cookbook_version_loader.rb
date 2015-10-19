@@ -91,7 +91,7 @@ class Chef
         remove_ignored_files
 
         if empty?
-          Chef::Log.warn "found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
+          Chef::Log.warn "Found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
         end
         @cookbook_settings
       end

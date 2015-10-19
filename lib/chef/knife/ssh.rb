@@ -467,7 +467,7 @@ class Chef
         session.servers_for.each do |server|
           cssh_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
         end
-        Chef::Log.debug("starting cssh session with command: #{cssh_cmd}")
+        Chef::Log.debug("Starting cssh session with command: #{cssh_cmd}")
         exec(cssh_cmd)
       end
 

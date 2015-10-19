@@ -111,7 +111,7 @@ class Chef
               end
             end
             results = results.reject(&:nil?)
-            Chef::Log.debug("candidate versions of '#{new_resource.package_name}' are '#{results}'")
+            Chef::Log.debug("Candidate versions of '#{new_resource.package_name}' are '#{results}'")
             case results.length
             when 0
               []
