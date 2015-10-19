@@ -5,18 +5,21 @@ class Chef
         attr_accessor :wrapped_object
 
         #
-        # Delegate methods common to Array and Hash
-        # - this is done for speed over method_missing
-        # - some of these methods are overridden later with different semantics
+        # Performance Delegation
         #
+
         methods = ( Array.instance_methods & Hash.instance_methods ) - Object.instance_methods +
-          [ :!, :!=, :<=>, :==, :===, :eql?, :to_s, :hash ]
+          [ :!, :!=, :<=>, :==, :===, :eql?, :to_s, :hash, :key, :has_key? ]
 
         methods.each do |method|
           define_method method do |*args, &block|
             wrapped_object.public_send(method, *args, &block)
           end
         end
+
+        #
+        # Construction
+        #
 
         def self.included(base)
           base.extend(ClassMethods)
@@ -31,6 +34,14 @@ class Chef
         def initialize(wrapped_object: nil, **args)
           @wrapped_object = wrapped_object
         end
+
+        def new_decorator(**args)
+          self.class.new(**args)
+        end
+
+        #
+        # Conversion
+        #
 
         def ffi_yajl(*opts)
           for_json.ffi_yajl(*opts)
@@ -50,6 +61,10 @@ class Chef
           end
         end
 
+        #
+        # Inspection
+        #
+
         def is_a?(klass)
           wrapped_object.is_a?(klass) || super
         end
@@ -57,6 +72,10 @@ class Chef
         def kind_of?(klass)
           wrapped_object.kind_of?(klass) || super
         end
+
+        #
+        # Extended API
+        #
 
         def regular_writer(*path, value)
           last_key = path.pop
@@ -85,25 +104,13 @@ class Chef
           hash.delete(last)
         end
 
-        def [](key)
-          maybe_decorated_value(wrapped_object[key])
-        end
-
-        def maybe_decorated_value(val)
-          if val.is_a?(Hash) || val.is_a?(Array)
-            new_decorator(wrapped_object: val)
-          else
-            val
-          end
-        end
-
-        def new_decorator(**args)
-          self.class.new(**args)
-        end
+        #
+        # method_missing
+        #
 
         def method_missing(method, *args, &block)
           if wrapped_object.respond_to?(method, false)
-            # cannot define_method here
+            # do not define_method here
             wrapped_object.public_send(method, *args, &block)
           else
             super
@@ -122,34 +129,41 @@ class Chef
           wrapped_object.respond_to?(method, false) || super
         end
 
+        #
+        # Decorated Methods
+        #
 
-        def initialize_copy(source)
-          super
-          @wrapped_object = safe_dup(source.wrapped_object)
+        def [](key)
+          maybe_decorated_value(wrapped_object[key])
         end
 
-        def include?(key)
-          wrapped_object.include?(key)
+        def any?(&block)
+          block ||= ->(o) { o }
+          if is_a?(Hash)
+            each do |key, value|
+              if yield key, value
+                return true
+              end
+            end
+          elsif is_a?(Array)
+            each do |key|
+              if yield key
+                return true
+              end
+            end
+          else
+            return wrapped_object.any?(&block)
+          end
+          false
         end
 
-        # performance
-        def key?(key)
-          wrapped_object.key?(key)
-        end
-
-        # performance
-        def has_key?(key)
-          wrapped_object.has_key?(key)
-        end
-
-        # we need to be careful to return decorated values when appropriate
         def each(&block)
           return enum_for(:each) unless block_given?
-          if wrapped_object.is_a?(Array)
+          if is_a?(Array)
             wrapped_object.each_with_index do |value, i|
               yield self[i]
             end
-          elsif wrapped_object.is_a?(Hash)
+          elsif is_a?(Hash)
             if block.arity > 1
               wrapped_object.each do |key, value|
                 yield key, self[key]
@@ -160,13 +174,28 @@ class Chef
               end
             end
           else
-            # dunno...
             wrapped_object.each(&block)
           end
         end
 
-        # return decorated values when appropriate
         alias_method :each_pair, :each
+
+        def map(&block)
+          return enum_for(:map) unless block_given?
+          if is_a?(Array)
+            ret = []
+            each do |elem|
+              ret.push(yield elem)
+            end
+            ret
+          else
+            wrapped_object.map(&block)
+          end
+        end
+
+        #
+        # Copying and dup'ing
+        #
 
         # nil, true, false and Fixnums are not dup'able
         def safe_dup(e)
@@ -184,6 +213,21 @@ class Chef
             h
           else
             safe_dup(wrapped_object)
+          end
+        end
+
+        def initialize_copy(source)
+          super
+          @wrapped_object = safe_dup(source.wrapped_object)
+        end
+
+        private
+
+        def maybe_decorated_value(val)
+          if val.is_a?(Hash) || val.is_a?(Array)
+            new_decorator(wrapped_object: val)
+          else
+            val
           end
         end
 
