@@ -20,5 +20,6 @@ Gem::Specification.new do |s|
   s.bindir       = "bin"
   s.executables  = []
   s.require_path = 'lib'
-  s.files = %w(LICENSE README.md) + Dir.glob("lib/**/*")
+  s.files = %w(Gemfile Rakefile LICENSE README.md) + Dir.glob("*.gemspec") +
+      Dir.glob("lib/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }
 end
