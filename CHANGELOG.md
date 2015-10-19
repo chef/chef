@@ -1,5 +1,10 @@
 # mixlib-shellout Changelog
 
+## Release 2.2.2
+
+* Ship gemspec and Gemfiles to facilate testing.
+* Fix #111 by pulling in an updated version of win-32/process and correctly patching Process::create.
+
 ## Release 2.2.1
 
 * Fix executable resolution on Windows when a directory exists with the same name as the command to run
