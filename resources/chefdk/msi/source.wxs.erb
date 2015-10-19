@@ -30,6 +30,9 @@
       <RemoveExistingProducts After="InstallValidate" />
     </InstallExecuteSequence>
 
+    <CustomActionRef Id="WixBroadcastSettingChange" />
+    <CustomActionRef Id="WixBroadcastEnvironmentChange" />
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="WindowsVolume">
         <Directory Id="INSTALLLOCATION" Name="opscode">
