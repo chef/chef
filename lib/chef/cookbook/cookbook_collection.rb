@@ -41,5 +41,11 @@ class Chef
       cookbook_versions.each{ |cookbook_name, cookbook_version| self[cookbook_name] = cookbook_version }
     end
 
+    def validate!
+      each do |cookbook_name, cookbook_version|
+        cookbook_version.metadata.validate_chef_version!
+        cookbook_version.metadata.validate_ohai_version!
+      end
+    end
   end
 end

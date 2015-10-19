@@ -153,6 +153,7 @@ class Chef
         Chef::Cookbook::FileVendor.fetch_from_remote(http_api)
         sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbooks_to_sync)
+        cookbook_collection.validate!
         run_context = Chef::RunContext.new(node, cookbook_collection, events)
 
         setup_chef_class(run_context)

@@ -650,7 +650,27 @@ class Chef
         )
       end
 
+      def validate_ohai_version!
+        unless gem_dep_matches?("ohai", Gem::Version.new(Ohai::VERSION), *ohai_versions)
+          raise Exceptions::CookbookOhaiVersionMismatch.new(Ohai::VERSION, *ohai_versions)
+        end
+      end
+
+      def validate_chef_version!
+        unless gem_dep_matches?("chef", Gem::Version.new(Chef::VERSION), *chef_versions)
+          raise Exceptions::CookbookChefVersionMismatch.new(Chef::VERSION, *chef_versions)
+        end
+      end
+
     private
+
+      def gem_dep_matches?(what, version, *deps)
+        return true unless deps.length > 0
+        deps.each do |dep|
+          return true if dep.match?(what, version)
+        end
+        return false
+      end
 
       def run_validation
         if name.nil?

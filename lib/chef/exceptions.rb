@@ -482,6 +482,18 @@ class Chef
       end
     end
 
+    class CookbookChefVersionMismatch < RuntimeError
+      def initialize(chef_version, *constraints)
+        super "chef version #{chef_version} is badness"
+      end
+    end
+
+    class CookbookOhaiVersionMismatch < RuntimeError
+      def initialize(ohai_version, *constraints)
+        super "ohai version #{ohai_version} is badness"
+      end
+    end
+
     class MultipleDscResourcesFound < RuntimeError
       attr_reader :resources_found
       def initialize(resources_found)
