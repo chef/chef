@@ -273,7 +273,7 @@ class Chef
 
         if Chef::Config[:why_run] == true
           # why_run should probably be renamed to why_converge
-          Chef::Log.debug("Not running controls in 'why_run' mode - this mode is used to see potential converge changes")
+          Chef::Log.debug("Not running controls in 'why-run' mode - this mode is used to see potential converge changes")
         elsif Chef::Config[:audit_mode] != :disabled
           audit_error = run_audits(run_context)
         end
