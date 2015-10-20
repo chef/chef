@@ -52,7 +52,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
 
   context "when building the resource" do
     let(:node) do
-      Chef::Node.new.tap {|n| n.normal[:tags] = [] }
+      Chef::Node.new
     end
 
     let(:run_context) do

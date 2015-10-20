@@ -35,7 +35,7 @@ describe Chef::Recipe do
   let(:cookbook_collection) { Chef::CookbookCollection.new(cookbook_loader) }
 
   let(:node) do
-    Chef::Node.new.tap {|n| n.normal[:tags] = [] }
+    Chef::Node.new
   end
 
   let(:events) do
