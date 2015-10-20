@@ -31,6 +31,24 @@ class Chef
         @yum_binary = nil
       end
 
+      # override superclass and support arrays
+      def package_name(arg=nil)
+        set_or_return(
+          :package_name,
+          arg,
+          :kind_of => [ String, Array ]
+        )
+      end
+
+      # override superclass and support arrays
+      def version(arg=nil)
+        set_or_return(
+          :version,
+          arg,
+          :kind_of => [ String, Array ]
+        )
+      end
+
       # Install a specific arch
       def arch(arg=nil)
         set_or_return(

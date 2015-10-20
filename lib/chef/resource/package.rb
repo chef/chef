@@ -41,19 +41,21 @@ class Chef
         @timeout = nil
       end
 
+      # Package Resources that support Arrays should override in the subclass
       def package_name(arg=nil)
         set_or_return(
           :package_name,
           arg,
-          :kind_of => [ String, Array ]
+          :kind_of => [ String ]
         )
       end
 
+      # Package Resources that support Arrays should override in the subclass
       def version(arg=nil)
         set_or_return(
           :version,
           arg,
-          :kind_of => [ String, Array ]
+          :kind_of => [ String ]
         )
       end
 

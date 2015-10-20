@@ -30,6 +30,24 @@ class Chef
         @default_release = nil
       end
 
+      # override superclass and support arrays
+      def package_name(arg=nil)
+        set_or_return(
+          :package_name,
+          arg,
+          :kind_of => [ String, Array ]
+        )
+      end
+
+      # override superclass and support arrays
+      def version(arg=nil)
+        set_or_return(
+          :version,
+          arg,
+          :kind_of => [ String, Array ]
+        )
+      end
+
       def default_release(arg=nil)
         set_or_return(
           :default_release,
