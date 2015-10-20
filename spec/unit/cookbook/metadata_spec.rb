@@ -354,7 +354,7 @@ describe Chef::Cookbook::Metadata do
 
     it "should fail validation on a simple pessimistic constraint" do
       expect_chef_version_works(["~> 999.0"])
-      expect { metadata.validate_chef_version! }.not_to raise_error(Chef::Exceptions::CookbookChefVersionMismatch)
+      expect { metadata.validate_chef_version! }.to raise_error(Chef::Exceptions::CookbookChefVersionMismatch)
     end
 
     it "should fail validation when that valid chef versions are too big" do

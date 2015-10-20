@@ -706,7 +706,7 @@ EOH
         end
         it 'knife upload succeeds' do
           knife('upload /cookbooks/x').should_succeed <<EOM
-Updated /cookbooks/x
+Created /cookbooks/x
 EOM
           knife('diff --name-status /cookbooks').should_succeed ''
         end
@@ -1239,8 +1239,8 @@ EOM
           file 'cookbooks/x-1.0.0/metadata.rb', cb_metadata('x', '1.0.0', "\nchef_version '~> 999.0'")
         end
         it 'knife upload succeeds' do
-          knife('upload /cookbooks/x').should_succeed <<EOM
-Updated /cookbooks/x
+          knife('upload /cookbooks/x-1.0.0').should_succeed <<EOM
+Created /cookbooks/x-1.0.0
 EOM
           knife('diff --name-status /cookbooks').should_succeed ''
         end
