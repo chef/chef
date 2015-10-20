@@ -615,6 +615,10 @@ describe Chef::Recipe do
       end
     end
 
+    it "should initialize tags to an empty Array" do
+      expect(node.tags).to eql([])
+    end
+
     it "should set tags via tag" do
       recipe.tag "foo"
       expect(node[:tags]).to include("foo")
