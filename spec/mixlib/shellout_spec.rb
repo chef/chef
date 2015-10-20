@@ -1113,13 +1113,7 @@ describe Mixlib::ShellOut do
 
         context 'on windows', :windows_only do
           let(:cmd) do
-            'powershell -c "sleep 10"'
-          end
-
-          before do
-            require "wmi-lite/wmi"
-            allow(WmiLite::Wmi).to receive(:new)
-            allow(Mixlib::ShellOut::Windows::Utils).to receive(:kill_process_tree)
+            'cmd /c powershell -c "sleep 10"'
           end
 
           it "should raise CommandTimeout" do
@@ -1130,7 +1124,10 @@ describe Mixlib::ShellOut do
 
           context 'and child processes should be killed' do
             it 'kills the child processes' do
-              expect(Mixlib::ShellOut::Windows::Utils).to receive(:kill_process_tree)
+              expect(Mixlib::ShellOut::Windows::Utils).to receive(:kill_process) do |instance|
+                expect(instance.wmi_ole_object.Name).to match(/powershell/)
+                Process.kill(:KILL, instance.wmi_ole_object.processid)
+              end
               expect { executed_cmd }.to raise_error(Mixlib::ShellOut::CommandTimeout)
             end
           end

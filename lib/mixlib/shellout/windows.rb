@@ -77,8 +77,8 @@ module Mixlib
           #
           # Start the process
           #
-          logger.debug(Utils.format_process(process, app_name, command_line, timeout)) if logger
           process = Process.create(create_process_args)
+          logger.debug(Utils.format_process(process, app_name, command_line, timeout)) if logger
           begin
             # Start pushing data into input
             stdin_write << input if input
@@ -322,7 +322,7 @@ module Mixlib
         end
 
         def self.kill_process_tree(pid, wmi, logger)
-          wmi.query("select ProcessID, Name from Win32_Process where ParentProcessID=#{pid}").each do |instance|
+          wmi.query("select * from Win32_Process where ParentProcessID=#{pid}").each do |instance|
             child_pid = instance.wmi_ole_object.processid
             kill_process_tree(child_pid, wmi, logger)
             begin
@@ -330,7 +330,7 @@ module Mixlib
                 "killing child process #{child_pid}::",
                 "#{instance.wmi_ole_object.Name} of parent #{pid}"
                 ].join) if logger
-              Process.kill(:KILL, child_pid)
+              kill_process(instance)
             rescue Errno::EIO, SystemCallError
               logger.debug([
                 "Failed to kill child process #{child_pid}::",
@@ -338,6 +338,10 @@ module Mixlib
               ].join) if logger
             end
           end
+        end
+
+        def self.kill_process(instance)
+          Process.kill(:KILL, instance.wmi_ole_object.processid)
         end
 
         def self.format_process(process, app_name, command_line, timeout)
