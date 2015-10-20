@@ -74,17 +74,8 @@ end
 compress :dmg
 
 package :msi do
-  install_path = Pathname.new(install_dir)
-
-  # Find path in which the Chef gem is installed
-  search_pattern = "#{install_path}/**/gems/chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll"
-  dll_path  = Pathname.glob(search_pattern).find { |path| path.file? }
-
-  raise "Could not find the log dll at `#{search_pattern}'!" if dll_path.nil?
-  dll_relative_path = windows_safe_path(dll_path.relative_path_from(install_path).to_s)
-
   upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
   wix_candle_extension 'WixUtilExtension'
   signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
-  parameters ChefLogDllPath: dll_relative_path
+  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll"))
 end
