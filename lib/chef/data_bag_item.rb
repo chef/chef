@@ -170,7 +170,7 @@ class Chef
       r = chef_server_rest
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In whyrun mode, so NOT performing data bag item save.")
+          Chef::Log.warn("In why-run mode, so NOT performing data bag item save.")
         else
           r.put_rest("data/#{data_bag}/#{item_id}", self)
         end

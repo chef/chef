@@ -609,7 +609,7 @@ class Chef
       # so then POST to create.
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In whyrun mode, so NOT performing node save.")
+          Chef::Log.warn("In why-run mode, so NOT performing node save.")
         else
           chef_server_rest.put_rest("nodes/#{name}", data_for_save)
         end

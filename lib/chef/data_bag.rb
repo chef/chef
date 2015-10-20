@@ -144,7 +144,7 @@ class Chef
     def save
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In whyrun mode, so NOT performing data bag save.")
+          Chef::Log.warn("In why-run mode, so NOT performing data bag save.")
         else
           create
         end
