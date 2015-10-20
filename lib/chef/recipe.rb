@@ -98,7 +98,7 @@ class Chef
     # false<FalseClass>:: If any of the parameters are missing
     def tagged?(*tags)
       tags.each do |tag|
-        return false unless run_context.node[:tags].include?(tag)
+        return false unless run_context.node.tags.include?(tag)
       end
       true
     end
@@ -109,10 +109,10 @@ class Chef
     # tags<Array>:: A list of tags
     #
     # === Returns
-    # tags<Array>:: The current list of run_context.node[:tags]
+    # tags<Array>:: The current list of run_context.node.tags
     def untag(*tags)
       tags.each do |tag|
-        run_context.node.normal[:tags].delete(tag)
+        run_context.node.tags.delete(tag)
       end
     end
 

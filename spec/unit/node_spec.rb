@@ -785,7 +785,7 @@ describe Chef::Node do
     end
 
     it "should not set the tags attribute to an empty array if it is already defined" do
-      node.normal[:tags] = [ "radiohead" ]
+      node.tag("radiohead")
       node.consume_external_attrs(@ohai_data, {})
       expect(node.tags).to eql([ "radiohead" ])
     end
