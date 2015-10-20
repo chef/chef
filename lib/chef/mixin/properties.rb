@@ -18,15 +18,12 @@ class Chef
         # @return [Hash<Symbol,Property>] The list of property names and types.
         #
         def properties(include_superclass=true)
-          @properties ||= {}
           if include_superclass
-            if superclass.respond_to?(:properties)
-              superclass.properties.merge(@properties)
-            else
-              @properties.dup
-            end
+            result = {}
+            ancestors.reverse_each { |c| result.merge!(c.properties(false)) if c.respond_to?(:properties) }
+            result
           else
-            @properties
+            @properties ||= {}
           end
         end
 
@@ -269,7 +266,9 @@ class Chef
         end
       end
 
-      extend ClassMethods
+      def self.included(other)
+        other.extend ClassMethods
+      end
 
       include Chef::Mixin::ParamsValidate
 
