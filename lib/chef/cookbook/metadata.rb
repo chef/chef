@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Copyright:: Copyright 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -652,13 +652,13 @@ class Chef
 
       def validate_ohai_version!
         unless gem_dep_matches?("ohai", Gem::Version.new(Ohai::VERSION), *ohai_versions)
-          raise Exceptions::CookbookOhaiVersionMismatch.new(Ohai::VERSION, *ohai_versions)
+          raise Exceptions::CookbookOhaiVersionMismatch.new(Ohai::VERSION, name, version, *ohai_versions)
         end
       end
 
       def validate_chef_version!
         unless gem_dep_matches?("chef", Gem::Version.new(Chef::VERSION), *chef_versions)
-          raise Exceptions::CookbookChefVersionMismatch.new(Chef::VERSION, *chef_versions)
+          raise Exceptions::CookbookChefVersionMismatch.new(Chef::VERSION, name, version, *chef_versions)
         end
       end
 

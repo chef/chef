@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Copyright:: Copyright 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -483,14 +483,16 @@ class Chef
     end
 
     class CookbookChefVersionMismatch < RuntimeError
-      def initialize(chef_version, *constraints)
-        super "chef version #{chef_version} is badness"
+      def initialize(chef_version, cookbook_name, cookbook_version, *constraints)
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(', ')
+        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on chef version #{constraint_str}, but the running chef version is #{chef_version}"
       end
     end
 
     class CookbookOhaiVersionMismatch < RuntimeError
-      def initialize(ohai_version, *constraints)
-        super "ohai version #{ohai_version} is badness"
+      def initialize(ohai_version, cookbook_name, cookbook_version, *constraints)
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(', ')
+        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on ohai version #{constraint_str}, but the running ohai version is #{ohai_version}"
       end
     end
 

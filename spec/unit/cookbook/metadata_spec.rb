@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Copyright:: Copyright 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -351,6 +351,31 @@ describe Chef::Cookbook::Metadata do
     it "should work with multiple complex constraints" do
       expect_chef_version_works([">= 11.14.2", "< 11.18.10"],[">= 12.2.1", "< 12.5.1"])
     end
+
+    it "should fail validation on a simple pessimistic constraint" do
+      expect_chef_version_works(["~> 999.0"])
+      expect { metadata.validate_chef_version! }.not_to raise_error(Chef::Exceptions::CookbookChefVersionMismatch)
+    end
+
+    it "should fail validation when that valid chef versions are too big" do
+      expect_chef_version_works([">= 999.0", "< 999.9"])
+      expect { metadata.validate_chef_version! }.to raise_error(Chef::Exceptions::CookbookChefVersionMismatch)
+    end
+
+    it "should fail validation when that valid chef versions are too small" do
+      expect_chef_version_works([">= 0.0.1", "< 0.0.9"])
+      expect { metadata.validate_chef_version! }.to raise_error(Chef::Exceptions::CookbookChefVersionMismatch)
+    end
+
+    it "should fail validation when all ranges fail" do
+      expect_chef_version_works([">= 999.0", "< 999.9"],[">= 0.0.1", "< 0.0.9"])
+      expect { metadata.validate_chef_version! }.to raise_error(Chef::Exceptions::CookbookChefVersionMismatch)
+    end
+
+    it "should pass validation when one constraint passes" do
+      expect_chef_version_works([">= 999.0", "< 999.9"],["= #{Chef::VERSION}"])
+      expect { metadata.validate_chef_version! }.not_to raise_error
+    end
   end
 
   describe "ohai_version" do
@@ -377,6 +402,31 @@ describe Chef::Cookbook::Metadata do
 
     it "should work with multiple complex constraints" do
       expect_ohai_version_works([">= 11.14.2", "< 11.18.10"],[">= 12.2.1", "< 12.5.1"])
+    end
+
+    it "should fail validation on a simple pessimistic constraint" do
+      expect_ohai_version_works(["~> 999.0"])
+      expect { metadata.validate_ohai_version! }.to raise_error(Chef::Exceptions::CookbookOhaiVersionMismatch)
+    end
+
+    it "should fail validation when that valid chef versions are too big" do
+      expect_ohai_version_works([">= 999.0", "< 999.9"])
+      expect { metadata.validate_ohai_version! }.to raise_error(Chef::Exceptions::CookbookOhaiVersionMismatch)
+    end
+
+    it "should fail validation when that valid chef versions are too small" do
+      expect_ohai_version_works([">= 0.0.1", "< 0.0.9"])
+      expect { metadata.validate_ohai_version! }.to raise_error(Chef::Exceptions::CookbookOhaiVersionMismatch)
+    end
+
+    it "should fail validation when all ranges fail" do
+      expect_ohai_version_works([">= 999.0", "< 999.9"],[">= 0.0.1", "< 0.0.9"])
+      expect { metadata.validate_ohai_version! }.to raise_error(Chef::Exceptions::CookbookOhaiVersionMismatch)
+    end
+
+    it "should pass validation when one constraint passes" do
+      expect_ohai_version_works([">= 999.0", "< 999.9"],["= #{Ohai::VERSION}"])
+      expect { metadata.validate_ohai_version! }.not_to raise_error
     end
   end
 

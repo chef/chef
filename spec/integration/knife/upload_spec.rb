@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright (c) 2013-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -699,6 +699,19 @@ EOH
         end
       end
     end
+    when_the_chef_server "is empty" do
+      when_the_repository 'has a cookbook with an invalid chef_version constraint in it' do
+        before do
+          file 'cookbooks/x/metadata.rb', cb_metadata('x', '1.0.0', "\nchef_version '~> 999.0'")
+        end
+        it 'knife upload succeeds' do
+          knife('upload /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+          knife('diff --name-status /cookbooks').should_succeed ''
+        end
+      end
+    end
   end # without versioned cookbooks
 
   with_versioned_cookbooks do
@@ -1216,6 +1229,20 @@ EOM
         it 'knife upload succeeds' do
           knife('upload /data_bags/bag/x.json').should_succeed "Created /data_bags/bag\nCreated /data_bags/bag/x.json\n"
           knife('diff --name-status /data_bags/bag/x.json').should_succeed ''
+        end
+      end
+    end
+
+    when_the_chef_server "is empty" do
+      when_the_repository 'has a cookbook with an invalid chef_version constraint in it' do
+        before do
+          file 'cookbooks/x-1.0.0/metadata.rb', cb_metadata('x', '1.0.0', "\nchef_version '~> 999.0'")
+        end
+        it 'knife upload succeeds' do
+          knife('upload /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+          knife('diff --name-status /cookbooks').should_succeed ''
         end
       end
     end
