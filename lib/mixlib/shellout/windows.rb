@@ -20,14 +20,8 @@
 
 require 'win32/process'
 require 'mixlib/shellout/windows/core_ext'
-require 'mixlib/log'
 
 module Mixlib
-  class ShelloutLog
-    extend Mixlib::Log
-    init("#{ENV['temp']}/shellout.txt")
-  end
-
   class ShellOut
     module Windows
 
@@ -49,8 +43,6 @@ module Mixlib
       # Missing lots of features from the UNIX version, such as
       # uid, etc.
       def run_command
-        logger = ShelloutLog.logger
-
         #
         # Create pipes to capture stdout and stderr,
         #
@@ -85,6 +77,7 @@ module Mixlib
           #
           # Start the process
           #
+          logger.debug(Utils.format_process(process, app_name, command_line, timeout)) if logger
           process = Process.create(create_process_args)
           begin
             # Start pushing data into input
@@ -97,7 +90,6 @@ module Mixlib
             # Wait for the process to finish, consuming output as we go
             #
             start_wait = Time.now
-            logger.warn(Utils.format_process(process, app_name, command_line, timeout)) if logger
             while true
               wait_status = WaitForSingleObject(process.process_handle, 0)
               case wait_status
@@ -123,7 +115,11 @@ module Mixlib
                     logger.warn("Failed to kill timed out process #{process.process_id}") if logger
                   end
 
-                  raise Mixlib::ShellOut::CommandTimeout, "command timed out:\n#{format_for_exception}\n#{Utils.format_process(process, app_name, command_line, timeout)}"
+                  raise Mixlib::ShellOut::CommandTimeout, [
+                    "command timed out:",
+                    format_for_exception,
+                    Utils.format_process(process, app_name, command_line, timeout)
+                  ].join("\n")
                 end
 
                 consume_output(open_streams, stdout_read, stderr_read)
@@ -330,10 +326,16 @@ module Mixlib
             child_pid = instance.wmi_ole_object.processid
             kill_process_tree(child_pid, wmi, logger)
             begin
-              logger.warn("killing child process #{child_pid}::#{instance.wmi_ole_object.Name} of parent #{pid}") if logger
+              logger.debug([
+                "killing child process #{child_pid}::",
+                "#{instance.wmi_ole_object.Name} of parent #{pid}"
+                ].join) if logger
               Process.kill(:KILL, child_pid)
             rescue Errno::EIO, SystemCallError
-              logger.warn("Failed to kill child process #{child_pid}::#{instance.wmi_ole_object.Name} of parent #{pid}") if logger
+              logger.debug([
+                "Failed to kill child process #{child_pid}::",
+                "#{instance.wmi_ole_object.Name} of parent #{pid}"
+              ].join) if logger
             end
           end
         end
