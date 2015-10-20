@@ -29,7 +29,7 @@ require 'chef/resources'
 
 class Chef::Application::Apply < Chef::Application
 
-  banner "Usage: chef-apply [RECIPE_FILE] [-e RECIPE_TEXT] [-s]"
+  banner "Usage: chef-apply [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
 
   option :execute,
     :short        => "-e RECIPE_TEXT",
