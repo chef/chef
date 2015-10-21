@@ -199,6 +199,9 @@ elseif ( $LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0 )
   $exitstatus = $LASTEXITCODE
 }
 
+# Print STDOUT for the script execution
+Write-Output $chefscriptresult
+
 # If this script is launched with -File, the process exit
 # status of PowerShell.exe will be $exitstatus. If it was
 # launched with -Command, it will be 0 if $exitstatus was 0,
