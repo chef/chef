@@ -4,6 +4,12 @@
 * [pr#4034](https://github.com/chef/chef/pull/4034) add optional ruby-profiling with --profile-ruby
 * [pr#3119](https://github.com/chef/chef/pull/3119) allow removing user, even if their GID isn't resolvable
 * [pr#4068](https://github.com/chef/chef/pull/4068) update messaging from LWRP to Custom Resource in logging and spec 
+* [pr#4021](https://github.com/chef/chef/pull/4021) add missing requires for Chef::DSL::Recipe to LWRPBase 
+
+## 12.5.1
+
+* [**Ranjib Dey**](https://github.com/ranjib):
+  [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
 
 ## 12.5.1
 
