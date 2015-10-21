@@ -665,11 +665,10 @@ class Chef
     private
 
       def gem_dep_matches?(what, version, *deps)
+        # always match if we have no chef_version at all
         return true unless deps.length > 0
-        deps.each do |dep|
-          return true if dep.match?(what, version)
-        end
-        return false
+        # match if we match any of the chef_version lines
+        deps.any? { |dep| dep.match?(what, version) }
       end
 
       def run_validation
