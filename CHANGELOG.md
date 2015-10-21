@@ -2,6 +2,7 @@
 ## Unreleased
 
 * [pr#4034](https://github.com/chef/chef/pull/4034) add optional ruby-profiling with --profile-ruby
+* [pr#3119](https://github.com/chef/chef/pull/3119) allow removing user, even if their GID isn't resolvable
 
 ## 12.5.1
 
