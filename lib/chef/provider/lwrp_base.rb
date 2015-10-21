@@ -19,6 +19,7 @@
 #
 
 require 'chef/provider'
+require 'chef/dsl/recipe'
 require 'chef/dsl/include_recipe'
 
 class Chef
