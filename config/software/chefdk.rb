@@ -39,6 +39,7 @@ dependency "chef-vault"
 dependency "foodcritic"
 dependency "ohai"
 dependency "test-kitchen"
+dependency "kitchen-inspec"
 dependency "kitchen-vagrant"
 dependency "openssl-customization"
 

@@ -66,6 +66,7 @@ else
 end
 
 override :'test-kitchen', version: "v1.4.2"
+override :'kitchen-inspec', version: "master" # will set when release is tagged
 override :'kitchen-vagrant', version: "v0.19.0"
 override :yajl,           version: "1.2.1"
 override :zlib,           version: "1.2.8"
