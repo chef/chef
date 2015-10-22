@@ -4,6 +4,7 @@
 
 * Ship gemspec and Gemfiles to facilate testing.
 * Fix #111 by pulling in an updated version of win-32/process and correctly patching Process::create.
+* Kill all child processes on Windows when a command times out.
 
 ## Release 2.2.1
 
