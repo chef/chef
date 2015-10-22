@@ -1,5 +1,9 @@
 # mixlib-shellout Changelog
 
+## Release 2.2.3
+
+* Kill all child processes on Windows when a command times out.
+
 ## Release 2.2.2
 
 * Ship gemspec and Gemfiles to facilate testing.
