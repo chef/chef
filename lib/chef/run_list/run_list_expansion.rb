@@ -22,6 +22,7 @@ require 'chef/mixin/deep_merge'
 
 require 'chef/role'
 require 'chef/rest'
+require 'chef/json_compat'
 
 class Chef
   class RunList
@@ -54,6 +55,13 @@ class Chef
       # * Duplicate roles are not shown.
       attr_reader :run_list_trace
 
+      # Like run list trace but instead of saving the entries as strings it saves their objects
+      # The to_json method uses this list to construct json.
+      attr_reader :better_run_list_trace
+
+      attr_reader :all_missing_roles
+      attr_reader :role_errors
+
       def initialize(environment, run_list_items, source=nil)
         @environment = environment
         @missing_roles_with_including_role = Array.new
@@ -68,6 +76,9 @@ class Chef
 
         @applied_roles = {}
         @run_list_trace = Hash.new {|h, key| h[key] = [] }
+        @better_run_list_trace = Hash.new {|h, key| h[key] = [] }
+        @all_missing_roles = {}
+        @role_errors = {}
       end
 
       # Did we find any errors (expanding roles)?
@@ -124,11 +135,21 @@ class Chef
       def role_not_found(name, included_by)
         Chef::Log.error("Role #{name} (included by '#{included_by}') is in the runlist but does not exist. Skipping expand.")
         @missing_roles_with_including_role << [name, included_by]
+        @all_missing_roles[name] = true
         nil
       end
 
       def errors
         @missing_roles_with_including_role.map {|item| item.first }
+      end
+
+      def to_json(*a)
+        Chef::JSONCompat.to_json(to_hash, *a)
+      end
+
+      def to_hash
+        seen_items = {:recipe => {}, :role => {}}
+        {:id => @environment, :run_list => convert_run_list_trace('top level', seen_items)}
       end
 
       private
@@ -140,8 +161,10 @@ class Chef
       end
 
       def expand_run_list_items(items, included_by="top level")
+
         if entry = items.shift
           @run_list_trace[included_by.to_s] << entry.to_s
+          @better_run_list_trace[included_by.to_s] <<  entry
 
           case entry.type
           when :recipe
@@ -156,7 +179,25 @@ class Chef
         end
       end
 
+      # Recursive helper to decode the non-nested hash form back into a tree
+      def convert_run_list_trace(base, seen_items)
+        @better_run_list_trace[base].map do |item|
+          skipped = seen_items[item.type][item.name]
+          seen_items[item.type][item.name] = true
+          case item.type
+            when :recipe
+                {:type => 'recipe', :name => item.name, :version => item.version, :skipped => !!skipped}
+            when :role
+              error = @role_errors[item.name]
+              missing = @all_missing_roles[item.name]
+              {:type => :role, :name => item.name, :children => (missing || error || skipped) ? [] : convert_run_list_trace(item.to_s, seen_items),
+               :missing => missing, :error => error, :skipped => skipped}
+          end
+        end
+      end
+
     end
+
 
     # Expand a run list from disk. Suitable for chef-solo
     class RunListExpansionFromDisk < RunListExpansion
@@ -184,8 +225,14 @@ class Chef
         else
           raise
         end
+      rescue Exception => e
+        @role_errors[name] = e.to_s
+        raise
       end
+
     end
 
   end
 end
+
+
