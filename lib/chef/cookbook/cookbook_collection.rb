@@ -1,7 +1,7 @@
 #--
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +41,10 @@ class Chef
       cookbook_versions.each{ |cookbook_name, cookbook_version| self[cookbook_name] = cookbook_version }
     end
 
+    # Validates that the cookbook metadata allows it to run on this instance.
+    #
+    # Currently checks chef_version and ohai_version in the cookbook metadata
+    # against the running Chef::VERSION and Ohai::VERSION.
     def validate!
       each do |cookbook_name, cookbook_version|
         cookbook_version.metadata.validate_chef_version!

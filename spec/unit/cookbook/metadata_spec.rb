@@ -838,7 +838,7 @@ describe Chef::Cookbook::Metadata do
         chef_versions
       }.each do |t|
         it "should include '#{t}'" do
-          expect(deserialized_metadata[t]).to eq(metadata.gem_requirements_to_hash(*metadata.send(t.to_sym)))
+          expect(deserialized_metadata[t]).to eq(metadata.gem_requirements_to_array(*metadata.send(t.to_sym)))
         end
       end
     end
