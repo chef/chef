@@ -404,7 +404,7 @@ class Chef
       # @param version_args [Array<String>] Version constraint in String form
       # @return [Array<Gem::Dependency>] Current chef_versions array
       def chef_version(*version_args)
-        @chef_versions << Gem::Dependency.new('chef', *version_args)
+        @chef_versions << Gem::Dependency.new('chef', *version_args) unless version_args.empty?
         @chef_versions
       end
 
@@ -415,7 +415,7 @@ class Chef
       # @param version_args [Array<String>] Version constraint in String form
       # @return [Array<Gem::Dependency>] Current ohai_versions array
       def ohai_version(*version_args)
-        @ohai_versions << Gem::Dependency.new('ohai', *version_args)
+        @ohai_versions << Gem::Dependency.new('ohai', *version_args) unless version_args.empty?
         @ohai_versions
       end
 
