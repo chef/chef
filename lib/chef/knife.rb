@@ -87,7 +87,16 @@ class Chef
     def self.inherited(subclass)
       unless subclass.unnamed?
         subcommands[subclass.snake_case_name] = subclass
-        subcommand_files[subclass.snake_case_name] += [caller[0].split(/:\d+/).first]
+        subcommand_files[subclass.snake_case_name] +=
+          if subclass.superclass.to_s == "Chef::ChefFS::Knife"
+            # ChefFS-based commands have a superclass that defines an
+            # inhereited method which calls super. This means that the
+            # top of the call stack is not the class definition for
+            # our subcommand.  Try the second entry in the call stack.
+            [path_from_caller(caller[1])]
+          else
+            [path_from_caller(caller[0])]
+          end
       end
     end
 
@@ -220,6 +229,10 @@ class Chef
     private
 
     OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
+
+    def self.path_from_caller(caller_line)
+      caller_line.split(/:\d+/).first
+    end
 
     # :nodoc:
     # Error out and print usage. probably because the arguments given by the
