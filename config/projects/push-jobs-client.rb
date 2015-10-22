@@ -77,25 +77,10 @@ package :msi do
   upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
   signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
 
-  #######################################################################
-  # Locate the Chef gem's path relative to the installation directory
-  #######################################################################
-  install_path = Pathname.new(install_dir)
-
-  # Find path in which the Chef gem is installed
-  search_pattern = "#{install_path}/**/gems/opscode-pushy-client-[0-9]*"
-  gem_path  = Pathname.glob(search_pattern).find { |path| path.directory? }
-
-  if gem_path.nil?
-    raise "Could not find a gem in `#{search_pattern}'!"
-  else
-    relative_path = gem_path.relative_path_from(install_path)
-  end
-
   parameters(
     # We are going to use this path in the startup command of chef
     # service. So we need to change file seperators to make windows
     # happy.
-    'PushJobsGemPath' => windows_safe_path(relative_path.to_s),
+    'PushJobsGemPath' => windows_safe_path(gem_path("opscode-pushy-client-[0-9]*")),
   )
 end
