@@ -3,9 +3,10 @@
 
 * [pr#4034](https://github.com/chef/chef/pull/4034) add optional ruby-profiling with --profile-ruby
 * [pr#3119](https://github.com/chef/chef/pull/3119) allow removing user, even if their GID isn't resolvable
-* [pr#4068](https://github.com/chef/chef/pull/4068) update messaging from LWRP to Custom Resource in logging and spec 
-* [pr#4021](https://github.com/chef/chef/pull/4021) add missing requires for Chef::DSL::Recipe to LWRPBase 
+* [pr#4068](https://github.com/chef/chef/pull/4068) update messaging from LWRP to Custom Resource in logging and spec
+* [pr#4021](https://github.com/chef/chef/pull/4021) add missing requires for Chef::DSL::Recipe to LWRPBase
 * [pr#3597](https://github.com/chef/chef/pull/3597) print STDOUT from the powershell_script
+* [pr#4091](https://github.com/chef/chef/pull/4091) Allow downloading of root_files in a chef repository
 
 ## 12.5.1
 

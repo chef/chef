@@ -1103,6 +1103,15 @@ EOM
     before :each do
       Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
     end
+    when_the_repository 'has existing top level files' do
+      before do
+        file 'invitations.json', {}
+      end
+
+      it "can still download top level files" do
+        knife('download /invitations.json').should_succeed
+      end
+    end
 
     when_the_repository 'is empty' do
       it 'knife download / downloads everything' do
