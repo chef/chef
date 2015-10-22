@@ -321,6 +321,10 @@ module Mixlib
           File.executable?(path) && !File.directory?(path)
         end
 
+        # recursively kills all child processes of given pid
+        # calls itself querying for children child procs until
+        # none remain. Important that a single WmiLite instance
+        # is passed in since each creates its own WMI rpc process
         def self.kill_process_tree(pid, wmi, logger)
           wmi.query("select * from Win32_Process where ParentProcessID=#{pid}").each do |instance|
             child_pid = instance.wmi_ole_object.processid
