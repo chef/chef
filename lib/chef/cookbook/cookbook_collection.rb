@@ -45,6 +45,9 @@ class Chef
     #
     # Currently checks chef_version and ohai_version in the cookbook metadata
     # against the running Chef::VERSION and Ohai::VERSION.
+    #
+    # @raises [Chef::Exceptions::CookbookChefVersionMismatch] if the Chef::VERSION fails validation
+    # @raises [Chef::Exceptions::CookbookOhaiVersionMismatch] if the Ohai::VERSION fails validation
     def validate!
       each do |cookbook_name, cookbook_version|
         cookbook_version.metadata.validate_chef_version!
