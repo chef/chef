@@ -3,7 +3,8 @@
 
 * [**Dave Eddy**](https://github.com/bahamas10)
   [pr#3187](https://github.com/chef/chef/pull/3187) overhaul solaris SMF service provider
-
+* [**Mikhail Zholobov**](https://github.com/legal90)
+  [pr#3192](https://github.com/chef/chef/pull/3192) provider/user/dscl: Set default gid to 20
 
 * [pr#4034](https://github.com/chef/chef/pull/4034) add optional ruby-profiling with --profile-ruby
 * [pr#3119](https://github.com/chef/chef/pull/3119) allow removing user, even if their GID isn't resolvable

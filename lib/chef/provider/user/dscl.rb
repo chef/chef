@@ -257,10 +257,13 @@ user password using shadow hash.")
 
         #
         # Sets the group id for the user using dscl. Fails if a group doesn't
-        # exist on the system with given group id.
+        # exist on the system with given group id. If `gid` is not specified, it
+        # sets a default Mac user group "staff", with id 20.
         #
         def dscl_set_gid
-          unless @new_resource.gid && @new_resource.gid.to_s.match(/^\d+$/)
+          if @new_resource.gid.nil?
+            @new_resource.gid(20)
+          elsif !@new_resource.gid.to_s.match(/^\d+$/)
             begin
               possible_gid = run_dscl("read /Groups/#{@new_resource.gid} PrimaryGroupID").split(" ").last
             rescue Chef::Exceptions::DsclCommandFailed => e
