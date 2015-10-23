@@ -204,26 +204,39 @@ class Chef
         specified_properties = properties.select { |property| new_resource.property_is_set?(property) }
         modified = specified_properties.select { |p| new_resource.send(p) != current_resource.send(p) }
         if modified.empty?
-          Chef::Log.debug("Skipping update of #{new_resource.to_s}: has not changed any of the specified properties #{specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")}.")
+          properties_str = if @sensitive
+            '(suppressed sensitive properties)'
+          else
+            specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")
+          end
+          Chef::Log.debug("Skipping update of #{new_resource.to_s}: has not changed any of the specified properties #{properties_str}.")
           return false
         end
 
         # Print the pretty green text and run the block
         property_size = modified.map { |p| p.size }.max
-        modified = modified.map { |p| "  set #{p.to_s.ljust(property_size)} to #{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})" }
+        modified.map! do |p|
+          properties_str = if @sensitive
+            '(suppressed sensitive properties)'
+          else
+            "#{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})"
+          end
+          "  set #{p.to_s.ljust(property_size)} to #{properties_str}"
+        end
         converge_by([ "update #{current_resource.identity}" ] + modified, &converge_block)
 
       else
         # The resource doesn't exist. Mark that we are *creating* this, and
         # write down any properties we are setting.
         property_size = properties.map { |p| p.size }.max
-        created = []
-        properties.each do |property|
-          if new_resource.property_is_set?(property)
-            created << "  set #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect}"
+        created = properties.map do |property|
+          default = ' (default value)' unless new_resource.property_is_set?(property)
+          properties_str = if @sensitive
+            '(suppressed sensitive properties)'
           else
-            created << "  set #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect} (default value)"
+            new_resource.send(property).inspect
           end
+          "  set #{property.to_s.ljust(property_size)} to #{properties_str}" + default ||= ''
         end
 
         converge_by([ "create #{new_resource.identity}" ] + created, &converge_block)
