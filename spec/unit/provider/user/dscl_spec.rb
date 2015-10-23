@@ -789,6 +789,13 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         expect { provider.dscl_set_gid }.to raise_error(Chef::Exceptions::GroupIDNotFound)
       end
     end
+
+    it "should set group ID to 20 if it's not specified" do
+      new_resource.gid nil
+      expect(provider).to receive(:run_dscl).with("create /Users/toor PrimaryGroupID '20'").ordered.and_return(true)
+      provider.dscl_set_gid
+      expect(new_resource.gid).to eq(20)
+    end
   end
 
   describe "when the user exists and chef is managing it" do
