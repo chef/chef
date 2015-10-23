@@ -125,6 +125,8 @@ class Chef
           end
         end
 
+        alias_method :upgrade_package, :install_package
+
         def remove_package(name, version)
           if @new_resource.options.nil?
             shell_out_with_timeout!( "pkgrm -n #{name}" )
