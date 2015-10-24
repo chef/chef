@@ -44,6 +44,10 @@ class Chef
       # This provider only supports Mac OSX versions 10.7 and above
       class Dscl < Chef::Provider::User
 
+        attr_accessor :user_info
+        attr_accessor :authentication_authority
+        attr_accessor :password_shadow_conversion_algorithm
+
         provides :user, os: "darwin"
 
         def define_resource_requirements
@@ -56,19 +60,19 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { ::File.exists?("/usr/bin/dscl") }
-            a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/dscl' on the system for #{@new_resource}!")
+            a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/dscl' on the system for #{new_resource}!")
           end
 
           requirements.assert(:all_actions) do |a|
             a.assertion { ::File.exists?("/usr/bin/plutil") }
-            a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/plutil' on the system for #{@new_resource}!")
+            a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/plutil' on the system for #{new_resource}!")
           end
 
           requirements.assert(:create, :modify, :manage) do |a|
             a.assertion do
-              if @new_resource.password && mac_osx_version_greater_than_10_7?
+              if new_resource.password && mac_osx_version_greater_than_10_7?
                 # SALTED-SHA512 password shadow hashes are not supported on 10.8 and above.
-                !salted_sha512?(@new_resource.password)
+                !salted_sha512?(new_resource.password)
               else
                 true
               end
@@ -80,10 +84,10 @@ in 'password', with the associated 'salt' and 'iterations'.")
 
           requirements.assert(:create, :modify, :manage) do |a|
             a.assertion do
-              if @new_resource.password && mac_osx_version_greater_than_10_7? && salted_sha512_pbkdf2?(@new_resource.password)
+              if new_resource.password && mac_osx_version_greater_than_10_7? && salted_sha512_pbkdf2?(new_resource.password)
                 # salt and iterations should be specified when
                 # SALTED-SHA512-PBKDF2 password shadow hash is given
-                !@new_resource.salt.nil? && !@new_resource.iterations.nil?
+                !new_resource.salt.nil? && !new_resource.iterations.nil?
               else
                 true
               end
@@ -94,9 +98,9 @@ in 'password', with the associated 'salt' and 'iterations'.")
 
           requirements.assert(:create, :modify, :manage) do |a|
             a.assertion do
-              if @new_resource.password && !mac_osx_version_greater_than_10_7?
+              if new_resource.password && !mac_osx_version_greater_than_10_7?
                 # On 10.7 SALTED-SHA512-PBKDF2 is not supported
-                !salted_sha512_pbkdf2?(@new_resource.password)
+                !salted_sha512_pbkdf2?(new_resource.password)
               else
                 true
               end
@@ -109,21 +113,21 @@ user password using shadow hash.")
         end
 
         def load_current_resource
-          @current_resource = Chef::Resource::User.new(@new_resource.username)
-          @current_resource.username(@new_resource.username)
+          @current_resource = Chef::Resource::User.new(new_resource.username)
+          current_resource.username(new_resource.username)
 
           @user_info = read_user_info
-          if @user_info
-            @current_resource.uid(dscl_get(@user_info, :uid))
-            @current_resource.gid(dscl_get(@user_info, :gid))
-            @current_resource.home(dscl_get(@user_info, :home))
-            @current_resource.shell(dscl_get(@user_info, :shell))
-            @current_resource.comment(dscl_get(@user_info, :comment))
-            @authentication_authority = dscl_get(@user_info, :auth_authority)
+          if user_info
+            current_resource.uid(dscl_get(user_info, :uid))
+            current_resource.gid(dscl_get(user_info, :gid))
+            current_resource.home(dscl_get(user_info, :home))
+            current_resource.shell(dscl_get(user_info, :shell))
+            current_resource.comment(dscl_get(user_info, :comment))
+            @authentication_authority = dscl_get(user_info, :auth_authority)
 
-            if @new_resource.password && dscl_get(@user_info, :password) == "********"
+            if new_resource.password && dscl_get(user_info, :password) == "********"
               # A password is set. Let's get the password information from shadow file
-              shadow_hash_binary = dscl_get(@user_info, :shadow_hash)
+              shadow_hash_binary = dscl_get(user_info, :shadow_hash)
 
               # Calling shell_out directly since we want to give an input stream
               shadow_hash_xml = convert_binary_plist_to_xml(shadow_hash_binary.string)
@@ -132,26 +136,26 @@ user password using shadow hash.")
               if shadow_hash["SALTED-SHA512"]
                 # Convert the shadow value from Base64 encoding to hex before consuming them
                 @password_shadow_conversion_algorithm = "SALTED-SHA512"
-                @current_resource.password(shadow_hash["SALTED-SHA512"].string.unpack('H*').first)
+                current_resource.password(shadow_hash["SALTED-SHA512"].string.unpack('H*').first)
               elsif shadow_hash["SALTED-SHA512-PBKDF2"]
                 @password_shadow_conversion_algorithm = "SALTED-SHA512-PBKDF2"
                 # Convert the entropy from Base64 encoding to hex before consuming them
-                @current_resource.password(shadow_hash["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first)
-                @current_resource.iterations(shadow_hash["SALTED-SHA512-PBKDF2"]["iterations"])
+                current_resource.password(shadow_hash["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first)
+                current_resource.iterations(shadow_hash["SALTED-SHA512-PBKDF2"]["iterations"])
                 # Convert the salt from Base64 encoding to hex before consuming them
-                @current_resource.salt(shadow_hash["SALTED-SHA512-PBKDF2"]["salt"].string.unpack('H*').first)
+                current_resource.salt(shadow_hash["SALTED-SHA512-PBKDF2"]["salt"].string.unpack('H*').first)
               else
                 raise(Chef::Exceptions::User,"Unknown shadow_hash format: #{shadow_hash.keys.join(' ')}")
               end
             end
 
-            convert_group_name if @new_resource.gid
+            convert_group_name if new_resource.gid
           else
             @user_exists = false
-            Chef::Log.debug("#{@new_resource} user does not exist")
+            Chef::Log.debug("#{new_resource} user does not exist")
           end
 
-          @current_resource
+          current_resource
         end
 
         #
@@ -190,15 +194,16 @@ user password using shadow hash.")
         # Create a user using dscl
         #
         def dscl_create_user
-          run_dscl("create /Users/#{@new_resource.username}")
+          run_dscl("create /Users/#{new_resource.username}")
         end
 
         #
         # Saves the specified Chef user `comment` into RealName attribute
-        # of Mac user.
+        # of Mac user. If `comment` is not specified, it takes `username` value.
         #
         def dscl_create_comment
-          run_dscl("create /Users/#{@new_resource.username} RealName '#{@new_resource.comment}'")
+          comment = new_resource.comment || new_resource.username
+          run_dscl("create /Users/#{new_resource.username} RealName '#{comment}'")
         end
 
         #
@@ -207,13 +212,14 @@ user password using shadow hash.")
         # from 200 if `system` is set, 500 otherwise.
         #
         def dscl_set_uid
-          @new_resource.uid(get_free_uid) if (@new_resource.uid.nil? || @new_resource.uid == '')
+          # XXX: mutates the new resource
+          new_resource.uid(get_free_uid) if (new_resource.uid.nil? || new_resource.uid == '')
 
-          if uid_used?(@new_resource.uid)
-            raise(Chef::Exceptions::RequestedUIDUnavailable, "uid #{@new_resource.uid} is already in use")
+          if uid_used?(new_resource.uid)
+            raise(Chef::Exceptions::RequestedUIDUnavailable, "uid #{new_resource.uid} is already in use")
           end
 
-          run_dscl("create /Users/#{@new_resource.username} UniqueID #{@new_resource.uid}")
+          run_dscl("create /Users/#{new_resource.username} UniqueID #{new_resource.uid}")
         end
 
         #
@@ -222,7 +228,7 @@ user password using shadow hash.")
         #
         def get_free_uid(search_limit=1000)
           uid = nil
-          base_uid = @new_resource.system ? 200 : 500
+          base_uid = new_resource.system ? 200 : 500
           next_uid_guess = base_uid
           users_uids = run_dscl("list /Users uid")
           while(next_uid_guess < search_limit + base_uid)
@@ -248,7 +254,7 @@ user password using shadow hash.")
             tmap
           end
           if uid_map[uid.to_s]
-            unless uid_map[uid.to_s] == @new_resource.username.to_s
+            unless uid_map[uid.to_s] == new_resource.username.to_s
               return true
             end
           end
@@ -261,17 +267,19 @@ user password using shadow hash.")
         # sets a default Mac user group "staff", with id 20.
         #
         def dscl_set_gid
-          if @new_resource.gid.nil?
-            @new_resource.gid(20)
-          elsif !@new_resource.gid.to_s.match(/^\d+$/)
+          if new_resource.gid.nil?
+            # XXX: mutates the new resource
+            new_resource.gid(20)
+          elsif !new_resource.gid.to_s.match(/^\d+$/)
             begin
-              possible_gid = run_dscl("read /Groups/#{@new_resource.gid} PrimaryGroupID").split(" ").last
+              possible_gid = run_dscl("read /Groups/#{new_resource.gid} PrimaryGroupID").split(" ").last
             rescue Chef::Exceptions::DsclCommandFailed => e
-              raise Chef::Exceptions::GroupIDNotFound.new("Group not found for #{@new_resource.gid} when creating user #{@new_resource.username}")
+              raise Chef::Exceptions::GroupIDNotFound.new("Group not found for #{new_resource.gid} when creating user #{new_resource.username}")
             end
-            @new_resource.gid(possible_gid) if possible_gid && possible_gid.match(/^\d+$/)
+            # XXX: mutates the new resource
+            new_resource.gid(possible_gid) if possible_gid && possible_gid.match(/^\d+$/)
           end
-          run_dscl("create /Users/#{@new_resource.username} PrimaryGroupID '#{@new_resource.gid}'")
+          run_dscl("create /Users/#{new_resource.username} PrimaryGroupID '#{new_resource.gid}'")
         end
 
         #
@@ -279,15 +287,15 @@ user password using shadow hash.")
         # directory is managed (moved / created) for the user.
         #
         def dscl_set_home
-          if @new_resource.home.nil? || @new_resource.home.empty?
-            run_dscl("delete /Users/#{@new_resource.username} NFSHomeDirectory")
+          if new_resource.home.nil? || new_resource.home.empty?
+            run_dscl("delete /Users/#{new_resource.username} NFSHomeDirectory")
             return
           end
 
-          if @new_resource.supports[:manage_home]
+          if new_resource.supports[:manage_home]
             validate_home_dir_specification!
 
-            if (@current_resource.home == @new_resource.home) && !new_home_exists?
+            if (current_resource.home == new_resource.home) && !new_home_exists?
               ditto_home
             elsif !current_home_exists? && !new_home_exists?
               ditto_home
@@ -295,49 +303,49 @@ user password using shadow hash.")
               move_home
             end
           end
-          run_dscl("create /Users/#{@new_resource.username} NFSHomeDirectory '#{@new_resource.home}'")
+          run_dscl("create /Users/#{new_resource.username} NFSHomeDirectory '#{new_resource.home}'")
         end
 
         def validate_home_dir_specification!
-          unless @new_resource.home =~ /^\//
-            raise(Chef::Exceptions::InvalidHomeDirectory,"invalid path spec for User: '#{@new_resource.username}', home directory: '#{@new_resource.home}'")
+          unless new_resource.home =~ /^\//
+            raise(Chef::Exceptions::InvalidHomeDirectory,"invalid path spec for User: '#{new_resource.username}', home directory: '#{new_resource.home}'")
           end
         end
 
         def current_home_exists?
-          ::File.exist?("#{@current_resource.home}")
+          ::File.exist?("#{current_resource.home}")
         end
 
         def new_home_exists?
-          ::File.exist?("#{@new_resource.home}")
+          ::File.exist?("#{new_resource.home}")
         end
 
         def ditto_home
           skel = "/System/Library/User Template/English.lproj"
           raise(Chef::Exceptions::User,"can't find skel at: #{skel}") unless ::File.exists?(skel)
-          shell_out! "ditto '#{skel}' '#{@new_resource.home}'"
-          ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
+          shell_out! "ditto '#{skel}' '#{new_resource.home}'"
+          ::FileUtils.chown_R(new_resource.username,new_resource.gid.to_s,new_resource.home)
         end
 
         def move_home
-          Chef::Log.debug("#{@new_resource} moving #{self} home from #{@current_resource.home} to #{@new_resource.home}")
+          Chef::Log.debug("#{new_resource} moving #{self} home from #{current_resource.home} to #{new_resource.home}")
 
-          src = @current_resource.home
-          FileUtils.mkdir_p(@new_resource.home)
+          src = current_resource.home
+          FileUtils.mkdir_p(new_resource.home)
           files = ::Dir.glob("#{Chef::Util::PathHelper.escape_glob(src)}/*", ::File::FNM_DOTMATCH) - ["#{src}/.","#{src}/.."]
-          ::FileUtils.mv(files,@new_resource.home, :force => true)
+          ::FileUtils.mv(files,new_resource.home, :force => true)
           ::FileUtils.rmdir(src)
-          ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
+          ::FileUtils.chown_R(new_resource.username,new_resource.gid.to_s,new_resource.home)
         end
 
         #
         # Sets the shell for the user using dscl.
         #
         def dscl_set_shell
-          if @new_resource.shell || ::File.exists?("#{@new_resource.shell}")
-            run_dscl("create /Users/#{@new_resource.username} UserShell '#{@new_resource.shell}'")
+          if new_resource.shell || ::File.exists?("#{new_resource.shell}")
+            run_dscl("create /Users/#{new_resource.username} UserShell '#{new_resource.shell}'")
           else
-            run_dscl("create /Users/#{@new_resource.username} UserShell '/usr/bin/false'")
+            run_dscl("create /Users/#{new_resource.username} UserShell '/usr/bin/false'")
           end
         end
 
@@ -348,7 +356,7 @@ user password using shadow hash.")
         #
         def set_password
           # Return if there is no password to set
-          return if @new_resource.password.nil?
+          return if new_resource.password.nil?
 
           shadow_info = prepare_password_shadow_info
 
@@ -358,7 +366,7 @@ user password using shadow hash.")
             :input => shadow_info.to_plist, :live_stream => shadow_info_binary)
           command.run_command
 
-          if @user_info.nil?
+          if user_info.nil?
             # User is  just created. read_user_info() will read the fresh information
             # for the user with a cache flush. However with experimentation we've seen
             # that dscl cache is not immediately updated after the creation of the user
@@ -368,8 +376,8 @@ user password using shadow hash.")
           end
 
           # Replace the shadow info in user's plist
-          dscl_set(@user_info, :shadow_hash, shadow_info_binary)
-          save_user_info(@user_info)
+          dscl_set(user_info, :shadow_hash, shadow_info_binary)
+          save_user_info(user_info)
         end
 
         #
@@ -382,12 +390,12 @@ user password using shadow hash.")
           iterations = nil
 
           if mac_osx_version_10_7?
-            hash_value = if salted_sha512?(@new_resource.password)
-              @new_resource.password
+            hash_value = if salted_sha512?(new_resource.password)
+              new_resource.password
             else
               # Create a random 4 byte salt
               salt = OpenSSL::Random.random_bytes(4)
-              encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + @new_resource.password)
+              encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + new_resource.password)
               hash_value = salt.unpack('H*').first + encoded_password
             end
 
@@ -395,16 +403,16 @@ user password using shadow hash.")
             shadow_info["SALTED-SHA512"].string = convert_to_binary(hash_value)
             shadow_info
           else
-            if salted_sha512_pbkdf2?(@new_resource.password)
-              entropy = convert_to_binary(@new_resource.password)
-              salt = convert_to_binary(@new_resource.salt)
-              iterations = @new_resource.iterations
+            if salted_sha512_pbkdf2?(new_resource.password)
+              entropy = convert_to_binary(new_resource.password)
+              salt = convert_to_binary(new_resource.salt)
+              iterations = new_resource.iterations
             else
               salt = OpenSSL::Random.random_bytes(32)
-              iterations = @new_resource.iterations # Use the default if not specified by the user
+              iterations = new_resource.iterations # Use the default if not specified by the user
 
               entropy = OpenSSL::PKCS5::pbkdf2_hmac(
-                @new_resource.password,
+                new_resource.password,
                 salt,
                 iterations,
                 128,
@@ -430,43 +438,43 @@ user password using shadow hash.")
         # and deleting home directory if needed.
         #
         def remove_user
-          if @new_resource.supports[:manage_home]
+          if new_resource.supports[:manage_home]
             # Remove home directory
-            FileUtils.rm_rf(@current_resource.home)
+            FileUtils.rm_rf(current_resource.home)
           end
 
           # Remove the user from its groups
           run_dscl("list /Groups").each_line do |group|
             if member_of_group?(group.chomp)
-              run_dscl("delete /Groups/#{group.chomp} GroupMembership '#{@new_resource.username}'")
+              run_dscl("delete /Groups/#{group.chomp} GroupMembership '#{new_resource.username}'")
             end
           end
 
           # Remove user account
-          run_dscl("delete /Users/#{@new_resource.username}")
+          run_dscl("delete /Users/#{new_resource.username}")
         end
 
         #
         # Locks the user.
         #
         def lock_user
-          run_dscl("append /Users/#{@new_resource.username} AuthenticationAuthority ';DisabledUser;'")
+          run_dscl("append /Users/#{new_resource.username} AuthenticationAuthority ';DisabledUser;'")
         end
 
         #
         # Unlocks the user
         #
         def unlock_user
-          auth_string = @authentication_authority.gsub(/AuthenticationAuthority: /,"").gsub(/;DisabledUser;/,"").strip
-          run_dscl("create /Users/#{@new_resource.username} AuthenticationAuthority '#{auth_string}'")
+          auth_string = authentication_authority.gsub(/AuthenticationAuthority: /,"").gsub(/;DisabledUser;/,"").strip
+          run_dscl("create /Users/#{new_resource.username} AuthenticationAuthority '#{auth_string}'")
         end
 
         #
         # Returns true if the user is locked, false otherwise.
         #
         def locked?
-          if @authentication_authority
-            !!(@authentication_authority =~ /DisabledUser/ )
+          if authentication_authority
+            !!(authentication_authority =~ /DisabledUser/ )
           else
             false
           end
@@ -488,11 +496,11 @@ user password using shadow hash.")
         # given attribute.
         #
         def diverged?(parameter)
-          parameter_updated?(parameter) && (not @new_resource.send(parameter).nil?)
+          parameter_updated?(parameter) && (not new_resource.send(parameter).nil?)
         end
 
         def parameter_updated?(parameter)
-          not (@new_resource.send(parameter) == @current_resource.send(parameter))
+          not (new_resource.send(parameter) == current_resource.send(parameter))
         end
 
         #
@@ -503,11 +511,11 @@ user password using shadow hash.")
         # type of the password specified.
         #
         def diverged_password?
-          return false if @new_resource.password.nil?
+          return false if new_resource.password.nil?
 
           # Dscl provider supports both plain text passwords and shadow hashes.
           if mac_osx_version_10_7?
-            if salted_sha512?(@new_resource.password)
+            if salted_sha512?(new_resource.password)
               diverged?(:password)
             else
               !salted_sha512_password_match?
@@ -517,14 +525,14 @@ user password using shadow hash.")
             # will be updated when the user logs in. So it's possible that we will have
             # SALTED-SHA512 password in the current_resource. In that case we will force
             # password to be updated.
-            return true if salted_sha512?(@current_resource.password)
+            return true if salted_sha512?(current_resource.password)
 
             # Some system users don't have salts; this can happen if the system is
             # upgraded and the user hasn't logged in yet. In this case, we will force
             # the password to be updated.
-            return true if @current_resource.salt.nil?
+            return true if current_resource.salt.nil?
 
-            if salted_sha512_pbkdf2?(@new_resource.password)
+            if salted_sha512_pbkdf2?(new_resource.password)
               diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
             else
               !salted_sha512_pbkdf2_password_match?
@@ -546,7 +554,7 @@ user password using shadow hash.")
           # GroupMembership: root admin etc
           members = membership_info.split(" ")
           members.shift # Get rid of GroupMembership: string
-          members.include?(@new_resource.username)
+          members.include?(new_resource.username)
         end
 
         #
@@ -580,7 +588,7 @@ user password using shadow hash.")
           shell_out("dscacheutil '-flushcache'")
 
           begin
-            user_plist_file = "#{USER_PLIST_DIRECTORY}/#{@new_resource.username}.plist"
+            user_plist_file = "#{USER_PLIST_DIRECTORY}/#{new_resource.username}.plist"
             user_plist_info = run_plutil("convert xml1 -o - #{user_plist_file}")
             user_info = Plist::parse_xml(user_plist_info)
           rescue Chef::Exceptions::PlistUtilCommandFailed
@@ -594,7 +602,7 @@ user password using shadow hash.")
         # in DSCL_PROPERTY_MAP to the disk.
         #
         def save_user_info(user_info)
-          user_plist_file = "#{USER_PLIST_DIRECTORY}/#{@new_resource.username}.plist"
+          user_plist_file = "#{USER_PLIST_DIRECTORY}/#{new_resource.username}.plist"
           Plist::Emit.save_plist(user_info, user_plist_file)
           run_plutil("convert binary1 #{user_plist_file}")
         end
@@ -676,9 +684,9 @@ user password using shadow hash.")
 
         def salted_sha512_password_match?
           # Salt is included in the first 4 bytes of shadow data
-          salt = @current_resource.password.slice(0,8)
-          shadow = OpenSSL::Digest::SHA512.hexdigest(convert_to_binary(salt) + @new_resource.password)
-          @current_resource.password == salt + shadow
+          salt = current_resource.password.slice(0,8)
+          shadow = OpenSSL::Digest::SHA512.hexdigest(convert_to_binary(salt) + new_resource.password)
+          current_resource.password == salt + shadow
         end
 
         def salted_sha512_pbkdf2?(string)
@@ -686,15 +694,15 @@ user password using shadow hash.")
         end
 
         def salted_sha512_pbkdf2_password_match?
-          salt = convert_to_binary(@current_resource.salt)
+          salt = convert_to_binary(current_resource.salt)
 
           OpenSSL::PKCS5::pbkdf2_hmac(
-            @new_resource.password,
+            new_resource.password,
             salt,
-            @current_resource.iterations,
+            current_resource.iterations,
             128,
             OpenSSL::Digest::SHA512.new
-          ).unpack('H*').first == @current_resource.password
+          ).unpack('H*').first == current_resource.password
         end
 
       end
