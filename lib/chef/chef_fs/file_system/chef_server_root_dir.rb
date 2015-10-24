@@ -120,7 +120,8 @@ class Chef
             if File.dirname(path) == '/organizations'
               File.basename(path)
             else
-              nil
+              # In Chef 12, everything is in an org.
+              'chef'
             end
           end
         end

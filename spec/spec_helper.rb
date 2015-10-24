@@ -73,6 +73,7 @@ require 'spec/support/local_gems.rb' if File.exists?(File.join(File.dirname(__FI
 
 # Explicitly require spec helpers that need to load first
 require 'spec/support/platform_helpers'
+require 'spec/support/shared/unit/mock_shellout'
 
 # Autoloads support files
 # Excludes support/platforms by default
@@ -98,6 +99,7 @@ TEST_PLATFORM_VERSION = TEST_NODE['platform_version']
 
 RSpec.configure do |config|
   config.include(Matchers)
+  config.include(MockShellout::RSpec)
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
 
@@ -126,10 +128,12 @@ RSpec.configure do |config|
   config.filter_run_excluding :mac_osx_only=> true if !mac_osx?
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
   config.filter_run_excluding :not_supported_on_solaris => true if solaris?
+  config.filter_run_excluding :not_supported_on_nano => true if windows_nano_server?
   config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
   config.filter_run_excluding :windows_2008r2_or_later => true unless windows_2008r2_or_later?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
+  config.filter_run_excluding :windows_nano_only => true unless windows_nano_server?
   config.filter_run_excluding :ruby64_only => true unless ruby_64bit?
   config.filter_run_excluding :ruby32_only => true unless ruby_32bit?
   config.filter_run_excluding :windows_powershell_dsc_only => true unless windows_powershell_dsc?
@@ -185,6 +189,8 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 
   config.before(:each) do
+    Chef.reset!
+
     Chef::Config.reset
 
     # By default, treat deprecation warnings as errors in tests.

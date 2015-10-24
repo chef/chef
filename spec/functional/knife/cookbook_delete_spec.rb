@@ -40,20 +40,30 @@ describe Chef::Knife::CookbookDelete do
   end
 
   context "when the cookbook doesn't exist" do
+    let(:log_output) { StringIO.new }
+
     before do
-      @log_output = StringIO.new
-
-      Chef::Log.logger = Logger.new(@log_output)
-      Chef::Log.level = :debug
-
       @knife.name_args = %w{no-such-cookbook}
       @api.get("/cookbooks/no-such-cookbook", 404, Chef::JSONCompat.to_json({'error'=>'dear Tim, no. -Sent from my iPad'}))
     end
 
+    around do |ex|
+      old_logger = Chef::Log.logger
+      old_level = Chef::Log.level
+      begin
+        Chef::Log.logger = Logger.new(log_output)
+        Chef::Log.level = :debug
+        ex.run
+      ensure
+        Chef::Log.logger = old_logger
+        Chef::Log.level = old_level
+      end
+    end
+
     it "logs an error and exits" do
-      allow(@knife.ui).to receive(:stderr).and_return(@log_output)
+      allow(@knife.ui).to receive(:stderr).and_return(log_output)
       expect {@knife.run}.to raise_error(SystemExit)
-      expect(@log_output.string).to match(/Cannot find a cookbook named no-such-cookbook to delete/)
+      expect(log_output.string).to match(/Cannot find a cookbook named no-such-cookbook to delete/)
     end
 
   end

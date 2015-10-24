@@ -198,7 +198,7 @@ Created /nodes/y.json
 Created /roles/y.json
 Created /users/y.json
 EOM
-            knife('diff --name-status /').should_succeed ''
+            knife('diff /').should_succeed ''
           end
 
           it 'knife upload --no-diff adds the new files' do

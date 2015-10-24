@@ -36,6 +36,44 @@ class Chef
         is_server_2003
       end
 
+      def windows_nano_server?
+        return false unless windows?
+        require 'win32/registry'
+
+        # This method may be called before ohai runs (e.g., it may be used to
+        # determine settings in config.rb). Chef::Win32::Registry.new uses
+        # node attributes to verify the machine architecture which aren't
+        # accessible before ohai runs.
+        nano = nil
+        key = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Server\\ServerLevels"
+        access = ::Win32::Registry::KEY_QUERY_VALUE | 0x0100 # nano is 64-bit only
+        begin
+          ::Win32::Registry::HKEY_LOCAL_MACHINE.open(key, access) do |reg|
+            nano = reg["NanoServer"]
+          end
+        rescue ::Win32::Registry::Error
+          # If accessing the registry key failed, then we're probably not on
+          # nano. Fail through.
+        end
+        return nano == 1
+      end
+
+      def supports_msi?
+        return false unless windows?
+        require 'win32/registry'
+
+        key = "System\\CurrentControlSet\\Services\\msiserver"
+        access = ::Win32::Registry::KEY_QUERY_VALUE
+
+        begin
+          ::Win32::Registry::HKEY_LOCAL_MACHINE.open(key, access) do |reg|
+            true
+          end
+        rescue ::Win32::Registry::Error
+          false
+        end
+      end
+
       def supports_powershell_execution_bypass?(node)
         node[:languages] && node[:languages][:powershell] &&
           node[:languages][:powershell][:version].to_i >= 3
@@ -51,6 +89,13 @@ class Chef
         supports_dsc?(node) &&
           Gem::Version.new(node[:languages][:powershell][:version]) >=
             Gem::Version.new("5.0.10018.0")
+      end
+
+      def dsc_refresh_mode_disabled?(node)
+        require 'chef/util/powershell/cmdlet'
+        cmdlet = Chef::Util::Powershell::Cmdlet.new(node, "Get-DscLocalConfigurationManager", :object)
+        metadata = cmdlet.run!.return_value
+        metadata['RefreshMode'] == 'Disabled'
       end
     end
   end

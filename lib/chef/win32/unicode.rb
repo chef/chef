@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/wide_string'
 require 'chef/win32/api/unicode'
 
 class Chef
@@ -30,6 +31,8 @@ end
 
 module FFI
   class Pointer
+    include Chef::Mixin::WideString
+
     def read_wstring(num_wchars = nil)
       if num_wchars.nil?
         # Find the length of the string
@@ -43,13 +46,15 @@ module FFI
         num_wchars = length
       end
 
-      Chef::ReservedNames::Win32::Unicode.wide_to_utf8(self.get_bytes(0, num_wchars*2))
+      wide_to_utf8(self.get_bytes(0, num_wchars*2))
     end
   end
 end
 
 class String
+  include Chef::Mixin::WideString
+
   def to_wstring
-    Chef::ReservedNames::Win32::Unicode.utf8_to_wide(self)
+    utf8_to_wide(self)
   end
 end

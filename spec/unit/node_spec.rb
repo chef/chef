@@ -127,6 +127,78 @@ describe Chef::Node do
     end
   end
 
+  describe "policy_name" do
+
+    it "defaults to nil" do
+      expect(node.policy_name).to be_nil
+    end
+
+    it "sets policy_name with a regular setter" do
+      node.policy_name = "example-policy"
+      expect(node.policy_name).to eq("example-policy")
+    end
+
+    it "allows policy_name with every valid character" do
+      expect { node.policy_name = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:.' }.to_not raise_error
+    end
+
+    it "sets policy_name when given an argument" do
+      node.policy_name("example-policy")
+      expect(node.policy_name).to eq("example-policy")
+    end
+
+    it "sets policy_name to nil when given nil" do
+      node.policy_name = "example-policy"
+      node.policy_name = nil
+      expect(node.policy_name).to be_nil
+    end
+
+    it "disallows non-strings" do
+      expect { node.policy_name(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_name(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "cannot be blank" do
+      expect { node.policy_name("")}.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
+  describe "policy_group" do
+
+    it "defaults to nil" do
+      expect(node.policy_group).to be_nil
+    end
+
+    it "sets policy_group with a regular setter" do
+      node.policy_group = "staging"
+      expect(node.policy_group).to eq("staging")
+    end
+
+    it "allows policy_group with every valid character" do
+      expect { node.policy_group = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:.' }.to_not raise_error
+    end
+
+    it "sets an environment with chef_environment(something)" do
+      node.policy_group("staging")
+      expect(node.policy_group).to eq("staging")
+    end
+
+    it "sets policy_group to nil when given nil" do
+      node.policy_group = "staging"
+      node.policy_group = nil
+      expect(node.policy_group).to be_nil
+    end
+
+    it "disallows non-strings" do
+      expect { node.policy_group(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_group(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "cannot be blank" do
+      expect { node.policy_group("")}.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
   describe "attributes" do
     it "should have attributes" do
       expect(node.attribute).to be_a_kind_of(Hash)
@@ -1113,6 +1185,43 @@ describe Chef::Node do
       expect(serialized_node.run_list).to eq(node.run_list)
     end
 
+    context "when policyfile attributes are not present" do
+
+      it "does not have a policy_name key in the json" do
+        expect(node.for_json.keys).to_not include("policy_name")
+      end
+
+      it "does not have a policy_group key in the json" do
+        expect(node.for_json.keys).to_not include("policy_name")
+      end
+    end
+
+    context "when policyfile attributes are present" do
+
+      before do
+        node.policy_name = "my-application"
+        node.policy_group = "staging"
+      end
+
+      it "includes policy_name key in the json" do
+        expect(node.for_json).to have_key("policy_name")
+        expect(node.for_json["policy_name"]).to eq("my-application")
+      end
+
+      it "includes a policy_group key in the json" do
+        expect(node.for_json).to have_key("policy_group")
+        expect(node.for_json["policy_group"]).to eq("staging")
+      end
+
+      it "parses policyfile attributes from JSON" do
+        round_tripped_node = Chef::Node.json_create(node.for_json)
+
+        expect(round_tripped_node.policy_name).to eq("my-application")
+        expect(round_tripped_node.policy_group).to eq("staging")
+      end
+
+    end
+
     include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) {
         node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
@@ -1308,6 +1417,110 @@ describe Chef::Node do
           node.save
         end
       end
+
+      context "when policyfile attributes are present" do
+
+        before do
+          node.name("example-node")
+          node.policy_name = "my-application"
+          node.policy_group = "staging"
+        end
+
+        context "and the server supports policyfile attributes in node JSON" do
+
+          it "creates the object normally" do
+            expect(@rest).to receive(:post_rest).with("nodes", node.for_json)
+            node.create
+          end
+
+          it "saves the node object normally" do
+            expect(@rest).to receive(:put_rest).with("nodes/example-node", node.for_json)
+            node.save
+          end
+        end
+
+        # Chef Server before 12.3
+        context "and the Chef Server does not support policyfile attributes in node JSON" do
+
+          let(:response_body) { %q[{"error":["Invalid key policy_name in request body"]}] }
+
+          let(:response) do
+            Net::HTTPResponse.send(:response_class, "400").new("1.0", "400", "Bad Request").tap do |r|
+              allow(r).to receive(:body).and_return(response_body)
+            end
+          end
+
+          let(:http_exception) do
+            begin
+              response.error!
+            rescue => e
+              e
+            end
+          end
+
+          let(:trimmed_node) do
+            node.for_json.tap do |j|
+              j.delete("policy_name")
+              j.delete("policy_group")
+            end
+
+          end
+
+          context "on Chef Client 13 and later" do
+
+            # Though we normally attempt to provide compatibility with chef
+            # server one major version back, policyfiles were beta when we
+            # added the policyfile attributes to the node JSON, therefore
+            # policyfile users need to be on 12.3 minimum when upgrading Chef
+            # Client to 13+
+            it "lets the 400 pass through", :chef_gte_13_only do
+              expect { node.save }.to raise_error(http_exception)
+            end
+
+          end
+
+          context "when the node exists" do
+
+            it "falls back to saving without policyfile attributes" do
+              expect(@rest).to receive(:put_rest).with("nodes/example-node", node.for_json).and_raise(http_exception)
+              expect(@rest).to receive(:put_rest).with("nodes/example-node", trimmed_node).and_return(@node)
+              expect { node.save }.to_not raise_error
+            end
+
+          end
+
+          context "when the node doesn't exist" do
+
+            let(:response_404) do
+              Net::HTTPResponse.send(:response_class, "404").new("1.0", "404", "Not Found")
+            end
+
+            let(:http_exception_404) do
+              begin
+                response_404.error!
+              rescue => e
+                e
+              end
+            end
+
+            it "falls back to saving without policyfile attributes" do
+              expect(@rest).to receive(:put_rest).with("nodes/example-node", node.for_json).and_raise(http_exception)
+              expect(@rest).to receive(:put_rest).with("nodes/example-node", trimmed_node).and_raise(http_exception_404)
+              expect(@rest).to receive(:post_rest).with("nodes", trimmed_node).and_return(@node)
+              node.save
+            end
+
+            it "creates the node without policyfile attributes" do
+              expect(@rest).to receive(:post_rest).with("nodes", node.for_json).and_raise(http_exception)
+              expect(@rest).to receive(:post_rest).with("nodes", trimmed_node).and_return(@node)
+              node.create
+            end
+          end
+
+        end
+
+      end
+
     end
   end
 

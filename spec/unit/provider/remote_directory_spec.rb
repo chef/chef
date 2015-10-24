@@ -79,7 +79,7 @@ describe Chef::Provider::RemoteDirectory do
     end
 
     it "configures access control on intermediate directorys" do
-      directory_resource = @provider.send(:resource_for_directory, File.join(Dir.tmpdir, "intermediate_dir"))
+      directory_resource = @provider.send(:directory_resource, File.join(Dir.tmpdir, "intermediate_dir"))
       expect(directory_resource.path).to  eq(File.join(Dir.tmpdir, "intermediate_dir"))
       expect(directory_resource.mode).to  eq("0750")
       expect(directory_resource.group).to eq("wheel")
@@ -219,4 +219,3 @@ describe Chef::Provider::RemoteDirectory do
 
   end
 end
-

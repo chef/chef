@@ -49,7 +49,7 @@ class Chef
           end
         end
 
-        raise Chef::Exceptions::FileContentStagingError(errors) if tf.nil?
+        raise Chef::Exceptions::FileContentStagingError, errors if tf.nil?
 
         # We always process the tempfile in binmode so that we
         # preserve the line endings of the content.

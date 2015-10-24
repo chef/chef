@@ -68,7 +68,7 @@ module ChefConfig
 
     default(:config_dir) do
       if config_file
-        PathHelper.dirname(config_file)
+        PathHelper.dirname(PathHelper.canonical_path(config_file, false))
       else
         PathHelper.join(user_home, ".chef", "")
       end
@@ -339,10 +339,33 @@ module ChefConfig
     # most of our testing scenarios)
     default :minimal_ohai, false
 
+    ###
+    # Policyfile Settings
+    #
     # Policyfile is a feature where a node gets its run list and cookbook
     # version set from a single document on the server instead of expanding the
     # run list and having the server compute the cookbook version set based on
     # environment constraints.
+    #
+    # Policyfiles are auto-versioned. The user groups nodes by `policy_name`,
+    # which generally describes a hosts's functional role, and `policy_group`,
+    # which generally groups nodes by deployment phase (a.k.a., "environment").
+    # The Chef Server maps a given set of `policy_name` plus `policy_group` to
+    # a particular revision of a policy.
+
+    default :policy_name, nil
+    default :policy_group, nil
+
+    # Policyfiles can have multiple run lists, via the named run list feature.
+    # Generally this will be set by a CLI option via Chef::Application::Client,
+    # but it could be set in client.rb if desired.
+
+    default :named_run_list, nil
+
+    # During initial development, users were required to set `use_policyfile true`
+    # in `client.rb` to opt-in to policyfile use. Chef Client now examines
+    # configuration, node json, and the stored node to determine if policyfile
+    # usage is desired. This flag is still honored if set, but is unnecessary.
     default :use_policyfile, false
 
     # Policyfiles can be used in a native mode (default) or compatibility mode.
@@ -355,6 +378,16 @@ module ChefConfig
     # compatibility mode. Compatibility mode remains available so you can use
     # policyfiles with servers that don't yet support the native endpoints.
     default :policy_document_native_api, true
+
+    # When policyfiles are used in compatibility mode, `policy_name` and
+    # `policy_group` are instead specified using a combined configuration
+    # setting, `deployment_group`. For example, if policy_name should be
+    # "webserver" and policy_group should be "staging", then `deployment_group`
+    # should be set to "webserver-staging", which is the name of the data bag
+    # item that the policy will be stored as. NOTE: this setting only has an
+    # effect if `policy_document_native_api` is set to `false`.
+    default :deployment_group, nil
+
 
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
@@ -655,6 +688,14 @@ module ChefConfig
       # Set `watchdog_timeout` to the number of seconds to wait for a chef-client run
       # to finish
       default :watchdog_timeout, 2 * (60 * 60) # 2 hours
+    end
+
+    # Add an empty and non-strict config_context for chefdk. This lets the user
+    # have code like `chefdk.generator_cookbook "/path/to/cookbook"` in their
+    # config.rb, and it will be ignored by tools like knife and ohai. ChefDK
+    # itself can define the config options it accepts and enable strict mode,
+    # and that will only apply when running `chef` commands.
+    config_context :chefdk do
     end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt

@@ -40,7 +40,7 @@ class Chef
         end
 
         def bootstrap_environment
-          @chef_config[:environment] || '_default'
+          @chef_config[:environment]
         end
 
         def validation_key
@@ -128,7 +128,7 @@ CONFIG
           client_path = @chef_config[:chef_client_path] || 'chef-client'
           s = "#{client_path} -j /etc/chef/first-boot.json"
           s << ' -l debug' if @config[:verbosity] and @config[:verbosity] >= 2
-          s << " -E #{bootstrap_environment}"
+          s << " -E #{bootstrap_environment}" unless bootstrap_environment.nil?
           s
         end
 
@@ -163,11 +163,19 @@ CONFIG
         end
 
         def first_boot
-          (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+          (@config[:first_boot_attributes] || {}).tap do |attributes|
+            if @config[:policy_name] && @config[:policy_group]
+              attributes.merge!(:policy_name => @config[:policy_name], :policy_group => @config[:policy_group])
+            else
+              attributes.merge!(:run_list => @run_list)
+            end
+
+            attributes.merge!(:tags => @config[:tags]) if @config[:tags] && !@config[:tags].empty?
+          end
         end
 
         private
-       
+
         # Returns a string for copying the trusted certificates on the workstation to the system being bootstrapped
         # This string should contain both the commands necessary to both create the files, as well as their content
         def trusted_certs_content

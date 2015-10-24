@@ -79,10 +79,10 @@ class Chef
         else
           case response[CONTENT_ENCODING]
           when GZIP
-            Chef::Log.debug "decompressing gzip response"
+            Chef::Log.debug "Decompressing gzip response"
             Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
           when DEFLATE
-            Chef::Log.debug "decompressing deflate response"
+            Chef::Log.debug "Decompressing deflate response"
             Zlib::Inflate.inflate(response.body)
           else
             response.body

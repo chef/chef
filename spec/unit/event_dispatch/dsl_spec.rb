@@ -32,10 +32,6 @@ describe Chef::EventDispatch::DSL do
     Chef.set_run_context(run_context)
   end
 
-  after do
-    Chef.reset!
-  end
-
   subject{ described_class.new('test') }
 
   it 'set handler name' do

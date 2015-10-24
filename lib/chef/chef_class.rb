@@ -190,6 +190,45 @@ class Chef
     def resource_handler_map
       @resource_handler_map ||= Chef::Platform::ResourceHandlerMap.instance
     end
+
+    #
+    # Emit a deprecation message.
+    #
+    # @param message The message to send.
+    # @param location The location. Defaults to the caller who called you (since
+    #   generally the person who triggered the check is the one that needs to be
+    #   fixed).
+    #
+    # @example
+    #     Chef.deprecation("Deprecated!")
+    #
+    # @api private this will likely be removed in favor of an as-yet unwritten
+    #      `Chef.log`
+    def log_deprecation(message, location=nil)
+      if !location
+        # Pick the first caller that is *not* part of the Chef gem, that's the
+        # thing the user wrote.
+        chef_gem_path = File.expand_path("../..", __FILE__)
+        caller(0..10).each do |c|
+          if !c.start_with?(chef_gem_path)
+            location = c
+            break
+          end
+        end
+      end
+      # `run_context.events` is the primary deprecation target if we're in a
+      # run. If we are not yet in a run, print to `Chef::Log`.
+      if run_context && run_context.events
+        run_context.events.deprecation(message, location)
+      else
+        Chef::Log.deprecation(message, location)
+      end
+    end
+  end
+
+  # @api private Only for test dependency injection; not evenly implemented as yet.
+  def self.path_to(path)
+    path
   end
 
   reset!

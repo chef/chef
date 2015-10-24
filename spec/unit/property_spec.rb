@@ -107,6 +107,56 @@ describe "Chef::Resource.property" do
     end
   end
 
+  with_property ":x, name_property: true" do
+    context "and subclass" do
+      let(:subresource_class) do
+        new_resource_name = self.class.new_resource_name
+        Class.new(resource_class) do
+          resource_name new_resource_name
+        end
+      end
+      let(:subresource) do
+        subresource_class.new('blah')
+      end
+
+      context "with property :x on the subclass" do
+        before do
+          subresource_class.class_eval do
+            property :x
+          end
+        end
+
+        it "x is still name_property" do
+          expect(subresource.x).to eq 'blah'
+        end
+      end
+
+      context "with property :x, name_attribute: false on the subclass" do
+        before do
+          subresource_class.class_eval do
+            property :x, name_attribute: false
+          end
+        end
+
+        it "x is no longer name_property" do
+          expect(subresource.x).to be_nil
+        end
+      end
+
+      context "with property :x, default: 10 on the subclass" do
+        before do
+          subresource_class.class_eval do
+            property :x, default: 10
+          end
+        end
+
+        it "x is no longer name_property" do
+          expect(subresource.x).to eq(10)
+        end
+      end
+    end
+  end
+
   with_property ":x, Integer" do
     context "and subclass" do
       let(:subresource_class) do
@@ -462,24 +512,22 @@ describe "Chef::Resource.property" do
     end
 
     context "hash default" do
-      with_property ':x, default: {}' do
-        it "when x is not set, it returns {}" do
-          expect(resource.x).to eq({})
-        end
-        it "The same exact value is returned multiple times in a row" do
-          value = resource.x
-          expect(value).to eq({})
-          expect(resource.x.object_id).to eq(value.object_id)
-        end
-        it "Multiple instances of x receive the exact same value" do
-          expect(resource.x.object_id).to eq(resource_class.new('blah2').x.object_id)
-        end
-      end
+      context "(deprecations allowed)" do
+        before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
 
-      it "when a property is declared with default: {}, a warning is issued" do
-        expect(Chef::Log).to receive(:warn).with(match(/^Property .+\.x has an array or hash default \(\{\}\)\. This means that if one resource modifies or appends to it, all other resources of the same type will also see the changes\. Either freeze the constant with \`\.freeze\` to prevent appending, or use lazy \{ \{\} \}\.$/))
-        resource_class.class_eval("property :x, default: {}", __FILE__, __LINE__)
-        expect(resource.x).to eq({})
+        with_property ':x, default: {}' do
+          it "when x is not set, it returns {}" do
+            expect(resource.x).to eq({})
+          end
+          it "The same exact value is returned multiple times in a row" do
+            value = resource.x
+            expect(value).to eq({})
+            expect(resource.x.object_id).to eq(value.object_id)
+          end
+          it "Multiple instances of x receive the exact same value" do
+            expect(resource.x.object_id).to eq(resource_class.new('blah2').x.object_id)
+          end
+        end
       end
 
       with_property ':x, default: lazy { {} }' do
@@ -873,6 +921,9 @@ describe "Chef::Resource.property" do
         expect(resource.x 10).to eq "101"
         expect(Namer.current_index).to eq 1
       end
+      it "does not emit a deprecation warning if set to nil" do
+        expect(resource.x nil).to eq "1"
+      end
       it "coercion sets the value (and coercion does not run on get)" do
         expect(resource.x 10).to eq "101"
         expect(resource.x).to eq "101"
@@ -883,6 +934,11 @@ describe "Chef::Resource.property" do
         expect(Namer.current_index).to eq 1
         expect(resource.x 10).to eq "102"
         expect(Namer.current_index).to eq 2
+      end
+    end
+    with_property ':x, coerce: proc { |x| x }' do
+      it "does not emit a deprecation warning if set to nil" do
+        expect(resource.x nil).to be_nil
       end
     end
     with_property ':x, coerce: proc { |x| Namer.next_index; raise "hi" if x == 10; x }, is: proc { |x| Namer.next_index; x != 10 }' do
@@ -948,21 +1004,99 @@ describe "Chef::Resource.property" do
           expect(resource.x).to eq 'blah'
         end
       end
-      with_property ":x, default: 10, #{name}: true" do
-        it "chooses default over #{name}" do
-          expect(resource.x).to eq 10
+
+      with_property ":x, #{name}: false" do
+        it "defaults to nil" do
+          expect(resource.x).to be_nil
         end
       end
-      with_property ":x, #{name}: true, default: 10" do
-        it "chooses default over #{name}" do
-          expect(resource.x).to eq 10
+
+      with_property ":x, #{name}: nil" do
+        it "defaults to nil" do
+          expect(resource.x).to be_nil
         end
       end
-      with_property ":x, #{name}: true, required: true" do
-        it "defaults x to resource.name" do
-          expect(resource.x).to eq 'blah'
+
+      context "default ordering deprecation warnings" do
+        it "emits a deprecation warning for property :x, default: 10, #{name}: true" do
+          expect { resource_class.property :x, :default => 10, name.to_sym => true }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+). Only one \(default\) will be obeyed./
+        end
+        it "emits a deprecation warning for property :x, default: nil, #{name}: true" do
+          expect { resource_class.property :x, :default => nil, name.to_sym => true }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+). Only one \(name_property\) will be obeyed./
+        end
+        it "emits a deprecation warning for property :x, #{name}: true, default: 10" do
+          expect { resource_class.property :x, name.to_sym => true, :default => 10 }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+). Only one \(name_property\) will be obeyed./
+        end
+        it "emits a deprecation warning for property :x, #{name}: true, default: nil" do
+          expect { resource_class.property :x, name.to_sym => true, :default => nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+). Only one \(name_property\) will be obeyed./
         end
       end
+
+      context "default ordering" do
+        before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
+        with_property ":x, default: 10, #{name}: true" do
+          it "chooses default over #{name}" do
+            expect(resource.x).to eq 10
+          end
+        end
+        with_property ":x, default: nil, #{name}: true" do
+          it "chooses #{name} over default" do
+            expect(resource.x).to eq 'blah'
+          end
+        end
+        with_property ":x, #{name}: true, default: 10" do
+          it "chooses #{name} over default" do
+            expect(resource.x).to eq 'blah'
+          end
+        end
+        with_property ":x, #{name}: true, default: nil" do
+          it "chooses #{name} over default" do
+            expect(resource.x).to eq 'blah'
+          end
+        end
+      end
+
+      context "default ordering when #{name} is nil" do
+        with_property ":x, #{name}: nil, default: 10" do
+          it "chooses default" do
+            expect(resource.x).to eq 10
+          end
+        end
+        with_property ":x, default: 10, #{name}: nil" do
+          it "chooses default" do
+            expect(resource.x).to eq 10
+          end
+        end
+      end
+
+      context "default ordering when #{name} is false" do
+        with_property ":x, #{name}: false, default: 10" do
+          it "chooses default" do
+            expect(resource.x).to eq 10
+          end
+        end
+        with_property ":x, default: 10, #{name}: nil" do
+          it "chooses default" do
+            expect(resource.x).to eq 10
+          end
+        end
+      end
+
     end
+  end
+
+  it "raises an error if both name_property and name_attribute are specified" do
+    expect { resource_class.property :x, :name_property => false, :name_attribute => 1 }.to raise_error ArgumentError,
+      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+    expect { resource_class.property :x, :name_property => false, :name_attribute => nil }.to raise_error ArgumentError,
+      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+    expect { resource_class.property :x, :name_property => false, :name_attribute => false }.to raise_error ArgumentError,
+      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+    expect { resource_class.property :x, :name_property => true, :name_attribute => true }.to raise_error ArgumentError,
+      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
   end
 end

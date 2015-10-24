@@ -76,8 +76,11 @@ describe Chef::PolicyBuilder::Policyfile do
 
   let(:policyfile_run_list) { ["recipe[example1::default]", "recipe[example2::server]"] }
 
-  let(:parsed_policyfile_json) do
+  let(:basic_valid_policy_data) do
     {
+      "name" => "example-policy",
+      "revision_id" => "123abc",
+
       "run_list" => policyfile_run_list,
 
       "cookbook_locks" => {
@@ -89,6 +92,8 @@ describe Chef::PolicyBuilder::Policyfile do
       "override_attributes" => policyfile_override_attributes
     }
   end
+
+  let(:parsed_policyfile_json) { basic_valid_policy_data }
 
   let(:err_namespace) { Chef::PolicyBuilder::Policyfile }
 
@@ -181,19 +186,13 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:error404) { Net::HTTPServerException.new("404 message", :body) }
 
         before do
-          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
           expect(http_api).to receive(:get).
             with("data/policyfiles/example-policy-stage").
             and_raise(error404)
         end
 
         it "raises an error" do
-          expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
-        end
-
-        it "sends error message to the event system" do
-          expect(events).to receive(:node_load_failed).with(node_name, an_instance_of(err_namespace::ConfigurationError), Chef::Config)
-          expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
+          expect { policy_builder.finish_load_node(node) }.to raise_error(err_namespace::ConfigurationError)
         end
 
       end
@@ -201,20 +200,12 @@ describe Chef::PolicyBuilder::Policyfile do
       context "when the deployment_group is not configured" do
         before do
           Chef::Config[:deployment_group] = nil
-          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
         end
 
         it "errors while loading the node" do
-          expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
+          expect { policy_builder.finish_load_node(node) }.to raise_error(err_namespace::ConfigurationError)
         end
 
-
-        it "passes error information to the event system" do
-          # TODO: also make sure something acceptable happens with the error formatters
-          err_class = err_namespace::ConfigurationError
-          expect(events).to receive(:node_load_failed).with(node_name, an_instance_of(err_class), Chef::Config)
-          expect { policy_builder.load_node }.to raise_error(err_class)
-        end
       end
 
       context "when deployment_group is correctly configured" do
@@ -307,8 +298,7 @@ describe Chef::PolicyBuilder::Policyfile do
       end
 
       it "implements #expand_run_list in a manner compatible with ExpandNodeObject" do
-        expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-        policy_builder.load_node
+        policy_builder.finish_load_node(node)
         expect(policy_builder.expand_run_list).to respond_to(:recipes)
         expect(policy_builder.expand_run_list.recipes).to eq(["example1::default", "example2::server"])
         expect(policy_builder.expand_run_list.roles).to eq([])
@@ -345,11 +335,167 @@ describe Chef::PolicyBuilder::Policyfile do
 
       describe "building the node object" do
 
-        before do
-          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
+        let(:extra_chef_config) { {} }
 
-          policy_builder.load_node
+        before do
+          # must be set before #build_node is called to have the proper effect
+          extra_chef_config.each do |key, value|
+            Chef::Config[key] = value
+          end
+
+          policy_builder.finish_load_node(node)
           policy_builder.build_node
+        end
+
+        # it sets policy_name and policy_group in the following priority order:
+        # -j JSON > config file > node object
+
+        describe "selecting policy_name and policy_group from the various sources" do
+
+          context "when only set in node JSON" do
+
+            let(:json_attribs) do
+              {
+                "policy_name" => "policy_name_from_node_json",
+                "policy_group" => "policy_group_from_node_json"
+              }
+            end
+
+            it "sets policy_name and policy_group on Chef::Config" do
+              expect(Chef::Config[:policy_name]).to eq("policy_name_from_node_json")
+              expect(Chef::Config[:policy_group]).to eq("policy_group_from_node_json")
+            end
+
+            it "sets policy_name and policy_group on the node object" do
+              expect(node.policy_name).to eq("policy_name_from_node_json")
+              expect(node.policy_group).to eq("policy_group_from_node_json")
+            end
+
+          end
+
+          context "when only set in Chef::Config" do
+
+            let(:extra_chef_config) do
+              {
+                policy_name: "policy_name_from_config",
+                policy_group: "policy_group_from_config"
+              }
+            end
+
+            it "sets policy_name and policy_group on the node object" do
+              expect(node.policy_name).to eq("policy_name_from_config")
+              expect(node.policy_group).to eq("policy_group_from_config")
+            end
+
+          end
+
+          context "when only set on the node" do
+
+            let(:node) do
+              node = Chef::Node.new
+              node.name(node_name)
+              node.policy_name = "policy_name_from_node"
+              node.policy_group = "policy_group_from_node"
+              node
+            end
+
+            it "sets policy_name and policy_group on Chef::Config" do
+              expect(Chef::Config[:policy_name]).to eq("policy_name_from_node")
+              expect(Chef::Config[:policy_group]).to eq("policy_group_from_node")
+            end
+
+          end
+
+          context "when set in Chef::Config and the fetched node" do
+
+            let(:node) do
+              node = Chef::Node.new
+              node.name(node_name)
+              node.policy_name = "policy_name_from_node"
+              node.policy_group = "policy_group_from_node"
+              node
+            end
+
+            let(:extra_chef_config) do
+              {
+                policy_name: "policy_name_from_config",
+                policy_group: "policy_group_from_config"
+              }
+            end
+
+            it "prefers the policy_name and policy_group from Chef::Config" do
+              expect(node.policy_name).to eq("policy_name_from_config")
+              expect(node.policy_group).to eq("policy_group_from_config")
+            end
+
+          end
+
+          context "when set in node json and the fetched node" do
+
+            let(:json_attribs) do
+              {
+                "policy_name" => "policy_name_from_node_json",
+                "policy_group" => "policy_group_from_node_json"
+              }
+            end
+
+            let(:node) do
+              node = Chef::Node.new
+              node.name(node_name)
+              node.policy_name = "policy_name_from_node"
+              node.policy_group = "policy_group_from_node"
+              node
+            end
+
+
+            it "prefers the policy_name and policy_group from the node json" do
+              expect(policy_builder.policy_name).to eq("policy_name_from_node_json")
+              expect(policy_builder.policy_group).to eq("policy_group_from_node_json")
+
+              expect(Chef::Config[:policy_name]).to eq("policy_name_from_node_json")
+              expect(Chef::Config[:policy_group]).to eq("policy_group_from_node_json")
+              expect(node.policy_name).to eq("policy_name_from_node_json")
+              expect(node.policy_group).to eq("policy_group_from_node_json")
+            end
+
+          end
+
+          context "when set in all sources" do
+
+            let(:json_attribs) do
+              {
+                "policy_name" => "policy_name_from_node_json",
+                "policy_group" => "policy_group_from_node_json"
+              }
+            end
+
+            let(:node) do
+              node = Chef::Node.new
+              node.name(node_name)
+              node.policy_name = "policy_name_from_node"
+              node.policy_group = "policy_group_from_node"
+              node
+            end
+
+            let(:extra_chef_config) do
+              {
+                policy_name: "policy_name_from_config",
+                policy_group: "policy_group_from_config"
+              }
+            end
+
+            it "prefers the policy_name and group from node json" do
+              expect(policy_builder.policy_name).to eq("policy_name_from_node_json")
+              expect(policy_builder.policy_group).to eq("policy_group_from_node_json")
+
+              expect(Chef::Config[:policy_name]).to eq("policy_name_from_node_json")
+              expect(Chef::Config[:policy_group]).to eq("policy_group_from_node_json")
+              expect(node.policy_name).to eq("policy_name_from_node_json")
+              expect(node.policy_group).to eq("policy_group_from_node_json")
+            end
+
+          end
+
         end
 
         it "resets default and override data" do
@@ -357,34 +503,93 @@ describe Chef::PolicyBuilder::Policyfile do
           expect(node["override_key"]).to be_nil
         end
 
-        it "applies ohai data" do
-          expect(ohai_data).to_not be_empty # ensure test is testing something
-          ohai_data.each do |key, value|
-            expect(node.automatic_attrs[key]).to eq(value)
+        describe "setting attribute values" do
+
+          before do
+            policy_builder.build_node
+          end
+
+          it "resets default and override data" do
+            expect(node["default_key"]).to be_nil
+            expect(node["override_key"]).to be_nil
+          end
+
+          it "applies ohai data" do
+            expect(ohai_data).to_not be_empty # ensure test is testing something
+            ohai_data.each do |key, value|
+              expect(node.automatic_attrs[key]).to eq(value)
+            end
+          end
+
+          it "applies attributes from json file" do
+            expect(node["custom_attr"]).to eq("custom_attr_value")
+          end
+
+          it "applies attributes from the policyfile" do
+            expect(node["policyfile_default_attr"]).to eq("policyfile_default_value")
+            expect(node["policyfile_override_attr"]).to eq("policyfile_override_value")
+          end
+
+          it "sets the policyfile's run_list on the node object" do
+            expect(node.run_list).to eq(policyfile_run_list)
+          end
+
+          it "creates node.automatic_attrs[:roles]" do
+            expect(node.automatic_attrs[:roles]).to eq([])
+          end
+
+          it "create node.automatic_attrs[:recipes]" do
+            expect(node.automatic_attrs[:recipes]).to eq(["example1::default", "example2::server"])
           end
         end
 
-        it "applies attributes from json file" do
-          expect(node["custom_attr"]).to eq("custom_attr_value")
-        end
+        context "when a named run_list is given" do
 
-        it "applies attributes from the policyfile" do
-          expect(node["policyfile_default_attr"]).to eq("policyfile_default_value")
-          expect(node["policyfile_override_attr"]).to eq("policyfile_override_value")
-        end
+          before do
+            Chef::Config[:named_run_list] = "deploy-app"
+          end
 
-        it "sets the policyfile's run_list on the node object" do
-          expect(node.run_list).to eq(policyfile_run_list)
-        end
+          context "and the named run_list is not present in the policy" do
 
-        it "creates node.automatic_attrs[:roles]" do
-          expect(node.automatic_attrs[:roles]).to eq([])
-        end
+            it "raises a ConfigurationError" do
+              err_class = Chef::PolicyBuilder::Policyfile::ConfigurationError
+              err_text = "Policy 'example-policy' revision '123abc' does not have named_run_list 'deploy-app'(available named_run_lists: [])"
+              expect { policy_builder.build_node }.to raise_error(err_class, err_text)
+            end
 
-        it "create node.automatic_attrs[:recipes]" do
-          expect(node.automatic_attrs[:recipes]).to eq(["example1::default", "example2::server"])
-        end
+          end
 
+          context "and the named run_list is present in the policy" do
+
+            let(:parsed_policyfile_json) do
+              basic_valid_policy_data.dup.tap do |p|
+                p["named_run_lists"] = {
+                  "deploy-app" => [ "recipe[example1::default]" ]
+                }
+              end
+            end
+
+            before do
+              policy_builder.build_node
+            end
+
+            it "sets the run list to the desired named run list" do
+              expect(policy_builder.run_list).to eq([ "recipe[example1::default]" ])
+              expected_expansion = Chef::PolicyBuilder::Policyfile::RunListExpansionIsh.new([ "example1::default" ], [])
+              expect(policy_builder.run_list_expansion).to eq(expected_expansion)
+              expect(policy_builder.run_list_with_versions_for_display).to eq(["example1::default@2.3.5 (168d210)"])
+              expect(node.run_list).to eq([ Chef::RunList::RunListItem.new("recipe[example1::default]") ])
+              expect(node[:roles]).to eq( [] )
+              expect(node[:recipes]).to eq( ["example1::default"] )
+            end
+
+            it "disables the cookbook cache cleaner" do
+              expect(Chef::CookbookCacheCleaner.instance.skip_removal).to be(true)
+            end
+
+          end
+
+        end
       end
 
 
@@ -414,9 +619,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:error404) { Net::HTTPServerException.new("404 message", :body) }
 
             before do
-              expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-
-              policy_builder.load_node
+              policy_builder.finish_load_node(node)
               policy_builder.build_node
 
               expect(http_api).to receive(:get).with(cookbook1_url).
@@ -433,14 +636,18 @@ describe Chef::PolicyBuilder::Policyfile do
         shared_examples_for "fetching cookbooks when they exist" do
           context "and the cookbooks can be fetched" do
             before do
-              expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
+              Chef.reset!
 
-              policy_builder.load_node
+              policy_builder.finish_load_node(node)
               policy_builder.build_node
 
               allow(Chef::CookbookSynchronizer).to receive(:new).
                 with(expected_cookbook_hash, events).
                 and_return(cookbook_synchronizer)
+            end
+
+            after do
+              Chef.reset!
             end
 
             it "builds a Hash of the form 'cookbook_name' => Chef::CookbookVersion" do
@@ -458,6 +665,13 @@ describe Chef::PolicyBuilder::Policyfile do
               run_context = policy_builder.setup_run_context
               expect(run_context.node).to eq(node)
               expect(run_context.cookbook_collection.keys).to match_array(["example1", "example2"])
+            end
+
+            it "makes the run context available via static method on Chef" do
+              expect(cookbook_synchronizer).to receive(:sync_cookbooks)
+              expect_any_instance_of(Chef::RunContext).to receive(:load).with(policy_builder.run_list_expansion_ish)
+              run_context = policy_builder.setup_run_context
+              expect(Chef.run_context).to eq(run_context)
             end
 
           end

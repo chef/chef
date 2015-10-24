@@ -212,6 +212,9 @@ class Chef
         file_load_failed(path, exception)
       end
 
+      def deprecation(message, location=caller(2..2)[0])
+        Chef::Log.deprecation("#{message} at #{location}")
+      end
     end
 
 

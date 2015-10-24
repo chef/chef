@@ -17,6 +17,7 @@
 #
 
 require 'chef/win32/api/synchronization'
+require 'chef/win32/unicode'
 
 class Chef
   module ReservedNames::Win32
@@ -78,7 +79,7 @@ class Chef
           # of the process goes away and this class is only being used
           # to synchronize chef-clients runs on a node.
           Chef::Log.error("Can not release mutex '#{name}'. This might cause issues \
-if the mutex is attempted to be acquired by other threads.")
+if other threads attempt to acquire the mutex.")
           Chef::ReservedNames::Win32::Error.raise!
         end
       end
@@ -113,5 +114,3 @@ if the mutex is attempted to be acquired by other threads.")
     end
   end
 end
-
-

@@ -301,14 +301,36 @@ RSpec.describe ChefConfig::Config do
 
         describe "setting the config dir" do
 
+          context "when the config file is given with a relative path" do
+
+            before do
+              ChefConfig::Config.config_file = "client.rb"
+            end
+
+            it "expands the path when determining config_dir" do
+              # config_dir goes through PathHelper.canonical_path, which
+              # downcases on windows because the FS is case insensitive, so we
+              # have to downcase expected and actual to make the tests work.
+              expect(ChefConfig::Config.config_dir.downcase).to eq(to_platform(Dir.pwd).downcase)
+            end
+
+            it "does not set derived paths at FS root" do
+              ChefConfig::Config.local_mode = true
+              expect(ChefConfig::Config.cache_path.downcase).to eq(to_platform(File.join(Dir.pwd, 'local-mode-cache')).downcase)
+            end
+
+          end
+
           context "when the config file is /etc/chef/client.rb" do
 
             before do
-              ChefConfig::Config.config_file = to_platform("/etc/chef/client.rb")
+              config_location = to_platform("/etc/chef/client.rb").downcase
+              allow(File).to receive(:absolute_path).with(config_location).and_return(config_location)
+              ChefConfig::Config.config_file = config_location
             end
 
             it "config_dir is /etc/chef" do
-              expect(ChefConfig::Config.config_dir).to eq(to_platform("/etc/chef"))
+              expect(ChefConfig::Config.config_dir).to eq(to_platform("/etc/chef").downcase)
             end
 
             context "and chef is running in local mode" do
@@ -317,7 +339,7 @@ RSpec.describe ChefConfig::Config do
               end
 
               it "config_dir is /etc/chef" do
-                expect(ChefConfig::Config.config_dir).to eq(to_platform("/etc/chef"))
+                expect(ChefConfig::Config.config_dir).to eq(to_platform("/etc/chef").downcase)
               end
             end
 
@@ -537,6 +559,14 @@ RSpec.describe ChefConfig::Config do
         end
       end
     end
+  end
+
+  describe "allowing chefdk configuration outside of chefdk" do
+
+    it "allows arbitrary settings in the chefdk config context" do
+      expect { ChefConfig::Config.chefdk.generator_cookbook("/path") }.to_not raise_error
+    end
+
   end
 
   describe "Treating deprecation warnings as errors" do

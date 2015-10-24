@@ -265,7 +265,7 @@ class Chef
         provider_class = self
         @included_resource_dsl_module = Module.new do
           extend Forwardable
-          define_singleton_method(:to_s) { "#{resource_class} forwarder module" }
+          define_singleton_method(:to_s) { "forwarder module for #{provider_class}" }
           define_singleton_method(:inspect) { to_s }
           # Add a delegator for each explicit property that will get the *current* value
           # of the property by default instead of the *actual* value.
@@ -421,7 +421,7 @@ class Chef
     module DeprecatedLWRPClass
       def const_missing(class_name)
         if deprecated_constants[class_name.to_sym]
-          Chef::Log.deprecation("Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
+          Chef.log_deprecation("Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
           deprecated_constants[class_name.to_sym]
         else
           raise NameError, "uninitialized constant Chef::Provider::#{class_name}"

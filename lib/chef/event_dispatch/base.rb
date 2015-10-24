@@ -47,14 +47,19 @@ class Chef
       def ohai_completed(node)
       end
 
-      # Already have a client key, assuming this node has registered.
+      # Announce that we're not going to register the client. Generally because
+      # we already have the private key, or because we're deliberately not using
+      # a key.
       def skipping_registration(node_name, config)
       end
 
-      # About to attempt to register as +node_name+
+      # About to attempt to create a private key registered to the server with
+      # client +node_name+.
       def registration_start(node_name, config)
       end
 
+      # Successfully created the private key and registered this client with the
+      # server.
       def registration_completed
       end
 
@@ -340,7 +345,6 @@ class Chef
       def resource_completed(resource)
       end
 
-
       # A stream has opened.
       def stream_opened(stream, options = {})
       end
@@ -376,8 +380,12 @@ class Chef
       def whyrun_assumption(action, resource, message)
       end
 
-      ## TODO: deprecation warning. this way we can queue them up and present
-      #  them all at once.
+      # Emit a message about something being deprecated.
+      def deprecation(message, location=caller(2..2)[0])
+      end
+
+      def run_list_expanded(run_list_expansion)
+      end
 
       # An uncategorized message. This supports the case that a user needs to
       # pass output that doesn't fit into one of the callbacks above. Note that

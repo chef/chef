@@ -87,27 +87,8 @@ class Chef
     # Either acquire() or test() methods should be called in order to
     # get the ownership of run_lock.
     def test
-      # ensure the runlock_file path exists
-      create_path(File.dirname(runlock_file))
-      @runlock = File.open(runlock_file,'a+')
-
-      if Chef::Platform.windows?
-        acquire_win32_mutex
-      else
-        # If we support FD_CLOEXEC, then use it.
-        # NB: ruby-2.0.0-p195 sets FD_CLOEXEC by default, but not
-        # ruby-1.8.7/1.9.3
-        if Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
-          runlock.fcntl(Fcntl::F_SETFD, runlock.fcntl(Fcntl::F_GETFD, 0) | Fcntl::FD_CLOEXEC)
-        end
-        # Flock will return 0 if it can acquire the lock otherwise it
-        # will return false
-        if runlock.flock(File::LOCK_NB|File::LOCK_EX) == 0
-          true
-        else
-          false
-        end
-      end
+      create_lock
+      acquire_lock
     end
 
     #
@@ -144,6 +125,34 @@ class Chef
         # won't be recreated. Better to leave a "dead" pid file than not have
         # it available if you need to break the lock.
         reset
+      end
+    end
+
+    # @api private solely for race condition tests
+    def create_lock
+      # ensure the runlock_file path exists
+      create_path(File.dirname(runlock_file))
+      @runlock = File.open(runlock_file,'a+')
+    end
+
+    # @api private solely for race condition tests
+    def acquire_lock
+      if Chef::Platform.windows?
+        acquire_win32_mutex
+      else
+        # If we support FD_CLOEXEC, then use it.
+        # NB: ruby-2.0.0-p195 sets FD_CLOEXEC by default, but not
+        # ruby-1.8.7/1.9.3
+        if Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
+          runlock.fcntl(Fcntl::F_SETFD, runlock.fcntl(Fcntl::F_GETFD, 0) | Fcntl::FD_CLOEXEC)
+        end
+        # Flock will return 0 if it can acquire the lock otherwise it
+        # will return false
+        if runlock.flock(File::LOCK_NB|File::LOCK_EX) == 0
+          true
+        else
+          false
+        end
       end
     end
 

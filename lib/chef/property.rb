@@ -86,7 +86,30 @@ class Chef
     #
     def initialize(**options)
       options.each { |k,v| options[k.to_sym] = v if k.is_a?(String) }
-      options[:name_property] = options.delete(:name_attribute) if options.has_key?(:name_attribute) && !options.has_key?(:name_property)
+
+      # Replace name_attribute with name_property
+      if options.has_key?(:name_attribute)
+        # If we have both name_attribute and name_property and they differ, raise an error
+        if options.has_key?(:name_property)
+          raise ArgumentError, "Cannot specify both name_property and name_attribute together on property #{options[:name]}#{options[:declared_in] ? " of resource #{options[:declared_in].resource_name}" : ""}."
+        end
+        # replace name_property with name_attribute in place
+        options = Hash[options.map { |k,v| k == :name_attribute ? [ :name_property, v ] : [ k,v ] }]
+      end
+
+      # Only pick the first of :default, :name_property and :name_attribute if
+      # more than one is specified.
+      if options.has_key?(:default) && options[:name_property]
+        if options[:default].nil? || options.keys.index(:name_property) < options.keys.index(:default)
+          options.delete(:default)
+          preferred_default = :name_property
+        else
+          options.delete(:name_property)
+          preferred_default = :default
+        end
+        Chef.log_deprecation("Cannot specify both default and name_property together on property #{options[:name]}#{options[:declared_in] ? " of resource #{options[:declared_in].resource_name}" : ""}. Only one (#{preferred_default}) will be obeyed. In Chef 13, this will become an error.")
+      end
+
       @options = options
 
       options[:name] = options[:name].to_sym if options[:name]
@@ -228,7 +251,7 @@ class Chef
       if value.nil? && !explicitly_accepts_nil?(resource)
         # If you say "my_property nil" and the property explicitly accepts
         # nil values, we consider this a get.
-        Chef::Log.deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
+        Chef.log_deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
         return get(resource)
       end
 
@@ -399,7 +422,16 @@ class Chef
     # @return [Property] The new property type.
     #
     def derive(**modified_options)
-      Property.new(**options.merge(**modified_options))
+      # Since name_property, name_attribute and default override each other,
+      # if you specify one of them in modified_options it overrides anything in
+      # the original options.
+      options = self.options
+      if modified_options.has_key?(:name_property) ||
+         modified_options.has_key?(:name_attribute) ||
+         modified_options.has_key?(:default)
+        options = options.reject { |k,v| k == :name_attribute || k == :name_property || k == :default }
+      end
+      Property.new(options.merge(modified_options))
     end
 
     #
@@ -424,10 +456,10 @@ class Chef
       EOM
     rescue SyntaxError
       # If the name is not a valid ruby name, we use define_method.
-      resource_class.define_method(name) do |value=NOT_PASSED|
+      declared_in.define_method(name) do |value=NOT_PASSED|
         self.class.properties[name].call(self, value)
       end
-      resource_class.define_method("#{name}=") do |value|
+      declared_in.define_method("#{name}=") do |value|
         self.class.properties[name].set(self, value)
       end
     end
@@ -446,6 +478,8 @@ class Chef
     #
     # A type accepts nil explicitly if "is" allows nil, it validates as nil, *and* is not simply
     # an empty type.
+    #
+    # A type is presumed to accept nil if it does coercion (which must handle nil).
     #
     # These examples accept nil explicitly:
     # ```ruby
@@ -478,7 +512,8 @@ class Chef
     #
     # @api private
     def explicitly_accepts_nil?(resource)
-      options.has_key?(:is) && resource.send(:_pv_is, { name => nil }, name, options[:is], raise_error: false)
+      options.has_key?(:coerce) ||
+      (options.has_key?(:is) && resource.send(:_pv_is, { name => nil }, name, options[:is], raise_error: false))
     end
 
     def get_value(resource)

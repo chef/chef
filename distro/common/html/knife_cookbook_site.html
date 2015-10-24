@@ -5,12 +5,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+
     <title>knife cookbook site &mdash; chef-client Man Pages</title>
-    
+
     <link rel="stylesheet" href="_static/guide.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
+
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
@@ -32,13 +32,13 @@
 </div>
 
 
-  
+
 
     <div class="document">
       <div class="documentwrapper">
 
           <div class="body">
-            
+
   <div class="section" id="knife-cookbook-site">
 <h1>knife cookbook site<a class="headerlink" href="#knife-cookbook-site" title="Permalink to this headline">¶</a></h1>
 <p>The Cookbooks Site API is used to provide access to the cookbooks community hosted at <a class="reference external" href="https://supermarket.getchef.com/cookbooks">https://supermarket.getchef.com/cookbooks</a>. All of the cookbooks in the community are accessible through a RESTful API located at <a class="reference external" href="https://supermarket.getchef.com/api/v1/cookbooks">https://supermarket.getchef.com/api/v1/cookbooks</a> by using any of the supported endpoints. In most cases, using knife and the <strong>knife cookbook site</strong> sub-command (and any of its arguments) is the recommended method of interacting with these cookbooks, but in some cases, using the Cookbooks Site API directly may make sense.</p>
@@ -228,17 +228,17 @@ ant                   iis                   redmine
 </div>
 <p>to return something like:</p>
 <div class="highlight-bash"><div class="highlight"><pre>apache2:
-  cookbook:              http://cookbooks.opscode.com/api/v1/cookbooks/apache2
+  cookbook:              https://supermarket.chef.io/api/v1/cookbooks/apache2
   cookbook_description:  Installs and configures apache2 using Debian symlinks with helper definitions
   cookbook_maintainer:   opscode
   cookbook_name:         apache2
 instiki:
-  cookbook:              http://cookbooks.opscode.com/api/v1/cookbooks/instiki
+  cookbook:              https://supermarket.chef.io/api/v1/cookbooks/instiki
   cookbook_description:  Installs instiki, a Ruby on Rails wiki server under passenger+Apache2.
   cookbook_maintainer:   jtimberman
   cookbook_name:         instiki
 kickstart:
-  cookbook:              http://cookbooks.opscode.com/api/v1/cookbooks/kickstart
+  cookbook:              https://supermarket.chef.io/api/v1/cookbooks/kickstart
   cookbook_description:  Creates apache2 vhost and serves a kickstart file.
   cookbook_maintainer:   opscode
   cookbook_name:         kickstart
@@ -311,18 +311,18 @@ category:        Networking
 created_at:      2009-10-25T23:51:07Z
 description:     Installs and configures haproxy
 external_url:
-latest_version:  http://cookbooks.opscode.com/api/v1/cookbooks/haproxy/versions/1_0_3
+latest_version:  https://supermarket.chef.io/api/v1/cookbooks/haproxy/versions/1_0_3
 maintainer:      opscode
 name:            haproxy
 updated_at:      2011-06-30T21:53:25Z
 versions:
-   http://cookbooks.opscode.com/api/v1/cookbooks/haproxy/versions/1_0_3
-   http://cookbooks.opscode.com/api/v1/cookbooks/haproxy/versions/1_0_2
-   http://cookbooks.opscode.com/api/v1/cookbooks/haproxy/versions/1_0_1
-   http://cookbooks.opscode.com/api/v1/cookbooks/haproxy/versions/1_0_0
-   http://cookbooks.opscode.com/api/v1/cookbooks/haproxy/versions/0_8_1
-   http://cookbooks.opscode.com/api/v1/cookbooks/haproxy/versions/0_8_0
-   http://cookbooks.opscode.com/api/v1/cookbooks/haproxy/versions/0_7_0
+   https://supermarket.chef.io/api/v1/cookbooks/haproxy/versions/1_0_3
+   https://supermarket.chef.io/api/v1/cookbooks/haproxy/versions/1_0_2
+   https://supermarket.chef.io/api/v1/cookbooks/haproxy/versions/1_0_1
+   https://supermarket.chef.io/api/v1/cookbooks/haproxy/versions/1_0_0
+   https://supermarket.chef.io/api/v1/cookbooks/haproxy/versions/0_8_1
+   https://supermarket.chef.io/api/v1/cookbooks/haproxy/versions/0_8_0
+   https://supermarket.chef.io/api/v1/cookbooks/haproxy/versions/0_7_0
 </pre></div>
 </div>
 <p><strong>Show cookbook data as JSON</strong></p>
@@ -364,7 +364,7 @@ versions:
 
       </div>
 
-  
+
       <div class="clearer"></div>
     </div>
 

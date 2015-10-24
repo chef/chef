@@ -29,6 +29,18 @@ class Chef
         end_time - start_time
       end
 
+      def pretty_elapsed_time
+        time = elapsed_time
+        if time < 60 then
+          message = Time.at(time).utc.strftime("%S seconds")
+        elsif time < 3600 then
+          message = Time.at(time).utc.strftime("%M minutes %S seconds")
+        else
+          message = Time.at(time).utc.strftime("%H hours %M minutes %S seconds")
+        end
+        message
+      end
+
       def run_start(version)
         puts_line "Starting Chef Client, version #{version}"
       end
@@ -43,10 +55,30 @@ class Chef
 
       def run_completed(node)
         @end_time = Time.now
+        # Print out deprecations.
+        if !deprecations.empty?
+          puts_line ""
+          puts_line "Deprecated features used!"
+          deprecations.each do |message, locations|
+            if locations.size == 1
+              puts_line "  #{message} at #{locations.size} location:"
+            else
+              puts_line "  #{message} at #{locations.size} locations:"
+            end
+            locations.each do |location|
+              prefix = "    - "
+              Array(location).each do |line|
+                puts_line "#{prefix}#{line}"
+                prefix = "      "
+              end
+            end
+          end
+          puts_line ""
+        end
         if Chef::Config[:why_run]
           puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
           if total_audits > 0
             puts_line "  #{successful_audits}/#{total_audits} controls succeeded"
           end
@@ -58,7 +90,7 @@ class Chef
         if Chef::Config[:why_run]
           puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
-          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
           if total_audits > 0
             puts_line "  #{successful_audits} controls succeeded"
           end
@@ -336,12 +368,28 @@ class Chef
         end
       end
 
+      def deprecation(message, location=caller(2..2)[0])
+        if Chef::Config[:treat_deprecation_warnings_as_errors]
+          super
+        end
+
+        # Save deprecations to the screen until the end
+        deprecations[message] ||= Set.new
+        deprecations[message] << location
+      end
+
       def indent
         indent_by(2)
       end
 
       def unindent
         indent_by(-2)
+      end
+
+      protected
+
+      def deprecations
+        @deprecations ||= {}
       end
     end
   end

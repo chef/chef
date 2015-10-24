@@ -105,7 +105,7 @@ class Chef
     class VerificationNotFound < RuntimeError; end
     class InvalidEventType < ArgumentError; end
     class MultipleIdentityError < RuntimeError; end
-    # Used in Resource::ActionProvider#load_current_resource to denote that
+    # Used in Resource::ActionClass#load_current_resource to denote that
     # the resource doesn't actually exist (for example, the file does not exist)
     class CurrentValueDoesNotExist < RuntimeError; end
 
@@ -115,6 +115,8 @@ class Chef
         super "Cannot find a resource for #{short_name} on #{node[:platform]} version #{node[:platform_version]}"
       end
     end
+
+    class InvalidPolicybuilderCall < ArgumentError; end
 
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end

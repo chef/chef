@@ -33,6 +33,9 @@ class Chef
     # expands the run_list on a node object and then queries the chef-server
     # to find the correct set of cookbooks, given version constraints of the
     # node's environment.
+    #
+    # Note that this class should only be used via PolicyBuilder::Dynamic and
+    # not instantiated directly.
     class ExpandNodeObject
 
       attr_reader :events
@@ -55,9 +58,10 @@ class Chef
         @run_list_expansion = nil
       end
 
-      # This method injects the run_context and provider and resource priority
-      # maps into the Chef class.  The run_context has to be injected here, the provider and
-      # resource maps could be moved if a better place can be found to do this work.
+      # This method injects the run_context and into the Chef class.
+      #
+      # NOTE: This is duplicated with the Policyfile implementation. If
+      # it gets any more complicated, it needs to be moved elsewhere.
       #
       # @param run_context [Chef::RunContext] the run_context to inject
       def setup_chef_class(run_context)
@@ -93,25 +97,36 @@ class Chef
         run_context
       end
 
-
-      # In client-server operation, loads the node state from the server. In
-      # chef-solo operation, builds a new node object.
+      # DEPRECATED: As of Chef 12.5, chef selects either policyfile mode or
+      # "expand node" mode dynamically, based on the content of the node
+      # object, first boot JSON, and config. This happens in
+      # PolicyBuilder::Dynamic, which selects the implementation during
+      # #load_node and then delegates to either ExpandNodeObject or Policyfile
+      # implementations as appropriate. Tools authors should update their code
+      # to create a PolicyBuilder::Dynamc policy builder and allow it to select
+      # the proper implementation.
       def load_node
-        events.node_load_start(node_name, Chef::Config)
+        Chef.log_deprecation("ExpandNodeObject#load_node is deprecated. Please use Chef::PolicyBuilder::Dynamic instead of using ExpandNodeObject directly")
+
+        events.node_load_start(node_name, config)
         Chef::Log.debug("Building node object for #{node_name}")
 
-        if Chef::Config[:solo]
-          @node = Chef::Node.build(node_name)
-        else
-          @node = Chef::Node.find_or_create(node_name)
-        end
+        @node =
+          if Chef::Config[:solo]
+            Chef::Node.build(node_name)
+          else
+            Chef::Node.find_or_create(node_name)
+          end
+        finish_load_node(node)
+        node
       rescue Exception => e
-        # TODO: wrap this exception so useful error info can be given to the
-        # user.
-        events.node_load_failed(node_name, e, Chef::Config)
+        events.node_load_failed(node_name, e, config)
         raise
       end
 
+      def finish_load_node(node)
+        @node = node
+      end
 
       # Applies environment, external JSON attributes, and override run list to
       # the node, Then expands the run_list.
@@ -139,6 +154,7 @@ class Chef
         Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
 
         events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
+        events.run_list_expanded(@run_list_expansion)
 
         node
       end

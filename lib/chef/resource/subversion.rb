@@ -28,11 +28,16 @@ class Chef
         super
         @svn_arguments = '--no-auth-cache'
         @svn_info_args = '--no-auth-cache'
+        @svn_binary = nil
       end
 
       # Override exception to strip password if any, so it won't appear in logs and different Chef notifications
       def custom_exception_message(e)
         "#{self} (#{defined_at}) had an error: #{e.class.name}: #{svn_password ? e.message.gsub(svn_password, "[hidden_password]") : e.message}"
+      end
+
+      def svn_binary(arg=nil)
+        set_or_return(:svn_binary, arg, :kind_of => [String])
       end
     end
   end

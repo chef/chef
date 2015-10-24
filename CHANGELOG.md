@@ -1,10 +1,32 @@
+
 ## Unreleased
+
+* [**Dave Eddy**](https://github.com/bahamas10)
+  [pr#3187](https://github.com/chef/chef/pull/3187) overhaul solaris SMF service provider
+* [**Mikhail Zholobov**](https://github.com/legal90)
+  [pr#3192](https://github.com/chef/chef/pull/3192) provider/user/dscl: Set default gid to 20
+
+* [pr#4034](https://github.com/chef/chef/pull/4034) add optional ruby-profiling with --profile-ruby
+* [pr#3119](https://github.com/chef/chef/pull/3119) allow removing user, even if their GID isn't resolvable
+* [pr#4068](https://github.com/chef/chef/pull/4068) update messaging from LWRP to Custom Resource in logging and spec
+* [pr#4021](https://github.com/chef/chef/pull/4021) add missing requires for Chef::DSL::Recipe to LWRPBase
+* [pr#3597](https://github.com/chef/chef/pull/3597) print STDOUT from the powershell_script
+* [pr#4091](https://github.com/chef/chef/pull/4091) Allow downloading of root_files in a chef repository
+
+## 12.5.1
+
+* [**Ranjib Dey**](https://github.com/ranjib):
+  [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
+
+## 12.5.1
+
 * [**Ranjib Dey**](https://github.com/ranjib):
   [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
 * [**John Kerry**](https://github.com/jkerry):
   [pr#3539](https://github.com/chef/chef/pull/3539) Fix issue: registry\_key resource is case sensitive in chef but not on windows
 * [**David Eddy**](https://github.com/bahamas10):
-  [pr#3443](https://github.com/chef/chef/pull/3443) remove extraneous space
+  - [pr#3443](https://github.com/chef/chef/pull/3443) remove extraneous space
+  - [pr#3091](https://github.com/chef/chef/pull/3091) fix locking/unlocking users on SmartOS
 * [**margueritepd**](https://github.com/margueritepd):
   [pr#3693](https://github.com/chef/chef/pull/3693) Interpolate `%{path}` in verify command
 * [**Jeremy Fleischman**](https://github.com/jfly):
@@ -18,16 +40,36 @@
 * [**James Belchamber**](https://github.com/JamesBelchamber):
   [pr#1796](https://github.com/chef/chef/pull/1796): make mount options aware
 * [**Nate Walck**](https://github.com/natewalck):
-  [pr#3594](https://github.com/chef/chef/pull/3594): Update service provider for OSX 10.11
-* [**Nate Walck**](https://github.com/natewalck):
-  [pr#3704](https://github.com/chef/chef/pull/3704): Add SIP (OS X 10.11) support
+  - [pr#3594](https://github.com/chef/chef/pull/3594): Update service provider for OSX 10.11
+  - [pr#3704](https://github.com/chef/chef/pull/3704): Add SIP (OS X 10.11) support
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   [pr#3805](https://github.com/chef/chef/pull/3805) LWRP parameter validators should use truthiness
 * [**Igor Shpakov**](https://github.com/Igorshp):
   [pr#3743](https://github.com/chef/chef/pull/3743) speed improvement for `remote_directory` resource
+* [**James FitzGibbon**](https://github.com/jf647):
+  [pr#3027](https://github.com/chef/chef/pull/3027) Add warnings to 'knife node run list remove ...'
+* [**Backslasher**](https://github.com/backslasher):
+  [pr#3172](https://github.com/chef/chef/pull/3172) Migrated deploy resource to use shell\_out instead of run\_command
+* [**Sean Walberg**](https://github.com/swalberg):
+  [pr#3190](https://github.com/chef/chef/pull/3190) Allow tags to be set on a node during bootstrap
+* [**ckaushik**](https://github.com/ckaushik) and [**Sam Dunne**](https://github.com/samdunne):
+  [pr#3510](https://github.com/chef/chef/pull/3510) Fix broken rendering
+of partial templates.
+* [**Simon Detheridge**](https://github.com/gh2k):
+  [pr#3806](https://github.com/chef/chef/pull/3806) Replace output\_of\_command with shell\_out! in subversion provider
+* [**Joel Handwell**](https://github.com/joelhandwell):
+  [pr#3821](https://github.com/chef/chef/pull/3821) Human friendly elapsed time in log
 
+* [pr#3985](https://github.com/chef/chef/pull/3985) Simplify the regex which determines the rpm version to resolve issue #3671
+* [pr#3928](https://github.com/chef/chef/pull/3928) Add named run list support when using policyfiles
+* [pr#3913](https://github.com/chef/chef/pull/3913) Add `policy_name`and `policy_group` fields to the node object
+* [pr#3875](https://github.com/chef/chef/pull/3875) Patch Win32::Registry#delete_key, #delete_value to use wide (W) APIs
+* [pr#3850](https://github.com/chef/chef/pull/3850) Patch Win32::Registry#write to fix encoding errors
+* [pr#3837](https://github.com/chef/chef/pull/3837) refactor remote_directory provider for mem+perf improvement
 * [pr#3799](https://github.com/chef/chef/pull/3799) fix supports hash issues in service providers
+* [pr#3797](https://github.com/chef/chef/pull/3797) Fix dsc_script spec failure on 64-bit Ruby
 * [pr#3817](https://github.com/chef/chef/pull/3817) Remove now-useless forcing of ruby Garbage Collector run
+* [pr#3775](https://github.com/chef/chef/pull/3775) Enable 64-bit support for Powershell and Batch scripts
 * [pr#3774](https://github.com/chef/chef/pull/3774) Add support for yum-deprecated in yum provider
 * [pr#3793](https://github.com/chef/chef/pull/3793) CHEF-5372: Support specific `run_levels` for RedHat service
 * [pr#2460](https://github.com/chef/chef/pull/2460) add privacy flag
@@ -52,6 +94,7 @@
 * [pr#3768](https://github.com/chef/chef/pull/3768) Make reboot\_pending? look for CBS RebootPending
 * [pr#3815](https://github.com/chef/chef/pull/3815) Fix `powershell_script` validation to use correct architecture
 * [pr#3772](https://github.com/chef/chef/pull/3772) Add `ps_credential` dsl method to `dsc_script`
+* [pr#3462](https://github.com/chef/chef/pull/3462) Fix issue where `ps_credential` does not work over winrm
 
 ## 12.4.1
 

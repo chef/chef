@@ -38,14 +38,14 @@ describe Chef::Knife::Core::BootstrapContext do
     expect{described_class.new(config, run_list, chef_config)}.not_to raise_error
   end
 
-  it "runs chef with the first-boot.json in the _default environment" do
-    expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -E _default"
+  it "runs chef with the first-boot.json with no environment specified" do
+    expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json"
   end
 
   describe "when in verbosity mode" do
     let(:config) { {:verbosity => 2} }
     it "adds '-l debug' when verbosity is >= 2" do
-      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug -E _default"
+      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug"
     end
   end
 
@@ -70,7 +70,7 @@ EXPECTED
   describe "alternate chef-client path" do
     let(:chef_config){ {:chef_client_path => '/usr/local/bin/chef-client'} }
     it "runs chef-client from another path when specified" do
-      expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json -E _default"
+      expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json"
     end
   end
 
@@ -97,6 +97,13 @@ EXPECTED
     end
   end
 
+  describe "when tags are given" do
+    let(:config) { {:tags => [ "unicorn" ] } }
+    it "adds the attributes to first_boot" do
+      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json({:run_list => run_list, :tags => ["unicorn"]}))
+    end
+  end
+
   describe "when JSON attributes are given" do
     let(:config) { {:first_boot_attributes => {:baz => :quux}} }
     it "adds the attributes to first_boot" do
@@ -108,6 +115,16 @@ EXPECTED
     it "sets first_boot equal to run_list" do
       expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json({:run_list => run_list}))
     end
+  end
+
+  describe "when policy_name and policy_group are present in config" do
+
+    let(:config) { { policy_name: "my_app_server", policy_group: "staging" } }
+
+    it "includes them in the first_boot data and excludes run_list" do
+      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json(config))
+    end
+
   end
 
   describe "when an encrypted_data_bag_secret is provided" do

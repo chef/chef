@@ -105,7 +105,7 @@ class Chef
           # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
           # which is not what you wanted.
           if uri.to_s =~ /gz$/
-            Chef::Log.debug("turning gzip compression off due to filename ending in gz")
+            Chef::Log.debug("Turning gzip compression off due to filename ending in gz")
             opts[:disable_gzip] = true
           end
           opts

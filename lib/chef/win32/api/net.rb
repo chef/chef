@@ -17,6 +17,7 @@
 #
 
 require 'chef/win32/api'
+require 'chef/win32/unicode'
 
 class Chef
   module ReservedNames::Win32
@@ -40,6 +41,10 @@ class Chef
         UF_NORMAL_ACCOUNT      = 0x000200
         UF_DONT_EXPIRE_PASSWD  = 0x010000
 
+        USE_NOFORCE = 0
+        USE_FORCE = 1
+        USE_LOTS_OF_FORCE = 2 #every windows API should support this flag
+
         NERR_Success = 0
         NERR_InvalidComputer = 2351
         NERR_NotPrimary = 2226
@@ -55,37 +60,7 @@ class Chef
 
         ffi_lib "netapi32"
 
-        class USER_INFO_3 < FFI::Struct
-          layout :usri3_name, :LPWSTR,
-            :usri3_password, :LPWSTR,
-            :usri3_password_age, :DWORD,
-            :usri3_priv, :DWORD,
-            :usri3_home_dir, :LPWSTR,
-            :usri3_comment, :LPWSTR,
-            :usri3_flags, :DWORD,
-            :usri3_script_path, :LPWSTR,
-            :usri3_auth_flags, :DWORD,
-            :usri3_full_name, :LPWSTR,
-            :usri3_usr_comment, :LPWSTR,
-            :usri3_parms, :LPWSTR,
-            :usri3_workstations, :LPWSTR,
-            :usri3_last_logon, :DWORD,
-            :usri3_last_logoff, :DWORD,
-            :usri3_acct_expires, :DWORD,
-            :usri3_max_storage, :DWORD,
-            :usri3_units_per_week, :DWORD,
-            :usri3_logon_hours, :PBYTE,
-            :usri3_bad_pw_count, :DWORD,
-            :usri3_num_logons, :DWORD,
-            :usri3_logon_server, :LPWSTR,
-            :usri3_country_code, :DWORD,
-            :usri3_code_page, :DWORD,
-            :usri3_user_id, :DWORD,
-            :usri3_primary_group_id, :DWORD,
-            :usri3_profile, :LPWSTR,
-            :usri3_home_dir_drive, :LPWSTR,
-            :usri3_password_expired, :DWORD
-
+        module StructHelpers
           def set(key, val)
             val = if val.is_a? String
               encoded = if val.encoding == Encoding::UTF_16LE
@@ -117,19 +92,53 @@ class Chef
             end
           end
 
+          def as_ruby
+            members.inject({}) do |memo, key|
+              memo[key] = get(key)
+              memo
+            end
+          end
+        end
+
+
+        class USER_INFO_3 < FFI::Struct
+          include StructHelpers
+          layout :usri3_name, :LPWSTR,
+            :usri3_password, :LPWSTR,
+            :usri3_password_age, :DWORD,
+            :usri3_priv, :DWORD,
+            :usri3_home_dir, :LPWSTR,
+            :usri3_comment, :LPWSTR,
+            :usri3_flags, :DWORD,
+            :usri3_script_path, :LPWSTR,
+            :usri3_auth_flags, :DWORD,
+            :usri3_full_name, :LPWSTR,
+            :usri3_usr_comment, :LPWSTR,
+            :usri3_parms, :LPWSTR,
+            :usri3_workstations, :LPWSTR,
+            :usri3_last_logon, :DWORD,
+            :usri3_last_logoff, :DWORD,
+            :usri3_acct_expires, :DWORD,
+            :usri3_max_storage, :DWORD,
+            :usri3_units_per_week, :DWORD,
+            :usri3_logon_hours, :PBYTE,
+            :usri3_bad_pw_count, :DWORD,
+            :usri3_num_logons, :DWORD,
+            :usri3_logon_server, :LPWSTR,
+            :usri3_country_code, :DWORD,
+            :usri3_code_page, :DWORD,
+            :usri3_user_id, :DWORD,
+            :usri3_primary_group_id, :DWORD,
+            :usri3_profile, :LPWSTR,
+            :usri3_home_dir_drive, :LPWSTR,
+            :usri3_password_expired, :DWORD
+
           def usri3_logon_hours
             val = self[:usri3_logon_hours]
             if !val.nil? && !val.null?
               val.read_bytes(21)
             else
               nil
-            end
-          end
-
-          def as_ruby
-            members.inject({}) do |memo, key|
-              memo[key] = get(key)
-              memo
             end
           end
         end
@@ -146,19 +155,36 @@ class Chef
           layout :lgrpi0_name, :LPWSTR
         end
 
+        class USE_INFO_2 < FFI::Struct
+          include StructHelpers
+
+          layout :ui2_local, :LMSTR,
+            :ui2_remote, :LMSTR,
+            :ui2_password, :LMSTR,
+            :ui2_status, :DWORD,
+            :ui2_asg_type, :DWORD,
+            :ui2_refcount, :DWORD,
+            :ui2_usecount, :DWORD,
+            :ui2_username, :LPWSTR,
+            :ui2_domainname, :LMSTR
+        end
+
+
 #NET_API_STATUS NetLocalGroupAdd(
   #_In_  LPCWSTR servername,
   #_In_  DWORD   level,
   #_In_  LPBYTE  buf,
   #_Out_ LPDWORD parm_err
 #);
-        safe_attach_function :NetLocalGroupAdd, [ :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
+        safe_attach_function :NetLocalGroupAdd, [
+          :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD
+        ], :DWORD
 
 #NET_API_STATUS NetLocalGroupDel(
   #_In_ LPCWSTR servername,
   #_In_ LPCWSTR groupname
 #);
-        safe_attach_function :NetLocalGroupDel, [ :LPCWSTR, :LPCWSTR], :DWORD
+        safe_attach_function :NetLocalGroupDel, [:LPCWSTR, :LPCWSTR], :DWORD
 
 #NET_API_STATUS NetLocalGroupGetMembers(
   #_In_    LPCWSTR    servername,
@@ -170,7 +196,7 @@ class Chef
   #_Out_   LPDWORD    totalentries,
   #_Inout_ PDWORD_PTR resumehandle
 #);
-        safe_attach_function :NetLocalGroupGetMembers, [ 
+        safe_attach_function :NetLocalGroupGetMembers, [
           :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD,
           :LPDWORD, :LPDWORD, :PDWORD_PTR
         ], :DWORD
@@ -185,12 +211,15 @@ class Chef
 #   _Out_    LPDWORD totalentries,
 #   _Inout_  LPDWORD resume_handle
 # );
-        safe_attach_function :NetUserEnum, [ :LPCWSTR, :DWORD, :DWORD, :LPBYTE, :DWORD, :LPDWORD, :LPDWORD, :LPDWORD ], :DWORD
+        safe_attach_function :NetUserEnum, [
+          :LPCWSTR, :DWORD, :DWORD, :LPBYTE,
+          :DWORD, :LPDWORD, :LPDWORD, :LPDWORD
+        ], :DWORD
 
 # NET_API_STATUS NetApiBufferFree(
 #   _In_  LPVOID Buffer
 # );
-        safe_attach_function :NetApiBufferFree, [ :LPVOID ], :DWORD
+        safe_attach_function :NetApiBufferFree, [:LPVOID], :DWORD
 
 #NET_API_STATUS NetUserAdd(
   #_In_  LMSTR   servername,
@@ -198,7 +227,9 @@ class Chef
   #_In_  LPBYTE  buf,
   #_Out_ LPDWORD parm_err
 #);
-        safe_attach_function :NetUserAdd, [:LMSTR, :DWORD, :LPBYTE, :LPDWORD ], :DWORD
+        safe_attach_function :NetUserAdd, [
+          :LMSTR, :DWORD, :LPBYTE, :LPDWORD
+        ], :DWORD
 
 #NET_API_STATUS NetLocalGroupAddMembers(
 #  _In_ LPCWSTR servername,
@@ -207,7 +238,9 @@ class Chef
 #  _In_ LPBYTE  buf,
 #  _In_ DWORD   totalentries
 #);
-        safe_attach_function :NetLocalGroupAddMembers, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD ], :DWORD
+        safe_attach_function :NetLocalGroupAddMembers, [
+          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD
+        ], :DWORD
 
 #NET_API_STATUS NetLocalGroupSetMembers(
 #  _In_ LPCWSTR servername,
@@ -216,7 +249,9 @@ class Chef
 #  _In_ LPBYTE  buf,
 #  _In_ DWORD   totalentries
 #);
-        safe_attach_function :NetLocalGroupSetMembers, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD ], :DWORD
+        safe_attach_function :NetLocalGroupSetMembers, [
+          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD
+        ], :DWORD
 
 #NET_API_STATUS NetLocalGroupDelMembers(
 #  _In_ LPCWSTR servername,
@@ -225,7 +260,9 @@ class Chef
 #  _In_ LPBYTE  buf,
 #  _In_ DWORD   totalentries
 #);
-        safe_attach_function :NetLocalGroupDelMembers, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD ], :DWORD
+        safe_attach_function :NetLocalGroupDelMembers, [
+          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :DWORD
+        ], :DWORD
 
 #NET_API_STATUS NetUserGetInfo(
 #  _In_  LPCWSTR servername,
@@ -233,7 +270,9 @@ class Chef
 #  _In_  DWORD   level,
 #  _Out_ LPBYTE  *bufptr
 #);
-        safe_attach_function :NetUserGetInfo, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE], :DWORD
+        safe_attach_function :NetUserGetInfo, [
+          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE
+        ], :DWORD
 
 #NET_API_STATUS NetApiBufferFree(
 #  _In_ LPVOID Buffer
@@ -247,7 +286,9 @@ class Chef
 #  _In_  LPBYTE  buf,
 #  _Out_ LPDWORD parm_err
 #);
-        safe_attach_function :NetUserSetInfo, [:LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
+        safe_attach_function :NetUserSetInfo, [
+          :LPCWSTR, :LPCWSTR, :DWORD, :LPBYTE, :LPDWORD
+        ], :DWORD
 
 #NET_API_STATUS NetUserDel(
 #  _In_ LPCWSTR servername,
@@ -255,6 +296,28 @@ class Chef
 #);
         safe_attach_function :NetUserDel, [:LPCWSTR, :LPCWSTR], :DWORD
 
+#NET_API_STATUS NetUseDel(
+  #_In_ LMSTR UncServerName,
+  #_In_ LMSTR UseName,
+  #_In_ DWORD ForceCond
+#);
+        safe_attach_function :NetUseDel, [:LMSTR, :LMSTR, :DWORD], :DWORD
+
+#NET_API_STATUS NetUseGetInfo(
+  #_In_  LMSTR  UncServerName,
+  #_In_  LMSTR  UseName,
+  #_In_  DWORD  Level,
+  #_Out_ LPBYTE *BufPtr
+#);
+        safe_attach_function :NetUseGetInfo, [:LMSTR, :LMSTR, :DWORD, :pointer], :DWORD
+
+#NET_API_STATUS NetUseAdd(
+  #_In_  LMSTR   UncServerName,
+  #_In_  DWORD   Level,
+  #_In_  LPBYTE  Buf,
+  #_Out_ LPDWORD ParmError
+#);
+        safe_attach_function :NetUseAdd, [:LMSTR, :DWORD, :LPBYTE, :LPDWORD], :DWORD
       end
     end
   end

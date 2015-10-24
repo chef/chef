@@ -1103,6 +1103,15 @@ EOM
     before :each do
       Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
     end
+    when_the_repository 'has existing top level files' do
+      before do
+        file 'invitations.json', {}
+      end
+
+      it "can still download top level files" do
+        knife('download /invitations.json').should_succeed
+      end
+    end
 
     when_the_repository 'is empty' do
       it 'knife download / downloads everything' do
@@ -1113,11 +1122,13 @@ Created /acls/clients/foo-validator.json
 Created /acls/containers
 Created /acls/containers/clients.json
 Created /acls/containers/containers.json
+Created /acls/containers/cookbook_artifacts.json
 Created /acls/containers/cookbooks.json
 Created /acls/containers/data.json
 Created /acls/containers/environments.json
 Created /acls/containers/groups.json
 Created /acls/containers/nodes.json
+Created /acls/containers/policies.json
 Created /acls/containers/roles.json
 Created /acls/containers/sandboxes.json
 Created /acls/containers/x.json
@@ -1139,11 +1150,13 @@ Created /clients/foo-validator.json
 Created /containers
 Created /containers/clients.json
 Created /containers/containers.json
+Created /containers/cookbook_artifacts.json
 Created /containers/cookbooks.json
 Created /containers/data.json
 Created /containers/environments.json
 Created /containers/groups.json
 Created /containers/nodes.json
+Created /containers/policies.json
 Created /containers/roles.json
 Created /containers/sandboxes.json
 Created /containers/x.json

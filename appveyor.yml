@@ -1,12 +1,14 @@
 version: "master-{build}"
 
-os: Windows Server 2012
+os: Windows Server 2012 R2
 platform:
   - x64
 
 environment:
   matrix:
     - ruby_version: "200"
+    - ruby_version: "200-x64"
+    - ruby_version: "21"
 
 clone_folder: c:\projects\chef
 clone_depth: 1
@@ -14,13 +16,9 @@ skip_tags: true
 branches:
   only:
     - master
-    - 12.4-stable
-
-cache:
-  - C:\Ruby200\lib\ruby\gems\2.0.0
-  - C:\Ruby200\bin
 
 install:
+  - systeminfo
   - winrm quickconfig -q
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - echo %PATH%

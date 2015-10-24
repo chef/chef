@@ -201,7 +201,7 @@ class Chef
 
           converge_by("execute migration command #{@new_resource.migration_command}") do
             Chef::Log.info "#{@new_resource} migrating #{@new_resource.user} with environment #{env_info}"
-            run_command(run_options(:command => @new_resource.migration_command, :cwd=>release_path, :log_level => :info))
+            shell_out!(@new_resource.migration_command,run_options(:cwd=>release_path, :log_level => :info))
           end
         end
       end
@@ -221,7 +221,7 @@ class Chef
           else
             converge_by("restart app using command #{@new_resource.restart_command}") do
               Chef::Log.info("#{@new_resource} restarting app")
-              run_command(run_options(:command => @new_resource.restart_command, :cwd => @new_resource.current_path))
+              shell_out!(@new_resource.restart_command,run_options(:cwd=>@new_resource.current_path))
             end
           end
         end

@@ -149,6 +149,22 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       client_builder.run
     end
 
+    it "does not add tags by default" do
+      allow(node).to receive(:run_list).with([])
+      expect(node).to_not receive(:tags)
+      client_builder.run
+    end
+
+    it "adds tags to the node when given" do
+      tag_receiver = []
+
+      knife_config[:tags] = %w[foo bar]
+      allow(node).to receive(:run_list).with([])
+      allow(node).to receive(:tags).and_return(tag_receiver)
+      client_builder.run
+      expect(tag_receiver).to eq %w[foo bar]
+    end
+
     it "builds a node when the run_list is a string" do
       knife_config[:run_list] = "role[base],role[app]"
       expect(node).to receive(:run_list).with(["role[base]", "role[app]"])
@@ -172,6 +188,17 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       knife_config[:environment] = "production"
       expect(node).to receive(:environment).with("production")
       expect(node).to receive(:run_list).with([])
+      client_builder.run
+    end
+
+    it "builds a node with policy_name and policy_group when given" do
+      knife_config[:policy_name] = "my-app"
+      knife_config[:policy_group] = "staging"
+
+      expect(node).to receive(:run_list).with([])
+      expect(node).to receive(:policy_name=).with("my-app")
+      expect(node).to receive(:policy_group=).with("staging")
+
       client_builder.run
     end
   end

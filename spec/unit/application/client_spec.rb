@@ -47,6 +47,19 @@ describe Chef::Application::Client, "reconfigure" do
       expect(app).to receive(:set_specific_recipes).and_return(true)
       app.reconfigure
     end
+
+    context "when given a named_run_list" do
+
+      before do
+        ARGV.replace( %w[ --named-run-list arglebargle-example ] )
+        app.reconfigure
+      end
+
+      it "sets named_run_list in Chef::Config" do
+        expect(Chef::Config[:named_run_list]).to eq("arglebargle-example")
+      end
+
+    end
   end
 
   describe "when configured to not fork the client process" do
@@ -237,7 +250,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
 
     it "should throw an exception" do
-      expect { @app.reconfigure }.to raise_error
+      expect { app.reconfigure }.to raise_error(Chef::Exceptions::PIDFileLockfileMatch)
     end
   end
 end
@@ -275,9 +288,9 @@ describe Chef::Application::Client, "configure_chef" do
     ARGV.replace(@original_argv)
   end
 
-  it "should set the colored output to false by default on windows and true otherwise" do
+  it "should set the colored output to true by default on windows and true on all other platforms as well" do
     if windows?
-      expect(Chef::Config[:color]).to be_falsey
+      expect(Chef::Config[:color]).to be_truthy
     else
       expect(Chef::Config[:color]).to be_truthy
     end

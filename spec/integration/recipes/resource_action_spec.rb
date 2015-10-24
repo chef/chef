@@ -4,7 +4,7 @@ describe "Resource.action" do
   include IntegrationSupport
 
   shared_context "ActionJackson" do
-    it "The default action is the first declared action" do
+    it "the default action is the first declared action" do
       converge <<-EOM, __FILE__, __LINE__+1
         #{resource_dsl} 'hi' do
           foo 'foo!'
@@ -14,7 +14,7 @@ describe "Resource.action" do
       expect(ActionJackson.succeeded).to eq true
     end
 
-    it "The action can access recipe DSL" do
+    it "the action can access recipe DSL" do
       converge <<-EOM, __FILE__, __LINE__+1
         #{resource_dsl} 'hi' do
           foo 'foo!'
@@ -25,7 +25,7 @@ describe "Resource.action" do
       expect(ActionJackson.succeeded).to eq true
     end
 
-    it "The action can access attributes" do
+    it "the action can access attributes" do
       converge <<-EOM, __FILE__, __LINE__+1
         #{resource_dsl} 'hi' do
           foo 'foo!'
@@ -36,7 +36,7 @@ describe "Resource.action" do
       expect(ActionJackson.succeeded).to eq 'foo!'
     end
 
-    it "The action can access public methods" do
+    it "the action can access public methods" do
       converge <<-EOM, __FILE__, __LINE__+1
         #{resource_dsl} 'hi' do
           foo 'foo!'
@@ -47,7 +47,7 @@ describe "Resource.action" do
       expect(ActionJackson.succeeded).to eq 'foo_public!'
     end
 
-    it "The action can access protected methods" do
+    it "the action can access protected methods" do
       converge <<-EOM, __FILE__, __LINE__+1
         #{resource_dsl} 'hi' do
           foo 'foo!'
@@ -58,7 +58,7 @@ describe "Resource.action" do
       expect(ActionJackson.succeeded).to eq 'foo_protected!'
     end
 
-    it "The action cannot access private methods" do
+    it "the action cannot access private methods" do
       expect {
         converge(<<-EOM, __FILE__, __LINE__+1)
           #{resource_dsl} 'hi' do
@@ -70,7 +70,7 @@ describe "Resource.action" do
       expect(ActionJackson.ran_action).to eq :access_private_method
     end
 
-    it "The action cannot access resource instance variables" do
+    it "the action cannot access resource instance variables" do
       converge <<-EOM, __FILE__, __LINE__+1
         #{resource_dsl} 'hi' do
           foo 'foo!'
@@ -81,7 +81,7 @@ describe "Resource.action" do
       expect(ActionJackson.succeeded).to be_nil
     end
 
-    it "The action does not compile until the prior resource has converged" do
+    it "the action does not compile until the prior resource has converged" do
       converge <<-EOM, __FILE__, __LINE__+1
         ruby_block 'wow' do
           block do
@@ -98,7 +98,7 @@ describe "Resource.action" do
       expect(ActionJackson.succeeded).to eq 'ruby_block_converged!'
     end
 
-    it "The action's resources converge before the next resource converges" do
+    it "the action's resources converge before the next resource converges" do
       converge <<-EOM, __FILE__, __LINE__+1
         #{resource_dsl} 'hi' do
           foo 'foo!'
@@ -202,6 +202,11 @@ describe "Resource.action" do
       let(:resource_dsl) { :action_jackson }
     end
 
+    it "Can retrieve ancestors of action class without crashing" do
+      converge { action_jackson 'hi' }
+      expect { ActionJackson.action_class.ancestors.join(",") }.not_to raise_error
+    end
+
     context "And 'action_jackgrandson' inheriting from ActionJackson and changing nothing" do
       before(:context) {
         class ActionJackgrandson < ActionJackson
@@ -214,7 +219,7 @@ describe "Resource.action" do
       end
     end
 
-    context "And 'action_jackalope' inheriting from ActionJackson with an extra attribute and action" do
+    context "And 'action_jackalope' inheriting from ActionJackson with an extra attribute, action and custom method" do
       before(:context) {
         class ActionJackalope < ActionJackson
           use_automatic_resource_name
@@ -228,6 +233,7 @@ describe "Resource.action" do
             @bar
           end
           class <<self
+            attr_accessor :load_current_resource_ran
             attr_accessor :jackalope_ran
           end
           action :access_jackalope do
@@ -243,6 +249,7 @@ describe "Resource.action" do
       }
       before do
         ActionJackalope.jackalope_ran = nil
+        ActionJackalope.load_current_resource_ran = nil
       end
 
       context "action_jackson still behaves the same" do
@@ -251,7 +258,7 @@ describe "Resource.action" do
         end
       end
 
-      it "The default action remains the same even though new actions were specified first" do
+      it "the default action remains the same even though new actions were specified first" do
         converge {
           action_jackalope 'hi' do
             foo 'foo!'
@@ -320,7 +327,7 @@ describe "Resource.action" do
         end
       end
     }
-    it "The default action is :nothing" do
+    it "the default action is :nothing" do
       converge {
         no_action_jackson 'hi' do
           foo 'foo!'

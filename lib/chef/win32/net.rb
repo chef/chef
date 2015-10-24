@@ -18,11 +18,11 @@
 
 require 'chef/win32/api/net'
 require 'chef/win32/error'
-require 'chef/mixin/wstring'
+require 'chef/mixin/wide_string'
 
 class Chef
   module ReservedNames::Win32
-    class NetUser
+    class Net
       include Chef::ReservedNames::Win32::API::Error
       extend Chef::ReservedNames::Win32::API::Error
 
@@ -286,6 +286,59 @@ END
           net_api_error!(rc)
         end
       end
+
+      def self.net_use_del(server_name, use_name, force=:use_noforce)
+        server_name = wstring(server_name)
+        use_name = wstring(use_name)
+        force_const = case force
+                      when :use_noforce
+                        USE_NOFORCE
+                      when :use_force
+                        USE_FORCE
+                      when :use_lots_of_force
+                        USE_LOTS_OF_FORCE
+                      else
+                        raise ArgumentError, "force must be one of [:use_noforce, :use_force, or :use_lots_of_force]"
+                      end
+
+        rc = NetUseDel(server_name, use_name, force_const)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
+
+      def self.net_use_get_info_l2(server_name, use_name)
+        server_name = wstring(server_name)
+        use_name = wstring(use_name)
+        ui2_p = FFI::MemoryPointer.new(:pointer)
+
+        rc = NetUseGetInfo(server_name, use_name, 2, ui2_p)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+
+        ui2 = USE_INFO_2.new(ui2_p.read_pointer).as_ruby
+        NetApiBufferFree(ui2_p.read_pointer)
+
+        ui2
+      end
+
+      def self.net_use_add_l2(server_name, ui2_hash)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+
+        buf = USE_INFO_2.new
+
+        ui2_hash.each do |(k,v)|
+          buf.set(k,v)
+        end
+
+        rc = NetUseAdd(server_name, 2, buf, nil)
+        if rc != NERR_Success
+          net_api_error!(rc)
+        end
+      end
     end
+    NetUser = Net # For backwards compatibility
   end
 end

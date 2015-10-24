@@ -6,6 +6,69 @@ Example Doc Change:
 Description of the required change.
 -->
 
+### client.rb named run list setting
+
+Policyfiles allow for multiple named run lists to be specified. To use
+them in chef-client, one can either specify them on the command line
+with:
+
+```
+chef-client --named-run-list NAME
+```
+
+or use the short option:
+
+```
+chef-client -n NAME
+```
+
+or specify the named run list in client.rb:
+
+```ruby
+named_run_list "NAME"
+```
+
+NOTE: ChefDK has supported named run lists in policyfiles for a few
+releases, but is affected by a bug where named run lists can be deleted
+from a Policyfile.lock.json during the upload. The fix will likely be
+included in ChefDK 0.8.0. See: https://github.com/chef/chef-dk/pull/520
+
+### client.rb policyfile settings
+
+Chef client can be configured to run in policyfile mode by setting
+`policy_name` and `policy_group` in client.rb. In order to use
+policyfiles, _both_ settings should be set. Example:
+
+```ruby
+policy_name "appserver"
+policy_group "staging"
+```
+
+As of Chef Client 12.5, when used in conjunction with Chef Server 12.3,
+these settings can instead be set directly on the node object. Setting
+them via the node JSON as described below will result in Chef Client
+creating the node object with these settings.
+
+### `chef-client -j JSON`
+
+Chef client node JSON can now be used to specify the policyfile settings
+`policy_name` and `policy_group`, like so:
+
+```json
+{
+  "policy_name": "appserver",
+  "policy_group": "staging"
+}
+```
+
+Doing so will cause `chef-client` to switch to policyfile mode
+automatically (i.e., the `use_policy` flag in `client.rb` is not
+required).
+
+Users who wish to take advantage of this functionality should upgrade
+the Chef Server to at least 12.3, which is the first Chef Server release
+capable of storing `policy_name` and `policy_group` in the node data.
+
 ### PSCredential Support for `dsc_script`
 
 `dsc_script` now supports the use of `ps_credential` to create a PSCredential

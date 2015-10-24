@@ -69,7 +69,7 @@ class Chef
           Chef::FileCache.move_to(raw_file.path, cache_filename)
         else
           Chef::Log.debug("Not fetching #{cache_filename}, as the cache is up to date.")
-          Chef::Log.debug("current checksum: #{current_checksum}; manifest checksum: #{found_manifest_record['checksum']})")
+          Chef::Log.debug("Current checksum: #{current_checksum}; manifest checksum: #{found_manifest_record['checksum']})")
         end
 
         full_path_cache_filename = Chef::FileCache.load(cache_filename, false)

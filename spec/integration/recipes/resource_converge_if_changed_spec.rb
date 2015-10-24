@@ -1,6 +1,6 @@
 require 'support/shared/integration/integration_helper'
 
-describe "Resource::ActionProvider#converge_if_changed" do
+describe "Resource::ActionClass#converge_if_changed" do
   include IntegrationSupport
 
   module Namer

@@ -83,6 +83,8 @@ describe Chef::Search::Query do
   describe "search" do
     let(:query_string) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0" }
     let(:query_string_continue) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=4" }
+    let(:query_string_with_rows) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=4" }
+    let(:query_string_continue_with_rows) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=4&rows=4" }
 
     let(:response) { {
       "rows" => [
@@ -149,6 +151,14 @@ describe Chef::Search::Query do
       r
     }
 
+    let(:big_response_empty) {
+      {
+        "start" => 0,
+        "total" => 8,
+        "rows" => []
+      }
+    }
+
     let(:big_response_end) {
       r = response.dup
       r["start"] = 4
@@ -208,13 +218,21 @@ describe Chef::Search::Query do
     it "pages through the responses" do
       @call_me = double("blocky")
       response["rows"].each { |r| expect(@call_me).to receive(:do).with(r) }
-      query.search(:node, "*:*", sort: nil, start: 0, rows: 1) { |r| @call_me.do(r) }
+      query.search(:node, "*:*", sort: nil, start: 0, rows: 4) { |r| @call_me.do(r) }
     end
 
     it "sends multiple API requests when the server indicates there is more data" do
       expect(rest).to receive(:get_rest).with(query_string).and_return(big_response)
       expect(rest).to receive(:get_rest).with(query_string_continue).and_return(big_response_end)
       query.search(:node, "platform:rhel") do |r|
+        nil
+      end
+    end
+
+    it "paginates correctly in the face of filtered nodes" do
+      expect(rest).to receive(:get_rest).with(query_string_with_rows).and_return(big_response_empty)
+      expect(rest).to receive(:get_rest).with(query_string_continue_with_rows).and_return(big_response_end)
+      query.search(:node, "platform:rhel", rows: 4) do |r|
         nil
       end
     end

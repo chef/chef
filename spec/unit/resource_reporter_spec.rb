@@ -50,6 +50,9 @@ describe Chef::ResourceReporter do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @run_status = Chef::RunStatus.new(@node, @events)
+    @run_list = Chef::RunList.new
+    @run_list << 'recipe[lobster]' << 'role[rage]' << 'recipe[fist]'
+    @expansion = Chef::RunList::RunListExpansion.new("_default", @run_list.run_list_items)
     @run_id = @run_status.run_id
     allow(Time).to receive(:now).and_return(@start_time, @end_time)
   end
@@ -422,6 +425,10 @@ describe Chef::ResourceReporter do
       it "includes the run_list" do
         expect(@report).to have_key("run_list")
         expect(@report["run_list"]).to eq(Chef::JSONCompat.to_json(@run_status.node.run_list))
+      end
+
+      it "includes the expanded_run_list" do
+        expect(@report).to have_key("expanded_run_list")
       end
 
       it "includes the end_time" do
