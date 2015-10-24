@@ -33,46 +33,80 @@ class Chef
         provides :zypper_package, os: "linux"
 
         def load_current_resource
-          @current_resource = Chef::Resource::ZypperPackage.new(new_resource.name)
-          current_resource.package_name(new_resource.package_name)
+          @current_resource = Chef::Resource::ZypperPackage.new(@new_resource.name)
+          @current_resource.package_name(@new_resource.package_name)
+          check_all_packages_state(@new_resource.package_name)
+          @current_resource
+        end
 
+        def check_all_packages_state(package)
+          installed_version = {}
+          candidate_version = {}
+          installed = {}
+
+          [package].flatten.each do |pkg|
+            ret = check_package_state(pkg)
+            installed[pkg]          = ret[:installed]
+            installed_version[pkg]  = ret[:installed_version]
+            candidate_version[pkg]  = ret[:candidate_version]
+          end
+
+          if package.is_a?(Array)
+            @candidate_version = []
+            final_installed_version = []
+            [package].flatten.each do |pkg|
+              @candidate_version << candidate_version[pkg]
+              final_installed_version << installed_version[pkg]
+            end
+            @current_resource.version(final_installed_version)
+          else
+            @candidate_version = candidate_version[package]
+            @current_resource.version(installed_version[package])
+          end
+        end
+
+
+        def check_package_state(pkg)
           is_installed=false
           is_out_of_date=false
           version=''
           oud_version=''
+
+          installed_version=nil
+          candidate_version=nil
+
+
           Chef::Log.debug("#{new_resource} checking zypper")
-          status = shell_out_with_timeout("zypper --non-interactive info #{new_resource.package_name}")
+          status = shell_out_with_timeout("zypper --non-interactive info #{pkg}")
           status.stdout.each_line do |line|
             case line
-            when /^Version: (.+)$/
-              version = $1
-              Chef::Log.debug("#{new_resource} version #{$1}")
-            when /^Installed: Yes$/
-              is_installed=true
-              Chef::Log.debug("#{new_resource} is installed")
+              when /^Version: (.+)$/
+                version = $1
+                Chef::Log.debug("#{new_resource} version #{$1}")
+              when /^Installed: Yes$/
+                is_installed=true
+                Chef::Log.debug("#{new_resource} is installed")
 
-            when /^Installed: No$/
-              is_installed=false
-              Chef::Log.debug("#{new_resource} is not installed")
-            when /^Status: out-of-date \(version (.+) installed\)$/
-              is_out_of_date=true
-              oud_version=$1
-              Chef::Log.debug("#{new_resource} out of date version #{$1}")
+              when /^Installed: No$/
+                is_installed=false
+                Chef::Log.debug("#{new_resource} is not installed")
+              when /^Status: out-of-date \(version (.+) installed\)$/
+                is_out_of_date=true
+                oud_version=$1
+                Chef::Log.debug("#{new_resource} out of date version #{$1}")
             end
           end
 
-          if is_installed==false
-            @candidate_version=version
-            current_resource.version(nil)
-          end
-
-          if is_installed==true
-            if is_out_of_date==true
-              current_resource.version(oud_version)
-              @candidate_version=version
+          if !is_installed
+            candidate_version=version
+            installed_version=nil
+          else
+            if is_out_of_date
+              installed_version=oud_version
+              candidate_version=version
             else
-              current_resource.version(version)
-              @candidate_version=version
+              installed_version=version
+              candidate_version=version
             end
           end
 
@@ -80,7 +114,11 @@ class Chef
             raise Chef::Exceptions::Package, "zypper failed - #{status.inspect}!"
           end
 
-          current_resource
+          return {
+            installed_version:   installed_version,
+            installed:           is_installed,
+            candidate_version:   candidate_version,
+          }
         end
 
         def zypper_version()
@@ -104,13 +142,18 @@ class Chef
         end
 
         private
-        def zypper_package(command, pkgname, version)
-          version = "=#{version}" unless version.nil? || version.empty?
+        def zypper_package(command, name, version)
+          name_array = [ name ].flatten
+          version_array = [ version ].flatten
+          package_name = name_array.zip(version_array).map do |n, v|
+            (v.nil? || v.empty?) ? n : "#{n}=#{v}"
+          end.join(' ')
+
           if zypper_version < 1.0
-            shell_out_with_timeout!("zypper#{gpg_checks} #{command} -y #{pkgname}")
+            shell_out_with_timeout!("zypper#{gpg_checks} #{command} -y #{name_array.join(' ')}")
           else
             shell_out_with_timeout!("zypper --non-interactive#{gpg_checks} "+
-                      "#{command} #{pkgname}#{version}")
+                      "#{command} #{package_name}")
           end
         end
 
