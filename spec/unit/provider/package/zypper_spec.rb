@@ -261,4 +261,40 @@ describe Chef::Provider::Package::Zypper do
       end
     end
   end
+
+  describe "when installing multiple packages" do # https://github.com/chef/chef/issues/3570
+    it "should install an array of package names and versions" do
+      allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks install "+
+          "--auto-agree-with-licenses emacs=1.0 vim=2.0"
+      )
+      provider.install_package(["emacs", "vim"], ["1.0", "2.0"])
+      end
+
+    it "should install an array of package names without versions" do
+      allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks install "+
+          "--auto-agree-with-licenses emacs vim"
+      )
+      provider.install_package(["emacs", "vim"], nil)
+    end
+
+    it "should remove an array of package names and versions" do
+      allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks remove emacs=1.0 vim=2.0"
+      )
+      provider.remove_package(["emacs", "vim"], ["1.0", "2.0"])
+      end
+
+    it "should remove an array of package names without versions" do
+      allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks remove emacs vim"
+      )
+      provider.remove_package(["emacs", "vim"], nil)
+    end
+  end
 end
