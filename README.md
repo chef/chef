@@ -9,7 +9,7 @@ Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 * Source: [http://github.com/chef/chef/tree/master](http://github.com/chef/chef/tree/master)
 * Tickets/Issues: [https://github.com/chef/chef/issues](https://github.com/chef/chef/issues)
 * IRC: `#chef` and `#chef-hacking` on Freenode
-* Discussion forum: [https://discourse.chef.io](https://discourse.chef.io)
+* Mailing list: [https://discourse.chef.io](https://discourse.chef.io)
 
 Chef is a configuration management tool designed to bring automation to your
 entire infrastructure.
