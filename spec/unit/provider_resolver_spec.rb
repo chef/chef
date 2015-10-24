@@ -179,7 +179,7 @@ describe Chef::ProviderResolver do
             file "usr/local/etc/rc.d/#{service_name}", ""
           when :systemd
             file 'proc/1/comm', "systemd\n"
-            file "/etc/systemd/system/#{service_name}.service", ""
+            file "etc/systemd/system/#{service_name}.service", ""
           else
             raise ArgumentError, config
           end

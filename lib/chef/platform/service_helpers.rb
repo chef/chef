@@ -47,7 +47,7 @@ class Chef
           end
 
           if ::File.exist?(Chef.path_to("/sbin/initctl"))
-            service_resource_providers << :upstart
+            providers << :upstart
           end
 
           if ::File.exist?(Chef.path_to("/sbin/insserv"))
@@ -99,7 +99,7 @@ class Chef
 
         def systemd_is_init?
           ::File.exist?(Chef.path_to("/proc/1/comm")) &&
-            IO.read("/proc/1/comm").chomp == "systemd"
+            ::File.open(Chef.path_to("/proc/1/comm")).gets.chomp == "systemd" 
         end
 
         def has_systemd_service_unit?(svc_name)
