@@ -1,5 +1,5 @@
 # Chef 
-[![Code Climate](https://codeclimate.com/github/opscode/chef.png)](https://codeclimate.com/github/opscode/chef)
+[![Code Climate](https://codeclimate.com/github/chef/chef.png)](https://codeclimate.com/github/chef/chef)
 [![Build Status Master](https://travis-ci.org/chef/chef.svg?branch=master)](https://travis-ci.org/chef/chef)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
 
@@ -9,7 +9,7 @@ Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 * Source: [http://github.com/chef/chef/tree/master](http://github.com/chef/chef/tree/master)
 * Tickets/Issues: [https://github.com/chef/chef/issues](https://github.com/chef/chef/issues)
 * IRC: `#chef` and `#chef-hacking` on Freenode
-* Mailing list: [http://lists.opscode.com](http://lists.opscode.com)
+* Discussion forum: [https://discourse.chef.io](https://discourse.chef.io)
 
 Chef is a configuration management tool designed to bring automation to your
 entire infrastructure.
