@@ -88,7 +88,7 @@ class Chef
             configs << :usr_local_etc_rcd
           end
 
-          if has_systemd_service_unit?(service_name)
+          if has_systemd_service_unit?(service_name) || has_systemd_unit?(service_name)
             configs << :systemd
           end
 
@@ -98,14 +98,22 @@ class Chef
         private
 
         def systemd_is_init?
-          ::File.exist?("/proc/1/comm") &&
+          ::File.exist?(Chef.path_to("/proc/1/comm")) &&
             IO.read("/proc/1/comm").chomp == "systemd"
         end
 
         def has_systemd_service_unit?(svc_name)
-          %w( /etc /run /usr/lib ).any? do |cfg_base|
-            ::File.exist?("#{cfg_base}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service") ||
-              ::File.exist?("#{cfg_base}/systemd/system/#{svc_name}") # TODO: Stop supporting non-service units
+          %w( /etc /run /usr/lib ).any? do |load_path|
+            ::File.exist?(
+              Chef.path_to("#{load_path}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service")
+            )
+          end
+        end
+
+        def has_systemd_unit?(svc_name)
+          # TODO: stop supporting non-service units with service resource
+          %w( /etc /run /usr/lib ).any? do |load_path|
+            ::File.exist?(Chef.path_to("#{load_path}/systemd/system/#{svc_name}"))
           end
         end
       end
