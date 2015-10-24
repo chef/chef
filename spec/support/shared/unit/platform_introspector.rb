@@ -32,6 +32,7 @@ shared_examples_for "a platform introspector" do
     # The following @platform_hash keys are used for testing version constraints
     @platform_hash['exact_match'] = { '1.2.3' => 'exact', '>= 1.0' => 'not exact'}
     @platform_hash['multiple_matches'] = { '~> 2.3.4' => 'matched ~> 2.3.4', '>= 2.3' => 'matched >=2.3' }
+    @platform_hash['invalid_cookbook_version'] = {'>= 21' => 'Matches a single number'}
     @platform_hash['successful_matches'] = { '< 3.0' => 'matched < 3.0', '>= 3.0' => 'matched >= 3.0' }
 
     @platform_family_hash = {
@@ -93,6 +94,12 @@ shared_examples_for "a platform introspector" do
     node.automatic_attrs[:platform] = 'multiple_matches'
     node.automatic_attrs[:platform_version] = '2.3.4'
     expect {platform_introspector.value_for_platform(@platform_hash)}.to raise_error(RuntimeError)
+  end
+
+  it 'should not require .0 to match >= 21.0' do
+    node.automatic_attrs[:platform] = 'invalid_cookbook_version'
+    node.automatic_attrs[:platform_version] = '21'
+    expect(platform_introspector.value_for_platform(@platform_hash)).to eq('Matches a single number')
   end
 
   it 'should return the value for that match' do

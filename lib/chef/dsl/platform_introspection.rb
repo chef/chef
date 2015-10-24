@@ -50,7 +50,7 @@ class Chef
 
         def value_for_node(node)
           platform, version = node[:platform].to_s, node[:platform_version].to_s
-          # Check if we match a version constraint via Chef::VersionConstraint and Chef::Version::Platform
+          # Check if we match a version constraint via Chef::VersionConstraint::Platform and Chef::Version::Platform
           matched_value = match_versions(node)
           if @values.key?(platform) && @values[platform].key?(version)
             @values[platform][version]
@@ -76,11 +76,11 @@ class Chef
             keys = @values[platform].keys
             keys.each do |k|
               begin
-                if Chef::VersionConstraint.new(k).include?(node_version)
+                if Chef::VersionConstraint::Platform.new(k).include?(node_version)
                   key_matches << k
                 end
               rescue Chef::Exceptions::InvalidVersionConstraint => e
-                Chef::Log.debug "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint."
+                Chef::Log.debug "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint::Platform."
                 Chef::Log.debug(e)
               end
             end
