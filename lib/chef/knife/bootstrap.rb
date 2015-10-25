@@ -122,6 +122,11 @@ class Chef
         :description => "Execute the bootstrap via sudo",
         :boolean => true
 
+      option :preserve_home,
+        :long => "--sudo-preserve-home",
+        :description => "Preserve non-root user HOME environment variable with sudo",
+        :boolean => true
+
       option :use_sudo_password,
         :long => "--use-sudo-password",
         :description => "Execute the bootstrap via sudo with password",
@@ -412,7 +417,8 @@ class Chef
         command = render_template
 
         if config[:use_sudo]
-          command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -SH #{command}" : "sudo -H #{command}"
+          sudo_prefix = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S " : "sudo "
+          command = config[:preserve_home] ? "#{sudo_prefix} #{command}" : "#{sudo_prefix} -H #{command}" 
         end
 
         command
