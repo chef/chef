@@ -44,7 +44,11 @@ class Chef
       option :hide_healthy,
         :short => "-H",
         :long => "--hide-healthy",
-        :description => "Hide nodes that have run chef in the last hour"
+        :description => "Hide nodes that have run chef in the last hour. [DEPRECATED] Use --hide-by-mins MINS instead"
+
+      option :hide_by_mins,
+        :long => "--hide-by-mins MINS",
+        :description => "Hide nodes that have run chef in the last MINS minutes"
 
       def append_to_query(term)
         @query << " AND " unless @query.empty?
@@ -68,10 +72,19 @@ class Chef
         append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
 
         if config[:hide_healthy]
+          ui.warn("-H / --hide-healthy is deprecated. Use --hide-by-mins MINS instead")
           time = Time.now.to_i
           # AND NOT is not valid lucene syntax, so don't use append_to_query
           @query << " " unless @query.empty?
           @query << "NOT ohai_time:[#{(time - 60*60).to_s} TO #{time.to_s}]"
+        end
+
+        if config[:hide_by_mins]
+          hidemins = config[:hide_by_mins].to_i
+          time = Time.now.to_i
+          # AND NOT is not valid lucene syntax, so don't use append_to_query
+          @query << " " unless @query.empty?
+          @query << "NOT ohai_time:[#{(time - hidemins*60).to_s} TO #{time.to_s}]"
         end
 
         @query = @query.empty? ? "*:*" : @query
