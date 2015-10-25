@@ -164,7 +164,13 @@ class Chef
         :long => "--json-attributes",
         :description => "A JSON string to be added to the first run of chef-client",
         :proc => lambda { |o| Chef::JSONCompat.parse(o) },
-        :default => {}
+        :default => nil
+
+      option :first_boot_attributes_from_file,
+        :long => "--json-attribute-file FILE",
+        :description => "A JSON file to be used to the first run of chef-client",
+        :proc => lambda { |o| Chef::JSONCompat.parse(File.read(o)) },
+        :default => nil
 
       option :host_key_verify,
         :long => "--[no-]host-key-verify",
@@ -317,13 +323,22 @@ class Chef
         )
       end
 
+      def first_boot_attributes
+        @config[:first_boot_attributes] || @config[:first_boot_attributes_from_file] || {}
+      end
+
       def render_template
+        @config[:first_boot_attributes] = first_boot_attributes
         template_file = find_template
         template = IO.read(template_file).chomp
         Erubis::Eruby.new(template).evaluate(bootstrap_context)
       end
 
       def run
+        if @config[:first_boot_attributes] && @config[:first_boot_attributes_from_file]
+          raise Chef::Exceptions::BootstrapCommandInputError
+        end
+
         validate_name_args!
         validate_options!
 
