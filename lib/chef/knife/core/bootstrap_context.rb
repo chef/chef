@@ -40,7 +40,7 @@ class Chef
         end
 
         def bootstrap_environment
-          @chef_config[:environment]
+          @config[:environment]
         end
 
         def validation_key
