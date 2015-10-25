@@ -69,8 +69,8 @@ describe Chef::REST do
     rest
   end
 
-  let(:standard_read_headers) {{"Accept"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id, 'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION}}
-  let(:standard_write_headers) {{"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id, 'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION}}
+  let(:standard_read_headers) {{"Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id, 'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION}}
+  let(:standard_write_headers) {{"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id, 'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION}}
 
   before(:each) do
     Chef::Log.init(log_stringio)
