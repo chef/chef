@@ -450,7 +450,11 @@ class Chef
         end
         relative_search_path.map {|relative_path| File.join(segment.to_s, relative_path)}
       else
-        [File.join(segment, path)]
+        if segment.to_sym == :root_files
+          [] << path
+        else
+          [File.join(segment, path)]
+        end
       end
     end
     private :preferences_for_path
