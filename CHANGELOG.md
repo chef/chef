@@ -9,6 +9,8 @@
   [pr#3193](https://github.com/chef/chef/pull/3193) provider/user/dscl: Set "comment" default value
 * [**Jordan Evans**](https://github.com/jordane)
   [pr#3263](https://github.com/chef/chef/pull/3263) `value_for_platform` should use `Chef::VersionConstraint::Platform`
+* [**Scott McGillivray**](https://github.com/thechile)
+  [pr#3450](https://github.com/chef/chef/pull/3450) Fix 'knife cookbook show' to work on root files
 
 * [pr#4034](https://github.com/chef/chef/pull/4034) add optional ruby-profiling with --profile-ruby
 * [pr#3119](https://github.com/chef/chef/pull/3119) allow removing user, even if their GID isn't resolvable
