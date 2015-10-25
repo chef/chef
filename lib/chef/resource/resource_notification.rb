@@ -20,7 +20,15 @@ require 'chef/resource'
 
 class Chef
   class Resource
-    class Notification < Struct.new(:resource, :action, :notifying_resource)
+    class Notification
+
+      attr_accessor :resource, :action, :notifying_resource
+
+      def initialize(resource, action, notifying_resource)
+        @resource = resource
+        @action = action
+        @notifying_resource = notifying_resource
+      end
 
       def duplicates?(other_notification)
         unless other_notification.respond_to?(:resource) && other_notification.respond_to?(:action)
@@ -102,6 +110,11 @@ is defined near #{resource.source_line}
         F
         err.set_backtrace(e.backtrace)
         raise err
+      end
+
+      def ==(other)
+        return false unless other.is_a?(self.class)
+        other.resource == resource && other.action == action && other.notifying_resource == notifying_resource
       end
 
     end

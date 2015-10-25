@@ -58,7 +58,16 @@ class Chef
         end
 
         converge_by("execute #{description}") do
-          result = shell_out!(command, opts)
+          begin
+            shell_out!(command, opts)
+          rescue Mixlib::ShellOut::ShellCommandFailed
+            if sensitive?
+              raise Mixlib::ShellOut::ShellCommandFailed,
+                "Command execution failed. STDOUT/STDERR suppressed for sensitive resource"
+            else
+              raise
+            end
+          end
           Chef::Log.info("#{new_resource} ran successfully")
         end
       end

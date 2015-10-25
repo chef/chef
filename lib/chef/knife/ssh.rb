@@ -111,6 +111,12 @@ class Chef
         :boolean => true,
         :proc => Proc.new { :raise }
 
+      option :tmux_split,
+        :long => "--tmux-split",
+        :description => "Split tmux window.",
+        :boolean => true,
+        :default => false
+
       def session
         config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|
@@ -404,7 +410,11 @@ class Chef
         new_window_cmds = lambda do
           if session.servers_for.size > 1
             [""] + session.servers_for[1..-1].map do |server|
-              "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+              if config[:tmux_split]
+                "split-window #{ssh_dest.call(server)}; tmux select-layout tiled"
+              else
+                "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+              end
             end
           else
             []

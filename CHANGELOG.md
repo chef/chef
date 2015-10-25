@@ -11,7 +11,35 @@
   [pr#3263](https://github.com/chef/chef/pull/3263) `value_for_platform` should use `Chef::VersionConstraint::Platform`
 * [**Scott McGillivray**](https://github.com/thechile)
   [pr#3450](https://github.com/chef/chef/pull/3450) Fix 'knife cookbook show' to work on root files
+* [**Aubrey Holland**](https://github.com/aub)
+  [pr#3986](https://github.com/chef/chef/pull/3986) fix errors when files go away during chown
+* [**James Michael DuPont**](https://github.com/h4ck3rm1k3)
+  [pr#3973](https://github.com/chef/chef/pull/3973) better error reporting
+* [**Michael Pereira**](https://github.com/MichaelPereira)
+  [pr#3968](https://github.com/chef/chef/pull/3968) Fix cookbook installation from supermarket on windows
+* [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly)
+  [pr#3941](https://github.com/chef/chef/pull/3941) allow reboot by reboot resource with chef-apply
+* [**permyakovsv**](https://github.com/permyakovsv)
+  [pr#3901](https://github.com/chef/chef/pull/3901) Add tmux-split parameter to knife ssh
+* [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly)
+  [pr#3900](https://github.com/chef/chef/pull/3900) Add new option json attributes file to bootstraping
+* [**Evan Gilman**](https://github.com/evan2645)
+  [pr#3864](https://github.com/chef/chef/pull/3864) Knife `bootstrap_environment` should use Explicit config before Implicit
+* [**Ranjib Dey**](https://github.com/ranjib)
+  [pr#3834](https://github.com/chef/chef/pull/3834) Dont spit out stdout and stderr for execute resource failure, if its declared sensitive
+* [**Jeff Blaine**](https://github.com/jblaine)
+  [pr#3776](https://github.com/chef/chef/pull/3776) Changes --hide-healthy to --hide-by-mins MINS
+* [**dbresson**](https://github.com/dbresson)
+  [pr#3650](https://github.com/chef/chef/pull/3650) Define == for node objects
+* [**Jordan Evans**](https://github.com/jordane)
+  [pr#3633](https://github.com/chef/chef/pull/3633) add the word group to `converge_by` call for group provider
+* [**Patrick Connolly**](https://github.com/patcon)
+  [pr#3529](https://github.com/chef/chef/pull/3529) Allow user@hostname format for knife-bootstrap
 
+* [pr#3530](https://github.com/chef/chef/pull/3530) Allow using --sudo option with user's home folder in knife bootstrap
+* [pr#3858](https://github.com/chef/chef/pull/3858) Remove duplicate 'Accept' header in spec
+* [pr#3911](https://github.com/chef/chef/pull/3911) Avoid subclassing Struct.new
+* [pr#3990](https://github.com/chef/chef/pull/3990) Use SHA256 instead of MD5 for `registry_key` when data is not displayable
 * [pr#4034](https://github.com/chef/chef/pull/4034) add optional ruby-profiling with --profile-ruby
 * [pr#3119](https://github.com/chef/chef/pull/3119) allow removing user, even if their GID isn't resolvable
 * [pr#4068](https://github.com/chef/chef/pull/4068) update messaging from LWRP to Custom Resource in logging and spec

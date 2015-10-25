@@ -42,7 +42,7 @@ class Chef
         Chef::Knife::Ssh.load_deps
       end
 
-      banner "knife bootstrap FQDN (options)"
+      banner "knife bootstrap [SSH_USER@]FQDN (options)"
 
       option :ssh_user,
         :short => "-x USERNAME",
@@ -122,6 +122,11 @@ class Chef
         :description => "Execute the bootstrap via sudo",
         :boolean => true
 
+      option :preserve_home,
+        :long => "--sudo-preserve-home",
+        :description => "Preserve non-root user HOME environment variable with sudo",
+        :boolean => true
+
       option :use_sudo_password,
         :long => "--use-sudo-password",
         :description => "Execute the bootstrap via sudo with password",
@@ -164,7 +169,13 @@ class Chef
         :long => "--json-attributes",
         :description => "A JSON string to be added to the first run of chef-client",
         :proc => lambda { |o| Chef::JSONCompat.parse(o) },
-        :default => {}
+        :default => nil
+
+      option :first_boot_attributes_from_file,
+        :long => "--json-attribute-file FILE",
+        :description => "A JSON file to be used to the first run of chef-client",
+        :proc => lambda { |o| Chef::JSONCompat.parse(File.read(o)) },
+        :default => nil
 
       option :host_key_verify,
         :long => "--[no-]host-key-verify",
@@ -256,13 +267,25 @@ class Chef
         "chef-full"
       end
 
+      def host_descriptor
+        Array(@name_args).first
+      end
+
       # The server_name is the DNS or IP we are going to connect to, it is not necessarily
       # the node name, the fqdn, or the hostname of the server.  This is a public API hook
       # which knife plugins use or inherit and override.
       #
       # @return [String] The DNS or IP that bootstrap will connect to
       def server_name
-        Array(@name_args).first
+        if host_descriptor
+          @server_name ||= host_descriptor.split('@').reverse[0]
+        end
+      end
+
+      def user_name
+        if host_descriptor
+          @user_name ||= host_descriptor.split('@').reverse[1]
+        end
       end
 
       def bootstrap_template
@@ -317,13 +340,22 @@ class Chef
         )
       end
 
+      def first_boot_attributes
+        @config[:first_boot_attributes] || @config[:first_boot_attributes_from_file] || {}
+      end
+
       def render_template
+        @config[:first_boot_attributes] = first_boot_attributes
         template_file = find_template
         template = IO.read(template_file).chomp
         Erubis::Eruby.new(template).evaluate(bootstrap_context)
       end
 
       def run
+        if @config[:first_boot_attributes] && @config[:first_boot_attributes_from_file]
+          raise Chef::Exceptions::BootstrapCommandInputError
+        end
+
         validate_name_args!
         validate_options!
 
@@ -358,7 +390,7 @@ class Chef
           if config[:ssh_password]
             raise
           else
-            ui.info("Failed to authenticate #{config[:ssh_user]} - trying password auth")
+            ui.info("Failed to authenticate #{knife_ssh.config[:ssh_user]} - trying password auth")
             knife_ssh_with_password_auth.run
           end
         end
@@ -389,7 +421,7 @@ class Chef
         ssh = Chef::Knife::Ssh.new
         ssh.ui = ui
         ssh.name_args = [ server_name, ssh_command ]
-        ssh.config[:ssh_user] = config[:ssh_user]
+        ssh.config[:ssh_user] = user_name || config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = config[:ssh_port]
         ssh.config[:ssh_gateway] = config[:ssh_gateway]
@@ -412,7 +444,8 @@ class Chef
         command = render_template
 
         if config[:use_sudo]
-          command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -SH #{command}" : "sudo -H #{command}"
+          sudo_prefix = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S " : "sudo "
+          command = config[:preserve_home] ? "#{sudo_prefix} #{command}" : "#{sudo_prefix} -H #{command}" 
         end
 
         command

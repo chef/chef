@@ -196,6 +196,7 @@ class Chef::Application::Apply < Chef::Application
     ensure
       @recipe_fh.close
     end
+    Chef::Platform::Rebooter.reboot_if_needed!(runner)
   end
 
   def run_application

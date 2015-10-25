@@ -125,7 +125,7 @@ class Chef
       def action_create
         case @group_exists
         when false
-          converge_by("create #{@new_resource.group_name}") do
+          converge_by("create group #{@new_resource.group_name}") do
             create_group
             Chef::Log.info("#{@new_resource} created")
           end

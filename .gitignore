@@ -43,3 +43,6 @@ Vagrantfile
 
 # Kitchen Tests Local Mode Data
 kitchen-tests/nodes/*
+
+# Temporary files present during spec runs
+spec/data/test-dir
