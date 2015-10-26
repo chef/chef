@@ -32,8 +32,8 @@ else
 end
 
 # Uncomment to pin the chef version
-override :chef,           version: "master"
-override :ohai,           version: "master"
+override :chef,           version: "12.5.1"
+override :ohai,           version: "v8.7.0"
 override :chefdk,         version: "master"
 
 override :berkshelf,      version: "v4.0.1"
@@ -72,17 +72,17 @@ override :zlib,           version: "1.2.8"
 
 # NOTE: the base chef-provisioning gem is a dependency of chef-dk (the app).
 # Manage the chef-provisioning version via chef-dk.gemspec.
+override :'chef-provisioning-aws', version: "master"
+override :'chef-provisioning-azure', version: "v0.4.0"
 override :'chef-provisioning-fog', version: "v0.15.0"
 override :'chef-provisioning-vagrant', version: "v0.10.0"
-override :'chef-provisioning-azure', version: "v0.4.0"
-override :'chef-provisioning-aws', version: "master"
 
 dependency "preparation"
 dependency "chefdk"
+dependency "chef-provisioning-aws"
 dependency "chef-provisioning-fog"
 dependency "chef-provisioning-vagrant"
 dependency "chef-provisioning-azure"
-dependency "chef-provisioning-aws"
 dependency "rubygems-customization"
 dependency "shebang-cleanup"
 dependency "version-manifest"
