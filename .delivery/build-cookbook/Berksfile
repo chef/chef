@@ -1,0 +1,7 @@
+source 'https://supermarket.chef.io'
+
+metadata
+
+group :delivery do
+  cookbook 'languages', git: 'https://github.com/chef-cookbooks/languages'
+end
