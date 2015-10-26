@@ -4,10 +4,10 @@
     "path": ".delivery/build-cookbook",
     "name": "build-cookbook"
   },
-    "skip_phases": [
-	"lint",
-	"syntax",
-    ],
+  "skip_phases": [
+    "lint",
+    "syntax"
+   ],
   "build_nodes": {},
   "dependencies": []
 }
