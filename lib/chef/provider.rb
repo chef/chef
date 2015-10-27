@@ -205,7 +205,7 @@ class Chef
         modified = specified_properties.select { |p| new_resource.send(p) != current_resource.send(p) }
         if modified.empty?
           properties_str = if sensitive
-            '(suppressed sensitive properties)'
+            specified_properties.join(", ")
           else
             specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")
           end
@@ -236,7 +236,7 @@ class Chef
           else
             new_resource.send(property).inspect
           end
-          "  set #{property.to_s.ljust(property_size)} to #{properties_str}" + default ||= ''
+          "  set #{property.to_s.ljust(property_size)} to #{properties_str}#{default}"
         end
 
         converge_by([ "create #{new_resource.identity}" ] + created, &converge_block)
