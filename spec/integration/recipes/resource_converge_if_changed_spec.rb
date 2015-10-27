@@ -272,6 +272,30 @@ EOM
 EOM
           end
         end
+
+        context "and state1 and state2 are set with sensitive property" do
+          let(:converge_recipe) {
+            <<-EOM
+              #{resource_name} 'blah' do
+                sensitive true
+                state1 'new_state1'
+                state2 'new_state2'
+              end
+            EOM
+          }
+
+          it "the resource is created" do
+            expect(resource.converged).to eq 1
+            expect(resource.updated?).to  be_truthy
+            expect(converged_recipe.stdout).to eq <<-EOM
+* #{resource_name}[blah] action create
+  - create default_identity1
+  -   set identity1 to (suppressed sensitive properties) (default value)
+  -   set state1    to (suppressed sensitive properties)
+  -   set state2    to (suppressed sensitive properties)
+EOM
+          end
+        end
       end
     end
 
