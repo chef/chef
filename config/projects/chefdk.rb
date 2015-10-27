@@ -32,7 +32,7 @@ else
 end
 
 # Uncomment to pin the chef version
-override :chef,           version: "12.5.1"
+override :chef,           version: "12.5.1-omnibus"
 override :ohai,           version: "v8.7.0"
 override :chefdk,         version: "master"
 
