@@ -32,8 +32,11 @@ class Chef
           mth = s.method(method_name)
           # Trim arguments to match what the subscriber expects to allow
           # adding new arguments without breaking compat.
-          args = args.take(mth.arity) if mth.arity < args.size && mth.arity >= 0
-          mth.call(*args)
+          if mth.arity < args.size && mth.arity >= 0
+            mth.call(*args.take(mth.arity))
+          else
+            mth.call(*args)
+          end
         end
       end
 

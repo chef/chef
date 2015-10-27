@@ -88,8 +88,21 @@ WARNDEP
 
         if block
           response["rows"].each { |row| block.call(row) if row }
-          unless (response["start"] + response["rows"].length) >= response["total"]
-            args_h[:start] = response["start"] + response["rows"].length
+          #
+          # args_h[:rows] and args_h[:start] are the page size and
+          # start position requested of the search index backing the
+          # search API.
+          #
+          # The response may contain fewer rows than arg_h[:rows] if
+          # the page of index results included deleted nodes which
+          # have been filtered from the returned data. In this case,
+          # we still want to start the next page at start +
+          # args_h[:rows] to avoid asking the search backend for
+          # overlapping pages (which could result in duplicates).
+          #
+          next_start = response["start"] + (args_h[:rows] || response["rows"].length)
+          unless next_start >= response["total"]
+            args_h[:start] = next_start
             search(type, query, args_h, &block)
           end
           true
@@ -99,6 +112,7 @@ WARNDEP
       end
 
       private
+
       def validate_type(t)
         unless t.kind_of?(String) || t.kind_of?(Symbol)
           msg = "Invalid search object type #{t.inspect} (#{t.class}), must be a String or Symbol." +

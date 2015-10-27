@@ -41,7 +41,7 @@ class Chef
       def define_resource_requirements
          # @todo: this should change to raise in some appropriate major version bump.
          if creates && creates_relative? && !cwd
-           Chef::Log.warn "Providing a relative path for the creates attribute without the cwd is deprecated and will be changed to fail (CHEF-3819)"
+           Chef::Log.warn "Providing a relative path for the creates attribute without the cwd is deprecated and will be changed to fail in the future (CHEF-3819)"
          end
       end
 
@@ -58,7 +58,16 @@ class Chef
         end
 
         converge_by("execute #{description}") do
-          result = shell_out!(command, opts)
+          begin
+            shell_out!(command, opts)
+          rescue Mixlib::ShellOut::ShellCommandFailed
+            if sensitive?
+              raise Mixlib::ShellOut::ShellCommandFailed,
+                "Command execution failed. STDOUT/STDERR suppressed for sensitive resource"
+            else
+              raise
+            end
+          end
           Chef::Log.info("#{new_resource} ran successfully")
         end
       end

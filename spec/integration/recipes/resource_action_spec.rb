@@ -202,6 +202,11 @@ describe "Resource.action" do
       let(:resource_dsl) { :action_jackson }
     end
 
+    it "Can retrieve ancestors of action class without crashing" do
+      converge { action_jackson 'hi' }
+      expect { ActionJackson.action_class.ancestors.join(",") }.not_to raise_error
+    end
+
     context "And 'action_jackgrandson' inheriting from ActionJackson and changing nothing" do
       before(:context) {
         class ActionJackgrandson < ActionJackson

@@ -190,7 +190,7 @@ describe "LWRP" do
     end
 
     it "should have a class that outputs a reasonable string" do
-      expect(get_lwrp(:lwrp_foo).to_s).to eq "LWRP resource lwrp_foo from cookbook lwrp"
+      expect(get_lwrp(:lwrp_foo).to_s).to eq "Custom resource lwrp_foo from cookbook lwrp"
     end
 
     it "should add the specified actions to the allowed_actions array" do

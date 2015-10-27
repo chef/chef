@@ -440,7 +440,7 @@ class Chef
 
       self.tags # make sure they're defined
 
-      automatic_attrs[:recipes] = expansion.recipes.with_fully_qualified_names_and_version_constraints
+      automatic_attrs[:recipes] = expansion.recipes.with_duplicate_names
       automatic_attrs[:expanded_run_list] = expansion.recipes.with_fully_qualified_names_and_version_constraints
       automatic_attrs[:roles] = expansion.roles
 
@@ -609,7 +609,7 @@ class Chef
       # so then POST to create.
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In whyrun mode, so NOT performing node save.")
+          Chef::Log.warn("In why-run mode, so NOT performing node save.")
         else
           chef_server_rest.put_rest("nodes/#{name}", data_for_save)
         end
@@ -645,6 +645,14 @@ class Chef
 
     def to_s
       "node[#{name}]"
+    end
+
+    def ==(other)
+      if other.kind_of?(self.class)
+         self.name == other.name
+      else
+        false
+      end
     end
 
     def <=>(other_node)

@@ -29,7 +29,7 @@ require 'chef/resources'
 
 class Chef::Application::Apply < Chef::Application
 
-  banner "Usage: chef-apply [RECIPE_FILE] [-e RECIPE_TEXT] [-s]"
+  banner "Usage: chef-apply [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
 
   option :execute,
     :short        => "-e RECIPE_TEXT",
@@ -97,10 +97,16 @@ class Chef::Application::Apply < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :profile_ruby,
+    :long         => "--[no-]profile-ruby",
+    :description  => "Dump complete Ruby call graph stack of entire Chef run (expert only)",
+    :boolean      => true,
+    :default      => false
+
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,
-    :default      => !Chef::Platform.windows?,
+    :default      => true,
     :description  => "Use colored output, defaults to enabled"
 
   option :minimal_ohai,
@@ -190,6 +196,7 @@ class Chef::Application::Apply < Chef::Application
     ensure
       @recipe_fh.close
     end
+    Chef::Platform::Rebooter.reboot_if_needed!(runner)
   end
 
   def run_application

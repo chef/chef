@@ -232,6 +232,8 @@ class Chef
     # @return Always returns true.
     #
     def run
+      start_profiling
+
       run_error = nil
 
       runlock = RunLock.new(Chef::Config.lockfile)
@@ -271,7 +273,7 @@ class Chef
 
         if Chef::Config[:why_run] == true
           # why_run should probably be renamed to why_converge
-          Chef::Log.debug("Not running controls in 'why_run' mode - this mode is used to see potential converge changes")
+          Chef::Log.debug("Not running controls in 'why-run' mode - this mode is used to see potential converge changes")
         elsif Chef::Config[:audit_mode] != :disabled
           audit_error = run_audits(run_context)
         end
@@ -283,6 +285,9 @@ class Chef
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
         events.run_completed(node)
+
+        # keep this inside the main loop to get exception backtraces
+        end_profiling
 
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
@@ -890,6 +895,28 @@ class Chef
 
     attr_reader :override_runlist
     attr_reader :specific_recipes
+
+    def profiling_prereqs!
+      require 'ruby-prof'
+    rescue LoadError
+      raise "You must have the ruby-prof gem installed in order to use --profile-ruby"
+    end
+
+    def start_profiling
+      return unless Chef::Config[:profile_ruby]
+      profiling_prereqs!
+      RubyProf.start
+    end
+
+    def end_profiling
+      return unless Chef::Config[:profile_ruby]
+      profiling_prereqs!
+      path = Chef::FileCache.create_cache_path("graph_profile.out", false)
+      File.open(path, "w+") do |file|
+        RubyProf::GraphPrinter.new(RubyProf.stop).print(file, {})
+      end
+      Chef::Log.warn("Ruby execution profile dumped to #{path}")
+    end
 
     def empty_directory?(path)
       !File.exists?(path) || (Dir.entries(path).size <= 2)

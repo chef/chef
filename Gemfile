@@ -3,7 +3,7 @@ gemspec :name => "chef"
 
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
-gem 'chef-config', path: "chef-config"
+gem 'chef-config', path: "chef-config" if File.exists?(__FILE__ + '../chef-config')
 
 group(:docgen) do
   gem "yard"
@@ -18,6 +18,8 @@ group(:maintenance) do
 end
 
 group(:development, :test) do
+  # for profiling
+  gem "ruby-prof"
 
   gem "simplecov"
   gem 'rack', "~> 1.5.1"

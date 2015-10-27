@@ -102,7 +102,7 @@ class Chef
       end
 
       def path(arg=nil)
-        Chef::Log.warn "'path' attribute of 'execute' is not used by any provider in Chef 11 and Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
+        Chef::Log.warn "The 'path' attribute of 'execute' is not used by any provider in Chef 11 or Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
 
         set_or_return(
           :path,

@@ -4,7 +4,7 @@
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright 2008-2011 Opscode, Inc.
+# Copyright:: Copyright 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -450,7 +450,11 @@ class Chef
         end
         relative_search_path.map {|relative_path| File.join(segment.to_s, relative_path)}
       else
-        [File.join(segment, path)]
+        if segment.to_sym == :root_files
+          [path]
+        else
+          [File.join(segment, path)]
+        end
       end
     end
     private :preferences_for_path

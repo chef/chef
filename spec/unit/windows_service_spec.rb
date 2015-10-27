@@ -49,7 +49,11 @@ describe "Chef::Application::WindowsService", :windows_only do
       allow(instance.instance_variable_get(:@service_signal)).to receive(:wait)
       allow(instance).to receive(:state).and_return(4)
       expect(instance).to receive(:run_chef_client).and_call_original
-      expect(instance).to receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}", {:timeout => 7200}).and_return(shell_out_result)
+      expect(instance).to receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}",
+        {
+          :timeout => 7200,
+          :logger => Chef::Log
+        }).and_return(shell_out_result)
       instance.service_main
       tempfile.unlink
     end
@@ -63,7 +67,11 @@ describe "Chef::Application::WindowsService", :windows_only do
       allow(instance.instance_variable_get(:@service_signal)).to receive(:wait)
       allow(instance).to receive(:state).and_return(4)
       expect(instance).to receive(:run_chef_client).and_call_original
-      expect(instance).to receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}", {:timeout => 10}).and_return(shell_out_result)
+      expect(instance).to receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}",
+        {
+          :timeout => 10,
+          :logger => Chef::Log
+        }).and_return(shell_out_result)
       instance.service_main
       tempfile.unlink
     end

@@ -38,41 +38,67 @@ describe Chef::Provider::PowershellScript, "action_run" do
   }
 
   context 'when setting interpreter flags' do
-    it "should set the -File flag as the last flag" do
-      expect(provider.flags.split(' ').pop).to eq("-File")
-    end
-
-    let(:execution_policy_flag) do
-      execution_policy_index = 0
-      provider_flags = provider.flags.split(' ')
-      execution_policy_specified = false
-
-      provider_flags.find do | value |
-        execution_policy_index += 1
-        execution_policy_specified = value.downcase == '-ExecutionPolicy'.downcase
+    context 'on nano' do
+      before(:each) do
+        allow(Chef::Platform).to receive(:windows_nano_server?).and_return(true)
+        allow(provider).to receive(:is_forced_32bit).and_return(false)
+        os_info_double = double("os_info")
+        allow(provider.run_context.node.kernel).to receive(:os_info).and_return(os_info_double)
+        allow(os_info_double).to receive(:system_directory).and_return("C:\\Windows\\system32")
       end
 
-      execution_policy = execution_policy_specified ? provider_flags[execution_policy_index] : nil
-    end
-
-    context 'when running with an unspecified PowerShell version' do
-      let(:powershell_version) { nil }
-      it "should set the -ExecutionPolicy flag to 'Unrestricted' by default" do
-        expect(execution_policy_flag.downcase).to eq('unrestricted'.downcase)
+      it "sets the -Command flag as the last flag" do
+        flags = provider.command.split(' ').keep_if { |flag| flag =~ /^-/ }
+        expect(flags.pop).to eq("-Command")
       end
     end
 
-    { '2.0' => 'Unrestricted',
-      '2.5' => 'Unrestricted',
-      '3.0' => 'Bypass',
-      '3.6' => 'Bypass',
-      '4.0' => 'Bypass',
-      '5.0' => 'Bypass' }.each do | version_policy |
-      let(:powershell_version) { version_policy[0].to_f }
-      context "when running PowerShell version #{version_policy[0]}" do
+    context 'not on nano' do
+      before(:each) do
+        allow(Chef::Platform).to receive(:windows_nano_server?).and_return(false)
+        allow(provider).to receive(:is_forced_32bit).and_return(false)
+        os_info_double = double("os_info")
+        allow(provider.run_context.node.kernel).to receive(:os_info).and_return(os_info_double)
+        allow(os_info_double).to receive(:system_directory).and_return("C:\\Windows\\system32")
+      end
+
+      it "sets the -File flag as the last flag" do
+        flags = provider.command.split(' ').keep_if { |flag| flag =~ /^-/ }
+        expect(flags.pop).to eq("-File")
+      end
+
+      let(:execution_policy_flag) do
+        execution_policy_index = 0
+        provider_flags = provider.flags.split(' ')
+        execution_policy_specified = false
+
+        provider_flags.find do | value |
+          execution_policy_index += 1
+          execution_policy_specified = value.downcase == '-ExecutionPolicy'.downcase
+        end
+
+        execution_policy = execution_policy_specified ? provider_flags[execution_policy_index] : nil
+      end
+
+      context 'when running with an unspecified PowerShell version' do
+        let(:powershell_version) { nil }
+        it "sets the -ExecutionPolicy flag to 'Unrestricted' by default" do
+          expect(execution_policy_flag.downcase).to eq('unrestricted'.downcase)
+        end
+      end
+
+      { '2.0' => 'Unrestricted',
+        '2.5' => 'Unrestricted',
+        '3.0' => 'Bypass',
+        '3.6' => 'Bypass',
+        '4.0' => 'Bypass',
+        '5.0' => 'Bypass' }.each do | version_policy |
         let(:powershell_version) { version_policy[0].to_f }
-        it "should set the -ExecutionPolicy flag to '#{version_policy[1]}'" do
-          expect(execution_policy_flag.downcase).to eq(version_policy[1].downcase)
+        context "when running PowerShell version #{version_policy[0]}" do
+          let(:powershell_version) { version_policy[0].to_f }
+          it "sets the -ExecutionPolicy flag to '#{version_policy[1]}'" do
+            expect(execution_policy_flag.downcase).to eq(version_policy[1].downcase)
+          end
         end
       end
     end

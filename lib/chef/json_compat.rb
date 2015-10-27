@@ -41,6 +41,7 @@ class Chef
     CHEF_RESOURCECOLLECTION = "Chef::ResourceCollection".freeze
     CHEF_RESOURCESET        = "Chef::ResourceCollection::ResourceSet".freeze
     CHEF_RESOURCELIST       = "Chef::ResourceCollection::ResourceList".freeze
+    CHEF_RUNLISTEXPANSION   = "Chef::RunListExpansion".freeze
 
     class <<self
 

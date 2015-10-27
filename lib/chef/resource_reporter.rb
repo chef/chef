@@ -112,6 +112,7 @@ class Chef
       @exception = nil
       @rest_client = rest_client
       @error_descriptions = {}
+      @expanded_run_list = {}
     end
 
     def run_started(run_status)
@@ -217,6 +218,10 @@ class Chef
       end
     end
 
+    def run_list_expanded(run_list_expansion)
+      @expanded_run_list = run_list_expansion
+    end
+
     def post_reporting_data
       if reporting_enabled?
         run_data = prepare_run_data
@@ -271,6 +276,7 @@ class Chef
       run_data["data"] = {}
       run_data["start_time"] = start_time.to_s
       run_data["end_time"] = end_time.to_s
+      run_data["expanded_run_list"] = Chef::JSONCompat.to_json(@expanded_run_list)
 
       if exception
         exception_data = {}

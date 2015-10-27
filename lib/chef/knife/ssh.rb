@@ -111,6 +111,12 @@ class Chef
         :boolean => true,
         :proc => Proc.new { :raise }
 
+      option :tmux_split,
+        :long => "--tmux-split",
+        :description => "Split tmux window.",
+        :boolean => true,
+        :default => false
+
       def session
         config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|
@@ -225,6 +231,8 @@ class Chef
           if config[:identity_file]
             opts[:keys] = File.expand_path(config[:identity_file])
             opts[:keys_only] = true
+          elsif config[:ssh_password]
+            opts[:password] = config[:ssh_password]
           end
           # Don't set the keys to nil if we don't have them.
           forward_agent = config[:forward_agent] || ssh_config[:forward_agent]
@@ -402,7 +410,11 @@ class Chef
         new_window_cmds = lambda do
           if session.servers_for.size > 1
             [""] + session.servers_for[1..-1].map do |server|
-              "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+              if config[:tmux_split]
+                "split-window #{ssh_dest.call(server)}; tmux select-layout tiled"
+              else
+                "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+              end
             end
           else
             []
@@ -465,7 +477,7 @@ class Chef
         session.servers_for.each do |server|
           cssh_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
         end
-        Chef::Log.debug("starting cssh session with command: #{cssh_cmd}")
+        Chef::Log.debug("Starting cssh session with command: #{cssh_cmd}")
         exec(cssh_cmd)
       end
 

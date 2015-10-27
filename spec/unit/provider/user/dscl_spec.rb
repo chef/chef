@@ -760,6 +760,13 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         provider.dscl_create_comment
       end
 
+      it "sets the comment field to username" do
+        new_resource.comment nil
+        expect(provider).to receive(:run_dscl).with("create /Users/toor RealName '#mockssuck'").and_return(true)
+        provider.dscl_create_comment
+        expect(new_resource.comment).to eq("#mockssuck")
+      end
+
       it "should run run_dscl with create /Users/user PrimaryGroupID to set the users primary group" do
         expect(provider).to receive(:run_dscl).with("create /Users/toor PrimaryGroupID '1001'").and_return(true)
         provider.dscl_set_gid
@@ -788,6 +795,13 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         expect(provider).to receive(:shell_out).with('dscl . -read /Groups/newgroup PrimaryGroupID').and_return(shell_return)
         expect { provider.dscl_set_gid }.to raise_error(Chef::Exceptions::GroupIDNotFound)
       end
+    end
+
+    it "should set group ID to 20 if it's not specified" do
+      new_resource.gid nil
+      expect(provider).to receive(:run_dscl).with("create /Users/toor PrimaryGroupID '20'").ordered.and_return(true)
+      provider.dscl_set_gid
+      expect(new_resource.gid).to eq(20)
     end
   end
 

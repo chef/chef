@@ -20,6 +20,14 @@ require 'spec_helper'
 
 describe Chef::Provider::Template::Content do
 
+  let(:enclosing_directory) {
+    canonicalize_path(Dir.mktmpdir)
+  }
+
+  let(:resource_path) {
+    canonicalize_path(File.expand_path(File.join(enclosing_directory, "openldap_stuff.conf")))
+  }
+
   let(:new_resource) do
     double("Chef::Resource::Template (new)",
          :cookbook_name => 'openldap',
@@ -28,6 +36,8 @@ describe Chef::Provider::Template::Content do
          :source_line_file => "/Users/lamont/solo/cookbooks/openldap/recipes/default.rb",
          :source_line_number => "2",
          :source => 'openldap_stuff.conf.erb',
+         :name => 'openldap_stuff.conf',
+         :path => resource_path,
          :local => false,
          :cookbook => nil,
          :variables => {},
@@ -36,7 +46,10 @@ describe Chef::Provider::Template::Content do
          :helper_modules => [])
   end
 
-  let(:rendered_file_location) { Dir.tmpdir + '/openldap_stuff.conf' }
+  let(:rendered_file_locations) {
+    [Dir.tmpdir + '/openldap_stuff.conf',
+     enclosing_directory + '/openldap_stuff.conf']
+  }
 
   let(:run_context) do
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
@@ -54,7 +67,9 @@ describe Chef::Provider::Template::Content do
   end
 
   after do
-    FileUtils.rm(rendered_file_location) if ::File.exist?(rendered_file_location)
+    rendered_file_locations.each do |file|
+      FileUtils.rm(file) if ::File.exist?(file)
+    end
   end
 
   it "finds the template file in the cookbook cache if it isn't local" do
@@ -74,6 +89,39 @@ describe Chef::Provider::Template::Content do
     expect(content.template_location).to eq(CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/test.erb')
   end
 
+  it "returns a tempfile in the tempdir when :file_staging_uses_destdir is not set" do
+    Chef::Config[:file_staging_uses_destdir] = false
+    expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be true
+    expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be false
+  end
+
+  it "returns a tempfile in the destdir when :file_staging_uses_destdir is set" do
+    Chef::Config[:file_staging_uses_destdir] = true
+    expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be true
+  end
+
+  context "when creating a tempfile in destdir fails" do
+    let(:enclosing_directory) {
+      canonicalize_path("/nonexisting/path")
+    }
+
+    it "returns a tempfile in the tempdir when :file_deployment_uses_destdir is set to :auto" do
+      Chef::Config[:file_staging_uses_destdir] = :auto
+      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be true
+      expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be false
+    end
+
+    it "fails when :file_desployment_uses_destdir is set" do
+      Chef::Config[:file_staging_uses_destdir] = true
+      expect{content.tempfile}.to raise_error(Chef::Exceptions::FileContentStagingError)
+    end
+
+    it "returns a tempfile in the tempdir when :file_desployment_uses_destdir is not set" do
+      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be true
+      expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be false
+    end
+  end
+
   it "creates the template with the rendered content" do
     run_context.node.normal[:slappiness] = "a warm gun"
     expect(IO.read(content.tempfile.path)).to eq("slappiness is a warm gun")
@@ -88,6 +136,8 @@ describe Chef::Provider::Template::Content do
              :source_line_file => CHEF_SPEC_DATA + "/cookbooks/openldap/recipes/default.rb",
              :source_line_number => "2",
              :source => 'helpers.erb',
+             :name => 'helpers.erb',
+             :path => CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/helpers.erb',
              :local => false,
              :cookbook => nil,
              :variables => {},

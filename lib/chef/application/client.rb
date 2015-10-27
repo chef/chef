@@ -2,7 +2,7 @@
 # Author:: AJ Christensen (<aj@opscode.com)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Mark Mzyk (mmzyk@opscode.com)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,11 +55,17 @@ class Chef::Application::Client < Chef::Application
     :boolean      => true,
     :default      => false
 
+  option :profile_ruby,
+    :long         => "--[no-]profile-ruby",
+    :description  => "Dump complete Ruby call graph stack of entire Chef run (expert only)",
+    :boolean      => true,
+    :default      => false
+
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,
-    :default      => !Chef::Platform.windows?,
-    :description  => "Use colored output, defaults to false on Windows, true otherwise"
+    :default      => true,
+    :description  => "Use colored output, defaults to enabled"
 
   option :log_level,
     :short        => "-l LEVEL",

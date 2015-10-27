@@ -791,7 +791,7 @@ class Chef
               "/usr/bin/python"
             end
           rescue StandardError => e
-            Chef::Log.warn("An error occured attempting to determine correct python executable. Using default.")
+            Chef::Log.warn("An error occurred attempting to determine correct python executable. Using default.")
             Chef::Log.debug(e)
             "/usr/bin/python"
           end

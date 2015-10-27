@@ -166,7 +166,7 @@ class Chef
     def retriable_http_request(method, url, req_body, headers)
       rest_request = Chef::HTTP::HTTPRequest.new(method, url, req_body, headers)
 
-      Chef::Log.debug("Sending HTTP Request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
+      Chef::Log.debug("Sending HTTP request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
 
       retrying_http_errors(url) do
         yield rest_request

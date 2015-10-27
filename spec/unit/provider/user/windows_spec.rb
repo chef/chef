@@ -107,8 +107,8 @@ describe Chef::Provider::User::Windows do
         expect(@provider.set_options[:home_dir]).to eq('/home/adam')
       end
 
-      it "marks the primary_group_id attribute to be updated" do
-        expect(@provider.set_options[:primary_group_id]).to eq(1000)
+      it "ignores the primary_group_id attribute" do
+        expect(@provider.set_options[:primary_group_id]).to eq(nil)
       end
 
       it "marks the user_id attribute to be updated" do

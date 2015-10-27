@@ -172,5 +172,14 @@ describe Chef::Provider::Execute do
       provider.run_action(:run)
       expect(new_resource).to be_updated
     end
+
+    it "should not include stdout/stderr in failure exception for sensitive resource" do
+      opts.delete(:live_stream)
+      new_resource.sensitive true
+      expect(provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      expect do
+        provider.run_action(:run)
+      end.to raise_error(Mixlib::ShellOut::ShellCommandFailed, /suppressed for sensitive resource/)
+    end
   end
 end

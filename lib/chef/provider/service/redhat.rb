@@ -61,8 +61,10 @@ class Chef
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { !@service_missing }
-            a.failure_message Chef::Exceptions::Service, "#{new_resource}: unable to locate the init.d script!"
+            a.assertion do
+              custom_command_for_action?(action) || !@service_missing
+            end
+            a.failure_message Chef::Exceptions::Service, "#{new_resource}: No custom command for #{action} specified and unable to locate the init.d script!"
             a.whyrun "Assuming service would be disabled. The init script is not presently installed."
           end
         end
