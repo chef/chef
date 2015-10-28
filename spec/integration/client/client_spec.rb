@@ -320,6 +320,26 @@ EOM
     end
   end
 
+  when_the_repository "has a cookbook that should fail chef_version checks" do
+    before do
+      file 'cookbooks/x/recipes/default.rb', ''
+      file 'cookbooks/x/metadata.rb', <<EOM
+name 'x'
+version '0.0.1'
+chef_version '~> 999.99'
+EOM
+      file 'config/client.rb', <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+    it "should fail the chef client run" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      expect(command.exitstatus).to eql(1)
+      expect(command.stdout).to match(/Chef::Exceptions::CookbookChefVersionMismatch/)
+    end
+  end
+
   when_the_repository "has a cookbook that generates deprecation warnings" do
     before do
       file 'cookbooks/x/recipes/default.rb', <<-EOM

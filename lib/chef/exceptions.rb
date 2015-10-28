@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Copyright:: Copyright 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -479,6 +479,20 @@ class Chef
     class PIDFileLockfileMatch < RuntimeError
       def initialize
         super "PID file and lockfile are not permitted to match. Specify a different location with --pid or --lockfile"
+      end
+    end
+
+    class CookbookChefVersionMismatch < RuntimeError
+      def initialize(chef_version, cookbook_name, cookbook_version, *constraints)
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(', ')
+        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on chef version #{constraint_str}, but the running chef version is #{chef_version}"
+      end
+    end
+
+    class CookbookOhaiVersionMismatch < RuntimeError
+      def initialize(ohai_version, cookbook_name, cookbook_version, *constraints)
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(', ')
+        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on ohai version #{constraint_str}, but the running ohai version is #{ohai_version}"
       end
     end
 

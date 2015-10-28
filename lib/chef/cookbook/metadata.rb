@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Copyright:: Copyright 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,19 +55,23 @@ class Chef
       SOURCE_URL             = 'source_url'.freeze
       ISSUES_URL             = 'issues_url'.freeze
       PRIVACY                = 'privacy'.freeze
+      CHEF_VERSIONS          = 'chef_versions'.freeze
+      OHAI_VERSIONS          = 'ohai_versions'.freeze
 
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
                             :maintainer_email, :license, :platforms, :dependencies,
                             :recommendations, :suggestions, :conflicting, :providing,
                             :replacing, :attributes, :groupings, :recipes, :version,
-                            :source_url, :issues_url, :privacy ]
+                            :source_url, :issues_url, :privacy, :chef_versions, :ohai_versions ]
 
-      VERSION_CONSTRAINTS = {:depends     => DEPENDENCIES,
-                             :recommends  => RECOMMENDATIONS,
-                             :suggests    => SUGGESTIONS,
-                             :conflicts   => CONFLICTING,
-                             :provides    => PROVIDING,
-                             :replaces    => REPLACING }
+      VERSION_CONSTRAINTS = {:depends      => DEPENDENCIES,
+                             :recommends   => RECOMMENDATIONS,
+                             :suggests     => SUGGESTIONS,
+                             :conflicts    => CONFLICTING,
+                             :provides     => PROVIDING,
+                             :replaces     => REPLACING,
+                             :chef_version => CHEF_VERSIONS,
+                             :ohai_version => OHAI_VERSIONS }
 
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
@@ -83,6 +87,11 @@ class Chef
       attr_reader :groupings
       attr_reader :recipes
       attr_reader :version
+
+      # @return [Array<Gem::Dependency>] Array of supported Chef versions
+      attr_reader :chef_versions
+      # @return [Array<Gem::Dependency>] Array of supported Ohai versions
+      attr_reader :ohai_versions
 
       # Builds a new Chef::Cookbook::Metadata object.
       #
@@ -118,6 +127,8 @@ class Chef
         @source_url = ''
         @issues_url = ''
         @privacy = false
+        @chef_versions = []
+        @ohai_versions = []
 
         @errors = []
       end
@@ -386,6 +397,28 @@ class Chef
         @replacing[cookbook]
       end
 
+      # Metadata DSL to set a valid chef_version.  May be declared multiple times
+      # with the result being 'OR'd such that if any statements match, the version
+      # is considered supported.  Uses Gem::Requirement for its implementation.
+      #
+      # @param version_args [Array<String>] Version constraint in String form
+      # @return [Array<Gem::Dependency>] Current chef_versions array
+      def chef_version(*version_args)
+        @chef_versions << Gem::Dependency.new('chef', *version_args) unless version_args.empty?
+        @chef_versions
+      end
+
+      # Metadata DSL to set a valid ohai_version.  May be declared multiple times
+      # with the result being 'OR'd such that if any statements match, the version
+      # is considered supported.  Uses Gem::Requirement for its implementation.
+      #
+      # @param version_args [Array<String>] Version constraint in String form
+      # @return [Array<Gem::Dependency>] Current ohai_versions array
+      def ohai_version(*version_args)
+        @ohai_versions << Gem::Dependency.new('ohai', *version_args) unless version_args.empty?
+        @ohai_versions
+      end
+
       # Adds a description for a recipe.
       #
       # === Parameters
@@ -481,6 +514,40 @@ class Chef
         @groupings[name]
       end
 
+      # Convert an Array of Gem::Dependency objects (chef_version/ohai_version) to an Array.
+      #
+      # Gem::Dependencey#to_s is not useful, and there is no #to_json defined on it or its component
+      # objets, so we have to write our own rendering method.
+      #
+      # [ Gem::Dependency.new(">= 12.5"), Gem::Dependency.new(">= 11.18.0", "< 12.0") ]
+      #
+      # results in:
+      #
+      # [ [ ">= 12.5" ], [ ">= 11.18.0", "< 12.0" ] ]
+      #
+      # @param deps [Array<Gem::Dependency>] Multiple Gem-style version constraints
+      # @return [Array<Array<String>]] Simple object representation of version constraints (for json)
+      def gem_requirements_to_array(*deps)
+        deps.map do |dep|
+          dep.requirement.requirements.map do |op, version|
+            "#{op} #{version}"
+          end.sort
+        end
+      end
+
+      # Convert an Array of Gem::Dependency objects (chef_version/ohai_version) to a hash.
+      #
+      # This is the inverse of #gem_requirements_to_array
+      #
+      # @param what [String] What version constraint we are constructing ('chef' or 'ohai' presently)
+      # @param array [Array<Array<String>]] Simple object representation of version constraints (from json)
+      # @return [Array<Gem::Dependency>] Multiple Gem-style version constraints
+      def gem_requirements_from_array(what, array)
+        array.map do |dep|
+          Gem::Dependency.new(what, *dep)
+        end
+      end
+
       def to_hash
         {
           NAME                   => self.name,
@@ -502,7 +569,9 @@ class Chef
           VERSION                => self.version,
           SOURCE_URL             => self.source_url,
           ISSUES_URL             => self.issues_url,
-          PRIVACY                => self.privacy
+          PRIVACY                => self.privacy,
+          CHEF_VERSIONS          => gem_requirements_to_array(*self.chef_versions),
+          OHAI_VERSIONS          => gem_requirements_to_array(*self.ohai_versions)
         }
       end
 
@@ -537,6 +606,8 @@ class Chef
         @source_url                   = o[SOURCE_URL] if o.has_key?(SOURCE_URL)
         @issues_url                   = o[ISSUES_URL] if o.has_key?(ISSUES_URL)
         @privacy                      = o[PRIVACY] if o.has_key?(PRIVACY)
+        @chef_versions                = gem_requirements_from_array("chef", o[CHEF_VERSIONS]) if o.has_key?(CHEF_VERSIONS)
+        @ohai_versions                = gem_requirements_from_array("ohai", o[OHAI_VERSIONS]) if o.has_key?(OHAI_VERSIONS)
         self
       end
 
@@ -612,7 +683,42 @@ class Chef
         )
       end
 
+      # Validates that the Ohai::VERSION of the running chef-client matches one of the
+      # configured ohai_version statements in this cookbooks metadata.
+      #
+      # @raises [Chef::Exceptions::CookbookOhaiVersionMismatch] if the cookbook fails validation
+      def validate_ohai_version!
+        unless gem_dep_matches?("ohai", Gem::Version.new(Ohai::VERSION), *ohai_versions)
+          raise Exceptions::CookbookOhaiVersionMismatch.new(Ohai::VERSION, name, version, *ohai_versions)
+        end
+      end
+
+      # Validates that the Chef::VERSION of the running chef-client matches one of the
+      # configured chef_version statements in this cookbooks metadata.
+      #
+      # @raises [Chef::Exceptions::CookbookChefVersionMismatch] if the cookbook fails validation
+      def validate_chef_version!
+        unless gem_dep_matches?("chef", Gem::Version.new(Chef::VERSION), *chef_versions)
+          raise Exceptions::CookbookChefVersionMismatch.new(Chef::VERSION, name, version, *chef_versions)
+        end
+      end
+
     private
+
+      # Helper to match a gem style version (ohai_version/chef_version) against a set of
+      # Gem::Dependency version constraints.  If none are present, it always matches.  if
+      # multiple are present, one must match.  Returns false if none matches.
+      #
+      # @param what [String] the name of the constraint (e.g. 'chef' or 'ohai')
+      # @param version [String] the version to compare against the constraints
+      # @param deps [Array<Gem::Dependency>] Multiple Gem-style version constraints
+      # @return [Boolean] true if no constraints or a match, false if no match
+      def gem_dep_matches?(what, version, *deps)
+        # always match if we have no chef_version at all
+        return true unless deps.length > 0
+        # match if we match any of the chef_version lines
+        deps.any? { |dep| dep.match?(what, version) }
+      end
 
       def run_validation
         if name.nil?

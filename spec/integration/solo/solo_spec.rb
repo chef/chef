@@ -70,6 +70,40 @@ EOM
     end
   end
 
+  when_the_repository "has a cookbook with an incompatible chef_version" do
+    before do
+      file 'cookbooks/x/metadata.rb', cb_metadata('x', '1.0.0', "\nchef_version '~> 999.0'")
+      file 'cookbooks/x/recipes/default.rb', 'puts "ITWORKS"'
+      file 'config/solo.rb', <<EOM
+cookbook_path "#{path_to('cookbooks')}"
+file_cache_path "#{path_to('config/cache')}"
+EOM
+    end
+
+    it "should exit with an error" do
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      expect(result.exitstatus).to eq(1)
+      expect(result.stdout).to include("Chef::Exceptions::CookbookChefVersionMismatch")
+    end
+  end
+
+  when_the_repository "has a cookbook with an incompatible ohai_version" do
+    before do
+      file 'cookbooks/x/metadata.rb', cb_metadata('x', '1.0.0', "\nohai_version '~> 999.0'")
+      file 'cookbooks/x/recipes/default.rb', 'puts "ITWORKS"'
+      file 'config/solo.rb', <<EOM
+cookbook_path "#{path_to('cookbooks')}"
+file_cache_path "#{path_to('config/cache')}"
+EOM
+    end
+
+    it "should exit with an error" do
+      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      expect(result.exitstatus).to eq(1)
+      expect(result.stdout).to include("Chef::Exceptions::CookbookOhaiVersionMismatch")
+    end
+  end
+
 
   when_the_repository "has a cookbook with a recipe with sleep" do
     before do
