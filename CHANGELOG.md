@@ -36,6 +36,7 @@
 * [**Patrick Connolly**](https://github.com/patcon)
   [pr#3529](https://github.com/chef/chef/pull/3529) Allow user@hostname format for knife-bootstrap
 
+* [pr#4081](https://github.com/chef/chef/pull/4081) RFC-037: add `chef_version` and `ohai_version` metadata
 * [pr#3530](https://github.com/chef/chef/pull/3530) Allow using --sudo option with user's home folder in knife bootstrap
 * [pr#3858](https://github.com/chef/chef/pull/3858) Remove duplicate 'Accept' header in spec
 * [pr#3911](https://github.com/chef/chef/pull/3911) Avoid subclassing Struct.new
