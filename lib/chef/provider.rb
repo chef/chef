@@ -217,7 +217,7 @@ class Chef
         property_size = modified.map { |p| p.size }.max
         modified.map! do |p|
           properties_str = if sensitive
-            '(suppressed sensitive properties)'
+            '(suppressed sensitive property)'
           else
             "#{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})"
           end
@@ -232,7 +232,7 @@ class Chef
         created = properties.map do |property|
           default = ' (default value)' unless new_resource.property_is_set?(property)
           properties_str = if sensitive
-            '(suppressed sensitive properties)'
+            '(suppressed sensitive property)'
           else
             new_resource.send(property).inspect
           end

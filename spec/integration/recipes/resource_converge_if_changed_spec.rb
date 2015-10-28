@@ -127,8 +127,8 @@ EOM
             expect(converged_recipe.stdout).to eq <<-EOM
 * #{resource_name}[blah] action create
   - update default_identity1
-  -   set state1 to (suppressed sensitive properties)
-  -   set state2 to (suppressed sensitive properties)
+  -   set state1 to (suppressed sensitive property)
+  -   set state2 to (suppressed sensitive property)
 EOM
           end
         end
@@ -290,9 +290,9 @@ EOM
             expect(converged_recipe.stdout).to eq <<-EOM
 * #{resource_name}[blah] action create
   - create default_identity1
-  -   set identity1 to (suppressed sensitive properties) (default value)
-  -   set state1    to (suppressed sensitive properties)
-  -   set state2    to (suppressed sensitive properties)
+  -   set identity1 to (suppressed sensitive property) (default value)
+  -   set state1    to (suppressed sensitive property)
+  -   set state2    to (suppressed sensitive property)
 EOM
           end
         end
@@ -481,9 +481,9 @@ EOM
             expect(converged_recipe.stdout).to eq <<-EOM
 * #{resource_name}[blah] action create
   - create default_identity1
-  -   set state1 to (suppressed sensitive properties)
+  -   set state1 to (suppressed sensitive property)
   - create default_identity1
-  -   set state2 to (suppressed sensitive properties)
+  -   set state2 to (suppressed sensitive property)
 EOM
           end
         end
