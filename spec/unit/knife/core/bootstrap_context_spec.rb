@@ -20,7 +20,7 @@ require 'spec_helper'
 require 'chef/knife/core/bootstrap_context'
 
 describe Chef::Knife::Core::BootstrapContext do
-  let(:config) { {:foo => :bar} }
+  let(:config) { {:foo => :bar, :color => true} }
   let(:run_list) { Chef::RunList.new('recipe[tmux]', 'role[base]') }
   let(:chef_config) do
     {
@@ -39,20 +39,20 @@ describe Chef::Knife::Core::BootstrapContext do
   end
 
   it "runs chef with the first-boot.json with no environment specified" do
-    expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json --no-color"
+    expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json"
   end
 
   describe "when in verbosity mode" do
-    let(:config) { {:verbosity => 2} }
+    let(:config) { {:verbosity => 2, :color => true} }
     it "adds '-l debug' when verbosity is >= 2" do
-      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug --no-color"
+      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug"
     end
   end
 
-  describe "when in color is true" do
-    let(:config) { {:color => true} }
-    it "removes '--no-color' when color is true" do
-      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json"
+  describe "when no color value has been set in config" do
+    let(:config) { {:color => false } }
+    it "adds '--no-color' when color is false" do
+      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json --no-color"
     end
   end
 
@@ -77,7 +77,7 @@ EXPECTED
   describe "alternate chef-client path" do
     let(:chef_config){ {:chef_client_path => '/usr/local/bin/chef-client'} }
     it "runs chef-client from another path when specified" do
-      expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json --no-color"
+      expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json"
     end
   end
 
@@ -98,9 +98,9 @@ EXPECTED
   end
 
   describe "when bootstrapping into a specific environment" do
-    let(:config){ {:environment => "prodtastic"} }
+    let(:config){ {:environment => "prodtastic", :color => true} }
     it "starts chef in the configured environment" do
-      expect(bootstrap_context.start_chef).to eq('chef-client -j /etc/chef/first-boot.json -E prodtastic --no-color')
+      expect(bootstrap_context.start_chef).to eq('chef-client -j /etc/chef/first-boot.json -E prodtastic')
     end
   end
 
