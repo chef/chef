@@ -8,7 +8,7 @@ Description of the required change.
 
 ### `chef_version` and `ohai_version`
 
-Then metadata.rb DSL is extended to support `chef_version` and `ohai_version` to establish ranges
+The metadata.rb DSL is extended to support `chef_version` and `ohai_version` to establish ranges
 of chef and ohai versions that the cookbook supports.
 
 When the running chef or ohai version does not match, then the chef-client run will abort with an
