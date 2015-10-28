@@ -39,13 +39,20 @@ describe Chef::Knife::Core::BootstrapContext do
   end
 
   it "runs chef with the first-boot.json with no environment specified" do
-    expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json"
+    expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json --no-color"
   end
 
   describe "when in verbosity mode" do
     let(:config) { {:verbosity => 2} }
     it "adds '-l debug' when verbosity is >= 2" do
-      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug"
+      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -l debug --no-color"
+    end
+  end
+
+  describe "when in color is true" do
+    let(:config) { {:color => true} }
+    it "removes '--no-color' when color is true" do
+      expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json"
     end
   end
 
@@ -70,7 +77,7 @@ EXPECTED
   describe "alternate chef-client path" do
     let(:chef_config){ {:chef_client_path => '/usr/local/bin/chef-client'} }
     it "runs chef-client from another path when specified" do
-      expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json"
+      expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json --no-color"
     end
   end
 
@@ -93,7 +100,7 @@ EXPECTED
   describe "when bootstrapping into a specific environment" do
     let(:config){ {:environment => "prodtastic"} }
     it "starts chef in the configured environment" do
-      expect(bootstrap_context.start_chef).to eq('chef-client -j /etc/chef/first-boot.json -E prodtastic')
+      expect(bootstrap_context.start_chef).to eq('chef-client -j /etc/chef/first-boot.json -E prodtastic --no-color')
     end
   end
 

@@ -129,6 +129,7 @@ CONFIG
           s = "#{client_path} -j /etc/chef/first-boot.json"
           s << ' -l debug' if @config[:verbosity] and @config[:verbosity] >= 2
           s << " -E #{bootstrap_environment}" unless bootstrap_environment.nil?
+          s << " --no-color" unless @config[:color]
           s
         end
 
