@@ -47,6 +47,7 @@
 * [pr#4021](https://github.com/chef/chef/pull/4021) add missing requires for Chef::DSL::Recipe to LWRPBase
 * [pr#3597](https://github.com/chef/chef/pull/3597) print STDOUT from the powershell_script
 * [pr#4091](https://github.com/chef/chef/pull/4091) Allow downloading of root_files in a chef repository
+* [pr#4112](https://github.com/chef/chef/pull/4112) Update knife bootstrap command to honor --no-color flag in chef-client run that is part of the bootstrap process.
 
 ## 12.5.1
 
