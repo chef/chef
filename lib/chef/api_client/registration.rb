@@ -97,12 +97,21 @@ class Chef
       end
 
       def update
+        # Try with the v0 API
         response = http_api.put("clients/#{name}", put_data)
         if response.respond_to?(:private_key) # Chef 11
           @server_generated_private_key = response.private_key
         else # Chef 10
           @server_generated_private_key = response["private_key"]
         end
+        # If it fails and we receive a 400 stating to use the keys endpoint
+        # then, let's use it.
+        rescue Net::HTTPServerException => e
+          if e.response.code == '400' && e.response.body == '{"error":["Since Server API v1, all keys must be updated via the keys endpoint. "]}'
+                response = http_api.put("clients/#{name}/keys/default", { :name => 'default', :admin => false, :public_key => generated_public_key })
+          else
+                raise
+          end
         response
       end
 
