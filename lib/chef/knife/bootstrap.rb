@@ -99,13 +99,11 @@ class Chef
 
       option :bootstrap_proxy_user,
         :long => "--bootstrap-proxy-user PROXY_USER",
-        :description => "The proxy authentication username for the node being bootstrapped",
-        :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy_user] = p }
+        :description => "The proxy authentication username for the node being bootstrapped"
 
       option :bootstrap_proxy_pass,
         :long => "--bootstrap-proxy-pass PROXY_PASS",
-        :description => "The proxy authentication password for the node being bootstrapped",
-        :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy_pass] = p }
+        :description => "The proxy authentication password for the node being bootstrapped"
 
       option :bootstrap_no_proxy,
         :long => "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
