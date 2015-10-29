@@ -194,7 +194,7 @@ The specific components of Chef related to a given platform - including (but not
         maintainers = [
           "Aevin1387",
           "tBunnyMan",
-          "agentmeerkat"
+          "AgentMeerkat"
         ]
 
       [Org.Components.Subsystems.OpenBSD]
@@ -237,9 +237,9 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Cory Stephenson"
     GitHub = "Aevin1387"
 
-  [people.agentmeerkat]
+  [people.AgentMeerkat]
     Name = "Bryant Lippert"
-    GitHub = "agentmeerkat"
+    GitHub = "AgentMeerkat"
 
   [people.btm]
     Name = "Bryan McLellan"
