@@ -117,6 +117,14 @@ describe Chef::Knife do
       expect(Chef::Knife.subcommands["super_awesome_command"]).to eq(SuperAwesomeCommand)
     end
 
+    it "records the location of ChefFS-based commands correctly" do
+      class AwesomeCheffsCommand < Chef::ChefFS::Knife
+      end
+
+      Chef::Knife.load_commands
+      expect(Chef::Knife.subcommand_files["awesome_cheffs_command"]).to eq([__FILE__])
+    end
+
     it "guesses a category from a given ARGV" do
       Chef::Knife.subcommands_by_category["cookbook"] << :cookbook
       Chef::Knife.subcommands_by_category["cookbook site"] << :cookbook_site

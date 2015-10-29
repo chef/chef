@@ -48,6 +48,7 @@
 * [pr#3597](https://github.com/chef/chef/pull/3597) print STDOUT from the powershell_script
 * [pr#4091](https://github.com/chef/chef/pull/4091) Allow downloading of root_files in a chef repository
 * [pr#4112](https://github.com/chef/chef/pull/4112) Update knife bootstrap command to honor --no-color flag in chef-client run that is part of the bootstrap process.
+* [pr#4090](https://github.com/chef/chef/pull/4090) Improve detection of ChefFS-based commands in `knife rehash`
 
 ## 12.5.1
 
