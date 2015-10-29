@@ -431,7 +431,7 @@ class Chef
          modified_options.has_key?(:default)
         options = options.reject { |k,v| k == :name_attribute || k == :name_property || k == :default }
       end
-      Property.new(options.merge(modified_options))
+      self.class.new(options.merge(modified_options))
     end
 
     #

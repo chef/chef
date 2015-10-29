@@ -1099,4 +1099,52 @@ describe "Chef::Resource.property" do
     expect { resource_class.property :x, :name_property => true, :name_attribute => true }.to raise_error ArgumentError,
       /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
   end
+
+  context "with a custom property type" do
+    class CustomPropertyType < Chef::Property
+    end
+
+    with_property ":x, CustomPropertyType.new" do
+      it "creates x with the given type" do
+        expect(resource_class.properties[:x]).to be_kind_of(CustomPropertyType)
+      end
+
+      context "and a subclass" do
+        let(:subresource_class) do
+          new_resource_name = self.class.new_resource_name
+          Class.new(resource_class) do
+            resource_name new_resource_name
+          end
+        end
+        let(:subresource) do
+          subresource_class.new('blah')
+        end
+
+        context "with property :x, default: 10 on the subclass" do
+          before do
+            subresource_class.class_eval do
+              property :x, default: 10
+            end
+          end
+
+          it "x has the given type and default on the subclass" do
+            expect(subresource_class.properties[:x]).to be_kind_of(CustomPropertyType)
+            expect(subresource_class.properties[:x].default).to eq(10)
+          end
+
+          it "x does not have the default on the superclass" do
+            expect(resource_class.properties[:x]).to be_kind_of(CustomPropertyType)
+            expect(resource_class.properties[:x].default).to be_nil
+          end
+        end
+      end
+    end
+
+    with_property ":x, CustomPropertyType.new, default: 10" do
+      it "passes the default to the custom property type" do
+        expect(resource_class.properties[:x]).to be_kind_of(CustomPropertyType)
+        expect(resource_class.properties[:x].default).to eq(10)
+      end
+    end
+  end
 end
