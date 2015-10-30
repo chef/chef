@@ -70,6 +70,11 @@ class Chef
             providers << :systemd
           end
 
+          # openbsd 5.7+ use rcctl(8) for service management
+          if ::File.exist?(Chef.path_to("/usr/sbin/rcctl"))
+            providers << :rcctl
+          end
+
           providers
         end
 
