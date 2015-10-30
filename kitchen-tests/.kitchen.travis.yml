@@ -1,13 +1,10 @@
 ---
+settings:
+  parallel: true
+
 driver:
-  name: ec2
-  aws_access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
-  aws_secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
-  aws_ssh_key_id: <%= ENV['AWS_KEYPAIR_NAME'] %>
-  region: "us-west-2"
-  availability_zone: "us-west-2a"
-  security_group_ids: ["travis-ci"]
-  instance_type: "m3.medium"
+  name: docker
+  privileged: true
 
 provisioner:
   name: chef_github
@@ -20,19 +17,16 @@ provisioner:
   client_rb:
     diff_disabled: true
 
-transport:
-  ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
-
 platforms:
-  - name: ubuntu-12.04
-    driver:
-      # http://cloud-images.ubuntu.com/locator/ec2/
-      # 12.04 amd64 us-west-2 hvm:ssd
-      image_id: ami-f3635fc3
-  - name: rhel-6
-    driver:
-      # https://github.com/chef/releng-chef-repo/blob/master/script/ci#L93-L96
-      image_id: ami-7df0bd4d
+- name: ubuntu-12.04
+  driver:
+    image: ubuntu-upstart:12.04
+    platform: ubuntu
+    disable_upstart: false
+    run_command: /sbin/init
+    provision_command:
+      - /usr/bin/apt-get update
+      - /usr/bin/apt-get install apt-transport-https net-tools -y
 
 suites:
   - name: webapp
