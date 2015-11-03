@@ -200,7 +200,11 @@ class Chef
         # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
         # via chef-zero and that hits DNS (at *require* time) which may timeout,
         # when for most knife/chef-client work we never need/want this loaded.
-        require 'chef/http/socketless_chef_zero_client'
+        Thread.exclusive {
+          unless defined?(SocketlessChefZeroClient)
+            require 'chef/http/socketless_chef_zero_client'
+          end
+        }
         SocketlessChefZeroClient.new(base_url)
       else
         BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
