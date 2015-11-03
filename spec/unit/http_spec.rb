@@ -89,4 +89,106 @@ describe Chef::HTTP do
 
   end # head
 
+  describe "retrying connection errors" do
+
+    let(:uri) { "https://chef.example/organizations/default/" }
+
+    subject(:http) { Chef::HTTP.new(uri) }
+
+    # http#http_client gets stubbed later, so eager create
+    let!(:low_level_client) { http.http_client(URI(uri)) }
+
+    let(:http_ok_response) do
+      Net::HTTPOK.new("1.1", 200, "OK").tap do |r|
+        allow(r).to receive(:read_body).and_return("")
+      end
+    end
+
+    before do
+      allow(http).to receive(:http_client).with(URI(uri)).and_return(low_level_client)
+    end
+
+    shared_examples_for "retriable_request_errors" do
+
+      before do
+        expect(low_level_client).to receive(:request).exactly(5).times.and_raise(exception)
+        expect(http).to receive(:sleep).exactly(5).times.and_return(1)
+        expect(low_level_client).to receive(:request).and_return([low_level_client, http_ok_response])
+      end
+
+      it "retries the request 5 times" do
+        http.get('/')
+      end
+
+    end
+
+    shared_examples_for "errors_that_are_not_retried" do
+
+      before do
+        expect(low_level_client).to receive(:request).exactly(1).times.and_raise(exception)
+        expect(http).to_not receive(:sleep)
+      end
+
+      it "raises the error without retrying or sleeping" do
+        # We modify the strings to give addtional context, but the exception class should be the same
+        expect { http.get("/") }.to raise_error(exception.class)
+      end
+    end
+
+    context "when ECONNRESET is raised" do
+
+      let(:exception) { Errno::ECONNRESET.new("example error") }
+
+      include_examples "retriable_request_errors"
+
+    end
+
+    context "when SocketError is raised" do
+
+      let(:exception) { SocketError.new("example error") }
+
+      include_examples "retriable_request_errors"
+
+    end
+
+    context "when ETIMEDOUT is raised" do
+
+      let(:exception) { Errno::ETIMEDOUT.new("example error") }
+
+      include_examples "retriable_request_errors"
+
+    end
+
+    context "when ECONNREFUSED is raised" do
+
+      let(:exception) { Errno::ECONNREFUSED.new("example error") }
+
+      include_examples "retriable_request_errors"
+
+    end
+
+    context "when Timeout::Error is raised" do
+
+      let(:exception) { Timeout::Error.new("example error") }
+
+      include_examples "retriable_request_errors"
+
+    end
+
+    context "when OpenSSL::SSL::SSLError is raised" do
+
+      let(:exception) { OpenSSL::SSL::SSLError.new("example error") }
+
+      include_examples "retriable_request_errors"
+
+    end
+
+    context "when OpenSSL::SSL::SSLError is raised for certificate validation failure" do
+
+      let(:exception) { OpenSSL::SSL::SSLError.new("ssl_connect returned=1 errno=0 state=sslv3 read server certificate b: certificate verify failed") }
+
+      include_examples "errors_that_are_not_retried"
+
+    end
+  end
 end
