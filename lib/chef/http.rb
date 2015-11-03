@@ -197,8 +197,9 @@ class Chef
     def http_client(base_url=nil)
       base_url ||= url
       if chef_zero_uri?(base_url)
-        # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up all of
-        # chef-zero and webrick when we mostly never want to or have to
+        # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
+        # via chef-zero and that hits DNS (at *require* time) which may timeout,
+        # when for most knife/chef-client work we never need/want this loaded.
         require 'chef/http/socketless_chef_zero_client'
         SocketlessChefZeroClient.new(base_url)
       else
