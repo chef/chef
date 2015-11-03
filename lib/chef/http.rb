@@ -307,7 +307,7 @@ class Chef
           end
           return [response, request, return_value]
         end
-      rescue SocketError, Errno::ETIMEDOUT => e
+      rescue SocketError, Errno::ETIMEDOUT, Errno::ECONNRESET => e
         if http_retry_count - http_attempts + 1 > 0
           Chef::Log.error("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
