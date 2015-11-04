@@ -5,7 +5,7 @@
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010, 2013 Opscode, Inc.
+# Copyright:: Copyright (c) 2009, 2010, 2013-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,6 @@ require 'tempfile'
 require 'net/https'
 require 'uri'
 require 'chef/http/basic_client'
-require 'chef/http/socketless_chef_zero_client'
 require 'chef/monkey_patches/net_http'
 require 'chef/config'
 require 'chef/platform/query_helpers'
@@ -198,6 +197,14 @@ class Chef
     def http_client(base_url=nil)
       base_url ||= url
       if chef_zero_uri?(base_url)
+        # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
+        # via chef-zero and that hits DNS (at *require* time) which may timeout,
+        # when for most knife/chef-client work we never need/want this loaded.
+        Thread.exclusive {
+          unless defined?(SocketlessChefZeroClient)
+            require 'chef/http/socketless_chef_zero_client'
+          end
+        }
         SocketlessChefZeroClient.new(base_url)
       else
         BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
