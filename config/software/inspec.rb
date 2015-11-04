@@ -17,7 +17,7 @@
 name "inspec"
 default_version "master"
 
-source git: "https://github.com/chef/inspec.git"
+source git: "git://github.com/chef/inspec.git"
 
 if windows?
   dependency "ruby-windows"
@@ -32,7 +32,7 @@ dependency "bundler"
 build do
   env = with_standard_compiler_flags(with_embedded_path)
 
-  bundle "install --without test integration tools maintenance", env: env
+  bundle "install --with test integration --without tools maintenance", env: env
 
   gem "build inspec.gemspec", env: env
   gem "install inspec-*.gem" \

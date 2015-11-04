@@ -65,9 +65,8 @@ else
   override :rubygems,     version: "2.4.8"
 end
 
-# update to 0.9.1 when that is released
-# master currently has some dependency changes we need
-override :inspec, version: "0.9.1"
+#override :inspec, version: "0.9.1"
+override :inspec, version: "master"
 
 override :'test-kitchen', version: "v1.4.2"
 override :'kitchen-inspec', version: "master" # will set when release is tagged
