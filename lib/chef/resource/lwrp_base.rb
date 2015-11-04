@@ -102,10 +102,6 @@ class Chef
           run_context ? run_context.node : nil
         end
 
-        def lazy(&block)
-          DelayedEvaluator.new(&block)
-        end
-
         protected
 
         def loaded_lwrps
