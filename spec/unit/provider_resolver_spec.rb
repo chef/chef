@@ -147,25 +147,17 @@ describe Chef::ProviderResolver do
         services.each do |service|
           case service
           when :debian
-            directory 'usr/sbin/update-rc.d'
+            file 'usr/sbin/update-rc.d', ''
           when :invokercd
-            directory 'usr/sbin/invoke-rc.d'
+            file 'usr/sbin/invoke-rc.d', ''
           when :insserv
-            directory 'sbin/insserv'
+            file 'sbin/insserv', ''
           when :upstart
-            directory 'etc/init'
-            directory 'sbin/start'
+            file 'sbin/initctl', ''
           when :redhat
-            directory 'sbin/chkconfig'
+            file 'sbin/chkconfig', ''
           when :systemd
-            file 'bin/systemctl', ''
-            # Make systemctl executable
-            File.chmod(0755, path_to('bin/systemctl'))
-            # Windows doesn't respect executable bit, do this to let Windows users see if they've broken the resolver
-            allow(::File).to receive(:executable?) { |p| p == path_to('bin/systemctl') } if windows?
             file 'proc/1/comm', "systemd\n"
-            mock_shellout_command("/bin/systemctl --all", stdout: "")
-            mock_shellout_command("/bin/systemctl list-unit-files", stdout: "")
           else
             raise ArgumentError, service
           end
@@ -186,24 +178,8 @@ describe Chef::ProviderResolver do
           when :usr_local_etc_rcd
             file "usr/local/etc/rc.d/#{service_name}", ""
           when :systemd
-            file 'bin/systemctl', ''
-            # Make systemctl executable
-            File.chmod(0755, path_to("bin/systemctl"))
-            # Windows doesn't respect executable bit, do this to let Windows users see if they've broken the resolver
-            allow(::File).to receive(:executable?) { |p| p == path_to('bin/systemctl') } if windows?
             file 'proc/1/comm', "systemd\n"
-            mock_shellout_command("/bin/systemctl --all", stdout: <<-EOM)
-  superv  loaded
-  stinky  something-else
-  #{service_name} loaded
-  blargh  not-found
-  EOM
-            mock_shellout_command("/bin/systemctl list-unit-files", stdout: <<-EOM)
-  usuperv  loaded
-  ustinky  something-else
-  u#{service_name}    loaded
-  ublargh  not-found
-  EOM
+            file "etc/systemd/system/#{service_name}.service", ""
           else
             raise ArgumentError, config
           end
