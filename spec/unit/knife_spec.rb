@@ -33,7 +33,10 @@ describe Chef::Knife do
   let(:config_location) { File.expand_path("~/.chef/config.rb") }
 
   let(:config_loader) do
-    instance_double("WorkstationConfigLoader", load: nil, no_config_found?: false, config_location: config_location)
+    instance_double("WorkstationConfigLoader",
+                    load: nil, no_config_found?: false,
+                    config_location: config_location,
+                    :chef_config_dir => "/etc/chef")
   end
 
   before(:each) do
