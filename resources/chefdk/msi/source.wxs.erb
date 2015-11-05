@@ -1,4 +1,4 @@
-<?xml version='1.0'?>
+<?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 
   <!-- This is how we include wxi files -->
@@ -12,23 +12,59 @@
           Version="$(var.VersionNumber)" Manufacturer="!(loc.ManufacturerName)" UpgradeCode="$(var.UpgradeCode)">
 
     <!--
-      Define the minimum supported installer version (2.0).
-      The install should be done for the whole machine not just the current user
+      Minimum installer version (2.0) - Window XP and above.
+      The install scope is per machine, not the current user
     -->
     <Package InstallerVersion="200" InstallPrivileges="elevated"
              Compressed="yes" InstallScope="perMachine" />
 
     <Media Id="1" Cabinet="ChefClient.cab" EmbedCab="yes" CompressionLevel="high" />
 
-    <!-- Major upgrade -->
-    <Upgrade Id="$(var.UpgradeCode)">
-      <UpgradeVersion OnlyDetect="yes" Minimum="$(var.VersionNumber)" IncludeMinimum="no" Property="NEWERVERSIONDETECTED" />
-      <UpgradeVersion Minimum="0.0.0.0" IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" />
-    </Upgrade>
+    <!--
+      Uncomment launch condition below to check for minimum OS
+      601 = Windows 7/Server 2008R2.
+    -->
+    <!-- Condition Message="!(loc.MinimumOSVersionMessage)">
+      <![CDATA[Installed OR VersionNT >= 601]]>
+    </Condition -->
+
+    <!-- We always do Major upgrades -->
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)" />
+
+    <!--
+      If fastmsi is set, custom actions will be invoked during install to unzip
+      project files, and during uninstall to remove the project folder
+    -->
+    <% if fastmsi %>
+    <SetProperty Id="FastUnzip"
+                 Value="FASTZIPDIR=[INSTALLLOCATION];FASTZIPAPPNAME=chefdk"
+                 Sequence="execute"
+                 Before="FastUnzip" />
+
+    <CustomAction Id="FastUnzip"
+                  BinaryKey="CustomActionFastMsiDLL"
+                  DllEntry="FastUnzip"
+                  Execute="deferred"
+                  Return="check" />
+
+    <Binary Id="CustomActionFastMsiDLL"
+            SourceFile="CustomActionFastMsi.CA.dll" />
+
+    <CustomAction Id="Cleanup"
+                  Directory="INSTALLLOCATION"
+                  ExeCommand="cmd /C &quot;rd /S /Q chefdk&quot;"
+                  Execute="deferred"
+                  Return="ignore" />
 
     <InstallExecuteSequence>
-      <RemoveExistingProducts After="InstallValidate" />
+      <Custom Action="FastUnzip" After="InstallFiles">NOT Installed</Custom>
+      <Custom Action="Cleanup" After="RemoveFiles">REMOVE~="ALL"</Custom>
     </InstallExecuteSequence>
+
+    <UI>
+      <ProgressText Action="FastUnzip">!(loc.FileExtractionProgress)</ProgressText>
+    </UI>
+    <% end %>
 
     <CustomActionRef Id="WixBroadcastSettingChange" />
     <CustomActionRef Id="WixBroadcastEnvironmentChange" />
