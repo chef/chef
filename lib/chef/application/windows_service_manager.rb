@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,8 +51,7 @@ class Chef
       option :log_location,
         :short        => "-L LOGLOCATION",
         :long         => "--logfile LOGLOCATION",
-        :description  => "Set the log file location for chef-service",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.log"
+        :description  => "Set the log file location for chef-service"
 
       option :help,
         :short        => "-h",

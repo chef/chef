@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Maier (<maier@lambda.local>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,8 +45,7 @@ class Chef
       option :log_location,
         :short        => "-L LOGLOCATION",
         :long         => "--logfile LOGLOCATION",
-        :description  => "Set the log file location",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.log"
+        :description  => "Set the log file location"
 
       option :splay,
         :short        => "-s SECONDS",
@@ -59,6 +58,8 @@ class Chef
         :long         => "--interval SECONDS",
         :description  => "Set the number of seconds to wait between chef-client runs",
         :proc         => lambda { |s| s.to_i }
+
+      DEFAULT_LOG_LOCATION ||= "#{ENV['SYSTEMDRIVE']}/chef/client.log"
 
       def service_init
         @service_action_mutex = Mutex.new
@@ -187,8 +188,9 @@ class Chef
           # Pass config params to the new process
           config_params = " --no-fork"
           config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
-          config_params += " -L #{Chef::Config[:log_location]}" unless Chef::Config[:log_location] == STDOUT
+          config_params += " -L #{resolve_log_location}" unless Chef::Config[:log_location] == STDOUT
           # Starts a new process and waits till the process exits
+
           result = shell_out(
             "chef-client #{config_params}",
             :timeout => Chef::Config[:windows_service][:watchdog_timeout],
@@ -235,7 +237,7 @@ class Chef
       # See application.rb for related comments.
 
       def configure_logging
-        Chef::Log.init(MonoLogger.new(Chef::Config[:log_location]))
+        Chef::Log.init(MonoLogger.new(resolve_log_location))
         if want_additional_logger?
           configure_stdout_logger
         end
@@ -262,6 +264,15 @@ class Chef
 
       def auto_log_level?
         Chef::Config[:log_level] == :auto
+      end
+
+      # Check if we have a log location and it's not STDOUT
+      def resolve_log_location
+        if Chef::Config[:log_location] && Chef::Config[:log_location].is_a?(String)
+          Chef::Config[:log_location]
+        else
+          DEFAULT_LOG_LOCATION
+        end
       end
 
       # if log_level is `:auto`, convert it to :warn (when using output formatter)
