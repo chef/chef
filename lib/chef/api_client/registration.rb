@@ -108,9 +108,9 @@ class Chef
         # then, let's use it.
         rescue Net::HTTPServerException => e
           if e.response.code == '400' && e.response.body == '{"error":["Since Server API v1, all keys must be updated via the keys endpoint. "]}'
-                response = http_api.put("clients/#{name}/keys/default", { :name => 'default', :admin => false, :public_key => generated_public_key })
+            response = http_api.put("clients/#{name}/keys/default", { :name => 'default', :admin => false, :public_key => generated_public_key })
           else
-                raise
+            raise
           end
         response
       end
