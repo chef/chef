@@ -306,7 +306,7 @@ class Chef
 
       # copy Mixlib::CLI over so that it can be configured in knife.rb
       # config file
-      Chef::Config[:verbosity] = config[:verbosity]
+      Chef::Config[:verbosity] = config[:verbosity] if config[:verbosity]
     end
 
     def parse_options(args)

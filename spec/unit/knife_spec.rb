@@ -63,6 +63,12 @@ describe Chef::Knife do
     Chef::Knife.reset_config_loader!
   end
 
+  it "does not reset Chef::Config[:verbosity to nil if config[:verbosity] is nil" do
+    Chef::Config[:verbosity] = 2
+    Chef::Knife.new
+    expect(Chef::Config[:verbosity]).to eq(2)
+  end
+
   describe "after loading a subcommand" do
     before do
       Chef::Knife.reset_subcommands!
@@ -309,7 +315,7 @@ describe Chef::Knife do
         expect(Chef::Config[:listen]).to be(false)
       end
 
-      context "verbosity is greater than zero" do
+      context "verbosity is one" do
         let(:fake_config) { "/does/not/exist/knife.rb" }
 
         before do
@@ -326,6 +332,13 @@ describe Chef::Knife do
           expect(Chef::Log).to receive(:info).with("Using configuration from #{fake_config}")
           knife.configure_chef
         end
+      end
+
+      it "does not humanize the exception if Chef::Config[:verbosity] is two" do
+        Chef::Config[:verbosity] = 2
+        allow(knife).to receive(:run).and_raise(Exception)
+        expect(knife).not_to receive(:humanize_exception)
+        expect { knife.run_with_pretty_exceptions }.to raise_error(Exception)
       end
     end
   end
