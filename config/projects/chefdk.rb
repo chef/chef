@@ -32,9 +32,9 @@ else
 end
 
 # Uncomment to pin the chef version
-override :chef,           version: "d71bcbe7c5f4faa58f3d28c3462a759a83e2de17"
-override :ohai,           version: "d2888c0f48738839c9bbf2589fc831994df8c3b4"
-override :chefdk,         version: "4f1f37c95486a3ad32fa3348a2ad15ca3c776af8"
+override :chef,           version: "master"
+override :ohai,           version: "master"
+override :chefdk,         version: "master"
 
 override :berkshelf,      version: "v4.0.1"
 override :bundler,        version: "1.10.6"
