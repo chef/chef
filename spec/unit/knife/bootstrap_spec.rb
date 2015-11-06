@@ -472,6 +472,21 @@ describe Chef::Knife::Bootstrap do
 
     end
 
+    # https://github.com/chef/chef/issues/4131
+    # Arguably a bug in the plugin: it shouldn't be setting this to nil, but it
+    # worked before, so make it work now.
+    context "when a plugin sets the run list option to nil" do
+
+      before do
+        knife.config[:run_list] = nil
+      end
+
+      it "passes options validation" do
+        expect { knife.validate_options! }.to_not raise_error
+      end
+
+    end
+
   end
 
   describe "when configuring the underlying knife ssh command" do

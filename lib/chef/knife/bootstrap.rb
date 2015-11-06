@@ -455,7 +455,15 @@ class Chef
 
       # True if policy_name and run_list are both given
       def policyfile_and_run_list_given?
-        !config[:run_list].empty? && !!config[:policy_name]
+        run_list_given? && policyfile_options_given?
+      end
+
+      def run_list_given?
+        !config[:run_list].nil? && !config[:run_list].empty?
+      end
+
+      def policyfile_options_given?
+        !!config[:policy_name]
       end
 
       # True if one of policy_name or policy_group was given, but not both
