@@ -20,7 +20,7 @@ maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
 
 build_iteration 1
-build_version '0.9.0'
+build_version '0.10.0'
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
@@ -32,8 +32,8 @@ else
 end
 
 # Uncomment to pin the chef version
-override :chef,           version: "12.5.1-omnibus"
-override :ohai,           version: "v8.7.0"
+override :chef,           version: "master"
+override :ohai,           version: "master"
 override :chefdk,         version: "master"
 
 override :berkshelf,      version: "v4.0.1"
