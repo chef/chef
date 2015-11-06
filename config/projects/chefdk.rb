@@ -65,8 +65,7 @@ else
   override :rubygems,     version: "2.4.8"
 end
 
-#override :inspec, version: "0.9.1"
-override :inspec, version: "master"
+override :inspec, version: "v0.9.2"
 
 override :'test-kitchen', version: "v1.4.2"
 override :'kitchen-inspec', version: "master" # will set when release is tagged
