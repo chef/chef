@@ -24,6 +24,7 @@ describe "Chef::Application::WindowsService", :windows_only do
   let(:shell_out_result) { double('shellout', stdout: nil, stderr: nil) }
   let(:config_options) do
     {
+      log_location: STDOUT,
       config_file: "test_config_file",
       log_level: :info
     }
@@ -48,7 +49,7 @@ describe "Chef::Application::WindowsService", :windows_only do
 
   subject { Chef::Application::WindowsService.new }
 
-  it "passes config params to new process with default options" do
+  it "passes DEFAULT_LOG_LOCATION to chef-client instead of STDOUT" do
     expect(subject).to receive(:shell_out).with(
       "chef-client  --no-fork -c test_config_file -L #{Chef::Application::WindowsService::DEFAULT_LOG_LOCATION}",
       shellout_options
@@ -78,10 +79,10 @@ describe "Chef::Application::WindowsService", :windows_only do
       subject.service_main
     end
 
-    context 'configured to STDOUT' do
+    context 'configured to Event Logger' do
       let(:config_options) do
         {
-          log_location: STDOUT,
+          log_location: Chef::Log::WinEvt.new,
           config_file: "test_config_file",
           log_level: :info
         }
