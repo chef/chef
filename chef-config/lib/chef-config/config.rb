@@ -271,8 +271,8 @@ module ChefConfig
     # Using `force_logger` causes chef to default to logger output when STDOUT is a tty
     default :force_logger, false
 
-    # Using 'always_stream_output' will have Chef always stream the execute output
-    default :always_stream_output, false
+    # Using 'stream_execute_output' will have Chef always stream the execute output
+    default :stream_execute_output, false
 
     default :http_retry_count, 5
     default :http_retry_delay, 5

@@ -155,41 +155,8 @@ describe Chef::Provider::Execute do
       end.to raise_error(Mixlib::ShellOut::ShellCommandFailed, /suppressed for sensitive resource/)
     end
 
-    it "should set the live_stream if Chef::Config[:always_stream_execute] is set" do
-      Chef::Config[:always_stream_execute] = true
-      nopts = opts
-      nopts[:live_stream] = @live_stream
-      expect(provider).to receive(:shell_out!).with(new_resource.name, nopts)
-      expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
-      expect(Chef::Log).not_to receive(:warn)
-      provider.run_action(:run)
-      expect(new_resource).to be_updated
-    end
-
-    it "should not set the live_stream if Chef::Config[:always_stream_execute] is set but sensitive is on" do
-      Chef::Config[:always_stream_execute] = true
-      new_resource.sensitive true
-      expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
-      expect(provider).to receive(:converge_by).with("execute sensitive resource").and_call_original
-      expect(Chef::Log).not_to receive(:warn)
-      provider.run_action(:run)
-      expect(new_resource).to be_updated
-    end
-
-    describe "with an output formatter listening" do
-      let(:events) { d = Chef::EventDispatch::Dispatcher.new; d.register(Chef::Formatters::Doc.new(StringIO.new, StringIO.new)); d }
-
-      it "should set the live_stream" do
-        nopts = opts
-        nopts[:live_stream] = @live_stream
-        expect(provider).to receive(:shell_out!).with(new_resource.name, nopts)
-        expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
-        expect(Chef::Log).not_to receive(:warn)
-        provider.run_action(:run)
-        expect(new_resource).to be_updated
-      end
-
-      it "should not set the live_stream if the resource is sensitive" do
+    describe "streaming output" do
+      it "should not set the live_stream if sensitive is on" do
         new_resource.sensitive true
         expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
         expect(provider).to receive(:converge_by).with("execute sensitive resource").and_call_original
@@ -197,40 +164,79 @@ describe Chef::Provider::Execute do
         provider.run_action(:run)
         expect(new_resource).to be_updated
       end
-    end
 
-    describe "with only logging enabled" do
-      it "should set the live_stream to STDOUT if we are a TTY, not daemonized, not sensitive, and info is enabled" do
-        nopts = opts
-        nopts[:live_stream] = STDOUT
-        allow(STDOUT).to receive(:tty?).and_return(true)
-        expect(provider).to receive(:shell_out!).with(new_resource.name, nopts)
-        expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
-        expect(Chef::Log).not_to receive(:warn)
-        provider.run_action(:run)
-        expect(new_resource).to be_updated
+      describe "with an output formatter listening" do
+        let(:events) { d = Chef::EventDispatch::Dispatcher.new; d.register(Chef::Formatters::Doc.new(StringIO.new, StringIO.new)); d }
+
+        before do
+          Chef::Config[:stream_execute_output] = true
+        end
+
+        it "should set the live_stream if the log level is info or above" do
+          nopts = opts
+          nopts[:live_stream] = @live_stream
+          expect(provider).to receive(:shell_out!).with(new_resource.name, nopts)
+          expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
+          expect(Chef::Log).not_to receive(:warn)
+          provider.run_action(:run)
+          expect(new_resource).to be_updated
+        end
+
+        it "should set the live_stream if the resource requests live streaming" do
+          Chef::Log.level = :warn
+          new_resource.live_stream true
+          nopts = opts
+          nopts[:live_stream] = @live_stream
+          expect(provider).to receive(:shell_out!).with(new_resource.name, nopts)
+          expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
+          expect(Chef::Log).not_to receive(:warn)
+          provider.run_action(:run)
+          expect(new_resource).to be_updated
+        end
+
+        it "should not set the live_stream if the resource is sensitive" do
+          new_resource.sensitive true
+          expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
+          expect(provider).to receive(:converge_by).with("execute sensitive resource").and_call_original
+          expect(Chef::Log).not_to receive(:warn)
+          provider.run_action(:run)
+          expect(new_resource).to be_updated
+        end
       end
 
-      it "should not set the live_stream to STDOUT if we are a TTY, not daemonized, but sensitive" do
-        new_resource.sensitive true
-        allow(STDOUT).to receive(:tty?).and_return(true)
-        expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
-        expect(provider).to receive(:converge_by).with("execute sensitive resource").and_call_original
-        expect(Chef::Log).not_to receive(:warn)
-        provider.run_action(:run)
-        expect(new_resource).to be_updated
-      end
+      describe "with only logging enabled" do
+        it "should set the live_stream to STDOUT if we are a TTY, not daemonized, not sensitive, and info is enabled" do
+          nopts = opts
+          nopts[:live_stream] = STDOUT
+          allow(STDOUT).to receive(:tty?).and_return(true)
+          expect(provider).to receive(:shell_out!).with(new_resource.name, nopts)
+          expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
+          expect(Chef::Log).not_to receive(:warn)
+          provider.run_action(:run)
+          expect(new_resource).to be_updated
+        end
 
-      it "should not set the live_stream to STDOUT if we are a TTY, but daemonized" do
-        Chef::Config[:daemon] = true
-        allow(STDOUT).to receive(:tty?).and_return(true)
-        expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
-        expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
-        expect(Chef::Log).not_to receive(:warn)
-        provider.run_action(:run)
-        expect(new_resource).to be_updated
-      end
+        it "should not set the live_stream to STDOUT if we are a TTY, not daemonized, but sensitive" do
+          new_resource.sensitive true
+          allow(STDOUT).to receive(:tty?).and_return(true)
+          expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
+          expect(provider).to receive(:converge_by).with("execute sensitive resource").and_call_original
+          expect(Chef::Log).not_to receive(:warn)
+          provider.run_action(:run)
+          expect(new_resource).to be_updated
+        end
 
+        it "should not set the live_stream to STDOUT if we are a TTY, but daemonized" do
+          Chef::Config[:daemon] = true
+          allow(STDOUT).to receive(:tty?).and_return(true)
+          expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
+          expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
+          expect(Chef::Log).not_to receive(:warn)
+          provider.run_action(:run)
+          expect(new_resource).to be_updated
+        end
+
+      end
     end
 
   end

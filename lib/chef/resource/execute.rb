@@ -49,6 +49,7 @@ class Chef
         @umask = nil
         @default_guard_interpreter = :execute
         @is_guard_interpreter = false
+        @live_stream = false
       end
 
       def umask(arg=nil)
@@ -99,6 +100,13 @@ class Chef
           arg,
           :kind_of => [ String, Integer ]
         )
+      end
+
+      def live_stream(arg=nil)
+        set_or_return(
+          :live_stream,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ])
       end
 
       def path(arg=nil)

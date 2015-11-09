@@ -264,8 +264,8 @@ RSpec.describe ChefConfig::Config do
           end
         end
 
-        it "ChefConfig::Config[:always_stream_output] defaults to false" do
-          expect(ChefConfig::Config[:always_stream_output]).to eq(false)
+        it "ChefConfig::Config[:stream_execute_output] defaults to false" do
+          expect(ChefConfig::Config[:stream_execute_output]).to eq(false)
         end
 
         it "ChefConfig::Config[:file_backup_path] defaults to /var/chef/backup" do
