@@ -188,7 +188,11 @@ class Chef
           # Pass config params to the new process
           config_params = " --no-fork"
           config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
-          config_params += " -L #{resolve_log_location}" unless Chef::Config[:log_location] == STDOUT
+          # log_location might be an event logger and if so we cannot pass as a command argument
+          # but shed no tears! If the logger is an event logger, it must have been configured
+          # as such in the config file and chef-client will use that when no arg is passed here
+          config_params += " -L #{resolve_log_location}" if resolve_log_location.is_a?(String)
+          
           # Starts a new process and waits till the process exits
 
           result = shell_out(
@@ -266,13 +270,9 @@ class Chef
         Chef::Config[:log_level] == :auto
       end
 
-      # Check if we have a log location and it's not STDOUT
       def resolve_log_location
-        if Chef::Config[:log_location] && Chef::Config[:log_location].is_a?(String)
-          Chef::Config[:log_location]
-        else
-          DEFAULT_LOG_LOCATION
-        end
+        # STDOUT is the default log location, but makes no sense for a windows service
+        Chef::Config[:log_location] == STDOUT ? DEFAULT_LOG_LOCATION : Chef::Config[:log_location]
       end
 
       # if log_level is `:auto`, convert it to :warn (when using output formatter)
