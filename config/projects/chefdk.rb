@@ -36,6 +36,11 @@ override :chef,           version: "master"
 override :ohai,           version: "master"
 override :chefdk,         version: "master"
 
+override :'knife-windows', version: "v1.1.1"
+override :'knife-spork',   version: "1.5.0"
+override :fauxhai,         version: "v2.3.0"
+override :chefspec,        version: "v4.4.0"
+
 override :berkshelf,      version: "v4.0.1"
 override :bundler,        version: "1.10.6"
 override :'chef-vault',   version: "v2.6.1"
@@ -67,9 +72,12 @@ end
 
 override :inspec, version: "v0.9.2"
 
+override :rubocop, version: "v0.31.0"
+
 override :'test-kitchen', version: "v1.4.2"
 override :'kitchen-inspec', version: "v0.9.0"
 override :'kitchen-vagrant', version: "v0.19.0"
+override :'winrm-transport', version: "v1.0.2"
 override :yajl,           version: "1.2.1"
 override :zlib,           version: "1.2.8"
 
