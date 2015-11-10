@@ -8,6 +8,8 @@ Description of the required change.
 
 ### `chef_version` and `ohai_version`
 
+see: https://docs.chef.io/release/12-6/release_notes.html#new-metadata-rb-settings
+
 The metadata.rb DSL is extended to support `chef_version` and `ohai_version` to establish ranges
 of chef and ohai versions that the cookbook supports.
 
@@ -47,3 +49,9 @@ There is currently no support in supermarket for making this metadata visible in
 depsolvers, or support in Berksfile/PolicyFile for automatically pruning cookbooks that fail
 to match.
 
+### `chocolatey_package` and `ksh` resources
+
+Assuming both of those make 12.6, placeholder pages:
+
+chocolatey_package: https://docs.chef.io/release/12-6/resource_chocolatey_package.html
+ksh: https://docs.chef.io/release/12-6/resource_ksh.html
