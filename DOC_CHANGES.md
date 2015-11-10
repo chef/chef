@@ -54,4 +54,5 @@ to match.
 Assuming both of those make 12.6, placeholder pages:
 
 chocolatey_package: https://docs.chef.io/release/12-6/resource_chocolatey_package.html
+
 ksh: https://docs.chef.io/release/12-6/resource_ksh.html
