@@ -21,6 +21,11 @@ class Chef
         events.stream_output(self, str, options)
       end
 
+      # Mixlib shellout expects streams to have a shift operator 
+      def <<(str)
+        print(str)
+      end
+
       def close
         events.stream_closed(self, options)
       end
