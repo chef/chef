@@ -477,6 +477,14 @@ describe Mixlib::ShellOut do
           end
         end
 
+        context 'when setting environments with symbols' do
+          let(:options) { { :environment => { SYMBOL: 'cymbal' } } }
+
+          it "should also set the enviroment" do
+            expect(shell_cmd.environment).to eql({'SYMBOL' => 'cymbal'})
+          end
+        end
+
         context 'when :environment is set to nil' do
           let(:options) { { :environment => nil } }
 
