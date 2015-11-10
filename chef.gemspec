@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-zero", "~> 4.2", ">= 4.2.2"
   s.add_dependency "pry", "~> 0.9"
+  s.add_dependency "pry-byebug", "~> 3.0"
 
   s.add_dependency 'plist', '~> 3.1.0'
 
