@@ -79,11 +79,7 @@ class Chef
       end
 
       def live_stream?
-        !!new_resource.live_stream
-      end
-
-      def stream_to_formatter?
-        Chef::Config[:stream_execute_output] && run_context.events.formatter?
+        Chef::Config[:stream_execute_output] || !!new_resource.live_stream
       end
 
       def stream_to_stdout?
@@ -102,7 +98,7 @@ class Chef
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s
         if (Chef::Log.info? || live_stream?) && !sensitive?
-          if stream_to_formatter?
+          if run_context.events.formatter?
             opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
           elsif stream_to_stdout?
             opts[:live_stream] = STDOUT

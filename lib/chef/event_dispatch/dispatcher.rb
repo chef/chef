@@ -22,10 +22,7 @@ class Chef
 
       # Check to see if we are dispatching to a formatter
       def formatter?
-        @subscribers.each do |s|
-          return s.is_formatter? if s.respond_to?(:is_formatter?)
-        end
-        false
+        @subscribers.any? { |s| s.respond_to?(:is_formatter?) && s.is_formatter? }
       end
 
       ####
