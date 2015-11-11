@@ -77,7 +77,7 @@ override :rubocop, version: "v0.31.0"
 override :'test-kitchen', version: "v1.4.2"
 override :'kitchen-inspec', version: "v0.9.0"
 override :'kitchen-vagrant', version: "v0.19.0"
-override :'winrm-transport', version: "v1.0.2"
+override :'winrm-transport', version: "v1.0.3"
 override :yajl,           version: "1.2.1"
 override :zlib,           version: "1.2.8"
 
