@@ -6,9 +6,9 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: 3e59997f785ac9a7df177a7638265f6765d1d4b1
+  revision: c078b22c0b77b96b00e4f529af7466c919d25529
   specs:
-    omnibus (4.1.0)
+    omnibus (5.0.0)
       aws-sdk (~> 2)
       chef-sugar (~> 3.0)
       cleanroom (~> 1.0)
@@ -22,12 +22,12 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.8)
-    aws-sdk (2.1.30)
-      aws-sdk-resources (= 2.1.30)
-    aws-sdk-core (2.1.30)
+    aws-sdk (2.1.36)
+      aws-sdk-resources (= 2.1.36)
+    aws-sdk-core (2.1.36)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.1.30)
-      aws-sdk-core (= 2.1.30)
+    aws-sdk-resources (2.1.36)
+      aws-sdk-core (= 2.1.36)
     berkshelf (3.2.4)
       addressable (~> 2.3.4)
       berkshelf-api-client (~> 1.2)
@@ -101,9 +101,10 @@ GEM
     mixlib-cli (1.5.0)
     mixlib-config (2.2.1)
     mixlib-log (1.6.0)
-    mixlib-shellout (2.2.2)
-    mixlib-shellout (2.2.2-universal-mingw32)
+    mixlib-shellout (2.2.3)
+    mixlib-shellout (2.2.3-universal-mingw32)
       win32-process (~> 0.8.2)
+      wmi-lite (~> 1.0)
     mixlib-versioning (1.1.0)
     multi_json (1.11.2)
     multipart-post (2.0.0)
@@ -201,4 +202,4 @@ DEPENDENCIES
   winrm-transport (~> 1.0)
 
 BUNDLED WITH
-   1.10.6
+   1.10.7.depsolverfix.0
