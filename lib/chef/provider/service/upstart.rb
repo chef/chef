@@ -30,7 +30,7 @@ class Chef
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
         end
 
-        UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
+        UPSTART_STATE_FORMAT = /\S+ \(?(start|stop)?\)? ?[\/ ](\w+)/
 
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
@@ -224,10 +224,10 @@ class Chef
           command = "/sbin/status #{@job}"
           status = popen4(command) do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
-              # rsyslog stop/waiting
               # service goal/state
               # OR
-              # rsyslog (stop) waiting
+              # service (instance) goal/state
+              # OR
               # service (goal) state
               line =~ UPSTART_STATE_FORMAT
               data = Regexp.last_match
