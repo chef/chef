@@ -785,7 +785,7 @@ class Chef
           def python_bin
             yum_executable = which(yum_binary)
             if yum_executable && shabang?(yum_executable)
-              extract_interpreter(yum_executable)
+              shabang_or_fallback(extract_interpreter(yum_executable))
             else
               Chef::Log.warn("Yum executable not found or doesn't start with #!. Using default python.")
               "/usr/bin/python"
@@ -797,7 +797,17 @@ class Chef
           end
 
           def extract_interpreter(file)
-            ::File.open(file, 'r', &:readline)[2..-1].chomp
+            ::File.open(file, 'r', &:readline)[2..-1].strip
+          end
+
+          # dnf based systems have a yum shim that has /bin/bash as the interpreter. Don't use this.
+          def shabang_or_fallback(interpreter)
+            if interpreter == '/bin/bash'
+              Chef::Log.warn("Yum executable interpreter is /bin/bash. Falling back to default python.")
+              "/usr/bin/python"
+            else
+              interpreter
+            end
           end
 
           def shabang?(file)

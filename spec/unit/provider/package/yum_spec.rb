@@ -1844,6 +1844,12 @@ EOF
       expect(@yc.python_bin).to eq("/usr/bin/python")
     end
 
+    it "should return /usr/bin/python if the interpreter is /bin/bash" do
+      other = StringIO.new("#!/bin/bash\n# The yum executable redirecting to dnf from dnf-yum compatible package.")
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(other); other.rewind; r}
+      expect(@yc.python_bin).to eq("/usr/bin/python")
+    end
+
     it "should return the interpreter for yum" do
       other = StringIO.new("#!/usr/bin/super_python\n\nlasjdfdsaljf\nlasdjfs")
       allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(other); other.rewind; r}
