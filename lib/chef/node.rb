@@ -376,12 +376,12 @@ class Chef
       normal[:tags]
     end
 
-    def tag(*tags)
-      tags.each do |tag|
-        self.normal[:tags].push(tag.to_s) unless self[:tags].include? tag.to_s
+    def tag(*args)
+      args.each do |tag|
+        tags.push(tag.to_s) unless tags.include? tag.to_s
       end
 
-      self[:tags]
+      tags
     end
 
     # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes

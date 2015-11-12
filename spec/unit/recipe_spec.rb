@@ -35,7 +35,7 @@ describe Chef::Recipe do
   let(:cookbook_collection) { Chef::CookbookCollection.new(cookbook_loader) }
 
   let(:node) do
-    Chef::Node.new.tap {|n| n.normal[:tags] = [] }
+    Chef::Node.new
   end
 
   let(:events) do
@@ -615,21 +615,25 @@ describe Chef::Recipe do
       end
     end
 
+    it "should initialize tags to an empty Array" do
+      expect(node.tags).to eql([])
+    end
+
     it "should set tags via tag" do
       recipe.tag "foo"
-      expect(node[:tags]).to include("foo")
+      expect(node.tags).to include("foo")
     end
 
     it "should set multiple tags via tag" do
       recipe.tag "foo", "bar"
-      expect(node[:tags]).to include("foo")
-      expect(node[:tags]).to include("bar")
+      expect(node.tags).to include("foo")
+      expect(node.tags).to include("bar")
     end
 
     it "should not set the same tag twice via tag" do
       recipe.tag "foo"
       recipe.tag "foo"
-      expect(node[:tags]).to eql([ "foo" ])
+      expect(node.tags).to eql([ "foo" ])
     end
 
     it "should return the current list of tags from tag with no arguments" do
@@ -653,13 +657,13 @@ describe Chef::Recipe do
     it "should remove a tag from the tag list via untag" do
       recipe.tag "foo"
       recipe.untag "foo"
-      expect(node[:tags]).to eql([])
+      expect(node.tags).to eql([])
     end
 
     it "should remove multiple tags from the tag list via untag" do
       recipe.tag "foo", "bar"
       recipe.untag "bar", "foo"
-      expect(node[:tags]).to eql([])
+      expect(node.tags).to eql([])
     end
   end
 
