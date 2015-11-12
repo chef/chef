@@ -20,6 +20,11 @@ class Chef
         @subscribers << subscriber
       end
 
+      # Check to see if we are dispatching to a formatter
+      def formatter?
+        @subscribers.any? { |s| s.respond_to?(:is_formatter?) && s.is_formatter? }
+      end
+
       ####
       # All messages are unconditionally forwarded to all subscribers, so just
       # define the forwarding in one go:

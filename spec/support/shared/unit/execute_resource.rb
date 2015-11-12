@@ -111,6 +111,11 @@ shared_examples_for "an execute resource" do
     expect(@resource.creates).to eql("something")
   end
 
+  it "should accept a boolean for live streaming" do
+    @resource.live_stream true
+    expect(@resource.live_stream).to be true
+  end
+
   describe "when it has cwd, environment, group, path, return value, and a user" do
     before do
       @resource.command("grep")
