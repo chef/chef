@@ -123,6 +123,25 @@ describe Chef::Provider::Service::Upstart do
       end
     end
 
+    describe "when the status command uses the new format with an instance" do
+      before do
+      end
+
+      it "should set running to true if the status command returns 0" do
+        @stdout = StringIO.new("rsyslog (test) start/running, process 100")
+        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_truthy
+      end
+
+      it "should set running to false if the status command returns anything except 0" do
+        @stdout = StringIO.new("rsyslog (test) stop/waiting, process 100")
+        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_falsey
+      end
+    end
+
     describe "when the status command uses the old format" do
       it "should set running to true if the status command returns 0" do
         @stdout = StringIO.new("rsyslog (start) running, process 32225")
