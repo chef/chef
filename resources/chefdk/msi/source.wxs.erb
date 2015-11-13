@@ -45,6 +45,7 @@
                   BinaryKey="CustomActionFastMsiDLL"
                   DllEntry="FastUnzip"
                   Execute="deferred"
+                  Impersonate="no"
                   Return="check" />
 
     <Binary Id="CustomActionFastMsiDLL"
@@ -54,6 +55,7 @@
                   Directory="INSTALLLOCATION"
                   ExeCommand="cmd /C &quot;rd /S /Q chefdk&quot;"
                   Execute="deferred"
+                  Impersonate="no"
                   Return="ignore" />
 
     <InstallExecuteSequence>
