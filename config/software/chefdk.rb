@@ -39,10 +39,18 @@ dependency "chef-vault"
 dependency "foodcritic"
 dependency "ohai"
 dependency "inspec"
+dependency "rubocop"
 dependency "test-kitchen"
 dependency "kitchen-inspec"
 dependency "kitchen-vagrant"
+# This is a TK dependency but isn't declared in that software definition
+# because it is an optional dependency but we want to give it to ChefDK users
+dependency "winrm-transport"
 dependency "openssl-customization"
+dependency "knife-windows"
+dependency "knife-spork"
+dependency "fauxhai"
+dependency "chefspec"
 
 dependency "chefdk-env-customization" if windows?
 
@@ -60,31 +68,10 @@ build do
       " --no-ri --no-rdoc" \
       " --verbose", env: env
 
-  # TODO: These gems should have software definitions created and in turn
-  #       be properly appbundled.
-
-  # Perform multiple gem installs to better isolate/debug failures
-  {
-    'chefspec'          => '4.4.0',
-    'fauxhai'           => '2.3.0',
-    'rubocop'           => '0.31.0',
-    'knife-spork'       => '1.5.0',
-    'winrm-transport'   => '1.0.2',
-    'knife-windows'     => '1.1.1',
-    # Strainer build is hosed on windows
-    # 'strainer'        => '0.15.0',
-  }.each do |name, version|
-    gem "install #{name}" \
-        " --version '#{version}'" \
-        " --no-user-install" \
-        " --bindir '#{install_dir}/bin'" \
-        " --no-ri --no-rdoc" \
-        " --verbose", env: env
-  end
-
   appbundle 'berkshelf'
   appbundle 'chef-dk'
   appbundle 'chef-vault'
   appbundle 'foodcritic'
+  appbundle 'rubocop'
   appbundle 'test-kitchen'
 end

@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: c1aab3cf227b21c43954699d863fe67e789c528a
+  revision: 252a2a021e43368cbd838f341dd659d57aa7e417
   specs:
     omnibus-software (4.0.0)
 
@@ -200,6 +200,3 @@ DEPENDENCIES
   omnibus-software!
   test-kitchen (~> 1.4.0)
   winrm-transport (~> 1.0)
-
-BUNDLED WITH
-   1.10.7.depsolverfix.0
