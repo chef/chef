@@ -56,3 +56,10 @@ Assuming both of those make 12.6, placeholder pages:
 chocolatey_package: https://docs.chef.io/release/12-6/resource_chocolatey_package.html
 
 ksh: https://docs.chef.io/release/12-6/resource_ksh.html
+
+### `dsc_resource` resource
+
+Added allow_reboot attribute to dsc_resource.
+
+If the DSC resource indicates that it requires a reboot, allow_reboot can use the reboot resource to
+either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).

@@ -32,12 +32,14 @@ class Chef
         super
         @new_resource = new_resource
         @module_name = new_resource.module_name
+        @reboot_resource = nil
       end
 
       def action_run
         if ! test_resource
           converge_by(generate_description) do
             result = set_resource
+            reboot_if_required
           end
         end
       end
@@ -123,18 +125,14 @@ class Chef
         # however Invoke-DscResource is not correctly writing to that
         # stream and instead just dumping to stdout
         @converge_description = result.stdout
-
-        if result.return_value.is_a?(Array)
-          # WMF Feb 2015 Preview
-          result.return_value[0]["InDesiredState"]
-        else
-          # WMF April 2015 Preview
-          result.return_value["InDesiredState"]
-        end
+        return_dsc_resource_result(result, "InDesiredState")
       end
 
       def set_resource
         result = invoke_resource(:set)
+        if return_dsc_resource_result(result, 'RebootRequired') 
+          create_reboot_resource
+        end
         result.return_value
       end
 
@@ -155,6 +153,38 @@ class Chef
         cmdlet.run!
       end
 
+      def return_dsc_resource_result(result, property_name)
+        if result.return_value.is_a?(Array)
+          # WMF Feb 2015 Preview
+          result.return_value[0][property_name]
+        else
+          # WMF April 2015 Preview
+          result.return_value[property_name]
+        end
+      end
+
+      def create_reboot_resource
+        @reboot_resource = Chef::Resource::Reboot.new(
+          "Reboot for #{@new_resource.name}", 
+          run_context
+        ).tap do |r|
+          r.reason("Reboot for #{@new_resource.resource}.")
+        end
+      end
+
+      def reboot_if_required
+        reboot_action = @new_resource.reboot_action
+        unless @reboot_resource.nil?
+          case reboot_action
+          when :nothing
+            Chef::Log.debug("A reboot was requested by the DSC resource, but reboot_action is :nothing.")
+            Chef::Log.debug("This dsc_resource will not reboot the node.")
+          else
+            Chef::Log.debug("Requesting node reboot with #{reboot_action}.")
+            @reboot_resource.run_action(reboot_action)
+          end  
+        end
+      end
     end
   end
 end

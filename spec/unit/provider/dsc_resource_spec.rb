@@ -72,6 +72,26 @@ describe Chef::Provider::DscResource do
         provider.run_action(:run)
         expect(resource).to be_updated
       end
+      
+      it 'flags the resource as reboot required when required' do
+        expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
+        expect(provider).to receive(:test_resource).and_return(false)
+        expect(provider).to receive(:invoke_resource).
+          and_return(double(:stdout => '', :return_value =>nil))
+        expect(provider).to receive(:return_dsc_resource_result).and_return(true)
+        expect(provider).to receive(:create_reboot_resource)
+        provider.run_action(:run)
+      end
+      
+      it 'does not flag the resource as reboot required when not required' do
+        expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
+        expect(provider).to receive(:test_resource).and_return(false)
+        expect(provider).to receive(:invoke_resource).
+          and_return(double(:stdout => '', :return_value =>nil))
+        expect(provider).to receive(:return_dsc_resource_result).and_return(false)
+        expect(provider).to_not receive(:create_reboot_resource)
+        provider.run_action(:run)
+      end
     end
   end
 end
