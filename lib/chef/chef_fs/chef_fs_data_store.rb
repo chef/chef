@@ -66,11 +66,64 @@ class Chef
     #   - ChefFSDataStore lets cookbooks be uploaded into a temporary memory
     #     storage, and when the cookbook is committed, copies the files onto the
     #     disk in the correct place (/cookbooks/apache2/recipes/default.rb).
+    #
     # 3. Data bags:
     #   - The Chef server expects data bags in /data/BAG/ITEM
     #   - The repository stores data bags in /data_bags/BAG/ITEM
     #
     # 4. JSON filenames are generally NAME.json in the repository (e.g. /nodes/foo.json).
+    #
+    # 5. Org membership:
+    #    chef-zero stores user membership in an org as a series of empty files.
+    #    If an org has jkeiser and cdoherty as members, chef-zero expects these
+    #    files to exist:
+    #
+    #    - `users/jkeiser` (content: '{}')
+    #    - `users/cdoherty` (content: '{}')
+    #
+    #    ChefFS, on the other hand, stores user membership in an org as a single
+    #    file, `members.json`, with content:
+    #
+    #        ```json
+    #        [
+    #          { "user": { "username": "jkeiser" } },
+    #          { "user": { "username": "cdoherty" } }
+    #        ]
+    #        ```
+    #
+    #    To translate between the two, we need to intercept requests to `users`
+    #    like so:
+    #
+    #    - `list(users)` -> `get(/members.json)`
+    #    - `get(users/NAME)` -> `get(/members.json)`, see if it's in there
+    #    - `create(users/NAME)` -> `get(/members.json)`, add name, `set(/members.json)`
+    #    - `delete(users/NAME)` -> `get(/members.json)`, remove name, `set(/members.json)`
+    #
+    # 6. Org invitations:
+    #    chef-zero stores org membership invitations as a series of empty files.
+    #    If an org has invited jkeiser and cdoherty (and they have not yet accepted
+    #    the invite), chef-zero expects these files to exist:
+    #
+    #    - `association_requests/jkeiser` (content: '{}')
+    #    - `association_requests/cdoherty` (content: '{}')
+    #
+    #    ChefFS, on the other hand, stores invitations as a single file,
+    #    `invitations.json`, with content:
+    #
+    #        ```json
+    #        [
+    #          { "id" => "jkeiser-chef", 'username' => 'jkeiser' },
+    #          { "id" => "cdoherty-chef", 'username' => 'cdoherty' }
+    #        ]
+    #        ```
+    #
+    #    To translate between the two, we need to intercept requests to `users`
+    #    like so:
+    #
+    #    - `list(association_requests)` -> `get(/invitations.json)`
+    #    - `get(association_requests/NAME)` -> `get(/invitations.json)`, see if it's in there
+    #    - `create(association_requests/NAME)` -> `get(/invitations.json)`, add name, `set(/invitations.json)`
+    #    - `delete(association_requests/NAME)` -> `get(/invitations.json)`, remove name, `set(/invitations.json)`
     #
     class ChefFSDataStore
       #
@@ -108,12 +161,56 @@ class Chef
         end
       end
 
+      #
+      # If you want to get the contents of /data/x/y from the server,
+      # you say chef_fs.child('data').child('x').child('y').read.
+      # It will make exactly one network request: GET /data/x/y
+      # And that will return 404 if it doesn't exist.
+      #
+      # ChefFS objects do not go to the network until you ask them for data.
+      # This means you can construct a /data/x/y ChefFS entry early.
+      #
+      # Alternative:
+      # chef_fs.child('data') could have done a GET /data preemptively,
+      # allowing it to know whether child('x') was valid (GET /data gives you
+      # a list of data bags). Then child('x') could have done a GET /data/x,
+      # allowing it to know whether child('y') (the item) existed. Finally,
+      # we would do the GET /data/x/y to read the contents. Three network
+      # requests instead of 1.
+      #
+
       def create(path, name, data, *options)
         if use_memory_store?(path)
           @memory_store.create(path, name, data, *options)
 
         elsif path[0] == 'cookbooks' && path.length == 2
           # Do nothing.  The entry gets created when the cookbook is created.
+
+        # create [/organizations/ORG]/users/NAME (with content '{}')
+        # Manipulate the `members.json` file that contains a list of all users
+        elsif path == [ 'users' ]
+          update_json('members.json', []) do |members|
+            # Format of each entry: { "user": { "username": "jkeiser" } }
+            if members.any? { |member| member['user']['username'] == name }
+              raise ChefZero::DataStore::DataAlreadyExistsError.new(path, entry)
+            end
+
+            # Actually add the user
+            members << { "user" => { "username" => name } }
+          end
+
+        # create [/organizations/ORG]/association_requests/NAME (with content '{}')
+        # Manipulate the `invitations.json` file that contains a list of all users
+        elsif path == [ 'association_requests' ]
+          update_json('invitations.json', []) do |invitations|
+            # Format of each entry: { "id" => "jkeiser-chef", 'username' => 'jkeiser' }
+            if invitations.any? { |member| member['username'] == name }
+              raise ChefZero::DataStore::DataAlreadyExistsError.new(path)
+            end
+
+            # Actually add the user (TODO insert org name??)
+            invitations << { "username" => name }
+          end
 
         else
           if !data.is_a?(String)
@@ -140,6 +237,24 @@ class Chef
             entry.read
           rescue Chef::ChefFS::FileSystem::NotFoundError => e
             raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+          end
+
+        # GET [/organizations/ORG]/users/NAME -> /users/NAME
+        # Manipulates members.json
+        elsif path[0] == 'users' && path.length == 2
+          if get_json('members.json', []).any? { |member| member['user']['username'] == path[1] }
+            '{}'
+          else
+            raise ChefZero::DataStore::DataNotFoundError.new(path)
+          end
+
+        # GET [/organizations/ORG]/association_requests/NAME -> /users/NAME
+        # Manipulates invites.json
+        elsif path[0] == 'association_requests' && path.length == 2
+          if get_json('invites.json', []).any? { |member| member['user']['username'] == path[1] }
+            '{}'
+          else
+            raise ChefZero::DataStore::DataNotFoundError.new(path)
           end
 
         else
@@ -209,6 +324,29 @@ class Chef
       def delete(path)
         if use_memory_store?(path)
           @memory_store.delete(path)
+
+        # DELETE [/organizations/ORG]/users/NAME
+        # Manipulates members.json
+        elsif path[0] == 'users' && path.length == 2
+          update_json('members.json', []) do |members|
+            result = members.reject { |member| member['user']['username'] == path[1] }
+            if result.size == members.size
+              raise ChefZero::DataStore::DataNotFoundError.new(path)
+            end
+            result
+          end
+
+        # DELETE [/organizations/ORG]/users/NAME
+        # Manipulates members.json
+        elsif path[0] == 'association_requests' && path.length == 2
+          update_json('invitations.json', []) do |invitations|
+            result = invitations.reject { |invitation| invitation['username'] == path[1] }
+            if result.size == invitations.size
+              raise ChefZero::DataStore::DataNotFoundError.new(path)
+            end
+            result
+          end
+
         else
           with_entry(path) do |entry|
             begin
@@ -476,6 +614,28 @@ class Chef
         dir = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path[0..1].join('/'))
         metadata = ChefZero::CookbookData.metadata_from(dir, path[1], nil, [])
         metadata[:version] || '0.0.0'
+      end
+
+      def update_json(path, default_value)
+        entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path)
+        begin
+          input = Chef::JSONCompat.parse(entry.read)
+          output = yield input.dup
+          entry.write(Chef::JSONCompat.to_json_pretty(output)) if output != input
+        rescue Chef::ChefFS::FileSystem::NotFoundError
+          # Send the default value to the caller, and create the entry if the caller updates it
+          output = yield default_value
+          entry.parent.create_child(entry.name, Chef::JSONCompat.to_json_pretty(output)) if output != []
+        end
+      end
+
+      def get_json(path, default_value)
+        entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path)
+        begin
+          Chef::JSONCompat.parse(entry.read)
+        rescue Chef::ChefFS::FileSystem::NotFoundError
+          default_value
+        end
       end
     end
   end
