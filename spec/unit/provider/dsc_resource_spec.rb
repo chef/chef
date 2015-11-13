@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 require 'chef'
 require 'spec_helper'
 
@@ -34,7 +33,6 @@ describe Chef::Provider::DscResource do
       node.automatic[:languages][:powershell][:version] = '4.0'
       node
     }
-
     it 'raises a ProviderNotFound exception' do
       expect(provider).not_to receive(:meta_configuration)
       expect{provider.run_action(:run)}.to raise_error(
@@ -71,6 +69,26 @@ describe Chef::Provider::DscResource do
         expect(provider).to receive(:set_resource)
         provider.run_action(:run)
         expect(resource).to be_updated
+      end
+
+      it 'flags the resource as reboot required when required' do
+        expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
+        expect(provider).to receive(:test_resource).and_return(false)
+        expect(provider).to receive(:invoke_resource).
+          and_return(double(:stdout => '', :return_value =>nil))
+        expect(provider).to receive(:return_dsc_resource_result).and_return(true)
+        expect(provider).to receive(:create_reboot_resource)
+        provider.run_action(:run)
+      end
+
+      it 'does not flag the resource as reboot required when not required' do
+        expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
+        expect(provider).to receive(:test_resource).and_return(false)
+        expect(provider).to receive(:invoke_resource).
+          and_return(double(:stdout => '', :return_value =>nil))
+        expect(provider).to receive(:return_dsc_resource_result).and_return(false)
+        expect(provider).to_not receive(:create_reboot_resource)
+        provider.run_action(:run)
       end
     end
   end
