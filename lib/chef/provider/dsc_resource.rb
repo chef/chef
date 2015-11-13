@@ -19,6 +19,7 @@ require 'chef/util/powershell/cmdlet'
 require 'chef/util/dsc/local_configuration_manager'
 require 'chef/mixin/powershell_type_coercions'
 require 'chef/util/dsc/resource_store'
+
 class Chef
   class Provider
     class DscResource < Chef::Provider
@@ -30,6 +31,7 @@ class Chef
         @module_name = new_resource.module_name
         @reboot_resource = nil
       end
+
       def action_run
         if ! test_resource
           converge_by(generate_description) do
@@ -38,11 +40,14 @@ class Chef
           end
         end
       end
+
       def load_current_resource
       end
+
       def whyrun_supported?
         true
       end
+
       def define_resource_requirements
         requirements.assert(:run) do |a|
           a.assertion { supports_dsc_invoke_resource? }
@@ -53,35 +58,48 @@ class Chef
           a.block_action!
         end
         requirements.assert(:run) do |a|
-          a.assertion { dsc_refresh_mode_disabled? }
-          err = ["The LCM must have its RefreshMode set to Disabled. "]
+          a.assertion { supports_refresh_mode_enabled? || dsc_refresh_mode_disabled? }
+          err = ["The LCM must have its RefreshMode set to Disabled for" \
+                 " PowerShell versions before 5.0.10586.0."]
           a.failure_message Chef::Exceptions::ProviderNotFound, err.join(' ')
           a.whyrun err + ["Assuming a previous resource sets the RefreshMode."]
           a.block_action!
         end
       end
+
       protected
+
       def local_configuration_manager
         @local_configuration_manager ||= Chef::Util::DSC::LocalConfigurationManager.new(
           node,
           nil
         )
       end
+
       def resource_store
         Chef::Util::DSC::ResourceStore.instance
       end
+
       def supports_dsc_invoke_resource?
         run_context && Chef::Platform.supports_dsc_invoke_resource?(node)
       end
+
       def dsc_refresh_mode_disabled?
         Chef::Platform.dsc_refresh_mode_disabled?(node)
       end
+
+      def supports_refresh_mode_enabled?
+        Chef::Platform.supports_refresh_mode_enabled?(node)
+      end
+
       def generate_description
         @converge_description
       end
+
       def dsc_resource_name
         new_resource.resource.to_s
       end
+
       def module_name
         @module_name ||= begin
           found = resource_store.find(dsc_resource_name)
@@ -101,6 +119,7 @@ class Chef
               end
         end
       end
+
       def test_resource
         result = invoke_resource(:test)
         # We really want this information from the verbose stream,
@@ -109,6 +128,7 @@ class Chef
         @converge_description = result.stdout
         return_dsc_resource_result(result, "InDesiredState")
       end
+
       def set_resource
         result = invoke_resource(:set)
         if return_dsc_resource_result(result, 'RebootRequired')
@@ -116,6 +136,7 @@ class Chef
         end
         result.return_value
       end
+
       def invoke_resource(method, output_format=:object)
         properties = translate_type(@new_resource.properties)
         switches = "-Method #{method.to_s} -Name #{@new_resource.resource}"\
@@ -130,6 +151,7 @@ class Chef
         )
         cmdlet.run!
       end
+
       def return_dsc_resource_result(result, property_name)
         if result.return_value.is_a?(Array)
           # WMF Feb 2015 Preview
@@ -139,6 +161,7 @@ class Chef
           result.return_value[property_name]
         end
       end
+
       def create_reboot_resource
         @reboot_resource = Chef::Resource::Reboot.new(
           "Reboot for #{@new_resource.name}",
@@ -147,6 +170,7 @@ class Chef
           r.reason("Reboot for #{@new_resource.resource}.")
         end
       end
+
       def reboot_if_required
         reboot_action = @new_resource.reboot_action
         unless @reboot_resource.nil?
