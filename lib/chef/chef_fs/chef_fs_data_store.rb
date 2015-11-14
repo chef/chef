@@ -532,9 +532,22 @@ class Chef
               end
             end
           end
+
+        elsif path[0] == 'acls'
+          # /acls/containers|nodes|.../x.json
+          # /acls/organization.json
+          if path.length == 3 || path == [ 'acls', 'organization' ]
+            path = path.dup
+            path[-1] = "#{path[-1]}.json"
+          end
+
+          # /acls/containers|nodes|... do NOT drop into the next elsif, and do
+          # not get .json appended
+
+        # /nodes|clients|.../x.json
         elsif path.length == 2
           path = path.dup
-          path[1] = "#{path[1]}.json"
+          path[-1] = "#{path[-1]}.json"
         end
         path
       end
