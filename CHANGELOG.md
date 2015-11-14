@@ -54,11 +54,6 @@
 
 * [**Ranjib Dey**](https://github.com/ranjib):
   [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
-
-## 12.5.1
-
-* [**Ranjib Dey**](https://github.com/ranjib):
-  [pr#3588](https://github.com/chef/chef/pull/3588) Count skipped resources among total resources in doc formatter
 * [**John Kerry**](https://github.com/jkerry):
   [pr#3539](https://github.com/chef/chef/pull/3539) Fix issue: registry\_key resource is case sensitive in chef but not on windows
 * [**David Eddy**](https://github.com/bahamas10):
