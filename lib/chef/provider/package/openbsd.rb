@@ -52,10 +52,6 @@ class Chef
 
           # Below are incomplete/missing features for this package provider
           requirements.assert(:all_actions) do |a|
-            a.assertion { !new_resource.source }
-            a.failure_message(Chef::Exceptions::Package, 'The openbsd package provider does not support the source attribute')
-          end
-          requirements.assert(:all_actions) do |a|
             a.assertion do
               if new_resource.package_name =~ /^(.+?)--(.+)/
                 !new_resource.version
@@ -72,7 +68,9 @@ class Chef
             if parts = name.match(/^(.+?)--(.+)/) # use double-dash for stems with flavors, see man page for pkg_add
               name = parts[1]
             end
-            shell_out_with_timeout!("pkg_add -r #{name}#{version_string}", :env => {"PKG_PATH" => pkg_path}).status
+
+            pkg_add_target = @current_resource.source || name + version_string
+            shell_out_with_timeout!("pkg_add -r #{pkg_add_target}", :env => {"PKG_PATH" => pkg_path}).status
             Chef::Log.debug("#{new_resource.package_name} installed")
           end
         end
