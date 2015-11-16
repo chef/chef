@@ -136,9 +136,10 @@ class Chef
       #   Generally will be a +ChefFS::FileSystem::ChefRepositoryFileSystemRoot+
       #   object, created from +ChefFS::Config.local_fs+.
       #
-      def initialize(chef_fs)
+      def initialize(chef_fs, chef_config=Chef::Config)
         @chef_fs = chef_fs
         @memory_store = ChefZero::DataStore::MemoryStore.new
+        @repo_mode = chef_config[:repo_mode]
       end
 
       def publish_description
@@ -146,6 +147,7 @@ class Chef
       end
 
       attr_reader :chef_fs
+      attr_reader :repo_mode
 
       def create_dir(path, name, *options)
         if use_memory_store?(path)
@@ -188,7 +190,7 @@ class Chef
 
         # create [/organizations/ORG]/users/NAME (with content '{}')
         # Manipulate the `members.json` file that contains a list of all users
-        elsif path == [ 'users' ]
+        elsif is_org? && path == [ 'users' ]
           update_json('members.json', []) do |members|
             # Format of each entry: { "user": { "username": "jkeiser" } }
             if members.any? { |member| member['user']['username'] == name }
@@ -201,7 +203,7 @@ class Chef
 
         # create [/organizations/ORG]/association_requests/NAME (with content '{}')
         # Manipulate the `invitations.json` file that contains a list of all users
-        elsif path == [ 'association_requests' ]
+        elsif is_org? && path == [ 'association_requests' ]
           update_json('invitations.json', []) do |invitations|
             # Format of each entry: { "id" => "jkeiser-chef", 'username' => 'jkeiser' }
             if invitations.any? { |member| member['username'] == name }
@@ -241,7 +243,7 @@ class Chef
 
         # GET [/organizations/ORG]/users/NAME -> /users/NAME
         # Manipulates members.json
-        elsif path[0] == 'users' && path.length == 2
+        elsif is_org? && path[0] == 'users' && path.length == 2
           if get_json('members.json', []).any? { |member| member['user']['username'] == path[1] }
             '{}'
           else
@@ -250,7 +252,7 @@ class Chef
 
         # GET [/organizations/ORG]/association_requests/NAME -> /users/NAME
         # Manipulates invites.json
-        elsif path[0] == 'association_requests' && path.length == 2
+        elsif is_org? && path[0] == 'association_requests' && path.length == 2
           if get_json('invites.json', []).any? { |member| member['user']['username'] == path[1] }
             '{}'
           else
@@ -327,7 +329,7 @@ class Chef
 
         # DELETE [/organizations/ORG]/users/NAME
         # Manipulates members.json
-        elsif path[0] == 'users' && path.length == 2
+        elsif is_org? && path[0] == 'users' && path.length == 2
           update_json('members.json', []) do |members|
             result = members.reject { |member| member['user']['username'] == path[1] }
             if result.size == members.size
@@ -338,7 +340,7 @@ class Chef
 
         # DELETE [/organizations/ORG]/users/NAME
         # Manipulates members.json
-        elsif path[0] == 'association_requests' && path.length == 2
+        elsif is_org? && path[0] == 'association_requests' && path.length == 2
           update_json('invitations.json', []) do |invitations|
             result = invitations.reject { |invitation| invitation['username'] == path[1] }
             if result.size == invitations.size
@@ -649,6 +651,10 @@ class Chef
         rescue Chef::ChefFS::FileSystem::NotFoundError
           default_value
         end
+      end
+
+      def is_org?
+        repo_mode == 'hosted_everything'
       end
     end
   end
