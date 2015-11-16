@@ -28,7 +28,7 @@ group(:development, :test) do
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 
   # For external tests
-#  gem 'chef-zero', github: 'chef/chef-zero'
+  gem 'chef-zero', github: 'chef/chef-zero', branch: 'cd/run-moar-pedant'
 #  gem 'cheffish', github: 'chef/cheffish'
 #  gem 'chef-provisioning'#, github: 'chef/chef-provisioning'
 #  gem 'chef-provisioning-aws', github: 'chef/chef-provisioning-aws'
