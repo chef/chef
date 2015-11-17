@@ -53,10 +53,11 @@ matrix:
     cache:
     env: "GEMFILE_MOD=\"gem 'chef-sugar'\""
     script: bundle exec rake chef_sugar_spec
-  - rvm: 2.2
-    cache:
-    env: "GEMFILE_MOD=\"gem 'chef-rewind'\""
-    script: bundle exec rake chef_rewind_spec
+  # Requires vagrant
+  # - rvm: 2.2
+  #   cache:
+  #   env: "GEMFILE_MOD=\"gem 'chef-rewind'\""
+  #   script: bundle exec rake chef_rewind_spec
   - rvm: 2.2
     cache:
     env: "GEMFILE_MOD=\"gem 'foodcritic', github: 'acrmp/foodcritic', branch: 'v5.0.0'\""
@@ -69,9 +70,6 @@ matrix:
     cache:
     env: "GEMFILE_MOD=\"gem 'poise', github: 'poise/poise'\""
     script: bundle exec rake poise_spec
-  # Not working yet: halite
-  # - rvm: 2.2
-  #   script: bundle exec rake poise_spec
   ### START TEST KITCHEN ONLY ###
   - rvm: 2.2
     gemfile: kitchen-tests/Gemfile
