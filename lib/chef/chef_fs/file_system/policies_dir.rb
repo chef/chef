@@ -16,42 +16,67 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/base_fs_dir'
-require 'chef/chef_fs/file_system/rest_list_entry'
-require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/chef_fs/file_system/rest_list_dir'
+require 'chef/chef_fs/file_system/policy_revision_entry'
 
 class Chef
   module ChefFS
     module FileSystem
-      class RestListDir < BaseFSDir
-        def initialize(name, parent, api_path = nil, data_handler = nil)
-          super(name, parent)
-          @api_path = api_path || (parent.api_path == "" ? name : "#{parent.api_path}/#{name}")
-          @data_handler = data_handler
-        end
-
-        attr_reader :api_path
-        attr_reader :data_handler
-
-        def can_have_child?(name, is_dir)
-          name =~ /\.json$/ && !is_dir
-        end
-
+      #
+      # Server API:
+      # /policies - list of policies by name
+      #   - /policies/NAME - represents a policy with all revisions
+      #     - /policies/NAME/revisions - list of revisions for that policy
+      #       - /policies/NAME/revisions/REVISION - actual policy-revision document
+      #
+      # Local Repository and ChefFS:
+      # /policies - PoliciesDir - maps to server API /policies
+      #   - /policies/NAME-REVISION.json - PolicyRevision - maps to /policies/NAME/revisions/REVISION
+      #
+      class PoliciesDir < RestListDir
+        # Children: NAME-REVISION.json for all revisions of all policies
         #
-        # Does GET /<api_path>, assumes the result is of the format:
-        #
-        # {
-        #   "foo": "<api_path>/foo",
-        #   "bar": "<api_path>/bar",
+        # /nodes: {
+        #   "node1": "https://api.opscode.com/organizations/myorg/nodes/node1",
+        #   "node2": "https://api.opscode.com/organizations/myorg/nodes/node2",
         # }
         #
-        # Children are foo.json and bar.json in this case.
+        # /policies: {
+        #   "foo": {}
+        # }
+
+        def make_child_entry(name, exists = nil)
+          @children.select { |child| child.name == name }.first if @children
+          PolicyRevisionEntry.new(name, self, exists)
+        end
+
+        # Children come from /policies in this format:
+        # {
+        #   "foo": {
+        #     "uri": "https://api.opscode.com/organizations/essentials/policies/foo",
+        #     "revisions": {
+        #       "1.0.0": {
         #
+        #       },
+        #       "1.0.1": {
+        #
+        #       }
+        #     }
+        #   }
+        # }
         def children
           begin
             # Grab the names of the children, append json, and make child entries
-            @children ||= root.get_json(api_path).keys.sort.map do |key|
-              make_child_entry("#{key}.json", true)
+            @children ||= begin
+              result = []
+              data = root.get_json(api_path)
+              data.keys.sort.each do |policy_name|
+                data[policy_name]["revisions"].keys.each do |policy_revision|
+                  filename = "#{policy_name}-#{policy_revision}.json"
+                  result << make_child_entry(filename, true)
+                end
+              end
+              result
             end
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout retrieving children: #{e}")
@@ -90,7 +115,8 @@ class Chef
 
           # POST /api_path with the normalized file_contents
           begin
-            rest.post(api_path, object)
+            policy_name, policy_revision = data_handler.name_and_revision(name)
+            rest.post("#{api_path}/#{policy_name}/revisions", object)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e, "Timeout creating '#{name}': #{e}")
           rescue Net::HTTPServerException => e
@@ -113,22 +139,6 @@ class Chef
           result
         end
 
-        def org
-          parent.org
-        end
-
-        def environment
-          parent.environment
-        end
-
-        def rest
-          parent.rest
-        end
-
-        def make_child_entry(name, exists = nil)
-          @children.select { |child| child.name == name }.first if @children
-          RestListEntry.new(name, self, exists)
-        end
       end
     end
   end

@@ -22,9 +22,6 @@ class Chef
   module ChefFS
     module FileSystem
       class NotFoundError < FileSystemError
-        def initialize(entry, cause = nil)
-          super(entry, cause)
-        end
       end
     end
   end

@@ -21,11 +21,12 @@ require 'chef/chef_fs/file_system/chef_repository_file_system_entry'
 require 'chef/chef_fs/file_system/chef_repository_file_system_acls_dir'
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbooks_dir'
 require 'chef/chef_fs/file_system/chef_repository_file_system_data_bags_dir'
-require 'chef/chef_fs/file_system/chef_repository_file_system_policies_dir'
 require 'chef/chef_fs/file_system/multiplexed_dir'
 require 'chef/chef_fs/data_handler/client_data_handler'
 require 'chef/chef_fs/data_handler/environment_data_handler'
 require 'chef/chef_fs/data_handler/node_data_handler'
+require 'chef/chef_fs/data_handler/policy_data_handler'
+require 'chef/chef_fs/data_handler/policy_group_data_handler'
 require 'chef/chef_fs/data_handler/role_data_handler'
 require 'chef/chef_fs/data_handler/user_data_handler'
 require 'chef/chef_fs/data_handler/group_data_handler'
@@ -163,8 +164,6 @@ class Chef
             dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
           when 'data_bags'
             dirs = paths.map { |path| ChefRepositoryFileSystemDataBagsDir.new(name, self, path) }
-          when 'policies'
-            dirs = paths.map { |path| ChefRepositoryFileSystemPoliciesDir.new(name, self, path) }
           when 'acls'
             dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
           else
@@ -175,6 +174,10 @@ class Chef
                 Chef::ChefFS::DataHandler::EnvironmentDataHandler.new
               when 'nodes'
                 Chef::ChefFS::DataHandler::NodeDataHandler.new
+              when 'policies'
+                Chef::ChefFS::DataHandler::PolicyDataHandler.new
+              when 'policy_groups'
+                Chef::ChefFS::DataHandler::PolicyGroupDataHandler.new
               when 'roles'
                 Chef::ChefFS::DataHandler::RoleDataHandler.new
               when 'users'

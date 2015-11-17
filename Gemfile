@@ -5,6 +5,8 @@ gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
 gem 'chef-config', path: "chef-config" if File.exists?(__FILE__ + '../chef-config')
 
+gem 'chef-zero', github: 'chef/chef-zero'
+
 group(:docgen) do
   gem "yard"
 end

@@ -241,6 +241,22 @@ class Chef
             raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
           end
 
+        # /policy_groups/NAME/policies/POLICYNAME: return the revision of the given policy
+        elsif path[0] == 'policy_groups' && path[2] == 'policies' && path.length == 4
+          with_entry(path[0..1]) do |entry|
+            policy_group = Chef::JSONCompat.parse(entry)
+            if !policy_group['policies'] || !policy_group['policies'][path[3]] || !policy_group['policies'][path[3]]
+              raise ChefZero::DataStore::DataNotFoundError.new(path, entry)
+            end
+            # The policy group looks like:
+            # {
+            #   "policies": {
+            #     "x": { "revision_id": "10" }
+            #   }
+            # }
+            Chef::JSONCompat.to_json_pretty(policy_group['policies'][path[3]]["revision_id"])
+          end
+
         # GET [/organizations/ORG]/users/NAME -> /users/NAME
         # Manipulates members.json
         elsif is_org? && path[0] == 'users' && path.length == 2
@@ -382,6 +398,17 @@ class Chef
         if use_memory_store?(path)
           @memory_store.list(path)
 
+        elsif path[0] == 'policy_groups' && path.length == 2
+          with_entry(path) do |entry|
+            [ 'policies' ]
+          end
+
+        elsif path[0] == 'policy_groups' && path[2] == 'policies' && path.length == 3
+          with_entry([ 'policy_groups', path[1] ]) do |entry|
+            policy_group = Chef::JSONCompat.parse(entry.read)
+            (policy_group['policies'] || {}).keys
+          end
+
         elsif path[0] == 'cookbooks' && path.length == 1
           with_entry(path) do |entry|
             begin
@@ -444,6 +471,12 @@ class Chef
           @memory_store.exists_dir?(path)
         elsif path[0] == 'cookbooks' && path.length == 2
           list([ path[0] ]).include?(path[1])
+        # /policy_groups/NAME/policies
+        elsif path[0] == 'policy_groups' && path[2] == 'policies' && path.length == 3
+          exists_dir?(path[0..1])
+        # /policy_groups/NAME/policies/POLICYNAME
+        elsif path[0] == 'policy_groups' && path[2] == 'policies' && path.length == 4
+          exists_dir?(path[0..1]) && list(path[0..2]).include?(path[3])
         else
           Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path)).exists?
         end

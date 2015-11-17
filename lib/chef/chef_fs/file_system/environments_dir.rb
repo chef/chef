@@ -20,16 +20,11 @@ require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/rest_list_entry'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/default_environment_cannot_be_modified_error'
-require 'chef/chef_fs/data_handler/environment_data_handler'
 
 class Chef
   module ChefFS
     module FileSystem
       class EnvironmentsDir < RestListDir
-        def initialize(parent)
-          super("environments", parent, nil, Chef::ChefFS::DataHandler::EnvironmentDataHandler.new)
-        end
-
         def make_child_entry(name, exists = nil)
           if name == '_default.json'
             DefaultEnvironmentEntry.new(name, self, exists)
@@ -46,12 +41,12 @@ class Chef
 
           def delete(recurse)
             raise NotFoundError.new(self) if !exists?
-            raise DefaultEnvironmentCannotBeModifiedError.new(:delete, self), "#{path_for_printing} cannot be deleted."
+            raise DefaultEnvironmentCannotBeModifiedError.new(:delete, self)
           end
 
           def write(file_contents)
             raise NotFoundError.new(self) if !exists?
-            raise DefaultEnvironmentCannotBeModifiedError.new(:write, self), "#{path_for_printing} cannot be updated."
+            raise DefaultEnvironmentCannotBeModifiedError.new(:write, self)
           end
         end
       end

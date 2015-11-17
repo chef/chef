@@ -1248,6 +1248,7 @@ EOM
     end
   end # with versioned cookbooks
 
+
   when_the_chef_server 'has a user' do
     before do
       user 'x', {}
@@ -1268,7 +1269,7 @@ EOM
       user 'foo', {}
       user 'bar', {}
       user 'foobar', {}
-      organization 'foo', { 'full_name' => 'Something'}
+      organization 'foo', { 'full_name' => 'Something' }
     end
 
     before :each do
@@ -1278,7 +1279,7 @@ EOM
     context 'and has nothing but a single group named blah' do
       group 'blah', {}
 
-      when_the_repository 'has one of each thing' do
+      when_the_repository 'has at least one of each thing' do
 
         before do
           # TODO We have to upload acls for an existing group due to a lack of
@@ -1292,8 +1293,11 @@ EOM
           file 'groups/x.json', {}
           file 'invitations.json', [ 'foo' ]
           file 'members.json', [ 'bar' ]
-          file 'nodes/x.json', {}
           file 'org.json', { 'full_name' => 'wootles' }
+          file 'nodes/x.json', {}
+          file 'policies/x-1.0.0.json', { }
+          file 'policies/blah-1.0.0.json', { }
+          file 'policy_groups/x.json', { 'policies' => { 'x' => { 'revision_id' => '1.0.0' }, 'blah' => { 'revision_id' => '1.0.0' } } }
           file 'roles/x.json', {}
         end
 
@@ -1311,10 +1315,101 @@ Updated /invitations.json
 Updated /members.json
 Created /nodes/x.json
 Updated /org.json
+Created /policies/blah-1.0.0.json
+Created /policies/x-1.0.0.json
+Created /policy_groups/x.json
 Created /roles/x.json
 EOM
           expect(api.get('association_requests').map { |a| a['username'] }).to eq([ 'foo' ])
           expect(api.get('users').map { |a| a['user']['username'] }).to eq([ 'bar' ])
+        end
+
+        context "When the chef server has an identical copy of each thing" do
+          before do
+            file 'invitations.json', [ 'foo' ]
+            file 'members.json', [ 'bar' ]
+            file 'org.json', { 'full_name' => 'Something' }
+
+            # acl_for %w(organizations foo groups blah)
+            client 'x', {}
+            cookbook 'x', '1.0.0'
+            container 'x', {}
+            data_bag 'x', { 'y' => {} }
+            environment 'x', {}
+            group 'x', {}
+            org_invite 'foo'
+            org_member 'bar'
+            node 'x', {}
+            policy 'x', '1.0.0', {}
+            policy 'blah', '1.0.0', {}
+            policy_group 'x', {
+              'policies' => {
+                'x' => { 'revision_id' => '1.0.0' },
+                'blah' => { 'revision_id' => '1.0.0' }
+              }
+            }
+            role 'x', {}
+          end
+
+          it 'knife upload makes no changes' do
+            knife('upload /').should_succeed <<EOM
+Updated /acls/groups/blah.json
+EOM
+          end
+        end
+
+        context "When the chef server has a slightly different copy of the policy revision" do
+          before do
+            policy 'x', '1.0.0', { 'run_list' => [ 'blah' ] }
+          end
+
+          it "should fail because policies are not updateable" do
+            knife("upload /policies/x-1.0.0.json").should_fail <<EOM
+ERROR: /policies/x-1.0.0.json cannot be updated: policy revisions are immutable once uploaded. If you want to change the policy, create a new revision with your changes.
+EOM
+          end
+        end
+
+        context "When the chef server has a slightly different copy of each thing (except policy revisions)" do
+          before do
+            # acl_for %w(organizations foo groups blah)
+            client 'x', { 'validator' => true }
+            container 'x', {}
+            cookbook 'x', '1.0.0', { 'recipes' => { 'default.rb' => '' } }
+            data_bag 'x', { 'y' => { 'a' => 'b' } }
+            environment 'x', { 'description' => 'foo' }
+            group 'x', { 'groups' => [ 'admin' ] }
+            node 'x', { 'run_list' => [ 'blah' ] }
+            policy 'x', '1.0.0', { }
+            policy 'x', '1.0.1', { }
+            policy 'y', '1.0.0', { }
+            policy_group 'x', {
+              'policies' => {
+                'x' => { 'revision_id' => '1.0.1' },
+                'y' => { 'revision_id' => '1.0.0' }
+              }
+            }
+            role 'x', { 'run_list' => [ 'blah' ] }
+          end
+
+          it 'knife upload updates everything' do
+            knife('upload /').should_succeed <<EOM
+Updated /acls/groups/blah.json
+Updated /clients/x.json
+Updated /cookbooks/x
+Updated /data_bags/x/y.json
+Updated /environments/x.json
+Updated /groups/x.json
+Updated /invitations.json
+Updated /members.json
+Updated /nodes/x.json
+Updated /org.json
+Created /policies/blah-1.0.0.json
+Updated /policy_groups/x.json
+Updated /roles/x.json
+EOM
+            knife('diff --name-status --diff-filter=AMT /').should_succeed ''
+          end
         end
       end
 

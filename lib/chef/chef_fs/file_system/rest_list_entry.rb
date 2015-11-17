@@ -70,12 +70,12 @@ class Chef
           begin
             rest.delete(api_path)
           rescue Timeout::Error => e
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
           rescue Net::HTTPServerException => e
             if e.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
             end
           end
         end
@@ -89,12 +89,12 @@ class Chef
             # Minimize the value (get rid of defaults) so the results don't look terrible
             root.get_json(api_path)
           rescue Timeout::Error => e
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading: #{e}"
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
           rescue Net::HTTPServerException => e
             if $!.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "HTTP error reading: #{e}"
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "HTTP error reading: #{e}")
             end
           end
         end
@@ -148,25 +148,25 @@ class Chef
           begin
             object = Chef::JSONCompat.parse(file_contents)
           rescue Chef::Exceptions::JSON::ParseError => e
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Parse error reading JSON: #{e}"
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "Parse error reading JSON: #{e}")
           end
 
           if data_handler
             object = data_handler.normalize_for_put(object, self)
             data_handler.verify_integrity(object, self) do |error|
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self), "#{error}"
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, nil, "#{error}")
             end
           end
 
           begin
             rest.put(api_path, object)
           rescue Timeout::Error => e
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "Timeout writing: #{e}")
           rescue Net::HTTPServerException => e
             if e.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "HTTP error writing: #{e}"
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "HTTP error writing: #{e}")
             end
           end
         end

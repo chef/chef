@@ -47,7 +47,7 @@ class Chef
         end
 
         def create_child(name, file_contents)
-          raise OperationNotAllowedError.new(:create_child, self), "ACLs can only be updated, and can only be created when the corresponding object is created."
+          raise OperationNotAllowedError.new(:create_child, self, nil, "ACLs can only be updated, and can only be created when the corresponding object is created.")
         end
 
         def data_handler

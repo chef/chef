@@ -22,10 +22,6 @@ class Chef
   module ChefFS
     module FileSystem
       class DefaultEnvironmentCannotBeModifiedError < OperationNotAllowedError
-        def initialize(operation, entry, cause = nil)
-          super(operation, entry, cause)
-        end
-
         def reason
           result = super
           result + " (default environment cannot be modified)"

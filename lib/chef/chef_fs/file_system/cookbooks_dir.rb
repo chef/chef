@@ -32,10 +32,6 @@ class Chef
 
         include Chef::Mixin::FileClass
 
-        def initialize(parent)
-          super("cookbooks", parent)
-        end
-
         def make_child_entry(name)
           result = @children.select { |child| child.name == name }.first if @children
           result || CookbookDir.new(name, self)
@@ -65,16 +61,16 @@ class Chef
         def upload_cookbook_from(other, options = {})
           root.versioned_cookbooks ? upload_versioned_cookbook(other, options) : upload_unversioned_cookbook(other, options)
         rescue Timeout::Error => e
-          raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
+          raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "Timeout writing: #{e}")
         rescue Net::HTTPServerException => e
           case e.response.code
           when "409"
-            raise Chef::ChefFS::FileSystem::CookbookFrozenError.new(:write, self, e), "Cookbook #{other.name} is frozen"
+            raise Chef::ChefFS::FileSystem::CookbookFrozenError.new(:write, self, e, "Cookbook #{other.name} is frozen")
           else
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "HTTP error writing: #{e}"
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "HTTP error writing: #{e}")
           end
         rescue Chef::Exceptions::CookbookFrozen => e
-          raise Chef::ChefFS::FileSystem::CookbookFrozenError.new(:write, self, e), "Cookbook #{other.name} is frozen"
+          raise Chef::ChefFS::FileSystem::CookbookFrozenError.new(:write, self, e, "Cookbook #{other.name} is frozen")
         end
 
         # Knife currently does not understand versioned cookbooks

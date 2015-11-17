@@ -49,17 +49,17 @@ class Chef
         def delete(recurse)
           if !recurse
             raise NotFoundError.new(self) if !exists?
-            raise MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
+            raise MustDeleteRecursivelyError.new(self, "#{path_for_printing} must be deleted recursively")
           end
           begin
             rest.delete(api_path)
           rescue Timeout::Error => e
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
           rescue Net::HTTPServerException => e
             if e.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "HTTP error deleting: #{e}"
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "HTTP error deleting: #{e}")
             end
           end
         end

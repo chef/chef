@@ -1094,27 +1094,18 @@ EOM
 
   when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
     before do
-      organization 'foo' do
-        container 'x', {}
-        group 'x', {}
-      end
+      user 'foo', {}
+      user 'bar', {}
+      user 'foobar', {}
+      organization 'foo', { 'full_name' => 'Something' }
     end
 
     before :each do
       Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
     end
-    when_the_repository 'has existing top level files' do
+
+    when_the_repository "has all the default stuff" do
       before do
-        file 'invitations.json', {}
-      end
-
-      it "can still download top level files" do
-        knife('download /invitations.json').should_succeed
-      end
-    end
-
-    when_the_repository 'is empty' do
-      it 'knife download / downloads everything' do
         knife('download /').should_succeed <<EOM
 Created /acls
 Created /acls/clients
@@ -1131,7 +1122,6 @@ Created /acls/containers/nodes.json
 Created /acls/containers/policies.json
 Created /acls/containers/roles.json
 Created /acls/containers/sandboxes.json
-Created /acls/containers/x.json
 Created /acls/cookbooks
 Created /acls/data_bags
 Created /acls/environments
@@ -1141,7 +1131,6 @@ Created /acls/groups/admins.json
 Created /acls/groups/billing-admins.json
 Created /acls/groups/clients.json
 Created /acls/groups/users.json
-Created /acls/groups/x.json
 Created /acls/nodes
 Created /acls/roles
 Created /acls/organization.json
@@ -1159,7 +1148,6 @@ Created /containers/nodes.json
 Created /containers/policies.json
 Created /containers/roles.json
 Created /containers/sandboxes.json
-Created /containers/x.json
 Created /cookbooks
 Created /data_bags
 Created /environments
@@ -1169,14 +1157,141 @@ Created /groups/admins.json
 Created /groups/billing-admins.json
 Created /groups/clients.json
 Created /groups/users.json
-Created /groups/x.json
 Created /invitations.json
 Created /members.json
 Created /nodes
 Created /org.json
+Created /policies
+Created /policy_groups
 Created /roles
 EOM
-        knife('diff --name-status /').should_succeed ''
+      end
+
+      context 'and the server has one of each thing' do
+        before do
+          # acl_for %w(organizations foo groups blah)
+          client 'x', {}
+          cookbook 'x', '1.0.0'
+          container 'x', {}
+          data_bag 'x', { 'y' => {} }
+          environment 'x', {}
+          group 'x', {}
+          org_invite 'foo'
+          org_member 'bar'
+          node 'x', {}
+          policy 'x', '1.0.0', {}
+          policy 'blah', '1.0.0', {}
+          policy_group 'x', {
+            'policies' => {
+              'x' => { 'revision_id' => '1.0.0' },
+              'blah' => { 'revision_id' => '1.0.0' }
+            }
+          }
+          role 'x', {}
+        end
+
+        before do
+          knife('download /acls /groups/clients.json /groups/users.json').should_succeed <<-EOM
+Created /acls/clients/x.json
+Created /acls/containers/x.json
+Created /acls/cookbooks/x.json
+Created /acls/data_bags/x.json
+Created /acls/environments/x.json
+Created /acls/groups/x.json
+Created /acls/nodes/x.json
+Created /acls/roles/x.json
+Updated /groups/clients.json
+Updated /groups/users.json
+EOM
+        end
+
+        it 'knife download / downloads everything' do
+          knife('download /').should_succeed <<EOM
+Created /clients/x.json
+Created /containers/x.json
+Created /cookbooks/x
+Created /cookbooks/x/metadata.rb
+Created /data_bags/x
+Created /data_bags/x/y.json
+Created /environments/x.json
+Created /groups/x.json
+Updated /invitations.json
+Updated /members.json
+Created /nodes/x.json
+Created /policies/blah-1.0.0.json
+Created /policies/x-1.0.0.json
+Created /policy_groups/x.json
+Created /roles/x.json
+EOM
+          knife('diff --name-status /').should_succeed ''
+        end
+
+        context "and the repository has an identical copy of each thing" do
+          before do
+            # TODO We have to upload acls for an existing group due to a lack of
+            # dependency detection during upload.  Fix that!
+            file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+            file 'containers/x.json', {}
+            file 'cookbooks/x/metadata.rb', cb_metadata("x", "1.0.0")
+            file 'data_bags/x/y.json', {}
+            file 'environments/x.json', {}
+            file 'groups/x.json', {}
+            file 'invitations.json', [ 'foo' ]
+            file 'members.json', [ 'bar' ]
+            file 'nodes/x.json', {}
+            file 'org.json', { 'full_name' => 'Something' }
+            file 'policies/x-1.0.0.json', { }
+            file 'policies/blah-1.0.0.json', { }
+            file 'policy_groups/x.json', { 'policies' => { 'x' => { 'revision_id' => '1.0.0' }, 'blah' => { 'revision_id' => '1.0.0' } } }
+            file 'roles/x.json', {}
+          end
+
+          it 'knife download makes no changes' do
+            knife('download /').should_succeed ''
+          end
+        end
+
+        context "and the repository has a slightly different copy of each thing" do
+          before do
+            # acl_for %w(organizations foo groups blah)
+            file 'clients/x.json', { 'validator' => true }
+            file 'containers/x.json', {}
+            file 'cookbooks/x/metadata.rb', cb_metadata("x", "1.0.1")
+            file 'data_bags/x/y.json', { 'a' => 'b' }
+            file 'environments/x.json', { 'description' => 'foo' }
+            file 'groups/x.json', { 'description' => 'foo' }
+            file 'groups/x.json', { 'groups' => [ 'admin' ] }
+            file 'nodes/x.json', { 'run_list' => [ 'blah' ] }
+            file 'org.json', { 'full_name' => 'Something Else ' }
+            file 'policies/x-1.0.0.json', { 'run_list' => [ 'blah' ] }
+            file 'policy_groups/x.json', {
+              'policies' => {
+                'x' => { 'revision_id' => '1.0.1' },
+                'y' => { 'revision_id' => '1.0.0' }
+              }
+            }
+            file 'roles/x.json', { 'run_list' => [ 'blah' ] }
+          end
+
+          it 'knife download updates everything' do
+            knife('download /').should_succeed <<EOM
+Updated /clients/x.json
+Updated /cookbooks/x/metadata.rb
+Updated /data_bags/x/y.json
+Updated /environments/x.json
+Updated /groups/x.json
+Updated /invitations.json
+Updated /members.json
+Updated /nodes/x.json
+Updated /org.json
+Created /policies/blah-1.0.0.json
+Updated /policies/x-1.0.0.json
+Updated /policy_groups/x.json
+Updated /roles/x.json
+EOM
+            knife('diff --name-status /').should_succeed ''
+          end
+        end
       end
     end
   end
