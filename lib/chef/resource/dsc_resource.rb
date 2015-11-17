@@ -80,7 +80,6 @@ class Chef
           @reboot_action
         end
       end
-
       private
 
       def value_of(value)
