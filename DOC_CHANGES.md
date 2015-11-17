@@ -59,7 +59,7 @@ ksh: https://docs.chef.io/release/12-6/resource_ksh.html
 
 ### `dsc_resource` resource
 
-Added allow_reboot attribute to dsc_resource.
+Added reboot_action attribute to dsc_resource.
 
-If the DSC resource indicates that it requires a reboot, allow_reboot can use the reboot resource to
-either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).
+If the DSC resource indicates that it requires a reboot, reboot_action can use the reboot resource to
+either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).  The default value of reboot_action is :nothing.
