@@ -31,9 +31,7 @@ ChefConfig::PackageTask.new(File.expand_path('..', __FILE__), 'Chef') do |packag
   package.generate_version_class = true
 end
 
-task :pedant do
-  require File.expand_path('spec/support/pedant/run_pedant')
-end
+task :pedant, :chef_zero_spec
 
 task :build_eventlog do
   Dir.chdir 'ext/win32-eventlog/' do
@@ -62,4 +60,3 @@ begin
 rescue LoadError
   puts "yard is not available. (sudo) gem install yard to generate yard documentation."
 end
-

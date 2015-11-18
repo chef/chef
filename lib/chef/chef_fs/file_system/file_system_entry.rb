@@ -72,13 +72,17 @@ class Chef
         end
 
         def delete(recurse)
-          if dir?
-            if !recurse
-              raise MustDeleteRecursivelyError.new(self, $!)
+          begin
+            if dir?
+              if !recurse
+                raise MustDeleteRecursivelyError.new(self, $!)
+              end
+              FileUtils.rm_r(file_path)
+            else
+              File.delete(file_path)
             end
-            FileUtils.rm_rf(file_path)
-          else
-            File.delete(file_path)
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
         end
 

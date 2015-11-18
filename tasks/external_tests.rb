@@ -40,7 +40,7 @@ def bundle_exec_with_chef(test_gem, commands)
 end
 
 EXTERNAL_PROJECTS = {
-  "chef-zero"             => [ "rake spec", "rake pedant" ],
+  "chef-zero"             => [ "rake spec", "rake cheffs" ],
   "cheffish"              => "rake spec",
   "chef-provisioning"     => "rake spec",
   "chef-provisioning-aws" => "rake spec",
