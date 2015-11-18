@@ -149,9 +149,9 @@ EOH
 <<-EOH
 # Chef Client wrapper for powershell_script resources
 
-# In rare cases, this module is not present and the
-# new-variable cmdlet is not available, so import it
-# just in case
+# In rare cases, such as when PowerShell is executed
+# as an alternate user, the new-variable cmdlet is not
+# available, so import it just in case
 if ( get-module -ListAvailable Microsoft.PowerShell.Utility )
 {
     Import-Module Microsoft.PowerShell.Utility

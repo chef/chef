@@ -76,27 +76,31 @@ class Chef
           grant_alternate_user_read_access
         end
       end
-      require 'pry'
 
       def grant_alternate_user_read_access
         return if new_resource.user.nil?
 
+        # Duplicate the script file's existing DACL
+        # so we can add an ACE later
         securable_object = Chef::ReservedNames::Win32::Security::SecurableObject.new(script_file.path)
         aces = securable_object.security_descriptor.dacl.reduce([]) { | result, current | result.push(current) }
-#        binding.pry
+
         username = new_resource.user
 
         if new_resource.domain
           username = new_resource.domain + '\\' + new_resource.user
         end
 
+        # Create an ACE that allows the alternate user read access to the script
+        # file so it can be read and executed.
         user_sid = Chef::ReservedNames::Win32::Security::SID.from_account(username)
         read_ace = Chef::ReservedNames::Win32::Security::ACE.access_allowed(user_sid, Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE, 0)
         aces.push(read_ace)
         acl = Chef::ReservedNames::Win32::Security::ACL.create(aces)
+
+        # This actually applies the modified DACL to the file
         securable_object.dacl = acl
       end
-
 
       def script_file
         @script_file ||= Tempfile.open("chef-script")

@@ -92,9 +92,6 @@ class Chef
 
       def stream_to_stdout?
         STDOUT.tty? && !Chef::Config[:daemon]
-
-      def has_credentials?
-        user.is_a? Hash
       end
 
       def opts
