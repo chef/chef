@@ -72,18 +72,16 @@ class Chef
             if parts = name.match(/^(.+?)--(.+)/) # use double-dash for stems with flavors, see man page for pkg_add
               name = parts[1]
             end
-            shell_out_with_timeout!("pkg_add -r #{name}#{version_string}", :env => {"PKG_PATH" => pkg_path}).status
+            shell_out_with_timeout!("pkg_add -r #{name}#{version_string(version)}", :env => {"PKG_PATH" => pkg_path}).status
             Chef::Log.debug("#{new_resource.package_name} installed")
           end
         end
 
         def remove_package(name, version)
-          version_string  = ''
-          version_string += "-#{version}" if version
           if parts = name.match(/^(.+?)--(.+)/)
             name = parts[1]
           end
-          shell_out_with_timeout!("pkg_delete #{name}#{version_string}", :env => nil).status
+          shell_out_with_timeout!("pkg_delete #{name}#{version_string(version)}", :env => nil).status
         end
 
         private
@@ -103,7 +101,7 @@ class Chef
         def candidate_version
           @candidate_version ||= begin
             results = []
-            shell_out_with_timeout!("pkg_info -I \"#{new_resource.package_name}#{version_string}\"", :env => nil, :returns => [0,1]).stdout.each_line do |line|
+            shell_out_with_timeout!("pkg_info -I \"#{new_resource.package_name}#{version_string(new_resource.version)}\"", :env => nil, :returns => [0,1]).stdout.each_line do |line|
               if parts = new_resource.package_name.match(/^(.+?)--(.+)/)
                 results << line[/^#{Regexp.escape(parts[1])}-(.+?)\s/, 1]
               else
@@ -123,9 +121,9 @@ class Chef
           end
         end
 
-        def version_string
+        def version_string(version)
           ver  = ''
-          ver += "-#{new_resource.version}" if new_resource.version
+          ver += "-#{version}" if version
         end
 
         def pkg_path

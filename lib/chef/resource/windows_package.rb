@@ -67,7 +67,7 @@ class Chef
       end
 
       def source(arg=nil)
-        if arg == nil && self.instance_variable_defined?(:@source) == true
+        if arg == nil
           @source
         else
           raise ArgumentError, "Bad type for WindowsPackage resource, use a String" unless arg.is_a?(String)

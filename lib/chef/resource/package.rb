@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,14 +31,13 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @candidate_version = nil
-        @options = nil
-        @package_name = name
-        @response_file = nil
-        @response_file_variables = Hash.new
-        @source = nil
-        @version = nil
-        @timeout = nil
+        options                 nil
+        package_name            name
+        response_file           nil
+        response_file_variables Hash.new
+        source                  nil
+        version                 nil
+        timeout                 nil
       end
 
       def package_name(arg=nil)
