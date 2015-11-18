@@ -90,12 +90,10 @@ class Chef
       end
 
       private
-require 'pry'
+
       def shell_out_command(*command_args)
         cmd = Mixlib::ShellOut.new(*run_command_compatible_options(command_args))
         cmd.live_stream ||= io_for_live_stream
-        puts "COMMAND: #{cmd.command}"
-  #      binding.pry if cmd.command.include?("chef-script")
         cmd.run_command
         cmd
       end
