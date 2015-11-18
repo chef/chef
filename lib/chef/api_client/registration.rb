@@ -104,6 +104,7 @@ class Chef
         else # Chef 10
           @server_generated_private_key = response["private_key"]
         end
+        response
         # If it fails and we receive a 400 stating to use the keys endpoint
         # then, let's use it.
         rescue Net::HTTPServerException => e
@@ -112,7 +113,6 @@ class Chef
           else
             raise
           end
-        response
       end
 
       def put_data
