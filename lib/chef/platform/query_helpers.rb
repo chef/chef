@@ -85,10 +85,12 @@ class Chef
       end
 
       def supports_dsc_invoke_resource?(node)
-        require 'rubygems'
         supports_dsc?(node) &&
-          Gem::Version.new(node[:languages][:powershell][:version]) >=
-            Gem::Version.new("5.0.10018.0")
+          supported_powershell_version?(node, "5.0.10018.0")
+      end
+
+      def supports_refresh_mode_enabled?(node)
+        supported_powershell_version?(node, "5.0.10586.0")
       end
 
       def dsc_refresh_mode_disabled?(node)
@@ -97,6 +99,15 @@ class Chef
         metadata = cmdlet.run!.return_value
         metadata['RefreshMode'] == 'Disabled'
       end
+      
+
+      def supported_powershell_version?(node, version_string)
+        return false unless node[:languages] && node[:languages][:powershell]
+        require 'rubygems'
+        Gem::Version.new(node[:languages][:powershell][:version]) >=
+          Gem::Version.new(version_string)
+      end
+
     end
   end
 end

@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 require 'chef/util/powershell/cmdlet'
 require 'chef/util/dsc/local_configuration_manager'
 require 'chef/mixin/powershell_type_coercions'
@@ -25,19 +24,19 @@ class Chef
   class Provider
     class DscResource < Chef::Provider
       include Chef::Mixin::PowershellTypeCoercions
-
       provides :dsc_resource, os: "windows"
-
       def initialize(new_resource, run_context)
         super
         @new_resource = new_resource
         @module_name = new_resource.module_name
+        @reboot_resource = nil
       end
 
       def action_run
         if ! test_resource
           converge_by(generate_description) do
             result = set_resource
+            reboot_if_required
           end
         end
       end
@@ -59,8 +58,9 @@ class Chef
           a.block_action!
         end
         requirements.assert(:run) do |a|
-          a.assertion { dsc_refresh_mode_disabled? }
-          err = ["The LCM must have its RefreshMode set to Disabled. "]
+          a.assertion { supports_refresh_mode_enabled? || dsc_refresh_mode_disabled? }
+          err = ["The LCM must have its RefreshMode set to Disabled for" \
+                 " PowerShell versions before 5.0.10586.0."]
           a.failure_message Chef::Exceptions::ProviderNotFound, err.join(' ')
           a.whyrun err + ["Assuming a previous resource sets the RefreshMode."]
           a.block_action!
@@ -83,9 +83,13 @@ class Chef
       def supports_dsc_invoke_resource?
         run_context && Chef::Platform.supports_dsc_invoke_resource?(node)
       end
-      
+
       def dsc_refresh_mode_disabled?
         Chef::Platform.dsc_refresh_mode_disabled?(node)
+      end
+
+      def supports_refresh_mode_enabled?
+        Chef::Platform.supports_refresh_mode_enabled?(node)
       end
 
       def generate_description
@@ -99,7 +103,6 @@ class Chef
       def module_name
         @module_name ||= begin
           found = resource_store.find(dsc_resource_name)
-
           r = case found.length
               when 0
                 raise Chef::Exceptions::ResourceNotFound,
@@ -123,18 +126,14 @@ class Chef
         # however Invoke-DscResource is not correctly writing to that
         # stream and instead just dumping to stdout
         @converge_description = result.stdout
-
-        if result.return_value.is_a?(Array)
-          # WMF Feb 2015 Preview
-          result.return_value[0]["InDesiredState"]
-        else
-          # WMF April 2015 Preview
-          result.return_value["InDesiredState"]
-        end
+        return_dsc_resource_result(result, "InDesiredState")
       end
 
       def set_resource
         result = invoke_resource(:set)
+        if return_dsc_resource_result(result, 'RebootRequired')
+          create_reboot_resource
+        end
         result.return_value
       end
 
@@ -142,11 +141,9 @@ class Chef
         properties = translate_type(@new_resource.properties)
         switches = "-Method #{method.to_s} -Name #{@new_resource.resource}"\
                    " -Property #{properties} -Verbose"
-
         if module_name != :none
           switches += " -Module #{module_name}"
         end
-
         cmdlet = Chef::Util::Powershell::Cmdlet.new(
           node,
           "Invoke-DscResource #{switches}",
@@ -155,6 +152,38 @@ class Chef
         cmdlet.run!
       end
 
+      def return_dsc_resource_result(result, property_name)
+        if result.return_value.is_a?(Array)
+          # WMF Feb 2015 Preview
+          result.return_value[0][property_name]
+        else
+          # WMF April 2015 Preview
+          result.return_value[property_name]
+        end
+      end
+
+      def create_reboot_resource
+        @reboot_resource = Chef::Resource::Reboot.new(
+          "Reboot for #{@new_resource.name}",
+          run_context
+        ).tap do |r|
+          r.reason("Reboot for #{@new_resource.resource}.")
+        end
+      end
+
+      def reboot_if_required
+        reboot_action = @new_resource.reboot_action
+        unless @reboot_resource.nil?
+          case reboot_action
+          when :nothing
+            Chef::Log.debug("A reboot was requested by the DSC resource, but reboot_action is :nothing.")
+            Chef::Log.debug("This dsc_resource will not reboot the node.")
+          else
+            Chef::Log.debug("Requesting node reboot with #{reboot_action}.")
+            @reboot_resource.run_action(reboot_action)
+          end
+        end
+      end
     end
   end
 end
