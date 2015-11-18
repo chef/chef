@@ -31,6 +31,7 @@ class Chef
         super
         @properties = {}
         @resource = nil
+        @reboot_action = :nothing
       end
 
       def resource(value=nil)
@@ -68,6 +69,17 @@ class Chef
         end
       end
 
+      # This property takes the action message for the reboot resource
+      # If the set method of the DSC resource indicate that a reboot
+      # is necessary, reboot_action provides the mechanism for a reboot to 
+      # be requested.
+      def reboot_action(value=nil)
+        if value
+          @reboot_action = value
+        else
+          @reboot_action
+        end
+      end
       private
 
       def value_of(value)
