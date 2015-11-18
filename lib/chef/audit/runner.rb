@@ -106,6 +106,7 @@ class Chef
         RSpec.configure do |c|
           c.color = Chef::Config[:color]
           c.expose_dsl_globally = false
+          c.project_source_dirs = Array(Chef::Config[:cookbook_path])
           c.backtrace_exclusion_patterns << exclusion_pattern
         end
       end

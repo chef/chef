@@ -52,6 +52,10 @@ describe Chef::Audit::Runner do
     let(:run_context) { instance_double(Chef::RunContext, :events => events, :audits => audits) }
     let(:control_group_name) { "control_group_name" }
 
+    # Set cookbook path to include our parent, so that it will recognize this
+    # rspec file as one that should show up in the backtrace.
+    before(:each) { Chef::Config[:cookbook_path] = File.dirname(__FILE__) }
+
     shared_context "passing audit" do
       let(:audits) do
         should_pass = lambda do
