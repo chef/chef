@@ -52,5 +52,5 @@ IF "%PIPELINE_NAME%" == "chef-13" (
   call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/unit spec/functional
 ) ELSE (
   REM ; Running unit tests
-  call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/unit
+  call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/unit spec/functional
 )
