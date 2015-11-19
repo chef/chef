@@ -42,7 +42,8 @@ build do
 "%~dp0\\..\\embedded\\bin\\ruby.exe" "%~dpn0" %*
               EOF
             end
-          elsif File.exists?("#{install_dir}/embedded/bin/#{bin}")
+          end
+          if File.exists?("#{install_dir}/embedded/bin/#{bin}")
             File.open("#{install_dir}/embedded/bin/#{bin}.bat", "w") do |f|
               f.puts <<-EOF
 @ECHO OFF
