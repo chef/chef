@@ -1,4 +1,4 @@
-# Chef 
+# Chef
 [![Code Climate](https://codeclimate.com/github/chef/chef.png)](https://codeclimate.com/github/chef/chef)
 [![Build Status Master](https://travis-ci.org/chef/chef.svg?branch=master)](https://travis-ci.org/chef/chef)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
@@ -9,6 +9,8 @@ Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 * Source: [http://github.com/chef/chef/tree/master](http://github.com/chef/chef/tree/master)
 * Tickets/Issues: [https://github.com/chef/chef/issues](https://github.com/chef/chef/issues)
 * IRC: `#chef` and `#chef-hacking` on Freenode
+  - Join via browser: [#chef](https://webchat.freenode.net/?channels=chef), [#chef-hacking](https://webchat.freenode.net/?channels=chef-hacking)
+  - View logs: [#chef](https://botbot.me/freenode/chef/), [#chef-hacking](https://botbot.me/freenode/chef-hacking/)
 * Mailing list: [https://discourse.chef.io](https://discourse.chef.io)
 
 Chef is a configuration management tool designed to bring automation to your
@@ -46,7 +48,7 @@ Then get the source and install it:
 
     # Clone this repo
     git clone https://github.com/chef/chef.git
-    
+
     # cd into the source tree
     cd chef
 
