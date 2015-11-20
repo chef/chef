@@ -72,7 +72,7 @@ class Chef
         :description => "The ssh password - will prompt if flag is specified but no password is given",
         # default to a value that can not be a password (boolean)
         # so we can effectively test if this parameter was specified
-        # without a vlaue
+        # without a value
         :default => false
 
       option :ssh_port,
