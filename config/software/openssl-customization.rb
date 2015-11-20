@@ -53,7 +53,12 @@ build do
       "OpenSSL.fips_mode = true",
       "require 'digest'",
       "require 'digest/sha1'",
-      "Digest::SHA1 = OpenSSL::Digest::SHA1"
+      "Digest::SHA1 = OpenSSL::Digest::SHA1",
+
+      "require 'digest/md5'",
+      "# We're going to use the ruby md5 implementation for now",
+      "# This will be removed once all our MD5 uses are removed",
+      "OpenSSL::Digest::MD5 = Digest::MD5",
     ].join("\n")
 
     if windows?
