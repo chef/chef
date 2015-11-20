@@ -152,5 +152,8 @@ describe Chef::Resource::Execute do
     end
   end
 
-  it_behaves_like "an execute resource that supports alternate user identity"
+  describe "when running with an alternate user identity" do
+    let(:resource_command_property) { :command }
+    it_behaves_like "an execute resource that supports alternate user identity"
+  end
 end
