@@ -50,12 +50,12 @@ shared_examples_for "an execute resource that supports alternate user identity" 
 
     let(:windows_current_user) { ENV['USERNAME'] }
     let(:windows_current_user_qualified) { "#{ENV['COMPUTERNAME']}\\#{windows_current_user}" }
-    let(:resource_identity_command) { "whoami.exe > #{script_output_path}" }
+    let(:resource_identity_command) { "powershell.exe -noprofile -command \"import-module microsoft.powershell.utility;([Security.Principal.WindowsPrincipal]([Security.Principal.WindowsIdentity]::GetCurrent())).identity.name | out-file -encoding ASCII '#{script_output_path}'\"" }
+
     let(:execute_resource) {
-      resource = Chef::Resource::Execute.new("foo_resource", run_context)
-      resource.command(resource_identity_command)
       resource.user(windows_alternate_user)
       resource.password(windows_alternate_user_password)
+      resource.send(resource_command_property, resource_identity_command)
       resource
     }
 

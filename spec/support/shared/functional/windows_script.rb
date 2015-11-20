@@ -181,6 +181,11 @@ shared_context Chef::Resource::WindowsScript do
       let(:resource_architecture) { :x86_64 }
       it_behaves_like "a script resource with architecture attribute"
     end
+
+    describe "when running with an alternate user identity" do
+      let(:resource_command_property) { :code }
+      it_behaves_like "an execute resource that supports alternate user identity"
+    end
   end
 
   def get_windows_script_output(suffix = '')
