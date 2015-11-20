@@ -151,4 +151,6 @@ describe Chef::Resource::Execute do
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::CommandTimeout)
     end
   end
+
+  it_behaves_like "an execute resource that supports alternate user identity"
 end
