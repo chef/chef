@@ -32,9 +32,11 @@ else
 end
 
 # Uncomment to pin the chef version
-override :chef,           version: "master"
-override :ohai,           version: "master"
-override :chefdk,         version: "master"
+override :chef,             version: "master"
+override :ohai,             version: "master"
+override :chefdk,           version: "master"
+override :inspec,           version: "master"
+override :'kitchen-inspec', version: "master"
 
 override :'knife-windows', version: "v1.1.1"
 override :'knife-spork',   version: "1.5.0"
@@ -70,12 +72,9 @@ else
   override :rubygems,     version: "2.4.8"
 end
 
-override :inspec, version: "v0.9.2"
-
 override :rubocop, version: "v0.31.0"
 
 override :'test-kitchen', version: "v1.4.2"
-override :'kitchen-inspec', version: "v0.9.0"
 override :'kitchen-vagrant', version: "v0.19.0"
 override :'winrm-transport', version: "v1.0.3"
 override :yajl,           version: "1.2.1"
