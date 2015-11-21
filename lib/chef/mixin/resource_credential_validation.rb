@@ -30,7 +30,7 @@ class Chef
           end
         end
 
-        if password.nil?
+        if ! user.nil? && password.nil?
           raise ArgumentError, "No password property was specified when the user property was specified"
         end
       end
