@@ -165,6 +165,11 @@ shared_context Chef::Resource::WindowsScript do
         expect(resource.class).to receive(:new).and_call_original
         expect(resource.should_skip?(:run)).to be_falsey
       end
+
+      context "when this resource is used as a guard and it is specified with an alternate user identity" do
+        let(:guard_interpreter_resource) { resource.resource_name }
+        it_behaves_like "a resource with a guard specifying an alternate user identity"
+      end
     end
 
     context "when the architecture attribute is not set" do
