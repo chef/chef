@@ -46,10 +46,6 @@ shared_context Chef::Resource::WindowsScript do
     File.delete(script_output_path) if File.exists?(script_output_path)
   end
 
-  let!(:resource) do
-    Chef::Resource::WindowsScript::Batch.new("Batch resource functional test", @run_context)
-  end
-
   shared_examples_for "a script resource with architecture attribute" do
     context "with the given architecture attribute value" do
       let(:expected_architecture) do
