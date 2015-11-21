@@ -137,6 +137,13 @@ describe Chef::Resource::Execute do
     end
   end
 
+  describe "when a guard is specified" do
+    describe "when using the default guard interpreter" do
+      let(:guard_interpreter_resource) { nil }
+      it_behaves_like "a resource with a guard specifying an alternate user identity"
+    end
+  end
+
   # Ensure that CommandTimeout is raised, and is caused by resource.timeout really expiring.
   # https://github.com/chef/chef/issues/2985
   #
