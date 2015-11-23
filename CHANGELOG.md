@@ -35,6 +35,10 @@
   [pr#3633](https://github.com/chef/chef/pull/3633) add the word group to `converge_by` call for group provider
 * [**Patrick Connolly**](https://github.com/patcon)
   [pr#3529](https://github.com/chef/chef/pull/3529) Allow user@hostname format for knife-bootstrap
+* [**Justin Seubert**](https://github.com/dude051)
+  [pr#4160](https://github.com/chef/chef/pull/4160) Correcting regex for upstart_state
+* [**Jeff Blaine**](https://github.com/jblaine)
+  [pr#3848](https://github.com/chef/chef/pull/3848) Migrate to --ssh-identity-file instead of --identity-file
 
 * [pr#4185](https://github.com/chef/chef/pull/4185) dpkg provider cleanup
 * [pr#4165](https://github.com/chef/chef/pull/4165) Multipackage internal API improvements

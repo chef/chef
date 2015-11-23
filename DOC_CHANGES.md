@@ -63,3 +63,8 @@ Added reboot_action attribute to dsc_resource.
 
 If the DSC resource indicates that it requires a reboot, reboot_action can use the reboot resource to
 either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).  The default value of reboot_action is :nothing.
+
+### `knife bootstrap --ssh-identity-file`
+
+The --identity-file option to `knife bootstrap` has been deprecated in favor of `knife bootstrap --ssh-identity-file`
+to better align with other ssh related options.
