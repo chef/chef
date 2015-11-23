@@ -21,7 +21,7 @@ require 'chef/util/powershell/ps_credential'
 
 describe Chef::Util::Powershell::PSCredential do
   let (:username) { 'foo' }
-  let (:password) { 'password' }
+  let (:password) { 'ThIsIsThEpAsSwOrD' }
 
   context 'when username and password are provided' do
     let(:ps_credential) { Chef::Util::Powershell::PSCredential.new(username, password)}
@@ -31,6 +31,13 @@ describe Chef::Util::Powershell::PSCredential do
         expect(ps_credential.to_psobject).to eq(
         "New-Object System.Management.Automation.PSCredential("\
             "'#{username}',('encrypted' | ConvertTo-SecureString))")
+      end
+    end
+
+    context 'when to_text is called' do
+      it 'should not contain the password' do
+        allow(ps_credential).to receive(:encrypt).with(password).and_return('encrypted')
+        expect(ps_credential.to_text).not_to match(/#{password}/)
       end
     end
   end
