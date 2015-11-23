@@ -16,18 +16,28 @@
 # limitations under the License.
 #
 
+shared_context "a non-admin Windows user" do
+  include Chef::Mixin::ShellOut
+
+  before do
+    shell_out!("net.exe user /delete #{windows_nonadmin_user}", returns: [0,2])
+    shell_out!("net.exe user /add #{windows_nonadmin_user} \"#{windows_nonadmin_user_password}\"")
+  end
+
+  after do
+    shell_out!("net.exe user /delete #{windows_nonadmin_user}", returns: [0,2])
+  end
+end
+
 shared_context "alternate user identity" do
   let(:windows_alternate_user) {"chef%02d%02d%02d" %[Time.now.year % 100, Time.now.month, Time.now.day]}
   let(:windows_alternate_user_password) { 'lj28;fx3T!x,2'}
   let(:windows_alternate_user_qualified) { "#{ENV['COMPUTERNAME']}\\#{windows_alternate_user}" }
 
-  include Chef::Mixin::ShellOut
+  let(:windows_nonadmin_user) { windows_alternate_user }
+  let(:windows_nonadmin_user_password) { windows_alternate_user_password }
 
-  before do
-    shell_out!("net.exe user /delete #{windows_alternate_user}", returns: [0,2])
-    shell_out!("net.exe user /add #{windows_alternate_user} \"#{windows_alternate_user_password}\"")
-  end
-
+  include_context 'a non-admin Windows user'
 end
 
 shared_context "a command that can be executed as an alternate user" do
@@ -46,7 +56,6 @@ shared_context "a command that can be executed as an alternate user" do
   after do
     File.delete(script_output_path) if File.exists?(script_output_path)
     Dir.rmdir(script_output_dir) if Dir.exists?(script_output_dir)
-    shell_out("net.exe user /delete #{windows_alternate_user}")
   end
 end
 
