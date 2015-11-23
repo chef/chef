@@ -121,6 +121,25 @@ matrix:
     - secure: SOMYGVfHLkHsH6koxpw68YQ4ydEo6YXPhHbrYGQbehUbFa6+OZzBcAJRJbKjyhD2AZRvNr2jB8XnjYKvVyDGQRpkWhGYZ7CpHqINpDsqKBsbiMe3/+KmKQqS+UKxNGefquoOvyQ1N8Xy77dkWYokRtGMEuR12RkZLonxiDW8Qyg=
     - secure: bSsDg+dJnPFdFiC/tbb61HdLh/Q0z2RVVAReT1wvV1BN4fN4NydvkUGbQmyFNyyunLulEs+X0oFma9L0497nUlTnan8UOg9sIleTSybPX6E9xSKKCItH1GgDw8bM9Igez5OOrrePBD3altVrH+FmGx0dlTQgM/KZMN50BJ79cXw=
     ### END TEST KITCHEN ONLY ###
+  - rvm: 2.2
+    sudo: required
+    dist: trusty
+    os: linux
+    cache:
+    before_install:
+      - sudo apt-get update
+      - sudo apt-get -y install squid3 git
+    env: PROXY_TESTS_DIR=/tmp/proxy_tests
+    script:
+      - which chef-client
+      - chef-client --version
+      - git clone https://github.com/chef/proxy_tests.git
+      - cd proxy_tests
+      - chef-client -z -o proxy_tests::render
+      #- sh /tmp/proxy_tests/setup.sh
+      - sudo -E bash /tmp/proxy_tests/run_tests.sh chef_client \* \* /tmp/out.txt
+    after_script: cat /tmp/out.txt
+
 notifications:
   on_change: true
   on_failure: true
