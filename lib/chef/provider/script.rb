@@ -18,7 +18,7 @@
 
 require 'tempfile'
 require 'chef/provider/execute'
-require 'chef/win32/security'
+require 'chef/win32/security' if Chef::Platform.windows?
 require 'forwardable'
 
 class Chef
