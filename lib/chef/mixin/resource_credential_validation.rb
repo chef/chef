@@ -21,17 +21,17 @@ class Chef
     module ResourceCredentialValidation
 
       def validate_credential(user, domain, password)
-        if ! Chef::Platform.windows?
-          if domain || password
-            raise Exceptions::UnsupportedPlatform,
-                  "The domain and password properties are only supported on the Windows platform"
-          else
-            return
+
+        if Chef::Platform.windows?
+          if ! user.nil? && password.nil?
+            raise ArgumentError, "No `password` property was specified when the `user` property was specified"
           end
+        elsif ! domain.nil? || ! password.nil?
+          raise Exceptions::UnsupportedPlatform, "The `domain` and `password` properties are only supported on the Windows platform"
         end
 
-        if ! user.nil? && password.nil?
-          raise ArgumentError, "No password property was specified when the user property was specified"
+        if ( ! password.nil? || ! domain.nil? ) && user.nil?
+          raise ArgumentError, "The `password` or `domain` property was specified without specification of the user property"
         end
       end
 
