@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,25 +24,19 @@ require 'chef/platform/resource_priority_map'
 
 describe Chef::Recipe do
 
-  let(:cookbook_repo) { File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks")) }
-
-  let(:cookbook_loader) do
-    loader = Chef::CookbookLoader.new(cookbook_repo)
-    loader.load_cookbooks
-    loader
+  let(:cookbook_collection) do
+    cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+    cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
+    cookbook_loader.load_cookbooks
+    Chef::CookbookCollection.new(cookbook_loader)
   end
-
-  let(:cookbook_collection) { Chef::CookbookCollection.new(cookbook_loader) }
 
   let(:node) do
     Chef::Node.new
   end
 
-  let(:events) do
-    Chef::EventDispatch::Dispatcher.new
-  end
-
   let(:run_context) do
+    events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, cookbook_collection, events)
   end
 
@@ -304,6 +298,34 @@ describe Chef::Recipe do
       it "adds the resource to the resource collection" do
         zm_resource # force let binding evaluation
         expect(run_context.resource_collection.resources(:zen_master => "klopp")).to eq(zm_resource)
+      end
+
+      it "will insert another resource if create_if_missing is not set (cloned resource as of Chef-12)" do
+        zm_resource
+        recipe.declare_resource(:zen_master, "klopp")
+        expect(run_context.resource_collection.count).to eql(2)
+      end
+
+      it "does not insert two resources if create_if_missing is used" do
+        zm_resource
+        recipe.declare_resource(:zen_master, "klopp", create_if_missing: true)
+        expect(run_context.resource_collection.count).to eql(1)
+      end
+
+      context "injecting a different run_context" do
+        let(:run_context2) do
+          events = Chef::EventDispatch::Dispatcher.new
+          Chef::RunContext.new(node, cookbook_collection, events)
+        end
+
+        it "should insert resources into the correct run_context" do
+          zm_resource
+          recipe.declare_resource(:zen_master, "klopp2", run_context: run_context2)
+          run_context2.resource_collection.lookup("zen_master[klopp2]")
+          expect {run_context2.resource_collection.lookup("zen_master[klopp]")}.to raise_error(Chef::Exceptions::ResourceNotFound)
+          expect {run_context.resource_collection.lookup("zen_master[klopp2]")}.to raise_error(Chef::Exceptions::ResourceNotFound)
+          run_context.resource_collection.lookup("zen_master[klopp]")
+        end
       end
     end
 

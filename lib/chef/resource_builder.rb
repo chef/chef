@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright (c) 2015-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,6 @@
 #
 
 # NOTE: this was extracted from the Recipe DSL mixin, relevant specs are in spec/unit/recipe_spec.rb
-
-require 'chef/exceptions'
-require 'chef/resource'
-require 'chef/log'
 
 class Chef
   class ResourceBuilder
@@ -142,3 +138,7 @@ class Chef
 
   end
 end
+
+require 'chef/exceptions'
+require 'chef/resource'
+require 'chef/log'
