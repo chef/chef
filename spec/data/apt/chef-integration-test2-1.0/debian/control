@@ -1,0 +1,15 @@
+Source: chef-integration-test2
+Section: unknown
+Priority: optional
+Maintainer: Lamont Granquist <lamont@coredump.scriptkiddie.lan>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.4
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Git: git://git.debian.org/collab-maint/chef-integration-test2.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/chef-integration-test2.git;a=summary
+
+Package: chef-integration-test2
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>

@@ -16,16 +16,27 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-
 class Chef
-  class Resource
-    class DpkgPackage < Chef::Resource::Package
-      provides :dpkg_package, os: "linux"
+  module Mixin
+    module SubclassDirective
+      def self.included(base)
+        base.extend(ClassMethods)
+      end
+      module ClassMethods
+        def subclass_directive(sym)
+          define_singleton_method sym do
+            instance_variable_set(:"@#{sym}", true)
+          end
 
-      resource_name :dpkg_package
+          define_singleton_method :"#{sym}?" do
+            !!instance_variable_get(:"@#{sym}")
+          end
 
-      property :source, [String, Array, nil]
+          define_method :"#{sym}?" do
+            self.class.send(:"#{sym}?")
+          end
+        end
+      end
     end
   end
 end

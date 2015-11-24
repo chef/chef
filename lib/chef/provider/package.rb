@@ -18,6 +18,7 @@
 
 require 'chef/mixin/shell_out'
 require 'chef/mixin/command'
+require 'chef/mixin/subclass_directive'
 require 'chef/log'
 require 'chef/file_cache'
 require 'chef/platform'
@@ -27,6 +28,12 @@ class Chef
     class Package < Chef::Provider
       include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::SubclassDirective
+
+      # subclasses declare this if they want all their arguments as arrays of packages and names
+      subclass_directive :use_multipackage_api
+      # subclasses declare this if they want sources (filenames) pulled from their package names
+      subclass_directive :use_package_name_for_source
 
       #
       # Hook that subclasses use to populate the candidate_version(s)
@@ -44,6 +51,8 @@ class Chef
       end
 
       def check_resource_semantics!
+        # FIXME: this is not universally true and subclasses are needing to override this and no-ops it.  It should be turned into
+        # another "subclass_directive" and the apt and yum providers should declare that they need this behavior.
         if new_resource.package_name.is_a?(Array) && new_resource.source != nil
           raise Chef::Exceptions::InvalidResourceSpecification, "You may not specify both multipackage and source"
         end
@@ -211,7 +220,7 @@ class Chef
       # @todo use composition rather than inheritance
 
       def multipackage_api_adapter(name, version)
-        if supports_arrays?
+        if use_multipackage_api?
           yield [name].flatten, [version].flatten
         else
           yield name, version
@@ -242,7 +251,7 @@ class Chef
         raise( Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reconfig" )
       end
 
-      # this is heavily used by subclasses
+      # used by subclasses.  deprecated.  use #a_to_s instead.
       def expand_options(options)
         options ? " #{options}" : ""
       end
@@ -296,24 +305,6 @@ class Chef
       #
       def as_array(thing)
         [ thing ].flatten
-      end
-
-      class << self
-        attr_accessor :supports_arrays
-
-        def supports_arrays?
-          !!@supports_arrays
-        end
-
-        private
-
-        def use_multipackage_api
-          @supports_arrays = true
-        end
-      end
-
-      def supports_arrays?
-        self.class.supports_arrays?
       end
 
       private
@@ -527,6 +518,16 @@ class Chef
           args << { :timeout => new_resource.timeout ? new_resource.timeout : 900 }
         end
         args
+      end
+
+      # Helper for sublcasses to convert an array of string args into a string.  It
+      # will compact nil or empty strings in the array and will join the array elements
+      # with spaces, without introducing any double spaces for nil/empty elements.
+      #
+      # @param args [String] variable number of string arguments
+      # @return [String] nicely concatenated string or empty string
+      def a_to_s(*args)
+        args.reject {|i| i.nil? || i == "" }.join(" ")
       end
     end
   end

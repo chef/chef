@@ -1,0 +1,5 @@
+chef-integration-test2 (1.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Lamont Granquist <lamont@coredump.scriptkiddie.lan>  Mon, 23 Nov 2015 12:57:22 -0800
