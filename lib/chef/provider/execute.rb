@@ -33,7 +33,6 @@ class Chef
       def_delegators :@new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates
 
       def initialize(new_resource, run_context)
-        validate_credential(new_resource.user, new_resource.domain, new_resource.password)
         super
       end
 
@@ -60,6 +59,7 @@ class Chef
       end
 
       def action_run
+        validate_credential(new_resource.user, new_resource.domain, new_resource.password)
         if creates && sentinel_file.exist?
           Chef::Log.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false
