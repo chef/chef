@@ -106,6 +106,22 @@ shared_examples_for "an execute resource" do
     expect(@resource.user).to eql(1)
   end
 
+  describe "when running on Windows" do
+    it "should accept a string for the domain" do
+    end
+
+    it "should accept a password for the domain" do
+    end
+  end
+
+  describe "when not running on Windows" do
+    it "should raise an error if the domain is specified" do
+    end
+
+    it "should raise an error if the password is specified" do
+    end
+  end
+
   it "should accept a string for creates" do
     @resource.creates "something"
     expect(@resource.creates).to eql("something")
