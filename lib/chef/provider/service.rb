@@ -44,16 +44,19 @@ class Chef
         supports[:restart] = false if supports[:restart].nil?
       end
 
-     def load_new_resource_state
-        # If the user didn't specify a change in enabled state,
-        # it will be the same as the old resource
-       if ( @new_resource.enabled.nil? )
-         @new_resource.enabled(@current_resource.enabled)
-       end
-       if ( @new_resource.running.nil? )
-         @new_resource.running(@current_resource.running)
-       end
-     end
+      # the new_resource#enabled and #running variables are not user input, but when we
+      # do (e.g.) action_enable we want to set new_resource.enabled so that the comparison
+      # between desired and current state produces the correct change in reporting.
+      # XXX?: the #nil? check below will likely fail if this is a cloned resource or if
+      # we just run multiple actions.
+      def load_new_resource_state
+        if ( @new_resource.enabled.nil? )
+          @new_resource.enabled(@current_resource.enabled)
+        end
+        if ( @new_resource.running.nil? )
+          @new_resource.running(@current_resource.running)
+        end
+      end
 
       def shared_resource_requirements
       end
