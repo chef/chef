@@ -131,13 +131,12 @@ matrix:
       - sudo apt-get -y install squid3 git
     env: PROXY_TESTS_DIR=/tmp/proxy_tests
     script:
-      - which chef-client
-      - chef-client --version
+      - bundle exec chef-client --version
       - git clone https://github.com/chef/proxy_tests.git
       - cd proxy_tests
-      - chef-client -z -o proxy_tests::render
+      - bundle exec chef-client -z -o proxy_tests::render
       #- sh /tmp/proxy_tests/setup.sh
-      - sudo -E bash /tmp/proxy_tests/run_tests.sh chef_client \* \* /tmp/out.txt
+      - bundle exec sudo -E bash /tmp/proxy_tests/run_tests.sh chef_client \* \* /tmp/out.txt
     after_script: cat /tmp/out.txt
 
 notifications:
