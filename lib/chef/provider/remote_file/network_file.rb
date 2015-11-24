@@ -32,7 +32,6 @@ class Chef
         attr_reader :new_resource
 
         def initialize(source, new_resource, current_resource)
-          validate_credential(new_resource.remote_user, new_resource.remote_user_domain, new_resource.remote_user_password)
           @new_resource = new_resource
           @source = source
         end
@@ -40,6 +39,7 @@ class Chef
         # Fetches the file on a network share, returning a Tempfile-like File handle
         # windows only
         def fetch
+          validate_credential(new_resource.remote_user, new_resource.remote_user_domain, new_resource.remote_user_password)
           begin
             tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
             Chef::Log.debug("#{new_resource} staging #{@source} to #{tempfile.path}")
