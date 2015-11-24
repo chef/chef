@@ -29,9 +29,8 @@ class Chef::Util::Powershell
       "New-Object System.Management.Automation.PSCredential('#{@username}',('#{encrypt(@password)}' | ConvertTo-SecureString))"
     end
 
-    def to_s
-      to_psobject
-    end
+    alias to_s to_psobject
+    alias to_text to_psobject
 
     private
 
