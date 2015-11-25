@@ -4,11 +4,11 @@
 * [**Dave Eddy**](https://github.com/bahamas10)
   [pr#3187](https://github.com/chef/chef/pull/3187) overhaul solaris SMF service provider
 * [**Mikhail Zholobov**](https://github.com/legal90)
-  [pr#3192](https://github.com/chef/chef/pull/3192) provider/user/dscl: Set default gid to 20
-* [**Mikhail Zholobov**](https://github.com/legal90)
-  [pr#3193](https://github.com/chef/chef/pull/3193) provider/user/dscl: Set "comment" default value
+  - [pr#3192](https://github.com/chef/chef/pull/3192) provider/user/dscl: Set default gid to 20
+  - [pr#3193](https://github.com/chef/chef/pull/3193) provider/user/dscl: Set "comment" default value
 * [**Jordan Evans**](https://github.com/jordane)
-  [pr#3263](https://github.com/chef/chef/pull/3263) `value_for_platform` should use `Chef::VersionConstraint::Platform`
+  - [pr#3263](https://github.com/chef/chef/pull/3263) `value_for_platform` should use `Chef::VersionConstraint::Platform`
+  - [pr#3633](https://github.com/chef/chef/pull/3633) add the word group to `converge_by` call for group provider
 * [**Scott McGillivray**](https://github.com/thechile)
   [pr#3450](https://github.com/chef/chef/pull/3450) Fix 'knife cookbook show' to work on root files
 * [**Aubrey Holland**](https://github.com/aub)
@@ -18,27 +18,27 @@
 * [**Michael Pereira**](https://github.com/MichaelPereira)
   [pr#3968](https://github.com/chef/chef/pull/3968) Fix cookbook installation from supermarket on windows
 * [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly)
-  [pr#3941](https://github.com/chef/chef/pull/3941) allow reboot by reboot resource with chef-apply
+  - [pr#3941](https://github.com/chef/chef/pull/3941) allow reboot by reboot resource with chef-apply
+  - [pr#3900](https://github.com/chef/chef/pull/3900) Add new option json attributes file to bootstraping
 * [**permyakovsv**](https://github.com/permyakovsv)
   [pr#3901](https://github.com/chef/chef/pull/3901) Add tmux-split parameter to knife ssh
-* [**Yukihiko SAWANOBORI**](https://github.com/sawanoboly)
-  [pr#3900](https://github.com/chef/chef/pull/3900) Add new option json attributes file to bootstraping
 * [**Evan Gilman**](https://github.com/evan2645)
   [pr#3864](https://github.com/chef/chef/pull/3864) Knife `bootstrap_environment` should use Explicit config before Implicit
 * [**Ranjib Dey**](https://github.com/ranjib)
   [pr#3834](https://github.com/chef/chef/pull/3834) Dont spit out stdout and stderr for execute resource failure, if its declared sensitive
 * [**Jeff Blaine**](https://github.com/jblaine)
-  [pr#3776](https://github.com/chef/chef/pull/3776) Changes --hide-healthy to --hide-by-mins MINS
+  - [pr#3776](https://github.com/chef/chef/pull/3776) Changes --hide-healthy to --hide-by-mins MINS
+  - [pr#3848](https://github.com/chef/chef/pull/3848) Migrate to --ssh-identity-file instead of --identity-file
 * [**dbresson**](https://github.com/dbresson)
   [pr#3650](https://github.com/chef/chef/pull/3650) Define == for node objects
-* [**Jordan Evans**](https://github.com/jordane)
-  [pr#3633](https://github.com/chef/chef/pull/3633) add the word group to `converge_by` call for group provider
 * [**Patrick Connolly**](https://github.com/patcon)
   [pr#3529](https://github.com/chef/chef/pull/3529) Allow user@hostname format for knife-bootstrap
 * [**Justin Seubert**](https://github.com/dude051)
   [pr#4160](https://github.com/chef/chef/pull/4160) Correcting regex for upstart_state
-* [**Jeff Blaine**](https://github.com/jblaine)
-  [pr#3848](https://github.com/chef/chef/pull/3848) Migrate to --ssh-identity-file instead of --identity-file
+* [**Sarah Michaelson**](https://github.com/skmichaelson)
+  [pr#3810](https://github.com/chef/chef/pull/3810) GH-1909 Add validation for chef_server_url
+* [**Maxime Brugidou**](https://github.com/brugidou)
+  [pr#4052](https://github.com/chef/chef/pull/4052) Add make_child_entry in ChefFS CookbookSubdir
 
 * [pr#4185](https://github.com/chef/chef/pull/4185) dpkg provider cleanup
 * [pr#4165](https://github.com/chef/chef/pull/4165) Multipackage internal API improvements
