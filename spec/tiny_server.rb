@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,9 +66,11 @@ module TinyServer
         @server = Server.setup(@options) do
           run API.instance
         end
+        @old_handler = trap(:INT, "EXIT")
         @server.start
       end
       block_until_started
+      trap(:INT, @old_handler)
     end
 
     def url
