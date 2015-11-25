@@ -87,7 +87,7 @@ module ChefConfig
     #
     configurable(:chef_server_url).writes_value do |uri|
       unless is_valid_url? uri
-        raise ConfigurationError, "#{url} is an invalid chef_server_url."
+        raise ConfigurationError, "#{uri} is an invalid chef_server_url."
       end
       uri.to_s.strip
     end
