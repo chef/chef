@@ -181,7 +181,7 @@ E
       let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
 
       before do
-        trap(:INT, "DEFAULT")
+        @old_signal = trap(:INT, "DEFAULT")
 
         expect(TCPSocket).to receive(:new).
           with("foo.example.com", 8443).
@@ -189,6 +189,10 @@ E
         expect(OpenSSL::SSL::SSLSocket).to receive(:new).
           with(tcp_socket_for_debug, ssl_check.noverify_peer_ssl_context).
           and_return(ssl_socket_for_debug)
+      end
+
+      after do
+        trap(:INT, @old_signal)
       end
 
       context "when the certificate's CN does not match the hostname" do
