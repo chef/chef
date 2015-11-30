@@ -23,6 +23,8 @@ require 'chef/mixin/shell_out'
 include_flag = !(['ubuntu', 'centos', 'aix'].include?(ohai[:platform]))
 
 describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => include_flag do
+  # This test does not work in travis because there is no eth0
+
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
