@@ -21,23 +21,32 @@ require 'chef/util/windows/logon_session' if Chef::Platform.windows?
 class Chef
   module Mixin
     module UserContext
+
+      include Chef::Mixin::ResourceCredentialValidation
+
       def with_user_context(user, domain, password, &block)
         if ! block_given?
           raise Exceptions::ArgumentError, 'You must supply a block to `with_user_context`'
         end
 
-        if ! Chef::Platform.windows?
+        validate_credential(user, domain, password)
+
+        if ! user.nil? && ! Chef::Platform.windows?
           raise Exceptions::UnsupportedPlatform,
-                  "User context functionality is only supported on the Windows platform"
+                "User context functionality is only supported on the Windows platform"
         end
 
+        login_session = nil
+
         begin
-          logon_session = Chef::Util::Windows::LogonSession.new(user, domain, password)
-          logon_session.open
-          logon_session.set_user_context
+          if ! user.nil?
+            logon_session = Chef::Util::Windows::LogonSession.new(user, domain, password)
+            logon_session.open
+            logon_session.set_user_context
+          end
           block.call
         ensure
-          logon_session.close!
+          logon_session.close! if logon_session
         end
       end
     end

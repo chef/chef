@@ -44,7 +44,10 @@ class Chef
             tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
             Chef::Log.debug("#{new_resource} staging #{@source} to #{tempfile.path}")
 
-            with_user_context(new_resource.remote_user, new_resource.remote_user_domain, new_resource.remote_user_password) do
+            validate_credential(new_resource.remote_user, new_resource.remote_user_domain, new_resource.remote_user_password)
+            domain, user = translated_domain_and_user( new_resource.remote_user_domain, new_resource.remote_user )
+
+            with_user_context(user, domain, new_resource.remote_user_password) do
               ::File.open(@source, 'rb') do | remote_file |
                 while data = remote_file.read(1048576)
                   tempfile.write(data)
@@ -54,7 +57,6 @@ class Chef
           ensure
             tempfile.close if tempfile
           end
-
           tempfile
         end
 

@@ -20,9 +20,15 @@ class Chef
   module Mixin
     module ResourceCredentialValidation
 
-      def validate_credential(user, domain, password)
+      def validate_credential(specified_user, specified_domain, password)
+        user = specified_user
+        domain = specified_domain
 
         if Chef::Platform.windows?
+          if ! user.nil?
+            domain, user = translated_domain_and_user(specified_domain, specified_user)
+          end
+
           if ! user.nil? && password.nil?
             raise ArgumentError, "No `password` property was specified when the `user` property was specified"
           end
@@ -35,7 +41,30 @@ class Chef
         end
       end
 
+      def translated_domain_and_user(specified_domain, specified_user)
+        domain = specified_domain
+        user = specified_user
+
+        if ! specified_user.nil? && specified_domain.nil?
+          domain_and_user = user.split('\\')
+
+          if domain_and_user.length == 1
+            domain_and_user = user.split('@')
+          end
+
+          if domain_and_user.length == 2
+            domain = domain_and_user[0]
+            user = domain_and_user[1]
+          elsif domain_and_user.length != 1
+            raise ArgumentError, "The specified user name `#{user}` is not a syntactically valid user name"
+          end
+        end
+
+        [domain, user]
+      end
+
       private(:validate_credential)
+      private(:translated_domain_and_user)
 
     end
   end
