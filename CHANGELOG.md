@@ -40,6 +40,7 @@
 * [**Maxime Brugidou**](https://github.com/brugidou)
   [pr#4052](https://github.com/chef/chef/pull/4052) Add make_child_entry in ChefFS CookbookSubdir
 
+* [pr#4183](https://github.com/chef/chef/pull/4183) extract declare_resource to a mixin and extend API
 * [pr#4185](https://github.com/chef/chef/pull/4185) dpkg provider cleanup
 * [pr#4165](https://github.com/chef/chef/pull/4165) Multipackage internal API improvements
 * [pr#4081](https://github.com/chef/chef/pull/4081) RFC-037: add `chef_version` and `ohai_version` metadata
