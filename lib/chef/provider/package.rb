@@ -28,7 +28,7 @@ class Chef
     class Package < Chef::Provider
       include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
-      include Chef::Mixin::SubclassDirective
+      extend Chef::Mixin::SubclassDirective
 
       # subclasses declare this if they want all their arguments as arrays of packages and names
       subclass_directive :use_multipackage_api

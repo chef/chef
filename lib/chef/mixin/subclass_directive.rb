@@ -19,22 +19,17 @@
 class Chef
   module Mixin
     module SubclassDirective
-      def self.included(base)
-        base.extend(ClassMethods)
-      end
-      module ClassMethods
-        def subclass_directive(sym)
-          define_singleton_method sym do
-            instance_variable_set(:"@#{sym}", true)
-          end
+      def subclass_directive(sym)
+        define_singleton_method sym do
+          instance_variable_set(:"@#{sym}", true)
+        end
 
-          define_singleton_method :"#{sym}?" do
-            !!instance_variable_get(:"@#{sym}")
-          end
+        define_singleton_method :"#{sym}?" do
+          !!instance_variable_get(:"@#{sym}")
+        end
 
-          define_method :"#{sym}?" do
-            self.class.send(:"#{sym}?")
-          end
+        define_method :"#{sym}?" do
+          self.class.send(:"#{sym}?")
         end
       end
     end
