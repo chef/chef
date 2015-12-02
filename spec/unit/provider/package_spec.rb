@@ -458,6 +458,10 @@ describe "Subclass with use_multipackage_api" do
     expect(provider.use_multipackage_api?).to be true
   end
 
+  it "offers a_to_s to subclasses to convert an array of strings to a single string" do
+    expect(provider.send(:a_to_s, "a", nil, "b", "", "c", " ", "d e", "f-g")).to eq("a b c   d e f-g")
+  end
+
   it "when user passes string to package_name, passes arrays to install_package" do
     new_resource.package_name "vim"
     new_resource.version nil
