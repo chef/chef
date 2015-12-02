@@ -23,7 +23,7 @@ require 'chef/dsl/platform_introspection'
 require 'chef/version'
 require 'chef/shell/shell_session'
 require 'chef/shell/model_wrapper'
-require 'chef/shell/shell_rest'
+require 'chef/server_api'
 require 'chef/json_compat'
 
 module Shell
@@ -536,7 +536,7 @@ E
 
       desc "A REST Client configured to authenticate with the API"
       def api
-        @rest = Shell::ShellREST.new(Chef::Config[:chef_server_url])
+        @rest = Chef::ServerAPI.new(Chef::Config[:chef_server_url])
       end
 
     end

@@ -201,7 +201,7 @@ module Shell
 
     def rebuild_context
       @run_status = Chef::RunStatus.new(@node, @events)
-      Chef::Cookbook::FileVendor.fetch_from_remote(Chef::REST.new(Chef::Config[:chef_server_url]))
+      Chef::Cookbook::FileVendor.fetch_from_remote(Chef::ServerAPI.new(Chef::Config[:chef_server_url]))
       cookbook_hash = @client.sync_cookbooks
       cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
       @run_context = Chef::RunContext.new(node, cookbook_collection, @events)
@@ -253,7 +253,8 @@ module Shell
     end
 
     def register
-      @rest = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:node_name], Chef::Config[:client_key])
+      @rest = Chef::ServerAPI.new(Chef::Config[:chef_server_url], :client_name => Chef::Config[:node_name],
+                                  :signing_key_filename => Chef::Config[:client_key])
     end
 
   end

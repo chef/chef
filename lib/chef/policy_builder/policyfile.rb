@@ -20,10 +20,10 @@
 #
 
 require 'chef/log'
-require 'chef/rest'
 require 'chef/run_context'
 require 'chef/config'
 require 'chef/node'
+require 'chef/server_api'
 
 class Chef
   module PolicyBuilder
@@ -455,7 +455,7 @@ class Chef
 
       # @api private
       def http_api
-        @api_service ||= Chef::REST.new(config[:chef_server_url])
+        @api_service ||= Chef::ServerAPI.new(config[:chef_server_url])
       end
 
       # @api private

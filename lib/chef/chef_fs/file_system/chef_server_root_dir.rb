@@ -104,7 +104,7 @@ class Chef
         end
 
         def chef_rest
-          Chef::REST.new(chef_server_url, chef_username, chef_private_key)
+          Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key)
         end
 
         def api_path

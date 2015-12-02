@@ -24,6 +24,7 @@ require 'chef/mash'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/version_constraint'
+require 'chef/server_api'
 
 class Chef
   class Environment
@@ -47,11 +48,11 @@ class Chef
     end
 
     def chef_server_rest
-      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def name(arg=nil)
@@ -216,6 +217,10 @@ class Chef
     end
 
     def self.json_create(o)
+      from_hash(o)
+    end
+
+    def self.from_hash(o)
       environment = new
       environment.name(o["name"])
       environment.description(o["description"])
@@ -233,7 +238,7 @@ class Chef
         end
         response
       else
-        chef_server_rest.get_rest("environments")
+        chef_server_rest.get("environments")
       end
     end
 
@@ -241,7 +246,7 @@ class Chef
       if Chef::Config[:solo]
         load_from_file(name)
       else
-        chef_server_rest.get_rest("environments/#{name}")
+        chef_server_rest.get("environments/#{name}")
       end
     end
 
@@ -267,26 +272,26 @@ class Chef
     end
 
     def destroy
-      chef_server_rest.delete_rest("environments/#{@name}")
+      chef_server_rest.delete("environments/#{@name}")
     end
 
     def save
       begin
-        chef_server_rest.put_rest("environments/#{@name}", self)
+        chef_server_rest.put("environments/#{@name}", self)
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
-        chef_server_rest.post_rest("environments", self)
+        chef_server_rest.post("environments", self)
       end
       self
     end
 
     def create
-      chef_server_rest.post_rest("environments", self)
+      chef_server_rest.post("environments", self)
       self
     end
 
     def self.load_filtered_recipe_list(environment)
-      chef_server_rest.get_rest("environments/#{environment}/recipes")
+      chef_server_rest.get("environments/#{environment}/recipes")
     end
 
     def to_s

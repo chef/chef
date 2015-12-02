@@ -36,7 +36,7 @@ describe Chef::Knife::CookbookSiteShare do
     allow(@cookbook_loader).to receive(:[]).and_return(@cookbook)
     allow(Chef::CookbookLoader).to receive(:new).and_return(@cookbook_loader)
 
-    @noauth_rest = double(Chef::REST)
+    @noauth_rest = double(Chef::ServerAPI)
     allow(@knife).to receive(:noauth_rest).and_return(@noauth_rest)
 
     @cookbook_uploader = Chef::CookbookUploader.new('herpderp', :rest => "norest")
@@ -78,21 +78,21 @@ describe Chef::Knife::CookbookSiteShare do
 
     it 'should not fail when given only 1 argument and can determine category' do
       @knife.name_args = ['cookbook_name']
-      expect(@noauth_rest).to receive(:get_rest).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name").and_return(@category_response)
+      expect(@noauth_rest).to receive(:get).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name").and_return(@category_response)
       expect(@knife).to receive(:do_upload)
       @knife.run
     end
 
     it 'should print error and exit when given only 1 argument and cannot determine category' do
       @knife.name_args = ['cookbook_name']
-      expect(@noauth_rest).to receive(:get_rest).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name").and_return(@bad_category_response)
+      expect(@noauth_rest).to receive(:get).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name").and_return(@bad_category_response)
       expect(@knife.ui).to receive(:fatal)
       expect { @knife.run }.to raise_error(SystemExit)
     end
 
-    it 'should print error and exit when given only 1 argument and Chef::REST throws an exception' do
+    it 'should print error and exit when given only 1 argument and Chef::ServerAPI throws an exception' do
       @knife.name_args = ['cookbook_name']
-      expect(@noauth_rest).to receive(:get_rest).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name") { raise Errno::ECONNREFUSED, "Connection refused" }
+      expect(@noauth_rest).to receive(:get).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name") { raise Errno::ECONNREFUSED, "Connection refused" }
       expect(@knife.ui).to receive(:fatal)
       expect { @knife.run }.to raise_error(SystemExit)
     end

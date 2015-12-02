@@ -38,7 +38,6 @@ describe Chef::CookbookCacheCleaner do
       unused_template_files.each do |cbf|
         expect(file_cache).to receive(:delete).with(cbf)
       end
-      cookbook_hash = {"valid1"=> {}, "valid2" => {}}
       allow(cleaner).to receive(:cache).and_return(file_cache)
       cleaner.cleanup_file_cache
     end
@@ -224,8 +223,8 @@ describe Chef::CookbookSynchronizer do
       and_return(false)
 
     # Fetch and copy default.rb recipe
-    expect(server_api).to receive(:get_rest).
-      with('http://chef.example.com/abc123', true).
+    expect(server_api).to receive(:streaming_request).
+      with('http://chef.example.com/abc123').
       and_return(cookbook_a_default_recipe_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_recipes_default_rb", "cookbooks/cookbook_a/recipes/default.rb")
@@ -234,8 +233,8 @@ describe Chef::CookbookSynchronizer do
       and_return("/file-cache/cookbooks/cookbook_a/recipes/default.rb")
 
     # Fetch and copy default.rb attribute file
-    expect(server_api).to receive(:get_rest).
-      with('http://chef.example.com/abc456', true).
+    expect(server_api).to receive(:streaming_request).
+      with('http://chef.example.com/abc456').
       and_return(cookbook_a_default_attribute_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_attributes_default_rb", "cookbooks/cookbook_a/attributes/default.rb")
@@ -252,8 +251,8 @@ describe Chef::CookbookSynchronizer do
       with("cookbooks/cookbook_a/templates/default/apache2.conf.erb").
       and_return(false)
 
-    expect(server_api).to receive(:get_rest).
-      with('http://chef.example.com/megaman.conf', true).
+    expect(server_api).to receive(:streaming_request).
+      with('http://chef.example.com/megaman.conf').
       and_return(cookbook_a_file_default_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_file_default_tempfile", "cookbooks/cookbook_a/files/default/megaman.conf")
@@ -261,8 +260,8 @@ describe Chef::CookbookSynchronizer do
       with("cookbooks/cookbook_a/files/default/megaman.conf", false).
       and_return("/file-cache/cookbooks/cookbook_a/default/megaman.conf")
 
-    expect(server_api).to receive(:get_rest).
-      with('http://chef.example.com/ffffff', true).
+    expect(server_api).to receive(:streaming_request).
+      with('http://chef.example.com/ffffff').
       and_return(cookbook_a_template_default_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_template_default_tempfile", "cookbooks/cookbook_a/templates/default/apache2.conf.erb")
@@ -281,8 +280,8 @@ describe Chef::CookbookSynchronizer do
       and_return(true)
 
     # Fetch and copy default.rb recipe
-    expect(server_api).to receive(:get_rest).
-      with('http://chef.example.com/abc123', true).
+    expect(server_api).to receive(:streaming_request).
+      with('http://chef.example.com/abc123').
       and_return(cookbook_a_default_recipe_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_recipes_default_rb", "cookbooks/cookbook_a/recipes/default.rb")
@@ -297,8 +296,8 @@ describe Chef::CookbookSynchronizer do
       and_return("fff000")
 
     # Fetch and copy default.rb attribute file
-    expect(server_api).to receive(:get_rest).
-      with('http://chef.example.com/abc456', true).
+    expect(server_api).to receive(:streaming_request).
+      with('http://chef.example.com/abc456').
       and_return(cookbook_a_default_attribute_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_attributes_default_rb", "cookbooks/cookbook_a/attributes/default.rb")
@@ -323,8 +322,8 @@ describe Chef::CookbookSynchronizer do
       and_return(true)
 
     # Fetch and copy megaman.conf
-    expect(server_api).to receive(:get_rest).
-      with('http://chef.example.com/megaman.conf', true).
+    expect(server_api).to receive(:streaming_request).
+      with('http://chef.example.com/megaman.conf').
       and_return(cookbook_a_file_default_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_file_default_tempfile", "cookbooks/cookbook_a/files/default/megaman.conf")
@@ -334,8 +333,8 @@ describe Chef::CookbookSynchronizer do
       and_return("/file-cache/cookbooks/cookbook_a/default/megaman.conf")
 
     # Fetch and copy apache2.conf template
-    expect(server_api).to receive(:get_rest).
-      with('http://chef.example.com/ffffff', true).
+    expect(server_api).to receive(:streaming_request).
+      with('http://chef.example.com/ffffff').
       and_return(cookbook_a_template_default_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_template_default_tempfile", "cookbooks/cookbook_a/templates/default/apache2.conf.erb")
@@ -416,7 +415,7 @@ describe Chef::CookbookSynchronizer do
   end
 
   describe "when syncing cookbooks with the server" do
-    let(:server_api) { double("Chef::REST (mock)") }
+    let(:server_api) { double("Chef::ServerAPI (mock)") }
 
     let(:file_cache) { double("Chef::FileCache (mock)") }
 
@@ -442,8 +441,8 @@ describe Chef::CookbookSynchronizer do
 
         it "does not fetch templates or cookbook files" do
           # Implicitly tested in previous test; this test is just for behavior specification.
-          expect(server_api).not_to receive(:get_rest).
-            with('http://chef.example.com/ffffff', true)
+          expect(server_api).not_to receive(:streaming_request).
+            with('http://chef.example.com/ffffff')
 
           synchronizer.sync_cookbooks
         end
@@ -502,7 +501,7 @@ describe Chef::CookbookSynchronizer do
 
         it "does not update files" do
           expect(file_cache).not_to receive(:move_to)
-          expect(server_api).not_to receive(:get_rest)
+          expect(server_api).not_to receive(:streaming_request)
           synchronizer.sync_cookbooks
         end
       end
@@ -512,7 +511,7 @@ describe Chef::CookbookSynchronizer do
 
         it "does not update files" do
           expect(file_cache).not_to receive(:move_to)
-          expect(server_api).not_to receive(:get_rest)
+          expect(server_api).not_to receive(:streaming_request)
           synchronizer.sync_cookbooks
         end
       end

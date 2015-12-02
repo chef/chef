@@ -70,8 +70,8 @@ describe TinyServer::Manager do
 
     TinyServer::API.instance.get("/index", 200, "[\"hello\"]")
 
-    rest = Chef::REST.new('http://localhost:9000', false, false)
-    expect(rest.get_rest("index")).to eq(["hello"])
+    rest = Chef::HTTP.new('http://localhost:9000')
+    expect(rest.get("index")).to eq("[\"hello\"]")
 
     @server.stop
   end

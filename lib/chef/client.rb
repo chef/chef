@@ -22,7 +22,7 @@ require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/path_sanity'
 require 'chef/log'
-require 'chef/rest'
+require 'chef/server_api'
 require 'chef/api_client'
 require 'chef/api_client/registration'
 require 'chef/audit/runner'
@@ -92,7 +92,7 @@ class Chef
     #
     # The rest object used to communicate with the Chef server.
     #
-    # @return [Chef::REST]
+    # @return [Chef::ServerAPI]
     #
     attr_reader :rest
 
@@ -575,7 +575,7 @@ class Chef
     # If Chef::Config.client_key does not exist, we register the client with the
     # Chef server and fire the registration_start and registration_completed events.
     #
-    # @return [Chef::REST] The server connection object.
+    # @return [Chef::ServerAPI] The server connection object.
     #
     # @see Chef::Config#chef_server_url
     # @see Chef::Config#client_key
@@ -601,7 +601,8 @@ class Chef
         events.registration_completed
       end
       # We now have the client key, and should use it from now on.
-      @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
+      @rest = Chef::ServerAPI.new(config[:chef_server_url], client_name: client_name,
+                                  signing_key_filename: config[:client_key])
       register_reporters
     rescue Exception => e
       # TODO this should probably only ever fire if we *started* registration.

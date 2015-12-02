@@ -6,7 +6,7 @@ describe Chef::Knife::Configure do
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::Configure.new
-    @rest_client = double("null rest client", :post_rest => { :result => :true })
+    @rest_client = double("null rest client", :post => { :result => :true })
     allow(@knife).to receive(:rest).and_return(@rest_client)
 
     @out = StringIO.new

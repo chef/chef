@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Thom May (<thom@chef.io>)
+# Copyright:: Copyright (c) 2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,28 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-class Chef::Knife::RecipeList < Chef::Knife
+require 'chef/http'
+require 'chef/http/authenticator'
+require 'chef/http/decompressor'
+require 'chef/http/cookie_manager'
+require 'chef/http/validate_content_length'
 
-  banner "knife recipe list [PATTERN]"
+class Chef
+  class HTTP
 
-  def run
-    recipes = rest.get('cookbooks/_recipes')
-    if pattern = @name_args.first
-      recipes = recipes.grep(Regexp.new(pattern))
+    class SimpleJSON < HTTP
+
+      use JSONInput
+      use JSONOutput
+      use CookieManager
+      use Decompressor
+      use RemoteRequestID
+
+      # ValidateContentLength should come after Decompressor
+      # because the order of middlewares is reversed when handling
+      # responses.
+      use ValidateContentLength
+
     end
-    output(recipes)
   end
-
 end

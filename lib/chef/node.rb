@@ -27,7 +27,7 @@ require 'chef/mixin/deep_merge'
 require 'chef/dsl/include_attribute'
 require 'chef/dsl/platform_introspection'
 require 'chef/environment'
-require 'chef/rest'
+require 'chef/server_api'
 require 'chef/run_list'
 require 'chef/node/attribute'
 require 'chef/mash'
@@ -99,10 +99,10 @@ class Chef
       # for saving node data we use validate_utf8: false which will not
       # raise an exception on bad utf8 data, but will replace the bad
       # characters and render valid JSON.
-      @chef_server_rest ||= Chef::REST.new(
+      @chef_server_rest ||= Chef::ServerAPI.new(
         Chef::Config[:chef_server_url],
-        Chef::Config[:node_name],
-        Chef::Config[:client_key],
+        client_name: Chef::Config[:node_name],
+        signing_key_filename: Chef::Config[:client_key],
         validate_utf8: false,
       )
     end
@@ -532,6 +532,11 @@ class Chef
 
     # Create a Chef::Node from JSON
     def self.json_create(o)
+      from_hash(o)
+    end
+
+    def self.from_hash(o)
+      return o if o.kind_of? Chef::Node
       node = new
       node.name(o["name"])
       node.chef_environment(o["chef_environment"])
@@ -561,7 +566,7 @@ class Chef
         Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") {|n| response[n.name] = n unless n.nil?}
         response
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{environment}/nodes")
+        Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("environments/#{environment}/nodes")
       end
     end
 
@@ -569,11 +574,12 @@ class Chef
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:node) do |n|
+          n = Chef::Node.from_hash(n)
           response[n.name] = n unless n.nil?
         end
         response
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes")
+        Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("nodes")
       end
     end
 
@@ -594,12 +600,12 @@ class Chef
 
     # Load a node by name
     def self.load(name)
-      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes/#{name}")
+      from_hash(Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("nodes/#{name}"))
     end
 
     # Remove this node via the REST API
     def destroy
-      chef_server_rest.delete_rest("nodes/#{name}")
+      chef_server_rest.delete("nodes/#{name}")
     end
 
     # Save this node via the REST API
@@ -610,11 +616,11 @@ class Chef
         if Chef::Config[:why_run]
           Chef::Log.warn("In why-run mode, so NOT performing node save.")
         else
-          chef_server_rest.put_rest("nodes/#{name}", data_for_save)
+          chef_server_rest.put("nodes/#{name}", data_for_save)
         end
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
-          chef_server_rest.post_rest("nodes", data_for_save)
+          chef_server_rest.post("nodes", data_for_save)
         # Chef Server before 12.3 rejects node JSON with 'policy_name' or
         # 'policy_group' keys, but 'policy_name' will be detected first.
         # Backcompat can be removed in 13.0
@@ -629,14 +635,14 @@ class Chef
 
     # Create the node via the REST API
     def create
-      chef_server_rest.post_rest("nodes", data_for_save)
+      chef_server_rest.post("nodes", data_for_save)
       self
     rescue Net::HTTPServerException => e
       # Chef Server before 12.3 rejects node JSON with 'policy_name' or
       # 'policy_group' keys, but 'policy_name' will be detected first.
       # Backcompat can be removed in 13.0
       if e.response.code == "400" && e.response.body.include?("Invalid key policy_name")
-        chef_server_rest.post_rest("nodes", data_for_save_without_policyfile_attrs)
+        chef_server_rest.post("nodes", data_for_save_without_policyfile_attrs)
       else
         raise
       end
@@ -663,10 +669,10 @@ class Chef
     def save_without_policyfile_attrs
       trimmed_data = data_for_save_without_policyfile_attrs
 
-      chef_server_rest.put_rest("nodes/#{name}", trimmed_data)
+      chef_server_rest.put("nodes/#{name}", trimmed_data)
     rescue Net::HTTPServerException => e
       raise e unless e.response.code == "404"
-      chef_server_rest.post_rest("nodes", trimmed_data)
+      chef_server_rest.post("nodes", trimmed_data)
     end
 
     def data_for_save_without_policyfile_attrs

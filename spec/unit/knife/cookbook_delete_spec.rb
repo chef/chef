@@ -134,19 +134,19 @@ describe Chef::Knife::CookbookDelete do
     end
 
     it 'should return the list of versions of the cookbook' do
-      expect(@rest_mock).to receive(:get_rest).with('cookbooks/foobar').and_return(@cookbook_data)
+      expect(@rest_mock).to receive(:get).with('cookbooks/foobar').and_return(@cookbook_data)
       expect(@knife.available_versions).to eq(['1.0.0', '1.1.0', '2.0.0'])
     end
 
     it 'should raise if an error other than HTTP 404 is returned' do
       exception = Net::HTTPServerException.new('500 Internal Server Error', '500')
-      expect(@rest_mock).to receive(:get_rest).and_raise(exception)
+      expect(@rest_mock).to receive(:get).and_raise(exception)
       expect { @knife.available_versions }.to raise_error Net::HTTPServerException
     end
 
     describe "if the cookbook can't be found" do
       before(:each) do
-        expect(@rest_mock).to receive(:get_rest).
+        expect(@rest_mock).to receive(:get).
           and_raise(Net::HTTPServerException.new('404 Not Found', '404'))
       end
 

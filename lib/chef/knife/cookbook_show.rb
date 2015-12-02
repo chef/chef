@@ -67,9 +67,9 @@ class Chef
           cookbook_name, segment, filename = @name_args[0], @name_args[2], @name_args[3]
           cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
 
-          cookbook = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
+          cookbook = rest.get("cookbooks/#{cookbook_name}/#{cookbook_version}")
           manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)
-          temp_file = rest.get_rest(manifest_entry[:url], true)
+          temp_file = rest.get(manifest_entry[:url], true)
 
           # the temp file is cleaned up elsewhere
           temp_file.open if temp_file.closed?
@@ -77,16 +77,16 @@ class Chef
 
         when 3 # We are showing a specific part of the cookbook
           cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
-          result = rest.get_rest("cookbooks/#{@name_args[0]}/#{cookbook_version}")
+          result = rest.get("cookbooks/#{@name_args[0]}/#{cookbook_version}")
           output(result.manifest[@name_args[2]])
         when 2 # We are showing the whole cookbook data
           cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
-          output(rest.get_rest("cookbooks/#{@name_args[0]}/#{cookbook_version}"))
+          output(rest.get("cookbooks/#{@name_args[0]}/#{cookbook_version}"))
         when 1 # We are showing the cookbook versions (all of them)
           cookbook_name = @name_args[0]
           env           = config[:environment]
           api_endpoint  = env ? "environments/#{env}/cookbooks/#{cookbook_name}" : "cookbooks/#{cookbook_name}"
-          output(format_cookbook_list_for_display(rest.get_rest(api_endpoint)))
+          output(format_cookbook_list_for_display(rest.get(api_endpoint)))
         when 0
           show_usage
           ui.fatal("You must specify a cookbook name")

@@ -18,7 +18,7 @@
 
 require 'chef/config'
 require 'chef/exceptions'
-require 'chef/rest'
+require 'chef/server_api'
 
 require 'uri'
 
@@ -35,7 +35,7 @@ class Chef
       end
 
       def rest
-        @rest ||= Chef::REST.new(@url || @config[:chef_server_url])
+        @rest ||= Chef::ServerAPI.new(@url || @config[:chef_server_url])
       end
 
       # Backwards compatability for cookbooks.
@@ -150,12 +150,26 @@ WARNDEP
         query_string = create_query_string(type, query, rows, start, sort)
 
         if filter_result
-          response = rest.post_rest(query_string, filter_result)
+          response = rest.post(query_string, filter_result)
           # response returns rows in the format of
           # { "url" => url_to_node, "data" => filter_result_hash }
           response['rows'].map! { |row| row['data'] }
         else
-          response = rest.get_rest(query_string)
+          response = rest.get(query_string)
+          response['rows'].map! do |row|
+            case type.to_s
+            when 'node'
+              Chef::Node.from_hash(row)
+            when 'role'
+              Chef::Role.from_hash(row)
+            when 'environment'
+              Chef::Environment.from_hash(row)
+            when 'client'
+              Chef::ApiClient.from_hash(row)
+            else
+              Chef::DataBagItem.from_hash(row)
+            end
+          end
         end
 
         response

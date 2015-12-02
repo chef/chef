@@ -275,7 +275,7 @@ describe Chef::ApiClient do
 
   describe "when requesting a new key" do
     before do
-      @http_client = double("Chef::REST mock")
+      @http_client = double("Chef::ServerAPI mock")
       allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
     end
 

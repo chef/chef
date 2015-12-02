@@ -108,7 +108,7 @@ class Chef
 
       def get_category(cookbook_name)
         begin
-          data = noauth_rest.get_rest("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
+          data = noauth_rest.get("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
           if !data["category"] && data["error_code"]
             ui.fatal("Received an error from Supermarket: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
             exit(1)

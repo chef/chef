@@ -365,8 +365,8 @@ describe Chef::Environment do
 
   describe "api model" do
     before(:each) do
-      @rest = double("Chef::REST")
-      allow(Chef::REST).to receive(:new).and_return(@rest)
+      @rest = double("Chef::ServerAPI")
+      allow(Chef::ServerAPI).to receive(:new).and_return(@rest)
       @query = double("Chef::Search::Query")
       allow(Chef::Search::Query).to receive(:new).and_return(@query)
     end
@@ -382,7 +382,7 @@ describe Chef::Environment do
       end
 
       it "should return a hash of environment names and urls" do
-        expect(@rest).to receive(:get_rest).and_return({ "one" => "http://foo" })
+        expect(@rest).to receive(:get).and_return({ "one" => "http://foo" })
         r = Chef::Environment.list
         expect(r["one"]).to eq("http://foo")
       end

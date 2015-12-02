@@ -37,7 +37,7 @@ describe Chef::Knife::CookbookList do
 
   describe 'run' do
     it 'should display the latest version of the cookbooks' do
-      expect(@rest_mock).to receive(:get_rest).with('/cookbooks?num_versions=1').
+      expect(@rest_mock).to receive(:get).with('/cookbooks?num_versions=1').
                                            and_return(@cookbook_data)
       @knife.run
       @cookbook_names.each do |item|
@@ -47,7 +47,7 @@ describe Chef::Knife::CookbookList do
 
     it 'should query cookbooks for the configured environment' do
       @knife.config[:environment] = 'production'
-      expect(@rest_mock).to receive(:get_rest).
+      expect(@rest_mock).to receive(:get).
                  with('/environments/production/cookbooks?num_versions=1').
                  and_return(@cookbook_data)
       @knife.run
@@ -56,7 +56,7 @@ describe Chef::Knife::CookbookList do
     describe 'with -w or --with-uri' do
       it 'should display the cookbook uris' do
         @knife.config[:with_uri] = true
-        allow(@rest_mock).to receive(:get_rest).and_return(@cookbook_data)
+        allow(@rest_mock).to receive(:get).and_return(@cookbook_data)
         @knife.run
         @cookbook_names.each do |item|
           pattern = /#{Regexp.escape(@cookbook_data[item]['versions'].first['url'])}/
@@ -75,7 +75,7 @@ describe Chef::Knife::CookbookList do
 
       it 'should display all versions of the cookbooks' do
         @knife.config[:all_versions] = true
-        expect(@rest_mock).to receive(:get_rest).with('/cookbooks?num_versions=all').
+        expect(@rest_mock).to receive(:get).with('/cookbooks?num_versions=all').
                                              and_return(@cookbook_data)
         @knife.run
         @cookbook_names.each do |item|

@@ -41,7 +41,7 @@ class Chef
         confirm "Do you really want to unshare all versions of the cookbook #{@cookbook_name}"
 
         begin
-          rest.delete_rest "https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}"
+          rest.delete "https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}"
         rescue Net::HTTPServerException => e
           raise e unless e.message =~ /Forbidden/
           ui.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it."

@@ -63,7 +63,7 @@ class Chef
 
       def current_cookbook_data
         @current_cookbook_data ||= begin
-          noauth_rest.get_rest "#{cookbooks_api_url}/#{@name_args[0]}"
+          noauth_rest.get "#{cookbooks_api_url}/#{@name_args[0]}"
         end
       end
 
@@ -79,14 +79,14 @@ class Chef
             specific_cookbook_version_url
           end
 
-          noauth_rest.get_rest uri
+          noauth_rest.get uri
         end
       end
 
       def download_cookbook
         ui.info "Downloading #{@name_args[0]} from Supermarket at version #{version} to #{download_location}"
         noauth_rest.sign_on_redirect = false
-        tf = noauth_rest.get_rest desired_cookbook_data["file"], true
+        tf = noauth_rest.get desired_cookbook_data["file"], true
 
         ::FileUtils.cp tf.path, download_location
         ui.info "Cookbook saved: #{download_location}"

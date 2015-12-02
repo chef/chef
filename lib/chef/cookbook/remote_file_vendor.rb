@@ -63,7 +63,7 @@ class Chef
         # (remote, per manifest), do the update. This will also execute if there
         # is no current checksum.
         if current_checksum != found_manifest_record['checksum']
-          raw_file = @rest.get_rest(found_manifest_record[:url], true)
+          raw_file = @rest.get(found_manifest_record[:url], true)
 
           Chef::Log.debug("Storing updated #{cache_filename} in the cache.")
           Chef::FileCache.move_to(raw_file.path, cache_filename)

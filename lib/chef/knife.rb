@@ -26,14 +26,16 @@ require 'chef/mixin/path_sanity'
 require 'chef/knife/core/subcommand_loader'
 require 'chef/knife/core/ui'
 require 'chef/local_mode'
-require 'chef/rest'
+require 'chef/server_api'
 require 'chef/http/authenticator'
+require 'chef/http/http_request'
+require 'chef/http'
 require 'pp'
 
 class Chef
   class Knife
 
-    Chef::REST::RESTRequest.user_agent = "Chef Knife#{Chef::REST::RESTRequest::UA_COMMON}"
+    Chef::HTTP::HTTPRequest.user_agent = "Chef Knife#{Chef::HTTP::HTTPRequest::UA_COMMON}"
 
     include Mixlib::CLI
     include Chef::Mixin::PathSanity
@@ -551,15 +553,15 @@ class Chef
 
     def rest
       @rest ||= begin
-        require 'chef/rest'
-        Chef::REST.new(Chef::Config[:chef_server_url])
+        require 'chef/server_api'
+        Chef::ServerAPI.new(Chef::Config[:chef_server_url])
       end
     end
 
     def noauth_rest
       @rest ||= begin
-        require 'chef/rest'
-        Chef::REST.new(Chef::Config[:chef_server_url], false, false)
+        require 'chef/http/simple_json'
+        Chef::HTTP::SimpleJSON.new(Chef::Config[:chef_server_url])
       end
     end
 

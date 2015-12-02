@@ -79,7 +79,7 @@ describe Chef::Knife::DataBagFromFile do
   } }
   let(:enc_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(plain_data, secret) }
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }

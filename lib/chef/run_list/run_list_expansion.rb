@@ -21,7 +21,7 @@ require 'chef/mash'
 require 'chef/mixin/deep_merge'
 
 require 'chef/role'
-require 'chef/rest'
+require 'chef/server_api'
 require 'chef/json_compat'
 
 class Chef
@@ -45,7 +45,7 @@ class Chef
       attr_reader :missing_roles_with_including_role
 
       # The data source passed to the constructor. Not used in this class.
-      # In subclasses, this is a couchdb or Chef::REST object pre-configured
+      # In subclasses, this is a Chef::ServerAPI object pre-configured
       # to fetch roles from their correct location.
       attr_reader :source
 
@@ -214,11 +214,11 @@ class Chef
     class RunListExpansionFromAPI < RunListExpansion
 
       def rest
-        @rest ||= (source || Chef::REST.new(Chef::Config[:chef_server_url]))
+        @rest ||= (source || Chef::ServerAPI.new(Chef::Config[:chef_server_url]))
       end
 
       def fetch_role(name, included_by)
-        rest.get_rest("roles/#{name}")
+        Chef::Role.from_hash(rest.get("roles/#{name}"))
       rescue Net::HTTPServerException => e
         if e.message == '404 "Not Found"'
           role_not_found(name, included_by)

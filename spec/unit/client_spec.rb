@@ -23,7 +23,7 @@ require 'spec/support/shared/context/client'
 require 'spec/support/shared/examples/client'
 
 require 'chef/run_context'
-require 'chef/rest'
+require 'chef/server_api'
 require 'rbconfig'
 
 class FooError < RuntimeError
@@ -169,7 +169,7 @@ describe Chef::Client do
             # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
             #
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-            expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
             expect(http_cookbook_sync).to receive(:post).
               with("environments/_default/cookbook_versions", {:run_list => ["override_recipe"]}).
               and_return({})
@@ -203,7 +203,7 @@ describe Chef::Client do
           # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
           #
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-          expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
           expect(http_cookbook_sync).to receive(:post).
             with("environments/_default/cookbook_versions", {:run_list => ["new_run_list_recipe"]}).
             and_return({})
@@ -336,9 +336,9 @@ describe Chef::Client do
 
       # build_node will call Node#expand! with server, which will
       # eventually hit the server to expand the included role.
-      mock_chef_rest = double("Chef::REST")
-      expect(mock_chef_rest).to receive(:get_rest).with("roles/role_containing_cookbook1").and_return(role_containing_cookbook1)
-      expect(Chef::REST).to receive(:new).and_return(mock_chef_rest)
+      mock_chef_rest = double("Chef::ServerAPI")
+      expect(mock_chef_rest).to receive(:get).with("roles/role_containing_cookbook1").and_return(role_containing_cookbook1.to_hash)
+      expect(Chef::ServerAPI).to receive(:new).and_return(mock_chef_rest)
 
       # check pre-conditions.
       expect(node[:roles]).to be_nil
@@ -372,9 +372,9 @@ describe Chef::Client do
       test_env = Chef::Environment.new
       test_env.name("A")
 
-      mock_chef_rest = double("Chef::REST")
-      expect(mock_chef_rest).to receive(:get_rest).with("environments/A").and_return(test_env)
-      expect(Chef::REST).to receive(:new).and_return(mock_chef_rest)
+      mock_chef_rest = double("Chef::ServerAPI")
+      expect(mock_chef_rest).to receive(:get).with("environments/A").and_return(test_env)
+      expect(Chef::ServerAPI).to receive(:new).and_return(mock_chef_rest)
       allow(client.policy_builder).to receive(:node).and_return(node)
       client.policy_builder.select_implementation(node)
       allow(client.policy_builder.implementation).to receive(:node).and_return(node)

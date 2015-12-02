@@ -23,6 +23,7 @@ require 'chef/http/decompressor'
 require 'chef/http/json_input'
 require 'chef/http/json_output'
 require 'chef/http/remote_request_id'
+require 'chef/http/validate_content_length'
 
 class Chef
   class ServerAPI < Chef::HTTP
@@ -31,6 +32,7 @@ class Chef
       options[:client_name] ||= Chef::Config[:node_name]
       options[:signing_key_filename] ||= Chef::Config[:client_key]
       options[:signing_key_filename] = nil if chef_zero_uri?(url)
+      options[:inflate_json_class] = false
       super(url, options)
     end
 
@@ -40,6 +42,30 @@ class Chef
     use Chef::HTTP::Decompressor
     use Chef::HTTP::Authenticator
     use Chef::HTTP::RemoteRequestID
+
+    # ValidateContentLength should come after Decompressor
+    # because the order of middlewares is reversed when handling
+    # responses.
+    use Chef::HTTP::ValidateContentLength
+
+    # Makes an HTTP request to +path+ with the given +method+, +headers+, and
+    # +data+ (if applicable). Does not apply any middleware, besides that
+    # needed for Authentication.
+    def raw_request(method, path, headers={}, data=false)
+      url = create_url(path)
+      method, url, headers, data = Chef::HTTP::Authenticator.new(options).handle_request(method, url, headers, data)
+      method, url, headers, data = Chef::HTTP::RemoteRequestID.new(options).handle_request(method, url, headers, data)
+      response, rest_request, return_value = send_http_request(method, url, headers, data)
+      response.error! unless success_response?(response)
+      return_value
+    rescue Exception => exception
+      log_failed_request(response, return_value) unless response.nil?
+
+      if exception.respond_to?(:chef_rest_request=)
+        exception.chef_rest_request = rest_request
+      end
+      raise
+    end
   end
 end
 

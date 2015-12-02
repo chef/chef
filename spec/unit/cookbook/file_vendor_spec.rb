@@ -23,7 +23,7 @@ describe Chef::Cookbook::FileVendor do
 
   context "when configured to fetch files over http" do
 
-    let(:http) { double("Chef::REST") }
+    let(:http) { double("Chef::ServerAPI") }
 
     before do
       file_vendor_class.fetch_from_remote(http)

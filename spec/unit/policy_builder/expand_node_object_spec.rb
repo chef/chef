@@ -290,7 +290,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       node
     end
 
-    let(:chef_http) { double("Chef::REST") }
+    let(:chef_http) { double("Chef::ServerAPI") }
 
     let(:cookbook_resolve_url) { "environments/#{node.chef_environment}/cookbook_versions" }
     let(:cookbook_resolve_post_data) { {:run_list=>["first::default", "second::default"]} }
@@ -298,7 +298,8 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     # cookbook_hash is just a hash, but since we're passing it between mock
     # objects, we get a little better test strictness by using a double (which
     # will have object equality rather than semantic equality #== semantics).
-    let(:cookbook_hash) { double("cookbook hash", :each => nil) }
+    let(:cookbook_hash) { double("cookbook hash") }
+    let(:expanded_cookbook_hash) { double("expanded cookbook hash", :each => nil) }
 
     let(:cookbook_synchronizer) { double("CookbookSynchronizer") }
 
@@ -310,8 +311,9 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
       run_list_expansion = policy_builder.run_list_expansion
 
+      expect(cookbook_hash).to receive(:inject).and_return(expanded_cookbook_hash)
       expect(chef_http).to receive(:post).with(cookbook_resolve_url, cookbook_resolve_post_data).and_return(cookbook_hash)
-      expect(Chef::CookbookSynchronizer).to receive(:new).with(cookbook_hash, events).and_return(cookbook_synchronizer)
+      expect(Chef::CookbookSynchronizer).to receive(:new).with(expanded_cookbook_hash, events).and_return(cookbook_synchronizer)
       expect(cookbook_synchronizer).to receive(:sync_cookbooks)
 
       expect_any_instance_of(Chef::RunContext).to receive(:load).with(run_list_expansion)

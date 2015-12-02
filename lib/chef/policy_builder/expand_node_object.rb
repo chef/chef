@@ -20,7 +20,7 @@
 #
 
 require 'chef/log'
-require 'chef/rest'
+require 'chef/server_api'
 require 'chef/run_context'
 require 'chef/config'
 require 'chef/node'
@@ -198,7 +198,12 @@ class Chef
         begin
           events.cookbook_resolution_start(@expanded_run_list_with_versions)
           cookbook_hash = api_service.post("environments/#{node.chef_environment}/cookbook_versions",
-                                         {:run_list => @expanded_run_list_with_versions})
+                                           {:run_list => @expanded_run_list_with_versions})
+
+          cookbook_hash = cookbook_hash.inject({}) do |memo, (key, value)|
+            memo[key] = Chef::CookbookVersion.from_hash(value)
+            memo
+          end
         rescue Exception => e
           # TODO: wrap/munge exception to provide helpful error output
           events.cookbook_resolution_failed(@expanded_run_list_with_versions, e)
@@ -257,7 +262,7 @@ class Chef
       end
 
       def api_service
-        @api_service ||= Chef::REST.new(config[:chef_server_url])
+        @api_service ||= Chef::ServerAPI.new(config[:chef_server_url])
       end
 
       def config

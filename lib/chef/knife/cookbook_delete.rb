@@ -85,7 +85,7 @@ class Chef
       end
 
       def available_versions
-        @available_versions ||= rest.get_rest("cookbooks/#{@cookbook_name}").map do |name, url_and_version|
+        @available_versions ||= rest.get("cookbooks/#{@cookbook_name}").map do |name, url_and_version|
           url_and_version["versions"].map {|url_by_version| url_by_version["version"]}
         end.flatten
       rescue Net::HTTPServerException => e
@@ -143,7 +143,7 @@ class Chef
 
       def delete_request(path)
         path += "?purge=true" if config[:purge]
-        rest.delete_rest(path)
+        rest.delete(path)
       end
 
     end
