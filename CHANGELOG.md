@@ -1,5 +1,10 @@
 # mixlib-shellout Changelog
 
+## Release 2.2.4
+
+* [**tschuy**:](https://github.com/tschuy)
+  convert environment hash keys to strings
+
 ## Release 2.2.3
 
 * Kill all child processes on Windows when a command times out.
