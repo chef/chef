@@ -41,3 +41,24 @@ also array of versions and array of sources).
 
 Some edge conditions in the `:remove` and `:purge` actions in `dpkg_package` were also fixed and the `:purge` action will now
 purge packages that were previously removed (`apt_package` still does not do this).
+
+## New ksh resource
+
+Korn Shell scripts can now be run using the ksh resource, or by setting the interpreter parameter of the script resource to ksh.
+
+Please see the following for more details : https://docs.chef.io/release/12-6/resource_ksh.html
+
+## Better handling of log_location with chef client service (Windows)
+
+This change is for the scenario when running chef client as a Windows service. Currently, a default log_location gets used by the chef client windows service. This log_location overrides any log_location set in the client.rb. In 12.6.0, the behavior is changed to allow the Chef client running as a Windows service to prefer the log_location in client.rb instead. Now, the windows_service_manager will not explicitly pass in a log_location, and therefore the Chef service will always use what is in the client.rb or the typical default path if none is configured. This enables scenarios such as logging to the Windows event log when running chef client as a Windows service.
+
+## Dsc_resource changes and fixes
+
+* A fix was made for the Nov 2015 update of Windows 10, where the dsc_resource did not properly show the command output when converging the resource.
+* Dsc_resource could in some cases show the plaintext password when #inspected - this is now prevented from happening.
+* Previously, Chef required the LCM Refreshmode to be set to Disabled when utilizing dsc_resource. Microsoft has relaxed this requirement in WFM 5 (PowerShell 5.0.10586.0 or later).  Now, we only require the RefreshMode to be disabled when running on earlier versions of PowerShell.
+* Added a reboot_action attribute to dsc_resource. If the DSC resource indicates that it requires a reboot, reboot_action can use the reboot resource to either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).  The default value of reboot_action is :nothing.
+
+## Other items
+
+There are a large number of other PRs in this release. Please eee the CHANGELOG for the full set of changes.
