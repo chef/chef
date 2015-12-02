@@ -49,13 +49,23 @@ There is currently no support in supermarket for making this metadata visible in
 depsolvers, or support in Berksfile/PolicyFile for automatically pruning cookbooks that fail
 to match.
 
-### `chocolatey_package` and `ksh` resources
+### `ksh` resources
 
-Assuming both of those make 12.6, placeholder pages:
+Use the ksh resource to execute scripts using the Korn shell (ksh) interpreter.
+This resource may also use any of the actions and properties that are available
+to the execute resource.
 
-chocolatey_package: https://docs.chef.io/release/12-6/resource_chocolatey_package.html
+Example:
+```ruby
+ksh 'hello world' do
+  code <<-EOH
+    echo "Hello world!"
+    echo "Current directory: " $cwd
+    EOH
+end
+```
 
-ksh: https://docs.chef.io/release/12-6/resource_ksh.html
+See https://docs.chef.io/release/12-6/resource_ksh.html for more info.
 
 ### `dsc_resource` resource
 
