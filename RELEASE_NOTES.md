@@ -34,4 +34,8 @@ not designed to be a general solution to performance issues inside of chef-clien
 
 This debugging feature will mostly be useful to people who are already Ruby experts.
 
+## `dpkg_package` now accepts an array of packages
+
+Similar to the `yum_package` and `apt_package` resources, the `dpkg_package` resource now handles an Array of package names (and
+also array of versions and array of sources).
 
