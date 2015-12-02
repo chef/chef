@@ -1,79 +1,37 @@
-# Chef Client Release Notes 12.5.0:
-* OSX 10.11 support (support for SIP and service changes)
-* Windows cookbook <= 1.38.1 contains a library file which does not compile with
-chef-client 12.5.0. This is resolved in version 1.38.2 of the Windows cookbook.
-Cookbooks depending on the Windows cookbook should update the dependency version
-to at least 1.38.2 to be compatible with chef-client 12.5.0.
+# Chef Client Release Notes 12.6.0:
 
-## PSCredential support for the `dsc_script` resource
 
-The `dsc_script` resource now supports the use of the `ps_credential`
-helper method. This method generates a Ruby object which can be described
-as a Powershell PSCredential object. For example, if you wanted to created
-a user using DSC, previously you would have had to do something like:
+## New `chef_version` and `ohai_version` metadata keywords
 
-```ruby
-dsc_script 'create-foo-user' do
-  code <<-EOH
-     $username = "placeholder"
-     $password = "#{FooBarBaz1!}" | ConvertTo-SecureString -asPlainText -Force
-     $cred = New-Object System.Management.Automation.PSCredential($username, $password)
-     User FooUser00
-     {
-       Ensure = "Present"
-       UserName = 'FooUser00'
-       Password = $cred
-     }
-  EOH
-  configuration_data_script "path/to/config/data.psd1"
-end
-```
+Two new keywords have been introduced to the metadata of cookbooks for constraining the acceptable range
+of chef-client versions that a cookbook runs on.  By default if these keywords are not present chef-client
+will always run.  If either of these keywords are given and none of the given ranges match the running
+Chef::VERSION or Ohai::VERSION then the chef-client will report an error that the cookbook does not support
+the running client or ohai version.
 
-This can now be replaced with
+There is currently little integration with this outside of the client, but work is underway to display this
+information on the supermarket.  There are also plans to get depsolvers like Berkshelf able to automatically
+prune invalid cookbooks out of their solution sets to avoid uploading a cookbook which will only throw
+an exception.
 
-```ruby
-dsc_script 'create-foo-user' do
-  code <<-EOH
-     User FooUser00
-     {
-       Ensure = "Present"
-       UserName = 'FooUser00'
-       Password = #{ps_credential("FooBarBaz1!")}
-     }
-  EOH
-  configuration_data_script "path/to/config/data.psd1"
-end
-```
+## New --profile-ruby option to profile Ruby
 
-## New `knife rehash` for faster command loading
+The 'chef' gem now has a new optional development dependency on the 'ruby-prof' gem and when it is installed
+it can be used via the --profile-ruby command line option.  This gem will also be shipped in all the omnibus
+builds of `chef` and `chef-dk` going forwards so that while it will be 'optional' it will also be fairly
+broadly installed (it is 'optional' mostly for people who are installing chef in their own bundles).
 
-The new `knife rehash` command speeds up day-to-day knife usage by
-caching information about installed plugins and available commands.
-Initial testing has shown substantial improvements in `knife` startup
-times for users with a large number of Gems installed and Windows
-users.
+When invoked this option will dump a (large) profiling graph into `/var/chef/cache/graph_profile.out`.  For
+users who are familiar with reading call stack graphs this will likely be very useful for profiling the
+internal guts of a chef-client run.  The performance hit of this profiler will roughly double the length
+of a chef-client run so it is something that can be used without causing errant timeouts and other
+heisenbugs due to the profiler itself.  It is not suitable for daily use in production.  It is unlikely to
+be suitable for users without a background in software development and debugging.
 
-To use this feature, simply run `knife rehash` and continue using
-`knife`.  When you install or remove gems that provide knife plugins,
-run `knife rehash` again to keep the cache up to date.
+It was developed out of some particularly difficult profiling of performance issues in the Chef node
+attributes code, which was then turned into a patch so that other people could experiment with it.  It was
+not designed to be a general solution to performance issues inside of chef-client recipe code.
 
-## Support for `/usr/bin/yum-deprecated` in the yum provider
+This debugging feature will mostly be useful to people who are already Ruby experts.
 
-In Fedora 22 yum has been deprecated in favor of DNF.  Unfortunately, while DNF tries to be backwards
-compatible with yum, the yum provider in Chef is not compatible with DNF.  Until a proper `dnf_package`
-resource and associated provider is written and merged into core, 12.5.0 has been patched so that the
-`yum_package` resource takes a property named `yum_binary` which can be set to point at the yum binary
-to run for all its commands.  The `yum_binary` will also default to `yum-deprecated` if the
-`/usr/bin/yum-deprecated` command is found on the system.  This means that Fedora 22 users can run
-something like this early in their chef-client run:
 
-```ruby
-if File.exist?("/usr/bin/dnf")
-  execute "dnf install -y yum" do
-    not_if { File.exist?("/usr/bin/yum-deprecated") }
-  end
-end
-```
-
-After which the yum-deprecated binary will exist, and the yum provider will find it and should operate
-normally and successfully.
