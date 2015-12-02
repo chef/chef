@@ -1,6 +1,6 @@
 # mixlib-shellout Changelog
 
-## Release 2.2.4
+## Release 2.2.5
 
 * [**tschuy**:](https://github.com/tschuy)
   convert environment hash keys to strings
