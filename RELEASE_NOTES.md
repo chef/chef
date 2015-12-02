@@ -39,3 +39,5 @@ This debugging feature will mostly be useful to people who are already Ruby expe
 Similar to the `yum_package` and `apt_package` resources, the `dpkg_package` resource now handles an Array of package names (and
 also array of versions and array of sources).
 
+Some edge conditions in the `:remove` and `:purge` actions in `dpkg_package` were also fixed and the `:purge` action will now
+purge packages that were previously removed (`apt_package` still does not do this).
