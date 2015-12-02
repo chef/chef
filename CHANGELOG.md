@@ -1,5 +1,5 @@
 
-## Unreleased
+## 12.6.0
 
 * [**Dave Eddy**](https://github.com/bahamas10)
   [pr#3187](https://github.com/chef/chef/pull/3187) overhaul solaris SMF service provider
@@ -39,8 +39,21 @@
   [pr#3810](https://github.com/chef/chef/pull/3810) GH-1909 Add validation for chef_server_url
 * [**Maxime Brugidou**](https://github.com/brugidou)
   [pr#4052](https://github.com/chef/chef/pull/4052) Add make_child_entry in ChefFS CookbookSubdir
+* [**Nathan Williams**](https://github.com/nathwill)
+  [pr#3836](https://github.com/chef/chef/pull/3836) simplify service helpers
+* [**Paul Welch**](https://github.com/pwelch)
+  [pr#4066](https://github.com/chef/chef/pull/4066) Fix chef-apply usage banner
+* [**Mat Schaffer**](https://github.com/matschaffer)
+  [pr#4153](https://github.com/chef/chef/pull/4153) Require ShellOut before Knife::SSH definition
+* [**Donald Guy**](https://github.com/donaldguy)
+  [pr#4158](https://github.com/chef/chef/pull/4158) Allow named_run_list to be loaded from config
+* [**Jos Backus**](https://github.com/josb)
+  [pr#4064](https://github.com/chef/chef/pull/4064) Ensure that tags are properly initialized
+* [**John Bellone**](https://github.com/johnbellone)
+  [pr#4101](https://github.com/chef/chef/pull/4101) Adds alias method upgrade_package for solaris package
+* [**Nolan Davidson**](https://github.com/nsdavidson)
+  [pr#4014](https://github.com/chef/chef/pull/4014) Adding ksh resource
 
-* [pr#4183](https://github.com/chef/chef/pull/4183) extract declare_resource to a mixin and extend API
 * [pr#4185](https://github.com/chef/chef/pull/4185) dpkg provider cleanup
 * [pr#4165](https://github.com/chef/chef/pull/4165) Multipackage internal API improvements
 * [pr#4081](https://github.com/chef/chef/pull/4081) RFC-037: add `chef_version` and `ohai_version` metadata
@@ -56,6 +69,25 @@
 * [pr#4091](https://github.com/chef/chef/pull/4091) Allow downloading of root_files in a chef repository
 * [pr#4112](https://github.com/chef/chef/pull/4112) Update knife bootstrap command to honor --no-color flag in chef-client run that is part of the bootstrap process.
 * [pr#4090](https://github.com/chef/chef/pull/4090) Improve detection of ChefFS-based commands in `knife rehash`
+* [pr#3991](https://github.com/chef/chef/pull/3991) Modify remote_file cache_control_data to use sha256 for its name
+* [pr#4079](https://github.com/chef/chef/pull/4079) add logger to windows service shellout
+* [pr#3966](https://github.com/chef/chef/pull/3966) Report expanded run list json tree to reporting
+* [pr#4080](https://github.com/chef/chef/pull/4080) Make property modules possible
+* [pr#4069](https://github.com/chef/chef/pull/4069) Improvements to log messages
+* [pr#4049](https://github.com/chef/chef/pull/4049) Add gemspec files to allow bundler to run from the gem
+* [pr#4029](https://github.com/chef/chef/pull/4029) Fix search result pagination
+* [pr#4048](https://github.com/chef/chef/pull/4048) Accept coercion as a way to accept nil values
+* [pr#4046](https://github.com/chef/chef/pull/4046) ignore gid in the user resource on windows
+* [pr#4118](https://github.com/chef/chef/pull/4118) Make Property.derive create derived properties of the same type
+* [pr#4133](https://github.com/chef/chef/pull/4133) Add retries to `Chef::HTTP` for transient SSL errors
+* [pr#4135](https://github.com/chef/chef/pull/4135) Windows service uses log file location from config if none is given on commandline
+* [pr#4142](https://github.com/chef/chef/pull/4142) Use the proper python interpretor for yum-dump.py on Fedora 21
+* [pr#4149](https://github.com/chef/chef/pull/4149) Handle nil run list option in knife bootstrap
+* [pr#4040](https://github.com/chef/chef/pull/4040) Implement live streaming for execute resources
+* [pr#4167](https://github.com/chef/chef/pull/4167) Add `reboot_action` to `dsc_resource`
+* [pr#4167](https://github.com/chef/chef/pull/4167) Allow `dsc_resource` to run with the LCM enabled
+* [pr#4188](https://github.com/chef/chef/pull/4188) Update `dsc_resource` to use verbose stream output
+* [pr#4200](https://github.com/chef/chef/pull/4200) Prevent inspect of PsCredential from printing out plain text password
 
 ## 12.5.1
 
