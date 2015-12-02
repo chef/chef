@@ -31,6 +31,18 @@ ChefConfig::PackageTask.new(File.expand_path('..', __FILE__), 'Chef') do |packag
   package.generate_version_class = true
 end
 
+
+require 'github_changelog_generator/task'
+
+GitHubChangelogGenerator::RakeTask.new :changelog do |config|
+  config.token = ENV['GITHUB_CHANGELOG_TOKEN']
+  config.future_release = Chef::VERSION
+  config.enhancement_labels = "enhancement,Enhancement,New Feature".split(",")
+  config.bug_labels = "bug,Bug,Improvement,Upstream Bug".split(",")
+  config.exclude_labels = "duplicate,question,invalid,wontfix,no_changelog".split(",")
+  config.issues = false
+end
+
 task :pedant, :chef_zero_spec
 
 task :build_eventlog do

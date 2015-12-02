@@ -27,6 +27,8 @@ group(:development, :test) do
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 
+  gem 'github_changelog_generator'
+
   # For external tests
 #  gem 'chef-zero', github: 'chef/chef-zero'
 #  gem 'cheffish', github: 'chef/cheffish'
