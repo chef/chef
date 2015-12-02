@@ -332,7 +332,11 @@ module Mixlib
         when 'log_tag'
           self.log_tag = setting
         when 'environment', 'env'
-          self.environment = setting || {}
+          if setting
+            self.environment = Hash[setting.map{|(k,v)| [k.to_s,v]}]
+          else
+            self.environment = {}
+          end
         when 'login'
           self.login = setting
         else
