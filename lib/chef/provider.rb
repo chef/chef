@@ -351,10 +351,20 @@ class Chef
     # @api private
     module InlineResources
 
-      # Our run context is a child of the main run context; that gives us a
-      # whole new resource collection and notification set.
-      def initialize(resource, run_context)
-        super(resource, run_context.create_child)
+      # Create a child run_context, compile the block, and converge it.
+      #
+      # @api private
+      def compile_and_converge_action(&block)
+        old_run_context = run_context
+        @run_context = run_context.create_child
+        return_value = instance_eval(&block)
+        Chef::Runner.new(run_context).converge
+        return_value
+      ensure
+        if run_context.resource_collection.any? { |r| r.updated? }
+          new_resource.updated_by_last_action(true)
+        end
+        @run_context = old_run_context
       end
 
       # Class methods for InlineResources. Overrides the `action` DSL method
@@ -366,36 +376,7 @@ class Chef
         # compile the resources, converging them, and then checking if any
         # were updated (and updating new-resource if so)
         def action(name, &block)
-          # We first try to create the method using "def method_name", which is
-          # preferred because it actually shows up in stack traces. If that
-          # fails, we try define_method.
-          begin
-            class_eval <<-EOM, __FILE__, __LINE__+1
-              def action_#{name}
-                return_value = compile_action_#{name}
-                Chef::Runner.new(run_context).converge
-                return_value
-              ensure
-                if run_context.resource_collection.any? {|r| r.updated? }
-                  new_resource.updated_by_last_action(true)
-                end
-              end
-            EOM
-          rescue SyntaxError
-            define_method("action_#{name}") do
-              begin
-                return_value = send("compile_action_#{name}")
-                Chef::Runner.new(run_context).converge
-                return_value
-              ensure
-                if run_context.resource_collection.any? {|r| r.updated? }
-                  new_resource.updated_by_last_action(true)
-                end
-              end
-            end
-          end
-          # We put the action in its own method so that super() works.
-          define_method("compile_action_#{name}", &block)
+          define_method("action_#{name}") { compile_and_converge_action(&block) }
         end
       end
 
