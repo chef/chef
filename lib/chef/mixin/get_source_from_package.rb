@@ -1,5 +1,5 @@
 # Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,12 @@
 class Chef
   module Mixin
     module GetSourceFromPackage
+      # FIXME:  this is some bad code that I wrote a long time ago.
+      #  - it does too much in the initializer
+      #  - it mutates the new_resource
+      #  - it does not support multipackage arrays
+      # this code is deprecated, check out the :use_package_names_for_source
+      # subclass directive instead
       def initialize(new_resource, run_context)
         super
         return if new_resource.package_name.is_a?(Array)
@@ -40,4 +46,3 @@ class Chef
     end
   end
 end
-

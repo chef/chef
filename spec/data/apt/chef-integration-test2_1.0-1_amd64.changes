@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Mon, 23 Nov 2015 12:57:22 -0800
+Source: chef-integration-test2
+Binary: chef-integration-test2
+Architecture: source amd64
+Version: 1.0-1
+Distribution: unstable
+Urgency: low
+Maintainer: Lamont Granquist <lamont@coredump.scriptkiddie.lan>
+Changed-By: Lamont Granquist <lamont@coredump.scriptkiddie.lan>
+Description: 
+ chef-integration-test2 - <insert up to 60 chars description>
+Changes: 
+ chef-integration-test2 (1.0-1) unstable; urgency=low
+ .
+   * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+Checksums-Sha1: 
+ 496f99763cf1363587a218530839b888c9f21352 950 chef-integration-test2_1.0-1.dsc
+ 755c304197c6559128aed206ea70643fec2bb90d 248 chef-integration-test2_1.0.orig.tar.gz
+ 147e8003463c5b54862a84367ab8f9559306da60 9737 chef-integration-test2_1.0-1.debian.tar.gz
+ 9f6e72d07f4e7f7b835e81bf34890ecfdec57b30 2258 chef-integration-test2_1.0-1_amd64.deb
+Checksums-Sha256: 
+ 3535259d2a747b4c9595d86db41691cf7408d6cfe409fda2d11c538c19d39925 950 chef-integration-test2_1.0-1.dsc
+ 8b206a7b3d422290bc8d82bd700cb89f1c6e3962b96be6a3955c7a0159f9031c 248 chef-integration-test2_1.0.orig.tar.gz
+ b0b4f3423dc8934f41543352ab3f4bd3e647fdfc490f825426fd71103403d4bc 9737 chef-integration-test2_1.0-1.debian.tar.gz
+ 42df491d0a3c3a077b6c808fffc93557f9b4747b2443a1c1da16ddda873730a4 2258 chef-integration-test2_1.0-1_amd64.deb
+Files: 
+ 67b83ba0dcd7b8a3e061c38b9d70d0af 950 unknown optional chef-integration-test2_1.0-1.dsc
+ f1f7d7bbe63ad631d25d707f564a8d33 248 unknown optional chef-integration-test2_1.0.orig.tar.gz
+ ad45e1006026dbbe60edcbb7520e9379 9737 unknown optional chef-integration-test2_1.0-1.debian.tar.gz
+ 9932a1f0074e1b218c057b7f7f7a1399 2258 unknown optional chef-integration-test2_1.0-1_amd64.deb

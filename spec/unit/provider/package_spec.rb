@@ -453,17 +453,13 @@ describe "Subclass with use_multipackage_api" do
     provider
   end
 
-  it "should have supports_arrays class accessor" do
-    expect(MyPackageProvider.supports_arrays).to be true
-    MyPackageProvider.supports_arrays = false
-    expect(MyPackageProvider.supports_arrays).to be false
-    # class variables are global state, so better set it back...
-    MyPackageProvider.supports_arrays = true
+  it "has use_multipackage_api? methods on the class and instance" do
+    expect(MyPackageProvider.use_multipackage_api?).to be true
+    expect(provider.use_multipackage_api?).to be true
   end
 
-  it "has supports_arrays? methods on the class and instance" do
-    expect(MyPackageProvider.supports_arrays?).to be true
-    expect(provider.supports_arrays?).to be true
+  it "offers a_to_s to subclasses to convert an array of strings to a single string" do
+    expect(provider.send(:a_to_s, "a", nil, "b", "", "c", " ", "d e", "f-g")).to eq("a b c   d e f-g")
   end
 
   it "when user passes string to package_name, passes arrays to install_package" do

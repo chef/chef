@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -94,8 +94,10 @@ test_node.automatic['platform_family'] = (OHAI_SYSTEM['platform_family'] || 'unk
 test_node.automatic['platform'] = (OHAI_SYSTEM['platform'] || 'unknown_platform').dup.freeze
 test_node.automatic['platform_version'] = (OHAI_SYSTEM['platform_version'] || 'unknown_platform_version').dup.freeze
 TEST_NODE = test_node.freeze
+TEST_OS = TEST_NODE['os']
 TEST_PLATFORM = TEST_NODE['platform']
 TEST_PLATFORM_VERSION = TEST_NODE['platform_version']
+TEST_PLATFORM_FAMILY = TEST_NODE['platform_family']
 
 RSpec.configure do |config|
   config.include(Matchers)
@@ -145,6 +147,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
   config.filter_run_excluding :aix_only => true unless aix?
+  config.filter_run_excluding :debian_family_only => true unless debian_family?
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_20_only => true unless ruby_20?
