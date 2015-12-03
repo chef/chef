@@ -74,11 +74,11 @@ describe "Notifications" do
     runner.converge
   end
 
-  it "should notify from one resource to another immediately_before" do
+  it "should notify from one resource to another before" do
     log_resource = recipe.declare_resource(:log, "log") do
       message "This is a log message"
       action :write
-      notifies :install, "package[vim]", :immediately_before
+      notifies :install, "package[vim]", :before
     end
     update_action(log_resource, 2)
 
@@ -102,19 +102,19 @@ describe "Notifications" do
     expect(actions).to eq [
       # First it runs why-run to check if the resource would update
       { resource: log_resource.to_s,     action: :write,   why_run: true },
-      # Then it runs the immediately_before action
-      { resource: package_resource.to_s, action: :install, notification_type: :immediately_before, notifying_resource: log_resource.to_s },
+      # Then it runs the before action
+      { resource: package_resource.to_s, action: :install, notification_type: :before, notifying_resource: log_resource.to_s },
       # Then it runs the actual action
       { resource: log_resource.to_s,     action: :write },
       { resource: package_resource.to_s, action: :nothing }
     ]
   end
 
-  it "should not notify from one resource to another immediately_before if the resource is not updated" do
+  it "should not notify from one resource to another before if the resource is not updated" do
     log_resource = recipe.declare_resource(:log, "log") do
       message "This is a log message"
       action :write
-      notifies :install, "package[vim]", :immediately_before
+      notifies :install, "package[vim]", :before
     end
 
     package_resource = recipe.declare_resource(:package, "vim") do
@@ -137,7 +137,7 @@ describe "Notifications" do
     expect(actions).to eq [
       # First it runs why-run to check if the resource would update
       { resource: log_resource.to_s,     action: :write,   why_run: true },
-      # Then it does NOT run the immediately_before action
+      # Then it does NOT run the before action
       # Then it runs the actual action
       { resource: log_resource.to_s,     action: :write },
       { resource: package_resource.to_s, action: :nothing }
