@@ -2,7 +2,7 @@
 #
 # Authors:: Adam Jacob (<adam@opscode.com>)
 #           Ionuț Arțăriși (<iartarisi@suse.cz>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 #             Copyright (c) 2013 SUSE Linux GmbH
 # License:: Apache License, Version 2.0
 #
@@ -28,62 +28,68 @@ class Chef
   class Provider
     class Package
       class Zypper < Chef::Provider::Package
+        use_multipackage_api
 
         provides :package, platform_family: "suse"
         provides :zypper_package, os: "linux"
+
+        def get_versions(package_name)
+          candidate_version = current_version = nil
+          is_installed = false
+          Chef::Log.debug("#{new_resource} checking zypper")
+          status = shell_out_with_timeout!("zypper --non-interactive info #{package_name}")
+          status.stdout.each_line do |line|
+            case line
+            when /^Version: (.+)$/
+              candidate_version = $1
+              Chef::Log.debug("#{new_resource} version #{$1}")
+            when /^Installed: Yes$/
+              is_installed=true
+              Chef::Log.debug("#{new_resource} is installed")
+            when /^Status: out-of-date \(version (.+) installed\)$/
+              current_version=$1
+              Chef::Log.debug("#{new_resource} out of date version #{$1}")
+            end
+          end
+          current_version = candidate_version if is_installed
+          { current_version: current_version, candidate_version: candidate_version }
+        end
+
+        def versions
+          @versions =
+            begin
+              raw_versions = package_name_array.map do |package_name|
+                get_versions(package_name)
+              end
+              Hash[*package_name_array.zip(raw_versions).flatten]
+            end
+        end
+
+        def get_candidate_versions
+          package_name_array.map do |package_name|
+            versions[package_name][:candidate_version]
+          end
+        end
+
+        def get_current_versions
+          package_name_array.map do |package_name|
+            versions[package_name][:current_version]
+          end
+        end
 
         def load_current_resource
           @current_resource = Chef::Resource::ZypperPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
 
-          is_installed=false
-          is_out_of_date=false
-          version=""
-          oud_version=""
-          Chef::Log.debug("#{new_resource} checking zypper")
-          status = shell_out_with_timeout("zypper --non-interactive info #{new_resource.package_name}")
-          status.stdout.each_line do |line|
-            case line
-            when /^Version: (.+)$/
-              version = $1
-              Chef::Log.debug("#{new_resource} version #{$1}")
-            when /^Installed: Yes$/
-              is_installed=true
-              Chef::Log.debug("#{new_resource} is installed")
-
-            when /^Installed: No$/
-              is_installed=false
-              Chef::Log.debug("#{new_resource} is not installed")
-            when /^Status: out-of-date \(version (.+) installed\)$/
-              is_out_of_date=true
-              oud_version=$1
-              Chef::Log.debug("#{new_resource} out of date version #{$1}")
-            end
-          end
-
-          if is_installed==false
-            @candidate_version=version
-          end
-
-          if is_installed==true
-            if is_out_of_date==true
-              current_resource.version(oud_version)
-              @candidate_version=version
-            else
-              current_resource.version(version)
-              @candidate_version=version
-            end
-          end
-
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "zypper failed - #{status.inspect}!"
-          end
+          @candidate_version = get_candidate_versions
+          current_resource.version(get_current_versions)
 
           current_resource
         end
 
-        def zypper_version()
-          `zypper -V 2>&1`.scan(/\d+/).join(".").to_f
+        def zypper_version
+          @zypper_version ||=
+            `zypper -V 2>&1`.scan(/\d+/).join(".").to_f
         end
 
         def install_package(name, version)
@@ -91,6 +97,7 @@ class Chef
         end
 
         def upgrade_package(name, version)
+          # `zypper install` upgrades packages, we rely on the idempotency checks to get action :install behavior
           install_package(name, version)
         end
 
@@ -103,13 +110,19 @@ class Chef
         end
 
         private
-        def zypper_package(command, pkgname, version)
-          version = "=#{version}" unless version.nil? || version.empty?
+
+        def zip(names, versions)
+          names.zip(versions).map do |n, v|
+            (v.nil? || v.empty?) ? n : "#{n}=#{v}"
+          end
+        end
+
+        def zypper_package(command, names, versions)
+          zipped_names = zip(names, versions)
           if zypper_version < 1.0
-            shell_out_with_timeout!("zypper#{gpg_checks} #{command} -y #{pkgname}")
+            shell_out_with_timeout!(a_to_s("zypper", gpg_checks, command, "-y", names))
           else
-            shell_out_with_timeout!("zypper --non-interactive#{gpg_checks} "+
-                      "#{command} #{pkgname}#{version}")
+            shell_out_with_timeout!(a_to_s("zypper --non-interactive", gpg_checks, command, zipped_names))
           end
         end
 
@@ -118,12 +131,12 @@ class Chef
           when true
             ""
           when false
-            " --no-gpg-checks"
+            "--no-gpg-checks"
           when nil
             Chef::Log.warn("Chef::Config[:zypper_check_gpg] was not set. " +
               "All packages will be installed without gpg signature checks. " +
               "This is a security hazard.")
-            " --no-gpg-checks"
+            "--no-gpg-checks"
           end
         end
       end
