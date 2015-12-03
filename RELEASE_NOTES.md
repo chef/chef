@@ -65,4 +65,4 @@ This change is for the scenario when running chef client as a Windows service. C
 
 ## Other items
 
-There are a large number of other PRs in this release. Please eee the CHANGELOG for the full set of changes.
+There are a large number of other PRs in this release. Please see the CHANGELOG for the full set of changes.
