@@ -501,7 +501,7 @@ class Chef
           begin
             source_array.each_with_index.map do |source, i|
               package_name = package_name_array[i]
-              # we require at least one '/' in the package_name to avoid dpkg_package 'foo' breaking due to a random 'foo' file in cwd
+              # we require at least one '/' in the package_name to avoid [XXX_]package 'foo' breaking due to a random 'foo' file in cwd
               if use_package_name_for_source? && source.nil? && package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(package_name)
                 Chef::Log.debug("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
                 package_name
