@@ -37,7 +37,7 @@
     -->
     <% if fastmsi %>
     <SetProperty Id="FastUnzip"
-                 Value="FASTZIPDIR=[INSTALLLOCATION];FASTZIPAPPNAME=chef"
+                 Value="FASTZIPDIR=[INSTALLLOCATION];FASTZIPAPPNAME=$(var.ProjectLocationDir)"
                  Sequence="execute"
                  Before="FastUnzip" />
 
@@ -53,7 +53,7 @@
 
     <CustomAction Id="Cleanup"
                   Directory="INSTALLLOCATION"
-                  ExeCommand="cmd /C &quot;rd /S /Q chef&quot;"
+                  ExeCommand="cmd /C &quot;rd /S /Q $(var.ProjectLocationDir)&quot;"
                   Execute="deferred"
                   Impersonate="no"
                   Return="ignore" />
@@ -77,7 +77,7 @@
           </Component>
         </Directory>
         <Directory Id="INSTALLLOCATION" Name="opscode">
-          <Directory Id="PROJECTLOCATION" Name="chef" >
+          <Directory Id="PROJECTLOCATION" Name="#(var.ProjectLocationDir)" >
             <Directory Id="PROJECTLOCATIONBIN" Name="bin" >
               <Component Id="ChefClientPath" Guid="{7F663F88-55A2-4E20-82BF-8BD2E60BB83A}" >
                 <Environment Id="ClientPathEnvironment"

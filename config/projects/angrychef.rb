@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2014 Chef Software, Inc.
+# Copyright 2012-2015 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ self.instance_eval chef_project_contents
 
 name "angrychef"
 friendly_name "Angry Chef Client"
-maintainer "Chef Software, Inc. <maintainers@chef.io>"
-homepage "https://www.chef.io"
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
@@ -37,18 +35,5 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-dependency "openssl-customization"
-
-package :pkg do
-  identifier "com.getchef.pkg.angrychef"
-  signing_identity "Developer ID Installer: Chef Software, Inc. (EU3VF8YLX2)"
-end
-
-compress :dmg
-
-package :msi do
-  upgrade_code "D7FDDC1A-7668-404E-AD2F-61F875632A9C"
-  wix_candle_extension 'WixUtilExtension'
-  signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
-  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll"))
-end
+msi_upgrade_code = "D7FDDC1A-7668-404E-AD2F-61F875632A9C"
+project_location_dir = "angrychef"
