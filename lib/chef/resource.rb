@@ -664,13 +664,18 @@ class Chef
     end
 
     def to_hash
+      # Grab all current state, then any other ivars (backcompat)
+      result = {}
+      self.class.state_properties.each do |p|
+        result[p.name] = p.get(self)
+      end
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
-      instance_vars = Hash.new
       safe_ivars.each do |iv|
         key = iv.to_s.sub(/^@/,'').to_sym
-        instance_vars[key] = instance_variable_get(iv)
+        next if result.has_key?(key)
+        result[key] = instance_variable_get(iv)
       end
-      instance_vars
+      result
     end
 
     def self.json_create(o)
