@@ -17,7 +17,6 @@
 #
 
 require 'chef/provider/package'
-require 'chef/mixin/command'
 require 'chef/resource/package'
 
 class Chef
@@ -33,19 +32,11 @@ class Chef
         use_multipackage_api
         use_package_name_for_source
 
-        # semantics of dpkg properties:
-        #
-        # new_resource.name is always an array for this resource
-        # new_resource.package_name is always an array for this resource
-        # new_resource.source is always an array and may be [ nil ] for this resource.  properly use #sources or
-        #    #name_sources to also get the automatic package-name-to-source-conversion.  this will never be nil?
-        #
-
         def define_resource_requirements
           super
 
           requirements.assert(:install, :upgrade) do |a|
-            a.assertion { !sources.compact.empty? }
+            a.assertion { !resolved_source_array.compact.empty? }
             a.failure_message Chef::Exceptions::Package, "#{new_resource} the source property is required for action :install or :upgrade"
           end
 
@@ -154,48 +145,18 @@ class Chef
         #
         # @return [Boolean] True if all sources exist
         def source_files_exist?
-          sources.all? {|s| s && ::File.exist?(s) }
+          resolved_source_array.all? {|s| s && ::File.exist?(s) }
         end
 
         # Helper to return all the nanes of the missing sources for error messages.
         #
         # @return [Array<String>] Array of missing sources
         def missing_sources
-          sources.select {|s| s.nil? || !::File.exist?(s) }
+          resolved_source_array.select {|s| s.nil? || !::File.exist?(s) }
         end
 
         def current_package_name_array
           [ current_resource.package_name ].flatten
-        end
-
-        def source_array
-          if new_resource.source.nil?
-            package_name_array.map { nil }
-          else
-            [ new_resource.source ].flatten
-          end
-        end
-
-        # Helper to construct Array of sources.  If the new_resource.source is nil it
-        # will return an array filled will nil the same size as the package_name array
-        # For all the nil source values, if a file exists on the filesystem that
-        # matches the package name it will use that name as the source.
-        #
-        # @return [Array] Array of normalized sources with package_names converted to sources
-        def sources
-          @sources ||=
-            begin
-              source_array.each_with_index.map do |source, i|
-                package_name = package_name_array[i]
-                # we require at least one '/' in the package_name to avoid dpkg_package 'foo' breaking due to a random 'foo' file in cwd
-                if use_package_name_for_source? && source.nil? && package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(package_name)
-                  Chef::Log.debug("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
-                  package_name
-                else
-                  source
-                end
-              end
-            end
         end
 
         # Helper to construct Hash of names-to-sources.
@@ -204,7 +165,7 @@ class Chef
         def name_sources
           @name_sources =
             begin
-              Hash[*package_name_array.zip(sources).flatten]
+              Hash[*package_name_array.zip(resolved_source_array).flatten]
             end
         end
 
@@ -214,7 +175,7 @@ class Chef
         def name_pkginfo
           @name_pkginfo ||=
             begin
-              pkginfos = sources.map do |src|
+              pkginfos = resolved_source_array.map do |src|
                 Chef::Log.debug("#{new_resource} checking #{src} dpkg status")
                 status = shell_out_with_timeout!("dpkg-deb -W #{src}")
                 status.stdout
