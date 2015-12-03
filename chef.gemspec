@@ -43,6 +43,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency "syslog-logger", "~> 1.6"
 
+  s.add_dependency "proxifier", "~> 1.0"
+
   s.add_development_dependency "rack"
   s.add_development_dependency "cheffish", "~> 1.1"
 

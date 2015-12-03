@@ -29,6 +29,8 @@ class Chef
         require 'uri'
         require 'chef/http/ssl_policies'
         require 'openssl'
+        require 'chef/mixin/proxified_socket'
+        include Chef::Mixin::ProxifiedSocket
       end
 
       banner "knife ssl check [URL] (options)"
@@ -75,7 +77,7 @@ class Chef
 
       def verify_peer_socket
         @verify_peer_socket ||= begin
-          tcp_connection = TCPSocket.new(host, port)
+          tcp_connection = proxified_socket(host, port)
           ssl_client = OpenSSL::SSL::SSLSocket.new(tcp_connection, verify_peer_ssl_context)
           ssl_client.hostname = host
           ssl_client
@@ -93,7 +95,7 @@ class Chef
 
       def noverify_socket
         @noverify_socket ||= begin
-          tcp_connection = TCPSocket.new(host, port)
+          tcp_connection = proxified_socket(host, port)
           OpenSSL::SSL::SSLSocket.new(tcp_connection, noverify_peer_ssl_context)
         end
       end
@@ -125,7 +127,9 @@ class Chef
 
       def verify_cert
         ui.msg("Connecting to host #{host}:#{port}")
+        ui.msg("TYLER DEBUGGING INFO1")
         verify_peer_socket.connect
+        ui.msg("TYLER DEBUGGING INFO2")
         true
       rescue OpenSSL::SSL::SSLError => e
         ui.error "The SSL certificate of #{host} could not be verified"
