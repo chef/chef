@@ -123,9 +123,13 @@ class Chef
       end
 
       def http_api
-        @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url],
-                                     Chef::Config[:validation_client_name],
-                                     Chef::Config[:validation_key])
+        @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url],
+                                          {
+                                            :api_version => "0",
+                                            :client_name => Chef::Config[:validation_client_name],
+                                            :signing_key_filename => Chef::Config[:validation_key]
+                                          }
+                                         )
       end
 
       # Whether or not to generate keys locally and post the public key to the
