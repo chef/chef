@@ -67,16 +67,20 @@ package :rpm do
   signing_passphrase ENV['OMNIBUS_RPM_SIGNING_PASSPHRASE']
 end
 
+proj_to_work_around_cleanroom = self
 package :pkg do
-  identifier "com.getchef.pkg.chef"
+  identifier "com.getchef.pkg.#{proj_to_work_around_cleanroom.name}"
   signing_identity "Developer ID Installer: Chef Software, Inc. (EU3VF8YLX2)"
 end
 compress :dmg
 
+msi_upgrade_code = "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
+project_location_dir = name
 package :msi do
   fast_msi true
-  upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
+  upgrade_code msi_upgrade_code
   wix_candle_extension 'WixUtilExtension'
   signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
-  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll"))
+  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
+    ProjectLocationDir: project_location_dir
 end

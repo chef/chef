@@ -112,7 +112,7 @@ GEM
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.2)
-    nio4r (1.1.0)
+    nio4r (1.1.1)
     nori (2.6.0)
     octokit (3.8.0)
       sawyer (~> 0.6.0, >= 0.5.3)
@@ -200,3 +200,6 @@ DEPENDENCIES
   omnibus-software!
   test-kitchen (~> 1.4.0)
   winrm-transport (~> 1.0)
+
+BUNDLED WITH
+   1.10.6

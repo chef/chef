@@ -15,28 +15,28 @@
 #
 
 #
-# This is a clone of the Chef project that we can install on the Chef build and
-# test machines. As such this project definition is just a thin wrapper around
-# `config/project/chef.rb`.
+# This is the chef client build with FIPS mode enabled.
+# It's a stub for now and produces identical results 
 #
 chef_project_contents = IO.read(File.expand_path('../chef.rb', __FILE__))
 self.instance_eval chef_project_contents
 
-name "angrychef"
-friendly_name "Angry Chef Client"
+name "chef-fips"
+friendly_name "Chef Client with FIPS"
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
   #       Native gems will use gcc which will barf on files with spaces,
   #       which is only fixable if everyone in the world fixes their Makefiles
   install_dir "#{default_root}/opscode/#{name}"
-  package_name "angrychef"
+  package_name "chef-client-fips"
 else
   install_dir "#{default_root}/#{name}"
 end
 
+msi_upgrade_code = "819F5DB3-B818-4358-BB2B-54B8171D0A26"
+project_location_dir = "chef-fips"
+
+# Use chef's scripts for everything.
 resources_path "#{resources_path}/../chef"
 package_scripts_path "#{package_scripts_path}/../chef"
-
-msi_upgrade_code = "D7FDDC1A-7668-404E-AD2F-61F875632A9C"
-project_location_dir = "angrychef"
