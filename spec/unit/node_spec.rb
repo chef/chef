@@ -772,6 +772,25 @@ describe Chef::Node do
       end
     end
 
+    describe "ways of abusing Chef 12 node state" do
+      # these tests abuse the top_level_breadcrumb state in Chef 12
+      it "derived attributes work correctly" do
+        node.default['v1'] = 1
+        expect(node['a']).to eql(nil)
+        node.default['a'] = node['v1']
+        expect(node['a']).to eql(1)
+      end
+
+      it "works when saving nodes to variables" do
+        a = node.default['a']
+        expect(node['a']).to eql({})
+        node.default['b'] = 0
+        a['key'] = 1
+
+        expect(node['a']['key']).to eql(1)
+      end
+    end
+
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
       expect { node.sunshine }.to raise_error(NoMethodError)
     end

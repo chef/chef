@@ -1438,22 +1438,4 @@ describe Chef::Node::Attribute do
       expect(@attributes['foo']['baz']).to eql('qux')
     end
   end
-
-  describe "ways of abusing Chef 12 node state" do
-    # these tests abuse the top_level_breadcrumb state in Chef 12
-    it "derived attributes work correctly" do
-      @attributes.default['v1'] = 1
-      expect(@attributes['a']).to eql(nil)
-      @attributes.default['a'] = @attributes['v1']
-      expect(@attributes['a']).to eql(1)
-    end
-
-    it "works when saving nodes to variables" do
-      a = @attributes.default['a']
-      @attributes.default['b'] = 0
-      a['key'] = 1
-      expect(@attributes['a']['key']).to eql(1)
-      #expect(@attributes['a']).to eql({ 'key': 1 })
-    end
-  end
 end
