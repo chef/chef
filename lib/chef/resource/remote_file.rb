@@ -21,14 +21,12 @@ require 'uri'
 require 'chef/resource/file'
 require 'chef/provider/remote_file'
 require 'chef/mixin/securable'
-require 'chef/mixin/resource_credential_validation'
 require 'chef/mixin/uris'
 
 class Chef
   class Resource
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
-      include Chef::Mixin::ResourceCredentialValidation
 
       def initialize(name, run_context=nil)
         super

@@ -18,7 +18,7 @@
 
 class Chef
   module Mixin
-    module ResourceCredentialValidation
+    module ResourceCredential
 
       def validate_credential(specified_user, specified_domain, password)
         user = specified_user
@@ -26,7 +26,7 @@ class Chef
 
         if Chef::Platform.windows?
           if ! user.nil?
-            domain, user = translated_domain_and_user(specified_domain, specified_user)
+            domain, user = canonicalize_credential(specified_domain, specified_user)
           end
 
           if ! user.nil? && password.nil?
@@ -41,7 +41,7 @@ class Chef
         end
       end
 
-      def translated_domain_and_user(specified_domain, specified_user)
+      def canonicalize_credential(specified_domain, specified_user)
         domain = specified_domain
         user = specified_user
 
@@ -64,7 +64,7 @@ class Chef
       end
 
       private(:validate_credential)
-      private(:translated_domain_and_user)
+      private(:canonicalize_credential)
 
     end
   end

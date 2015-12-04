@@ -17,12 +17,13 @@
 #
 
 require 'chef/util/windows/logon_session' if Chef::Platform.windows?
+require 'chef/mixin/resource_credential'
 
 class Chef
   module Mixin
     module UserContext
 
-      include Chef::Mixin::ResourceCredentialValidation
+      include Chef::Mixin::ResourceCredential
 
       def with_user_context(user, domain, password, &block)
         if ! block_given?
