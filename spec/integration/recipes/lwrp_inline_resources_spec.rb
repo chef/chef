@@ -75,7 +75,7 @@ describe "LWRPs with inline resources" do
       end
     end
 
-    it "resources declared in b are executed immediately inline", :focus do
+    it "resources declared in b are executed immediately inline" do
       r = nil
       expect_recipe {
         r = lwrp_inline_resources_test2 'hi' do
