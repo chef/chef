@@ -36,7 +36,7 @@ fi
 
 # We test for the presence of /usr/bin/chef-client to know if this script succeeds,
 # so chef-client must appear as the last item here.
-binaries="chef chef-solo chef-apply chef-shell knife shef ohai berks chef-zero fauxhai foodcritic kitchen rubocop strain strainer chef-client"
+binaries="chef chef-solo chef-apply chef-shell knife ohai berks fauxhai foodcritic kitchen rubocop chef-client"
 
 # rm -f before ln -sf is required for solaris 9
 for binary in $binaries; do
