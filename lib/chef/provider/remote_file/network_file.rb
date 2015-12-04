@@ -19,6 +19,7 @@
 require 'uri'
 require 'tempfile'
 require 'chef/provider/remote_file'
+require 'chef/mixin/resource_credential'
 require 'chef/mixin/user_context'
 
 class Chef
@@ -26,7 +27,7 @@ class Chef
     class RemoteFile
       class NetworkFile
 
-        include Chef::Mixin::ResourceCredentialValidation
+        include Chef::Mixin::ResourceCredential
         include Chef::Mixin::UserContext
 
         attr_reader :new_resource
@@ -44,8 +45,7 @@ class Chef
             tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
             Chef::Log.debug("#{new_resource} staging #{@source} to #{tempfile.path}")
 
-            validate_credential(new_resource.remote_user, new_resource.remote_user_domain, new_resource.remote_user_password)
-            domain, user = translated_domain_and_user( new_resource.remote_user_domain, new_resource.remote_user )
+            domain, user = canonicalize_credential( new_resource.remote_user_domain, new_resource.remote_user )
 
             with_user_context(user, domain, new_resource.remote_user_password) do
               ::File.open(@source, 'rb') do | remote_file |
