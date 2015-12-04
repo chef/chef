@@ -67,8 +67,9 @@ package :rpm do
   signing_passphrase ENV['OMNIBUS_RPM_SIGNING_PASSPHRASE']
 end
 
+proj_to_work_around_cleanroom = self
 package :pkg do
-  identifier "com.getchef.pkg.#{name}"
+  identifier "com.getchef.pkg.#{proj_to_work_around_cleanroom.name}"
   signing_identity "Developer ID Installer: Chef Software, Inc. (EU3VF8YLX2)"
 end
 compress :dmg
