@@ -194,6 +194,25 @@ describe Chef::Resource::RemoteFile do
             let(:remote_password) { nil }
 
             it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
+
+            describe "uses the ::Chef::Provider::RemoteFile::NetworkFile::TRANSFER_CHUNK_SIZE constant to chunk the file" do
+              let(:invalid_chunk_size) { -1 }
+              before do
+                stub_const('::Chef::Provider::RemoteFile::NetworkFile::TRANSFER_CHUNK_SIZE', invalid_chunk_size)
+              end
+
+              it "raises an ArgumentError when the chunk size is negative" do
+                expect(::Chef::Provider::RemoteFile::NetworkFile::TRANSFER_CHUNK_SIZE).to eq(invalid_chunk_size)
+                expect {resource.run_action(:create)}.to raise_error(ArgumentError)
+              end
+            end
+
+            context "when the file must be transferred in more than one chunk" do
+              before do
+                stub_const('::Chef::Provider::RemoteFile::NetworkFile::TRANSFER_CHUNK_SIZE', 3)
+              end
+              it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
+            end
           end
 
           context "when the resource is accessed using an alternate user's identity with no access to the file" do

@@ -32,6 +32,8 @@ class Chef
 
         attr_reader :new_resource
 
+        TRANSFER_CHUNK_SIZE = 1048576
+
         def initialize(source, new_resource, current_resource)
           @new_resource = new_resource
           @source = source
@@ -49,7 +51,7 @@ class Chef
 
             with_user_context(user, domain, new_resource.remote_user_password) do
               ::File.open(@source, 'rb') do | remote_file |
-                while data = remote_file.read(1048576)
+                while data = remote_file.read(TRANSFER_CHUNK_SIZE)
                   tempfile.write(data)
                 end
               end
