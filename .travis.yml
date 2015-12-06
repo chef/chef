@@ -8,7 +8,8 @@ before_install:
   # new 1.10.6 bundler is busted with our rake tasks.  the
   # 2.4.5 rubygems with 1.7.6 bundler in travis currently works.
   # see https://github.com/bundler/bundler/issues/3982
-#  gem update --system
+  - gem update --system
+  - gem install bundler --pre
 
 branches:
   only:

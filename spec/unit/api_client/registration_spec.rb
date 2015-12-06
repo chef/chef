@@ -35,7 +35,7 @@ describe Chef::ApiClient::Registration do
     File.open(Chef::Config[:validation_key], "r") {|f| f.read.chomp }
   end
 
-  let(:http_mock) { double("Chef::REST mock") }
+  let(:http_mock) { double("Chef::ServerAPI mock") }
 
   let(:expected_post_data) do
     { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
@@ -93,7 +93,7 @@ describe Chef::ApiClient::Registration do
   end
 
   it "has an HTTP client configured with validator credentials" do
-    expect(registration.http_api).to be_a_kind_of(Chef::REST)
+    expect(registration.http_api).to be_a_kind_of(Chef::ServerAPI)
     expect(registration.http_api.client_name).to eq("test-validator")
     expect(registration.http_api.signing_key).to eq(private_key_data)
   end
