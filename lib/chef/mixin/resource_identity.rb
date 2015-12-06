@@ -18,14 +18,14 @@
 
 class Chef
   module Mixin
-    module ResourceCredential
+    module ResourceIdentity
 
-      def validate_credential(specified_user, specified_domain, password)
-        validate_credential_platform(specified_user, specified_domain, password)
-        validate_credential_syntax(specified_user, specified_domain, password)
+      def validate_identity(specified_user, specified_domain, password)
+        validate_identity_platform(specified_user, specified_domain, password)
+        validate_identity_syntax(specified_user, specified_domain, password)
       end
 
-      def validate_credential_platform(specified_user, specified_domain, password)
+      def validate_identity_platform(specified_user, specified_domain, password)
         if ! Chef::Platform.windows?
           if ! password.nil? || ! specified_domain.nil?
             raise Exceptions::UnsupportedPlatform, "The `domain` and `password` properties are only supported on the Windows platform"
@@ -37,20 +37,20 @@ class Chef
         end
       end
 
-      def validate_credential_syntax(specified_user, specified_domain, password)
-        domain, user = qualify_credential_user(specified_domain, specified_user)
+      def validate_identity_syntax(specified_user, specified_domain, password)
+        domain, user = qualify_identity_user(specified_domain, specified_user)
 
         if ( ! password.nil? || ! domain.nil? ) && user.nil?
-          raise ArgumentError, "The `password` or `domain` property was specified without specification of the user property"
+          raise ArgumentError, "The `password` or `domain` property was specified without specification of the `user` property"
         end
       end
 
-      def qualify_credential_user(specified_domain, specified_user)
+      def qualify_identity_user(specified_domain, specified_user)
         domain = specified_domain
         user = specified_user
 
         if specified_user.nil? && ! specified_domain.nil?
-          raise ArgumentError, "The domain #{specified_domain} was specified, but no user name was given"
+          raise ArgumentError, "The domain `#{specified_domain}` was specified, but no user name was given"
         end
 
         if ! specified_user.nil? && specified_domain.nil?
@@ -71,10 +71,10 @@ class Chef
         [domain, user]
       end
 
-      protected(:validate_credential)
-      protected(:validate_credential_platform)
-      protected(:validate_credential_syntax)
-      protected(:qualify_credential_user)
+      protected(:validate_identity)
+      protected(:validate_identity_platform)
+      protected(:validate_identity_syntax)
+      protected(:qualify_identity_user)
 
     end
   end
