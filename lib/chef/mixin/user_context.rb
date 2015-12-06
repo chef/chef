@@ -17,20 +17,20 @@
 #
 
 require 'chef/util/windows/logon_session' if Chef::Platform.windows?
-require 'chef/mixin/resource_credential'
+require 'chef/mixin/resource_identity'
 
 class Chef
   module Mixin
     module UserContext
 
-      include Chef::Mixin::ResourceCredential
+      include Chef::Mixin::ResourceIdentity
 
       def with_user_context(user, domain, password, &block)
         if ! block_given?
           raise Exceptions::ArgumentError, 'You must supply a block to `with_user_context`'
         end
 
-        validate_credential(user, domain, password)
+        validate_identity(user, domain, password)
 
         if ! user.nil? && ! Chef::Platform.windows?
           raise Exceptions::UnsupportedPlatform,

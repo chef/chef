@@ -19,7 +19,7 @@
 require 'uri'
 require 'tempfile'
 require 'chef/provider/remote_file'
-require 'chef/mixin/resource_credential'
+require 'chef/mixin/resource_identity'
 require 'chef/mixin/user_context'
 
 class Chef
@@ -27,7 +27,7 @@ class Chef
     class RemoteFile
       class NetworkFile
 
-        include Chef::Mixin::ResourceCredential
+        include Chef::Mixin::ResourceIdentity
         include Chef::Mixin::UserContext
 
         attr_reader :new_resource
@@ -42,12 +42,12 @@ class Chef
         # Fetches the file on a network share, returning a Tempfile-like File handle
         # windows only
         def fetch
-          validate_credential(new_resource.remote_user, new_resource.remote_user_domain, new_resource.remote_user_password)
+          validate_identity(new_resource.remote_user, new_resource.remote_user_domain, new_resource.remote_user_password)
           begin
             tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
             Chef::Log.debug("#{new_resource} staging #{@source} to #{tempfile.path}")
 
-            domain, user = qualify_credential_user( new_resource.remote_user_domain, new_resource.remote_user )
+            domain, user = qualify_identity_user( new_resource.remote_user_domain, new_resource.remote_user )
 
             with_user_context(user, domain, new_resource.remote_user_password) do
               ::File.open(@source, 'rb') do | remote_file |

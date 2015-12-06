@@ -19,14 +19,14 @@
 require 'chef/log'
 require 'chef/provider'
 require 'forwardable'
-require 'chef/mixin/resource_credential'
+require 'chef/mixin/resource_identity'
 
 class Chef
   class Provider
     class Execute < Chef::Provider
       extend Forwardable
 
-      include Chef::Mixin::ResourceCredential
+      include Chef::Mixin::ResourceIdentity
 
       provides :execute
 
@@ -59,7 +59,7 @@ class Chef
       end
 
       def action_run
-        validate_credential(new_resource.user, new_resource.domain, new_resource.password)
+        validate_identity(new_resource.user, new_resource.domain, new_resource.password)
         if creates && sentinel_file.exist?
           Chef::Log.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false

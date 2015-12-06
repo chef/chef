@@ -17,7 +17,7 @@
 #
 
 require 'spec_helper'
-require 'chef/mixin/resource_credential'
+require 'chef/mixin/resource_identity'
 
 shared_examples_for "it received valid credentials" do
   describe "the validation method" do
@@ -52,7 +52,7 @@ shared_examples_for "it received credentials that are not valid on the platform"
   end
 end
 
-shared_examples_for "a consumer of the resource_credential mixin" do
+shared_examples_for "a consumer of the resource_identity mixin" do
   context "when running on Windows" do
     before do
       allow(::Chef::Platform).to receive(:windows?).and_return(true)
@@ -182,20 +182,20 @@ shared_examples_for "a consumer of the resource_credential mixin" do
   end
 end
 
-describe "a class that mixes in resource_credential" do
+describe "a class that mixes in resource_identity" do
   let(:instance_with_credential) do
-    class CredentialClass
-      include ::Chef::Mixin::ResourceCredential
+    class IdentityClass
+      include ::Chef::Mixin::ResourceIdentity
       def validate(*args)
-        validate_credential(*args)
+        validate_identity(*args)
       end
 
       def qualify_name(*args)
-        qualify_credential_user(*args)
+        qualify_identity_user(*args)
       end
     end
-    CredentialClass.new
+    IdentityClass.new
   end
 
-  it_behaves_like "a consumer of the resource_credential mixin"
+  it_behaves_like "a consumer of the resource_identity mixin"
 end
