@@ -45,7 +45,7 @@ class Chef
             tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
             Chef::Log.debug("#{new_resource} staging #{@source} to #{tempfile.path}")
 
-            domain, user = canonicalize_credential( new_resource.remote_user_domain, new_resource.remote_user )
+            domain, user = qualify_credential_user( new_resource.remote_user_domain, new_resource.remote_user )
 
             with_user_context(user, domain, new_resource.remote_user_password) do
               ::File.open(@source, 'rb') do | remote_file |
