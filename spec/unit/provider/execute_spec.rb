@@ -303,7 +303,7 @@ describe Chef::Provider::Execute do
             expect { provider.run_action(:run) }.to raise_error(ArgumentError)
           end
 
-          it "should raise an error if the domain and user are specified" do
+          it "should raise an error if the domain and password are specified" do
             expect(new_resource).to receive(:password).at_least(1).times.and_return('we.funk!')
             expect(new_resource).to receive(:domain).at_least(1).times.and_return('mothership')
             expect { provider.run_action(:run) }.to raise_error(ArgumentError)
