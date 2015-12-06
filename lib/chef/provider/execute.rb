@@ -59,7 +59,7 @@ class Chef
       end
 
       def action_run
-        validate_identity(new_resource.user, new_resource.domain, new_resource.password)
+        validate_identity(new_resource.user, new_resource.password, new_resource.domain)
         if creates && sentinel_file.exist?
           Chef::Log.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false

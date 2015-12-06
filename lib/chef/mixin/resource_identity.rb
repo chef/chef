@@ -20,12 +20,12 @@ class Chef
   module Mixin
     module ResourceIdentity
 
-      def validate_identity(specified_user, specified_domain, password)
-        validate_identity_platform(specified_user, specified_domain, password)
-        validate_identity_syntax(specified_user, specified_domain, password)
+      def validate_identity(specified_user, password = nil, specified_domain = nil)
+        validate_identity_platform(specified_user, password, specified_domain)
+        validate_identity_syntax(specified_user, password, specified_domain)
       end
 
-      def validate_identity_platform(specified_user, specified_domain, password)
+      def validate_identity_platform(specified_user, password = nil, specified_domain = nil)
         if ! Chef::Platform.windows?
           if ! password.nil? || ! specified_domain.nil?
             raise Exceptions::UnsupportedPlatform, "The `domain` and `password` properties are only supported on the Windows platform"
@@ -37,15 +37,15 @@ class Chef
         end
       end
 
-      def validate_identity_syntax(specified_user, specified_domain, password)
-        domain, user = qualify_identity_user(specified_domain, specified_user)
+      def validate_identity_syntax(specified_user, password = nil, specified_domain = nil)
+        domain, user = qualify_identity(specified_user, specified_domain)
 
         if ( ! password.nil? || ! domain.nil? ) && user.nil?
           raise ArgumentError, "The `password` or `domain` property was specified without specification of the `user` property"
         end
       end
 
-      def qualify_identity_user(specified_domain, specified_user)
+      def qualify_identity(specified_user, specified_domain = nil)
         domain = specified_domain
         user = specified_user
 
@@ -74,7 +74,7 @@ class Chef
       protected(:validate_identity)
       protected(:validate_identity_platform)
       protected(:validate_identity_syntax)
-      protected(:qualify_identity_user)
+      protected(:qualify_identity)
 
     end
   end

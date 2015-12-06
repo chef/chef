@@ -22,14 +22,14 @@ require 'chef/mixin/resource_identity'
 shared_examples_for "it received valid credentials" do
   describe "the validation method" do
     it "should not raise an error" do
-      expect {instance_with_credential.validate(username, domain, password)}.not_to raise_error
+      expect {instance_with_credential.validate(username, password, domain)}.not_to raise_error
     end
   end
 
   describe "the name qualification method" do
     it "should correctly translate the user and domain" do
       qualified_user = nil
-      expect { qualified_user = instance_with_credential.qualify_name(domain, username)}.not_to raise_error
+      expect { qualified_user = instance_with_credential.qualify_name(username, domain)}.not_to raise_error
       expect(qualified_user[0]).to eq(domain)
       expect(qualified_user[1]).to eq(username)
     end
@@ -39,7 +39,7 @@ end
 shared_examples_for "it received invalid credentials" do
   describe "the validation method" do
     it "should raise an error" do
-      expect { instance_with_credential.validate(username, domain, password)}.to raise_error(ArgumentError)
+      expect { instance_with_credential.validate(username, password, domain)}.to raise_error(ArgumentError)
     end
   end
 end
@@ -47,7 +47,7 @@ end
 shared_examples_for "it received credentials that are not valid on the platform" do
   describe "the validation method" do
     it "should raise an error" do
-      expect { instance_with_credential.validate(username, domain, password)}.to raise_error(Chef::Exceptions::UnsupportedPlatform)
+      expect { instance_with_credential.validate(username, password, domain)}.to raise_error(Chef::Exceptions::UnsupportedPlatform)
     end
   end
 end
@@ -191,7 +191,7 @@ describe "a class that mixes in resource_identity" do
       end
 
       def qualify_name(*args)
-        qualify_identity_user(*args)
+        qualify_identity(*args)
       end
     end
     IdentityClass.new
