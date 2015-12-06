@@ -30,7 +30,7 @@ class Chef
           raise Exceptions::ArgumentError, 'You must supply a block to `with_user_context`'
         end
 
-        validate_identity(user, domain, password)
+        validate_identity(user, password, domain)
 
         if ! user.nil? && ! Chef::Platform.windows?
           raise Exceptions::UnsupportedPlatform,
