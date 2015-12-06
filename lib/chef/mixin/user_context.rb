@@ -32,7 +32,7 @@ class Chef
 
         validate_identity(user, password, domain)
 
-        if ! user.nil? && ! Chef::Platform.windows?
+        if user && ! Chef::Platform.windows?
           raise Exceptions::UnsupportedPlatform,
                 "User context functionality is only supported on the Windows platform"
         end
@@ -40,7 +40,7 @@ class Chef
         login_session = nil
 
         begin
-          if ! user.nil?
+          if user
             logon_session = Chef::Util::Windows::LogonSession.new(user, domain, password)
             logon_session.open
             logon_session.set_user_context

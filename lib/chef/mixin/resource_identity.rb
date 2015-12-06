@@ -27,11 +27,11 @@ class Chef
 
       def validate_identity_platform(specified_user, password = nil, specified_domain = nil)
         if ! Chef::Platform.windows?
-          if ! password.nil? || ! specified_domain.nil?
+          if password || specified_domain
             raise Exceptions::UnsupportedPlatform, "The `domain` and `password` properties are only supported on the Windows platform"
           end
         else
-          if ! specified_user.nil? && password.nil?
+          if specified_user && password.nil?
             raise ArgumentError, "A `password` property must be specified when the `user` property is specified on the Windows platform"
           end
         end
@@ -40,7 +40,7 @@ class Chef
       def validate_identity_syntax(specified_user, password = nil, specified_domain = nil)
         domain, user = qualify_identity(specified_user, specified_domain)
 
-        if ( ! password.nil? || ! domain.nil? ) && user.nil?
+        if ( password || domain ) && user.nil?
           raise ArgumentError, "The `password` or `domain` property was specified without specification of the `user` property"
         end
       end
