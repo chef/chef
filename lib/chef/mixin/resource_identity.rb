@@ -38,9 +38,9 @@ class Chef
       end
 
       def validate_identity_syntax(specified_user, password = nil, specified_domain = nil)
-        domain, user = qualify_identity(specified_user, specified_domain)
+        identity = qualify_identity(specified_user, specified_domain)
 
-        if ( password || domain ) && user.nil?
+        if ( password || identity[:domain] ) && identity[:user].nil?
           raise ArgumentError, "The `password` or `domain` property was specified without specification of the `user` property"
         end
       end
@@ -68,7 +68,7 @@ class Chef
           end
         end
 
-        [domain, user]
+        { domain: domain, user: user }
       end
 
       protected(:validate_identity)

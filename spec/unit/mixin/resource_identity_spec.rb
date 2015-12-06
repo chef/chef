@@ -28,10 +28,10 @@ shared_examples_for "it received valid credentials" do
 
   describe "the name qualification method" do
     it "should correctly translate the user and domain" do
-      qualified_user = nil
-      expect { qualified_user = instance_with_credential.qualify_name(username, domain)}.not_to raise_error
-      expect(qualified_user[0]).to eq(domain)
-      expect(qualified_user[1]).to eq(username)
+      identity = nil
+      expect { identity = instance_with_credential.qualify_name(username, domain) }.not_to raise_error
+      expect(identity[:domain]).to eq(domain)
+      expect(identity[:user]).to eq(username)
     end
   end
 end
