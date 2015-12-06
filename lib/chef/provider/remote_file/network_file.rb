@@ -47,9 +47,9 @@ class Chef
             tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
             Chef::Log.debug("#{new_resource} staging #{@source} to #{tempfile.path}")
 
-            domain, user = qualify_identity( new_resource.remote_user, new_resource.remote_user_domain )
+            identity = qualify_identity( new_resource.remote_user, new_resource.remote_user_domain )
 
-            with_user_context(user, domain, new_resource.remote_user_password) do
+            with_user_context(identity[:user], identity[:domain], new_resource.remote_user_password) do
               ::File.open(@source, 'rb') do | remote_file |
                 while data = remote_file.read(TRANSFER_CHUNK_SIZE)
                   tempfile.write(data)
