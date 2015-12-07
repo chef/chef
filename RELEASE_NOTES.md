@@ -1,6 +1,11 @@
 # Chef Client Release Notes 12.6.0:
 
 
+## Upgrade to OpenSSL 1.0.1q
+
+This release picks up the latest distribution from the OpenSSL 1.0.1 branch (1.0.1q).
+There are a number of OpenSSL security fixes that are addressed - please see the following for more info: https://www.openssl.org/news/openssl-1.0.1-notes.html
+
 ## New `chef_version` and `ohai_version` metadata keywords
 
 Two new keywords have been introduced to the metadata of cookbooks for constraining the acceptable range
