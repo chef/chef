@@ -481,6 +481,37 @@ class Chef
         [ new_resource.version ].flatten.map { |v| v.to_s.empty? ? nil : v }
       end
 
+      # TIP: less error prone to simply always call resolved_source_array, even if you
+      # don't think that you need to.
+      #
+      # @return [Array] new_resource.source as an array
+      def source_array
+        if new_resource.source.nil?
+          package_name_array.map { nil }
+        else
+          [ new_resource.source ].flatten
+        end
+      end
+
+      # Helper to handle use_package_name_for_source to convert names into local packages to install.
+      #
+      # @return [Array] Array of sources with package_names converted to sources
+      def resolved_source_array
+        @resolved_source_array ||=
+          begin
+            source_array.each_with_index.map do |source, i|
+              package_name = package_name_array[i]
+              # we require at least one '/' in the package_name to avoid [XXX_]package 'foo' breaking due to a random 'foo' file in cwd
+              if use_package_name_for_source? && source.nil? && package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(package_name)
+                Chef::Log.debug("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
+                package_name
+              else
+                source
+              end
+            end
+          end
+      end
+
       # @todo: extract apt/dpkg specific preseeding to a helper class
       def template_available?(path)
         run_context.has_template_in_cookbook?(new_resource.cookbook_name, path)
