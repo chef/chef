@@ -74,6 +74,7 @@ class Chef
     attr_reader :sign_on_redirect
     attr_reader :redirect_limit
 
+    attr_reader :options
     attr_reader :middlewares
 
     # Create a HTTP client object. The supplied +url+ is used as the base for
@@ -86,6 +87,7 @@ class Chef
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
+      @options = options
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
