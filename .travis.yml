@@ -134,7 +134,9 @@ matrix:
     before_install:
       - sudo apt-get update
       - sudo apt-get -y install squid3 git
-    env: PROXY_TESTS_DIR=/tmp/proxy_tests
+    env:
+      - PROXY_TESTS_DIR=/tmp/proxy_tests
+      - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
     script:
       - bundle exec chef-client --version
       - git clone https://github.com/chef/proxy_tests.git
