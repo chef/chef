@@ -1,5 +1,4 @@
 language: ruby
-cache: bundler
 
 sudo: false
 # Early warning system to catch if Rubygems breaks something
