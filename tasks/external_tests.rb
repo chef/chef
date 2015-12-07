@@ -25,12 +25,14 @@ def bundle_exec_with_chef(test_gem, commands)
     gemfile.puts("gemspec path: #{gem_path.inspect}")
     gemfile.close
     Dir.chdir(gem_path) do
-      unless system({ 'RUBYOPT' => nil, 'GEMFILE_MOD' => nil }, "bundle install --gemfile #{gemfile_path}")
-        raise "Error running bundle install --gemfile #{gemfile_path} in #{gem_path}: #{$?.exitstatus}\nGemfile:\n#{IO.read(gemfile_path)}"
-      end
-      Array(commands).each do |command|
-        unless system({ 'BUNDLE_GEMFILE' => gemfile_path, 'RUBYOPT' => nil, 'GEMFILE_MOD' => nil }, "bundle exec #{command}")
-          raise "Error running bundle exec #{command} in #{gem_path} with BUNDLE_GEMFILE=#{gemfile_path}: #{$?.exitstatus}\nGemfile:\n#{IO.read(gemfile_path)}"
+      Bundler.with_clean_env do
+        unless system({ 'RUBYOPT' => nil, 'GEMFILE_MOD' => nil }, "bundle install --gemfile #{gemfile_path}")
+          raise "Error running bundle install --gemfile #{gemfile_path} in #{gem_path}: #{$?.exitstatus}\nGemfile:\n#{IO.read(gemfile_path)}"
+        end
+        Array(commands).each do |command|
+          unless system({ 'BUNDLE_GEMFILE' => gemfile_path, 'RUBYOPT' => nil, 'GEMFILE_MOD' => nil }, "bundle exec #{command}")
+            raise "Error running bundle exec #{command} in #{gem_path} with BUNDLE_GEMFILE=#{gemfile_path}: #{$?.exitstatus}\nGemfile:\n#{IO.read(gemfile_path)}"
+          end
         end
       end
     end

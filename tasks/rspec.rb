@@ -30,7 +30,7 @@ begin
   task :component_specs do
     Dir.chdir("chef-config") do
       Bundler.with_clean_env do
-        sh("bundle install --local")
+        sh("bundle install")
         sh("bundle exec rake spec")
       end
     end
