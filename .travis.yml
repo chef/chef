@@ -1,12 +1,11 @@
 language: ruby
-cache: bundler
 
 sudo: false
-# Early warning system to catch if Rubygems breaks something
-before_install:
+
+before_install: gem install bundler -v 1.10.5
   # the new 2.5.0 rubygems is busted with 1.7.6 bundler, the
   # new 1.10.6 bundler is busted with our rake tasks.  the
-  # 2.4.5 rubygems with 1.7.6 bundler in travis currently works.
+  # 2.4.5 rubygems with 1.10.5 bundler in travis currently works.
   # see https://github.com/bundler/bundler/issues/3982
 #  gem update --system
 
