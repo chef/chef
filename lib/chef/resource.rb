@@ -36,6 +36,7 @@ require 'chef/platform'
 require 'chef/resource/resource_notification'
 require 'chef/provider_resolver'
 require 'chef/resource_resolver'
+require 'chef/provider'
 require 'set'
 
 require 'chef/mixin/deprecation'
