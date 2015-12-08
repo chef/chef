@@ -182,7 +182,14 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'kernel32'
+        ffi_lib 'kernel32', 'version'
+
+        # Does not map directly to a win32 struct
+        # see https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464(v=vs.85).aspx
+        class Translation < FFI::Struct
+          layout :w_lang, :WORD,
+          :w_code_page, :WORD
+        end
 
 =begin
 typedef struct _FILETIME {
@@ -470,6 +477,34 @@ BOOL WINAPI DeviceIoControl(
 #);
         safe_attach_function :GetVolumeNameForVolumeMountPointW, [:LPCTSTR, :LPTSTR, :DWORD], :BOOL
 
+=begin
+BOOL WINAPI GetFileVersionInfo(
+  _In_       LPCTSTR lptstrFilename,
+  _Reserved_ DWORD   dwHandle,
+  _In_       DWORD   dwLen,
+  _Out_      LPVOID  lpData
+);
+=end
+        safe_attach_function :GetFileVersionInfoW, [:LPCTSTR, :DWORD, :DWORD, :LPVOID], :BOOL
+
+=begin
+DWORD WINAPI GetFileVersionInfoSize(
+  _In_      LPCTSTR lptstrFilename,
+  _Out_opt_ LPDWORD lpdwHandle
+);
+=end
+        safe_attach_function :GetFileVersionInfoSizeW, [:LPCTSTR, :LPDWORD], :DWORD
+
+=begin
+BOOL WINAPI VerQueryValue(
+  _In_  LPCVOID pBlock,
+  _In_  LPCTSTR lpSubBlock,
+  _Out_ LPVOID  *lplpBuffer,
+  _Out_ PUINT   puLen
+);
+=end
+        safe_attach_function :VerQueryValueW, [:LPCVOID, :LPCTSTR, :LPVOID, :PUINT], :BOOL
+
         ###############################################
         # Helpers
         ###############################################
@@ -563,6 +598,21 @@ BOOL WINAPI DeviceIoControl(
             end
           end
           file_information
+        end
+
+        def retrieve_file_version_info(file_name)
+          file_name = encode_path(file_name)
+          file_size = GetFileVersionInfoSizeW(file_name, nil)
+          if file_size == 0
+            Chef::ReservedNames::Win32::Error.raise!
+          end
+          
+          version_info = FFI::MemoryPointer.new(file_size)
+          unless GetFileVersionInfoW(file_name, 0, file_size, version_info)
+            Chef::ReservedNames::Win32::Error.raise!
+          end
+
+          version_info
         end
 
       end

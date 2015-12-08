@@ -57,6 +57,10 @@ Please see the following for more details : https://docs.chef.io/release/12-6/re
 
 This is the first release where we are rolling out a MSI package for Windows that significantly improves the installation time. In a nutshell, the new approach is to deploy and extract a zipped package rather than individually tracking every file as a MSI component. Please note that the first  upgrade (ie, an older version of Chef client is already on the machine) may not exhibit the full extent of the speed-up (as MSI is still tracking the older files). New installs, as well as future upgrades, will be sped up. Uninstalls will remove the folder that Chef client is installed to (typically, C:\Opscode\Chef).
 
+## `windows_package` now supports non-`MSI` based Windows installers
+
+Today you can install `MSI`s using the `windows_package` resource. However, you have had to use the windows cookbook in order to install non `MSI` based installer packages such as Nullsoft, Inno Setup, Installshield and other `EXE` based installers. We have moved and slightly improved the windows cookbook resource into the core chef client. This means you can now run most windows installer types without taking on external cookbook dependencies.
+
 ## Better handling of log_location with chef client service (Windows)
 
 This change is for the scenario when running chef client as a Windows service. Currently, a default log_location gets used by the chef client windows service. This log_location overrides any log_location set in the client.rb. In 12.6.0, the behavior is changed to allow the Chef client running as a Windows service to prefer the log_location in client.rb instead. Now, the windows_service_manager will not explicitly pass in a log_location, and therefore the Chef service will always use what is in the client.rb or the typical default path if none is configured. This enables scenarios such as logging to the Windows event log when running chef client as a Windows service.

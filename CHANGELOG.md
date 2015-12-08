@@ -54,6 +54,7 @@
 * [**Nolan Davidson**](https://github.com/nsdavidson)
   [pr#4014](https://github.com/chef/chef/pull/4014) Adding ksh resource
 
+* [pr#4193](https://github.com/chef/chef/pull/4196) support for inno, nsis, wise and installshield installer types in windows_package resource
 * [pr#4196](https://github.com/chef/chef/pull/4196) multipackage dpkg_package and bonus fixes
 * [pr#4185](https://github.com/chef/chef/pull/4185) dpkg provider cleanup
 * [pr#4165](https://github.com/chef/chef/pull/4165) Multipackage internal API improvements

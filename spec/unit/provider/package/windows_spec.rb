@@ -17,6 +17,8 @@
 #
 
 require 'spec_helper'
+require 'chef/provider/package/windows/exe'
+require 'chef/provider/package/windows/msi'
 
 describe Chef::Provider::Package::Windows, :windows_only do
   before(:each) do
@@ -28,9 +30,18 @@ describe Chef::Provider::Package::Windows, :windows_only do
   let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
   let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
   let(:resource_source) { 'calculator.msi' }
-  let(:new_resource) { Chef::Resource::WindowsPackage.new(resource_source) }
+  let(:resource_name) { 'calculator' }
+  let(:new_resource) do
+    new_resource = Chef::Resource::WindowsPackage.new(resource_name)
+    new_resource.source(resource_source)
+    new_resource
+  end
   let(:provider) { Chef::Provider::Package::Windows.new(new_resource, run_context) }
   let(:cache_path) { 'c:\\cache\\' }
+
+  before(:each) do
+    allow(::File).to receive(:exist?).with(provider.new_resource.source).and_return(true)
+  end
 
   describe "load_current_resource" do
     shared_examples "a local file" do
@@ -43,7 +54,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       it "creates a current resource with the name of the new resource" do
         provider.load_current_resource
         expect(provider.current_resource).to be_a(Chef::Resource::WindowsPackage)
-        expect(provider.current_resource.name).to eql(resource_source)
+        expect(provider.current_resource.name).to eql(resource_name)
       end
 
       it "sets the current version if the package is installed" do
@@ -76,19 +87,6 @@ describe Chef::Provider::Package::Windows, :windows_only do
         end
         it_behaves_like "a local file"
       end
-
-      context "when remote_file_attributes are provided" do
-        let (:remote_file_attributes) { {:path => 'C:\\foobar.msi'} }
-        before(:each) do
-          new_resource.remote_file_attributes(remote_file_attributes)
-        end
-
-        it 'should override the attributes of the remote file resource used' do
-          expect(::File).to receive(:exists?).with(remote_file_attributes[:path])
-          provider.load_current_resource
-        end
-
-      end
     end
 
     context "when source is a local file" do
@@ -98,6 +96,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
   describe "package_provider" do
     shared_examples "a local file" do
+
       it "checks that the source path is valid" do
         expect(Chef::Util::PathHelper).to receive(:validate_path)
         provider.package_provider
@@ -108,9 +107,29 @@ describe Chef::Provider::Package::Windows, :windows_only do
         expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::MSI)
       end
 
-      it "raises an error if the installer_type is unknown" do
-        allow(provider).to receive(:installer_type).and_return(:apt_for_windows)
-        expect { provider.package_provider }.to raise_error
+      it "sets the package provider to Exe if the the installer type is :inno" do
+        allow(provider).to receive(:installer_type).and_return(:inno)
+        expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::Exe)
+      end
+
+      it "sets the package provider to Exe if the the installer type is :nsis" do
+        allow(provider).to receive(:installer_type).and_return(:nsis)
+        expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::Exe)
+      end
+
+      it "sets the package provider to Exe if the the installer type is :wise" do
+        allow(provider).to receive(:installer_type).and_return(:wise)
+        expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::Exe)
+      end
+
+      it "sets the package provider to Exe if the the installer type is :installshield" do
+        allow(provider).to receive(:installer_type).and_return(:installshield)
+        expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::Exe)
+      end
+
+      it "defaults to exe if the installer_type is unknown" do
+        allow(provider).to receive(:installer_type).and_return(nil)
+        expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::Exe)
       end
     end
 
@@ -146,20 +165,202 @@ describe Chef::Provider::Package::Windows, :windows_only do
   end
 
   describe "installer_type" do
-    it "it returns @installer_type if it is set" do
+    let(:resource_source) { "microsoft_installer.exe" }
+
+    context "there is no source" do
+      let(:uninstall_hash) do
+        [{
+          'DisplayVersion' => 'outdated',
+          'UninstallString' => "blah blah"
+        }]
+      end
+      let(:uninstall_key) { "blah" }
+      let(:uninstall_entry) do
+        entries = []
+        uninstall_hash.each do |entry|
+          entries.push(Chef::Provider::Package::Windows::RegistryUninstallEntry.new('hive', uninstall_key, entry))
+        end
+        entries
+      end
+
+      before do
+        allow(Chef::Provider::Package::Windows::RegistryUninstallEntry).to receive(:find_entries).and_return(uninstall_entry)
+        allow(::File).to receive(:exist?).with(Chef::Util::PathHelper.canonical_path(resource_source, false)).and_return(false)
+      end
+
+      context "uninstall string contains MsiExec.exe" do
+        let(:uninstall_hash) do
+          [{
+            'DisplayVersion' => 'outdated',
+            'UninstallString' => "MsiExec.exe /X{guid}"
+          }]
+        end
+
+        it "sets installer_type to MSI" do
+          expect(provider.installer_type).to eql(:msi)
+        end
+      end
+
+      context "uninstall string ends with uninst.exe" do
+        let(:uninstall_hash) do
+          [{
+            'DisplayVersion' => 'outdated',
+            'UninstallString' => %q{"c:/hfhfheru/uninst.exe"}
+          }]
+        end
+
+        it "sets installer_type to NSIS" do
+          expect(provider.installer_type).to eql(:nsis)
+        end
+      end
+
+      context "uninstall key ends in _is1" do
+        let(:uninstall_key) { "blah_is1" }
+
+        it "sets installer_type to inno" do
+          expect(provider.installer_type).to eql(:inno)
+        end
+      end
+
+      context "eninstall entries is empty" do
+        before { allow(Chef::Provider::Package::Windows::RegistryUninstallEntry).to receive(:find_entries).and_return([]) }
+
+        it "returns nil" do
+          expect(provider.installer_type).to eql(nil)
+        end
+      end
+    end
+
+    it "returns @installer_type if it is set" do
       provider.new_resource.installer_type(:downeaster)
       expect(provider.installer_type).to eql(:downeaster)
     end
 
-    it "sets installer_type to msi if the source ends in .msi" do
-      provider.new_resource.source("microsoft_installer.msi")
-      expect(provider.installer_type).to eql(:msi)
+    it "sets installer_type to inno if the source contains inno" do
+      allow(::Kernel).to receive(:open).and_yield(StringIO.new('blah blah inno blah'))
+      expect(provider.installer_type).to eql(:inno)
     end
 
-    it "raises an error if it cannot determine the installer type" do
-      provider.new_resource.installer_type(nil)
-      provider.new_resource.source("tomfoolery.now")
-      expect { provider.installer_type }.to raise_error(ArgumentError)
+    it "sets installer_type to wise if the source contains wise" do
+      allow(::Kernel).to receive(:open).and_yield(StringIO.new('blah blah wise blah'))
+      expect(provider.installer_type).to eql(:wise)
+    end
+
+    it "sets installer_type to nsis if the source contains nsis" do
+      allow(::Kernel).to receive(:open).and_yield(StringIO.new('blah blah nullsoft blah'))
+      expect(provider.installer_type).to eql(:nsis)
+    end
+
+    context "source ends in .msi" do
+      let(:resource_source) { "microsoft_installer.msi" }
+
+      it "sets installer_type to msi" do
+        expect(provider.installer_type).to eql(:msi)
+      end
+    end
+
+    context "the source is setup.exe" do
+      let(:resource_source) { "setup.exe" }
+
+      it "sets installer_type to installshield" do
+        allow(::Kernel).to receive(:open).and_yield(StringIO.new(''))
+        expect(provider.installer_type).to eql(:installshield)
+      end
+    end
+
+    context "cannot determine the installer type" do
+      let(:resource_source) { "tomfoolery.now" }
+
+      it "raises an error" do
+        allow(::Kernel).to receive(:open).and_yield(StringIO.new(''))
+        provider.new_resource.installer_type(nil)
+        expect { provider.installer_type }.to raise_error(Chef::Exceptions::CannotDetermineWindowsInstallerType)
+      end
+    end
+  end
+
+  describe "action_install" do
+    let(:new_resource) { Chef::Resource::WindowsPackage.new("blah.exe") }
+    before do
+      new_resource.installer_type(:inno)
+      allow_any_instance_of(Chef::Provider::Package::Windows::Exe).to receive(:package_version).and_return(new_resource.version)
+    end
+
+    context "no version given, discovered or installed" do
+      it "installs latest" do
+        expect(provider).to receive(:install_package).with("blah.exe", "latest")
+        provider.run_action(:install)
+      end
+    end
+
+    context "no version given or discovered but package is installed" do
+      before { allow(provider).to receive(:current_version_array).and_return(["5.5.5"]) }
+
+      it "does not install" do
+        expect(provider).not_to receive(:install_package)
+        provider.run_action(:install)
+      end
+    end
+
+    context "a version is given and none is installed" do
+      before { new_resource.version('5.5.5') }
+
+      it "installs given version" do
+        expect(provider).to receive(:install_package).with("blah.exe", "5.5.5")
+        provider.run_action(:install)
+      end
+    end
+
+    context "a version is given and several are installed" do
+      context "given version matches an installed version" do
+        before do
+          new_resource.version('5.5.5')
+          allow(provider).to receive(:current_version_array).and_return([ ["5.5.5", "4.3.0", "1.1.1"] ])
+        end
+        
+        it "does not install" do
+          expect(provider).not_to receive(:install_package)
+          provider.run_action(:install)
+        end
+      end
+
+      context "given version does not match an installed version" do
+        before do
+          new_resource.version('5.5.5')
+          allow(provider).to receive(:current_version_array).and_return([ ["5.5.0", "4.3.0", "1.1.1"] ])
+        end
+        
+        it "installs given version" do
+          expect(provider).to receive(:install_package).with("blah.exe", "5.5.5")
+          provider.run_action(:install)
+        end
+      end
+    end
+
+    context "a version is given and one is installed" do
+      context "given version matches installed version" do
+        before do
+          new_resource.version('5.5.5')
+          allow(provider).to receive(:current_version_array).and_return(["5.5.5"])
+        end
+        
+        it "does not install" do
+          expect(provider).not_to receive(:install_package)
+          provider.run_action(:install)
+        end
+      end
+
+      context "given version does not match installed version" do
+        before do
+          new_resource.version('5.5.5')
+          allow(provider).to receive(:current_version_array).and_return(["5.5.0"])
+        end
+        
+        it "installs given version" do
+          expect(provider).to receive(:install_package).with("blah.exe", "5.5.5")
+          provider.run_action(:install)
+        end
+      end
     end
   end
 end
