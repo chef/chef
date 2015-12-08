@@ -19,7 +19,7 @@
 require 'uri'
 require 'tempfile'
 require 'chef/provider/remote_file'
-require 'chef/mixin/resource_identity'
+require 'chef/mixin/user_identity'
 require 'chef/mixin/user_context'
 
 class Chef
@@ -27,7 +27,7 @@ class Chef
     class RemoteFile
       class NetworkFile
 
-        include Chef::Mixin::ResourceIdentity
+        include Chef::Mixin::UserIdentity
         include Chef::Mixin::UserContext
 
         attr_reader :new_resource

@@ -18,7 +18,7 @@
 
 class Chef
   module Mixin
-    module ResourceIdentity
+    module UserIdentity
 
       def validate_identity(specified_user, password = nil, specified_domain = nil)
         validate_identity_platform(specified_user, password, specified_domain)
@@ -38,14 +38,14 @@ class Chef
       end
 
       def validate_identity_syntax(specified_user, password = nil, specified_domain = nil)
-        identity = qualify_identity(specified_user, specified_domain)
+        identity = qualify_user(specified_user, specified_domain)
 
         if ( password || identity[:domain] ) && identity[:user].nil?
           raise ArgumentError, "A value for `password` or `domain` was specified without specification of a value for `user`"
         end
       end
 
-      def qualify_identity(specified_user, specified_domain = nil)
+      def qualify_user(specified_user, specified_domain = nil)
         domain = specified_domain
         user = specified_user
 
@@ -74,7 +74,7 @@ class Chef
       protected(:validate_identity)
       protected(:validate_identity_platform)
       protected(:validate_identity_syntax)
-      protected(:qualify_identity)
+      protected(:qualify_user)
 
     end
   end

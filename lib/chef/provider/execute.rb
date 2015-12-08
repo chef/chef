@@ -19,14 +19,14 @@
 require 'chef/log'
 require 'chef/provider'
 require 'forwardable'
-require 'chef/mixin/resource_identity'
+require 'chef/mixin/user_identity'
 
 class Chef
   class Provider
     class Execute < Chef::Provider
       extend Forwardable
 
-      include Chef::Mixin::ResourceIdentity
+      include Chef::Mixin::UserIdentity
 
       provides :execute
 

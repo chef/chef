@@ -17,13 +17,13 @@
 #
 
 require 'chef/util/windows/logon_session' if Chef::Platform.windows?
-require 'chef/mixin/resource_identity'
+require 'chef/mixin/user_identity'
 
 class Chef
   module Mixin
     module UserContext
 
-      include Chef::Mixin::ResourceIdentity
+      include Chef::Mixin::UserIdentity
 
       def with_user_context(specified_user, specified_domain, password, &block)
         if ! block_given?
@@ -32,7 +32,7 @@ class Chef
 
         validate_identity(specified_user, password, specified_domain)
 
-        identity = qualify_identity(specified_user, specified_domain)
+        identity = qualify_user(specified_user, specified_domain)
 
         user = identity[:user]
         domain = identity[:domain]
@@ -50,6 +50,9 @@ class Chef
           logon_session.close! if logon_session
         end
       end
+
+      protected(:with_user_context)
+
     end
   end
 end
