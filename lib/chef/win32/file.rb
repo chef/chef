@@ -150,6 +150,10 @@ class Chef
         Info.new(file_name)
       end
 
+      def self.version_info(file_name)
+        VersionInfo.new(file_name)
+      end
+
       def self.verify_links_supported!
         begin
           CreateSymbolicLinkW(nil)
@@ -211,3 +215,4 @@ class Chef
 end
 
 require 'chef/win32/file/info'
+require 'chef/win32/file/version_info'
