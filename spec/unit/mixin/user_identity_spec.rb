@@ -17,7 +17,7 @@
 #
 
 require 'spec_helper'
-require 'chef/mixin/resource_identity'
+require 'chef/mixin/user_identity'
 
 shared_examples_for "it received valid credentials" do
   describe "the validation method" do
@@ -185,13 +185,13 @@ end
 describe "a class that mixes in resource_identity" do
   let(:instance_with_credential) do
     class IdentityClass
-      include ::Chef::Mixin::ResourceIdentity
+      include ::Chef::Mixin::UserIdentity
       def validate(*args)
         validate_identity(*args)
       end
 
       def qualify_name(*args)
-        qualify_identity(*args)
+        qualify_user(*args)
       end
     end
     IdentityClass.new
