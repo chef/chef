@@ -25,17 +25,17 @@ class Chef
 
       include Chef::Mixin::ResourceIdentity
 
-      def with_user_context(user, domain, password, &block)
+      def with_user_context(specified_user, specified_domain, password, &block)
         if ! block_given?
           raise Exceptions::ArgumentError, 'You must supply a block to `with_user_context`'
         end
 
-        validate_identity(user, password, domain)
+        validate_identity(specified_user, password, specified_domain)
 
-        if user && ! Chef::Platform.windows?
-          raise Exceptions::UnsupportedPlatform,
-                "User context functionality is only supported on the Windows platform"
-        end
+        identity = qualify_identity(specified_user, specified_domain)
+
+        user = identity[:user]
+        domain = identity[:domain]
 
         login_session = nil
 
