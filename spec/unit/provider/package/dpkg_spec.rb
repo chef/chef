@@ -52,7 +52,7 @@ Conflicts: wget-ssl
 
   before(:each) do
     allow(provider).to receive(:shell_out!).with("dpkg-deb -W #{source}", timeout: 900).and_return(dpkg_deb_status)
-    allow(provider).to receive(:shell_out).with("dpkg -s #{package}", timeout: 900).and_return(double(stdout: "", exitstatus: -1))
+    allow(provider).to receive(:shell_out!).with("dpkg -s #{package}", timeout: 900, returns: [0,1]).and_return(double(stdout: "", exitstatus: 1))
     allow(::File).to receive(:exist?).with(source).and_return(true)
   end
 
@@ -169,12 +169,47 @@ Conflicts: wget-ssl
     end
 
     it "should return the current version installed if found by dpkg" do
-      allow(provider).to receive(:shell_out).with("dpkg -s #{package}", timeout: 900).and_return(dpkg_s_status)
+      allow(provider).to receive(:shell_out!).with("dpkg -s #{package}", timeout: 900, returns: [0,1]).and_return(dpkg_s_status)
       provider.load_current_resource
       expect(provider.current_resource.version).to eq(["1.11.4-1ubuntu1"])
     end
 
-    it "should raise an exception if dpkg fails to run" do
+    it "on new debian/ubuntu we get an exit(1) and no stdout from dpkg -s for uninstalled" do
+      dpkg_s_status = double(
+        exitstatus: 1, stdout: "", stderr: <<-EOF
+dpkg-query: package '#{package}' is not installed and no information is available
+Use dpkg --info (= dpkg-deb --info) to examine archive files,
+and dpkg --contents (= dpkg-deb --contents) to list their contents.
+        EOF
+      )
+      expect(provider).to receive(:shell_out!).with("dpkg -s #{package}", returns: [0, 1], timeout: 900).and_return(dpkg_s_status)
+      provider.load_current_resource
+      expect(provider.current_resource.version).to eq([nil])
+    end
+
+    it "on old debian/ubuntu we get an exit(0) and we get info on stdout from dpkg -s for uninstalled" do
+      dpkg_s_status = double(
+        exitstatus: 0, stderr: "", stdout: <<-EOF
+Package: #{package}
+Status: unknown ok not-installed
+Priority: extra
+Section: ruby
+        EOF
+      )
+      expect(provider).to receive(:shell_out!).with("dpkg -s #{package}", returns: [0, 1], timeout: 900).and_return(dpkg_s_status)
+      provider.load_current_resource
+      expect(provider.current_resource.version).to eq([nil])
+    end
+
+    it "and we should raise if we get any other exit codes from dpkg -s" do
+      dpkg_s_status = double(
+        exitstatus: 3, stderr: "i am very, very angry with you.  i'm very, very cross.  go to your room.", stdout: ""
+      )
+      expect(provider).to receive(:shell_out!).with("dpkg -s #{package}", returns: [0, 1], timeout: 900).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      expect { provider.load_current_resource }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+    end
+
+    it "should raise an exception if dpkg-deb -W fails to run" do
       status = double(:stdout => "", :exitstatus => -1)
       expect(provider).to receive(:shell_out_with_timeout!).with("dpkg-deb -W /tmp/wget_1.11.4-1ubuntu1_amd64.deb").and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect { provider.load_current_resource }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
