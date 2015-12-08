@@ -85,8 +85,6 @@ to better align with other ssh related options.
 
 Also, while being able to download remote installers from a `HTTP` resource is not new, it looks as though the top of the docs page is incorrect stating that only local installers can be used as a source.
 
-An unspecified source now only defaults to the name if the name is either a URL or a valid file path.
-
 Example Nullsoft (`nsis`) package resource:
 ```
 windows_package 'Mercurial 3.6.1 (64-bit)' do
