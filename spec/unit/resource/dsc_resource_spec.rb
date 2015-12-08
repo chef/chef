@@ -21,6 +21,7 @@ describe Chef::Resource::DscResource do
   let(:dsc_test_property_name) { :DSCTestProperty }
   let(:dsc_test_property_value) { 'DSCTestValue' }
   let(:dsc_test_reboot_action) { :reboot_now }
+  let(:dsc_test_timeout) { 101 }
 
   context 'when Powershell supports Dsc' do
     let(:dsc_test_run_context) {
@@ -55,6 +56,11 @@ describe Chef::Resource::DscResource do
     it "allows the reboot_action attribute to be set" do
       dsc_test_resource.reboot_action(dsc_test_reboot_action)
       expect(dsc_test_resource.reboot_action).to eq(dsc_test_reboot_action)
+    end
+
+    it "allows the timeout attribute to be set" do
+      dsc_test_resource.timeout(dsc_test_timeout)
+      expect(dsc_test_resource.timeout).to eq(dsc_test_timeout)
     end
 
     context "when setting a dsc property" do

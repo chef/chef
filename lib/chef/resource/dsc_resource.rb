@@ -89,7 +89,7 @@ class Chef
 
       # This property takes the action message for the reboot resource
       # If the set method of the DSC resource indicate that a reboot
-      # is necessary, reboot_action provides the mechanism for a reboot to 
+      # is necessary, reboot_action provides the mechanism for a reboot to
       # be requested.
       def reboot_action(value=nil)
         if value
@@ -97,6 +97,14 @@ class Chef
         else
           @reboot_action
         end
+      end
+
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => [ Integer ]
+        )
       end
       private
 
