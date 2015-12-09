@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/security'
+require 'chef/win32/api/security' if Chef::Platform.windows?
 require 'chef/mixin/wide_string'
 
 class Chef
@@ -36,7 +36,7 @@ class Chef
 
         def open
           if @session_opened
-            raise 'Session already open'
+            raise RuntimeError, 'Attempted to open a logon session that was already open.'
           end
 
           username = wstring(@username)
@@ -46,7 +46,8 @@ class Chef
           status = Chef::ReservedNames::Win32::API::Security.LogonUserW(username, domain, password, Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NETWORK, Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT, @token)
 
           if ! status
-            raise 'logon failed'
+            last_error = FFI::LastError.error
+            raise Chef::Exceptions::Win32APIError, "Logon for user `#{@username}` failed with Win32 status #{last_error}."
           end
 
           @session_opened = true
@@ -64,7 +65,7 @@ class Chef
 
         def close
           if ! @session_opened
-            raise 'Session not open'
+            raise RuntimeError, 'Attempted to close a logon session that was not open.'
           end
 
           close!
@@ -72,13 +73,14 @@ class Chef
 
         def set_user_context
           if ! @session_opened
-            raise 'Session not open'
+            raise RuntimeError, 'Attempted to set the user context before opening a session.'
           end
 
           status = Chef::ReservedNames::Win32::API::Security.ImpersonateLoggedOnUser(@token.read_ulong)
 
           if ! status
-            raise 'Impersonation failed'
+            last_error = FFI::LastError.error
+            raise Chef::Exceptions::Win32APIError, "Attempt to impersonate user `#{@username}` failed with Win32 status #{last_error}."
           end
 
           @impersonating = true
@@ -89,7 +91,8 @@ class Chef
             status = Chef::ReservedNames::Win32::API::Security.RevertToSelf
 
             if ! status
-              raise 'Unable to restore user context'
+              last_error = FFI::LastError.error
+              raise Chef::Exceptions::Win32APIError, "Unable to restore user context with Win32 status #{last_error}."
             end
           end
 

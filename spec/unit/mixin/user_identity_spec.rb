@@ -22,14 +22,14 @@ require 'chef/mixin/user_identity'
 shared_examples_for "it received valid credentials" do
   describe "the validation method" do
     it "should not raise an error" do
-      expect {instance_with_credential.validate(username, password, domain)}.not_to raise_error
+      expect {instance_with_identity.validate(username, password, domain)}.not_to raise_error
     end
   end
 
   describe "the name qualification method" do
     it "should correctly translate the user and domain" do
       identity = nil
-      expect { identity = instance_with_credential.qualify_name(username, domain) }.not_to raise_error
+      expect { identity = instance_with_identity.qualify_name(username, domain) }.not_to raise_error
       expect(identity[:domain]).to eq(domain)
       expect(identity[:user]).to eq(username)
     end
@@ -39,7 +39,7 @@ end
 shared_examples_for "it received invalid credentials" do
   describe "the validation method" do
     it "should raise an error" do
-      expect { instance_with_credential.validate(username, password, domain)}.to raise_error(ArgumentError)
+      expect { instance_with_identity.validate(username, password, domain)}.to raise_error(ArgumentError)
     end
   end
 end
@@ -47,12 +47,12 @@ end
 shared_examples_for "it received credentials that are not valid on the platform" do
   describe "the validation method" do
     it "should raise an error" do
-      expect { instance_with_credential.validate(username, password, domain)}.to raise_error(Chef::Exceptions::UnsupportedPlatform)
+      expect { instance_with_identity.validate(username, password, domain)}.to raise_error(Chef::Exceptions::UnsupportedPlatform)
     end
   end
 end
 
-shared_examples_for "a consumer of the resource_identity mixin" do
+shared_examples_for "a consumer of the user_identity mixin" do
   context "when running on Windows" do
     before do
       allow(::Chef::Platform).to receive(:windows?).and_return(true)
@@ -182,8 +182,8 @@ shared_examples_for "a consumer of the resource_identity mixin" do
   end
 end
 
-describe "a class that mixes in resource_identity" do
-  let(:instance_with_credential) do
+describe "a class that mixes in user_identity" do
+  let(:instance_with_identity) do
     class IdentityClass
       include ::Chef::Mixin::UserIdentity
       def validate(*args)
@@ -197,5 +197,5 @@ describe "a class that mixes in resource_identity" do
     IdentityClass.new
   end
 
-  it_behaves_like "a consumer of the resource_identity mixin"
+  it_behaves_like "a consumer of the ::Chef::Mixin::UserIdentity mixin"
 end
