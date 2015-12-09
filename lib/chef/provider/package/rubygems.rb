@@ -160,18 +160,23 @@ class Chef
           # the constraints of +gem_dependency+
           def find_newest_remote_version(gem_dependency, *sources)
             spec, source =
-              if !Chef::Config[:rubygems_cache_enabled]
-                # Use the API that 'gem install' calls which does not pull down the rubygems universe
-                rs = Gem::RequestSet.new
-                rs.import [ gem_dependency ]
-                # This returns the gem which satisfies the dependency along with all of its deps
-                resolved_spec = rs.resolve.select { |spec| spec.name == gem_dependency.name }.first.spec
-                resolved_spec && resolved_spec
-              else
+              if Chef::Config[:rubygems_cache_enabled]
+                # This code caches every gem on rubygems.org and uses lots of RAM
                 available_gems = dependency_installer.find_gems_with_sources(gem_dependency)
                 available_gems.pick_best!
                 best_gem = available_gems.set.first
                 best_gem && [best_gem.spec, best_gem.source]
+              else
+                # Use the API that 'gem install' calls which does not pull down the rubygems universe
+                rs = Gem::RequestSet.new
+                rs.import [ gem_dependency ]
+                begin
+                  # rs.resolve returns the gem which satisfies the dependency along with all of its deps
+                  resolved_spec = rs.resolve.select { |spec| spec.name == gem_dependency.name }.first.spec
+                  resolved_spec && resolved_spec
+                rescue Gem::UnsatisfiableDependencyError
+                  nil
+                end
               end
 
             version = spec && spec.version

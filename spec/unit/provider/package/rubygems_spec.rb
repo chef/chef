@@ -86,34 +86,46 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     expect(Gem.sources).to eq(normal_sources)
   end
 
-  it "finds a matching gem candidate version" do
-    dep = Gem::Dependency.new('rspec', '>= 0')
-    dep_installer = Gem::DependencyInstaller.new
-    allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "https://rubygems.org/"]]
-    expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(latest)
-    expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0'))).to eq(Gem::Version.new('1.3.0'))
-  end
+  context "old rubygems caching behavior" do
+    before do
+      Chef::Config[:rubygems_cache_enabled] = true
+    end
 
-  it "finds a matching gem candidate version on rubygems 2.0.0+" do
-    dep = Gem::Dependency.new('rspec', '>= 0')
-    dep_installer = Gem::DependencyInstaller.new
-    allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    best_gem = double("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
-    available_set = double("Gem::AvailableSet test double")
-    expect(available_set).to receive(:pick_best!)
-    expect(available_set).to receive(:set).and_return([best_gem])
-    expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(available_set)
-    expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0'))).to eq(Gem::Version.new('1.3.0'))
-  end
+    it "finds a matching gem candidate version on rubygems 2.0.0+" do
+      dep = Gem::Dependency.new('rspec', '>= 0')
+      dep_installer = Gem::DependencyInstaller.new
+      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
+      best_gem = double("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
+      available_set = double("Gem::AvailableSet test double")
+      expect(available_set).to receive(:pick_best!)
+      expect(available_set).to receive(:set).and_return([best_gem])
+      expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(available_set)
+      expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0'))).to eq(Gem::Version.new('1.3.0'))
+    end
 
-  it "gives the candidate version as nil if none is found" do
-    dep = Gem::Dependency.new('rspec', '>= 0')
-    latest = []
-    dep_installer = Gem::DependencyInstaller.new
-    allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(latest)
-    expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0'))).to be_nil
+    it "gives the candidate version as nil if none is found" do
+      dep = Gem::Dependency.new('rspec', '>= 0')
+      dep_installer = Gem::DependencyInstaller.new
+      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
+      available_set = double("Gem::AvailableSet test double")
+      expect(available_set).to receive(:pick_best!)
+      expect(available_set).to receive(:set).and_return([])
+      expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(available_set)
+      expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0'))).to be_nil
+    end
+
+    it "finds a matching gem from a specific gemserver when explicit sources are given" do
+      dep = Gem::Dependency.new('rspec', '>= 0')
+      expect(@gem_env).to receive(:with_gem_sources).with('http://gems.example.com').and_yield
+      dep_installer = Gem::DependencyInstaller.new
+      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
+      best_gem = double("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
+      available_set = double("Gem::AvailableSet test double")
+      expect(available_set).to receive(:pick_best!)
+      expect(available_set).to receive(:set).and_return([best_gem])
+      expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(available_set)
+      expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>=0'), 'http://gems.example.com')).to eq(Gem::Version.new('1.3.0'))
+    end
   end
 
   it "finds a matching candidate version from a .gem file when the path to the gem is supplied" do
@@ -122,16 +134,6 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     expect(@gem_env.candidate_version_from_file(Gem::Dependency.new('chef-integration-test', '>= 0.2.0'), location)).to be_nil
   end
 
-  it "finds a matching gem from a specific gemserver when explicit sources are given" do
-    dep = Gem::Dependency.new('rspec', '>= 0')
-    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "https://rubygems.org/"]]
-
-    expect(@gem_env).to receive(:with_gem_sources).with('http://gems.example.com').and_yield
-    dep_installer = Gem::DependencyInstaller.new
-    allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(latest)
-    expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>=0'), 'http://gems.example.com')).to eq(Gem::Version.new('1.3.0'))
-  end
 
   it "installs a gem with a hash of options for the dependency installer" do
     dep_installer = Gem::DependencyInstaller.new
