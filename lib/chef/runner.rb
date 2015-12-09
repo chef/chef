@@ -49,7 +49,9 @@ class Chef
 
       # If there are any before notifications, why-run the resource
       # and notify anyone who needs notifying
-      if !run_context.before_notifications(resource).empty?
+      # TODO cheffish has a bug where it passes itself instead of the run_context to us, so doesn't have before_notifications. Fix there, update dependency requirement, and remove this if statement.
+      before_notifications = run_context.before_notifications(resource) if run_context.respond_to?(:before_notifications)
+      if before_notifications && !before_notifications.empty?
         whyrun_before = Chef::Config[:why_run]
         begin
           Chef::Config[:why_run] = true
@@ -60,7 +62,7 @@ class Chef
         end
 
         if resource.updated_by_last_action?
-          run_context.before_notifications(resource).each do |notification|
+          before_notifications.each do |notification|
             Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (before)")
             run_action(notification.resource, notification.action, :before, resource)
           end
