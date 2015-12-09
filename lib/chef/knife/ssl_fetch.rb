@@ -28,6 +28,8 @@ class Chef
         require 'socket'
         require 'uri'
         require 'openssl'
+        require 'chef/mixin/proxified_socket'
+        include Chef::Mixin::ProxifiedSocket
       end
 
       banner "knife ssl fetch [URL] (options)"
@@ -71,7 +73,7 @@ class Chef
       end
 
       def remote_cert_chain
-        tcp_connection = TCPSocket.new(host, port)
+        tcp_connection = proxified_socket(host, port)
         shady_ssl_connection = OpenSSL::SSL::SSLSocket.new(tcp_connection, noverify_peer_ssl_context)
         shady_ssl_connection.connect
         shady_ssl_connection.peer_cert_chain
@@ -155,4 +157,3 @@ TRUST_TRUST
     end
   end
 end
-

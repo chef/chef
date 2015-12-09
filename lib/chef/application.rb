@@ -17,7 +17,6 @@
 # limitations under the License.
 
 require 'pp'
-require 'uri'
 require 'socket'
 require 'chef/config'
 require 'chef/config_fetcher'
@@ -47,7 +46,6 @@ class Chef
     def reconfigure
       configure_chef
       configure_logging
-      configure_proxy_environment_variables
       configure_encoding
       emit_warnings
     end
@@ -85,6 +83,7 @@ class Chef
     def configure_chef
       parse_options
       load_config_file
+      Chef::Config.export_proxies
     end
 
     # Parse the config file
@@ -178,14 +177,6 @@ class Chef
       else
         Chef::Config[:log_level]
       end
-    end
-
-    # Configure and set any proxy environment variables according to the config.
-    def configure_proxy_environment_variables
-      configure_http_proxy
-      configure_https_proxy
-      configure_ftp_proxy
-      configure_no_proxy
     end
 
     # Sets the default external encoding to UTF-8 (users can change this, but they shouldn't)
@@ -300,79 +291,6 @@ class Chef
       filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
       filtered_trace.each {|line| Chef::Log.fatal("  " + line )}
       Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
-    end
-
-    # Set ENV['http_proxy']
-    def configure_http_proxy
-      if http_proxy = Chef::Config[:http_proxy]
-        http_proxy_string = configure_proxy("http", http_proxy,
-          Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
-        env['http_proxy'] = http_proxy_string unless env['http_proxy']
-        env['HTTP_PROXY'] = http_proxy_string unless env['HTTP_PROXY']
-      end
-    end
-
-    # Set ENV['https_proxy']
-    def configure_https_proxy
-      if https_proxy = Chef::Config[:https_proxy]
-        https_proxy_string = configure_proxy("https", https_proxy,
-          Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
-        env['https_proxy'] = https_proxy_string unless env['https_proxy']
-        env['HTTPS_PROXY'] = https_proxy_string unless env['HTTPS_PROXY']
-      end
-    end
-
-    # Set ENV['ftp_proxy']
-    def configure_ftp_proxy
-      if ftp_proxy = Chef::Config[:ftp_proxy]
-        ftp_proxy_string = configure_proxy("ftp", ftp_proxy,
-          Chef::Config[:ftp_proxy_user], Chef::Config[:ftp_proxy_pass])
-        env['ftp_proxy'] = ftp_proxy_string unless env['ftp_proxy']
-        env['FTP_PROXY'] = ftp_proxy_string unless env['FTP_PROXY']
-      end
-    end
-
-    # Set ENV['no_proxy']
-    def configure_no_proxy
-      if Chef::Config[:no_proxy]
-        env['no_proxy'] = Chef::Config[:no_proxy] unless env['no_proxy']
-        env['NO_PROXY'] = Chef::Config[:no_proxy] unless env['NO_PROXY']
-      end
-    end
-
-    # Builds a proxy uri. Examples:
-    #   http://username:password@hostname:port
-    #   https://username@hostname:port
-    #   ftp://hostname:port
-    # when
-    #   scheme = "http", "https", or "ftp"
-    #   hostport = hostname:port
-    #   user = username
-    #   pass = password
-    def configure_proxy(scheme, path, user, pass)
-      begin
-        path = "#{scheme}://#{path}" unless path.include?('://')
-        # URI.split returns the following parts:
-        # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
-        parts = URI.split(URI.encode(path))
-        # URI::Generic.build requires an integer for the port, but URI::split gives
-        # returns a string for the port.
-        parts[3] = parts[3].to_i if parts[3]
-        if user
-          userinfo = URI.encode(URI.encode(user), '@:')
-          if pass
-            userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
-          end
-          parts[1] = userinfo
-        end
-
-        return URI::Generic.build(parts).to_s
-      rescue URI::Error => e
-        # URI::Error messages generally include the offending string. Including a message
-        # for which proxy config item has the issue should help deduce the issue when
-        # the URI::Error message is vague.
-        raise Chef::Exceptions::BadProxyURI, "Cannot configure #{scheme} proxy. Does not comply with URI scheme. #{e.message}"
-      end
     end
 
     # This is a hook for testing

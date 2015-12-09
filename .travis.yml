@@ -118,22 +118,21 @@ matrix:
   - rvm: 2.2
     sudo: required
     dist: trusty
-    os: linux
-    cache:
     before_install:
       - sudo apt-get update
-      - sudo apt-get -y install squid3 git
+      - sudo apt-get -y install squid3 git curl
     env:
-      - PROXY_TESTS_DIR=/tmp/proxy_tests
-      - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
+      global:
+        - PROXY_TESTS_DIR=proxy_tests/files/default/scripts
+        - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
     script:
       - bundle exec chef-client --version
       - git clone https://github.com/chef/proxy_tests.git
-      - cd proxy_tests
-      - bundle exec chef-client -z -o proxy_tests::render
-      #- sh /tmp/proxy_tests/setup.sh
-      - bundle exec sudo -E bash /tmp/proxy_tests/run_tests.sh chef_client \* \* /tmp/out.txt
-    after_script: cat /tmp/out.txt
+      - rvmsudo -E bundle exec bash $PROXY_TESTS_DIR/run_tests.sh chef_client \* \* /tmp/out.txt
+    after_script:
+      - cat /tmp/out.txt
+      - sudo cat /var/log/squid3/cache.log
+      - sudo cat /var/log/squid3/access.log
 
   allow_failures:
     - rvm: rbx
