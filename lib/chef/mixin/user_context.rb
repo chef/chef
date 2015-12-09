@@ -26,6 +26,10 @@ class Chef
       include Chef::Mixin::UserIdentity
 
       def with_user_context(specified_user, specified_domain, password, &block)
+        if ! Chef::Platform.windows?
+          raise Exceptions::UnsupportedPlatform, 'User context impersonation is supported only on the Windows platform'
+        end
+
         if ! block_given?
           raise Exceptions::ArgumentError, 'You must supply a block to `with_user_context`'
         end

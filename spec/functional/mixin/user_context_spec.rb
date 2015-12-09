@@ -33,7 +33,6 @@ describe Chef::Mixin::UserContext, windows_only: true do
     name_size = FFI::Buffer.new(:long).write_long(0)
     succeeded = get_user_name_a.call(nil, name_size)
     last_error = FFI::LastError.error
-    Chef::Exceptions::Win32APIError
     if succeeded || last_error != Chef::ReservedNames::Win32::API::Error::ERROR_INSUFFICIENT_BUFFER
       raise Chef::Exceptions::Win32APIError, "Expected ERROR_INSUFFICIENT_BUFFER from GetUserNameA but it returned the following error: #{last_error}"
     end
