@@ -1,15 +1,13 @@
 Source: chef-integration-test2
-Section: unknown
-Priority: optional
-Maintainer: Lamont Granquist <lamont@coredump.scriptkiddie.lan>
-Build-Depends: debhelper (>= 8.0.0)
-Standards-Version: 3.9.4
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://git.debian.org/collab-maint/chef-integration-test2.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/chef-integration-test2.git;a=summary
+Section: ruby
+Priority: extra
+Maintainer: Joshua Timberman <Joshua Timberman <joshua@opscode.com>>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Homepage: http://tickets.opscode.com
 
 Package: chef-integration-test2
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: Chef integration tests for APT in Cucumber
+ This package is used for cucumber integration testing in Chef.
