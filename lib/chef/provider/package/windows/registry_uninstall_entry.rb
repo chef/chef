@@ -48,7 +48,7 @@ class Chef
                     end
                   end
                 end
-              rescue ::Win32::Registry::Error
+              rescue ::Win32::Registry::Error => ex
                 Chef::Log.debug("Registry error opening hive '#{hkey[0]}' :: #{desired}: #{ex}")
               end
             end
