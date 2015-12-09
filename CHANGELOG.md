@@ -90,7 +90,7 @@
 * [pr#4167](https://github.com/chef/chef/pull/4167) Allow `dsc_resource` to run with the LCM enabled
 * [pr#4188](https://github.com/chef/chef/pull/4188) Update `dsc_resource` to use verbose stream output
 * [pr#4200](https://github.com/chef/chef/pull/4200) Prevent inspect of PsCredential from printing out plain text password
-
+* [pr#4237](https://github.com/chef/chef/pull/4237) Enabling 'knife ssl check/fetch' commands to respect proxy environment variables and moving proxy environment variables export to Chef::Config
 ## 12.5.1
 
 * [**Ranjib Dey**](https://github.com/ranjib):
