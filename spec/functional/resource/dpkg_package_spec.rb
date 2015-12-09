@@ -18,7 +18,8 @@
 require 'spec_helper'
 require 'chef/mixin/shell_out'
 
-describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch: "x86_64" do
+describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only,
+  :not_ubuntu_1004, arch: "x86_64" do
   include Chef::Mixin::ShellOut
 
   let(:apt_data) { File.join(CHEF_SPEC_DATA, "apt") }
