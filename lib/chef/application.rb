@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
 # Author:: Mark Mzyk (mmzyk@opscode.com)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -312,6 +312,7 @@ class Chef
 
         Chef::FileCache.store("chef-stacktrace.out", chef_stacktrace_out)
         Chef::Log.fatal("Stacktrace dumped to #{Chef::FileCache.load("chef-stacktrace.out", false)}")
+        Chef::Log.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
         Chef::Log.debug(message)
         true
       end
