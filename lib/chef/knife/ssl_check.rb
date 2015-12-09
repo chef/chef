@@ -127,9 +127,7 @@ class Chef
 
       def verify_cert
         ui.msg("Connecting to host #{host}:#{port}")
-        ui.msg("TYLER DEBUGGING INFO1")
         verify_peer_socket.connect
-        ui.msg("TYLER DEBUGGING INFO2")
         true
       rescue OpenSSL::SSL::SSLError => e
         ui.error "The SSL certificate of #{host} could not be verified"

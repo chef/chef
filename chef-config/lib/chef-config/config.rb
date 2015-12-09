@@ -26,6 +26,7 @@ require 'chef-config/logger'
 require 'chef-config/windows'
 require 'chef-config/path_helper'
 require 'mixlib/shellout'
+require 'uri'
 
 module ChefConfig
 
@@ -708,6 +709,66 @@ module ChefConfig
     # itself can define the config options it accepts and enable strict mode,
     # and that will only apply when running `chef` commands.
     config_context :chefdk do
+    end
+
+    configurable(:http_proxy)
+    configurable(:http_proxy_user)
+    configurable(:http_proxy_pass)
+    configurable(:https_proxy)
+    configurable(:https_proxy_user)
+    configurable(:https_proxy_pass)
+    configurable(:ftp_proxy)
+    configurable(:ftp_proxy_user)
+    configurable(:ftp_proxy_pass)
+    configurable(:no_proxy)
+
+    # Public method that users should call to export proxies to the appropriate
+    # environment variables.  This method should be called after the config file is
+    # parsed and loaded.
+    # TODO add some post-file-parsing logic that automatically calls this so
+    # users don't have to
+    def self.export_proxies
+      export_proxy("http", http_proxy, http_proxy_user, http_proxy_pass) if http_proxy
+      export_proxy("https", https_proxy, https_proxy_user, https_proxy_pass) if https_proxy
+      export_proxy("ftp", ftp_proxy, ftp_proxy_user, ftp_proxy_pass) if ftp_proxy
+      export_no_proxy("no_proxy", no_proxy) if no_proxy
+    end
+
+    # Builds a proxy uri and exports it to the appropriate environment variables. Examples:
+    #   http://username:password@hostname:port
+    #   https://username@hostname:port
+    #   ftp://hostname:port
+    # when
+    #   scheme = "http", "https", or "ftp"
+    #   hostport = hostname:port or scheme://hostname:port
+    #   user = username
+    #   pass = password
+    # @api private
+    def self.export_proxy(scheme, path, user, pass)
+      path = "#{scheme}://#{path}" unless path.include?('://')
+      # URI.split returns the following parts:
+      # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
+      parts = URI.split(URI.encode(path))
+      # URI::Generic.build requires an integer for the port, but URI::split gives
+      # returns a string for the port.
+      parts[3] = parts[3].to_i if parts[3]
+      if user && !user.empty?
+        userinfo = URI.encode(URI.encode(user), '@:')
+        if pass
+          userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
+        end
+        parts[1] = userinfo
+      end
+
+      path = URI::Generic.build(parts).to_s
+      ENV["#{scheme}_proxy".downcase] = path unless ENV["#{scheme}_proxy".downcase]
+      ENV["#{scheme}_proxy".upcase] = path unless ENV["#{scheme}_proxy".upcase]
+    end
+
+    # @api private
+    def self.export_no_proxy(value)
+      ENV['no_proxy'] = value unless ENV['no_proxy']
+      ENV['NO_PROXY'] = value unless ENV['NO_PROXY']
     end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
