@@ -72,6 +72,26 @@ This change is for the scenario when running chef client as a Windows service. C
 * Previously, Chef required the LCM Refreshmode to be set to Disabled when utilizing dsc_resource. Microsoft has relaxed this requirement in Windows Management Framework 5 (WMF5) (PowerShell 5.0.10586.0 or later). Now, we only require the RefreshMode to be disabled when running on earlier versions of PowerShell 5.
 * Added a reboot_action attribute to dsc_resource. If the DSC resource indicates that it requires a reboot, reboot_action can use the reboot resource to either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).  The default value of reboot_action is :nothing.
 
+In addition to `:immediately` and `:delayed`, we have added the new notification timing `:before`. `:before` will trigger just before the
+resource converges, but will only trigger if the resource is going to
+actually cause an update.
+
+For example, this will stop apache if you are about to upgrade your particularly sensitive web app (which can't run while installing for
+whatever reason) and start it back up afterwards.
+
+```
+execute 'install my app' do
+  only_if { i_should_install_my_app }
+end
+
+# Only stop and start apache if i_should_install_my_app
+service 'httpd' do
+  action :nothing
+  subscribes :stop, 'template[/etc/httpd.conf]', :before
+  subscribes :start, 'template[/etc/httpd.conf]'
+end
+```
+
 ## Other items
 
 There are a large number of other PRs in this release. Please see the CHANGELOG for the full set of changes.
