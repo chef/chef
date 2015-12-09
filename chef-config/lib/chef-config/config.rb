@@ -4,7 +4,7 @@
 # Author:: AJ Christensen (<aj@opscode.com>)
 # Author:: Mark Mzyk (<mmzyk@opscode.com>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -689,7 +689,7 @@ module ChefConfig
     # Pull down all the rubygems versions from rubygems and cache them the first time we do a gem_package or
     # chef_gem install.  This is memory-expensive and will grow without bounds, but will reduce network
     # round trips.
-    default :rubygems_cache_enabled, true
+    default :rubygems_cache_enabled, false
 
     config_context :windows_service do
       # Set `watchdog_timeout` to the number of seconds to wait for a chef-client run

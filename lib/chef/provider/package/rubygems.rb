@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2008, 2010-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -169,17 +169,9 @@ class Chef
                 resolved_spec && resolved_spec
               else
                 available_gems = dependency_installer.find_gems_with_sources(gem_dependency)
-                if available_gems.respond_to?(:last)
-                  # Rubygems < 2.0 sorts results such that the last one is the 'best' one
-                  spec_with_source = available_gems.last
-                  spec_with_source && spec_with_source
-                else
-                  # Rubygems 2.0 returns a Gem::Available set, which is a
-                  # collection of AvailableSet::Tuple structs
-                  available_gems.pick_best!
-                  best_gem = available_gems.set.first
-                  best_gem && [best_gem.spec, best_gem.source]
-                end
+                available_gems.pick_best!
+                best_gem = available_gems.set.first
+                best_gem && [best_gem.spec, best_gem.source]
               end
 
             version = spec && spec.version
