@@ -159,6 +159,7 @@ class Chef
       @default_guard_interpreter = :default
       @elapsed_time = 0
       @sensitive = false
+      @cloning_behavior = Chef::Config[:default_resource_cloning_behavior]
     end
 
     #
@@ -180,6 +181,21 @@ class Chef
       else
         @action
       end
+    end
+
+    #
+    # The kind of cloning behavior on the resource.  Supported values are:
+    #
+    #  :clone  - old CHEF-3694 style resource cloning
+    #  :rewind - overwrite the resource properties of the prior resource directly
+    #  :none   - no cloning at all
+    #
+    def cloning_behavior(arg=nil)
+      set_or_return(
+        :cloning_behavior,
+        arg,
+        kind_of: Symbol,
+      )
     end
 
     # Alias for normal assigment syntax.

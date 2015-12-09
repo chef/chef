@@ -422,6 +422,10 @@ describe Chef::Recipe do
         end
       end
 
+      before do
+        duplicated_resource # evaluate the lazy resources in the correct order
+      end
+
       it "copies attributes from the first resource" do
         expect(duplicated_resource.something).to eq("bvb09")
       end
@@ -447,6 +451,109 @@ describe Chef::Recipe do
         expect(duplicated_resource.recipe_name).to eq("second_recipe")
       end
 
+    end
+
+    describe "resource cloning with :rewind" do
+      let(:second_recipe) do
+        Chef::Recipe.new("second_cb", "second_recipe", run_context)
+      end
+
+      let(:original_resource) do
+        recipe.zen_master("klopp") do
+          something "bvb09"
+          cloning_behavior :rewind
+          action :score
+        end
+      end
+
+      let(:duplicated_resource) do
+        original_resource
+        second_recipe.zen_master("klopp") do
+          something "else"
+        end
+      end
+
+      before do
+        duplicated_resource # evaluate the lazy resources in the correct order
+      end
+
+      it "the second resource points at the first resource" do
+        expect(duplicated_resource).to eq(original_resource)
+      end
+
+      it "the first resources property is updated" do
+        expect(duplicated_resource.something).to eq("else")
+        expect(original_resource.something).to eq("else")
+      end
+
+      it "the cookbook_name should come from the first resource" do
+        expect(original_resource.cookbook_name).to eq("hjk")
+        expect(original_resource.cookbook_name).to eq(duplicated_resource.cookbook_name)
+      end
+
+      it "the recipe_name should come from the first resource" do
+        expect(original_resource.recipe_name).to eq("test")
+        expect(original_resource.recipe_name).to eq(duplicated_resource.recipe_name)
+      end
+
+      it "the source_line should make sense" do
+        # hard to test if this is from the first or second resource
+        expect(original_resource.source_line).to include(__FILE__)
+        expect(original_resource.source_line).to eq(duplicated_resource.source_line)
+      end
+    end
+
+    describe "resource cloning with :none" do
+      let(:second_recipe) do
+        Chef::Recipe.new("second_cb", "second_recipe", run_context)
+      end
+
+      let(:original_resource) do
+        recipe.zen_master("klopp") do
+          something "bvb09"
+          cloning_behavior :none
+          action :score
+        end
+      end
+
+      let(:duplicated_resource) do
+        original_resource
+        second_recipe.zen_master("klopp") do
+        end
+      end
+
+      before do
+        duplicated_resource # evaluate the lazy resources in the correct order
+      end
+
+      it "the second resource is different from the first resource" do
+        expect(duplicated_resource).not_to eq(original_resource)
+      end
+
+      it "does not copy attributes from the first resource" do
+        expect(duplicated_resource.something).to eq(nil)
+      end
+
+      it "does not copy the action from the first resource" do
+        expect(original_resource.action).to eq([:score])
+        expect(duplicated_resource.action).to eq([:nothing])
+      end
+
+      it "does not copy the source location of the first resource" do
+        # sanity check source location:
+        expect(original_resource.source_line).to include(__FILE__)
+        expect(duplicated_resource.source_line).to include(__FILE__)
+        # actual test:
+        expect(original_resource.source_line).not_to eq(duplicated_resource.source_line)
+      end
+
+      it "sets the cookbook name on the cloned resource to that resource's cookbook" do
+        expect(duplicated_resource.cookbook_name).to eq("second_cb")
+      end
+
+      it "sets the recipe name on the cloned resource to that resoure's recipe" do
+        expect(duplicated_resource.recipe_name).to eq("second_recipe")
+      end
     end
 
     describe "resource definitions" do

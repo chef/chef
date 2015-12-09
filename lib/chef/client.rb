@@ -385,13 +385,25 @@ class Chef
       end
     end
 
+    #
     # Resource reporters send event information back to the chef server for
-    # processing.  Can only be called after we have a @rest object
+    # processing
+    #
     # @api private
+    #
     def register_reporters
+      # Audit and Resource Reporters set validate_utf8 to false so that they
+      # never fail if we accidentally send binary data through (validate_utf8
+      # will raise when set to true, and sanitizes to utf8 when false)
+      reporter_rest = Chef::REST.new(
+        config[:chef_server_url],
+        client_name,
+        config[:client_key],
+        validate_utf8: false,
+      )
       [
-        Chef::ResourceReporter.new(rest),
-        Chef::Audit::AuditReporter.new(rest)
+        Chef::ResourceReporter.new(reporter_rest),
+        Chef::Audit::AuditReporter.new(reporter_rest)
       ].each do |r|
         events.register(r)
       end

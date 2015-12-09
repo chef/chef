@@ -45,23 +45,30 @@ class Chef
     def build(&block)
       raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
 
-      @resource = resource_class.new(name, run_context)
-      if resource.resource_name.nil?
-        raise Chef::Exceptions::InvalidResourceSpecification, "#{resource}.resource_name is `nil`!  Did you forget to put `provides :blah` or `resource_name :blah` in your resource class?"
+      if prior_resource && prior_resource.cloning_behavior == :rewind
+        @resource = prior_resource
+      else
+        @resource = resource_class.new(name, run_context)
+        if resource.resource_name.nil?
+          raise Chef::Exceptions::InvalidResourceSpecification, "#{resource}.resource_name is `nil`!  Did you forget to put `provides :blah` or `resource_name :blah` in your resource class?"
+        end
+        resource.source_line = created_at
+        resource.declared_type = type
       end
-      resource.source_line = created_at
-      resource.declared_type = type
 
       # If we have a resource like this one, we want to steal its state
       # This behavior is very counter-intuitive and should be removed.
       # See CHEF-3694, https://tickets.opscode.com/browse/CHEF-3694
       # Moved to this location to resolve CHEF-5052, https://tickets.opscode.com/browse/CHEF-5052
-      if prior_resource
+      if prior_resource && prior_resource.cloning_behavior == :clone
         resource.load_from(prior_resource)
       end
 
-      resource.cookbook_name = cookbook_name
-      resource.recipe_name = recipe_name
+      unless prior_resource && prior_resource.cloning_behavior == :rewind
+        resource.cookbook_name = cookbook_name
+        resource.recipe_name = recipe_name
+      end
+
       # Determine whether this resource is being created in the context of an enclosing Provider
       resource.enclosing_provider = enclosing_provider
 
@@ -73,7 +80,7 @@ class Chef
       resource.instance_eval(&block) if block_given?
 
       # emit a cloned resource warning if it is warranted
-      if prior_resource
+      if prior_resource && prior_resource.cloning_behavior == :clone
         if is_trivial_resource?(prior_resource) && identicalish_resources?(prior_resource, resource)
           emit_harmless_cloning_debug
         else
