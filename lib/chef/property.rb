@@ -292,9 +292,21 @@ class Chef
         value
 
       else
-        # If we are still compiling this resource (rather than running an action
-        # on it), reading this property before it's been set is likely the wrong
-        # thing. Warn if it's a duplicate of the enclosing provider.
+        # If the user does something like this:
+        #
+        # ```
+        # class MyResource < Chef::Resource
+        #   property :content
+        #   action :create do
+        #     file '/x.txt' do
+        #       content content
+        #     end
+        #   end
+        # end
+        # ```
+        #
+        # It won't do what they expect. This checks whether you try to *read*
+        # `content` while we are compiling the resource.
         if resource.respond_to?(:enclosing_provider) && resource.enclosing_provider &&
            !resource.currently_running_action &&
            !name_property? &&

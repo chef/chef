@@ -624,6 +624,8 @@ class Chef
     # If we are currently running an action, this shows the action we are running.
     # If the resource is running multiple actions at once, this will show the most recent.
     #
+    # Do NOT use this. It may be removed. It is for internal purposes only.
+    # @api private
     attr_reader :currently_running_action
 
     #
