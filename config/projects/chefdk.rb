@@ -40,8 +40,8 @@ override :'kitchen-inspec', version: "master"
 
 override :'knife-windows', version: "v1.1.1"
 override :'knife-spork',   version: "1.5.0"
-override :fauxhai,         version: "v2.3.0"
-override :chefspec,        version: "v4.4.0"
+override :fauxhai,         version: "v3.0.1"
+override :chefspec,        version: "v4.5.0"
 
 override :berkshelf,      version: "v4.0.1"
 override :bundler,        version: "1.10.6"
@@ -72,7 +72,7 @@ else
   override :rubygems,     version: "2.4.8"
 end
 
-override :rubocop, version: "v0.31.0"
+override :rubocop, version: "v0.35.1"
 
 override :'test-kitchen', version: "v1.4.2"
 override :'kitchen-vagrant', version: "v0.19.0"
