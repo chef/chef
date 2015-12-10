@@ -385,12 +385,6 @@ class Chef
       Mixlib::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
       Chef::Log.level(Chef::Config[:log_level] || :error)
-
-      if Chef::Config[:node_name] && Chef::Config[:node_name].bytesize > 90
-        # node names > 90 bytes only work with authentication protocol >= 1.1
-        # see discussion in config.rb.
-        Chef::Config[:authentication_protocol_version] = "1.1"
-      end
     end
 
     def configure_chef

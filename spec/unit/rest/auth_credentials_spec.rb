@@ -81,33 +81,32 @@ describe Chef::REST::AuthCredentials do
     before do
       @request_time = Time.at(1270920860)
       @request_params = {:http_method => :POST, :path => "/clients", :body => '{"some":"json"}', :host => "localhost"}
+      allow(Chef::Config).to(
+        receive(:[]).with(:authentication_protocol_version).and_return(protocol_version))
     end
 
-    it "generates signature headers for the request" do
-      allow(Time).to receive(:now).and_return(@request_time)
-      actual = @auth_credentials.signature_headers(@request_params)
-      expect(actual["HOST"]).to                    eq("localhost")
-      expect(actual["X-OPS-AUTHORIZATION-1"]).to eq("kBssX1ENEwKtNYFrHElN9vYGWS7OeowepN9EsYc9csWfh8oUovryPKDxytQ/")
-      expect(actual["X-OPS-AUTHORIZATION-2"]).to eq("Wc2/nSSyxdWJjjfHzrE+YrqNQTaArOA7JkAf5p75eTUonCWcvNPjFrZVgKGS")
-      expect(actual["X-OPS-AUTHORIZATION-3"]).to eq("yhzHJQh+lcVA9wwARg5Hu9q+ddS8xBOdm3Vp5atl5NGHiP0loiigMYvAvzPO")
-      expect(actual["X-OPS-AUTHORIZATION-4"]).to eq("r9853eIxwYMhn5hLGhAGFQznJbE8+7F/lLU5Zmk2t2MlPY8q3o1Q61YD8QiJ")
-      expect(actual["X-OPS-AUTHORIZATION-5"]).to eq("M8lIt53ckMyUmSU0DDURoiXLVkE9mag/6Yq2tPNzWq2AdFvBqku9h2w+DY5k")
-      expect(actual["X-OPS-AUTHORIZATION-6"]).to eq("qA5Rnzw5rPpp3nrWA9jKkPw4Wq3+4ufO2Xs6w7GCjA==")
-      expect(actual["X-OPS-CONTENT-HASH"]).to eq("1tuzs5XKztM1ANrkGNPah6rW9GY=")
-      expect(actual["X-OPS-SIGN"]).to         match(%r{(version=1\.0)|(algorithm=sha1;version=1.0;)})
-      expect(actual["X-OPS-TIMESTAMP"]).to    eq("2010-04-10T17:34:20Z")
-      expect(actual["X-OPS-USERID"]).to       eq("client-name")
+    context "when configured for version 1.0 of the authn protocol" do
+      let(:protocol_version) { "1.0" }
 
+      it "generates signature headers for the request" do
+        allow(Time).to receive(:now).and_return(@request_time)
+        actual = @auth_credentials.signature_headers(@request_params)
+        expect(actual["HOST"]).to                    eq("localhost")
+        expect(actual["X-OPS-AUTHORIZATION-1"]).to eq("kBssX1ENEwKtNYFrHElN9vYGWS7OeowepN9EsYc9csWfh8oUovryPKDxytQ/")
+        expect(actual["X-OPS-AUTHORIZATION-2"]).to eq("Wc2/nSSyxdWJjjfHzrE+YrqNQTaArOA7JkAf5p75eTUonCWcvNPjFrZVgKGS")
+        expect(actual["X-OPS-AUTHORIZATION-3"]).to eq("yhzHJQh+lcVA9wwARg5Hu9q+ddS8xBOdm3Vp5atl5NGHiP0loiigMYvAvzPO")
+        expect(actual["X-OPS-AUTHORIZATION-4"]).to eq("r9853eIxwYMhn5hLGhAGFQznJbE8+7F/lLU5Zmk2t2MlPY8q3o1Q61YD8QiJ")
+        expect(actual["X-OPS-AUTHORIZATION-5"]).to eq("M8lIt53ckMyUmSU0DDURoiXLVkE9mag/6Yq2tPNzWq2AdFvBqku9h2w+DY5k")
+        expect(actual["X-OPS-AUTHORIZATION-6"]).to eq("qA5Rnzw5rPpp3nrWA9jKkPw4Wq3+4ufO2Xs6w7GCjA==")
+        expect(actual["X-OPS-CONTENT-HASH"]).to eq("1tuzs5XKztM1ANrkGNPah6rW9GY=")
+        expect(actual["X-OPS-SIGN"]).to         match(%r{(version=1\.0)|(algorithm=sha1;version=1.0;)})
+        expect(actual["X-OPS-TIMESTAMP"]).to    eq("2010-04-10T17:34:20Z")
+        expect(actual["X-OPS-USERID"]).to       eq("client-name")
+      end
     end
 
-    describe "when configured for version 1.1 of the authn protocol" do
-      before do
-        Chef::Config[:authentication_protocol_version] = "1.1"
-      end
-
-      after do
-        Chef::Config[:authentication_protocol_version] = "1.0"
-      end
+    context "when configured for version 1.1 of the authn protocol" do
+      let(:protocol_version) { "1.1" }
 
       it "generates the correct signature for version 1.1" do
         allow(Time).to receive(:now).and_return(@request_time)

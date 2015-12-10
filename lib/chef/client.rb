@@ -550,14 +550,10 @@ class Chef
     # - ohai[:machinename]
     # - ohai[:hostname]
     #
-    # If we are running against a server with authentication protocol < 1.0, we
-    # *require* authentication protocol version 1.1.
-    #
     # @raise [Chef::Exceptions::CannotDetermineNodeName] If the node name is not
     #   set and cannot be determined via ohai.
     #
     # @see Chef::Config#node_name
-    # @see Chef::Config#authentication_protocol_version
     #
     # @api private
     #
@@ -566,14 +562,6 @@ class Chef
       Chef::Config[:node_name] = name
 
       raise Chef::Exceptions::CannotDetermineNodeName unless name
-
-      # node names > 90 bytes only work with authentication protocol >= 1.1
-      # see discussion in config.rb.
-      # TODO use a computed default in Chef::Config to determine this instead of
-      # setting it.
-      if name.bytesize > 90
-        Chef::Config[:authentication_protocol_version] = "1.1"
-      end
 
       name
     end
