@@ -1,5 +1,8 @@
 require 'support/shared/integration/integration_helper'
 
+# Houses any classes we declare
+module ResourceActionSpec
+
 describe "Resource.action" do
   include IntegrationSupport
 
@@ -85,7 +88,7 @@ describe "Resource.action" do
       converge <<-EOM, __FILE__, __LINE__+1
         ruby_block 'wow' do
           block do
-            ActionJackson.ruby_block_converged = 'ruby_block_converged!'
+            ResourceActionSpec::ActionJackson.ruby_block_converged = 'ruby_block_converged!'
           end
         end
 
@@ -107,7 +110,7 @@ describe "Resource.action" do
 
         ruby_block 'wow' do
           block do
-            ActionJackson.ruby_block_converged = ActionJackson.succeeded
+            ResourceActionSpec::ActionJackson.ruby_block_converged = ResourceActionSpec::ActionJackson.succeeded
           end
         end
       EOM
@@ -118,80 +121,79 @@ describe "Resource.action" do
   end
 
   context "With resource 'action_jackson'" do
-    before(:context) {
-      class ActionJackson < Chef::Resource
-        use_automatic_resource_name
-        def foo(value=nil)
-          @foo = value if value
-          @foo
-        end
-        def blarghle(value=nil)
-          @blarghle = value if value
-          @blarghle
-        end
+    class ActionJackson < Chef::Resource
+      use_automatic_resource_name
+      def foo(value=nil)
+        @foo = value if value
+        @foo
+      end
+      def blarghle(value=nil)
+        @blarghle = value if value
+        @blarghle
+      end
 
-        class <<self
-          attr_accessor :ran_action
-          attr_accessor :succeeded
-          attr_accessor :ruby_block_converged
-        end
+      class <<self
+        attr_accessor :ran_action
+        attr_accessor :succeeded
+        attr_accessor :ruby_block_converged
+      end
 
-        public
-        def foo_public
-          'foo_public!'
-        end
-        protected
-        def foo_protected
-          'foo_protected!'
-        end
-        private
-        def foo_private
-          'foo_private!'
-        end
+      public
+      def foo_public
+        'foo_public!'
+      end
+      protected
+      def foo_protected
+        'foo_protected!'
+      end
+      private
+      def foo_private
+        'foo_private!'
+      end
 
-        public
-        action :access_recipe_dsl do
-          ActionJackson.ran_action = :access_recipe_dsl
-          ruby_block 'hi there' do
-            block do
-              ActionJackson.succeeded = true
-            end
+      public
+      action :access_recipe_dsl do
+        ActionJackson.ran_action = :access_recipe_dsl
+        ruby_block 'hi there' do
+          block do
+            ActionJackson.succeeded = true
           end
         end
-        action :access_attribute do
-          ActionJackson.ran_action = :access_attribute
-          ActionJackson.succeeded = foo
-          ActionJackson.succeeded += " #{blarghle}" if blarghle
-          ActionJackson.succeeded += " #{bar}" if respond_to?(:bar)
-        end
-        action :access_attribute2 do
-          ActionJackson.ran_action = :access_attribute2
-          ActionJackson.succeeded = foo
-          ActionJackson.succeeded += " #{blarghle}" if blarghle
-          ActionJackson.succeeded += " #{bar}" if respond_to?(:bar)
-        end
-        action :access_method do
-          ActionJackson.ran_action = :access_method
-          ActionJackson.succeeded = foo_public
-        end
-        action :access_protected_method do
-          ActionJackson.ran_action = :access_protected_method
-          ActionJackson.succeeded = foo_protected
-        end
-        action :access_private_method do
-          ActionJackson.ran_action = :access_private_method
-          ActionJackson.succeeded = foo_private
-        end
-        action :access_instance_variable do
-          ActionJackson.ran_action = :access_instance_variable
-          ActionJackson.succeeded = @foo
-        end
-        action :access_class_method do
-          ActionJackson.ran_action = :access_class_method
-          ActionJackson.succeeded = ActionJackson.ruby_block_converged
-        end
       end
-    }
+      action :access_attribute do
+        ActionJackson.ran_action = :access_attribute
+        ActionJackson.succeeded = foo
+        ActionJackson.succeeded += " #{blarghle}" if blarghle
+        ActionJackson.succeeded += " #{bar}" if respond_to?(:bar)
+      end
+      action :access_attribute2 do
+        ActionJackson.ran_action = :access_attribute2
+        ActionJackson.succeeded = foo
+        ActionJackson.succeeded += " #{blarghle}" if blarghle
+        ActionJackson.succeeded += " #{bar}" if respond_to?(:bar)
+      end
+      action :access_method do
+        ActionJackson.ran_action = :access_method
+        ActionJackson.succeeded = foo_public
+      end
+      action :access_protected_method do
+        ActionJackson.ran_action = :access_protected_method
+        ActionJackson.succeeded = foo_protected
+      end
+      action :access_private_method do
+        ActionJackson.ran_action = :access_private_method
+        ActionJackson.succeeded = foo_private
+      end
+      action :access_instance_variable do
+        ActionJackson.ran_action = :access_instance_variable
+        ActionJackson.succeeded = @foo
+      end
+      action :access_class_method do
+        ActionJackson.ran_action = :access_class_method
+        ActionJackson.succeeded = ActionJackson.ruby_block_converged
+      end
+    end
+
     before(:each) {
       ActionJackson.ran_action = :error
       ActionJackson.succeeded = :error
@@ -220,33 +222,31 @@ describe "Resource.action" do
     end
 
     context "And 'action_jackalope' inheriting from ActionJackson with an extra attribute, action and custom method" do
-      before(:context) {
-        class ActionJackalope < ActionJackson
-          use_automatic_resource_name
+      class ActionJackalope < ActionJackson
+        use_automatic_resource_name
 
-          def foo(value=nil)
-            @foo = "#{value}alope" if value
-            @foo
-          end
-          def bar(value=nil)
-            @bar = "#{value}alope" if value
-            @bar
-          end
-          class <<self
-            attr_accessor :load_current_resource_ran
-            attr_accessor :jackalope_ran
-          end
-          action :access_jackalope do
-            ActionJackalope.jackalope_ran = :access_jackalope
-            ActionJackalope.succeeded = "#{foo} #{blarghle} #{bar}"
-          end
-          action :access_attribute do
-            super()
-            ActionJackalope.jackalope_ran = :access_attribute
-            ActionJackalope.succeeded = ActionJackson.succeeded
-          end
+        def foo(value=nil)
+          @foo = "#{value}alope" if value
+          @foo
         end
-      }
+        def bar(value=nil)
+          @bar = "#{value}alope" if value
+          @bar
+        end
+        class <<self
+          attr_accessor :load_current_resource_ran
+          attr_accessor :jackalope_ran
+        end
+        action :access_jackalope do
+          ActionJackalope.jackalope_ran = :access_jackalope
+          ActionJackalope.succeeded = "#{foo} #{blarghle} #{bar}"
+        end
+        action :access_attribute do
+          super()
+          ActionJackalope.jackalope_ran = :access_attribute
+          ActionJackalope.succeeded = ActionJackson.succeeded
+        end
+      end
       before do
         ActionJackalope.jackalope_ran = nil
         ActionJackalope.load_current_resource_ran = nil
@@ -313,20 +313,19 @@ describe "Resource.action" do
   end
 
   context "With a resource with no actions" do
-    before(:context) {
-      class NoActionJackson < Chef::Resource
-        use_automatic_resource_name
+    class NoActionJackson < Chef::Resource
+      use_automatic_resource_name
 
-        def foo(value=nil)
-          @foo = value if value
-          @foo
-        end
-
-        class <<self
-          attr_accessor :action_was
-        end
+      def foo(value=nil)
+        @foo = value if value
+        @foo
       end
-    }
+
+      class <<self
+        attr_accessor :action_was
+      end
+    end
+
     it "the default action is :nothing" do
       converge {
         no_action_jackson 'hi' do
@@ -339,19 +338,17 @@ describe "Resource.action" do
   end
 
   context "With a resource with action a-b-c d" do
-    before(:context) {
-      class WeirdActionJackson < Chef::Resource
-        use_automatic_resource_name
+    class WeirdActionJackson < Chef::Resource
+      use_automatic_resource_name
 
-        class <<self
-          attr_accessor :action_was
-        end
-
-        action "a-b-c d" do
-          WeirdActionJackson.action_was = action
-        end
+      class <<self
+        attr_accessor :action_was
       end
-    }
+
+      action "a-b-c d" do
+        WeirdActionJackson.action_was = action
+      end
+    end
 
     it "Running the action works" do
       expect_recipe {
@@ -410,4 +407,24 @@ describe "Resource.action" do
     end
 
   end
+
+  context "When a resource has a property with the same name as another resource" do
+    class HasPropertyNamedTemplate < Chef::Resource
+      use_automatic_resource_name
+      property :template
+      action :create do
+        template "x" do
+          'blah'
+        end
+      end
+    end
+
+    it "Raises an error when attempting to use a template in the action" do
+      expect_converge {
+        has_property_named_template 'hi'
+      }.to raise_error(/Property template of has_property_named_template\[hi\] cannot be passed a block! If you meant to create a resource named template instead, you'll need to first rename the property./)
+    end
+  end
+end
+
 end
