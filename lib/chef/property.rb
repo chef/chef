@@ -292,6 +292,28 @@ class Chef
         value
 
       else
+        # If the user does something like this:
+        #
+        # ```
+        # class MyResource < Chef::Resource
+        #   property :content
+        #   action :create do
+        #     file '/x.txt' do
+        #       content content
+        #     end
+        #   end
+        # end
+        # ```
+        #
+        # It won't do what they expect. This checks whether you try to *read*
+        # `content` while we are compiling the resource.
+        if resource.respond_to?(:enclosing_provider) && resource.enclosing_provider &&
+           !resource.currently_running_action &&
+           !name_property? &&
+           resource.enclosing_provider.respond_to?(name)
+           Chef::Log.warn("#{Chef::Log.caller_location}: property #{name} is declared in both #{resource} and #{resource.enclosing_provider}. Use new_resource.#{name} instead. At #{Chef::Log.caller_location}")
+        end
+
         if has_default?
           value = default
           if value.is_a?(DelayedEvaluator)

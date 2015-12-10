@@ -205,17 +205,7 @@ class Chef
     # @api private this will likely be removed in favor of an as-yet unwritten
     #      `Chef.log`
     def log_deprecation(message, location=nil)
-      if !location
-        # Pick the first caller that is *not* part of the Chef gem, that's the
-        # thing the user wrote.
-        chef_gem_path = File.expand_path("../..", __FILE__)
-        caller(0..10).each do |c|
-          if !c.start_with?(chef_gem_path)
-            location = c
-            break
-          end
-        end
-      end
+      location ||= Chef::Log.caller_location
       # `run_context.events` is the primary deprecation target if we're in a
       # run. If we are not yet in a run, print to `Chef::Log`.
       if run_context && run_context.events

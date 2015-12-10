@@ -569,6 +569,8 @@ class Chef
     #
     def run_action(action, notification_type=nil, notifying_resource=nil)
       # reset state in case of multiple actions on the same resource.
+      old_currently_running_action = @currently_running_action
+      @currently_running_action = action
       @elapsed_time = 0
       start_time = Time.now
       events.resource_action_start(self, action, notification_type, notifying_resource)
@@ -608,14 +610,23 @@ class Chef
           events.resource_failed(self, action, e)
           raise customize_exception(e)
         end
-      ensure
-        @elapsed_time = Time.now - start_time
-        # Reporting endpoint doesn't accept a negative resource duration so set it to 0.
-        # A negative value can occur when a resource changes the system time backwards
-        @elapsed_time = 0 if @elapsed_time < 0
-        events.resource_completed(self)
       end
+    ensure
+      @currently_running_action = old_currently_running_action
+      @elapsed_time = Time.now - start_time
+      # Reporting endpoint doesn't accept a negative resource duration so set it to 0.
+      # A negative value can occur when a resource changes the system time backwards
+      @elapsed_time = 0 if @elapsed_time < 0
+      events.resource_completed(self)
     end
+
+    #
+    # If we are currently running an action, this shows the action we are running.
+    # If the resource is running multiple actions at once, this will show the most recent.
+    #
+    # Do NOT use this. It may be removed. It is for internal purposes only.
+    # @api private
+    attr_reader :currently_running_action
 
     #
     # Generic Ruby and Data Structure Stuff (for user)
