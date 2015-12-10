@@ -360,4 +360,54 @@ describe "Resource.action" do
       expect(WeirdActionJackson.action_was).to eq :"a-b-c d"
     end
   end
+
+  context "With a resource with property x" do
+    class ResourceActionSpecWithX < Chef::Resource
+      resource_name :resource_action_spec_with_x
+      property :x, default: 20
+      action :set do
+        # Access x during converge to ensure that we emit no warnings there
+        x
+      end
+    end
+
+    context "And another resource with a property x and an action that sets property x to its value" do
+      class ResourceActionSpecAlsoWithX < Chef::Resource
+        resource_name :resource_action_spec_also_with_x
+        property :x
+        action :set_x_to_x do
+          resource_action_spec_with_x 'hi' do
+            x x
+          end
+        end
+        action :set_x_to_10 do
+          resource_action_spec_with_x 'hi' do
+            x 10
+          end
+        end
+      end
+
+      it "Using the enclosing resource to set x to x emits a warning that you're using the wrong x" do
+        recipe = converge {
+          resource_action_spec_also_with_x 'hi' do
+            x 1
+            action :set_x_to_x
+          end
+        }
+        warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
+        expect(warnings.size).to eq 1
+        expect(warnings[0]).to match(/property x is declared in both resource_action_spec_with_x\[hi\] and resource_action_spec_also_with_x\[hi\] action :set_x_to_x. Use new_resource.x instead. At #{__FILE__}:#{__LINE__-19}/)
+      end
+
+      it "Using the enclosing resource to set x to 10 emits no warning" do
+        expect_recipe {
+          resource_action_spec_also_with_x 'hi' do
+            x 1
+            action :set_x_to_10
+          end
+        }.to emit_no_warnings_or_errors
+      end
+    end
+
+  end
 end

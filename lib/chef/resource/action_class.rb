@@ -21,6 +21,10 @@ require 'chef/exceptions'
 class Chef
   class Resource
     module ActionClass
+      def to_s
+        "#{new_resource || "<no resource>"} action #{action ? action.inspect : "<no action>"}"
+      end
+
       #
       # If load_current_value! is defined on the resource, use that.
       #
