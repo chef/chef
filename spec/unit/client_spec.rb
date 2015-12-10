@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Copyright:: Copyright 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

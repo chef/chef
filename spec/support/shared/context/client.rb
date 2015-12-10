@@ -10,13 +10,13 @@ shared_context "client" do
   let(:platform_version) { "example-platform-1.0" }
 
   let(:ohai_data) do
-    {
+    Mash.new( {
       'fqdn' =>             fqdn,
       'hostname' =>         hostname,
       'machinename' =>      machinename,
       'platform' =>         platform,
       'platform_version' => platform_version
-    }
+    } )
   end
 
   let(:ohai_system) do

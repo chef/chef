@@ -260,7 +260,15 @@ class Chef
       Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
       consume_attributes(json_cli_attrs)
 
-      wrap_automatic_attrs(ohai_data)
+      if ohai_data.is_a?(::Mash)
+        # if we are passed a Mash (normally what ohai does, then we just want to wrap
+        # that Mash and not run through convert_value'ing the whole thing
+        wrap_automatic_attrs(ohai_data)
+      else
+        # some consumers send us just a Hash (mostly our own spec tests), so wrap it in
+        # a Mash and take the perf hit of convert_value'ing it
+        wrap_automatic_attrs(::Mash.new(ohai_data))
+      end
 
       platform, version = Chef::Platform.find_platform_and_version(self)
       Chef::Log.debug("Platform is #{platform} version #{version}")
