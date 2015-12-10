@@ -25,6 +25,7 @@ describe Chef::Node::AttributeTrait::Decorator do
 
     context "Hash#assoc" do
       it "returns decorated objects when nested" do
+        pending "not implemented yet"
         test['foo'] = { 'bar' => 'baz' }
         test['bar'] = [ 1, 2 ]
         expect(test.assoc('foo')).to be_instance_of(Test)
@@ -41,6 +42,7 @@ describe Chef::Node::AttributeTrait::Decorator do
 
     context "Hash#delete_if" do
       it "returns decorated objects when nested" do
+        pending "not implemented yet"
         test['foo'] = { 'bar' => 'baz' }
         test['bar'] = [ 1, 2 ]
         expect(test.delete('foo')).to be_instance_of(Test)
