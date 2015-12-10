@@ -57,7 +57,7 @@ describe Chef::Mixin::UserContext, windows_only: true do
 
   let(:username_while_impersonating) do
     username = nil
-    with_user_context(username_with_conditional_domain, domain_to_impersonate, username_to_impersonate_password) do
+    with_user_context(username_with_conditional_domain, username_to_impersonate_password, domain_to_impersonate) do
       username = process_username
     end
     username
@@ -104,7 +104,7 @@ describe Chef::Mixin::UserContext, windows_only: true do
         end
 
         it "raises an error user if specified with the wrong password" do
-          expect { with_user_context(username_to_impersonate, nil, username_to_impersonate_password + '1') }.to raise_error(ArgumentError)
+          expect { with_user_context(username_to_impersonate, username_to_impersonate_password + '1', nil) }.to raise_error(ArgumentError)
         end
       end
     end

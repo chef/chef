@@ -25,7 +25,7 @@ describe "a class that mixes in user_context" do
     class UserContextConsumer
       include ::Chef::Mixin::UserContext
       def with_context(user, domain, password, &block)
-        with_user_context(user, domain, password, &block)
+        with_user_context(user, password, domain, &block)
       end
     end
     UserContextConsumer.new
