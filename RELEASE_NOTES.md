@@ -94,4 +94,4 @@ end
 
 ## Other items
 
-There are a large number of other PRs in this release. Please see the CHANGELOG for the full set of changes.
+There are a large number of other PRs in this release. Please see the CHANGELOG for the full set of changes : https://github.com/chef/chef/blob/master/CHANGELOG.md
