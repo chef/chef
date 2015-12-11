@@ -1172,14 +1172,18 @@ class Chef
     # using `action :x do ... end`, then there is no need for this class and
     # `action_class` will be `nil`.
     #
+    # If a block is passed, the action_class is always created and the block is
+    # run inside it.
+    #
     # @api private
     #
-    def self.action_class
-      @action_class ||
-        # If the superclass needed one, then we need one as well.
-        if superclass.respond_to?(:action_class) && superclass.action_class
-          declare_action_class
-        end
+    def self.action_class(&block)
+      return @action_class if @action_class && !block
+      # If the superclass needed one, then we need one as well.
+      if block || (superclass.respond_to?(:action_class) && superclass.action_class)
+        @action_class = declare_action_class(&block)
+      end
+      @action_class
     end
 
     #
@@ -1189,19 +1193,21 @@ class Chef
     # If a block is passed, it is run inside the action_class.
     #
     # @api private
-    def self.declare_action_class
-      return @action_class if @action_class
+    def self.declare_action_class(&block)
+      @action_class ||= begin
+        if superclass.respond_to?(:action_class)
+          base_provider = superclass.action_class
+        end
+        base_provider ||= Chef::Provider
 
-      if superclass.respond_to?(:action_class)
-        base_provider = superclass.action_class
+        resource_class = self
+        Class.new(base_provider) do
+          include ActionClass
+          self.resource_class = resource_class
+        end
       end
-      base_provider ||= Chef::Provider
-
-      resource_class = self
-      @action_class = Class.new(base_provider) do
-        include ActionClass
-        self.resource_class = resource_class
-      end
+      @action_class.class_eval(&block) if block
+      @action_class
     end
 
     #
