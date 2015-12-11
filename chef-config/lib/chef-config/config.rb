@@ -720,7 +720,7 @@ module ChefConfig
       export_proxy("http", http_proxy, http_proxy_user, http_proxy_pass) if http_proxy
       export_proxy("https", https_proxy, https_proxy_user, https_proxy_pass) if https_proxy
       export_proxy("ftp", ftp_proxy, ftp_proxy_user, ftp_proxy_pass) if ftp_proxy
-      export_no_proxy("no_proxy", no_proxy) if no_proxy
+      export_no_proxy(no_proxy) if no_proxy
     end
 
     # Builds a proxy uri and exports it to the appropriate environment variables. Examples:
