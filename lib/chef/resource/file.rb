@@ -52,7 +52,7 @@ class Chef
 
       property :content, [ String, nil ], desired_state: false
       property :backup, [ Integer, false ], desired_state: false, default: 5
-      property :checksum, [ String, nil ], regex: /^[a-zA-Z0-9]{64}$/
+      property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ]
       property :path, String, name_property: true, identity: true
       property :diff, [ String, nil ], desired_state: false
       property :atomic_update, [ true, false ], desired_state: false, default: Chef::Config[:file_atomic_update]
