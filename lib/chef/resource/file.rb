@@ -50,11 +50,6 @@ class Chef
       default_action :create
       allowed_actions :create, :delete, :touch, :create_if_missing
 
-      def initialize(name, run_context=nil)
-        super
-        @verifications = []
-      end
-
       property :content, [ String, nil ], desired_state: false
       property :backup, [ Integer, false ], desired_state: false, default: 5
       property :checksum, [ String, nil ], is: /^[a-zA-Z0-9]{64}$/
@@ -63,6 +58,7 @@ class Chef
       property :atomic_update, [ true, false ], desired_state: false, default: Chef::Config[:file_atomic_update]
       property :force_unlink, [ true, false ], desired_state: false, default: false
       property :manage_symlink_source, [ true, false ], desired_state: false
+      property :verifications, Array, default: []
 
       def verify(command=nil, opts={}, &block)
         if ! (command.nil? || [String, Symbol].include?(command.class))
@@ -70,9 +66,9 @@ class Chef
         end
 
         if command || block_given?
-          @verifications << Verification.new(self, command, opts, &block)
+          verifications << Verification.new(self, command, opts, &block)
         else
-          @verifications
+          verifications
         end
       end
 
