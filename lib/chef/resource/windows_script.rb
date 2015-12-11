@@ -24,32 +24,23 @@ class Chef
   class Resource
     class WindowsScript < Chef::Resource::Script
       # This is an abstract resource meant to be subclasses; thus no 'provides'
+      resource_name :windows_script
 
       set_guard_inherited_attributes(:architecture)
 
+      property :default_guard_interpreter, default: lazy { resource_name }
+      property :architecture, [ :x86_64, :i386 ],
+                 coerce: proc { |v| assert_architecture_compatible!(v) }
+
       protected
 
-      def initialize(name, run_context, resource_name, interpreter_command)
+      def initialize(name, run_context, resource_name = nil, interpreter = nil)
         super(name, run_context)
-        @interpreter = interpreter_command
+        @interpreter = interpreter if interpreter
         @resource_name = resource_name if resource_name
-        @default_guard_interpreter = self.resource_name
       end
 
       include Chef::Mixin::WindowsArchitectureHelper
-
-      public
-
-      def architecture(arg = nil)
-        assert_architecture_compatible!(arg) if ! arg.nil?
-        result = set_or_return(
-          :architecture,
-          arg,
-          :kind_of => Symbol
-        )
-      end
-
-      protected
 
       def assert_architecture_compatible!(desired_architecture)
         if desired_architecture == :i386 && Chef::Platform.windows_nano_server?

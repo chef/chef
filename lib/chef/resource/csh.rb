@@ -26,12 +26,8 @@ class Chef
     # their nature) not idempotent, as they are typically unique to the environment in which they are run. Use not_if
     # and only_if to guard this resource for idempotence.
     class Csh < Chef::Resource::Script
-
-      def initialize(name, run_context = nil)
-        super
-        @interpreter = "csh"
-      end
-
+      resource_name :csh
+      property :interpreter, default: "csh"
     end
   end
 end

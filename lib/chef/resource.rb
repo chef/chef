@@ -141,13 +141,6 @@ class Chef
       @not_if = []
       @only_if = []
       @source_line = nil
-      # We would like to raise an error when the user gives us a guard
-      # interpreter and a ruby_block to the guard. In order to achieve this
-      # we need to understand when the user overrides the default guard
-      # interpreter. Therefore we store the default separately in a different
-      # attribute.
-      @guard_interpreter = nil
-      @default_guard_interpreter = :default
       @elapsed_time = 0
     end
 
@@ -475,13 +468,7 @@ class Chef
     #   symbol/name.
     # @return [Class, Symbol, String] The Guard interpreter resource.
     #
-    def guard_interpreter(arg = nil)
-      if arg.nil?
-        @guard_interpreter || @default_guard_interpreter
-      else
-        set_or_return(:guard_interpreter, arg, :kind_of => Symbol)
-      end
-    end
+    property :guard_interpreter, Symbol, default: lazy { default_guard_interpreter }, desired_state: false
 
     #
     # Get the value of the state attributes in this resource as a hash.
@@ -699,8 +686,8 @@ class Chef
     def to_hash
       # Grab all current state, then any other ivars (backcompat)
       result = {}
-      self.class.state_properties.each do |p|
-        result[p.name] = p.get(self)
+      self.class.properties.each do |property_name, property|
+        result[property_name] = property.get(self)
       end
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       safe_ivars.each do |iv|
@@ -852,7 +839,7 @@ class Chef
     #
     # @return [Class, Symbol, String] the default Guard interpreter resource.
     #
-    attr_reader :default_guard_interpreter
+    property :default_guard_interpreter, Symbol, default: :default, desired_state: false
 
     #
     # The list of actions this Resource is allowed to have.  Setting `action`
