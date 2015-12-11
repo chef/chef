@@ -467,14 +467,14 @@ shared_examples_for Chef::Provider::File do
 
       context "with user-supplied verifications" do
         it "calls #verify on each verification with tempfile path" do
-          provider.new_resource.verify "true"
-          provider.new_resource.verify "true"
+          provider.new_resource.verify windows? ? "REM" : "true"
+          provider.new_resource.verify windows? ? "REM" : "true"
           provider.send(:do_validate_content)
         end
 
         it "raises an exception if any verification fails" do
-          provider.new_resource.verify "true"
-          provider.new_resource.verify "false"
+          provider.new_resource.verify windows? ? "REM" : "true"
+          provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
           expect{provider.send(:do_validate_content)}.to raise_error(Chef::Exceptions::ValidationFailed)
         end
       end
