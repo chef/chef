@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2008, 2011-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,78 +52,17 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @path = name
-        @backup = 5
-        @atomic_update = Chef::Config[:file_atomic_update]
-        @force_unlink = false
-        @manage_symlink_source = nil
-        @diff = nil
         @verifications = []
       end
 
-      def content(arg=nil)
-        set_or_return(
-          :content,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def backup(arg=nil)
-        set_or_return(
-          :backup,
-          arg,
-          :kind_of => [ Integer, FalseClass ]
-        )
-      end
-
-      def checksum(arg=nil)
-        set_or_return(
-          :checksum,
-          arg,
-          :regex => /^[a-zA-Z0-9]{64}$/
-        )
-      end
-
-      def path(arg=nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def diff(arg=nil)
-        set_or_return(
-          :diff,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def atomic_update(arg=nil)
-        set_or_return(
-          :atomic_update,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def force_unlink(arg=nil)
-        set_or_return(
-          :force_unlink,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def manage_symlink_source(arg=nil)
-        set_or_return(
-          :manage_symlink_source,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :content, [ String, NilClass ], desired_state: false
+      property :backup, [ Integer, FalseClass ], desired_state: false, default: 5
+      property :checksum, [ String, NilClass ], is: /^[a-zA-Z0-9]{64}$/
+      property :path, [ String ], name_property: true
+      property :diff, [ String, NilClass ], desired_state: false
+      property :atomic_update, [ TrueClass, FalseClass ], desired_state: false, default: Chef::Config[:file_atomic_update]
+      property :force_unlink, [ TrueClass, FalseClass ], desired_state: false, default: false
+      property :manage_symlink_source, [ TrueClass, FalseClass ], desired_state: false
 
       def verify(command=nil, opts={}, &block)
         if ! (command.nil? || [String, Symbol].include?(command.class))
