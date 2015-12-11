@@ -677,6 +677,17 @@ RSpec.describe ChefConfig::Config do
       end
       include_examples "no export"
     end
+
+    context "no_proxy is set" do
+      before do
+        ChefConfig::Config.no_proxy = "localhost"
+      end
+      it "exports ENV['no_proxy']" do
+        expect(ENV).to receive(:[]=).with('no_proxy', "localhost")
+        expect(ENV).to receive(:[]=).with('NO_PROXY', "localhost")
+        ChefConfig::Config.export_proxies
+      end
+    end
   end
 
   describe "allowing chefdk configuration outside of chefdk" do
