@@ -6,7 +6,6 @@ platform:
 
 environment:
   matrix:
-    - ruby_version: "200"
     - ruby_version: "200-x64"
     - ruby_version: "21"
 
