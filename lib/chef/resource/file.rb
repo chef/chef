@@ -55,14 +55,14 @@ class Chef
         @verifications = []
       end
 
-      property :content, [ String, NilClass ], desired_state: false
-      property :backup, [ Integer, FalseClass ], desired_state: false, default: 5
-      property :checksum, [ String, NilClass ], is: /^[a-zA-Z0-9]{64}$/
+      property :content, [ String, nil ], desired_state: false
+      property :backup, [ Integer, false ], desired_state: false, default: 5
+      property :checksum, [ String, nil ], is: /^[a-zA-Z0-9]{64}$/
       property :path, [ String ], name_property: true
-      property :diff, [ String, NilClass ], desired_state: false
-      property :atomic_update, [ TrueClass, FalseClass ], desired_state: false, default: Chef::Config[:file_atomic_update]
-      property :force_unlink, [ TrueClass, FalseClass ], desired_state: false, default: false
-      property :manage_symlink_source, [ TrueClass, FalseClass ], desired_state: false
+      property :diff, [ String, nil ], desired_state: false
+      property :atomic_update, [ true, false ], desired_state: false, default: Chef::Config[:file_atomic_update]
+      property :force_unlink, [ true, false ], desired_state: false, default: false
+      property :manage_symlink_source, [ true, false ], desired_state: false
 
       def verify(command=nil, opts={}, &block)
         if ! (command.nil? || [String, Symbol].include?(command.class))
