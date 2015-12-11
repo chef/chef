@@ -21,51 +21,17 @@ require 'chef/resource/service'
 class Chef
   class Resource
     class WindowsService < Chef::Resource::Service
-
+      resource_name :windows_service
       # Until #1773 is resolved, you need to manually specify the windows_service resource
       # to use action :configure_startup and attribute startup_type
-
       provides :windows_service, os: "windows"
       provides :service, os: "windows"
 
       allowed_actions :configure_startup
 
-      identity_attr :service_name
-
-      state_attrs :enabled, :running
-
-      def initialize(name, run_context=nil)
-        super
-        @startup_type = :automatic
-        @run_as_user = ""
-        @run_as_password = ""
-      end
-
-      def startup_type(arg=nil)
-        # Set-Service arguments are automatic and manual
-        # Win32::Service returns 'auto start' or 'demand start' respectively, which the provider currently uses
-        set_or_return(
-          :startup_type,
-          arg,
-          :equal_to => [ :automatic, :manual, :disabled ]
-        )
-      end
-
-      def run_as_user(arg=nil)
-        set_or_return(
-          :run_as_user,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def run_as_password(arg=nil)
-        set_or_return(
-          :run_as_password,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :startup_type, [ :automatic, :manual, :disabled ], default: :automatic, desired_state: false
+      property :run_as_user, String, default: ""
+      property :run_as_password, String, default: ""
     end
   end
 end
