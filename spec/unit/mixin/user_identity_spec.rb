@@ -52,7 +52,7 @@ shared_examples_for "it received credentials that are not valid on the platform"
   end
 end
 
-shared_examples_for "a consumer of the user_identity mixin" do
+shared_examples_for "a consumer of the ::Chef::Mixin::UserIdentity mixin" do
   context "when running on Windows" do
     before do
       allow(::Chef::Platform).to receive(:windows?).and_return(true)
