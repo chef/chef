@@ -37,13 +37,15 @@ override :ohai,             version: "master"
 override :chefdk,           version: "master"
 override :inspec,           version: "master"
 override :'kitchen-inspec', version: "master"
+# We should do a gem release of berkshelf
+# before releasing chefdk.
+override :berkshelf,      version: "master"
 
 override :'knife-windows', version: "v1.1.1"
 override :'knife-spork',   version: "1.5.0"
 override :fauxhai,         version: "v2.3.0"
 override :chefspec,        version: "v4.4.0"
 
-override :berkshelf,      version: "v4.0.1"
 override :bundler,        version: "1.10.6"
 override :'chef-vault',   version: "v2.6.1"
 
