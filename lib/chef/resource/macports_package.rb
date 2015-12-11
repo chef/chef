@@ -21,6 +21,7 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class MacportsPackage < Chef::Resource::Package
+      resource_name :macports_package
     end
   end
 end

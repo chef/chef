@@ -31,8 +31,6 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.package_name)
           @current_resource.package_name(@new_resource.package_name)
 
-          @current_resource.version(nil)
-
           Chef::Log.debug("Checking package status for #{@new_resource.package_name}")
           installed = false
           re = Regexp.new('(.*)[[:blank:]](.*)[[:blank:]](.*)$')
@@ -48,7 +46,6 @@ class Chef
                 @current_resource.version(res[2])
               else
                 @candidate_version = res[2]
-                @current_resource.version(nil)
               end
             end
           end

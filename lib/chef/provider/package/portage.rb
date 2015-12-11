@@ -35,8 +35,6 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
-          @current_resource.version(nil)
-
           category, pkg = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name)[1,2]
 
           globsafe_category = category ? Chef::Util::PathHelper.escape_glob(category) : nil

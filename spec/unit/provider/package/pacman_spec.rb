@@ -62,7 +62,6 @@ ERR
 
     it "should set the installed version to nil on the current resource if pacman installed version not exists" do
       allow(@provider).to receive(:shell_out).and_return(@status)
-      expect(@current_resource).to receive(:version).with(nil).and_return(true)
       @provider.load_current_resource
     end
 

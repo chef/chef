@@ -22,24 +22,13 @@ require 'chef/provider/package/ips'
 class Chef
   class Resource
     class IpsPackage < ::Chef::Resource::Package
-
+      resource_name :ips_package
       provides :package, os: "solaris2"
       provides :ips_package, os: "solaris2"
 
       allowed_actions :install, :remove, :upgrade
 
-      def initialize(name, run_context = nil)
-        super(name, run_context)
-        @accept_license = false
-      end
-
-      def accept_license(arg=nil)
-        set_or_return(
-          :purge,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :accept_license, [ true, false ], default: false, desired_state: false
     end
   end
 end

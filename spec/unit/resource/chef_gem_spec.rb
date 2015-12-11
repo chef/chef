@@ -34,16 +34,12 @@ end
 describe Chef::Resource::ChefGem, "gem_binary" do
   let(:resource) { Chef::Resource::ChefGem.new("foo") }
 
-  before(:each) do
-    expect(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
-  end
-
   it "should raise an exception when gem_binary is set" do
     expect { resource.gem_binary("/lol/cats/gem") }.to raise_error(ArgumentError)
   end
 
   it "should set the gem_binary based on computing it from RbConfig" do
-    expect(resource.gem_binary).to eql("/opt/chef/embedded/bin/gem")
+    expect(resource.gem_binary).to eql("#{RbConfig::CONFIG['bindir']}/gem")
   end
 
   it "should set the gem_binary based on computing it from RbConfig" do

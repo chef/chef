@@ -21,30 +21,11 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class EasyInstallPackage < Chef::Resource::Package
+      resource_name :easy_install_package
 
-      def easy_install_binary(arg=nil)
-        set_or_return(
-          :easy_install_binary,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def python_binary(arg=nil)
-        set_or_return(
-          :python_install_binary,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def module_name(arg=nil)
-        set_or_return(
-          :module_name,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :easy_install_binary, String, desired_state: false
+      property :python_binary, String, desired_state: false
+      property :module_name, String, desired_state: false
 
     end
   end

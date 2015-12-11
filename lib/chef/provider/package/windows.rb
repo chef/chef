@@ -73,7 +73,7 @@ class Chef
               @new_resource.installer_type
             elsif source_location.nil?
                 inferred_registry_type
-            else    
+            else
               basename = ::File.basename(source_location)
               file_extension = basename.split(".").last.downcase
 
@@ -149,7 +149,7 @@ class Chef
 
         # @return [Array] current_version(s) as an array
         # this package provider does not support package arrays
-        # However, There may be multiple versions for a single 
+        # However, There may be multiple versions for a single
         # package so the first element may be a nested array
         def current_version_array
           [ current_resource.version ]

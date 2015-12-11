@@ -63,7 +63,6 @@ class Chef
 
           if is_installed==false
             @candidate_version=version
-            current_resource.version(nil)
           end
 
           if is_installed==true

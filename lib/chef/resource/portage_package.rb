@@ -21,6 +21,7 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class PortagePackage < Chef::Resource::Package
+      resource_name :portage_package
       def initialize(name, run_context=nil)
         super
         @provider = Chef::Provider::Package::Portage

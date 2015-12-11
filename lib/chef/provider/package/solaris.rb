@@ -51,7 +51,6 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-          @new_resource.version(nil)
 
           if @new_resource.source
             @package_source_found = ::File.exists?(@new_resource.source)
@@ -78,10 +77,6 @@ class Chef
 
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "pkginfo failed - #{status.inspect}!"
-          end
-
-          unless @current_resource.version.nil?
-            @current_resource.version(nil)
           end
 
           @current_resource

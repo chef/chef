@@ -50,7 +50,6 @@ class Chef
 
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-          @new_resource.version(nil)
 
           if @new_resource.source
             unless uri_scheme?(@new_resource.source) || ::File.exists?(@new_resource.source)

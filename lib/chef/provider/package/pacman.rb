@@ -32,8 +32,6 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
-          @current_resource.version(nil)
-
           Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
           status = shell_out_with_timeout("pacman -Qi #{@new_resource.package_name}")
           status.stdout.each_line do |line|

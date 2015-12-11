@@ -21,11 +21,10 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
+      resource_name :dpkg_package
       provides :dpkg_package, os: "linux"
 
-      resource_name :dpkg_package
-
-      property :source, [String, Array, nil]
+      property :source, [ String, Array, nil ]
     end
   end
 end

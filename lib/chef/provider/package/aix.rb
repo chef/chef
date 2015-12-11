@@ -47,7 +47,6 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-          @new_resource.version(nil)
 
           if @new_resource.source
             @package_source_found = ::File.exists?(@new_resource.source)

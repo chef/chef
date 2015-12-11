@@ -22,79 +22,25 @@ require 'chef/resource'
 class Chef
   class Resource
     class Package < Chef::Resource
-      identity_attr :package_name
-
-      state_attrs :version, :options
+      resource_name :package
 
       default_action :install
       allowed_actions :install, :upgrade, :remove, :purge, :reconfig
 
-      def initialize(name, run_context=nil)
+      def initialize(name, *args)
+        # We capture name here, before it gets coerced to name
+        package_name name
         super
-        options                 nil
-        package_name            name
-        response_file           nil
-        response_file_variables Hash.new
-        source                  nil
-        version                 nil
-        timeout                 nil
       end
 
-      def package_name(arg=nil)
-        set_or_return(
-          :package_name,
-          arg,
-          :kind_of => [ String, Array ]
-        )
-      end
+      property :package_name, [ String, Array ], identity: true
 
-      def version(arg=nil)
-        set_or_return(
-          :version,
-          arg,
-          :kind_of => [ String, Array ]
-        )
-      end
-
-      def response_file(arg=nil)
-        set_or_return(
-          :response_file,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def response_file_variables(arg=nil)
-        set_or_return(
-          :response_file_variables,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
-
-      def source(arg=nil)
-        set_or_return(
-          :source,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def options(arg=nil)
-        set_or_return(
-      	  :options,
-      	  arg,
-      	  :kind_of => [ String ]
-      	)
-      end
-
-      def timeout(arg=nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => [String, Integer]
-        )
-      end
+      property :version, [ String, Array ]
+      property :options, String
+      property :response_file, String, desired_state: false
+      property :response_file_variables, Hash, default: lazy { {} }, desired_state: false
+      property :source, String, desired_state: false
+      property :timeout, [ String, Integer ], desired_state: false
 
     end
   end

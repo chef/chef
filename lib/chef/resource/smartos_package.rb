@@ -22,6 +22,7 @@ require 'chef/provider/package/smartos'
 class Chef
   class Resource
     class SmartosPackage < Chef::Resource::Package
+      resource_name :smartos_package
       provides :package, os: "solaris2", platform_family: "smartos"
     end
   end

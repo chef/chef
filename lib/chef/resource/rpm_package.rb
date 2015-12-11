@@ -22,20 +22,10 @@ require 'chef/provider/package/rpm'
 class Chef
   class Resource
     class RpmPackage < Chef::Resource::Package
+      resource_name :rpm_package
       provides :rpm_package, os: [ "linux", "aix" ]
 
-      def initialize(name, run_context=nil)
-        super
-        @allow_downgrade = false
-      end
-
-      def allow_downgrade(arg=nil)
-        set_or_return(
-          :allow_downgrade,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :allow_downgrade, [ true, false ], default: false, desired_state: false
 
     end
   end

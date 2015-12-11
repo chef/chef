@@ -36,7 +36,6 @@ class Chef
           Chef::Log.debug("#{@new_resource} loading current resource")
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-          @current_resource.version(nil)
           check_package_state(@new_resource.package_name)
           @current_resource # modified by check_package_state
         end
@@ -50,9 +49,7 @@ class Chef
             version = info.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
           end
 
-          if !version
-            @current_resource.version(nil)
-          else
+          if version
             @current_resource.version(version)
           end
         end
