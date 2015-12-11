@@ -58,7 +58,7 @@ class Chef
       property :atomic_update, [ true, false ], desired_state: false, default: Chef::Config[:file_atomic_update]
       property :force_unlink, [ true, false ], desired_state: false, default: false
       property :manage_symlink_source, [ true, false ], desired_state: false
-      property :verifications, Array, default: []
+      property :verifications, Array, default: lazy { Array.new }
 
       def verify(command=nil, opts={}, &block)
         if ! (command.nil? || [String, Symbol].include?(command.class))
