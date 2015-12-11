@@ -27,8 +27,6 @@ class Chef
     class File < Chef::Resource
       include Chef::Mixin::Securable
 
-      identity_attr :path
-
       if Platform.windows?
         # Use Windows rights instead of standard *nix permissions
         state_attrs :checksum, :rights, :deny_rights
