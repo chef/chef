@@ -74,6 +74,11 @@ Added reboot_action attribute to dsc_resource.
 If the DSC resource indicates that it requires a reboot, reboot_action can use the reboot resource to
 either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).  The default value of reboot_action is :nothing.
 
+The following two items in the dsc_resource doc in Chef 12.6.0 are ONLY applicable for PowerShell versions earlier than 5.0.10586.0. The latest version of WMF 5 has relaxed the limitation that prevented us from running in non-disabled RefreshMode configuration, and including both dsc_script and dsc_resource in the same run list:
+1. The RefreshMode configuration setting in the Local Configuration Manager must be set to Disabled
+2. The dsc_script resource may not be used in the same run-list with the dsc_resource. This is because the dsc_script resource requires that RefreshMode in the Local Configuration Manager be set to Push, whereas the dsc_resource resource requires it to be set to Disabled
+
+
 ### `knife bootstrap --ssh-identity-file`
 
 The --identity-file option to `knife bootstrap` has been deprecated in favor of `knife bootstrap --ssh-identity-file`
