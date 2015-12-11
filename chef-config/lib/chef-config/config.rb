@@ -444,19 +444,8 @@ module ChefConfig
 
     # Sets the version of the signed header authentication protocol to use (see
     # the 'mixlib-authorization' project for more detail). Currently, versions
-    # 1.0 and 1.1 are available; however, the chef-server must first be
-    # upgraded to support version 1.1 before clients can begin using it.
-    #
-    # Version 1.1 of the protocol is required when using a `node_name` greater
-    # than ~90 bytes (~90 ascii characters), so chef-client will automatically
-    # switch to using version 1.1 when `node_name` is too large for the 1.0
-    # protocol. If you intend to use large node names, ensure that your server
-    # supports version 1.1. Automatic detection of large node names means that
-    # users will generally not need to manually configure this.
-    #
-    # In the future, this configuration option may be replaced with an
-    # automatic negotiation scheme.
-    default :authentication_protocol_version, "1.0"
+    # 1.0 and 1.1 are available.
+    default :authentication_protocol_version, "1.1"
 
     # This key will be used to sign requests to the Chef server. This location
     # must be writable by Chef during initial setup when generating a client
