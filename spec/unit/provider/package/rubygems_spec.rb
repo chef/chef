@@ -95,36 +95,21 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
       dep = Gem::Dependency.new('rspec', '>= 0')
       dep_installer = Gem::DependencyInstaller.new
       allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-      best_gem = double("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
-      available_set = double("Gem::AvailableSet test double")
-      expect(available_set).to receive(:pick_best!)
-      expect(available_set).to receive(:set).and_return([best_gem])
-      expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(available_set)
-      expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0'))).to eq(Gem::Version.new('1.3.0'))
+      expect(@gem_env.candidate_version_from_remote(dep)).to be_kind_of(Gem::Version)
     end
 
     it "gives the candidate version as nil if none is found" do
-      dep = Gem::Dependency.new('rspec', '>= 0')
+      dep = Gem::Dependency.new('lksdjflksdjflsdkfj', '>= 0')
       dep_installer = Gem::DependencyInstaller.new
       allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-      available_set = double("Gem::AvailableSet test double")
-      expect(available_set).to receive(:pick_best!)
-      expect(available_set).to receive(:set).and_return([])
-      expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(available_set)
-      expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0'))).to be_nil
+      expect(@gem_env.candidate_version_from_remote(dep)).to be_nil
     end
 
     it "finds a matching gem from a specific gemserver when explicit sources are given" do
       dep = Gem::Dependency.new('rspec', '>= 0')
-      expect(@gem_env).to receive(:with_gem_sources).with('http://gems.example.com').and_yield
       dep_installer = Gem::DependencyInstaller.new
       allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-      best_gem = double("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
-      available_set = double("Gem::AvailableSet test double")
-      expect(available_set).to receive(:pick_best!)
-      expect(available_set).to receive(:set).and_return([best_gem])
-      expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(available_set)
-      expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>=0'), 'http://gems.example.com')).to eq(Gem::Version.new('1.3.0'))
+      expect(@gem_env.candidate_version_from_remote(dep, 'http://production.cf.rubygems.org')).to be_kind_of(Gem::Version)
     end
   end
 
@@ -428,7 +413,6 @@ describe Chef::Provider::Package::Rubygems do
     end
 
     describe "when determining the currently installed version" do
-
       it "sets the current version to the version specified by the new resource if that version is installed" do
         @provider.load_current_resource
         expect(@provider.current_resource.version).to eq(@spec_version)
@@ -449,7 +433,6 @@ describe Chef::Provider::Package::Rubygems do
     end
 
     describe "when determining the candidate version to install" do
-
       it "does not query for available versions when the current version is the target version" do
         @provider.current_resource = @new_resource.dup
         expect(@provider.candidate_version).to be_nil
@@ -473,7 +456,6 @@ describe Chef::Provider::Package::Rubygems do
         @provider.load_current_resource
         expect(@provider.candidate_version).to eq('0.1.0')
       end
-
     end
 
     describe "when installing a gem" do
@@ -482,7 +464,7 @@ describe Chef::Provider::Package::Rubygems do
         @provider.current_resource = @current_resource
         @gem_dep = Gem::Dependency.new('rspec-core', @spec_version)
         allow(@provider).to receive(:load_current_resource)
-        allow(@provider).to receive(:candidate_version).and_return("3.4.1")
+        allow(@provider).to receive(:candidate_version).and_return("3.2.1")
       end
 
       describe "in the current gem environment" do
@@ -641,7 +623,7 @@ describe Chef::Provider::Package::Rubygems do
         @current_resource.version('1.2.3')
         @provider.new_resource = @new_resource
         @provider.current_resource = @current_resource
-        allow(@provider).to receive(:candidate_version).and_return("3.4.1")
+        allow(@provider).to receive(:candidate_version).and_return("3.2.1")
       end
 
       describe "in the current gem environment" do
