@@ -45,13 +45,13 @@ class Chef
 
         begin
           if user
-            logon_session = Chef::Util::Windows::LogonSession.new(user, domain, password)
+            logon_session = Chef::Util::Windows::LogonSession.new(user, password, domain)
             logon_session.open
             logon_session.set_user_context
           end
           block.call
         ensure
-          logon_session.close! if logon_session
+          logon_session.close if logon_session
         end
       end
 

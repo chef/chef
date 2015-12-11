@@ -25,7 +25,11 @@ class Chef
       class LogonSession
         include Chef::Mixin::WideString
 
-        def initialize(username, domain=nil, password=nil)
+        def initialize(username, password, domain=nil)
+          if username.nil? || password.nil?
+            raise ArgumentError, 'The logon session must be initialize with non-nil user name and password parameters'
+          end
+
           @username = username
           @password = password
           @domain = domain
@@ -45,7 +49,7 @@ class Chef
 
           status = Chef::ReservedNames::Win32::API::Security.LogonUserW(username, domain, password, Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NETWORK, Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT, @token)
 
-          if ! status
+          if status == 0
             last_error = FFI::LastError.error
             raise Chef::Exceptions::Win32APIError, "Logon for user `#{@username}` failed with Win32 status #{last_error}."
           end
@@ -53,7 +57,9 @@ class Chef
           @session_opened = true
         end
 
-        def close!
+        def close
+          validate_session_open!
+
           if @impersonating
             restore_user_context
           end
@@ -63,22 +69,20 @@ class Chef
           @session_opened = false
         end
 
-        def close
-          if ! @session_opened
-            raise RuntimeError, 'Attempted to close a logon session that was not open.'
-          end
-
-          close!
-        end
-
         def set_user_context
+          validate_session_open!
+
           if ! @session_opened
             raise RuntimeError, 'Attempted to set the user context before opening a session.'
           end
 
+          if @impersonating
+            raise RuntimeError, 'Attempt to set the user context when the user context is already set.'
+          end
+
           status = Chef::ReservedNames::Win32::API::Security.ImpersonateLoggedOnUser(@token.read_ulong)
 
-          if ! status
+          if status == 0
             last_error = FFI::LastError.error
             raise Chef::Exceptions::Win32APIError, "Attempt to impersonate user `#{@username}` failed with Win32 status #{last_error}."
           end
@@ -87,16 +91,26 @@ class Chef
         end
 
         def restore_user_context
+          validate_session_open!
+
           if @impersonating
             status = Chef::ReservedNames::Win32::API::Security.RevertToSelf
 
-            if ! status
+            if status == 0
               last_error = FFI::LastError.error
               raise Chef::Exceptions::Win32APIError, "Unable to restore user context with Win32 status #{last_error}."
             end
           end
 
           @impersonating = false
+        end
+
+        protected
+
+        def validate_session_open!
+          if ! @session_opened
+            raise RuntimeError, 'Attempted to set the user context before opening a session.'
+          end
         end
       end
     end
