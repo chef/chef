@@ -443,7 +443,7 @@ class Chef
           end
 
         else
-          with_entry(path) do |entry|
+          result = with_entry(path) do |entry|
             begin
               entry.children.map { |c| zero_filename(c) }.sort
             rescue Chef::ChefFS::FileSystem::NotFoundError => e
@@ -455,6 +455,13 @@ class Chef
               end
             end
           end
+
+          # Older versions of chef-zero do not understand policies and cookbook_artifacts,
+          # don't give that stuff to them
+          if path == [] && ChefZero::VERSION.to_f < 4.4
+            result.reject! { |child| %w(policies policy_data cookbook_artifacts).include?(child) }
+          end
+          result
         end
       end
 
