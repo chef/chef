@@ -198,7 +198,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
     end
 
-    context "and proxying is enabled" do
+    context "when proxying is enabled via Chef::Config" do
       before do
         Chef::Config[:ftp_proxy] = "socks5://socks.example.com:5000"
         Chef::Config[:ftp_proxy_user] = "bill"
@@ -215,5 +215,51 @@ describe Chef::Provider::RemoteFile::FTP do
 
     end
 
+    context "when proxying is enabled via environment variables" do
+      before :each do
+        allow(ENV).to receive(:[]).with("SOCKS_SERVER")
+        allow(ENV).to receive(:[]).with("TMPDIR")
+        allow(ENV).to receive(:[]).with("TMP")
+        allow(ENV).to receive(:[]).with("TEMP")
+        allow(ENV).to receive(:[]).with("ftp_proxy").and_return(
+          "socks5://bill:ted@socks.example.com:5000"
+        )
+        allow(ENV).to receive(:[]).with("FTP_PROXY")
+      end
+
+      context "when lowercase" do
+        before :each do
+          allow(ENV).to receive(:[]).with("ftp_proxy").and_return(
+            "socks5://bill:ted@socks.example.com:5000"
+          )
+          allow(ENV).to receive(:[]).with("FTP_PROXY")
+        end
+
+        it "fetches the file via the proxy" do
+          current_socks_server = ENV["SOCKS_SERVER"]
+          expect(ENV).to receive(:[]=).with("SOCKS_SERVER", "socks5://bill:ted@socks.example.com:5000").ordered
+          expect(ENV).to receive(:[]=).with("SOCKS_SERVER", current_socks_server).ordered
+          result = fetcher.fetch
+          expect(result).to equal(tempfile)
+        end
+      end
+
+      context "when uppercase" do
+        before :each do
+          allow(ENV).to receive(:[]).with("ftp_proxy")
+          allow(ENV).to receive(:[]).with("FTP_PROXY").and_return(
+            "socks5://bill:ted@socks.example.com:5000"
+          )
+        end
+
+        it "fetches the file via the proxy" do
+          current_socks_server = ENV["SOCKS_SERVER"]
+          expect(ENV).to receive(:[]=).with("SOCKS_SERVER", "socks5://bill:ted@socks.example.com:5000").ordered
+          expect(ENV).to receive(:[]=).with("SOCKS_SERVER", current_socks_server).ordered
+          result = fetcher.fetch
+          expect(result).to equal(tempfile)
+        end
+      end
+    end
   end
 end
