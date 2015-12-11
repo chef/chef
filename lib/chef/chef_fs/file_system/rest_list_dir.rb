@@ -38,6 +38,29 @@ class Chef
         end
 
         #
+        # When talking to a modern (12.0+) Chef server
+        # knife list /
+        # -> /nodes
+        # -> /policies
+        # -> /policy_groups
+        # -> /roles
+        #
+        # 12.0 or 12.1 will fail when you do this:
+        # knife list / --recursive
+        # Because it thinks /policies exists, and when it tries to list its children
+        # it gets a 404 (indicating it actually doesn't exist).
+        #
+        # With this change, knife list / --recursive will list /policies as a real, empty directory.
+        #
+        # Alternately, we could have done some sort of detection when we listed the top level
+        # and determined which endpoints the server would support, and returned only those.
+        # So you wouldn't see /policies in that case at all.
+        # The issue with that is there's no efficient way to do it because we can't find out
+        # the server version directly, and can't ask the server for a list of the endpoints it supports.
+        #
+
+
+        #
         # Does GET /<api_path>, assumes the result is of the format:
         #
         # {
@@ -58,7 +81,26 @@ class Chef
           rescue Net::HTTPServerException => e
             # 404 = NotFoundError
             if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+
+              if parent.is_a?(ChefServerRootDir)
+                # GET /organizations/ORG/<container> returned 404, but that just might be because
+                # we are talking to an older version of the server that doesn't support policies.
+                # Do GET /orgqanizations/ORG to find out if the org exists at all.
+                # TODO use server API version instead of a second network request.
+                begin
+                  root.get_json(parent.api_path)
+                  # Return empty list if the organization exists but /policies didn't work
+                  []
+                rescue Net::HTTPServerException => e
+                  if e.response.code == "404"
+                    raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+                  end
+                  raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "HTTP error retrieving children: #{e}")
+                end
+              else
+                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+              end
+
             # Anything else is unexpected (OperationFailedError)
             else
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "HTTP error retrieving children: #{e}")
