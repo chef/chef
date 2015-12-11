@@ -482,6 +482,7 @@ describe Chef::Provider::Package::Rubygems do
         @provider.current_resource = @current_resource
         @gem_dep = Gem::Dependency.new('rspec-core', @spec_version)
         allow(@provider).to receive(:load_current_resource)
+        allow(@provider).to receive(:candidate_version).and_return("3.4.1")
       end
 
       describe "in the current gem environment" do
@@ -640,6 +641,7 @@ describe Chef::Provider::Package::Rubygems do
         @current_resource.version('1.2.3')
         @provider.new_resource = @new_resource
         @provider.current_resource = @current_resource
+        allow(@provider).to receive(:candidate_version).and_return("3.4.1")
       end
 
       describe "in the current gem environment" do
