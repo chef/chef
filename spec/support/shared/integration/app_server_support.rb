@@ -1,7 +1,7 @@
 #
 # Author:: John Keiser (<jkeiser@opscode.com>)
 # Author:: Ho-Sheng Hsiao (<hosh@opscode.com>)
-# Copyright:: Copyright (c) 2012, 2013 Opscode, Inc.
+# Copyright:: Copyright (c) 2012, 2013-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ module AppServerSupport
         server = found_server
       end
     end
-    Timeout::timeout(5) do
+    Timeout::timeout(30) do
       until server && server.status == :Running
         sleep(0.01)
       end
