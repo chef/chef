@@ -45,8 +45,23 @@ describe Chef::Client do
   end
 
   describe "authentication protocol selection" do
-    it "defaults to 1.1" do
-      expect(Chef::Config[:authentication_protocol_version]).to eq("1.1")
+    context "when openssl is not compiled with the FIPS module" do
+      it "defaults to 1.1" do
+        expect(Chef::Config[:authentication_protocol_version]).to eq("1.1")
+      end
+    end
+    context "when openssl is compiled with the FIPS module" do
+      before do
+        Chef::Config[:openssl_fips] = true
+      end
+
+      it "defaults to 1.3" do
+        expect(Chef::Config[:authentication_protocol_version]).to eq("1.3")
+      end
+
+      after do
+        Chef::Config[:openssl_fips] = false
+      end
     end
   end
 
