@@ -20,6 +20,9 @@
 require 'spec_helper'
 
 describe Chef::Provider::RemoteFile::NetworkFile do
+  before do
+    allow(::Chef::Platform).to receive(:windows?).and_return(true)
+  end
 
   let(:source) { "\\\\foohost\\fooshare\\Foo.tar.gz" }
 
