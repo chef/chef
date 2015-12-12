@@ -48,12 +48,12 @@ class Chef
       default_action :create
       allowed_actions :create, :delete, :touch, :create_if_missing
 
-      property :content, [ String, nil ], desired_state: false
+      property :path, String, name_property: true, identity: true
+      property :atomic_update, [ true, false ], desired_state: false, default: Chef::Config[:file_atomic_update]
       property :backup, [ Integer, false ], desired_state: false, default: 5
       property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ]
-      property :path, String, name_property: true, identity: true
+      property :content, [ String, nil ], desired_state: false
       property :diff, [ String, nil ], desired_state: false
-      property :atomic_update, [ true, false ], desired_state: false, default: Chef::Config[:file_atomic_update]
       property :force_unlink, [ true, false ], desired_state: false, default: false
       property :manage_symlink_source, [ true, false ], desired_state: false
       property :verifications, Array, default: lazy { [] }
