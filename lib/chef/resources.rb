@@ -82,10 +82,3 @@ require 'chef/resource/yum_package'
 require 'chef/resource/lwrp_base'
 require 'chef/resource/bff_package'
 require 'chef/resource/zypper_package'
-
-begin
-  # Optional resources chef_node, chef_client, machine, machine_image, etc.
-  require 'cheffish'
-  require 'chef/provisioning'
-rescue LoadError
-end

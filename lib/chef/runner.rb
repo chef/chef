@@ -46,6 +46,31 @@ class Chef
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action, notification_type=nil, notifying_resource=nil)
+
+      # If there are any before notifications, why-run the resource
+      # and notify anyone who needs notifying
+      # TODO cheffish has a bug where it passes itself instead of the run_context to us, so doesn't have before_notifications. Fix there, update dependency requirement, and remove this if statement.
+      before_notifications = run_context.before_notifications(resource) if run_context.respond_to?(:before_notifications)
+      if before_notifications && !before_notifications.empty?
+        whyrun_before = Chef::Config[:why_run]
+        begin
+          Chef::Config[:why_run] = true
+          Chef::Log.info("#{resource} running why-run #{action} action to support before action")
+          resource.run_action(action, notification_type, notifying_resource)
+        ensure
+          Chef::Config[:why_run] = whyrun_before
+        end
+
+        if resource.updated_by_last_action?
+          before_notifications.each do |notification|
+            Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (before)")
+            run_action(notification.resource, notification.action, :before, resource)
+          end
+        end
+
+      end
+
+      # Actually run the action for realsies
       resource.run_action(action, notification_type, notifying_resource)
 
       # Execute any immediate and queue up any delayed notifications

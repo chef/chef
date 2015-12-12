@@ -124,7 +124,7 @@ class Chef::Application::Apply < Chef::Application
     parse_options
     Chef::Config.merge!(config)
     configure_logging
-    configure_proxy_environment_variables
+    Chef::Config.export_proxies
     parse_json
   end
 

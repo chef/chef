@@ -1,6 +1,11 @@
 # Chef Client Release Notes 12.6.0:
 
 
+## Upgrade to OpenSSL 1.0.1q
+
+This release picks up the latest distribution from the OpenSSL 1.0.1 branch (1.0.1q).
+There are a number of OpenSSL security fixes that are addressed - please see the following for more info: https://www.openssl.org/news/openssl-1.0.1-notes.html
+
 ## New `chef_version` and `ohai_version` metadata keywords
 
 Two new keywords have been introduced to the metadata of cookbooks for constraining the acceptable range
@@ -52,6 +57,10 @@ Please see the following for more details : https://docs.chef.io/release/12-6/re
 
 This is the first release where we are rolling out a MSI package for Windows that significantly improves the installation time. In a nutshell, the new approach is to deploy and extract a zipped package rather than individually tracking every file as a MSI component. Please note that the first  upgrade (ie, an older version of Chef client is already on the machine) may not exhibit the full extent of the speed-up (as MSI is still tracking the older files). New installs, as well as future upgrades, will be sped up. Uninstalls will remove the folder that Chef client is installed to (typically, C:\Opscode\Chef).
 
+## `windows_package` now supports non-`MSI` based Windows installers
+
+Today you can install `MSI`s using the `windows_package` resource. However, you have had to use the windows cookbook in order to install non `MSI` based installer packages such as Nullsoft, Inno Setup, Installshield and other `EXE` based installers. We have moved and slightly improved the windows cookbook resource into the core chef client. This means you can now run most windows installer types without taking on external cookbook dependencies.
+
 ## Better handling of log_location with chef client service (Windows)
 
 This change is for the scenario when running chef client as a Windows service. Currently, a default log_location gets used by the chef client windows service. This log_location overrides any log_location set in the client.rb. In 12.6.0, the behavior is changed to allow the Chef client running as a Windows service to prefer the log_location in client.rb instead. Now, the windows_service_manager will not explicitly pass in a log_location, and therefore the Chef service will always use what is in the client.rb or the typical default path if none is configured. This enables scenarios such as logging to the Windows event log when running chef client as a Windows service.
@@ -63,6 +72,26 @@ This change is for the scenario when running chef client as a Windows service. C
 * Previously, Chef required the LCM Refreshmode to be set to Disabled when utilizing dsc_resource. Microsoft has relaxed this requirement in Windows Management Framework 5 (WMF5) (PowerShell 5.0.10586.0 or later). Now, we only require the RefreshMode to be disabled when running on earlier versions of PowerShell 5.
 * Added a reboot_action attribute to dsc_resource. If the DSC resource indicates that it requires a reboot, reboot_action can use the reboot resource to either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).  The default value of reboot_action is :nothing.
 
+In addition to `:immediately` and `:delayed`, we have added the new notification timing `:before`. `:before` will trigger just before the
+resource converges, but will only trigger if the resource is going to
+actually cause an update.
+
+For example, this will stop apache if you are about to upgrade your particularly sensitive web app (which can't run while installing for
+whatever reason) and start it back up afterwards.
+
+```
+execute 'install my app' do
+  only_if { i_should_install_my_app }
+end
+
+# Only stop and start apache if i_should_install_my_app
+service 'httpd' do
+  action :nothing
+  subscribes :stop, 'template[/etc/httpd.conf]', :before
+  subscribes :start, 'template[/etc/httpd.conf]'
+end
+```
+
 ## Other items
 
-There are a large number of other PRs in this release. Please see the CHANGELOG for the full set of changes.
+There are a large number of other PRs in this release. Please see the CHANGELOG for the full set of changes : https://github.com/chef/chef/blob/master/CHANGELOG.md

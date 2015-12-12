@@ -17,9 +17,12 @@ group(:maintenance) do
   gem "netrc"
 end
 
-group(:development, :test) do
-  # for profiling
+group(:ruby_prof) do
+  # may need to disable this in insolation on fussy builds like AIX, RHEL4, etc
   gem "ruby-prof"
+end
+
+group(:development, :test) do
 
   gem "simplecov"
   gem 'rack', "~> 1.5.1"

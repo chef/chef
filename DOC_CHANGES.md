@@ -78,3 +78,40 @@ either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).  Th
 
 The --identity-file option to `knife bootstrap` has been deprecated in favor of `knife bootstrap --ssh-identity-file`
 to better align with other ssh related options.
+
+### `windows_package` resource
+
+`windows_package` now supports more than just `MSI`. Most common windows installer types are supported including Inno Setup, Nullsoft, Wise and InstallShield. The new allowed `installer_type` values are: `inno`, `nsis`, `wise`, `installshield`, `custom`, and `msi`.
+
+Also, while being able to download remote installers from a `HTTP` resource is not new, it looks as though the top of the docs page is incorrect stating that only local installers can be used as a source.
+
+Example Nullsoft (`nsis`) package resource:
+```
+windows_package 'Mercurial 3.6.1 (64-bit)' do
+  source 'http://mercurial.selenic.com/release/windows/Mercurial-3.6.1-x64.exe'
+  checksum 'febd29578cb6736163d232708b834a2ddd119aa40abc536b2c313fc5e1b5831d'
+end
+```
+
+Example Custom `windows_package` resource:
+```
+windows_package 'Microsoft Visual C++ 2005 Redistributable' do
+  source 'https://download.microsoft.com/download/6/B/B/6BB661D6-A8AE-4819-B79F-236472F6070C/vcredist_x86.exe'
+  installer_type :custom
+  options '/Q'
+end
+```
+Using a `:custom` package is one way to install a non `.msi` file that embeds an `msi` based installer.
+
+Packages can now be removed without the need to include the package `source`. The relevent uninstall metadata will now be discovered from the registry.
+```
+windows_package 'Mercurial 3.6.1 (64-bit)' do
+  action :remove
+end
+```
+It is important that the package name used when not including the `source` is EXACTLY the same as the display name found in "Add/Remove programs" or the `DisplayName` property in the appropriate registry key:
+* HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall
+* HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Uninstall
+* HKEY_LOCAL_MACHINE\Software\Wow6464Node\Microsoft\Windows\CurrentVersion\Uninstall
+
+Note that if there are multiple versions of a package installed with the same display name, all packages will be removed unless a version is provided in the `version` attribute or can be discovered in the `source` installer file.

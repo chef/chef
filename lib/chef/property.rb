@@ -116,6 +116,10 @@ class Chef
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
     end
 
+    def to_s
+      name
+    end
+
     #
     # The name of this property.
     #
@@ -292,6 +296,28 @@ class Chef
         value
 
       else
+        # If the user does something like this:
+        #
+        # ```
+        # class MyResource < Chef::Resource
+        #   property :content
+        #   action :create do
+        #     file '/x.txt' do
+        #       content content
+        #     end
+        #   end
+        # end
+        # ```
+        #
+        # It won't do what they expect. This checks whether you try to *read*
+        # `content` while we are compiling the resource.
+        if resource.respond_to?(:enclosing_provider) && resource.enclosing_provider &&
+           !resource.currently_running_action &&
+           !name_property? &&
+           resource.enclosing_provider.respond_to?(name)
+           Chef::Log.warn("#{Chef::Log.caller_location}: property #{name} is declared in both #{resource} and #{resource.enclosing_provider}. Use new_resource.#{name} instead. At #{Chef::Log.caller_location}")
+        end
+
         if has_default?
           value = default
           if value.is_a?(DelayedEvaluator)
@@ -448,18 +474,22 @@ class Chef
       # stack trace if you use `define_method`.
       declared_in.class_eval <<-EOM, __FILE__, __LINE__+1
         def #{name}(value=NOT_PASSED)
+          raise "Property #{name} of \#{self} cannot be passed a block! If you meant to create a resource named #{name} instead, you'll need to first rename the property." if block_given?
           self.class.properties[#{name.inspect}].call(self, value)
         end
         def #{name}=(value)
+          raise "Property #{name} of \#{self} cannot be passed a block! If you meant to create a resource named #{name} instead, you'll need to first rename the property." if block_given?
           self.class.properties[#{name.inspect}].set(self, value)
         end
       EOM
     rescue SyntaxError
       # If the name is not a valid ruby name, we use define_method.
-      declared_in.define_method(name) do |value=NOT_PASSED|
+      declared_in.define_method(name) do |value=NOT_PASSED, &block|
+        raise "Property #{name} of #{self} cannot be passed a block! If you meant to create a resource named #{name} instead, you'll need to first rename the property." if block
         self.class.properties[name].call(self, value)
       end
-      declared_in.define_method("#{name}=") do |value|
+      declared_in.define_method("#{name}=") do |value, &block|
+        raise "Property #{name} of #{self} cannot be passed a block! If you meant to create a resource named #{name} instead, you'll need to first rename the property." if block
         self.class.properties[name].set(self, value)
       end
     end

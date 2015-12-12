@@ -340,6 +340,49 @@ EOM
     end
   end
 
+  when_the_repository "has a cookbook that uses cheffish resources" do
+    before do
+      file 'cookbooks/x/recipes/default.rb', <<-EOM
+        raise "Cheffish was loaded before we used any cheffish things!" if defined?(Cheffish::VERSION)
+        ran_block = false
+        got_server = with_chef_server 'https://blah.com' do
+          ran_block = true
+          run_context.cheffish.current_chef_server
+        end
+        raise "with_chef_server block was not run!" if !ran_block
+        raise "Cheffish was not loaded when we did cheffish things!" if !defined?(Cheffish::VERSION)
+        raise "current_chef_server did not return its value!" if got_server[:chef_server_url] != 'https://blah.com'
+      EOM
+      file 'config/client.rb', <<-EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+      EOM
+    end
+
+    it "the cheffish DSL is loaded lazily" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      expect(command.exitstatus).to eql(0)
+    end
+  end
+
+  when_the_repository "has a cookbook that uses chef-provisioning resources" do
+    before do
+      file 'cookbooks/x/recipes/default.rb', <<-EOM
+        with_driver 'blah'
+      EOM
+      file 'config/client.rb', <<-EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+      EOM
+    end
+
+    it "the cheffish DSL tries to load but fails (because chef-provisioning is not there)" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      expect(command.exitstatus).to eql(1)
+      expect(command.stdout).to match(/cannot load such file -- chef\/provisioning/)
+    end
+  end
+
   when_the_repository "has a cookbook that generates deprecation warnings" do
     before do
       file 'cookbooks/x/recipes/default.rb', <<-EOM

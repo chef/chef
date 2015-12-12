@@ -36,6 +36,7 @@ require 'chef/platform'
 require 'chef/resource/resource_notification'
 require 'chef/provider_resolver'
 require 'chef/resource_resolver'
+require 'chef/provider'
 require 'set'
 
 require 'chef/mixin/deprecation'
@@ -208,6 +209,8 @@ class Chef
     #     actions have been run.  This is the default.
     #   - `immediate`, `immediately`: Will run the action on the other resource
     #     immediately (before any other action is run).
+    #   - `before`: Will run the action on the other resource
+    #     immediately *before* the action is actually run.
     #
     # @example Resource by string
     #   file '/foo.txt' do
@@ -250,9 +253,11 @@ class Chef
           notifies_delayed(action, resource)
         when 'immediate', 'immediately'
           notifies_immediately(action, resource)
+        when 'before'
+          notifies_before(action, resource)
         else
           raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
-          "Valid timings are: :delayed, :immediate, :immediately"
+          "Valid timings are: :delayed, :immediate, :immediately, :before"
         end
       end
 
@@ -276,6 +281,8 @@ class Chef
     #     actions have been run.  This is the default.
     #   - `immediate`, `immediately`: The action will run immediately following
     #     the other resource being updated.
+    #   - `before`: The action will run immediately before the
+    #     other resource is updated.
     #
     # @example Resources by string
     #   file '/foo.txt' do
@@ -562,6 +569,8 @@ class Chef
     #
     def run_action(action, notification_type=nil, notifying_resource=nil)
       # reset state in case of multiple actions on the same resource.
+      old_currently_running_action = @currently_running_action
+      @currently_running_action = action
       @elapsed_time = 0
       start_time = Time.now
       events.resource_action_start(self, action, notification_type, notifying_resource)
@@ -601,14 +610,23 @@ class Chef
           events.resource_failed(self, action, e)
           raise customize_exception(e)
         end
-      ensure
-        @elapsed_time = Time.now - start_time
-        # Reporting endpoint doesn't accept a negative resource duration so set it to 0.
-        # A negative value can occur when a resource changes the system time backwards
-        @elapsed_time = 0 if @elapsed_time < 0
-        events.resource_completed(self)
       end
+    ensure
+      @currently_running_action = old_currently_running_action
+      @elapsed_time = Time.now - start_time
+      # Reporting endpoint doesn't accept a negative resource duration so set it to 0.
+      # A negative value can occur when a resource changes the system time backwards
+      @elapsed_time = 0 if @elapsed_time < 0
+      events.resource_completed(self)
     end
+
+    #
+    # If we are currently running an action, this shows the action we are running.
+    # If the resource is running multiple actions at once, this will show the most recent.
+    #
+    # Do NOT use this. It may be removed. It is for internal purposes only.
+    # @api private
+    attr_reader :currently_running_action
 
     #
     # Generic Ruby and Data Structure Stuff (for user)
@@ -1237,12 +1255,20 @@ class Chef
     # resolve_resource_reference on each in turn, causing them to
     # resolve lazy/forward references.
     def resolve_notification_references
+      run_context.before_notifications(self).each { |n|
+        n.resolve_resource_reference(run_context.resource_collection)
+      }
       run_context.immediate_notifications(self).each { |n|
         n.resolve_resource_reference(run_context.resource_collection)
       }
       run_context.delayed_notifications(self).each {|n|
         n.resolve_resource_reference(run_context.resource_collection)
       }
+    end
+
+    # Helper for #notifies
+    def notifies_before(action, resource_spec)
+      run_context.notifies_before(Notification.new(resource_spec, action, self))
     end
 
     # Helper for #notifies
@@ -1338,6 +1364,10 @@ class Chef
     def declared_key
       return to_s if declared_type.nil?
       "#{declared_type}[#{@name}]"
+    end
+
+    def before_notifications
+      run_context.before_notifications(self)
     end
 
     def immediate_notifications

@@ -169,6 +169,7 @@ class Chef
     class LCMParser < RuntimeError; end
 
     class CannotDetermineHomebrewOwner < Package; end
+    class CannotDetermineWindowsInstallerType < Package; end
 
     # Can not create staging file during file deployment
     class FileContentStagingError < RuntimeError

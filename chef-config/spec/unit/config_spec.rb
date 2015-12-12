@@ -571,6 +571,114 @@ RSpec.describe ChefConfig::Config do
     end
   end
 
+  describe "export_proxies" do
+    let(:http_proxy) { "http://localhost:7979" }
+    let(:https_proxy) { "https://localhost:7979" }
+    let(:ftp_proxy) { "ftp://localhost:7979" }
+    let(:proxy_user) { "http_user" }
+    let(:proxy_pass) { "http_pass" }
+
+    context "when http_proxy, proxy_pass and proxy_user are set" do
+      before do
+        ChefConfig::Config.http_proxy = http_proxy
+        ChefConfig::Config.http_proxy_user = proxy_user
+        ChefConfig::Config.http_proxy_pass = proxy_pass
+      end
+      it "exports ENV['http_proxy']" do
+        expect(ENV).to receive(:[]=).with('http_proxy', "http://http_user:http_pass@localhost:7979")
+        expect(ENV).to receive(:[]=).with('HTTP_PROXY', "http://http_user:http_pass@localhost:7979")
+        ChefConfig::Config.export_proxies
+      end
+    end
+
+    context "when https_proxy, proxy_pass and proxy_user are set" do
+      before do
+        ChefConfig::Config.https_proxy = https_proxy
+        ChefConfig::Config.https_proxy_user = proxy_user
+        ChefConfig::Config.https_proxy_pass = proxy_pass
+      end
+      it "exports ENV['https_proxy']" do
+        expect(ENV).to receive(:[]=).with('https_proxy', "https://http_user:http_pass@localhost:7979")
+        expect(ENV).to receive(:[]=).with('HTTPS_PROXY', "https://http_user:http_pass@localhost:7979")
+        ChefConfig::Config.export_proxies
+      end
+    end
+
+    context "when ftp_proxy, proxy_pass and proxy_user are set" do
+      before do
+        ChefConfig::Config.ftp_proxy = ftp_proxy
+        ChefConfig::Config.ftp_proxy_user = proxy_user
+        ChefConfig::Config.ftp_proxy_pass = proxy_pass
+      end
+      it "exports ENV['ftp_proxy']" do
+        expect(ENV).to receive(:[]=).with('ftp_proxy', "ftp://http_user:http_pass@localhost:7979")
+        expect(ENV).to receive(:[]=).with('FTP_PROXY', "ftp://http_user:http_pass@localhost:7979")
+        ChefConfig::Config.export_proxies
+      end
+    end
+
+    shared_examples "no user pass" do
+      it "does not populate the user or password" do
+        expect(ENV).to receive(:[]=).with('http_proxy', "http://localhost:7979")
+        expect(ENV).to receive(:[]=).with('HTTP_PROXY', "http://localhost:7979")
+        ChefConfig::Config.export_proxies
+      end
+    end
+
+    context "when proxy_pass and proxy_user are passed as empty strings" do
+      before do
+        ChefConfig::Config.http_proxy = http_proxy
+        ChefConfig::Config.http_proxy_user = ""
+        ChefConfig::Config.http_proxy_pass = proxy_pass
+      end
+      include_examples "no user pass"
+    end
+
+    context "when proxy_pass and proxy_user are not provided" do
+      before do
+        ChefConfig::Config.http_proxy = http_proxy
+      end
+      include_examples "no user pass"
+    end
+
+    context "when the proxy is provided without a scheme" do
+      before do
+        ChefConfig::Config.http_proxy = "localhost:1111"
+      end
+      it "automatically adds the scheme to the proxy url" do
+        expect(ENV).to receive(:[]=).with('http_proxy', "http://localhost:1111")
+        expect(ENV).to receive(:[]=).with('HTTP_PROXY', "http://localhost:1111")
+        ChefConfig::Config.export_proxies
+      end
+    end
+
+    shared_examples "no export" do
+      it "does not export any proxy settings" do
+        ChefConfig::Config.export_proxies
+        expect(ENV['http_proxy']).to eq(nil)
+        expect(ENV['https_proxy']).to eq(nil)
+        expect(ENV['ftp_proxy']).to eq(nil)
+        expect(ENV['no_proxy']).to eq(nil)
+      end
+    end
+
+    context "when nothing is set" do
+      include_examples "no export"
+    end
+
+    context "when all the users and passwords are set but no proxies are set" do
+      before do
+        ChefConfig::Config.http_proxy_user = proxy_user
+        ChefConfig::Config.http_proxy_pass = proxy_pass
+        ChefConfig::Config.https_proxy_user = proxy_user
+        ChefConfig::Config.https_proxy_pass = proxy_pass
+        ChefConfig::Config.ftp_proxy_user = proxy_user
+        ChefConfig::Config.ftp_proxy_pass = proxy_pass
+      end
+      include_examples "no export"
+    end
+  end
+
   describe "allowing chefdk configuration outside of chefdk" do
 
     it "allows arbitrary settings in the chefdk config context" do
