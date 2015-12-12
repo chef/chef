@@ -20,21 +20,11 @@ require 'spec_helper'
 require 'chef/util/windows/logon_session'
 
 describe ::Chef::Util::Windows::LogonSession do
-  class MockChefReservedNamesWin32APISecurity
-    LOGON32_LOGON_NETWORK = 314
-    LOGON32_PROVIDER_DEFAULT = 159
-    def self.ImpersonateLoggedOnUser(token)
-    end
-  end
-
-  class MockChefReservedNamesWin32APISystem
-    def self.CloseHandle(token)
-    end
-  end
-
   before do
-    stub_const('Chef::ReservedNames::Win32::API::Security', MockChefReservedNamesWin32APISecurity)
-    stub_const('Chef::ReservedNames::Win32::API::System',  MockChefReservedNamesWin32APISystem )
+    stub_const('Chef::ReservedNames::Win32::API::Security', Class.new)
+    stub_const('Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NETWORK', 314)
+    stub_const('Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT', 159)
+    stub_const('Chef::ReservedNames::Win32::API::System',  Class.new )
   end
 
   let(:session) { ::Chef::Util::Windows::LogonSession.new(session_user, password, session_domain)  }
@@ -47,26 +37,26 @@ describe ::Chef::Util::Windows::LogonSession do
 
   shared_examples_for "it received an incorrect username and password combination" do
     before do
-      expect(MockChefReservedNamesWin32APISecurity).to receive(:LogonUserW).and_return(0)
+      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(0)
     end
 
     it 'raises a Chef::Exceptions::Win32APIError exception when the open method is called' do
       expect{session.open}.to raise_error(Chef::Exceptions::Win32APIError)
       expect(session).not_to receive(:close)
-      expect(MockChefReservedNamesWin32APISecurity).not_to receive(:CloseHandle)
+      expect(Chef::ReservedNames::Win32::API::System).not_to receive(:CloseHandle)
     end
   end
 
   shared_examples_for "it received valid credentials" do
     it 'does not raise an exception when the open method is called' do
-      expect(MockChefReservedNamesWin32APISecurity).to receive(:LogonUserW).and_return(1)
+      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(1)
       expect{session.open}.not_to raise_error
     end
   end
 
   shared_examples_for 'the session is not open' do
     it "does not raise an exception when #open is called" do
-      expect(MockChefReservedNamesWin32APISecurity).to receive(:LogonUserW).and_return(1)
+      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(1)
       expect{session.open}.not_to raise_error
     end
 
@@ -80,17 +70,20 @@ describe ::Chef::Util::Windows::LogonSession do
   end
 
   shared_examples_for 'the session is open' do
+    before do
+      allow(Chef::ReservedNames::Win32::API::System).to receive(:CloseHandle)
+    end
     it 'does not result in an exception when #restore_user_context is called' do
-      expect {session.restore_user_context}.not_to raise_error(RuntimeError)
+      expect {session.restore_user_context}.not_to raise_error
     end
 
     it 'does not result in an exception when #close is called' do
-      expect {session.close}.not_to raise_error(RuntimeError)
+      expect {session.close}.not_to raise_error
     end
 
     it 'does close the operating system handle when #close is called' do
-      expect(MockChefReservedNamesWin32APISystem).not_to receive(:CloseHandle)
-      expect {session.restore_user_context}.not_to raise_error(RuntimeError)
+      expect(Chef::ReservedNames::Win32::API::System).not_to receive(:CloseHandle)
+      expect {session.restore_user_context}.not_to raise_error
     end
   end
 
@@ -176,7 +169,7 @@ describe ::Chef::Util::Windows::LogonSession do
         let(:session_domain) { 'fairlyand' }
 
         before do
-          expect(MockChefReservedNamesWin32APISecurity).to receive(:LogonUserW).and_return(1)
+          expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(1)
           expect{session.open}.not_to raise_error
         end
 
@@ -186,23 +179,25 @@ describe ::Chef::Util::Windows::LogonSession do
 
         context 'when the session was opened and then closed with the #close method' do
           before do
+            expect(Chef::ReservedNames::Win32::API::System).to receive(:CloseHandle)
             expect{session.close}.not_to raise_error
           end
           it_behaves_like 'the session is not open'
         end
 
         it 'can be closed and close the operating system handle' do
-          expect(MockChefReservedNamesWin32APISystem).to receive(:CloseHandle)
+          expect(Chef::ReservedNames::Win32::API::System).to receive(:CloseHandle)
           expect{session.close}.not_to raise_error
         end
 
         it 'can impersonate the user' do
+          expect(Chef::ReservedNames::Win32::API::Security).to receive(:ImpersonateLoggedOnUser).and_return(1)
           expect{session.set_user_context}.not_to raise_error
         end
 
         context 'when #set_user_context fails due to low resources causing a failure to impersonate' do
           before do
-            expect(MockChefReservedNamesWin32APISecurity).to receive(:ImpersonateLoggedOnUser).and_return(0)
+            expect(Chef::ReservedNames::Win32::API::Security).to receive(:ImpersonateLoggedOnUser).and_return(0)
           end
 
           it 'raises an exception when #set_user_context fails because impersonation failed' do
@@ -212,7 +207,7 @@ describe ::Chef::Util::Windows::LogonSession do
           context 'when calling subsequent methods' do
             before do
               expect{session.set_user_context}.to raise_error(Chef::Exceptions::Win32APIError)
-              expect(MockChefReservedNamesWin32APISecurity).not_to receive(:RevertToSelf)
+              expect(Chef::ReservedNames::Win32::API::Security).not_to receive(:RevertToSelf)
             end
 
             it_behaves_like 'the session is open'
@@ -221,7 +216,7 @@ describe ::Chef::Util::Windows::LogonSession do
 
         context 'when #set_user_context successfully impersonates the user' do
           before do
-            expect(MockChefReservedNamesWin32APISecurity).to receive(:ImpersonateLoggedOnUser).and_return(1)
+            expect(Chef::ReservedNames::Win32::API::Security).to receive(:ImpersonateLoggedOnUser).and_return(1)
             expect{session.set_user_context}.not_to raise_error
           end
 
@@ -233,14 +228,14 @@ describe ::Chef::Util::Windows::LogonSession do
 
           describe 'the impersonation will be reverted' do
             before do
-              expect(MockChefReservedNamesWin32APISecurity).to receive(:RevertToSelf)
+              expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf)
             end
             it_behaves_like 'the session is open'
           end
 
           context 'when the attempt to revert impersonation fails' do
             before do
-              expect(MockChefReservedNamesWin32APISecurity).to receive(:RevertToSelf).and_return(0)
+              expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(0)
             end
 
             it 'raises an exception when #restore_user_context is called' do
@@ -258,7 +253,7 @@ describe ::Chef::Util::Windows::LogonSession do
 
               context 'when revert continues to fail' do
                 before do
-                  expect(MockChefReservedNamesWin32APISecurity).to receive(:RevertToSelf).and_return(0)
+                  expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(0)
                 end
                 it 'raises an exception when #close is called and impersonation fails' do
                   expect{session.close}.to raise_error(Chef::Exceptions::Win32APIError)
@@ -267,7 +262,7 @@ describe ::Chef::Util::Windows::LogonSession do
 
               context 'when revert stops failing and succeeds' do
                 before do
-                  expect(MockChefReservedNamesWin32APISecurity).to receive(:RevertToSelf).and_return(1)
+                  expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(1)
                 end
 
                 it 'does not raise an exception when #restore_user_context is called' do
@@ -275,6 +270,7 @@ describe ::Chef::Util::Windows::LogonSession do
                 end
 
                 it 'does not raise an exception when #close is called' do
+                  expect(Chef::ReservedNames::Win32::API::System).to receive(:CloseHandle)
                   expect{session.close}.not_to raise_error
                 end
               end
