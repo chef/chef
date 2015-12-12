@@ -137,12 +137,8 @@ describe "Chef::Resource.property validation" do
         it "set to invalid value raises ValidationFailed" do
           expect { resource.x 10 }.to raise_error Chef::Exceptions::ValidationFailed
         end
-        it "set to nil emits a deprecation warning and does a get" do
-          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          resource.x 'str'
-          expect(resource.x nil).to eq 'str'
-          expect(resource.x).to eq 'str'
+        it "set to nil emits no warning because the value would not change" do
+          expect(resource.x nil).to be_nil
         end
       end
     end
@@ -534,12 +530,18 @@ describe "Chef::Resource.property validation" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
       end
-      it "value nil emits a deprecation warning and does a get" do
-        expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        resource.x 1
-        expect(resource.x nil).to eq 1
-        expect(resource.x).to eq 1
+      it "value nil emits a validation failed error because it must have a value" do
+        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+      end
+      context "and value is set to something other than nil" do
+        before { resource.x 10 }
+        it "value nil emits a deprecation warning and does a get" do
+          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          resource.x 1
+          expect(resource.x nil).to eq 1
+          expect(resource.x).to eq 1
+        end
       end
     end
 

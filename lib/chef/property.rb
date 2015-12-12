@@ -251,16 +251,19 @@ class Chef
         return get(resource)
       end
 
-      # myprop nil is sometimes a get (backcompat)
       if value.nil? && !explicitly_accepts_nil?(resource)
-        # If you say "my_property nil" and the property explicitly accepts
-        # nil values, we consider this a get.
-        Chef.log_deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
-        return get(resource)
+        # In Chef 12, value(nil) does a *get* instead of a set, so we
+        # warn if the value would have been changed. In Chef 13, it will be
+        # equivalent to value = nil.
+        result = get(resource)
+        if !result.nil?
+          Chef.log_deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
+        end
+        result
+      else
+        # Anything else, such as myprop(value) is a set
+        set(resource, value)
       end
-
-      # Anything else (myprop value) is a set
-      set(resource, value)
     end
 
     #
