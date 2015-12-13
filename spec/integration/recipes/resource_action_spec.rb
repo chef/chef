@@ -425,6 +425,81 @@ describe "Resource.action" do
       }.to raise_error(/Property template of has_property_named_template\[hi\] cannot be passed a block! If you meant to create a resource named template instead, you'll need to first rename the property./)
     end
   end
+
+  context "When a resource declares methods in action_class and declare_action_class" do
+    class DeclaresActionClassMethods < Chef::Resource
+      use_automatic_resource_name
+      property :x
+      action :create do
+        new_resource.x = a + b + c + d
+      end
+      action_class do
+        def a
+          1
+        end
+      end
+      declare_action_class do
+        def b
+          2
+        end
+      end
+      action_class do
+        def c
+          3
+        end
+      end
+      declare_action_class do
+        def d
+          4
+        end
+      end
+    end
+
+    it "the methods are not available on the resource" do
+      expect { DeclaresActionClassMethods.new('hi').a }.to raise_error(NameError)
+      expect { DeclaresActionClassMethods.new('hi').b }.to raise_error(NameError)
+      expect { DeclaresActionClassMethods.new('hi').c }.to raise_error(NameError)
+      expect { DeclaresActionClassMethods.new('hi').d }.to raise_error(NameError)
+    end
+
+    it "the methods are available to the action" do
+      r = nil
+      expect_recipe {
+        r = declares_action_class_methods 'hi'
+      }.to emit_no_warnings_or_errors
+      expect(r.x).to eq(10)
+    end
+
+    context "And a subclass also creates a method" do
+      class DeclaresActionClassMethodsToo < DeclaresActionClassMethods
+        use_automatic_resource_name
+        action :create do
+          new_resource.x a+b+c+d+e
+        end
+        action_class do
+          def e
+            5
+          end
+        end
+      end
+
+      it "the methods are not available on the resource" do
+        expect { DeclaresActionClassMethods.new('hi').a }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new('hi').b }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new('hi').c }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new('hi').d }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new('hi').e }.to raise_error(NameError)
+      end
+
+      it "the methods are available to the action" do
+        r = nil
+        expect_recipe {
+          r = declares_action_class_methods_too 'hi'
+        }.to emit_no_warnings_or_errors
+        expect(r.x).to eq(15)
+      end
+    end
+  end
 end
 
 end
