@@ -106,6 +106,16 @@ shared_examples_for "an execute resource" do
     expect(@resource.user).to eql(1)
   end
 
+  it "should accept a string for the domain" do
+    @resource.domain 'mothership'
+    expect(@resource.domain).to eql('mothership')
+  end
+
+  it "should accept a string for the password" do
+    @resource.password 'we.funk!'
+    expect(@resource.password).to eql('we.funk!')
+  end
+
   it "should accept a string for creates" do
     @resource.creates "something"
     expect(@resource.creates).to eql("something")
@@ -116,7 +126,34 @@ shared_examples_for "an execute resource" do
     expect(@resource.live_stream).to be true
   end
 
-  describe "when it has cwd, environment, group, path, return value, and a user" do
+  describe "the resource's sensitive attribute" do
+    it "should be false by default" do
+      expect(@resource.sensitive).to eq(false)
+    end
+
+    it "should be true if set to true" do
+      expect(@resource.sensitive).to eq(false)
+      @resource.sensitive true
+      expect(@resource.sensitive).to eq(true)
+    end
+
+    it "should be true if the password is non-nil" do
+      expect(@resource.sensitive).to eq(false)
+      @resource.password('we.funk!')
+      expect(@resource.sensitive).to eq(true)
+    end
+
+    it "should be true if the password is non-nil but the value is explicitly set to false" do
+      expect(@resource.sensitive).to eq(false)
+      @resource.password('we.funk!')
+      expect(@resource.sensitive).to eq(true)
+      @resource.sensitive false
+      expect(@resource.sensitive).to eq(true)
+    end
+
+  end
+
+  describe "when it has cwd, environment, group, path, return value, and a user" do 
     before do
       @resource.command("grep")
       @resource.cwd("/tmp/")

@@ -239,5 +239,97 @@ describe Chef::Provider::Execute do
       end
     end
 
+    describe "when an alternate user identity is specified" do
+      before do
+        allow(provider).to receive(:shell_out!).and_return(nil)
+      end
+
+      context "when running on Windows" do
+        before do
+          allow(::Chef::Platform).to receive(:windows?).and_return(true)
+        end
+
+        context "when the username is specified" do
+          before do
+            new_resource.user('starchild')
+          end
+
+          context "when the domain is specified" do
+            before do
+              new_resource.domain('mydomain')
+            end
+
+            it "should raise an error if the password is not specified" do
+              expect(new_resource).to receive(:password).at_least(1).times.and_return(nil)
+              expect { provider.run_action(:run) }.to raise_error(ArgumentError)
+            end
+
+            it "should not raise an error if the password is specified" do
+              expect(new_resource).to receive(:password).at_least(1).times.and_return('we.funk!')
+              expect { provider.run_action(:run) }.not_to raise_error
+            end
+          end
+
+          context "when the domain is not specified" do
+            before do
+              expect(new_resource).to receive(:domain).at_least(1).times.and_return(nil)
+            end
+
+            it "should raise an error if the password is not specified" do
+              expect(new_resource).to receive(:password).at_least(1).times.and_return(nil)
+              expect { provider.run_action(:run) }.to raise_error(ArgumentError)
+            end
+
+            it "should not raise an error if the password is specified" do
+              expect(new_resource).to receive(:password).at_least(1).times.and_return('we.funk!')
+              expect { provider.run_action(:run) }.not_to raise_error
+
+            end
+          end
+        end
+
+        context "when the username is not specified" do
+          before do
+            expect(new_resource).to receive(:user).at_least(1).times.and_return(nil)
+          end
+
+          it "should raise an error if the password is specified" do
+            expect(new_resource).to receive(:password).at_least(1).times.and_return('we.funk!')
+            expect { provider.run_action(:run) }.to raise_error(ArgumentError)
+          end
+
+          it "should raise an error if the domain is specified" do
+            expect(new_resource).to receive(:domain).at_least(1).times.and_return('mothership')
+            expect { provider.run_action(:run) }.to raise_error(ArgumentError)
+          end
+
+          it "should raise an error if the domain and password are specified" do
+            expect(new_resource).to receive(:password).at_least(1).times.and_return('we.funk!')
+            expect(new_resource).to receive(:domain).at_least(1).times.and_return('mothership')
+            expect { provider.run_action(:run) }.to raise_error(ArgumentError)
+          end
+        end
+      end
+
+      context "when not running on Windows" do
+        before do
+          allow(::Chef::Platform).to receive(:windows?).and_return(false)
+        end
+
+        it "should not raise an error if the user is specified" do
+          new_resource.user('starchild')
+        end
+
+        it "should raise an error if the password is specified" do
+          expect(new_resource).to receive(:password).and_return('we.funk!')
+          expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
+        end
+
+        it "should raise an error if the domain is specified" do
+          expect(new_resource).to receive(:domain).and_return('we.funk!')
+          expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
+        end
+      end
+    end
   end
 end
