@@ -23,7 +23,11 @@ describe Chef::Resource::WindowsScript::Batch, :windows_only do
 
   let(:output_command) { " > " }
 
-  let (:architecture_command) { "@echo %PROCESSOR_ARCHITECTURE%" }
+  let(:architecture_command) { '@echo %PROCESSOR_ARCHITECTURE%' }
+
+  let(:resource) do
+    Chef::Resource::WindowsScript::Batch.new("Batch resource functional test", @run_context)
+  end
 
   it_behaves_like "a Windows script running on Windows"
 
