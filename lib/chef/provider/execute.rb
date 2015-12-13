@@ -16,18 +16,25 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/provider"
-require "forwardable"
+require 'chef/log'
+require 'chef/provider'
+require 'forwardable'
+require 'chef/mixin/user_identity'
 
 class Chef
   class Provider
     class Execute < Chef::Provider
       extend Forwardable
 
+      include Chef::Mixin::UserIdentity
+
       provides :execute
 
-      def_delegators :@new_resource, :command, :returns, :environment, :user, :group, :cwd, :umask, :creates
+      def_delegators :@new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates
+
+      def initialize(new_resource, run_context)
+        super
+      end
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
@@ -52,6 +59,7 @@ class Chef
       end
 
       def action_run
+        validate_identity(new_resource.user, new_resource.password, new_resource.domain)
         if creates && sentinel_file.exist?
           Chef::Log.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false
@@ -92,6 +100,8 @@ class Chef
         opts[:returns]     = returns if returns
         opts[:environment] = environment if environment
         opts[:user]        = user if user
+        opts[:domain]      = domain if domain
+        opts[:password]    = password if password
         opts[:group]       = group if group
         opts[:cwd]         = cwd if cwd
         opts[:umask]       = umask if umask
@@ -120,6 +130,7 @@ class Chef
            ( cwd && creates_relative? ) ? ::File.join(cwd, creates) : creates
         ))
       end
+
     end
   end
 end
