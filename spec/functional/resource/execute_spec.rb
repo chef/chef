@@ -137,6 +137,18 @@ describe Chef::Resource::Execute do
     end
   end
 
+  describe "when a guard is specified" do
+    describe "when using the default guard interpreter" do
+      let(:guard_interpreter_resource) { nil }
+      it_behaves_like "a resource with a guard specifying an alternate user identity"
+    end
+
+    describe "when using the execute resource as the guard interpreter" do
+      let(:guard_interpreter_resource) { :execute }
+      it_behaves_like "a resource with a guard specifying an alternate user identity"
+    end
+  end
+
   # Ensure that CommandTimeout is raised, and is caused by resource.timeout really expiring.
   # https://github.com/chef/chef/issues/2985
   #
@@ -150,5 +162,10 @@ describe Chef::Resource::Execute do
       resource.timeout 0.1
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::CommandTimeout)
     end
+  end
+
+  describe "when running with an alternate user identity" do
+    let(:resource_command_property) { :command }
+    it_behaves_like "an execute resource that supports alternate user identity"
   end
 end
