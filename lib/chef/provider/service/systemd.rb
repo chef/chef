@@ -34,6 +34,13 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:systemd)
   end
 
+  def load_new_resource_state
+    super
+    if ( @new_resource.masked.nil? )
+      @new_resource.masked(@current_resource.masked)
+    end
+  end
+
   def load_current_resource
     @current_resource = Chef::Resource::Service.new(new_resource.name)
     current_resource.service_name(new_resource.service_name)
@@ -67,6 +74,32 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       a.whyrun ["Failed to determine status of #{new_resource}, using command #{new_resource.status_command}.",
         "Assuming service would have been installed and is disabled"]
     end
+  end
+
+  def action_mask
+    if @current_resource.masked
+      Chef::Log.debug("#{@new_resource} already masked - nothing to do")
+    else
+      converge_by("mask service #{@new_resource}") do
+        mask_service
+        Chef::Log.info("#{@new_resource} masked")
+      end
+    end
+    load_new_resource_state
+    @new_resource.masked(true)
+  end
+
+  def action_unmask
+    if @current_resource.masked
+      converge_by("unmask service #{@new_resource}") do
+        unmask_service
+        Chef::Log.info("#{@new_resource} masked")
+      end
+    else
+      Chef::Log.debug("#{@new_resource} already unmasked - nothing to do")
+    end
+    load_new_resource_state
+    @new_resource.masked(false)
   end
 
   def start_service
