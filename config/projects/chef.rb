@@ -20,7 +20,7 @@ maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
 
 build_iteration 1
-build_version '12.5.1'
+build_version '12.6.0'
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
