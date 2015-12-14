@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright (c) 2013-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -465,28 +465,17 @@ shared_examples_for Chef::Provider::File do
         t
       }
 
-      let(:verification) { instance_double(Chef::Resource::File::Verification) }
-      let(:verification_fail) { instance_double(Chef::Resource::File::Verification) }
-
       context "with user-supplied verifications" do
         it "calls #verify on each verification with tempfile path" do
-          allow(Chef::Resource::File::Verification).to(
-            receive(:new).with(anything(), "true", anything()).and_return(verification))
-          provider.new_resource.verify "true"
-          provider.new_resource.verify "true"
-          expect(verification).to receive(:verify).with(tempfile.path).twice.and_return(true)
+          provider.new_resource.verify windows? ? "REM" : "true"
+          provider.new_resource.verify windows? ? "REM" : "true"
           provider.send(:do_validate_content)
         end
 
         it "raises an exception if any verification fails" do
-          allow(Chef::Resource::File::Verification).to(
-            receive(:new).with(anything(), "true", anything()).and_return(verification))
-          allow(Chef::Resource::File::Verification).to(
-            receive(:new).with(anything(), "false", anything()).and_return(verification_fail))
-          provider.new_resource.verify "true"
-          provider.new_resource.verify "false"
-          expect(verification).to receive(:verify).with(tempfile.path).and_return(true)
-          expect(verification_fail).to receive(:verify).with(tempfile.path).and_return(false)
+          allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
+          provider.new_resource.verify windows? ? "REM" : "true"
+          provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
           expect{provider.send(:do_validate_content)}.to raise_error(Chef::Exceptions::ValidationFailed)
         end
       end

@@ -1,4 +1,8 @@
 
+## Unreleased
+
+* [pr#4278](https://github.com/chef/chef/pull/4278) make file resource use properties
+
 ## 12.6.0
 
 * [**Dave Eddy**](https://github.com/bahamas10)
