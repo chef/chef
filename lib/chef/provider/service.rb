@@ -195,6 +195,14 @@ class Chef
         raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :reload"
       end
 
+      def mask_service
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :mask"
+      end
+
+      def unmask_service
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :unmask"
+      end
+
       protected
 
       def default_init_command
