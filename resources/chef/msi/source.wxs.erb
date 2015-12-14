@@ -77,7 +77,7 @@
           </Component>
         </Directory>
         <Directory Id="INSTALLLOCATION" Name="opscode">
-          <Directory Id="PROJECTLOCATION" Name="#(var.ProjectLocationDir)" >
+          <Directory Id="PROJECTLOCATION" Name="$(var.ProjectLocationDir)" >
             <Directory Id="PROJECTLOCATIONBIN" Name="bin" >
               <Component Id="ChefClientPath" Guid="{7F663F88-55A2-4E20-82BF-8BD2E60BB83A}" >
                 <Environment Id="ClientPathEnvironment"
