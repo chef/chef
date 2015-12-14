@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'pp'
 
 module GemspecBackcompatCreator
   def gemspec(name, version)
@@ -86,6 +85,29 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     expect(Gem.sources).to eq(normal_sources)
   end
 
+  context "new default rubygems behavior" do
+    before do
+      Chef::Config[:rubygems_cache_enabled] = false
+    end
+
+    it "finds a matching gem candidate version on rubygems 2.0.0+" do
+      dep = Gem::Dependency.new('rspec', '>= 0')
+      expect(@gem_env.candidate_version_from_remote(dep)).to be_kind_of(Gem::Version)
+    end
+
+    it "gives the candidate version as nil if none is found" do
+      dep = Gem::Dependency.new('lksdjflksdjflsdkfj', '>= 0')
+      expect(@gem_env.candidate_version_from_remote(dep)).to be_nil
+    end
+
+    it "finds a matching gem from a specific gemserver when explicit sources are given (to a server that doesn't respond to api requests)" do
+      # this test is expensive because it really hits the s3 bucket, which doesn't respond to the REST API so it falls back and downloads
+      # all the specs, and then inflates them all into objects.
+      dep = Gem::Dependency.new('rspec', '>= 0')
+      expect(@gem_env.candidate_version_from_remote(dep, 'http://production.cf.rubygems.org')).to be_kind_of(Gem::Version)
+    end
+  end
+
   context "old rubygems caching behavior" do
     before do
       Chef::Config[:rubygems_cache_enabled] = true
@@ -93,22 +115,16 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
     it "finds a matching gem candidate version on rubygems 2.0.0+" do
       dep = Gem::Dependency.new('rspec', '>= 0')
-      dep_installer = Gem::DependencyInstaller.new
-      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
       expect(@gem_env.candidate_version_from_remote(dep)).to be_kind_of(Gem::Version)
     end
 
     it "gives the candidate version as nil if none is found" do
       dep = Gem::Dependency.new('lksdjflksdjflsdkfj', '>= 0')
-      dep_installer = Gem::DependencyInstaller.new
-      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
       expect(@gem_env.candidate_version_from_remote(dep)).to be_nil
     end
 
     it "finds a matching gem from a specific gemserver when explicit sources are given" do
       dep = Gem::Dependency.new('rspec', '>= 0')
-      dep_installer = Gem::DependencyInstaller.new
-      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
       expect(@gem_env.candidate_version_from_remote(dep, 'http://production.cf.rubygems.org')).to be_kind_of(Gem::Version)
     end
   end
