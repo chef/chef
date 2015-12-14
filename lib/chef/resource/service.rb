@@ -47,6 +47,7 @@ class Chef
         @priority = nil
         @timeout = nil
         @run_levels = nil
+        @user = nil
         @supports = { :restart => nil, :reload => nil, :status => nil }
       end
 
@@ -191,6 +192,14 @@ class Chef
           :run_levels,
           arg,
           :kind_of => [ Array ] )
+      end
+
+      def user(arg = nil)
+        set_or_return(
+          :user,
+          arg,
+          :kind_of => [ String ]
+        )
       end
 
       def supports(args = {})
