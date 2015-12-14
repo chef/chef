@@ -24,16 +24,18 @@ class Chef
     class Service < Chef::Resource
       identity_attr :service_name
 
-      state_attrs :enabled, :running
+      state_attrs :enabled, :running, :masked
 
       default_action :nothing
-      allowed_actions :enable, :disable, :start, :stop, :restart, :reload
+      allowed_actions :enable, :disable, :start, :stop, :restart, :reload,
+                      :mask, :unmask
 
       def initialize(name, run_context = nil)
         super
         @service_name = name
         @enabled = nil
         @running = nil
+        @masked = nil
         @parameters = nil
         @pattern = service_name
         @start_command = nil
@@ -135,6 +137,15 @@ class Chef
       def running(arg = nil)
         set_or_return(
           :running,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      # if the service is masked or not
+      def masked(arg=nil)
+        set_or_return(
+          :masked,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
