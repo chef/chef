@@ -28,7 +28,7 @@ describe Chef::Provider::Service::Systemd do
 
   let(:service_name) { "rsyslog.service" }
 
-  let(:new_resource) { Chef::Resource::Service.new(service_name) }
+  let(:new_resource) { Chef::Resource::SystemdService.new(service_name) }
 
   let(:provider) { Chef::Provider::Service::Systemd.new(new_resource, run_context) }
 
@@ -51,6 +51,7 @@ describe Chef::Provider::Service::Systemd do
     before(:each) do
       allow(provider).to receive(:is_active?).and_return(false)
       allow(provider).to receive(:is_enabled?).and_return(false)
+      allow(provider).to receive(:is_masked?).and_return(false)
     end
 
     it "should create a current resource with the name of the new resource" do
@@ -125,6 +126,18 @@ describe Chef::Provider::Service::Systemd do
       allow(provider).to receive(:is_enabled?).and_return(false)
       provider.load_current_resource
       expect(current_resource.enabled).to be false
+    end
+
+    it "should set masked to true if the service is masked" do
+      allow(provider).to receive(:is_masked?).and_return(true)
+      provider.load_current_resource
+      expect(current_resource.masked).to be true
+    end
+
+    it "should set masked to false if the service is not masked" do
+      allow(provider).to receive(:is_masked?).and_return(false)
+      provider.load_current_resource
+      expect(current_resource.masked).to be false
     end
 
     it "should return the current resource" do
@@ -236,6 +249,24 @@ describe Chef::Provider::Service::Systemd do
         it "should call '#{systemctl_path} disable service_name' to disable the service" do
           expect(provider).to receive(:shell_out!).with("#{systemctl_path} disable #{service_name}").and_return(shell_out_success)
           provider.disable_service
+        end
+      end
+
+      describe "mask and unmask service" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.service_name(service_name)
+          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+        end
+
+        it "should call '#{systemctl_path} mask service_name' to mask the service" do
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} mask #{service_name}").and_return(shell_out_success)
+          provider.mask_service
+        end
+
+        it "should call '#{systemctl_path} unmask service_name' to unmask the service" do
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} unmask #{service_name}").and_return(shell_out_success)
+          provider.unmask_service
         end
       end
 
