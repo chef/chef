@@ -3,7 +3,7 @@
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -372,7 +372,7 @@ class Chef
 
     # Lazy initializer for tags attribute
     def tags
-      normal[:tags] = [] unless attribute?(:tags)
+      normal_unless[:tags] = []
       normal[:tags]
     end
 

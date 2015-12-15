@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -148,7 +148,7 @@ class Chef
 
       def []=(key, value)
         root.top_level_breadcrumb ||= key
-        if set_unless? && key?(key)
+        if set_unless? && key?(key) && !self[key].nil?
           self[key]
         else
           root.reset_cache(root.top_level_breadcrumb)
