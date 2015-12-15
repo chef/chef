@@ -377,12 +377,23 @@ describe "Resource.action" do
             x x
           end
         end
+        def self.x_warning_line
+          __LINE__-4
+        end
+        action :set_x_to_x_in_non_initializer do
+          r = resource_action_spec_with_x 'hi' do
+            x 10
+          end
+          x_times_2 = r.x*2
+        end
         action :set_x_to_10 do
           resource_action_spec_with_x 'hi' do
             x 10
           end
         end
       end
+
+      attr_reader :x_warning_line
 
       it "Using the enclosing resource to set x to x emits a warning that you're using the wrong x" do
         recipe = converge {
@@ -393,7 +404,16 @@ describe "Resource.action" do
         }
         warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
         expect(warnings.size).to eq 1
-        expect(warnings[0]).to match(/property x is declared in both resource_action_spec_with_x\[hi\] and resource_action_spec_also_with_x\[hi\] action :set_x_to_x. Use new_resource.x instead. At #{__FILE__}:#{__LINE__-19}/)
+        expect(warnings[0]).to match(/property x is declared in both resource_action_spec_with_x\[hi\] and resource_action_spec_also_with_x\[hi\] action :set_x_to_x. Use new_resource.x instead. At #{__FILE__}:#{ResourceActionSpecAlsoWithX.x_warning_line}/)
+      end
+
+      it "Using the enclosing resource to set x to x outside the initializer emits no warning" do
+        expect_recipe {
+          resource_action_spec_also_with_x 'hi' do
+            x 1
+            action :set_x_to_x_in_non_initializer
+          end
+        }.to emit_no_warnings_or_errors
       end
 
       it "Using the enclosing resource to set x to 10 emits no warning" do
@@ -402,6 +422,14 @@ describe "Resource.action" do
             x 1
             action :set_x_to_10
           end
+        }.to emit_no_warnings_or_errors
+      end
+
+      it "Using the enclosing resource to set x to 10 emits no warning" do
+        expect_recipe {
+          r = resource_action_spec_also_with_x 'hi'
+          r.x 1
+          r.action :set_x_to_10
         }.to emit_no_warnings_or_errors
       end
     end

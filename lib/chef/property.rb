@@ -18,6 +18,8 @@
 
 require 'chef/exceptions'
 require 'chef/delayed_evaluator'
+require 'chef/chef_class'
+require 'chef/log'
 
 class Chef
   #
@@ -314,9 +316,10 @@ class Chef
         #
         # It won't do what they expect. This checks whether you try to *read*
         # `content` while we are compiling the resource.
-        if resource.respond_to?(:enclosing_provider) && resource.enclosing_provider &&
-           !resource.currently_running_action &&
-           !name_property? &&
+        if resource.respond_to?(:resource_initializing) &&
+           resource.resource_initializing &&
+           resource.respond_to?(:enclosing_provider) &&
+           resource.enclosing_provider &&
            resource.enclosing_provider.respond_to?(name)
            Chef::Log.warn("#{Chef::Log.caller_location}: property #{name} is declared in both #{resource} and #{resource.enclosing_provider}. Use new_resource.#{name} instead. At #{Chef::Log.caller_location}")
         end
