@@ -49,7 +49,7 @@ class Chef
             current_resource.version(:unknown.to_s)
           else
             current_resource.version(package_provider.installed_version)
-            new_resource.version(package_provider.package_version)
+            new_resource.version(package_provider.package_version) if package_provider.package_version
           end
 
           current_resource

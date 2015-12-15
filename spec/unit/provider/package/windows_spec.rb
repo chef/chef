@@ -33,7 +33,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
   let(:resource_name) { 'calculator' }
   let(:new_resource) do
     new_resource = Chef::Resource::WindowsPackage.new(resource_name)
-    new_resource.source(resource_source)
+    new_resource.source(resource_source) if resource_source
     new_resource
   end
   let(:provider) { Chef::Provider::Package::Windows.new(new_resource, run_context) }
@@ -98,7 +98,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     shared_examples "a local file" do
 
       it "checks that the source path is valid" do
-        expect(Chef::Util::PathHelper).to receive(:validate_path)
+        expect(Chef::Util::PathHelper).to receive(:validate_path).and_call_original
         provider.package_provider
       end
 
