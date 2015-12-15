@@ -1,6 +1,6 @@
 require 'fcntl'
 require 'chef/mixin/shell_out'
-
+require 'ohai/mixin/gce_metadata'
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
@@ -198,4 +198,14 @@ end
 
 def aes_256_gcm?
   OpenSSL::Cipher.ciphers.include?("aes-256-gcm")
+end
+
+class GCEDetector
+  extend Ohai::Mixin::GCEMetadata
+end
+
+def gce?
+  GCEDetector.can_metadata_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR,80)
+rescue SocketError
+  false
 end

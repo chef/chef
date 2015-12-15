@@ -18,7 +18,7 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
-describe "Knife cookbook API integration with IPv6", :workstation do
+describe "Knife cookbook API integration with IPv6", :workstation, :not_supported_on_gce do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
