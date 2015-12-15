@@ -1,4 +1,3 @@
-#
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
@@ -372,7 +371,7 @@ class Chef
 
     # Lazy initializer for tags attribute
     def tags
-      normal_unless[:tags] = []
+      normal[:tags] = Array(normal[:tags])
       normal[:tags]
     end
 

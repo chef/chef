@@ -810,6 +810,18 @@ describe Chef::Node do
       expect(node.tags).to eql([])
     end
 
+    it "should return an array if it is fed a string" do
+      node.normal[:tags] = "string"
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node.tags).to eql(["string"])
+    end
+
+    it "should return an array if it is fed a hash" do
+      node.normal[:tags] = {}
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node.tags).to eql([])
+    end
+
     it "deep merges attributes instead of overwriting them" do
       node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "four"}})
       expect(node.one.to_hash).to eq({"two" => {"three" => "four"}})
