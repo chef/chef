@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -262,6 +262,12 @@ describe Chef::Node do
         node.set[:snoopy][:is_a_puppy] = true
         node.set_unless[:snoopy][:is_a_puppy] = false
         expect(node[:snoopy][:is_a_puppy]).to eq(true)
+      end
+
+      it "should allow you to set an attribute with set_unless if is a nil value" do
+        node.attributes.normal = { snoopy: { is_a_puppy: nil } }
+        node.set_unless[:snoopy][:is_a_puppy] = false
+        expect(node[:snoopy][:is_a_puppy]).to eq(false)
       end
 
       it "should allow you to set a value after a set_unless" do
@@ -796,6 +802,24 @@ describe Chef::Node do
       node.tag("radiohead")
       node.consume_external_attrs(@ohai_data, {})
       expect(node.tags).to eql([ "radiohead" ])
+    end
+
+    it "should set the tags attribute to an empty array if it is nil" do
+      node.attributes.normal = { 'tags' => nil }
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node.tags).to eql([])
+    end
+
+    it "should return an array if it is fed a string" do
+      node.normal[:tags] = "string"
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node.tags).to eql(["string"])
+    end
+
+    it "should return an array if it is fed a hash" do
+      node.normal[:tags] = {}
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node.tags).to eql([])
     end
 
     it "deep merges attributes instead of overwriting them" do
