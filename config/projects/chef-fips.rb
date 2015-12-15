@@ -16,7 +16,7 @@
 
 #
 # This is the chef client build with FIPS mode enabled.
-# It's a stub for now and produces identical results 
+# It's a stub for now and produces identical results
 #
 chef_project_contents = IO.read(File.expand_path('../chef.rb', __FILE__))
 self.instance_eval chef_project_contents
@@ -29,7 +29,7 @@ if windows?
   #       Native gems will use gcc which will barf on files with spaces,
   #       which is only fixable if everyone in the world fixes their Makefiles
   install_dir "#{default_root}/opscode/#{name}"
-  package_name "chef-client-fips"
+  package_name "chef-fips"
 else
   install_dir "#{default_root}/#{name}"
 end
