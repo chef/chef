@@ -34,9 +34,16 @@ class Chef
 
         require 'chef/provider/package/windows/registry_uninstall_entry.rb'
 
+        def define_resource_requirements
+          requirements.assert(:install) do |a|
+            a.assertion { new_resource.source unless package_provider == :msi }
+            a.failure_message Chef::Exceptions::NoWindowsPackageSource, "Source for package #{new_resource.name} must be specified in the resource's source property for package to be installed because the package_name property is used to test for the package installation state for this package type."
+          end
+        end
+
         # load_current_resource is run in Chef::Provider#run_action when not in whyrun_mode?
         def load_current_resource
-          @current_resource = Chef::Resource::WindowsPackage.new(@new_resource.name)
+          @current_resource = Chef::Resource::WindowsPackage.new(new_resource.name)
           if downloadable_file_missing?
             Chef::Log.debug("We do not know the version of #{new_resource.source} because the file is not downloaded")
             current_resource.version(:unknown.to_s)
@@ -52,11 +59,11 @@ class Chef
           @package_provider ||= begin
             case installer_type
             when :msi
-              Chef::Log.debug("#{@new_resource} is MSI")
+              Chef::Log.debug("#{new_resource} is MSI")
               require 'chef/provider/package/windows/msi'
               Chef::Provider::Package::Windows::MSI.new(resource_for_provider, uninstall_registry_entries)
             else
-              Chef::Log.debug("#{@new_resource} is EXE with type '#{installer_type}'")
+              Chef::Log.debug("#{new_resource} is EXE with type '#{installer_type}'")
               require 'chef/provider/package/windows/exe'
               Chef::Provider::Package::Windows::Exe.new(resource_for_provider, installer_type, uninstall_registry_entries)
             end
@@ -69,8 +76,8 @@ class Chef
           # binary to determine the installer type for the user. Since the file
           # must be on disk to do so, we have to make this choice in the provider.
           @installer_type ||= begin
-            if @new_resource.installer_type
-              @new_resource.installer_type
+            if new_resource.installer_type
+              new_resource.installer_type
             elsif source_location.nil?
                 inferred_registry_type
             else
@@ -108,7 +115,7 @@ class Chef
                 if basename == 'setup.exe'
                   :installshield
                 else
-                  fail Chef::Exceptions::CannotDetermineWindowsInstallerType, "Installer type for Windows Package '#{@new_resource.name}' not specified and cannot be determined from file extension '#{file_extension}'"
+                  fail Chef::Exceptions::CannotDetermineWindowsInstallerType, "Installer type for Windows Package '#{new_resource.name}' not specified and cannot be determined from file extension '#{file_extension}'"
                 end
               end
             end
@@ -144,7 +151,7 @@ class Chef
 
         # @return [String] candidate_version
         def candidate_version
-          @candidate_version ||= (@new_resource.version || 'latest')
+          @candidate_version ||= (new_resource.version || 'latest')
         end
 
         # @return [Array] current_version(s) as an array
@@ -160,7 +167,7 @@ class Chef
         #
         # @return [Boolean] true if new_version is equal to or included in current_version
         def target_version_already_installed?(current_version, new_version)
-          Chef::Log.debug("Checking if #{@new_resource} version '#{new_version}' is already installed. #{current_version} is currently installed")
+          Chef::Log.debug("Checking if #{new_resource} version '#{new_version}' is already installed. #{current_version} is currently installed")
           if current_version.is_a?(Array)
             current_version.include?(new_version)
           else
@@ -175,7 +182,7 @@ class Chef
         private
 
         def uninstall_registry_entries
-          @uninstall_registry_entries ||= Chef::Provider::Package::Windows::RegistryUninstallEntry.find_entries(new_resource.name)
+          @uninstall_registry_entries ||= Chef::Provider::Package::Windows::RegistryUninstallEntry.find_entries(new_resource.package_name)
         end
 
         def inferred_registry_type
@@ -188,7 +195,7 @@ class Chef
         end
 
         def downloadable_file_missing?
-          uri_scheme?(new_resource.source) && !::File.exists?(source_location)
+          !new_resource.source.nil? && uri_scheme?(new_resource.source) && !::File.exists?(source_location)
         end
 
         def resource_for_provider
@@ -203,7 +210,7 @@ class Chef
 
         def download_source_file
           source_resource.run_action(:create)
-          Chef::Log.debug("#{@new_resource} fetched source file to #{source_resource.path}")
+          Chef::Log.debug("#{new_resource} fetched source file to #{source_resource.path}")
         end
 
         def source_resource
@@ -228,7 +235,9 @@ class Chef
         end
 
         def source_location
-          if uri_scheme?(new_resource.source)
+          if new_resource.source.nil?
+            nil
+          elsif uri_scheme?(new_resource.source)
             source_resource.path
           else
             new_source = Chef::Util::PathHelper.cleanpath(new_resource.source)

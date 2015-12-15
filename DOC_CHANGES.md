@@ -88,11 +88,19 @@ to better align with other ssh related options.
 
 `windows_package` now supports more than just `MSI`. Most common windows installer types are supported including Inno Setup, Nullsoft, Wise and InstallShield. The new allowed `installer_type` values are: `inno`, `nsis`, `wise`, `installshield`, `custom`, and `msi`.
 
+**Non `:msi` package installation**
+When installing non `:msi` packages, the `package_name` should match the display name used for the installed package in the "Add/Remove Programs" settings application. This value can also be found in the following registry locations:
+* HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall
+* HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Uninstall
+* HKEY_LOCAL_MACHINE\Software\Wow6464Node\Microsoft\Windows\CurrentVersion\Uninstall
+
+ Further, non `:msi` packages must explicitly include a package `source` attribute when using the `:install` action. Unlike `:msi` packages, they will not default to the package name if missing. Without the name matching the software's display name, non `:msi` packages will always reconverge on `:install`.
+
 Also, while being able to download remote installers from a `HTTP` resource is not new, it looks as though the top of the docs page is incorrect stating that only local installers can be used as a source.
 
 Example Nullsoft (`nsis`) package resource:
 ```
-windows_package 'Mercurial 3.6.1 (64-bit)' do
+package 'Mercurial 3.6.1 (64-bit)' do
   source 'http://mercurial.selenic.com/release/windows/Mercurial-3.6.1-x64.exe'
   checksum 'febd29578cb6736163d232708b834a2ddd119aa40abc536b2c313fc5e1b5831d'
 end
@@ -100,7 +108,7 @@ end
 
 Example Custom `windows_package` resource:
 ```
-windows_package 'Microsoft Visual C++ 2005 Redistributable' do
+package 'Microsoft Visual C++ 2005 Redistributable' do
   source 'https://download.microsoft.com/download/6/B/B/6BB661D6-A8AE-4819-B79F-236472F6070C/vcredist_x86.exe'
   installer_type :custom
   options '/Q'
@@ -108,15 +116,18 @@ end
 ```
 Using a `:custom` package is one way to install a non `.msi` file that embeds an `msi` based installer.
 
+**`windows_package` removal**
 Packages can now be removed without the need to include the package `source`. The relevent uninstall metadata will now be discovered from the registry.
 ```
-windows_package 'Mercurial 3.6.1 (64-bit)' do
+package 'Mercurial 3.6.1 (64-bit)' do
   action :remove
 end
 ```
-It is important that the package name used when not including the `source` is EXACTLY the same as the display name found in "Add/Remove programs" or the `DisplayName` property in the appropriate registry key:
+For non `:msi` packages, it is important that the package name used is EXACTLY the same as the display name found in "Add/Remove programs" or the `DisplayName` property in the appropriate registry key:
 * HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall
 * HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Uninstall
 * HKEY_LOCAL_MACHINE\Software\Wow6464Node\Microsoft\Windows\CurrentVersion\Uninstall
+
+When removing `:msi` packages, this same package naming rule applies if the `source` is omitted.
 
 Note that if there are multiple versions of a package installed with the same display name, all packages will be removed unless a version is provided in the `version` attribute or can be discovered in the `source` installer file.

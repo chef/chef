@@ -99,7 +99,7 @@ class Chef
 
           def install_file_version
             @install_file_version ||= begin
-              if ::File.exist?(@new_resource.source)
+              if !new_resource.source.nil? && ::File.exist?(new_resource.source)
                 version_info = Chef::ReservedNames::Win32::File.version_info(new_resource.source)
                 file_version = version_info.FileVersion || version_info.ProductVersion
                 file_version == '' ? nil : file_version

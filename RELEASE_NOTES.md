@@ -59,7 +59,7 @@ This is the first release where we are rolling out a MSI package for Windows tha
 
 ## `windows_package` now supports non-`MSI` based Windows installers
 
-Today you can install `MSI`s using the `windows_package` resource. However, you have had to use the windows cookbook in order to install non `MSI` based installer packages such as Nullsoft, Inno Setup, Installshield and other `EXE` based installers. We have moved and slightly improved the windows cookbook resource into the core chef client. This means you can now run most windows installer types without taking on external cookbook dependencies.
+Today you can install `MSI`s using the `windows_package` resource. However, you have had to use the windows cookbook in order to install non `MSI` based installer packages such as Nullsoft, Inno Setup, Installshield and other `EXE` based installers. We have moved and slightly improved the windows cookbook resource into the core chef client. This means you can now run most windows installer types without taking on external cookbook dependencies. Note that the `source` attribute of non `:msi` windows packages is required since the `package_name` is expected to match the same name displayed in "Add/Remove Programs."
 
 ## Better handling of log_location with chef client service (Windows)
 
