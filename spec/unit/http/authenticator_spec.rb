@@ -70,7 +70,9 @@ describe Chef::HTTP::Authenticator do
       it_behaves_like "merging the server API version into the headers"
 
       it "calls authentication_headers with the proper input" do
-        expect(class_instance).to receive(:authentication_headers).with(method, url, data).and_return({})
+        expect(class_instance).to receive(:authentication_headers).with(
+          method, url, data,
+          {"X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION}).and_return({})
         class_instance.handle_request(method, url, headers, data)
       end
     end

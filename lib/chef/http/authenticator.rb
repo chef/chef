@@ -47,8 +47,8 @@ class Chef
       end
 
       def handle_request(method, url, headers={}, data=false)
-        headers.merge!(authentication_headers(method, url, data)) if sign_requests?
         headers.merge!({"X-Ops-Server-API-Version" => @api_version})
+        headers.merge!(authentication_headers(method, url, data, headers)) if sign_requests?
         [method, url, headers, data]
       end
 
@@ -90,12 +90,17 @@ class Chef
         raise Chef::Exceptions::InvalidPrivateKey, msg
       end
 
-      def authentication_headers(method, url, json_body=nil)
-        request_params = {:http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}"}
+      def authentication_headers(method, url, json_body=nil, headers=nil)
+        request_params = {
+          :http_method => method,
+          :path => url.path,
+          :body => json_body,
+          :host => "#{url.host}:#{url.port}",
+          :headers => headers,
+        }
         request_params[:body] ||= ""
         auth_credentials.signature_headers(request_params)
       end
-
     end
   end
 end
