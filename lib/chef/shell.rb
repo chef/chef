@@ -265,6 +265,11 @@ FOOTER
       :description  => "Replace current run list with specified items",
       :proc         => lambda { |items| items.split(",").map { |item| Chef::RunList::RunListItem.new(item) } }
 
+    option :skip_cookbook_sync,
+      :long           => "--[no-]skip-cookbook-sync",
+      :description    => "Whether to skip cookbook synchronization",
+      :boolean        => false
+
     def self.print_help
       instance = new
       instance.parse_options([])

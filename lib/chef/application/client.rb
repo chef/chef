@@ -285,6 +285,11 @@ class Chef::Application::Client < Chef::Application
     :description    => "DANGEROUS: does what it says, only useful with --recipe-url",
     :boolean        => true
 
+  option :skip_cookbook_sync,
+    :long           => "--[no-]skip-cookbook-sync",
+    :description    => "Whether to skip cookbook synchronization",
+    :boolean        => false
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
   attr_reader :chef_client_json
