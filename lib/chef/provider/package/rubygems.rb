@@ -168,12 +168,9 @@ class Chef
                 best_gem && [best_gem.spec, best_gem.source]
               else
                 # Use the API that 'gem install' calls which does not pull down the rubygems universe
-                rs = Gem::RequestSet.new
-                rs.import [ gem_dependency ]
                 begin
-                  # rs.resolve returns the gem which satisfies the dependency along with all of its deps
-                  resolved_spec = rs.resolve.select { |spec| spec.name == gem_dependency.name }.first.spec
-                  resolved_spec && resolved_spec
+                  rs = dependency_installer.resolve_dependencies gem_dependency.name, gem_dependency.requirement
+                  rs.specs.first
                 rescue Gem::UnsatisfiableDependencyError
                   nil
                 end
