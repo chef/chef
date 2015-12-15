@@ -743,6 +743,12 @@ describe Chef::Resource do
       expect(resource.should_skip?(:purr)).to be_truthy
     end
 
+    it "should return false when only_if is met and also not_if is not met" do
+      resource.only_if { true }
+      resource.not_if { false }
+      expect(resource.should_skip?(:purr)).to be_falsey
+    end
+
     it "should return true when one of multiple only_if's is not met" do
       resource.only_if { true }
       resource.only_if { false }
@@ -755,6 +761,20 @@ describe Chef::Resource do
       resource.not_if { true }
       resource.not_if { false }
       expect(resource.should_skip?(:purr)).to be_truthy
+    end
+
+    it "should return false when all of multiple only_if's are met" do
+      resource.only_if { true }
+      resource.only_if { true }
+      resource.only_if { true }
+      expect(resource.should_skip?(:purr)).to be_falsey
+    end
+
+    it "should return false when all of multiple not_if's are not met" do
+      resource.not_if { false }
+      resource.not_if { false }
+      resource.not_if { false }
+      expect(resource.should_skip?(:purr)).to be_falsey
     end
 
     it "should return true when action is :nothing" do
