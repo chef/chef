@@ -20,13 +20,24 @@ class Chef
   module ChefFS
     module FileSystem
       class FileSystemError < StandardError
-        def initialize(entry, cause = nil)
+        # @param entry The entry which had an issue.
+        # @param cause The wrapped exception (if any).
+        # @param reason A string describing why this exception happened.
+        def initialize(entry, cause = nil, reason = nil)
+          super(reason)
           @entry = entry
           @cause = cause
+          @reason = reason
         end
 
+        # The entry which had an issue.
         attr_reader :entry
+
+        # The wrapped exception (if any).
         attr_reader :cause
+
+        # A string describing why this exception happened.
+        attr_reader :reason
       end
     end
   end

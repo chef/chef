@@ -967,6 +967,8 @@ EOM
       organization 'foo' do
         container 'x', {}
         group 'x', {}
+        policy 'x', '1.2.3', {}
+        policy_group 'x', { 'policies' => { 'x' => { 'revision_id' => '1.2.3' } } }
       end
     end
 
@@ -975,7 +977,7 @@ EOM
     end
 
     it 'knife delete /acls/containers/environments.json fails with a reasonable error' do
-      knife('delete /acls/containers/environments.json').should_fail "ERROR: /acls/containers/environments.json (remote) cannot be deleted.\n"
+      knife('delete /acls/containers/environments.json').should_fail "ERROR: /acls/containers/environments.json (remote) ACLs cannot be deleted.\n"
     end
 
     it 'knife delete /containers/x.json succeeds' do
@@ -986,6 +988,18 @@ EOM
     it 'knife delete /groups/x.json succeeds' do
       knife('delete /groups/x.json').should_succeed "Deleted /groups/x.json\n"
       knife('raw /groups/x.json').should_fail(/404/)
+    end
+
+    it 'knife delete /policies/x-1.2.3.json succeeds' do
+      knife('raw /policies/x/revisions/1.2.3').should_succeed "{\n  \"name\": \"x\",\n  \"revision_id\": \"1.2.3\",\n  \"run_list\": [\n\n  ],\n  \"cookbook_locks\": {\n\n  }\n}\n"
+      knife('delete /policies/x-1.2.3.json').should_succeed "Deleted /policies/x-1.2.3.json\n"
+      knife('raw /policies/x/revisions/1.2.3').should_fail(/404/)
+    end
+
+    it 'knife delete /policy_groups/x.json succeeds' do
+      knife('raw /policy_groups/x').should_succeed "{\n  \"uri\": \"http://127.0.0.1:8900/organizations/foo/policy_groups/x\",\n  \"policies\": {\n    \"x\": {\n      \"revision_id\": \"1.2.3\"\n    }\n  }\n}\n"
+      knife('delete /policy_groups/x.json').should_succeed "Deleted /policy_groups/x.json\n"
+      knife('raw /policy_groups/x').should_fail(/404/)
     end
 
     it 'knife delete /org.json fails with a reasonable error' do

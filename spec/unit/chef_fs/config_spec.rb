@@ -102,9 +102,5 @@ describe Chef::ChefFS::Config do
     it "sets the correct user path on the local FS object" do
       expect(local_fs.child_paths["users"]).to eq([platform_path("/base_path/users")])
     end
-
-    it "sets the correct policy path on the local FS object" do
-      expect(local_fs.child_paths["policies"]).to eq([platform_path("/base_path/policies")])
-    end
   end
 end

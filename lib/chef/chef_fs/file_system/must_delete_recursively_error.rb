@@ -22,9 +22,6 @@ class Chef
   module ChefFS
     module FileSystem
       class MustDeleteRecursivelyError < FileSystemError
-        def initialize(entry, cause = nil)
-          super(entry, cause)
-        end
       end
     end
   end

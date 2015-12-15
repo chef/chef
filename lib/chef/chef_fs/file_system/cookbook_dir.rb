@@ -128,17 +128,17 @@ class Chef
             begin
               rest.delete(api_path)
             rescue Timeout::Error => e
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
             rescue Net::HTTPServerException
               if $!.response.code == "404"
                 raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
               else
-                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "HTTP error deleting: #{e}"
+                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "HTTP error deleting: #{e}")
               end
             end
           else
             raise NotFoundError.new(self) if !exists?
-            raise MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
+            raise MustDeleteRecursivelyError.new(self, "#{path_for_printing} must be deleted recursively")
           end
         end
 
@@ -197,14 +197,14 @@ class Chef
             end
 
           rescue Timeout::Error => e
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading: #{e}"
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
 
           rescue Net::HTTPServerException => e
             if e.response.code == "404"
               @could_not_get_chef_object = e
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)
             else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "HTTP error reading: #{e}"
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "HTTP error reading: #{e}")
             end
 
           # Chef bug http://tickets.opscode.com/browse/CHEF-3066 ... instead of 404 we get 500 right now.
@@ -214,7 +214,7 @@ class Chef
               @could_not_get_chef_object = e
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)
             else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "HTTP error reading: #{e}"
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "HTTP error reading: #{e}")
             end
           end
         end

@@ -26,12 +26,18 @@ require 'chef/chef_fs/file_system/nodes_dir'
 require 'chef/chef_fs/file_system/org_entry'
 require 'chef/chef_fs/file_system/organization_invites_entry'
 require 'chef/chef_fs/file_system/organization_members_entry'
+require 'chef/chef_fs/file_system/policies_dir'
+require 'chef/chef_fs/file_system/policy_groups_dir'
 require 'chef/chef_fs/file_system/environments_dir'
+require 'chef/chef_fs/data_handler/acl_data_handler'
 require 'chef/chef_fs/data_handler/client_data_handler'
+require 'chef/chef_fs/data_handler/environment_data_handler'
+require 'chef/chef_fs/data_handler/node_data_handler'
 require 'chef/chef_fs/data_handler/role_data_handler'
 require 'chef/chef_fs/data_handler/user_data_handler'
 require 'chef/chef_fs/data_handler/group_data_handler'
 require 'chef/chef_fs/data_handler/container_data_handler'
+require 'chef/chef_fs/data_handler/policy_group_data_handler'
 
 class Chef
   module ChefFS
@@ -133,26 +139,45 @@ class Chef
         def children
           @children ||= begin
             result = [
-              CookbooksDir.new(self),
-              DataBagsDir.new(self),
-              EnvironmentsDir.new(self),
+              # /cookbooks
+              CookbooksDir.new("cookbooks", self),
+              # /data_bags
+              DataBagsDir.new("data_bags", self, "data"),
+              # /environments
+              EnvironmentsDir.new("environments", self, nil, Chef::ChefFS::DataHandler::EnvironmentDataHandler.new),
+              # /roles
               RestListDir.new("roles", self, nil, Chef::ChefFS::DataHandler::RoleDataHandler.new)
             ]
             if repo_mode == 'hosted_everything'
               result += [
-                AclsDir.new(self),
+                # /acls
+                AclsDir.new("acls", self),
+                # /clients
                 RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
+                # /containers
                 RestListDir.new("containers", self, nil, Chef::ChefFS::DataHandler::ContainerDataHandler.new),
+                # /groups
                 RestListDir.new("groups", self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new),
-                NodesDir.new(self),
+                # /nodes
+                NodesDir.new("nodes", self, nil, Chef::ChefFS::DataHandler::NodeDataHandler.new),
+                # /org.json
                 OrgEntry.new("org.json", self),
+                # /members.json
                 OrganizationMembersEntry.new("members.json", self),
-                OrganizationInvitesEntry.new("invitations.json", self)
+                # /invitations.json
+                OrganizationInvitesEntry.new("invitations.json", self),
+                # /policies
+                PoliciesDir.new("policies", self, nil, Chef::ChefFS::DataHandler::PolicyDataHandler.new),
+                # /policy_groups
+                PolicyGroupsDir.new("policy_groups", self, nil, Chef::ChefFS::DataHandler::PolicyGroupDataHandler.new),
               ]
             elsif repo_mode != 'static'
               result += [
+                # /clients
                 RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
-                NodesDir.new(self),
+                # /nodes
+                NodesDir.new("nodes", self, nil, Chef::ChefFS::DataHandler::NodeDataHandler.new),
+                # /users
                 RestListDir.new("users", self, nil, Chef::ChefFS::DataHandler::UserDataHandler.new)
               ]
             end

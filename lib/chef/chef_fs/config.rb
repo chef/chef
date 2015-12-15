@@ -40,7 +40,8 @@ class Chef
         "nodes" => "node",
         "roles" => "role",
         "users" => "user",
-        "policies" => "policy"
+        "policies" => "policy",
+        "policy_groups" => "policy_group"
       }
       INFLECTIONS.each { |k,v| k.freeze; v.freeze }
       INFLECTIONS.freeze
@@ -232,11 +233,11 @@ class Chef
           result = {}
           case @chef_config[:repo_mode]
           when 'static'
-            object_names = %w(cookbooks data_bags environments roles policies)
+            object_names = %w(cookbooks data_bags environments roles)
           when 'hosted_everything'
-            object_names = %w(acls clients cookbooks containers data_bags environments groups nodes roles policies)
+            object_names = %w(acls clients cookbooks containers data_bags environments groups nodes roles policies policy_groups)
           else
-            object_names = %w(clients cookbooks data_bags environments nodes roles users policies)
+            object_names = %w(clients cookbooks data_bags environments nodes roles users)
           end
           object_names.each do |object_name|
             # cookbooks -> cookbook_path

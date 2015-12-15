@@ -16,23 +16,26 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/chef_repository_file_system_entry'
-require 'chef/chef_fs/data_handler/policy_data_handler'
+require 'chef/chef_fs/file_system/base_fs_dir'
+require 'chef/chef_fs/file_system/rest_list_entry'
+require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/chef_fs/file_system/policy_group_entry'
 
 class Chef
   module ChefFS
     module FileSystem
-
-      class ChefRepositoryFileSystemPoliciesDir < ChefRepositoryFileSystemEntry
-        def initialize(name, parent, path = nil)
-          super(name, parent, path, Chef::ChefFS::DataHandler::PolicyDataHandler.new)
+      class PolicyGroupsDir < RestListDir
+        def make_child_entry(name, exists = nil)
+          PolicyGroupEntry.new(name, self, exists)
         end
 
-        def can_have_child?(name, is_dir)
-          is_dir && !name.start_with?('.')
+        def create_child(name, file_contents)
+          entry = make_child_entry(name, true)
+          entry.write(file_contents)
+          @children = nil
+          entry
         end
       end
     end
   end
 end
-

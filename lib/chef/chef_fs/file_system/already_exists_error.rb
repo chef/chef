@@ -22,9 +22,6 @@ class Chef
   module ChefFS
     module FileSystem
       class AlreadyExistsError < OperationFailedError
-        def initialize(operation, entry, cause = nil)
-          super(operation, entry, cause)
-        end
       end
     end
   end

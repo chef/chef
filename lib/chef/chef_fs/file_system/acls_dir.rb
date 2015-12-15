@@ -28,10 +28,6 @@ class Chef
       class AclsDir < BaseFSDir
         ENTITY_TYPES = %w(clients containers cookbooks data_bags environments groups nodes roles) # we don't read sandboxes, so we don't read their acls
 
-        def initialize(parent)
-          super('acls', parent)
-        end
-
         def data_handler
           @data_handler ||= Chef::ChefFS::DataHandler::AclDataHandler.new
         end

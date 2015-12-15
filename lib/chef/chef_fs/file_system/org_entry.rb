@@ -7,11 +7,6 @@ class Chef
       # /organizations/NAME/org.json
       # Represents the actual data at /organizations/NAME (the full name, etc.)
       class OrgEntry < RestListEntry
-        def initialize(name, parent, exists = nil)
-          super(name, parent)
-          @exists = exists
-        end
-
         def data_handler
           Chef::ChefFS::DataHandler::OrganizationDataHandler.new
         end
