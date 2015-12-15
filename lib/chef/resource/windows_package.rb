@@ -43,7 +43,11 @@ class Chef
       # In the past we accepted return code 127 for an unknown reason and 42 because of a bug
       property :returns, [ String, Integer, Array ], default: [ 0 ], desired_state: false
       property :source, String,
-                coerce: proc { |s| uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false) }
+                coerce: (proc do |s|
+                  unless s.nil?
+                    uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
+                  end
+                end)
       property :checksum, String, desired_state: false
       property :remote_file_attributes, Hash, desired_state: false
     end
