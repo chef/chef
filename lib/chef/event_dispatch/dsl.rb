@@ -33,7 +33,7 @@ class Chef
 
         # Use event.register API to add anonymous handler if Chef.run_context
         # and associated event dispatcher is set, else fallback to
-        # Chef::Config[:hanlder]
+        # Chef::Config[:event_handlers]
         if Chef.run_context && Chef.run_context.events
           Chef::Log.debug("Registering handler '#{name}' using events api")
           Chef.run_context.events.register(handler)
