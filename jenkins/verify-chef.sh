@@ -5,6 +5,9 @@
 PATH=/opt/$PROJECT_NAME/bin:$PATH
 export PATH
 
+BIN_DIR=/opt/$PROJECT_NAME/bin
+export BIN_DIR
+
 # We don't want to add the embedded bin dir to the main PATH as this
 # could mask issues in our binstub shebangs.
 EMBEDDED_BIN_DIR=/opt/$PROJECT_NAME/embedded/bin
@@ -20,16 +23,25 @@ fi
 export USR_BIN_DIR
 
 # sanity check that we're getting the correct symlinks from the pre-install script
-linked_binaries=( "chef-client" "knife" "chef-solo" "ohai" )
+if [ `readlink $USR_BIN_DIR/chef-client` != "$BIN_DIR/chef-client" ]; then
+  echo "$USR_BIN_DIR/chef-client symlink to $BIN_DIR/chef-client was not correctly created by the pre-install script!"
+  exit 1
+fi
 
-for i in "${linked_binaries[@]}"
-do
-  LINK_TARGET=`readlink $USR_BIN_DIR/$i`
-  if [ "$LINK_TARGET" != "$EMBEDDED_BIN_DIR/$i" ]; then
-    echo "$USR_BIN_DIR/$i symlink to $EMBEDDED_BIN_DIR/$i was not correctly created by the pre-install script!"
-    exit 1
-  fi
-done
+if [ `readlink $USR_BIN_DIR/knife` != "$BIN_DIR/knife" ]; then
+  echo "$USR_BIN_DIR/knife symlink to $BIN_DIR/knife was not correctly created by the pre-install script!"
+  exit 1
+fi
+
+if [ `readlink $USR_BIN_DIR/chef-solo` != "$BIN_DIR/chef-solo" ]; then
+  echo "$USR_BIN_DIR/chef-solo symlink to $BIN_DIR/chef-solo was not correctly created by the pre-install script!"
+  exit 1
+fi
+
+if [ `readlink $USR_BIN_DIR/ohai` != "$BIN_DIR/ohai" ]; then
+  echo "$USR_BIN_DIR/ohai symlink to $BIN_DIR/ohai was not correctly created by the pre-install script!"
+  exit 1
+fi
 
 # Ensure the calling environment (disapproval look Bundler) does not
 # infect our Ruby environment created by the `chef-client` cli.
