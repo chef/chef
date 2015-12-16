@@ -26,11 +26,7 @@ describe Chef::Provider::Package::EasyInstall do
     @new_resource = Chef::Resource::EasyInstallPackage.new('boto')
     @new_resource.version('1.8d')
 
-    @current_resource = Chef::Resource::EasyInstallPackage.new('boto')
-    @current_resource.version('1.8d')
-
     @provider = Chef::Provider::Package::EasyInstall.new(@new_resource, @run_context)
-    allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
 
     @stdin = StringIO.new
     @stdout = StringIO.new
@@ -48,8 +44,8 @@ describe Chef::Provider::Package::EasyInstall do
 
     it "should set the current resources package name to the new resources package name" do
       allow($stdout).to receive(:write)
-      expect(@current_resource).to receive(:package_name).with(@new_resource.package_name)
       @provider.load_current_resource
+      expect(@provider.current_resource.package_name).to eq(@new_resource.package_name)
     end
 
     it "should return a relative path to easy_install if no easy_install_binary is given" do
