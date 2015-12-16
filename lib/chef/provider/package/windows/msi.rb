@@ -44,7 +44,7 @@ class Chef
 
           # Returns a version if the package is installed or nil if it is not.
           def installed_version
-            if ::File.exist?(new_resource.source)
+            if !new_resource.source.nil? && ::File.exist?(new_resource.source)
               Chef::Log.debug("#{new_resource} getting product code for package at #{new_resource.source}")
               product_code = get_product_property(new_resource.source, "ProductCode")
               Chef::Log.debug("#{new_resource} checking package status and version for #{product_code}")
@@ -58,7 +58,7 @@ class Chef
 
           def package_version
             return new_resource.version if new_resource.version
-            if ::File.exist?(new_resource.source)
+            if !new_resource.source.nil? && ::File.exist?(new_resource.source)
               Chef::Log.debug("#{new_resource} getting product version for package at #{new_resource.source}")
               get_product_property(new_resource.source, "ProductVersion")
             end
@@ -72,7 +72,7 @@ class Chef
 
           def remove_package
             # We could use MsiConfigureProduct here, but we'll start off with msiexec
-            if ::File.exist?(new_resource.source)
+            if !new_resource.source.nil? && ::File.exist?(new_resource.source)
               Chef::Log.debug("#{new_resource} removing MSI package '#{new_resource.source}'")
               shell_out!("msiexec /qn /x \"#{new_resource.source}\" #{expand_options(new_resource.options)}", {:timeout => new_resource.timeout, :returns => new_resource.returns})
             else

@@ -29,7 +29,7 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
 
   subject do
     new_resource = Chef::Resource::WindowsPackage.new(pkg_name, run_context)
-    new_resource.source pkg_path
+    new_resource.source pkg_path if pkg_path
     new_resource.version pkg_version
     new_resource.installer_type pkg_type
     new_resource.options pkg_options

@@ -33,7 +33,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
   let(:resource_name) { 'calculator' }
   let(:new_resource) do
     new_resource = Chef::Resource::WindowsPackage.new(resource_name)
-    new_resource.source(resource_source)
+    new_resource.source(resource_source) if resource_source
     new_resource
   end
   let(:provider) { Chef::Provider::Package::Windows.new(new_resource, run_context) }
@@ -98,7 +98,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     shared_examples "a local file" do
 
       it "checks that the source path is valid" do
-        expect(Chef::Util::PathHelper).to receive(:validate_path)
+        expect(Chef::Util::PathHelper).to receive(:validate_path).and_call_original
         provider.package_provider
       end
 
@@ -280,15 +280,25 @@ describe Chef::Provider::Package::Windows, :windows_only do
   end
 
   describe "action_install" do
-    let(:new_resource) { Chef::Resource::WindowsPackage.new("blah.exe") }
+    let(:resource_name) { "blah" }
+    let(:resource_source) { "blah.exe" }
+
     before do
       new_resource.installer_type(:inno)
       allow_any_instance_of(Chef::Provider::Package::Windows::Exe).to receive(:package_version).and_return(new_resource.version)
     end
 
+    context "no source given" do
+      let(:resource_source) { nil }
+
+      it "raises a NoWindowsPackageSource error" do
+        expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::NoWindowsPackageSource)
+      end
+    end
+
     context "no version given, discovered or installed" do
       it "installs latest" do
-        expect(provider).to receive(:install_package).with("blah.exe", "latest")
+        expect(provider).to receive(:install_package).with("blah", "latest")
         provider.run_action(:install)
       end
     end
@@ -306,7 +316,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       before { new_resource.version('5.5.5') }
 
       it "installs given version" do
-        expect(provider).to receive(:install_package).with("blah.exe", "5.5.5")
+        expect(provider).to receive(:install_package).with("blah", "5.5.5")
         provider.run_action(:install)
       end
     end
@@ -331,7 +341,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
         end
         
         it "installs given version" do
-          expect(provider).to receive(:install_package).with("blah.exe", "5.5.5")
+          expect(provider).to receive(:install_package).with("blah", "5.5.5")
           provider.run_action(:install)
         end
       end
@@ -357,7 +367,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
         end
         
         it "installs given version" do
-          expect(provider).to receive(:install_package).with("blah.exe", "5.5.5")
+          expect(provider).to receive(:install_package).with("blah", "5.5.5")
           provider.run_action(:install)
         end
       end
