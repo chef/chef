@@ -11,7 +11,7 @@
 #
 
 PROGNAME=`basename $0`
-INSTALLER_DIR=/opt/chef
+INSTALLER_DIR=/opt/angrychef
 CONFIG_DIR=/etc/chef
 USAGE="usage: $0 [-v validation_key] ([-o organization] || [-u url])"
 

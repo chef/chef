@@ -36,7 +36,6 @@ else
 end
 
 resources_path "#{resources_path}/../chef"
-package_scripts_path "#{package_scripts_path}/../chef"
 
 msi_upgrade_code = "D7FDDC1A-7668-404E-AD2F-61F875632A9C"
 project_location_dir = "angrychef"

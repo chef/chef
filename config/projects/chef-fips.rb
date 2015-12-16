@@ -39,4 +39,3 @@ project_location_dir = "chef-fips"
 
 # Use chef's scripts for everything.
 resources_path "#{resources_path}/../chef"
-package_scripts_path "#{package_scripts_path}/../chef"
