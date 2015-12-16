@@ -59,10 +59,23 @@ BRANCHES
 
       it "exits when there is no git repo" do
         allow(::File).to receive(:directory?).with(/.*\.git/).and_return(false)
+        allow(::File).to receive(:exists?).with(/.*\.git/).and_return(false)
         expect {@cookbook_repo.sanity_check}.to raise_error(SystemExit)
       end
+     
 
       describe "and the repo is a git repo" do
+
+        describe "and the repo has a redirected git folder" do
+          it "exits if the redirected folder does not exist" do          
+            allow(::File).to receive(:directory?).with(/.*\.git/).and_return(false)
+            allow(::File).to receive(:exists?).with(/.*\.git/).and_return(true)
+            allow(::IO).to receive(:read).with(/.*\.git/).and_return('gitdir: /Users/someone/gitrepos/thiscookbook')
+            allow(::File).to receive(:directory?).with('/Users/someone/gitrepos/thiscookbook').and_return(false)          
+            expect {@cookbook_repo.sanity_check}.to raise_error(SystemExit)
+          end    
+        end
+
         before do
           allow(::File).to receive(:directory?).with(File.join(@repo_path, '.git')).and_return(true)
         end
@@ -98,6 +111,8 @@ DIRTY
             it "passes the sanity check" do
               @cookbook_repo.sanity_check
             end
+
+
 
           end
         end

@@ -130,13 +130,21 @@ class Chef
       private
 
       def git_repo?(directory)
-        if File.directory?(File.join(directory, '.git'))
+        possible_git_directory = File.join(directory, '.git')
+        if File.directory?(possible_git_directory)
+          return true
+        elsif File.exists?(possible_git_directory) and is_git_dir_redirect?(possible_git_directory)
           return true
         elsif File.dirname(directory) == directory
           return false
-        else
-          git_repo?(File.dirname(directory))
+        else 
+          git_repo?(File.dirname(directory))        
         end
+      end
+
+      def is_git_dir_redirect?(directory)
+        redirect_path = IO.read(directory).gsub('gitdir: ', '').strip
+        return File.directory?(redirect_path)
       end
 
       def apply_opts(opts)
