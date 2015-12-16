@@ -19,26 +19,17 @@ else
 fi
 export USR_BIN_DIR
 
-# sanity check that we're getting symlinks from the pre-install script
-if [ ! -L $USR_BIN_DIR/chef-client ]; then
-  echo "$USR_BIN_DIR/chef-client symlink was not installed by pre-install script!"
-  exit 1
-fi
+# sanity check that we're getting the correct symlinks from the pre-install script
+linked_binaries=( "chef-client" "knife" "chef-solo" "ohai" )
 
-if [ ! -L "$USR_BIN_DIR/knife" ]; then
-  echo "$USR_BIN_DIR/knife symlink was not installed by pre-install script!"
-  exit 1
-fi
-
-if [ ! -L "$USR_BIN_DIR/chef-solo" ]; then
-  echo "$USR_BIN_DIR/chef-solo symlink was not installed by pre-install script!"
-  exit 1
-fi
-
-if [ ! -L "$USR_BIN_DIR/ohai" ]; then
-  echo "$USR_BIN_DIR/ohai symlink was not installed by pre-install script!"
-  exit 1
-fi
+for i in "${linked_binaries[@]}"
+do
+  LINK_TARGET=`readlink $USR_BIN_DIR/$i`
+  if [ "$LINK_TARGET" != "$EMBEDDED_BIN_DIR/$i" ]; then
+    echo "$USR_BIN_DIR/$i symlink to $EMBEDDED_BIN_DIR/$i was not correctly created by the pre-install script!"
+    exit 1
+  fi
+done
 
 # Ensure the calling environment (disapproval look Bundler) does not
 # infect our Ruby environment created by the `chef-client` cli.
