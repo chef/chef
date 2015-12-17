@@ -263,9 +263,7 @@ class Chef
             Chef.log_deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead.")
           end
         else
-          if !result.nil?
-            Chef.log_deprecation("#{name} nil is now an allowed value of #{name}.  This will change in Chef 13, and attempting to set this value will result in an exception.")
-          end
+          Chef.log_deprecation("#{name} nil is not an allowed value of #{name}.  This will change in Chef 13, and attempting to set this value will result in an exception.")
         end
         result
       else
