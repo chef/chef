@@ -22,7 +22,7 @@ chef_project_contents = IO.read(File.expand_path('../chef.rb', __FILE__))
 self.instance_eval chef_project_contents
 
 name "chef-fips"
-friendly_name "Chef Client with FIPS"
+friendly_name "Chef Client with FIPS OpenSSL"
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
