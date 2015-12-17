@@ -131,8 +131,8 @@ class Chef
     #
     # === Parameters
     # path:: path part of the request URL
-    def delete(path, headers={})
-      request(:DELETE, path, headers)
+    def delete(path, json, headers={})
+      request(:DELETE, path, headers, json)
     end
 
     # Makes an HTTP request to +path+ with the given +method+, +headers+, and
