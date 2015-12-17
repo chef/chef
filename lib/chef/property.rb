@@ -253,13 +253,19 @@ class Chef
         return get(resource)
       end
 
-      if value.nil? && !explicitly_accepts_nil?(resource)
+      if value.nil?
         # In Chef 12, value(nil) does a *get* instead of a set, so we
         # warn if the value would have been changed. In Chef 13, it will be
         # equivalent to value = nil.
         result = get(resource)
-        if !result.nil?
-          Chef.log_deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
+        if explicitly_accepts_nil?(resource)
+          if !result.nil?
+            Chef.log_deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead.")
+          end
+        else
+          if !result.nil?
+            Chef.log_deprecation("#{name} nil is now an allowed value of #{name}.  This will change in Chef 13, and attempting to set this value will result in an exception.")
+          end
         end
         result
       else
