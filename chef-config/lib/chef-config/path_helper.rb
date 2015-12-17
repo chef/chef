@@ -149,6 +149,13 @@ module ChefConfig
       path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\"+x }
     end
 
+	# This function does not switch to backslashes for windows
+	# This is because only forwardslashes should be used with dir (even for windows)
+    def self.escape_glob_dir(*parts)
+      path = Pathname.new(join(*parts)).cleanpath.to_s
+      path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\"+x }
+    end	
+	
     def self.relative_path_from(from, to)
       Pathname.new(cleanpath(to)).relative_path_from(Pathname.new(cleanpath(from)))
     end
