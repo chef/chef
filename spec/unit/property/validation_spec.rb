@@ -99,6 +99,14 @@ describe "Chef::Resource.property validation" do
           expect(resource.x).to eq 'default'
         end
       end
+      if tags.include?(:nil_is_reset)
+        it "setting value to nil resets the value" do
+          resource.instance_eval { @x = 'default' }
+          expect(resource.property_is_set?(:x)).to be_truthy
+          expect(resource.x(nil)).not_to eq('default')
+          expect(resource.property_is_set?(:x)).to be_falsey
+        end
+      end
     end
   end
 
@@ -186,32 +194,38 @@ describe "Chef::Resource.property validation" do
     validation_test 'String',
       [ 'hi' ],
       [ 10 ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     validation_test ':a',
       [ :a ],
       [ :b ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     validation_test ':a, is: :b',
       [ :a, :b ],
       [ :c ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     validation_test ':a, is: [ :b, :c ]',
       [ :a, :b, :c ],
       [ :d ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     validation_test '[ :a, :b ], is: :c',
       [ :a, :b, :c ],
       [ :d ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     validation_test '[ :a, :b ], is: [ :c, :d ]',
       [ :a, :b, :c, :d ],
       [ :e ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     validation_test 'nil',
       [ nil ],
@@ -224,7 +238,8 @@ describe "Chef::Resource.property validation" do
     validation_test '[]',
       [],
       [ :a ],
-      [ nil ]
+      [],
+      :nil_is_reset
   end
 
   # is
@@ -233,34 +248,41 @@ describe "Chef::Resource.property validation" do
     validation_test 'is: String',
       [ 'a', '' ],
       [ :a, 1 ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     # Value
     validation_test 'is: :a',
       [ :a ],
       [ :b ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     validation_test 'is: [ :a, :b ]',
       [ :a, :b ],
       [ [ :a, :b ] ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     validation_test 'is: [ [ :a, :b ] ]',
       [ [ :a, :b ] ],
       [ :a, :b ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     # Regex
     validation_test 'is: /abc/',
       [ 'abc', 'wowabcwow' ],
       [ '', 'abac' ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     # Property
     validation_test 'is: Chef::Property.new(is: :a)',
       [ :a ],
-      [ :b, nil ]
+      [ :b ],
+      [],
+      :nil_is_reset
 
     # RSpec Matcher
     class Globalses
@@ -270,13 +292,15 @@ describe "Chef::Resource.property validation" do
     validation_test "is: Globalses.eq(10)",
       [ 10 ],
       [ 1 ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     # Proc
     validation_test 'is: proc { |x| x }',
       [ true, 1 ],
       [ false ],
-      [ nil ]
+      [],
+      :nil_is_reset
 
     validation_test 'is: proc { |x| x > blah }',
       [ 10 ],
@@ -293,7 +317,8 @@ describe "Chef::Resource.property validation" do
     validation_test 'is: []',
       [],
       [ :a ],
-      [ nil ]
+      [],
+      :nil_is_reset
   end
 
   # Combination

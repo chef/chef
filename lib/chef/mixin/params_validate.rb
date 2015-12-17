@@ -457,7 +457,7 @@ class Chef
 
         def call(resource, value=NOT_PASSED)
           # setting to nil does a get
-          if value.nil? && !explicitly_accepts_nil?(resource)
+          if value.nil?
             get(resource)
           else
             super

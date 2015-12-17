@@ -253,13 +253,13 @@ class Chef
         return get(resource)
       end
 
-      if value.nil? && !explicitly_accepts_nil?(resource)
+      if value.nil? && !options.has_key?(:is)
         # In Chef 12, value(nil) does a *get* instead of a set, so we
         # warn if the value would have been changed. In Chef 13, it will be
         # equivalent to value = nil.
         result = get(resource)
         if !result.nil?
-          Chef.log_deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. Please change your code to explicitly accept nil using \"property :#{name}, [MyType, nil]\", or stop setting this value to nil.")
+          Chef.log_deprecation("#{name} nil currently does not overwrite the value of #{name}. This will change in Chef 13, and the value will be set to nil instead. If `nil` is a valid value for your property, please change it to use a type (property kind_of: [ String, NilClass ] becomes property [ String, nil ]) or use `is` instead of `equal_to` or `kind_of` to avoid the warning. If `nil` is not a valid value for your property, please stop setting it to nil.")
         end
         result
       else
@@ -332,8 +332,6 @@ class Chef
 
           value = coerce(resource, value)
 
-          # We don't validate defaults
-
           # If the value is mutable (non-frozen), we set it on the instance
           # so that people can mutate it.  (All constant default values are
           # frozen.)
@@ -367,7 +365,18 @@ class Chef
     def set(resource, value)
       unless value.is_a?(DelayedEvaluator)
         value = coerce(resource, value)
-        validate(resource, value)
+        if value.nil?
+          # If the value is `nil`, and is not a valid value for this property,
+          # it means we need to reset the property.
+          begin
+            validate(resource, value)
+          rescue Chef::Exceptions::ValidationFailed
+            reset(resource)
+            return
+          end
+        else
+          validate(resource, value)
+        end
       end
       set_value(resource, value)
     end
@@ -411,6 +420,8 @@ class Chef
     #
     # Does no special handling for lazy values.
     #
+    # `nil` is never coerced.
+    #
     # @param resource [Chef::Resource] The resource we're coercing against
     #   (to provide context for the coerce).
     # @param value The value to coerce.
@@ -421,7 +432,7 @@ class Chef
     #   this property.
     #
     def coerce(resource, value)
-      if options.has_key?(:coerce)
+      if options.has_key?(:coerce) && !value.nil?
         value = exec_in_resource(resource, options[:coerce], value)
       end
       value
@@ -508,49 +519,6 @@ class Chef
     # @see #initialize for a list of valid options.
     #
     attr_reader :options
-
-    #
-    # Find out whether this type accepts nil explicitly.
-    #
-    # A type accepts nil explicitly if "is" allows nil, it validates as nil, *and* is not simply
-    # an empty type.
-    #
-    # A type is presumed to accept nil if it does coercion (which must handle nil).
-    #
-    # These examples accept nil explicitly:
-    # ```ruby
-    # property :a, [ String, nil ]
-    # property :a, [ String, NilClass ]
-    # property :a, [ String, proc { |v| v.nil? } ]
-    # ```
-    #
-    # This does not (because the "is" doesn't exist or doesn't have nil):
-    #
-    # ```ruby
-    # property :x, String
-    # ```
-    #
-    # These do not, even though nil would validate fine (because they do not
-    # have "is"):
-    #
-    # ```ruby
-    # property :a
-    # property :a, equal_to: [ 1, 2, 3, nil ]
-    # property :a, kind_of: [ String, NilClass ]
-    # property :a, respond_to: [ ]
-    # property :a, callbacks: { "a" => proc { |v| v.nil? } }
-    # ```
-    #
-    # @param resource [Chef::Resource] The resource we're coercing against
-    #   (to provide context for the coerce).
-    #
-    # @return [Boolean] Whether this value explicitly accepts nil.
-    #
-    # @api private
-    def explicitly_accepts_nil?(resource)
-      options.has_key?(:coerce) ||
-      (options.has_key?(:is) && resource.send(:_pv_is, { name => nil }, name, options[:is], raise_error: false))
-    end
 
     def get_value(resource)
       if instance_variable_name
