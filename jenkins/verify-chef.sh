@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # $PROJECT_NAME is set by Jenkins, this allows us to use the same script to verify
 # Chef and Angry Chef
@@ -23,22 +23,23 @@ fi
 export USR_BIN_DIR
 
 # sanity check that we're getting the correct symlinks from the pre-install script
-if [ `readlink $USR_BIN_DIR/chef-client` != "$BIN_DIR/chef-client" ]; then
+# solaris doesn't have readlink or test -e. proceed with caution.
+if [ ! -L $USR_BIN_DIR/chef-client ] || [ `ls -n $USR_BIN_DIR/chef-client | awk '{print$NF}'` != "$BIN_DIR/chef-client" ]; then
   echo "$USR_BIN_DIR/chef-client symlink to $BIN_DIR/chef-client was not correctly created by the pre-install script!"
   exit 1
 fi
 
-if [ `readlink $USR_BIN_DIR/knife` != "$BIN_DIR/knife" ]; then
+if [ ! -L $USR_BIN_DIR/knife ] || [ `ls -n $USR_BIN_DIR/knife | awk '{print$NF}'` != "$BIN_DIR/knife" ]; then
   echo "$USR_BIN_DIR/knife symlink to $BIN_DIR/knife was not correctly created by the pre-install script!"
   exit 1
 fi
 
-if [ `readlink $USR_BIN_DIR/chef-solo` != "$BIN_DIR/chef-solo" ]; then
+if [ ! -L $USR_BIN_DIR/chef-solo ] || [ `ls -n $USR_BIN_DIR/chef-solo | awk '{print$NF}'` != "$BIN_DIR/chef-solo" ]; then
   echo "$USR_BIN_DIR/chef-solo symlink to $BIN_DIR/chef-solo was not correctly created by the pre-install script!"
   exit 1
 fi
 
-if [ `readlink $USR_BIN_DIR/ohai` != "$BIN_DIR/ohai" ]; then
+if [ ! -L $USR_BIN_DIR/ohai ] || [ `ls -n $USR_BIN_DIR/ohai | awk '{print$NF}'` != "$BIN_DIR/ohai" ]; then
   echo "$USR_BIN_DIR/ohai symlink to $BIN_DIR/ohai was not correctly created by the pre-install script!"
   exit 1
 fi
