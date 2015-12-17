@@ -92,8 +92,8 @@ class Chef
           unless File.directory?(path)
             raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' is invalid"
           end
-		  
-          names += Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path), "*")).map{|f|File.basename(f)}.sort		
+            
+          names += Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path), "*")).map{|f|File.basename(f)}.sort
         end
         names.inject({}) {|h, n| h[n] = n; h}
       else
@@ -118,7 +118,7 @@ class Chef
           unless File.directory?(path)
             raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' is invalid"
           end
-		  
+            
           Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path, name.to_s), "*.json")).inject({}) do |bag, f|
             item = Chef::JSONCompat.from_json(IO.read(f))
 
