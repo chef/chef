@@ -97,6 +97,7 @@ class Chef
       # Send a DELETE request to @new_resource.url
       def action_delete
         converge_by("#{@new_resource} DELETE to #{@new_resource.url}") do
+          message = check_message(@new_resource.message)
           body = @http.delete(
             "#{@new_resource.url}",
             message,
