@@ -29,25 +29,39 @@ else
   dependency "rubygems"
 end
 
+fips_enabled = (project.overrides[:fips] && project.overrides[:fips][:enabled]) || false
+
 build do
-  if windows?
-    block "Add OpenSSL customization file" do
-      # gets directories for RbConfig::CONFIG and sanitizes them.
-      def get_sanitized_rbconfig(config)
-        ruby = windows_safe_path("#{install_dir}/embedded/bin/ruby")
+  block "Add OpenSSL customization file" do
+    # gets directories for RbConfig::CONFIG and sanitizes them.
+    def get_sanitized_rbconfig(config)
+      ruby = windows_safe_path("#{install_dir}/embedded/bin/ruby")
 
-        config_dir = Bundler.with_clean_env do
-          command_output = %x|#{ruby} -rrbconfig -e "puts RbConfig::CONFIG['#{config}']"|.strip
-          windows_safe_path(command_output)
-        end
-
-        if config_dir.nil? || config_dir.empty?
-          raise "could not determine embedded ruby's RbConfig::CONFIG['#{config}']"
-        end
-
-        config_dir
+      config_dir = Bundler.with_clean_env do
+        command_output = %x|#{ruby} -rrbconfig -e "puts RbConfig::CONFIG['#{config}']"|.strip
+        windows_safe_path(command_output)
       end
 
+      if config_dir.nil? || config_dir.empty?
+        raise "could not determine embedded ruby's RbConfig::CONFIG['#{config}']"
+      end
+
+      config_dir
+    end
+
+    fips_additions = [
+      "OpenSSL.fips_mode = true",
+      "require 'digest'",
+      "require 'digest/sha1'",
+      "Digest::SHA1 = OpenSSL::Digest::SHA1",
+
+      "require 'digest/md5'",
+      "# We're going to use the ruby md5 implementation for now",
+      "# This will be removed once all our MD5 uses are removed",
+      "OpenSSL::Digest::MD5 = Digest::MD5",
+    ].join("\n")
+
+    if windows?
       embedded_ruby_site_dir = get_sanitized_rbconfig('sitelibdir')
       embedded_ruby_lib_dir  = get_sanitized_rbconfig('rubylibdir')
 
@@ -65,6 +79,16 @@ build do
         f.rewind
         f.write("\nrequire 'ssl_env_hack'\n")
         f.write(unpatched_openssl_rb)
+        f.write(fips_additions) if fips_enabled
+      end
+    else
+      embedded_ruby_lib_dir  = get_sanitized_rbconfig('rubylibdir')
+      source_openssl_rb = File.join(embedded_ruby_lib_dir, "openssl.rb")
+      File.open(source_openssl_rb, "r+") do |f|
+        unpatched_openssl_rb = f.read
+        f.rewind
+        f.write(unpatched_openssl_rb)
+        f.write(fips_additions) if fips_enabled
       end
     end
   end
