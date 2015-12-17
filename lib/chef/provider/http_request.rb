@@ -99,6 +99,7 @@ class Chef
         converge_by("#{@new_resource} DELETE to #{@new_resource.url}") do
           body = @http.delete(
             "#{@new_resource.url}",
+            message,
             @new_resource.headers
           )
           @new_resource.updated_by_last_action(true)
