@@ -266,6 +266,23 @@ RSpec.describe ChefConfig::PathHelper do
     end
   end
 
+  describe "escape_glob_dir" do
+    it "escapes characters reserved by glob" do
+      path = "C:\\this\\*path\\[needs]\\escaping?"
+      escaped_path = "C:\\\\this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
+      expect(path_helper.escape_glob_dir(path)).to eq(escaped_path)
+    end
+
+    context "when given more than one argument" do
+      it "joins, cleanpaths, and escapes characters reserved by glob" do
+        args = ["this/*path", "[needs]", "escaping?"]
+        escaped_path = "this/\\*path/\\[needs\\]/escaping\\?"
+        expect(path_helper).to receive(:join).with(*args).and_call_original
+        expect(path_helper.escape_glob_dir(*args)).to eq(escaped_path)
+      end
+    end
+  end  
+
   describe "all_homes" do
     before do
       stub_const("ENV", env)

@@ -141,12 +141,20 @@ module ChefConfig
       canonical_path(path1) == canonical_path(path2)
     end
 
+    # Note: this method is deprecated. Please use escape_glob_dirs
     # Paths which may contain glob-reserved characters need
     # to be escaped before globbing can be done.
     # http://stackoverflow.com/questions/14127343
     def self.escape_glob(*parts)
       path = cleanpath(join(*parts))
       path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\" + x }
+    end
+
+    # This function does not switch to backslashes for windows
+    # This is because only forwardslashes should be used with dir (even for windows)
+    def self.escape_glob_dir(*parts)
+      path = Pathname.new(join(*parts)).cleanpath.to_s
+      path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\"+x }
     end
 
     def self.relative_path_from(from, to)
