@@ -430,7 +430,7 @@ EOM
       expect(run_complete).to be >= 0
 
       # Make sure there is exactly one result for each, and that it occurs *after* the complete message.
-      expect(match_indices(/nil currently does not overwrite the value of/, result.stdout)).to match([ be > run_complete ])
+      expect(match_indices(/An attempt was made to change x from \[\] to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./, result.stdout)).to match([ be > run_complete ])
     end
   end
 

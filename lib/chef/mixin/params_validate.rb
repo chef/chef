@@ -22,7 +22,6 @@ require "chef/delayed_evaluator"
 class Chef
   module Mixin
     module ParamsValidate
-
       # Takes a hash of options, along with a map to validate them.  Returns the original
       # options hash, plus any changes that might have been made (through things like setting
       # default values in the validation map)
@@ -333,6 +332,7 @@ class Chef
       def _pv_name_property(opts, key, is_name_property=true)
         if is_name_property
           if opts[key].nil?
+            raise CannotValidateStaticallyError, "name_property cannot be evaluated without a resource." if self == Chef::Mixin::ParamsValidate
             opts[key] = self.instance_variable_get(:"@name")
           end
         end
@@ -403,6 +403,7 @@ class Chef
         to_be.each do |tb|
           case tb
           when Proc
+            raise CannotValidateStaticallyError, "is: proc { } must be evaluated once for each resource" if self == Chef::Mixin::ParamsValidate
             return true if instance_exec(value, &tb)
           when Property
             validate(opts, { key => tb.validation_options })
@@ -436,11 +437,20 @@ class Chef
       #
       def _pv_coerce(opts, key, coercer)
         if opts.has_key?(key.to_s)
+          raise CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_s] = instance_exec(opts[key], &coercer)
         elsif opts.has_key?(key.to_sym)
+          raise CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_sym] = instance_exec(opts[key], &coercer)
         end
       end
+
+      # We allow Chef::Mixin::ParamsValidate.validate(), but we will raise an
+      # error if you try to do anything requiring there to be an actual resource.
+      # This way, you can statically validate things if you have constant validation
+      # (which is the norm).
+      extend self
+
 
       # Used by #set_or_return to avoid emitting a deprecation warning for
       # "value nil" and to keep default stickiness working exactly the same

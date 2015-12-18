@@ -203,7 +203,7 @@ describe "Chef::Resource.property" do
           expect(subresource_class.properties[:y]).not_to be_nil
         end
         it "y is not on the superclass" do
-          expect { resource_class.y 10 }.to raise_error
+          expect { resource_class.y 10 }.to raise_error NoMethodError
           expect(resource_class.properties[:y]).to be_nil
         end
       end
@@ -581,10 +581,17 @@ describe "Chef::Resource.property" do
     end
 
     context "validation of defaults" do
-      with_property ":x, String, default: 10" do
-        it "when the resource is created, no error is raised" do
-          resource
+      it "When a class is declared with property :x, String, default: 10, a warning is emitted" do
+        expect { resource_class.class_eval { property :x, String, default: 10 } }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+          /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Option x must be one of: String!  You passed 10./
+      end
+      context "With property :x, String, default: 10" do
+        before do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          resource_class.class_eval { property :x, String, default: 10 }
+          Chef::Config[:treat_deprecation_warnings_as_errors] = true
         end
+
         it "when x is set, no error is raised" do
           expect(resource.x "hi").to eq "hi"
           expect(resource.x).to eq "hi"
@@ -592,9 +599,6 @@ describe "Chef::Resource.property" do
         it "when x is retrieved, no validation error is raised" do
           expect(resource.x).to eq 10
         end
-        # it "when x is retrieved, a validation error is raised" do
-        #   expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
-        # end
       end
 
       with_property ":x, String, default: lazy { Namer.next_index }" do
@@ -605,40 +609,31 @@ describe "Chef::Resource.property" do
           expect(resource.x "hi").to eq "hi"
           expect(resource.x).to eq "hi"
         end
-        it "when x is retrieved, no validation error is raised" do
-          expect(resource.x).to eq 1
+        it "when x is retrieved, an invalid default warning is emitted and the value is returned" do
+          expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Default value 1 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Option x must be one of: String!  You passed 1./
           expect(Namer.current_index).to eq 1
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          expect(resource.x).to eq 2
         end
-        # it "when x is retrieved, a validation error is raised" do
-        #   expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
-        #   expect(Namer.current_index).to eq 1
-        # end
       end
 
       with_property ":x, default: lazy { Namer.next_index.to_s }, is: proc { |v| Namer.next_index; true }" do
-        it "validation is not run at all on the default value" do
+        it "coercion and validation is only run the first time" do
           expect(resource.x).to eq "1"
-          expect(Namer.current_index).to eq 1
+          expect(Namer.current_index).to eq 2
+          expect(resource.x).to eq "1"
+          expect(Namer.current_index).to eq 2
         end
-        # it "validation is run each time" do
-        #   expect(resource.x).to eq '1'
-        #   expect(Namer.current_index).to eq 2
-        #   expect(resource.x).to eq '1'
-        #   expect(Namer.current_index).to eq 2
-        # end
       end
 
       with_property ":x, default: lazy { Namer.next_index.to_s.freeze }, is: proc { |v| Namer.next_index; true }" do
-        it "validation is not run at all on the default value" do
+        it "coercion and validation is run each time" do
           expect(resource.x).to eq "1"
-          expect(Namer.current_index).to eq 1
+          expect(Namer.current_index).to eq 2
+          expect(resource.x).to eq "3"
+          expect(Namer.current_index).to eq 4
         end
-        # it "validation is only run the first time" do
-        #   expect(resource.x).to eq '1'
-        #   expect(Namer.current_index).to eq 2
-        #   expect(resource.x).to eq '1'
-        #   expect(Namer.current_index).to eq 2
-        # end
       end
     end
 
@@ -716,12 +711,12 @@ describe "Chef::Resource.property" do
       end
 
       with_property ':x, proc { |v| Namer.next_index; true }, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
-        it "coercion is only run the first time x is retrieved, and validation is not run" do
+        it "coercion and validation is only run the first time x is retrieved" do
           expect(Namer.current_index).to eq 0
           expect(resource.x).to eq "101"
-          expect(Namer.current_index).to eq 1
+          expect(Namer.current_index).to eq 2
           expect(resource.x).to eq "101"
-          expect(Namer.current_index).to eq 1
+          expect(Namer.current_index).to eq 2
         end
       end
 
@@ -732,12 +727,12 @@ describe "Chef::Resource.property" do
           end
         end
         with_property ':x, Integer, coerce: proc { |v| "#{v}#{next_index}" }, default: 10' do
-          it "when x is retrieved, it is coerced and not validated" do
-            expect(resource.x).to eq "101"
+          it "when x is retrieved, it is coerced and emits an invalid default warning, but still returns the value" do
+            expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+              /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Option x must be one of: Integer!  You passed "101"./
+            Chef::Config[:treat_deprecation_warnings_as_errors] = false
+            expect(resource.x).to eq "102"
           end
-          # it "when x is retrieved, it is coerced before validating and fails" do
-          #   expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
-          # end
         end
         with_property ':x, String, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
           it "when x is retrieved, it is coerced before validating and passes" do
@@ -745,20 +740,20 @@ describe "Chef::Resource.property" do
           end
         end
         with_property ':x, Integer, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
-          it "when x is retrieved, it is coerced and not validated" do
-            expect(resource.x).to eq "101"
+          it "when x is retrieved, it is coerced and emits an invalid default warning; the value is still returned." do
+            expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+              /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Option x must be one of: Integer!  You passed "101"./
+            Chef::Config[:treat_deprecation_warnings_as_errors] = false
+            expect(resource.x).to eq "102"
           end
-          # it "when x is retrieved, it is coerced before validating and fails" do
-          #   expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
-          # end
         end
         with_property ':x, proc { |v| Namer.next_index; true }, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
-          it "coercion is only run the first time x is retrieved, and validation is not run" do
+          it "coercion is only run the first time x is retrieved, and validation is run" do
             expect(Namer.current_index).to eq 0
             expect(resource.x).to eq "101"
-            expect(Namer.current_index).to eq 1
+            expect(Namer.current_index).to eq 2
             expect(resource.x).to eq "101"
-            expect(Namer.current_index).to eq 1
+            expect(Namer.current_index).to eq 2
           end
         end
       end
@@ -922,7 +917,8 @@ describe "Chef::Resource.property" do
         expect(Namer.current_index).to eq 1
       end
       it "does not emit a deprecation warning if set to nil" do
-        expect(resource.x nil).to eq "1"
+        # nil is never coerced
+        expect(resource.x nil).to be_nil
       end
       it "coercion sets the value (and coercion does not run on get)" do
         expect(resource.x 10).to eq "101"

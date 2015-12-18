@@ -26,9 +26,9 @@ class Chef
 
       property :gem_binary, default: "#{RbConfig::CONFIG['bindir']}/gem",
                callbacks: {
-                 "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { false }
+                 "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == properties[:gem_binary].default }
                }
-      property :compile_time, [ true, false ], default: lazy { Chef::Config[:chef_gem_compile_time] }, desired_state: false
+      property :compile_time, [ true, false, nil ], default: lazy { Chef::Config[:chef_gem_compile_time] }, desired_state: false
 
       def after_created
         # Chef::Resource.run_action: Caveat: this skips Chef::Runner.run_action, where notifications are handled

@@ -80,30 +80,26 @@ Conflicts: wget-ssl
       expect { provider.run_action(:purge) }.not_to raise_error
     end
 
-    it "should raise an exception if a source is nil when :install" do
-      new_resource.source nil
-      allow(::File).to receive(:exist?).with(source).and_return(false)
-      expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
-    end
+    context "when source is nil" do
+      let(:source) { nil }
 
-    it "should raise an exception if a source is nil when :upgrade" do
-      new_resource.source nil
-      allow(::File).to receive(:exist?).with(source).and_return(false)
-      expect { provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
-    end
+      it "should raise an exception if a source is nil when :install" do
+        expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+      end
 
-    it "should not raise an exception if a source is nil when :remove" do
-      new_resource.source nil
-      allow(::File).to receive(:exist?).with(source).and_return(false)
-      expect(provider).to receive(:action_remove)
-      expect { provider.run_action(:remove) }.not_to raise_error
-    end
+      it "should raise an exception if a source is nil when :upgrade" do
+        expect { provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
+      end
 
-    it "should not raise an exception if a source is nil when :purge" do
-      new_resource.source nil
-      allow(::File).to receive(:exist?).with(source).and_return(false)
-      expect(provider).to receive(:action_purge)
-      expect { provider.run_action(:purge) }.not_to raise_error
+      it "should not raise an exception if a source is nil when :remove" do
+        expect(provider).to receive(:action_remove)
+        expect { provider.run_action(:remove) }.not_to raise_error
+      end
+
+      it "should not raise an exception if a source is nil when :purge" do
+        expect(provider).to receive(:action_purge)
+        expect { provider.run_action(:purge) }.not_to raise_error
+      end
     end
   end
 
