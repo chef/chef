@@ -21,7 +21,7 @@ require 'chef/mixin/shell_out'
 require 'tmpdir'
 
 # run this test only for following platforms.
-include_flag = !(['ubuntu', 'centos', 'aix', 'solaris2'].include?(ohai[:platform]))
+include_flag = !(['ubuntu', 'centos', 'solaris2'].include?(ohai[:platform]))
 
 describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => include_flag do
   # Disabled in travis because it refuses to let us mount a ramdisk. /dev/ramX does not
@@ -34,6 +34,7 @@ describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => inclu
   def setup_device_for_mount
     # use ramdisk for creating a test device for mount.
     # This can cleaner if we have chef resource/provider for ramdisk.
+    # TODO: These tests only work in LPARs, not WPARs on AIX.
     case ohai[:platform]
     when "aix"
       ramdisk = shell_out!("mkramdisk 16M").stdout

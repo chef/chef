@@ -108,8 +108,8 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
     it_behaves_like "src service"
   end
 
-
-  describe "When service is a group" do
+  # Cannot run this test on a WPAR
+  describe "When service is a group", :not_wpar do
     before(:all) do
       script_dir = File.join(File.dirname(__FILE__), "/../assets/")
       shell_out!("mkssys -s ctestsys -p #{script_dir}/testchefsubsys -u #{get_user_id} -S -n 15 -f 9 -R -Q -G ctestgrp")
