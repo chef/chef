@@ -164,6 +164,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :openssl_lt_101 => true unless openssl_lt_101?
   config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
   config.filter_run_excluding :broken => true
+  config.filter_run_excluding :not_wpar => true unless wpar?
 
   running_platform_arch = `uname -m`.strip unless windows?
 
