@@ -73,6 +73,8 @@ Things we want to be true:
    but *not* valid for `default: lazy { nil }` (or more likely,
    `default: lazy { other_property_that_could_be_nil }`).
 
+## Possible Solutions
+
 The possible solutions I can come up with are below. I think the one that meets
 all our criteria with the least complexity is "Properties with no default or
 `default: nil` are valid", with "Properties with no default are valid" running
@@ -107,6 +109,8 @@ property :config_path, String, default: lazy { "#{path}/default_config.ini" }
 
 ### Properties with no default treat `nil` as valid
 
+This is tied with the next one for my favorite.
+
 This passes all of the rules, and is simple. If the default is not specified,
 then we are giving you a default, and we should take our own steps to make sure
 it is a valid one.
@@ -118,11 +122,13 @@ property :x, String
 property :x, String, default: nil # ValidationError when declaring this
 ```
 
-This is not intuitive. It's the least bad of the alternatives in my opinion,
-as the failure of intuition would be revealed immediately on declaration with a
-clear error message.
+This is not intuitive. It's not terrible in my opinion, as the failure of
+intuition would be revealed immediately on declaration with a clear error
+message.
 
 ### Properties with no default or `default: nil` are valid
+
+This is tied with the previous one for my favorite.
 
 In this, we solve the above problem by treating `default: nil` as valid (but no
 other construct). I don't think any other problems remain. This is arguably a
