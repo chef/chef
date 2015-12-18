@@ -94,9 +94,11 @@ module TinyServer
       true
     rescue Errno::ECONNREFUSED, EOFError, Errno::ECONNRESET => e
       sleep 0.1
+      true
       # If the host has ":::1 localhost" in its hosts file and if IPv6
       # is not enabled we can get NetworkUnreachable exception...
-    rescue Errno::ENETUNREACH, Net::ReadTimeout, IO::EAGAINWaitReadable => e
+    rescue Errno::ENETUNREACH, Net::ReadTimeout, IO::EAGAINWaitReadable,
+        Errno::EHOSTUNREACH => e
       sleep 0.1
       false
     end
