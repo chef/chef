@@ -104,17 +104,15 @@ class Chef
         res.group(@group) if @group
         res.mode(@mode) if @mode
         res.owner(@owner) if @owner
-        res.source(@source) if @source
 
         res
       end
 
       def cookbook_file_resource
         res = Chef::Resource::CookbookFile.new(@path, run_context)
+        res.cookbook_name = @cookbook if @cookbook
         res.name(@path)
         res.backup(@backup) if @backup
-        res.content(@content) if @content
-        res.cookbook_name = @cookbook if @cookbook
         res.group(@group) if @group
         res.mode(@mode) if @mode
         res.owner(@owner) if @owner
@@ -124,20 +122,15 @@ class Chef
       end
 
       def define_resource_requirements
-        super
         requirements.assert(
           :create, :create_if_missing, :delete, :enable, :disable
         ) do |a|
           type = @new_resource.type.to_s
-          a.assertion { !['daemon', 'agent'].include?(type) }
-          a.failure_message(
-            Chef::Exceptions::UnsupportedAction,
-            "service_type must be 'daemon' or 'agent'"
-          )
+          a.assertion { ['daemon', 'agent'].include?(type) }
+          error_msg = 'type must be daemon or agent'
+          a.failure_message Chef::Exceptions::ValidationFailed, error_msg
         end
       end
-
-      private
 
       def content?
         if @new_resource.hash

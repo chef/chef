@@ -49,7 +49,7 @@ class Chef
       def source(arg = nil)
         set_or_return(
           :source, arg,
-          :kind_of => [ String, Array ]
+          :kind_of => [String, Array]
         )
       end
 
@@ -77,38 +77,42 @@ class Chef
       def backup(arg=nil)
         set_or_return(
           :backup, arg,
-          :kind_of => [ Integer, FalseClass ]
+          :kind_of => [Integer, FalseClass]
         )
       end
 
       def group(arg = nil)
         set_or_return(
           :group, arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [String, Integer]
         )
       end
 
       def mode(arg = nil)
         set_or_return(
           :mode, arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [String, Integer]
         )
       end
 
       def owner(arg = nil)
         set_or_return(
           :owner, arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [String, Integer]
         )
       end
 
       def type(type = nil)
-        type = type ? type.downcase : nil
+        type = type ? type.downcase : 'daemon'
         if type == 'daemon'
           @path = "/Library/LaunchDaemons/#{name}.plist"
         elsif type == 'agent'
           @path = "/Library/LaunchAgents/#{name}.plist"
+        else
+          error_msg = 'type must be daemon or agent'
+          raise Chef::Exceptions::ValidationFailed, error_msg
         end
+        type
       end
 
       def abandon_process_group(arg = nil)
