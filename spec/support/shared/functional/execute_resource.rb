@@ -21,10 +21,15 @@ shared_context "a non-admin Windows user" do
 
   let(:windows_nonadmin_user_domain) { ENV['COMPUTERNAME'] }
   let(:windows_nonadmin_user_qualified) { "#{windows_nonadmin_user_domain}\\#{windows_nonadmin_user}" }
-
+  let(:temp_profile_path) { "#{ENV['USERPROFILE']}\\..\\cheftesttempuser" }
   before do
     shell_out!("net.exe user /delete #{windows_nonadmin_user}", returns: [0,2])
-    shell_out!("net.exe user /add #{windows_nonadmin_user} \"#{windows_nonadmin_user_password}\"")
+
+    # Supply a profile path when creating a user to avoid an apparent Windows bug where deleting
+    # the user actually creates the profile when it did not immediately exist before executing
+    # net user /delete! For some reason, specifying an explicit path ensures that the path
+    # profile doesn't get created at deletion.
+    shell_out!("net.exe user /add #{windows_nonadmin_user} \"#{windows_nonadmin_user_password}\" /profilepath:#{temp_profile_path}")
   end
 
   after do
