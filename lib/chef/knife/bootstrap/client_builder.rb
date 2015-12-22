@@ -34,6 +34,8 @@ class Chef
         attr_accessor :chef_config
         # @return [Chef::Knife::UI] ui object for output
         attr_accessor :ui
+        # @return [Chef::ApiClient] client saved on run
+        attr_reader :client
 
         # @param knife_config [Hash] Hash of knife config settings
         # @param chef_config [Hash] Hash of chef config settings
@@ -51,7 +53,7 @@ class Chef
 
           ui.info("Creating new client for #{node_name}")
 
-          create_client!
+          @client = create_client!
 
           ui.info("Creating new node for #{node_name}")
 

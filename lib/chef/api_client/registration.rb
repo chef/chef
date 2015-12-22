@@ -53,8 +53,9 @@ class Chef
       def run
         assert_destination_writable!
         retries = Config[:client_registration_retries] || 5
+        client = nil
         begin
-          create_or_update
+          client = api_client(create_or_update)
         rescue Net::HTTPFatalError => e
           # HTTPFatalError implies 5xx.
           raise if retries <= 0
@@ -64,6 +65,7 @@ class Chef
           retry
         end
         write_key
+        client
       end
 
       def assert_destination_writable!
@@ -104,6 +106,28 @@ class Chef
           @server_generated_private_key = response["private_key"]
         end
         response
+      end
+
+      def api_client(response)
+        return response if response.is_a?(Chef::ApiClient)
+
+        client = Chef::ApiClient.new
+        client.name(name)
+        client.public_key(api_client_key(response, "public_key"))
+        client.private_key(api_client_key(response, "private_key"))
+        client
+      end
+
+      def api_client_key(response, key_name)
+        if response[key_name]
+          if response[key_name].respond_to?(:to_pem)
+            response[key_name].to_pem
+          else
+            response[key_name]
+          end
+        elsif response["chef_key"]
+          response["chef_key"][key_name]
+        end
       end
 
       def put_data

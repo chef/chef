@@ -46,8 +46,10 @@ describe Chef::ApiClient::Registration do
   end
 
   let(:server_v10_response) do
-    {"uri" => "https://chef.local/clients/#{client_name}",
-     "private_key" => "--begin rsa key etc--"}
+    {
+      "uri" => "https://chef.local/clients/#{client_name}",
+      "private_key" => "--begin rsa key etc--"
+    }
   end
 
   # Server v11 includes `json_class` on all replies
@@ -69,7 +71,9 @@ describe Chef::ApiClient::Registration do
   let(:create_with_pkey_response) do
     {
       "uri" => "",
-      "public_key" => generated_public_key.to_pem
+      "chef_key" => {
+        "public_key" => generated_public_key.to_pem
+      }
     }
   end
 
@@ -108,7 +112,7 @@ describe Chef::ApiClient::Registration do
       expect(http_mock).to receive(:post).
         with("clients", expected_post_data).
         and_return(create_with_pkey_response)
-      expect(registration.create_or_update).to eq(create_with_pkey_response)
+      expect(registration.run.public_key).to eq(create_with_pkey_response["chef_key"]["public_key"])
       expect(registration.private_key).to eq(generated_private_key_pem)
     end
 
@@ -119,7 +123,7 @@ describe Chef::ApiClient::Registration do
       expect(http_mock).to receive(:put).
         with("clients/#{client_name}", expected_put_data).
         and_return(update_with_pkey_response)
-      expect(registration.create_or_update).to eq(update_with_pkey_response)
+      expect(registration.run.public_key).to eq(update_with_pkey_response["public_key"].to_pem)
       expect(registration.private_key).to eq(generated_private_key_pem)
     end
 
@@ -137,7 +141,7 @@ describe Chef::ApiClient::Registration do
         expect(http_mock).to receive(:put).
           with("clients/#{client_name}", expected_put_data).
           and_return(update_with_pkey_response)
-        expect(registration.create_or_update).to eq(update_with_pkey_response)
+        expect(registration.run.public_key).to eq(update_with_pkey_response["public_key"].to_pem)
         expect(registration.private_key).to eq(generated_private_key_pem)
       end
     end
@@ -161,7 +165,7 @@ describe Chef::ApiClient::Registration do
         expect(http_mock).to receive(:post).
           with("clients", expected_post_data).
           and_return(server_v10_response)
-        expect(registration.create_or_update).to eq(server_v10_response)
+        expect(registration.run.private_key).to eq(server_v10_response["private_key"])
         expect(registration.private_key).to eq("--begin rsa key etc--")
       end
 
@@ -171,7 +175,7 @@ describe Chef::ApiClient::Registration do
           expect(http_mock).to receive(:put).
             with("clients/#{client_name}", expected_put_data).
             and_return(server_v11_response)
-          expect(registration.create_or_update).to eq(server_v11_response)
+          expect(registration.run).to eq(server_v11_response)
           expect(registration.private_key).to eq("--begin rsa key etc--")
         end
       end
@@ -183,7 +187,7 @@ describe Chef::ApiClient::Registration do
           expect(http_mock).to receive(:put).
             with("clients/#{client_name}", expected_put_data).
             and_return(server_v10_response)
-          expect(registration.create_or_update).to eq(server_v10_response)
+          expect(registration.run.private_key).to eq(server_v10_response["private_key"])
           expect(registration.private_key).to eq("--begin rsa key etc--")
         end
       end
