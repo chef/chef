@@ -633,6 +633,7 @@ describe Chef::Knife::Bootstrap do
       allow(knife).to receive(:knife_ssh).and_return(knife_ssh)
       knife_ssh
     end
+    let(:client) { Chef::ApiClient.new }
 
     context "when running with a configured and present validation key" do
       before do
@@ -666,7 +667,8 @@ describe Chef::Knife::Bootstrap do
         knife.config[:bootstrap_vault_file] = "/not/our/responsibility/to/check/if/this/exists"
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).to receive(:run)
-        expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
+        expect(knife.client_builder).to receive(:client).and_return(client)
+        expect(knife.chef_vault_handler).to receive(:run).with(client)
         knife.run
       end
 
@@ -674,7 +676,8 @@ describe Chef::Knife::Bootstrap do
         knife.config[:bootstrap_vault_json] = '{ "vault" => "item" }'
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).to receive(:run)
-        expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
+        expect(knife.client_builder).to receive(:client).and_return(client)
+        expect(knife.chef_vault_handler).to receive(:run).with(client)
         knife.run
       end
 
@@ -682,7 +685,7 @@ describe Chef::Knife::Bootstrap do
         expect(File).to receive(:exist?).with(File.expand_path(Chef::Config[:validation_key])).and_return(true)
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).not_to receive(:run)
-        expect(knife.chef_vault_handler).not_to receive(:run).with(node_name: knife.config[:chef_node_name])
+        expect(knife.chef_vault_handler).not_to receive(:run)
         knife.run
       end
 
@@ -702,7 +705,8 @@ describe Chef::Knife::Bootstrap do
       it "creates the client (and possibly adds chef-vault items)" do
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).to receive(:run)
-        expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
+        expect(knife.client_builder).to receive(:client).and_return(client)
+        expect(knife.chef_vault_handler).to receive(:run).with(client)
         knife.run
       end
 

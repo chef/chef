@@ -107,17 +107,20 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
   end
 
   context "#create_client!" do
+    let(:client) { Chef::ApiClient.new }
+
     before do
       # mock out the rest of #run
       expect(client_builder).to receive(:sanity_check)
       expect(client_builder).to receive(:create_node!)
     end
 
-    it "delegates everything to Chef::ApiClient::Registration" do
+    it "delegates everything to Chef::ApiClient::Registration and sets client" do
       reg_double = double("Chef::ApiClient::Registration")
       expect(Chef::ApiClient::Registration).to receive(:new).with(node_name, client_builder.client_path, http_api: rest).and_return(reg_double)
-      expect(reg_double).to receive(:run)
+      expect(reg_double).to receive(:run).and_return(client)
       client_builder.run
+      expect(client_builder.client).to eq(client)
     end
 
   end
@@ -128,7 +131,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     end
   end
 
-  context "#create_node!" do
+  context "#create_node!" do    
     before do
       # mock out the rest of #run
       expect(client_builder).to receive(:sanity_check)
