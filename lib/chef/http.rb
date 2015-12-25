@@ -202,7 +202,7 @@ class Chef
         # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
         # via chef-zero and that hits DNS (at *require* time) which may timeout,
         # when for most knife/chef-client work we never need/want this loaded.
-        Thread.exclusive {
+        Mutex.new.synchronize {
           unless defined?(SocketlessChefZeroClient)
             require 'chef/http/socketless_chef_zero_client'
           end
