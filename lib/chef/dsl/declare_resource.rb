@@ -88,7 +88,7 @@ class Chef
       #
       def build_resource(type, name, created_at=nil, run_context: self.run_context, &resource_attrs_block)
         created_at ||= caller[0]
-        Thread.exclusive do
+        Mutex.new.synchronize do
           require 'chef/resource_builder' unless defined?(Chef::ResourceBuilder)
         end
 
