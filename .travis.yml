@@ -50,6 +50,9 @@ matrix:
   - rvm: 2.2
     env: "GEMFILE_MOD=\"gem 'chef-sugar'\""
     script: bundle exec rake chef_sugar_spec
+  - rvm: 2.2
+    env: "GEMFILE_MOD=\"gem 'knife-windows', github: 'chef/knife-windows'\""
+    script: bundle exec rake knife_windows_spec
   # Requires vagrant
   # - rvm: 2.2
   #   cache:
