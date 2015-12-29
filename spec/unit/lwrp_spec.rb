@@ -84,7 +84,7 @@ describe "LWRP" do
       end
 
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
-        expect(Chef::Log).to receive(:info).with(/Skipping/)
+        expect(Chef::Log).to receive(:debug).with(/Skipping/)
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
@@ -95,7 +95,7 @@ describe "LWRP" do
       end
 
       Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
-        expect(Chef::Log).to receive(:info).with(/Skipping/)
+        expect(Chef::Log).to receive(:debug).with(/Skipping/)
         Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
