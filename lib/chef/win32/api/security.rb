@@ -207,6 +207,21 @@ class Chef
         LOGON32_PROVIDER_WINNT40 = 2;
         LOGON32_PROVIDER_WINNT50 = 3;
 
+        # LSA access policy
+        POLICY_VIEW_LOCAL_INFORMATION = 0x00000001
+        POLICY_VIEW_AUDIT_INFORMATION = 0x00000002
+        POLICY_GET_PRIVATE_INFORMATION = 0x00000004
+        POLICY_TRUST_ADMIN = 0x00000008
+        POLICY_CREATE_ACCOUNT = 0x00000010
+        POLICY_CREATE_SECRET = 0x00000020
+        POLICY_CREATE_PRIVILEGE = 0x00000040
+        POLICY_SET_DEFAULT_QUOTA_LIMITS = 0x00000080
+        POLICY_SET_AUDIT_REQUIREMENTS = 0x00000100
+        POLICY_AUDIT_LOG_ADMIN = 0x00000200
+        POLICY_SERVER_ADMIN = 0x00000400
+        POLICY_LOOKUP_NAMES = 0x00000800
+        POLICY_NOTIFICATION = 0x00001000
+
         ###############################################
         # Win32 API Bindings
         ###############################################
@@ -381,6 +396,23 @@ class Chef
           end
         end
 
+        # https://msdn.microsoft.com/en-us/library/windows/desktop/ms721829(v=vs.85).aspx
+        class LSA_OBJECT_ATTRIBUTES < FFI::Struct
+          layout :Length, :ULONG,
+                 :RootDirectory, :HANDLE,
+                 :ObjectName, :pointer,
+                 :Attributes, :ULONG,
+                 :SecurityDescriptor, :PVOID,
+                 :SecurityQualityOfService, :PVOID
+        end
+
+        # https://msdn.microsoft.com/en-us/library/windows/desktop/ms721841(v=vs.85).aspx
+        class LSA_UNICODE_STRING < FFI::Struct
+          layout :Length, :USHORT,
+                 :MaximumLength, :USHORT,
+                 :Buffer, :PWSTR
+        end
+
         ffi_lib "advapi32"
 
         safe_attach_function :AccessCheck, [:pointer, :HANDLE, :DWORD, :pointer, :pointer, :pointer, :pointer, :pointer], :BOOL
@@ -415,6 +447,12 @@ class Chef
         safe_attach_function :LookupPrivilegeNameW, [ :LPCWSTR, :PLUID, :LPWSTR, :LPDWORD ], :BOOL
         safe_attach_function :LookupPrivilegeDisplayNameW, [ :LPCWSTR, :LPCWSTR, :LPWSTR, :LPDWORD, :LPDWORD ], :BOOL
         safe_attach_function :LookupPrivilegeValueW, [ :LPCWSTR, :LPCWSTR, :PLUID ], :BOOL
+        safe_attach_function :LsaAddAccountRights, [ :pointer, :pointer, :pointer, :ULONG ], :NTSTATUS
+        safe_attach_function :LsaClose, [ :LSA_HANDLE ], :NTSTATUS
+        safe_attach_function :LsaEnumerateAccountRights, [ :LSA_HANDLE, :PSID, :PLSA_UNICODE_STRING, :PULONG ], :NTSTATUS
+        safe_attach_function :LsaFreeMemory, [ :PVOID ], :NTSTATUS
+        safe_attach_function :LsaNtStatusToWinError, [ :NTSTATUS ], :ULONG
+        safe_attach_function :LsaOpenPolicy, [ :PLSA_UNICODE_STRING, :PLSA_OBJECT_ATTRIBUTES, :DWORD, :PLSA_HANDLE ], :NTSTATUS
         safe_attach_function :MakeAbsoluteSD, [ :pointer, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD], :BOOL
         safe_attach_function :MapGenericMask, [ :PDWORD, :PGENERICMAPPING ], :void
         safe_attach_function :OpenProcessToken, [ :HANDLE, :DWORD, :PHANDLE ], :BOOL
