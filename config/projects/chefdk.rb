@@ -37,9 +37,10 @@ override :ohai,             version: "master"
 override :chefdk,           version: "master"
 override :inspec,           version: "master"
 override :'kitchen-inspec', version: "master"
-# We should do a gem release of berkshelf
+# We should do a gem release of berkshelf and TK
 # before releasing chefdk.
 override :berkshelf,      version: "master"
+override :'test-kitchen', version: "v1.5.0.rc.1"
 
 override :'knife-windows', version: "v1.1.1"
 override :'knife-spork',   version: "1.5.0"
@@ -76,7 +77,6 @@ end
 
 override :rubocop, version: "v0.35.1"
 
-override :'test-kitchen', version: "v1.4.2"
 override :'kitchen-vagrant', version: "v0.19.0"
 override :'winrm-transport', version: "v1.0.3"
 override :yajl,           version: "1.2.1"
