@@ -104,6 +104,22 @@ class Chef
         end
       end
 
+      def self.add_account_right(name, privilege)
+        privilege_pointer = FFI::MemoryPointer.new LSA_UNICODE_STRING, 1
+        privilege_lsa_string = LSA_UNICODE_STRING.new(privilege_pointer)
+        privilege_lsa_string[:Buffer] = FFI::MemoryPointer.from_string(privilege.to_wstring)
+        privilege_lsa_string[:Length] = privilege.length * 2
+        privilege_lsa_string[:MaximumLength] = (privilege.length + 1) * 2
+
+        with_lsa_policy(name) do |policy_handle, sid|
+          result = LsaAddAccountRights(policy_handle.read_pointer, sid, privilege_pointer, 1)
+          win32_error = LsaNtStatusToWinError(result)
+          if win32_error != 0
+            Chef::ReservedNames::Win32::Error.raise!(nil, win32_error)
+          end
+        end
+      end
+
       def self.adjust_token_privileges(token, privileges)
         token = token.handle if token.respond_to?(:handle)
         old_privileges_size = FFI::Buffer.new(:long).write_long(privileges.size_with_privileges)
@@ -163,6 +179,29 @@ class Chef
         unless FreeSid(sid).null?
           Chef::ReservedNames::Win32::Error.raise!
         end
+      end
+
+      def self.get_account_right(name)
+        privileges = []
+        privilege_pointer = FFI::MemoryPointer.new(:pointer)
+        privilege_length = FFI::MemoryPointer.new(:ulong)
+
+        with_lsa_policy(name) do |policy_handle, sid|
+          result = LsaEnumerateAccountRights(policy_handle.read_pointer, sid, privilege_pointer, privilege_length)
+          win32_error = LsaNtStatusToWinError(result)
+          return [] if win32_error == 2 # FILE_NOT_FOUND - No rights assigned
+          if win32_error != 0
+            Chef::ReservedNames::Win32::Error.raise!(nil, win32_error)
+          end
+
+          privilege_length.read_ulong.times do |i|
+            privilege = LSA_UNICODE_STRING.new(privilege_pointer.read_pointer + i * LSA_UNICODE_STRING.size)
+            privileges << privilege[:Buffer].read_wstring
+          end
+          LsaFreeMemory(privilege_pointer)
+        end
+
+        privileges
       end
 
       def self.get_ace(acl, index)
@@ -545,6 +584,30 @@ class Chef
 
         unless SetSecurityDescriptorSacl(security_descriptor, present, acl, defaulted)
           Chef::ReservedNames::Win32::Error.raise!
+        end
+      end
+
+      def self.with_lsa_policy(username)
+        sid = lookup_account_name(username)[1]
+
+        access = 0
+        access |= POLICY_CREATE_ACCOUNT
+        access |= POLICY_LOOKUP_NAMES
+
+        policy_handle = FFI::MemoryPointer.new(:pointer)
+        result = LsaOpenPolicy(nil, LSA_OBJECT_ATTRIBUTES.new, access, policy_handle)
+        win32_error = LsaNtStatusToWinError(result)
+        if win32_error != 0
+          Chef::ReservedNames::Win32::Error.raise!(nil, win32_error)
+        end
+
+        begin
+          yield policy_handle, sid.pointer
+        ensure
+          win32_error = LsaNtStatusToWinError(LsaClose(policy_handle.read_pointer))
+          if win32_error != 0
+            Chef::ReservedNames::Win32::Error.raise!(nil, win32_error)
+          end
         end
       end
 

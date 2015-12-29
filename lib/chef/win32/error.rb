@@ -57,8 +57,7 @@ class Chef
       # nil::: always returns nil when it does not raise
       # === Raises
       # Chef::Exceptions::Win32APIError:::
-      def self.raise!(message = nil)
-        code = get_last_error
+      def self.raise!(message = nil, code = get_last_error)
         msg = format_message(code).strip
         formatted_message = ""
         formatted_message << message if message

@@ -147,6 +147,8 @@ class Chef
         host.typedef :long,    :LRESULT # Signed result of message processing. WinDef.h: host.typedef LONG_PTR LRESULT;
         host.typedef :pointer, :LPWIN32_FIND_DATA # Pointer to WIN32_FIND_DATA struct
         host.typedef :pointer, :LPBY_HANDLE_FILE_INFORMATION # Point to a BY_HANDLE_FILE_INFORMATION struct
+        host.typedef :pointer, :LSA_HANDLE # A handle to a Policy object
+        host.typedef :ulong,   :NTSTATUS # An NTSTATUS code returned by an LSA function call.
         host.typedef :pointer, :PBOOL # Pointer to a BOOL.
         host.typedef :pointer, :PBOOLEAN # Pointer to a BOOL.
         host.typedef :pointer, :PBYTE # Pointer to a BYTE.
@@ -174,12 +176,16 @@ class Chef
         host.typedef :pointer, :PLONG_PTR # Pointer to a LONG_PTR.
         host.typedef :pointer, :PLONG32 # Pointer to a LONG32.
         host.typedef :pointer, :PLONG64 # Pointer to a LONG64.
+        host.typedef :pointer, :PLSA_HANDLE # Pointer to an LSA_HANDLE
+        host.typedef :pointer, :PLSA_OBJECT_ATTRIBUTES # Pointer to an LSA_OBJECT_ATTRIBUTES
+        host.typedef :pointer, :PLSA_UNICODE_STRING # Pointer to LSA_UNICODE_STRING
         host.typedef :pointer, :PLUID # Pointer to a LUID.
         host.typedef :pointer, :POINTER_32 # 32-bit pointer. On a 32-bit system, this is a native pointer. On a 64-bit system, this is a truncated 64-bit pointer.
         host.typedef :pointer, :POINTER_64 # 64-bit pointer. On a 64-bit system, this is a native pointer. On a 32-bit system, this is a sign-extended 32-bit pointer.
         host.typedef :pointer, :POINTER_SIGNED # A signed pointer.
         host.typedef :pointer, :POINTER_UNSIGNED # An unsigned pointer.
         host.typedef :pointer, :PSHORT # Pointer to a SHORT.
+        host.typedef :pointer, :PSID # Pointer to an account SID
         host.typedef :pointer, :PSIZE_T # Pointer to a SIZE_T.
         host.typedef :pointer, :PSSIZE_T # Pointer to a SSIZE_T.
         host.typedef :pointer, :PSTR # Pointer to a null-terminated string of 8-bit Windows (ANSI) characters. For more information, see Character Sets Used By Fonts.
@@ -188,7 +194,6 @@ class Chef
         host.typedef :pointer, :PCRYPTPROTECT_PROMPTSTRUCT # Pointer to a CRYPTOPROTECT_PROMPTSTRUCT.
         host.typedef :pointer, :PDATA_BLOB # Pointer to a DATA_BLOB.
         host.typedef :pointer, :PTSTR # A PWSTR if UNICODE is defined, a PSTR otherwise.
-        host.typedef :pointer, :PSID
         host.typedef :pointer, :PUCHAR # Pointer to a UCHAR.
         host.typedef :pointer, :PUHALF_PTR # Pointer to a UHALF_PTR.
         host.typedef :pointer, :PUINT # Pointer to a UINT.

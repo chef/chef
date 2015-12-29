@@ -23,7 +23,7 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
   include_context "using Win32::Service"
 
   let(:username) { "service_spec_user"}
-  let(:qualified_username) { ".\\#{username}"}
+  let(:qualified_username) { "#{ENV['COMPUTERNAME']}\\#{username}"}
   let(:password) { "1a2b3c4X!&narf"}
 
   let(:user_resource) {
@@ -93,6 +93,9 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
       service_resource.run_action(:start)
     end
 
-    it "raises an exception when it can't grant the logon privilege"
+    it "grants the user the log on as service right" do
+      service_resource.run_action(:start)
+      expect(Chef::ReservedNames::Win32::Security.get_account_right(qualified_username)).to include("SeServiceLogonRight")
+    end
   end
 end
