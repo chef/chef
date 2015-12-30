@@ -146,19 +146,8 @@ class Chef
           tempfile
         end
 
-        #adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb
         def proxy_uri(uri)
-          proxy = Chef::Config["ftp_proxy"]
-          proxy = URI.parse(proxy) if String === proxy
-          if Chef::Config["ftp_proxy_user"]
-            proxy.user = Chef::Config["ftp_proxy_user"]
-          end
-          if Chef::Config["ftp_proxy_pass"]
-            proxy.password = Chef::Config["ftp_proxy_pass"]
-          end
-          excludes = Chef::Config[:no_proxy].to_s.split(/\s*,\s*/).compact
-          excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
-          return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
+          ChefConfig::Config.proxy_uri("ftp", hostname, port)
         end
 
         def parse_path

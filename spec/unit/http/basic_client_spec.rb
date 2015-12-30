@@ -40,90 +40,13 @@ describe "HTTP Connection" do
   end
 
   describe "#proxy_uri" do
-    shared_examples_for "a proxy uri" do
-      let(:proxy_host) { "proxy.mycorp.com" }
-      let(:proxy_port) { 8080 }
-      let(:proxy) { "#{proxy_prefix}#{proxy_host}:#{proxy_port}" }
+    subject(:proxy_uri) { basic_client.proxy_uri }
 
-      it "should contain the host" do
-        proxy_uri = subject.proxy_uri
-        expect(proxy_uri.host).to eq(proxy_host)
-      end
-
-      it "should contain the port" do
-        proxy_uri = subject.proxy_uri
-        expect(proxy_uri.port).to eq(proxy_port)
-      end
-    end
-
-    context "when the config setting is normalized (does not contain the scheme)" do
-      include_examples "a proxy uri" do
-
-        let(:proxy_prefix) { "" }
-
-        before do
-          Chef::Config["#{uri.scheme}_proxy"] = proxy
-          Chef::Config[:no_proxy] = nil
-        end
-
-      end
-    end
-
-    context "when the config setting is not normalized (contains the scheme)" do
-      include_examples "a proxy uri" do
-        let(:proxy_prefix) { "#{uri.scheme}://" }
-
-        before do
-          Chef::Config["#{uri.scheme}_proxy"] = proxy
-          Chef::Config[:no_proxy] = nil
-        end
-
-      end
-    end
-
-    context "when the proxy is set by the environment" do
-
-      include_examples "a proxy uri" do
-
-        let(:env) do
-          {
-            "https_proxy" => "https://proxy.mycorp.com:8080",
-            "https_proxy_user" => "jane_username",
-            "https_proxy_pass" => "opensesame",
-          }
-        end
-
-        let(:proxy_uri) { URI.parse(env["https_proxy"]) }
-
-        before do
-          allow(basic_client).to receive(:env).and_return(env)
-        end
-
-        it "sets the proxy user" do
-          expect(basic_client.http_proxy_user(proxy_uri)).to eq("jane_username")
-        end
-
-        it "sets the proxy pass" do
-          expect(basic_client.http_proxy_pass(proxy_uri)).to eq("opensesame")
-        end
-      end
-
-    end
-
-    context "when an empty proxy is set by the environment" do
-      let(:env) do
-        {
-          "https_proxy" => "",
-        }
-      end
-
-      before do
-        allow(subject).to receive(:env).and_return(env)
-      end
-
-      it "to not fail with URI parse exception" do
-        expect { subject.proxy_uri }.to_not raise_error
-      end
+    it "uses ChefConfig's proxy_uri method" do
+      expect(ChefConfig::Config).to receive(:proxy_uri).at_least(:once).with(
+        uri.scheme, uri.host, uri.port
+      )
+      proxy_uri
     end
   end
 end
