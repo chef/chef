@@ -794,6 +794,116 @@ RSpec.describe ChefConfig::Config do
     end
   end
 
+  describe "proxy_uri" do
+    subject(:proxy_uri) { described_class.proxy_uri(scheme, host, port) }
+    let(:env) { {} }
+    let(:scheme) { "http" }
+    let(:host) { "test.example.com" }
+    let(:port) { 8080 }
+    let(:proxy) { "#{proxy_prefix}#{proxy_host}:#{proxy_port}" }
+    let(:proxy_prefix) { "http://" }
+    let(:proxy_host) { "proxy.mycorp.com" }
+    let(:proxy_port) { 8080 }
+
+    before do
+      stub_const("ENV", env)
+    end
+
+    shared_examples_for "a proxy uri" do
+      it "contains the host" do
+        expect(proxy_uri.host).to eq(proxy_host)
+      end
+
+      it "contains the port" do
+        expect(proxy_uri.port).to eq(proxy_port)
+      end
+    end
+
+    context "when the config setting is normalized (does not contain the scheme)" do
+      include_examples "a proxy uri" do
+
+        let(:proxy_prefix) { "" }
+
+        let(:env) do
+          {
+            "#{scheme}_proxy" => proxy,
+            "no_proxy" => nil,
+          }
+        end
+      end
+    end
+
+    context "when the proxy is set by the environment" do
+      include_examples "a proxy uri" do
+        let(:scheme) { "https" }
+        let(:env) do
+          {
+            "https_proxy" => "https://jane_username:opensesame@proxy.mycorp.com:8080",
+          }
+        end
+      end
+    end
+
+    context "when an empty proxy is set by the environment" do
+      let(:env) do
+        {
+          "https_proxy" => ""
+        }
+      end
+
+      it "does not fail with URI parse exception" do
+        expect { proxy_uri }.to_not raise_error
+      end
+    end
+
+    context "when no_proxy is set" do
+      context "when no_proxy is the exact host" do
+        let(:env) do
+          {
+            "http_proxy" => proxy,
+            "no_proxy" => host,
+          }
+        end
+
+        it { is_expected.to eq nil }
+      end
+
+      context "when no_proxy includes the same domain with a wildcard" do
+        let(:env) do
+          {
+            "http_proxy" => proxy,
+            "no_proxy" => "*.example.com",
+          }
+        end
+
+        it { is_expected.to eq nil }
+      end
+
+
+      context "when no_proxy is included on a list" do
+        let(:env) do
+          {
+            "http_proxy" => proxy,
+            "no_proxy" => "chef.io,getchef.com,opscode.com,test.example.com",
+          }
+        end
+
+        it { is_expected.to eq nil }
+      end
+
+      context "when no_proxy is included on a list with wildcards" do
+        let(:env) do
+          {
+            "http_proxy" => proxy,
+            "no_proxy" => "10.*,*.example.com",
+          }
+        end
+
+        it { is_expected.to eq nil }
+      end
+    end
+  end
+
   describe "allowing chefdk configuration outside of chefdk" do
 
     it "allows arbitrary settings in the chefdk config context" do

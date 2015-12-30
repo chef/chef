@@ -837,6 +837,28 @@ module ChefConfig
       ENV["NO_PROXY"] = value unless ENV["NO_PROXY"]
     end
 
+    # Given a scheme, host, and port, return the correct proxy URI based on the
+    # set environment variables, unless exluded by no_proxy, in which case nil
+    # is returned
+    def self.proxy_uri(scheme, host, port)
+      proxy_env_var = ENV["#{scheme}_proxy"].to_s.strip
+
+      # Check if the proxy string contains a scheme. If not, add the url's scheme to the
+      # proxy before parsing. The regex /^.*:\/\// matches, for example, http://. Reusing proxy
+      # here since we are really just trying to get the string built correctly.
+      proxy = if !proxy_env_var.empty?
+        if proxy_env_var.match(/^.*:\/\//)
+          URI.parse(proxy_env_var)
+        else
+          URI.parse("#{scheme}://#{proxy_env_var}")
+        end
+      end
+
+      excludes = ENV['no_proxy'].to_s.split(/\s*,\s*/).compact
+      excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
+      return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
+    end
+
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
     # to use the 'locale -a' command and search through a list of preferences until we
     # find one that we can use.  On Ubuntu systems we should find 'C.UTF-8' and be

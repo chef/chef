@@ -94,24 +94,25 @@ describe Chef::REST::AuthCredentials do
 end
 
 describe Chef::REST::RESTRequest do
-  def new_request(method = nil)
+  let(:url) { URI.parse("http://chef.example.com:4000/?q=chef_is_awesome") }
+
+  def new_request(method=nil)
     method ||= :POST
-    Chef::REST::RESTRequest.new(method, @url, @req_body, @headers)
+    Chef::REST::RESTRequest.new(method, url, @req_body, @headers)
   end
 
   before do
-    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + "/ssl/private_key.pem")
-    @url = URI.parse("http://chef.example.com:4000/?q=chef_is_awesome")
+    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + '/ssl/private_key.pem')
     @req_body = '{"json_data":"as_a_string"}'
     @headers = { "Content-type" => "application/json",
                  "Accept" => "application/json",
                  "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
                  "Host" => "chef.example.com:4000" }
-    @request = Chef::REST::RESTRequest.new(:POST, @url, @req_body, @headers)
+    @request = Chef::REST::RESTRequest.new(:POST, url, @req_body, @headers)
   end
 
   it "stores the url it was created with" do
-    expect(@request.url).to eq(@url)
+    expect(@request.url).to eq(url)
   end
 
   it "stores the HTTP method" do
@@ -123,6 +124,10 @@ describe Chef::REST::RESTRequest do
   end
 
   describe "configuring the HTTP request" do
+    let(:url) do
+      URI.parse("http://homie:theclown@chef.example.com:4000/?q=chef_is_awesome")
+    end
+
     it "configures GET requests" do
       @req_body = nil
       rest_req = new_request(:GET)
@@ -152,7 +157,6 @@ describe Chef::REST::RESTRequest do
     end
 
     it "configures HTTP basic auth" do
-      @url = URI.parse("http://homie:theclown@chef.example.com:4000/?q=chef_is_awesome")
       rest_req = new_request(:GET)
       expect(rest_req.http_request.to_hash["authorization"]).to eq(["Basic aG9taWU6dGhlY2xvd24="])
     end
@@ -172,23 +176,14 @@ describe Chef::REST::RESTRequest do
 
     describe "for proxy" do
       before do
-        Chef::Config[:http_proxy]  = "http://proxy.example.com:3128"
-        Chef::Config[:https_proxy] = "http://sproxy.example.com:3129"
-        Chef::Config[:http_proxy_user] = nil
-        Chef::Config[:http_proxy_pass] = nil
-        Chef::Config[:https_proxy_user] = nil
-        Chef::Config[:https_proxy_pass] = nil
-        Chef::Config[:no_proxy] = nil
-      end
-
-      after do
-        Chef::Config[:http_proxy]  = nil
-        Chef::Config[:https_proxy] = nil
-        Chef::Config[:http_proxy_user] = nil
-        Chef::Config[:http_proxy_pass] = nil
-        Chef::Config[:https_proxy_user] = nil
-        Chef::Config[:https_proxy_pass] = nil
-        Chef::Config[:no_proxy] = nil
+        stub_const("ENV", "http_proxy" => "http://proxy.example.com:3128",
+                          "https_proxy" => "http://sproxy.example.com:3129",
+                          "http_proxy_user" => nil,
+                          "http_proxy_pass" => nil,
+                          "https_proxy_user" => nil,
+                          "https_proxy_pass" => nil,
+                          "no_proxy" => nil,
+                  )
       end
 
       describe "with :no_proxy nil" do
@@ -201,20 +196,23 @@ describe Chef::REST::RESTRequest do
           expect(http_client.proxy_pass).to be_nil
         end
 
-        it "configures the proxy address and port when using https scheme" do
-          @url.scheme = "https"
-          http_client = new_request.http_client
-          expect(http_client.proxy?).to eq(true)
-          expect(http_client.proxy_address).to eq("sproxy.example.com")
-          expect(http_client.proxy_port).to eq(3129)
-          expect(http_client.proxy_user).to be_nil
-          expect(http_client.proxy_pass).to be_nil
+        context "when the url has an https scheme" do
+          let(:url) { URI.parse("https://chef.example.com:4000/?q=chef_is_awesome") }
+
+          it "configures the proxy address and port when using https scheme" do
+            http_client = new_request.http_client
+            expect(http_client.proxy?).to eq(true)
+            expect(http_client.proxy_address).to eq("sproxy.example.com")
+            expect(http_client.proxy_port).to eq(3129)
+            expect(http_client.proxy_user).to be_nil
+            expect(http_client.proxy_pass).to be_nil
+          end
         end
       end
 
       describe "with :no_proxy set" do
         before do
-          Chef::Config[:no_proxy] = "10.*,*.example.com"
+          stub_const("ENV", "no_proxy" => "10.*,*.example.com")
         end
 
         it "does not configure the proxy address and port when using http scheme" do
@@ -226,26 +224,23 @@ describe Chef::REST::RESTRequest do
           expect(http_client.proxy_pass).to be_nil
         end
 
-        it "does not configure the proxy address and port when using https scheme" do
-          @url.scheme = "https"
-          http_client = new_request.http_client
-          expect(http_client.proxy?).to eq(false)
-          expect(http_client.proxy_address).to be_nil
-          expect(http_client.proxy_port).to be_nil
-          expect(http_client.proxy_user).to be_nil
-          expect(http_client.proxy_pass).to be_nil
+        context "when the url has an https scheme" do
+          let(:url) { URI.parse("https://chef.example.com:4000/?q=chef_is_awesome") }
+
+          it "does not configure the proxy address and port when using https scheme" do
+            http_client = new_request.http_client
+            expect(http_client.proxy?).to eq(false)
+            expect(http_client.proxy_address).to be_nil
+            expect(http_client.proxy_port).to be_nil
+            expect(http_client.proxy_user).to be_nil
+            expect(http_client.proxy_pass).to be_nil
+          end
         end
       end
 
       describe "with :http_proxy_user and :http_proxy_pass set" do
         before do
-          Chef::Config[:http_proxy_user] = "homie"
-          Chef::Config[:http_proxy_pass] = "theclown"
-        end
-
-        after do
-          Chef::Config[:http_proxy_user] = nil
-          Chef::Config[:http_proxy_pass] = nil
+          stub_const("ENV", "http_proxy" => "http://homie:theclown@proxy.example.com:3128")
         end
 
         it "configures the proxy user and pass when using http scheme" do
@@ -255,24 +250,23 @@ describe Chef::REST::RESTRequest do
           expect(http_client.proxy_pass).to eq("theclown")
         end
 
-        it "does not configure the proxy user and pass when using https scheme" do
-          @url.scheme = "https"
-          http_client = new_request.http_client
-          expect(http_client.proxy?).to eq(true)
-          expect(http_client.proxy_user).to be_nil
-          expect(http_client.proxy_pass).to be_nil
+        context "when the url has an https scheme" do
+          let(:url) { URI.parse("https://chef.example.com:4000/?q=chef_is_awesome") }
+
+          it "does not configure the proxy user and pass when using https scheme" do
+            http_client = new_request.http_client
+            expect(http_client.proxy?).to eq(true)
+            expect(http_client.proxy_user).to be_nil
+            expect(http_client.proxy_pass).to be_nil
+          end
         end
       end
 
       describe "with :https_proxy_user and :https_proxy_pass set" do
         before do
-          Chef::Config[:https_proxy_user] = "homie"
-          Chef::Config[:https_proxy_pass] = "theclown"
-        end
-
-        after do
-          Chef::Config[:https_proxy_user] = nil
-          Chef::Config[:https_proxy_pass] = nil
+          stub_const("ENV", "http_proxy" => "http://proxy.example.com:3128",
+                            "https_proxy" => "https://homie:theclown@sproxy.example.com:3129",
+                    )
         end
 
         it "does not configure the proxy user and pass when using http scheme" do
@@ -282,15 +276,17 @@ describe Chef::REST::RESTRequest do
           expect(http_client.proxy_pass).to be_nil
         end
 
-        it "configures the proxy user and pass when using https scheme" do
-          @url.scheme = "https"
-          http_client = new_request.http_client
-          expect(http_client.proxy?).to eq(true)
-          expect(http_client.proxy_user).to eq("homie")
-          expect(http_client.proxy_pass).to eq("theclown")
+        context "when the url has an https scheme" do
+          let(:url) { URI.parse("https://chef.example.com:4000/?q=chef_is_awesome") }
+
+          it "configures the proxy user and pass when using https scheme" do
+            http_client = new_request.http_client
+            expect(http_client.proxy?).to eq(true)
+            expect(http_client.proxy_user).to eq("homie")
+            expect(http_client.proxy_pass).to eq("theclown")
+          end
         end
       end
     end
   end
-
 end
