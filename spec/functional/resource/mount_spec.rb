@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
+require 'spec_helper'
 require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 require 'tmpdir'
 
 # run this test only for following platforms.
-include_flag = !(['ubuntu', 'centos', 'solaris2'].include?(ohai[:platform]))
+include_flag = !(['ubuntu', 'centos', 'aix', 'solaris2'].include?(ohai[:platform]))
 
 describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => include_flag do
   # Disabled in travis because it refuses to let us mount a ramdisk. /dev/ramX does not
@@ -34,16 +35,13 @@ describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => inclu
   def setup_device_for_mount
     # use ramdisk for creating a test device for mount.
     # This can cleaner if we have chef resource/provider for ramdisk.
-    # TODO: These tests only work in LPARs, not WPARs on AIX.
     case ohai[:platform]
     when "aix"
-      ramdisk = shell_out!("mkramdisk 16M").stdout
-
-      # identify device, for /dev/rramdisk0 it is /dev/ramdisk0
-      device = ramdisk.tr("\n","").gsub(/\/rramdisk/, '/ramdisk')
-
-      fstype = "jfs2"
-      shell_out!("mkfs  -V #{fstype} #{device}")
+      # On AIX, we can't create a ramdisk inside a WPAR, so we use
+      # a "namefs" mount against / to test
+      # https://www-304.ibm.com/support/knowledgecenter/ssw_aix_71/com.ibm.aix.performance/namefs_file_sys.htm
+      device = "/"
+      fstype = "namefs"
     when "ubuntu", "centos"
       device = "/dev/ram1"
       shell_out("ls -1 /dev/ram*").stdout.each_line do |d|
@@ -61,15 +59,6 @@ describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => inclu
     else
     end
     [device, fstype]
-  end
-
-  def cleanup_device(device)
-    case ohai[:platform]
-    when "aix"
-      ramdisk = device.gsub(/\/ramdisk/, '/rramdisk')
-      shell_out("rmramdisk #{ramdisk}")
-    else
-    end
   end
 
   def cleanup_mount(mount_point)
@@ -149,7 +138,6 @@ describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => inclu
 
   after(:all) do
     Dir.rmdir(@mount_point)
-    cleanup_device(@device)
   end
 
   after(:each) do
@@ -175,7 +163,7 @@ describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => inclu
       mount_should_exist(new_resource.mount_point, new_resource.device)
 
       new_resource.supports[:remount] = true
-      new_resource.options "rw,log=NULL" if ohai[:platform] == 'aix'
+      new_resource.options "rw" if ohai[:platform] == 'aix'
       new_resource.run_action(:remount)
 
       mount_should_exist(new_resource.mount_point, new_resource.device, nil, (ohai[:platform] == 'aix') ? new_resource.options : nil)
