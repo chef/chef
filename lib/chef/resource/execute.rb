@@ -143,6 +143,30 @@ class Chef
         )
       end
 
+      def domain(arg=nil)
+        set_or_return(
+          :domain,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def password(arg=nil)
+        set_or_return(
+          :password,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def sensitive(args=nil)
+        if ! password.nil?
+          true
+        else
+          super
+        end
+      end
+
       def self.set_guard_inherited_attributes(*inherited_attributes)
         @class_inherited_attributes = inherited_attributes
       end
