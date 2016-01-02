@@ -122,6 +122,38 @@ class Chef
         )
       end
 
+      def remote_user(args=nil)
+        set_or_return(
+          :remote_user,
+          args,
+          :kind_of => String
+        )
+      end
+
+      def remote_user_domain(args=nil)
+        set_or_return(
+          :remote_user_domain,
+          args,
+          :kind_of => String
+        )
+      end
+
+      def remote_user_password(args=nil)
+        set_or_return(
+          :remote_user_password,
+          args,
+          :kind_of => String
+        )
+      end
+
+      def sensitive(args=nil)
+        if ! remote_user_password.nil?
+          true
+        else
+          super
+        end
+      end
+
       private
 
       include Chef::Mixin::Uris

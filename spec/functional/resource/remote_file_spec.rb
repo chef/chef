@@ -123,6 +123,164 @@ describe Chef::Resource::RemoteFile do
 
   end
 
+  context "when running on Windows", :windows_only do
+    describe "when fetching files over SMB" do
+      include Chef::Mixin::ShellOut
+      let(:smb_share_root_directory) { directory = File.join(Dir.tmpdir, make_tmpname("windows_script_test")); Dir.mkdir(directory); directory }
+      let(:smb_file_local_file_name) { 'smb_file.txt' }
+      let(:smb_file_local_path) {File.join( smb_share_root_directory, smb_file_local_file_name ) }
+      let(:smb_share_name) { 'chef_smb_test' }
+      let(:smb_remote_path) { File.join("//#{ENV['COMPUTERNAME']}", smb_share_name, smb_file_local_file_name).gsub(/\//, '\\') }
+      let(:smb_file_content) { 'hellofun' }
+      let(:local_destination_path) { File.join(Dir.tmpdir, make_tmpname('chef_remote_file')) }
+      let(:windows_current_user) { ENV['USERNAME'] }
+      let(:windows_current_user_domain) { ENV['USERDOMAIN'] || ENV['COMPUTERNAME'] }
+      let(:windows_current_user_qualified) { "#{windows_current_user_domain}\\#{windows_current_user}" }
+
+      let(:remote_domain) { nil }
+      let(:remote_user) { nil }
+      let(:remote_password) { nil }
+
+      let(:resource) do
+        node = Chef::Node.new
+        events = Chef::EventDispatch::Dispatcher.new
+        run_context = Chef::RunContext.new(node, {}, events)
+        resource = Chef::Resource::RemoteFile.new(path, run_context)
+      end
+
+      before do
+        shell_out("net.exe share #{smb_share_name} /delete")
+        File.write(smb_file_local_path, smb_file_content )
+        shell_out!("net.exe share #{smb_share_name}=\"#{smb_share_root_directory.gsub(/\//,'\\')}\" /grant:\"authenticated users\",read")
+      end
+
+      after do
+        shell_out("net.exe share #{smb_share_name} /delete")
+        File.delete(smb_file_local_path) if File.exist?(smb_file_local_path)
+        File.delete(local_destination_path) if File.exist?(local_destination_path)
+        Dir.rmdir(smb_share_root_directory)
+      end
+
+      context "when configuring the Windows identity used to access the remote file" do
+        before do
+          resource.path(local_destination_path)
+          resource.source(smb_remote_path)
+          resource.remote_user_domain(remote_domain)
+          resource.remote_user(remote_user)
+          resource.remote_user_password(remote_password)
+        end
+
+        shared_examples_for "a remote_file resource accessing a remote file to which the specified user has access" do
+          it "has the same content as the original file" do
+            expect { resource.run_action(:create) }.not_to raise_error
+            expect(::File.read(local_destination_path).chomp).to eq smb_file_content
+          end
+        end
+
+        shared_examples_for "a remote_file resource accessing a remote file to which the specified user does not have access" do
+          it "causes an error to be raised" do
+            expect {resource.run_action(:create)}.to raise_error(Errno::EACCES)
+          end
+        end
+
+        context "when the the file is accessible to non-admin users only as the current identity" do
+          before do
+            shell_out!("icacls #{smb_file_local_path} /grant:r \"authenticated users:(W)\" /grant \"#{windows_current_user_qualified}:(R)\" /inheritance:r")
+          end
+
+          context "when the resource is accessed using the current user's identity" do
+            let(:remote_user) { nil }
+            let(:remote_domain) { nil }
+            let(:remote_password) { nil }
+
+            it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
+
+            describe "uses the ::Chef::Provider::RemoteFile::NetworkFile::TRANSFER_CHUNK_SIZE constant to chunk the file" do
+              let(:invalid_chunk_size) { -1 }
+              before do
+                stub_const('::Chef::Provider::RemoteFile::NetworkFile::TRANSFER_CHUNK_SIZE', invalid_chunk_size)
+              end
+
+              it "raises an ArgumentError when the chunk size is negative" do
+                expect(::Chef::Provider::RemoteFile::NetworkFile::TRANSFER_CHUNK_SIZE).to eq(invalid_chunk_size)
+                expect {resource.run_action(:create)}.to raise_error(ArgumentError)
+              end
+            end
+
+            context "when the file must be transferred in more than one chunk" do
+              before do
+                stub_const('::Chef::Provider::RemoteFile::NetworkFile::TRANSFER_CHUNK_SIZE', 3)
+              end
+              it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
+            end
+          end
+
+          context "when the resource is accessed using an alternate user's identity with no access to the file" do
+            let (:windows_nonadmin_user) { 'chefremfile1' }
+            let (:windows_nonadmin_user_password) { 'j82ajfxK3;2Xe1' }
+            include_context "a non-admin Windows user"
+
+            let(:remote_user) { windows_nonadmin_user }
+            let(:remote_domain) { nil }
+            let(:remote_password) { windows_nonadmin_user_password }
+
+            it_behaves_like "a remote_file resource accessing a remote file to which the specified user does not have access"
+          end
+        end
+
+        context "when the the file is only accessible as a specific alternate identity" do
+          let (:windows_nonadmin_user) { 'chefremfile2' }
+          let (:windows_nonadmin_user_password) { 'j82ajfxK3;2Xe2' }
+          include_context "a non-admin Windows user"
+
+          before do
+            shell_out!("icacls #{smb_file_local_path} /grant:r \"authenticated users:(W)\" /grant \"#{windows_nonadmin_user_qualified}:(R)\" /deny #{windows_current_user_qualified}:(R) /inheritance:r")
+          end
+
+          context "when the resource is accessed using the specific non-qualified alternate user identity with access" do
+            let(:remote_user) { windows_nonadmin_user }
+            let(:remote_domain) { nil }
+            let(:remote_password) { windows_nonadmin_user_password }
+
+            it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
+          end
+
+          context "when the resource is accessed using the specific alternate user identity with access and the domain is specified" do
+            let(:remote_user) { windows_nonadmin_user }
+            let(:remote_domain) { windows_nonadmin_user_domain }
+            let(:remote_password) { windows_nonadmin_user_password }
+
+            it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
+          end
+
+          context "when the resource is accessed using the specific qualified alternate user identity with access" do
+            let(:remote_user) { windows_nonadmin_user_qualified }
+            let(:remote_domain) { nil }
+            let(:remote_password) { windows_nonadmin_user_password }
+
+            it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
+          end
+
+          context "when the resource is accessed using the current user's identity" do
+            it_behaves_like "a remote_file resource accessing a remote file to which the specified user does not have access"
+          end
+
+          context "when the resource is accessed using an alternate user's identity with no access to the file" do
+            let (:windows_nonadmin_user) { 'chefremfile3' }
+            let (:windows_nonadmin_user_password) { 'j82ajfxK3;2Xe3' }
+            include_context "a non-admin Windows user"
+
+            let(:remote_user) { windows_nonadmin_user_qualified }
+            let(:remote_domain) { nil }
+            let(:remote_password) { windows_nonadmin_user_password }
+
+            it_behaves_like "a remote_file resource accessing a remote file to which the specified user does not have access"
+          end
+        end
+      end
+    end
+  end
+
   context "when dealing with content length checking" do
     before(:all) do
       start_tiny_server
