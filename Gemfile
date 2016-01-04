@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'omnibus', github: 'chef/omnibus'
+gem 'omnibus', github: 'chef/omnibus', branch: 'tball/chefdk'
 gem 'omnibus-software', github: 'chef/omnibus-software'
 
 # This development group is installed by default when you run `bundle install`,
