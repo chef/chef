@@ -114,6 +114,12 @@ class Chef::Application::Apply < Chef::Application
     :description    => "Only run the bare minimum ohai plugins chef needs to function",
     :boolean        => true
 
+  option :chef_server_url,
+    :short => "-S CHEFSERVERURL",
+    :long => "--server CHEFSERVERURL",
+    :description => "The chef server URL, node objet will load from server when given.",
+    :default => nil
+
   attr_reader :json_attribs
 
   def initialize
@@ -122,6 +128,10 @@ class Chef::Application::Apply < Chef::Application
 
   def reconfigure
     parse_options
+    if config[:chef_server_url]
+      config[:config_file] = Chef::Config.platform_specific_path('/etc/chef/client.rb')
+      load_config_file
+    end
     Chef::Config.merge!(config)
     configure_logging
     Chef::Config.export_proxies
@@ -150,8 +160,8 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def get_recipe_and_run_context
-    Chef::Config[:solo] = true
-    @chef_client = Chef::Client.new(@json_attribs)
+    Chef::Config[:solo] = true unless config[:chef_server_url] 
+    @chef_client = Chef::Client.new(@json_attribs, config)
     @chef_client.run_ohai
     @chef_client.load_node
     @chef_client.build_node
