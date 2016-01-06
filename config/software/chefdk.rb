@@ -21,7 +21,6 @@ source git: "git://github.com/chef/chef-dk.git"
 
 relative_path "chef-dk"
 
-
 if windows?
   dependency "ruby-windows"
   dependency "ruby-windows-devkit"
@@ -69,7 +68,7 @@ build do
       " --verbose", env: env
 
   appbundle 'berkshelf'
-  appbundle 'chef-dk'
+  appbundle 'chefdk'
   appbundle 'chef-vault'
   appbundle 'foodcritic'
   appbundle 'rubocop'
