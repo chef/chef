@@ -27,6 +27,7 @@ require 'chef/platform'
 require 'mixlib/cli'
 require 'tmpdir'
 require 'rbconfig'
+require 'chef/telemetry'
 
 class Chef
   class Application
@@ -196,6 +197,7 @@ class Chef
 
     # Initializes Chef::Client instance and runs it
     def run_chef_client(specific_recipes = [])
+      Chef::Telemetry.load if Chef::Telemetry.enabled?
       unless specific_recipes.respond_to?(:size)
         raise ArgumentError, 'received non-Array like specific_recipes argument'
       end

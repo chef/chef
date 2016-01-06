@@ -37,6 +37,12 @@ class Chef::Application::Client < Chef::Application
     :long  => "--config CONFIG",
     :description => "The configuration file to use"
 
+  option :enable_telemetry,
+    :short => "-T",
+    :long  => "--enable-telemetry",
+    :default => false,
+    :description => "Enable chef telemetry subsystem"
+
   option :formatter,
     :short        => "-F FORMATTER",
     :long         => "--format FORMATTER",

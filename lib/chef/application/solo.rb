@@ -34,6 +34,11 @@ class Chef::Application::Solo < Chef::Application
     :default => Chef::Config.platform_specific_path('/etc/chef/solo.rb'),
     :description => "The configuration file to use"
 
+  option :enable_telemetry,
+    :short => "-T",
+    :long  => "--enable-telemetry",
+    :description => "Enable chef telemetry subsystem"
+
   option :formatter,
     :short        => "-F FORMATTER",
     :long         => "--format FORMATTER",

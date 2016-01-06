@@ -564,6 +564,16 @@ module ChefConfig
       ENV.key?("CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS")
     end
 
+    config_context :telemetry do
+      default :resource, true
+      default :recipe, true
+      default :cookbook, true
+      default :gc, true
+      default :process, false
+      default :client_run, true
+      default :publish_using, []
+    end
+
     # knife configuration data
     config_context :knife do
       default :ssh_port, nil

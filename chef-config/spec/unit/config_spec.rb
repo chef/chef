@@ -734,7 +734,28 @@ RSpec.describe ChefConfig::Config do
       end
     end
 
-
+    context '#telemetry' do
+      it 'enables builtin resource telemetry by default' do
+        expect(ChefConfig::Config[:telemetry][:resource]).to eq(true)
+      end
+      it 'enables builtin recipe telemetry by default' do
+        expect(ChefConfig::Config[:telemetry][:recipe]).to eq(true)
+      end
+      it 'enables builtin cookbook telemetry by default' do
+        expect(ChefConfig::Config[:telemetry][:cookbook]).to eq(true)
+      end
+      it 'enables builtin gc telemetry by default' do
+        expect(ChefConfig::Config[:telemetry][:gc]).to eq(true)
+      end
+      it 'disable builtin process telemetry by default' do
+        expect(ChefConfig::Config[:telemetry][:process]).to eq(false)
+      end
+      it 'enables builtin client_run telemetry by default' do
+        expect(ChefConfig::Config[:telemetry][:client_run]).to eq(true)
+      end
+      it 'add no publisher by default' do
+        expect(ChefConfig::Config[:telemetry][:publish_using]).to be_empty
+      end
+    end
   end
-
 end
