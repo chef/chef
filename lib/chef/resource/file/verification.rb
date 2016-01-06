@@ -28,7 +28,7 @@ class Chef
       # See RFC 027 for a full specification
       #
       # File verifications allow user-supplied commands a means of
-      # preventing file reosurce content deploys.  Their intended use
+      # preventing file resource content deploys.  Their intended use
       # is to verify the contents of a temporary file before it is
       # deployed onto the system.
       #
