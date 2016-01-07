@@ -36,7 +36,7 @@ override :chef,             version: "master"
 override :ohai,             version: "master"
 override :chefdk,           version: "master"
 override :inspec,           version: "master"
-override :'kitchen-inspec', version: "master"
+override :'kitchen-inspec', version: "v0.10.0"
 # We should do a gem release of berkshelf and TK
 # before releasing chefdk.
 override :berkshelf,      version: "master"
