@@ -47,4 +47,12 @@ describe "Chef::ReservedNames::Win32::File::VersionInfo", :windows_only do
   it "file description is command processor" do
     expect(subject.FileDescription).to eq("Windows Command Processor")
   end
+
+  context "file has no version resources" do
+    let(:file_path) { File.join(ENV['windir'], "bootstat.dat") }
+
+    it "returns nil" do
+      expect(subject.FileVersion).to be nil
+    end
+  end
 end
