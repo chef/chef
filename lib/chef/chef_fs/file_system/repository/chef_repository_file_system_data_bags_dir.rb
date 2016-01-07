@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,23 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/chef_fs/file_system/chef_server/cookbook_subdir'
+require 'chef/chef_fs/file_system/repository/chef_repository_file_system_entry'
+require 'chef/chef_fs/data_handler/data_bag_item_data_handler'
 
-describe Chef::ChefFS::FileSystem::ChefServer::CookbookSubdir do
-  let(:root) do
-    Chef::ChefFS::FileSystem::BaseFSDir.new('', nil)
-  end
+class Chef
+  module ChefFS
+    module FileSystem
+      module Repository
+        class ChefRepositoryFileSystemDataBagsDir < ChefRepositoryFileSystemEntry
+          def initialize(name, parent, path = nil)
+            super(name, parent, path, Chef::ChefFS::DataHandler::DataBagItemDataHandler.new)
+          end
 
-  let(:cookbook_subdir) do
-    Chef::ChefFS::FileSystem::ChefServer::CookbookSubdir.new('test', root, false, true)
-  end
-
-  it 'can get child' do
-    cookbook_subdir.child('test')
+          def can_have_child?(name, is_dir)
+            is_dir && !name.start_with?('.')
+          end
+        end
+      end
+    end
   end
 end

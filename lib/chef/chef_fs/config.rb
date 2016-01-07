@@ -143,8 +143,8 @@ class Chef
       end
 
       def create_chef_fs
-        require 'chef/chef_fs/file_system/chef_server_root_dir'
-        Chef::ChefFS::FileSystem::ChefServerRootDir.new("remote", @chef_config, :cookbook_version => @cookbook_version)
+        require 'chef/chef_fs/file_system/chef_server/chef_server_root_dir'
+        Chef::ChefFS::FileSystem::ChefServer::ChefServerRootDir.new("remote", @chef_config, :cookbook_version => @cookbook_version)
       end
 
       def local_fs
@@ -152,8 +152,8 @@ class Chef
       end
 
       def create_local_fs
-        require 'chef/chef_fs/file_system/chef_repository_file_system_root_dir'
-        Chef::ChefFS::FileSystem::ChefRepositoryFileSystemRootDir.new(object_paths, Array(chef_config[:chef_repo_path]).flatten, @chef_config)
+        require 'chef/chef_fs/file_system/repository/chef_repository_file_system_root_dir'
+        Chef::ChefFS::FileSystem::Repository::ChefRepositoryFileSystemRootDir.new(object_paths, Array(chef_config[:chef_repo_path]).flatten, @chef_config)
       end
 
       # Returns the given real path's location relative to the server root.
