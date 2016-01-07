@@ -39,19 +39,57 @@ describe "HTTP Connection" do
     end
   end
 
+  describe "#http_client_builder" do
+    subject(:http_client_builder) { basic_client.http_client_builder }
+
+    context "when the http_proxy is an URI" do
+      before :each do
+        allow(basic_client).to receive(:proxy_uri).and_return(URI.parse(
+          "http://user:pass@example.com:1234"
+        ))
+      end
+
+      it "has a proxy_address" do
+        expect(http_client_builder.proxy_address).to eq "example.com"
+      end
+
+      it "has a proxy_pass" do
+        expect(http_client_builder.proxy_pass).to eq "pass"
+      end
+
+      it "has a proxy_port" do
+        expect(http_client_builder.proxy_port).to eq 1234
+      end
+
+      it "has a proxy_user" do
+        expect(http_client_builder.proxy_user).to eq "user"
+      end
+    end
+
+    context "when the http_proxy is nil" do
+      before :each do
+        allow(basic_client).to receive(:proxy_uri).and_return(nil)
+      end
+
+      it "returns Net::HTTP" do
+        expect(basic_client.http_client_builder).to eq Net::HTTP
+      end
+    end
+  end
+
   describe "#proxy_uri" do
+    subject(:proxy_uri) { basic_client.proxy_uri }
+
     shared_examples_for "a proxy uri" do
       let(:proxy_host) { "proxy.mycorp.com" }
       let(:proxy_port) { 8080 }
       let(:proxy) { "#{proxy_prefix}#{proxy_host}:#{proxy_port}" }
 
       it "should contain the host" do
-        proxy_uri = subject.proxy_uri
         expect(proxy_uri.host).to eq(proxy_host)
       end
 
       it "should contain the port" do
-        proxy_uri = subject.proxy_uri
         expect(proxy_uri.port).to eq(proxy_port)
       end
     end
@@ -122,7 +160,11 @@ describe "HTTP Connection" do
       end
 
       it "to not fail with URI parse exception" do
-        expect { subject.proxy_uri }.to_not raise_error
+        expect { proxy_uri }.to_not raise_error
+      end
+
+      it "returns nil" do
+        expect(proxy_uri).to eq nil
       end
     end
   end

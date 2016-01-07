@@ -103,14 +103,16 @@ class Chef
         # Check if the proxy string contains a scheme. If not, add the url's scheme to the
         # proxy before parsing. The regex /^.*:\/\// matches, for example, http://. Reusing proxy
         # here since we are really just trying to get the string built correctly.
-        if String === proxy && !proxy.strip.empty?
+        #
+        # If `proxy` is not a string or is an empty string, the value will be nil.
+        proxy = if proxy.is_a?(String) && !proxy.strip.empty?
           if proxy.match(/^.*:\/\//)
-           proxy = URI.parse(proxy.strip)
+            proxy = URI.parse(proxy.strip)
           else
-           proxy = URI.parse("#{url.scheme}://#{proxy.strip}")
-          end 
+            proxy = URI.parse("#{url.scheme}://#{proxy.strip}")
+          end
         end
-        
+
         no_proxy = Chef::Config[:no_proxy] || env['NO_PROXY'] || env['no_proxy']
         excludes = no_proxy.to_s.split(/\s*,\s*/).compact
         excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
