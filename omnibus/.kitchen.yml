@@ -11,13 +11,16 @@ driver:
     cpus: 4
     memory: 4096
   synced_folders:
-    - ['.', '/home/vagrant/omnibus-chef']
-    - ['../omnibus', '/home/vagrant/omnibus']
-    - ['../omnibus-software', '/home/vagrant/omnibus-software']
+    - ['..', '/home/vagrant/chef']
+    - ['../../omnibus', '/home/vagrant/omnibus']
+    - ['../../omnibus-software', '/home/vagrant/omnibus-software']
 
 provisioner:
   name: chef_zero
-  require_chef_omnibus: true # Always install the latest version of Chef
+  # Always install the latest version of Chef.
+  # This is not the version of chef that we're building - this is the version
+  # of chef that omnibus needs to build chef/chef.
+  require_chef_omnibus: true
 
 platforms:
   - name: centos-5.10
@@ -104,19 +107,5 @@ suites:
       omnibus:
         <<: *attribute_defaults
         install_dir: /opt/chef
-    run_list:
-      - omnibus::default
-  - name: chefdk
-    attributes:
-      omnibus:
-        <<: *attribute_defaults
-        install_dir: /opt/chefdk
-    run_list:
-      - omnibus::default
-  - name: push-jobs-client
-    attributes:
-      omnibus:
-        <<: *attribute_defaults
-        install_dir: /opt/push-jobs-client
     run_list:
       - omnibus::default
