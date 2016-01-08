@@ -4,8 +4,7 @@ This project creates full-stack platform-specific packages for the following pro
 
 * AngryChef
 * Chef
-* ChefDK
-* Push Jobs Client
+* Chef with FIPS enabled
 
 Installation
 ------------
@@ -97,7 +96,7 @@ section:
 
 ```shell
 $ bundle exec kitchen login <PROJECT>-ubuntu-1204
-[vagrant@ubuntu...] $ cd omnibus-chef
+[vagrant@ubuntu...] $ cd chef/omnibus
 [vagrant@ubuntu...] $ bundle install --without development # Don't install dev tools!
 [vagrant@ubuntu...] $ ...
 [vagrant@ubuntu...] $ bundle exec omnibus build <PROJECT> -l internal
@@ -105,8 +104,8 @@ $ bundle exec kitchen login <PROJECT>-ubuntu-1204
 
 You can also login to Windows instances but will have to manually call the
 `load-omnibus-toolchain.bat` script which initializes the build environment.
-Please note the mounted code directory is also at `C:\home\vagrant\omnibus-chef`
-as opposed to `C:\Users\vagrant\omnibus-chef`.
+Please note the mounted code directory is also at `C:\home\vagrant\chef\omnibus`
+as opposed to `C:\Users\vagrant\chef\omnibus`.
 
 ```shell
 $ bundle exec kitchen login <PROJECT>-windows-81-professional
@@ -116,11 +115,11 @@ Microsoft Windows [Version 6.3.9600]
 
 C:\Users\vagrant>load-omnibus-toolchain.bat
 
-C:\Users\vagrant>cd C:\home\vagrant\omnibus-chef
+C:\Users\vagrant>cd C:\home\vagrant\chef\omnibus
 
-C:\home\vagrant\omnibus-chef>bundle install --without development
+C:\home\vagrant\chef\omnibus>bundle install --without development
 
-C:\home\vagrant\omnibus-chef>bundle exec omnibus build <PROJECT> -l internal
+C:\home\vagrant\chef\omnibus>bundle exec omnibus build <PROJECT> -l internal
 ```
 
 For a complete list of all commands and platforms, run `kitchen list` or
