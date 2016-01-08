@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,7 @@ require 'chef/resource/batch'
 require 'chef/resource/breakpoint'
 require 'chef/resource/cookbook_file'
 require 'chef/resource/chef_gem'
+require 'chef/resource/chocolatey_package'
 require 'chef/resource/cron'
 require 'chef/resource/csh'
 require 'chef/resource/deploy'

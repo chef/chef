@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,6 +57,7 @@ require 'chef/provider/whyrun_safe_ruby_block'
 require 'chef/provider/env/windows'
 
 require 'chef/provider/package/apt'
+require 'chef/provider/package/chocolatey'
 require 'chef/provider/package/dpkg'
 require 'chef/provider/package/easy_install'
 require 'chef/provider/package/freebsd/port'
