@@ -3,6 +3,8 @@
 # see https://github.com/ruby/ruby/blob/2cd6800fd8437b1f862f3f5c44db877159271d17/COPYING
 # for the applicable ruby license.
 
+# since they were converted from ruby's internal minitest spec suit into rspec, these will look somewhat gross.
+
 require 'spec_helper'
 
 describe Chef::Node::AttributeTrait::Decorator do
@@ -130,17 +132,12 @@ describe Chef::Node::AttributeTrait::Decorator do
 #    expect(set2).to eql(set2.dup)
 #  end
 
-#  def test_s_AREF
-#    h = @cls["a" => 100, "b" => 200]
-#    expect(100).to eql(h['a'])
-#    expect(200).to eql(h['b'])
-#    assert_nil(h['c'])
-#
-#    h = @cls.[]("a" => 100, "b" => 200)
-#    expect(100).to eql(h['a'])
-#    expect(200).to eql(h['b'])
-#    assert_nil(h['c'])
-#  end
+  it "test_s_AREF" do
+    h = hash_bracket("a" => 100, "b" => 200)
+    expect(100).to eql(h['a'])
+    expect(200).to eql(h['b'])
+    expect(h['c']).to be nil
+  end
 
   it "#new" do
     h = hash_new
@@ -683,38 +680,38 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect([ %w(ass asinine), %w(bee beeline), %w(cat feline)]).to eql(h1)
   end
 
-#  def test_store
-#    t = Time.now
-#    h = @cls.new
-#    h.store(1, 'one')
-#    h.store(2, 'two')
-#    h.store(3, 'three')
-#    h.store(self, 'self')
-#    h.store(t,  'time')
-#    h.store(nil, 'nil')
-#    h.store('nil', nil)
-#    expect('one').to eql(  h[1])
-#    expect('two').to eql(  h[2])
-#    expect('three').to eql(h[3])
-#    expect('self').to eql( h[self])
-#    expect('time').to eql( h[t])
-#    expect('nil').to eql(  h[nil])
-#    expect(nil).to eql(    h['nil'])
-#    expect(nil).to eql(    h['koala'])
-#
-#    h.store(1, 1)
-#    h.store(nil,  99)
-#    h.store('nil', nil)
-#    expect(1).to eql(      h[1])
-#    expect('two').to eql(  h[2])
-#    expect('three').to eql(h[3])
-#    expect('self').to eql( h[self])
-#    expect('time').to eql( h[t])
-#    expect(99).to eql(     h[nil])
-#    expect(nil).to eql(    h['nil'])
-#    expect(nil).to eql(    h['koala'])
-#  end
-#
+  it "test_store" do
+    t = Time.now
+    h = hash_new
+    h.store(1, 'one')
+    h.store(2, 'two')
+    h.store(3, 'three')
+    h.store(self, 'self')
+    h.store(t,  'time')
+    h.store(nil, 'nil')
+    h.store('nil', nil)
+    expect('one').to eql(  h[1])
+    expect('two').to eql(  h[2])
+    expect('three').to eql(h[3])
+    expect('self').to eql( h[self])
+    expect('time').to eql( h[t])
+    expect('nil').to eql(  h[nil])
+    expect(nil).to eql(    h['nil'])
+    expect(nil).to eql(    h['koala'])
+
+    h.store(1, 1)
+    h.store(nil,  99)
+    h.store('nil', nil)
+    expect(1).to eql(      h[1])
+    expect('two').to eql(  h[2])
+    expect('three').to eql(h[3])
+    expect('self').to eql( h[self])
+    expect('time').to eql( h[t])
+    expect(99).to eql(     h[nil])
+    expect(nil).to eql(    h['nil'])
+    expect(nil).to eql(    h['koala'])
+  end
+
 #  def test_to_a
 #    expect([]).to eql(hash_bracket().to_a)
 #    expect([[1,2]]).to eql(@cls[ 1=>2 ].to_a)
@@ -869,84 +866,77 @@ describe Chef::Node::AttributeTrait::Decorator do
 #    assert_nil(hash_bracket().reject! { })
 #  end
 #
-#  def test_select
-#    expect({3=>4,5=>6}, @cls[1=>2,3=>4,5=>6].select {|k).to eql(v| k + v >= 7 })
-#
-#    base = @cls[ 1 => 'one', '2' => false, true => 'true', 'cat' => 99 ]
-#    h1   = @cls[ '2' => false, 'cat' => 99 ]
-#    h2   = @cls[ 1 => 'one', true => 'true' ]
-#    h3   = @cls[ 1 => 'one', true => 'true', 'cat' => 99 ]
-#
-#    h = base.dup
-#    expect(h).to eql(h.select { true })
-#    expect(hash_bracket()).to eql(h.select { false })
-#
-#    h = base.dup
-#    expect(h1).to eql(h.select {|k,v| k.instance_of?(String) })
-#
-#    expect(h2).to eql(h.select {|k,v| v.instance_of?(String) })
-#
-#    expect(h3).to eql(h.select {|k,v| v })
-#    expect(base).to eql(h)
-#
-#    h.instance_variable_set(:@foo, :foo)
-#    h.default = 42
-#    h.taint
-#    h = h.select {true}
-#    assert_instance_of(Hash, h)
-#    assert_not_predicate(h, :tainted?)
-#    assert_nil(h.default)
-#    assert_not_send([h, :instance_variable_defined?, :@foo])
-#  end
-#
-#  def test_select!
-#    h = @cls[1=>2,3=>4,5=>6]
-#    expect(h, h.select! {|k).to eql(v| k + v >= 7 })
-#    expect({3=>4,5=>6}).to eql(h)
-#    h = @cls[1=>2,3=>4,5=>6]
-#    expect(nil).to eql(h.select!{true})
-#  end
-#
-#  def test_clear2
-#    expect({}).to eql(@cls[1=>2,3=>4,5=>6].clear)
-#    h = @cls[1=>2,3=>4,5=>6]
-#    h.each { h.clear }
-#    expect({}).to eql(h)
-#  end
-#
-#  def test_replace2
-#    h1 = @cls.new { :foo }
-#    h2 = @cls.new
-#    h2.replace h1
-#    expect(:foo).to eql(h2[0])
-#
-#    assert_raise(ArgumentError) { h2.replace() }
-#    assert_raise(TypeError) { h2.replace(1) }
-#    h2.freeze
-#    assert_raise(ArgumentError) { h2.replace() }
-#    assert_raise(RuntimeError) { h2.replace(h1) }
-#    assert_raise(RuntimeError) { h2.replace(42) }
-#  end
-#
-#  def test_size2
-#    expect(0).to eql(hash_bracket().size)
-#  end
-#
-#  def test_equal2
-#    assert_not_equal(0, hash_bracket())
-#    o = Object.new
-#    o.instance_variable_set(:@cls, @cls)
-#    def o.to_hash; hash_bracket(); end
-#    def o.==(x); true; end
-#    expect({}).to eql(o)
-#    def o.==(x); false; end
-#    assert_not_equal({}, o)
-#
-#    h1 = @cls[1=>2]; h2 = @cls[3=>4]
-#    assert_not_equal(h1, h2)
-#    h1 = @cls[1=>2]; h2 = @cls[1=>4]
-#    assert_not_equal(h1, h2)
-#  end
+  it "test_select" do
+    expect(hash_bracket(1=>2,3=>4,5=>6).select {|k,v| k + v >= 7 }).to eql({3=>4,5=>6})
+
+    base = hash_bracket( 1 => 'one', '2' => false, true => 'true', 'cat' => 99 )
+    h1   = hash_bracket( '2' => false, 'cat' => 99 )
+    h2   = hash_bracket( 1 => 'one', true => 'true' )
+    h3   = hash_bracket( 1 => 'one', true => 'true', 'cat' => 99 )
+
+    h = base.dup
+    expect(h).to eql(h.select { true })
+    expect(hash_bracket()).to eql(h.select { false })
+
+    h = base.dup
+    expect(h1).to eql(h.select {|k,v| k.instance_of?(String) })
+
+    expect(h2).to eql(h.select {|k,v| v.instance_of?(String) })
+
+    expect(h3).to eql(h.select {|k,v| v })
+    expect(base).to eql(h)
+
+    h.instance_variable_set(:@foo, :foo)
+    h.default = 42
+    h.taint
+    h = h.select {true}
+    expect(h).to be_instance_of(Hash)
+    expect(h.tainted?).to be false
+    expect(h.default).to be nil
+    expect(h.instance_variable_defined?(:@foo)).to be false
+  end
+
+  it "test_select!" do
+    h = hash_bracket(1=>2,3=>4,5=>6)
+    expect(h).to eql(h.select! {|k, v| k + v >= 7 })
+    expect({3=>4,5=>6}).to eql(h)
+    h = hash_bracket(1=>2,3=>4,5=>6)
+    expect(nil).to eql(h.select!{true})
+  end
+
+  it "test_clear2" do
+    h = hash_bracket(1=>2,3=>4,5=>6)
+    h.each { h.clear }
+    expect({}).to eql(h)
+  end
+
+  it "test_replace2" do
+    h1 = hash_new(:foo)
+    h2 = hash_new
+    h2.replace h1
+    expect(h2[0]).to eql(:foo)
+
+    expect{ h2.replace() }.to raise_error(ArgumentError)
+    expect{ h2.replace(1) }.to raise_error(TypeError)
+    h2.freeze
+    expect{ h2.replace() }.to raise_error(ArgumentError)
+    # @todo fix these
+  #  expect{ h2.replace(h1) }.to raise_error(RuntimeError)
+  #  expect{ h2.replace(42) }.to raise_error(RuntimeError)
+  end
+
+  it "test_size2" do
+    expect(0).to eql(hash_bracket().size)
+  end
+
+  it "test_equal2" do
+    expect(hash_bracket).not_to eql(0)
+
+    h1 = hash_bracket(1=>2); h2 = hash_bracket(3=>4)
+    expect(h2).not_to eql(h1)
+    h1 = hash_bracket(1=>2); h2 = hash_bracket(1=>4)
+    expect(h2).not_to eql(h1)
+  end
 
   it "test_eql" do
     expect(hash_bracket().eql?(0)).to be false
@@ -988,13 +978,13 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect([1.0,1]).to eql(hash_bracket(1.0=>1).assoc(1))
   end
 
-#  def test_assoc_compare_by_identity
-#    h = hash_bracket()
-#    h.compare_by_identity
-#    h["a"] = 1
-#    h["a".dup] = 2
-#    expect(["a",1]).to eql(h.assoc("a"))
-#  end
+  it "test_assoc_compare_by_identity" do
+    h = hash_bracket()
+    h.compare_by_identity
+    h["a"] = 1
+    h["a".dup] = 2
+    expect(["a",1]).to eql(h.assoc("a"))
+  end
 
   it "#rassoc" do
     expect([3,4]).to eql(hash_bracket(1=>2, 3=>4, 5=>6).rassoc(4))
