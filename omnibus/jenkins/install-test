@@ -1,0 +1,105 @@
+#!/bin/sh
+# WARNING: REQUIRES /bin/sh
+#
+# - must run on /bin/sh on solaris 9
+# - must run on /bin/sh on AIX 6.x
+# - if you think you are a bash wizard, you probably do not understand
+#   this programming language.  do not touch.
+# - if you are under 40, get peer review from your elders.
+
+set -e
+set -x
+
+env
+
+# sleep unti omnitruck has updated itself
+sleep $SLEEP_TIME
+
+# Check whether a command exists - returns 0 if it does, 1 if it does not
+exists() {
+  if command -v $1 >/dev/null 2>&1; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# SmartOS builds in /opt/local instead
+is_smartos() {
+  uname -v | grep "^joyent" 2>&1 >/dev/null
+}
+
+if is_smartos; then
+    PREFIX="/opt/local"
+else
+    PREFIX="/usr"
+fi
+
+# remove the chef package / clobber the files
+if exists dpkg; then
+    sudo dpkg -P chef || true
+elif exists rpm; then
+    sudo rpm -ev chef || true
+elif exists pkgadd; then
+    cat <<EOF > /tmp/nocheck
+conflict=nocheck
+action=nocheck
+EOF
+    if sudo pkgrm -a /tmp/nocheck -n chef; then
+      :
+    else
+      echo "WARNING: a 'no package to deinstall' error is normal here"
+      echo "WARNING: attempting to fix busted postremove anyway because I'm dumb..."
+      echo "WARNING: if this is really a busted postremove you should fix that..."
+      echo "WARNING: (but that should have been caught in the client-test script)"
+      sudo rm -f /var/sadm/pkg/chef/install/postremove || true
+      sudo pkgrm -a /tmp/nocheck -n chef || true
+      echo "WARNING: a 'no package to deinstall error' is normal here"
+    fi
+else # makeself installer
+  :
+fi
+
+sudo rm  -rf /opt/chef/*
+
+# ensure symlinks are gone, so that failures to recreate them get caught
+sudo rm -f $PREFIX/bin/chef-client || true
+sudo rm -f $PREFIX/bin/chef-solo || true
+sudo rm -f $PREFIX/bin/chef-apply || true
+sudo rm -f $PREFIX/bin/chef-shell || true
+sudo rm -f $PREFIX/bin/knife || true
+sudo rm -f $PREFIX/bin/shef || true
+sudo rm -f $PREFIX/bin/ohai || true
+
+if exists curl; then
+   curl -L "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
+else
+   wget -qO- "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
+fi
+
+# sanity check that we're getting symlinks from the pre-install script
+if [ ! -L "/usr/bin/chef-client" ]; then
+  echo "/usr/bin/chef-client symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+if [ ! -L "/usr/bin/knife" ]; then
+  echo "/usr/bin/knife symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+if [ ! -L "/usr/bin/chef-solo" ]; then
+  echo "/usr/bin/chef-solo symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+if [ ! -L "/usr/bin/ohai" ]; then
+  echo "/usr/bin/ohai symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+# bundle bust and make sure we invoke chef-client from the installed artifact
+unset GEM_HOME
+unset GEM_PATH
+/opt/chef/bin/chef-client --version
+

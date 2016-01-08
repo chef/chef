@@ -1,0 +1,55 @@
+#!/bin/sh
+# WARNING: REQUIRES /bin/sh
+#
+# Post install configuration for Push Jobs Client
+#
+
+PROGNAME=`basename $0`
+INSTALLER_DIR=/opt/push-jobs-client
+
+error_exit()
+{
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+is_darwin()
+{
+  uname -v | grep "^Darwin" 2>&1 >/dev/null
+}
+
+is_smartos()
+{
+  uname -v | grep "^joyent" 2>&1 >/dev/null
+}
+
+if is_smartos; then
+  PREFIX="/opt/local"
+elif is_darwin; then
+  PREFIX="/usr/local"
+  mkdir -p "$PREFIX/bin"
+else
+  PREFIX="/usr"
+fi
+
+# We test for the presence of /usr/bin/push-client to know if this script succeeds,
+# so push-client must appear as the last item here.
+binaries="pushy-client"
+
+# rm -f before ln -sf is required for solaris 9
+for binary in $binaries; do
+  rm -f $PREFIX/bin/$binary
+done
+
+for binary in $binaries; do
+  ln -sf $INSTALLER_DIR/bin/$binary $PREFIX/bin || error_exit "Cannot link $binary to $PREFIX/bin"
+done
+
+# Ensure all files/directories in $INSTALLER_DIR are owned by root. This
+# has been fixed on new installs but upgrades from old installs need to
+# be manually fixed.
+chown -Rh 0:0 $INSTALLER_DIR
+
+echo "Thank you for installing Chef Push Jobs Client!"
+
+exit 0

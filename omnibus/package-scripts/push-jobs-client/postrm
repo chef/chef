@@ -1,0 +1,39 @@
+#!/bin/sh
+# WARNING: REQUIRES /bin/sh
+#
+# Post uninstall configuration for Push Jobs Client
+#
+
+is_smartos() {
+  uname -v | grep "^joyent" 2>&1 >/dev/null
+}
+
+is_darwin()
+{
+  uname -v | grep "^Darwin" 2>&1 >/dev/null
+}
+
+if is_smartos; then
+  PREFIX="/opt/local"
+elif is_darwin; then
+  PREFIX="/usr/local"
+else
+  PREFIX="/usr"
+fi
+
+cleanup_symlinks() {
+  binaries="pushy-client"
+  for binary in $binaries; do
+    rm -f $PREFIX/bin/$binary
+  done
+}
+
+# Clean up binary symlinks if they exist
+# see: http://tickets.opscode.com/browse/CHEF-3022
+if [ ! -f /etc/redhat-release -a ! -f /etc/fedora-release -a ! -f /etc/system-release -a ! -f /etc/SuSE-release ]; then
+  # not a redhat-ish RPM-based system
+  cleanup_symlinks
+elif [ "x$1" = "x0" ]; then
+  # RPM-based system and we're deinstalling rather than upgrading
+  cleanup_symlinks
+fi
