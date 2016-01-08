@@ -27,7 +27,7 @@ Chef::Config.solo(false)
 
 
 def sha256_checksum(path)
-  Digest::SHA256.hexdigest(File.read(path))
+  OpenSSL::Digest::SHA256.hexdigest(File.read(path))
 end
 
 # From Ruby 1.9.2+

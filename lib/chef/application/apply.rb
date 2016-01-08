@@ -125,6 +125,7 @@ class Chef::Application::Apply < Chef::Application
     Chef::Config.merge!(config)
     configure_logging
     Chef::Config.export_proxies
+    Chef::Config.init_openssl
     parse_json
   end
 

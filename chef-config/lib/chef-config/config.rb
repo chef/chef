@@ -27,6 +27,7 @@ require "chef-config/windows"
 require "chef-config/path_helper"
 require "mixlib/shellout"
 require "uri"
+require 'openssl'
 
 module ChefConfig
 
@@ -452,6 +453,19 @@ module ChefConfig
 
     # Set to true if Chef is to set OpenSSL to run in FIPS mode
     default :openssl_fips, false
+
+    # Initialize openssl
+    def self.init_openssl
+      if openssl_fips
+        ChefConfig.logger.warn "The `openssl_fips` is still a work in progress. This feature is incomplete."
+        OpenSSL.fips_mode = true
+        require 'digest'
+        require 'digest/sha1'
+        require 'digest/md5'
+        Digest.const_set('SHA1', OpenSSL::Digest::SHA1)
+        OpenSSL::Digest.const_set('MD5', Digest::MD5)
+      end
+    end
 
     # Sets the version of the signed header authentication protocol to use (see
     # the 'mixlib-authorization' project for more detail). Currently, versions

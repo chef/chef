@@ -398,6 +398,7 @@ class Chef
       merge_configs
       apply_computed_config
       Chef::Config.export_proxies
+      Chef::Config.init_openssl
       # This has to be after apply_computed_config so that Mixlib::Log is configured
       Chef::Log.info("Using configuration from #{config[:config_file]}") if config[:config_file]
     end

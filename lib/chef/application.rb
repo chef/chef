@@ -84,6 +84,7 @@ class Chef
       parse_options
       load_config_file
       Chef::Config.export_proxies
+      Chef::Config.init_openssl
     end
 
     # Parse the config file
