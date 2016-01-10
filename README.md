@@ -56,7 +56,7 @@ Then get the source and install it:
     bundle install
 
     # Build a gem
-    rake gem
+    bundle exec rake gem
 
     # Install the gem you just built
     gem install pkg/chef-VERSION.gem
