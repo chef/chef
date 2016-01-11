@@ -140,7 +140,7 @@ class Chef
 
     def destroy
       # will default to the current API version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
-      Chef::REST.new(Chef::Config[:chef_server_url]).delete("users/#{@username}")
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url]).delete("users/#{@username}")
     end
 
     def create
@@ -287,7 +287,7 @@ class Chef
     end
 
     def self.list(inflate=false)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get('users')
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get('users')
       users = if response.is_a?(Array)
                 # EC 11 / CS 12 V0, V1
                 #   GET /organizations/<org>/users
@@ -312,7 +312,7 @@ class Chef
 
     def self.load(username)
       # will default to the current API version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get("users/#{username}")
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("users/#{username}")
       Chef::UserV1.from_hash(response)
     end
 

@@ -37,7 +37,7 @@ describe Chef::Knife::DataBagEdit do
   let(:db) { Chef::DataBagItem.from_hash(raw_hash)}
   let(:raw_edited_hash) { {"login_name" => "rho", "id" => "item_name", "new_key" => "new_value"} }
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
@@ -56,7 +56,7 @@ describe Chef::Knife::DataBagEdit do
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(db)
       expect(knife).to receive(:encrypted?).with(db.raw_data).and_return(is_encrypted?)
       expect(knife).to receive(:edit_data).with(data_to_edit).and_return(raw_edited_hash)
-      expect(rest).to receive(:put_rest).with("data/#{bag_name}/#{item_name}", transmitted_hash).ordered
+      expect(rest).to receive(:put).with("data/#{bag_name}/#{item_name}", transmitted_hash).ordered
 
       knife.run
     end

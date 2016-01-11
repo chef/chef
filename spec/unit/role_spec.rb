@@ -201,7 +201,7 @@ describe Chef::Role do
     describe "and it has per-environment run lists" do
       before do
         @role.env_run_lists("_default" => ['one', 'two', 'role[a]'], "production" => ['role[monitoring]', 'role[auditing]', 'role[apache]'], "dev" => ["role[nginx]"])
-        @serialized_role = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@role), :create_additions => false)
+        @serialized_role = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(@role), :create_additions => false)
       end
 
       it "includes the per-environment run lists" do
@@ -229,7 +229,7 @@ describe Chef::Role do
       @role.run_list('one', 'two', 'role[a]')
       @role.default_attributes({ 'el_groupo' => 'nuevo' })
       @role.override_attributes({ 'deloused' => 'in the comatorium' })
-      @deserial = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@role))
+      @deserial = Chef::Role.from_hash(Chef::JSONCompat.parse(Chef::JSONCompat.to_json(@role)))
     end
 
     it "should deserialize to a Chef::Role object" do

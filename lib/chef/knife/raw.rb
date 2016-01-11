@@ -1,4 +1,5 @@
 require 'chef/knife'
+require 'chef/http'
 
 class Chef
   class Knife

@@ -127,10 +127,8 @@ class Chef
         end
 
         Chef::Log.debug "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
-        # Since we're posting compressed data we can not directly call post_rest which expects JSON
         begin
-          audit_url = rest_client.create_url(audit_history_url)
-          rest_client.post(audit_url, run_data, headers)
+          rest_client.post(audit_history_url, run_data, headers)
         rescue StandardError => e
           if e.respond_to? :response
             # 404 error code is OK. This means the version of server we're running against doesn't support

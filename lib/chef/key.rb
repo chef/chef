@@ -19,6 +19,7 @@
 require 'chef/json_compat'
 require 'chef/mixin/params_validate'
 require 'chef/exceptions'
+require 'chef/server_api'
 
 class Chef
   # Class for interacting with a chef key object. Can be used to create new keys,
@@ -31,7 +32,7 @@ class Chef
   # @attr [String] public_key      the RSA string of this key
   # @attr [String] private_key     the RSA string of the private key if returned via a POST or PUT
   # @attr [String] expiration_date the ISO formatted string YYYY-MM-DDTHH:MM:SSZ, i.e. 2020-12-24T21:00:00Z
-  # @attr [String] rest            Chef::REST object, initialized and cached via chef_rest method
+  # @attr [String] rest            Chef::ServerAPI object, initialized and cached via chef_rest method
   # @attr [string] api_base        either "users" or "clients", initialized and cached via api_base method
   #
   # @attr_reader [String] actor_field_name must be either 'client' or 'user'
@@ -60,9 +61,9 @@ class Chef
 
     def chef_rest
       @rest ||= if @actor_field_name == "user"
-                  Chef::REST.new(Chef::Config[:chef_server_root])
+                  Chef::ServerAPI.new(Chef::Config[:chef_server_root])
                 else
-                  Chef::REST.new(Chef::Config[:chef_server_url])
+                  Chef::ServerAPI.new(Chef::Config[:chef_server_url])
                 end
     end
 
@@ -151,7 +152,7 @@ class Chef
       payload['public_key'] = @public_key unless @public_key.nil?
       payload['create_key'] = @create_key if @create_key
       payload['expiration_date'] = @expiration_date unless @expiration_date.nil?
-      result = chef_rest.post_rest("#{api_base}/#{@actor}/keys", payload)
+      result = chef_rest.post("#{api_base}/#{@actor}/keys", payload)
       # append the private key to the current key if the server returned one,
       # since the POST endpoint just returns uri and private_key if needed.
       new_key = self.to_hash
@@ -174,7 +175,7 @@ class Chef
       # to @name.
       put_name = @name if put_name.nil?
 
-      new_key = chef_rest.put_rest("#{api_base}/#{@actor}/keys/#{put_name}", to_hash)
+      new_key = chef_rest.put("#{api_base}/#{@actor}/keys/#{put_name}", to_hash)
       # if the server returned a public_key, remove the create_key field, as we now have a key
       if new_key["public_key"]
         self.delete_create_key
@@ -197,7 +198,7 @@ class Chef
         raise Chef::Exceptions::MissingKeyAttribute, "the name field must be populated when delete is called"
       end
 
-      chef_rest.delete_rest("#{api_base}/#{@actor}/keys/#{@name}")
+      chef_rest.delete("#{api_base}/#{@actor}/keys/#{@name}")
     end
 
     # Class methods
@@ -226,22 +227,22 @@ class Chef
     end
 
     def self.list_by_user(actor, inflate=false)
-      keys = Chef::REST.new(Chef::Config[:chef_server_root]).get_rest("users/#{actor}/keys")
+      keys = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys")
       self.list(keys, actor, :load_by_user, inflate)
     end
 
     def self.list_by_client(actor, inflate=false)
-      keys = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients/#{actor}/keys")
+      keys = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys")
       self.list(keys, actor, :load_by_client, inflate)
     end
 
     def self.load_by_user(actor, key_name)
-      response = Chef::REST.new(Chef::Config[:chef_server_root]).get_rest("users/#{actor}/keys/#{key_name}")
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys/#{key_name}")
       Chef::Key.from_hash(response.merge({"user" => actor}))
     end
 
     def self.load_by_client(actor, key_name)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients/#{actor}/keys/#{key_name}")
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys/#{key_name}")
       Chef::Key.from_hash(response.merge({"client" => actor}))
     end
 

@@ -69,7 +69,7 @@ class Chef
 
         ui.info("Downloading #{@cookbook_name} cookbook version #{@version}")
 
-        cookbook = rest.get_rest("cookbooks/#{@cookbook_name}/#{@version}")
+        cookbook = Chef::CookbookVersion.load(@cookbook_name, @version)
         manifest = cookbook.manifest
 
         basedir = File.join(config[:download_directory], "#{@cookbook_name}-#{cookbook.version}")
@@ -90,8 +90,7 @@ class Chef
             dest = File.join(basedir, segment_file['path'].gsub('/', File::SEPARATOR))
             Chef::Log.debug("Downloading #{segment_file['path']} to #{dest}")
             FileUtils.mkdir_p(File.dirname(dest))
-            rest.sign_on_redirect = false
-            tempfile = rest.get_rest(segment_file['url'], true)
+            tempfile = rest.streaming_request(segment_file['url'])
             FileUtils.mv(tempfile.path, dest)
           end
         end

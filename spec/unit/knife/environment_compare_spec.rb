@@ -51,7 +51,7 @@ describe Chef::Knife::EnvironmentCompare do
                                               'url' => "#{@base_url}/#{item}/1.0.1"}]}
     end 
 
-    allow(@rest_double).to receive(:get_rest).with("/cookbooks?num_versions=1").and_return(@cookbook_data)
+    allow(@rest_double).to receive(:get).with("/cookbooks?num_versions=1").and_return(@cookbook_data)
 
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)

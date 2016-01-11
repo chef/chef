@@ -17,7 +17,7 @@
 #
 
 require 'chef/config'
-require 'chef/rest'
+require 'chef/server_api'
 require 'chef/exceptions'
 
 class Chef
@@ -45,7 +45,7 @@ class Chef
       #--
       # If client creation fails with a 5xx, it is retried up to 5 times. These
       # retries are on top of the retries with randomized exponential backoff
-      # built in to Chef::REST. The retries here are a workaround for failures
+      # built in to Chef::ServerAPI. The retries here are a workaround for failures
       # caused by resource contention in Hosted Chef when creating a very large
       # number of clients simultaneously, (e.g., spinning up 100s of ec2 nodes
       # at once). Future improvements to the affected component should make

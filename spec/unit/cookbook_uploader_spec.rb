@@ -20,7 +20,7 @@ require 'spec_helper'
 
 describe Chef::CookbookUploader do
 
-  let(:http_client) { double("Chef::REST") }
+  let(:http_client) { double("Chef::ServerAPI") }
 
   let(:cookbook_loader) do
     loader = Chef::CookbookLoader.new(File.join(CHEF_SPEC_DATA, "cookbooks"))
@@ -64,8 +64,8 @@ describe Chef::CookbookUploader do
   end
 
   it "creates an HTTP client with default configuration when not initialized with one" do
-    default_http_client = double("Chef::REST")
-    expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(default_http_client)
+    default_http_client = double("Chef::ServerAPI")
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(default_http_client)
     uploader = described_class.new(cookbooks_to_upload)
     expect(uploader.rest).to eq(default_http_client)
   end

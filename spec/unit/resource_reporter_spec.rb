@@ -36,8 +36,8 @@ describe Chef::ResourceReporter do
   before do
     @node = Chef::Node.new
     @node.name("spitfire")
-    @rest_client = double("Chef::REST (mock)")
-    allow(@rest_client).to receive(:post_rest).and_return(true)
+    @rest_client = double("Chef::ServerAPI (mock)")
+    allow(@rest_client).to receive(:post).and_return(true)
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
     @cookbook_name = "monkey"
@@ -92,9 +92,8 @@ describe Chef::ResourceReporter do
 
   context "when chef fails" do
     before do
-      allow(@rest_client).to receive(:create_url).and_return("reports/nodes/spitfire/runs/#{@run_id}");
-      allow(@rest_client).to receive(:raw_http_request).and_return({"result"=>"ok"});
-      allow(@rest_client).to receive(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
+      allow(@rest_client).to receive(:raw_request).and_return({"result"=>"ok"});
+      allow(@rest_client).to receive(:post).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
 
     end
 
@@ -260,9 +259,8 @@ describe Chef::ResourceReporter do
   describe "when generating a report for the server" do
 
     before do
-      allow(@rest_client).to receive(:create_url).and_return("reports/nodes/spitfire/runs/#{@run_id}");
-      allow(@rest_client).to receive(:raw_http_request).and_return({"result"=>"ok"});
-      allow(@rest_client).to receive(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
+      allow(@rest_client).to receive(:raw_request).and_return({"result"=>"ok"});
+      allow(@rest_client).to receive(:post).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
 
       @resource_reporter.run_started(@run_status)
     end
@@ -592,7 +590,7 @@ describe Chef::ResourceReporter do
         # 404 getting the run_id
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
         @error = Net::HTTPServerException.new("404 message", @response)
-        expect(@rest_client).to receive(:post_rest).
+        expect(@rest_client).to receive(:post).
           with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id,
                                                :start_time => @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
@@ -606,7 +604,7 @@ describe Chef::ResourceReporter do
 
       it "does not send a resource report to the server" do
         @resource_reporter.run_started(@run_status)
-        expect(@rest_client).not_to receive(:post_rest)
+        expect(@rest_client).not_to receive(:post)
         @resource_reporter.run_completed(@node)
       end
 
@@ -622,7 +620,7 @@ describe Chef::ResourceReporter do
         # 500 getting the run_id
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
-        expect(@rest_client).to receive(:post_rest).
+        expect(@rest_client).to receive(:post).
           with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
@@ -635,7 +633,7 @@ describe Chef::ResourceReporter do
 
       it "does not send a resource report to the server" do
         @resource_reporter.run_started(@run_status)
-        expect(@rest_client).not_to receive(:post_rest)
+        expect(@rest_client).not_to receive(:post)
         @resource_reporter.run_completed(@node)
       end
 
@@ -652,7 +650,7 @@ describe Chef::ResourceReporter do
         # 500 getting the run_id
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
-        expect(@rest_client).to receive(:post_rest).
+        expect(@rest_client).to receive(:post).
           with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
@@ -673,7 +671,7 @@ describe Chef::ResourceReporter do
     context "after creating the run history document" do
       before do
         response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/@run_id"}
-        expect(@rest_client).to receive(:post_rest).
+        expect(@rest_client).to receive(:post).
           with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_return(response)
@@ -693,16 +691,10 @@ describe Chef::ResourceReporter do
         allow(@resource_reporter).to receive(:end_time).and_return(@end_time)
         @expected_data = @resource_reporter.prepare_run_data
 
-        post_url = "https://chef_server/example_url"
         response = {"result"=>"ok"}
 
-        expect(@rest_client).to receive(:create_url).
-          with("reports/nodes/spitfire/runs/#{@run_id}").
-          ordered.
-          and_return(post_url)
-        expect(@rest_client).to receive(:raw_http_request).ordered do |method, url, headers, data|
+        expect(@rest_client).to receive(:raw_request).ordered do |method, url, headers, data|
           expect(method).to eq(:POST)
-          expect(url).to eq(post_url)
           expect(headers).to eq({'Content-Encoding' => 'gzip',
                              'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION
           })
@@ -720,8 +712,6 @@ describe Chef::ResourceReporter do
       before do
         @enable_reporting_url_fatals = Chef::Config[:enable_reporting_url_fatals]
         Chef::Config[:enable_reporting_url_fatals] = true
-        # this call doesn't matter for this context
-        allow(@rest_client).to receive(:create_url)
       end
 
       after do
@@ -731,7 +721,7 @@ describe Chef::ResourceReporter do
       it "should log 4xx errors" do
         response = Net::HTTPClientError.new("forbidden", "403", "Forbidden")
         error = Net::HTTPServerException.new("403 message", response)
-        allow(@rest_client).to receive(:raw_http_request).and_raise(error)
+        allow(@rest_client).to receive(:raw_request).and_raise(error)
         expect(Chef::Log).to receive(:error).with(/403/)
 
         @resource_reporter.post_reporting_data
@@ -740,14 +730,14 @@ describe Chef::ResourceReporter do
       it "should log error 5xx errors" do
         response = Net::HTTPServerError.new("internal error", "500", "Internal Server Error")
         error = Net::HTTPFatalError.new("500 message", response)
-        allow(@rest_client).to receive(:raw_http_request).and_raise(error)
+        allow(@rest_client).to receive(:raw_request).and_raise(error)
         expect(Chef::Log).to receive(:error).with(/500/)
 
         @resource_reporter.post_reporting_data
       end
 
       it "should log if a socket error happens" do
-        allow(@rest_client).to receive(:raw_http_request).and_raise(SocketError.new("test socket error"))
+        allow(@rest_client).to receive(:raw_request).and_raise(SocketError.new("test socket error"))
         expect(Chef::Log).to receive(:error).with(/test socket error/)
 
         @resource_reporter.post_reporting_data
@@ -755,7 +745,7 @@ describe Chef::ResourceReporter do
       end
 
       it "should raise if an unkwown error happens" do
-        allow(@rest_client).to receive(:raw_http_request).and_raise(Exception.new)
+        allow(@rest_client).to receive(:raw_request).and_raise(Exception.new)
 
         expect {
           @resource_reporter.post_reporting_data

@@ -39,7 +39,7 @@ describe Chef::Knife::DataBagShow do
     k
   end
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }

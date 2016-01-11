@@ -51,7 +51,7 @@ class Chef
 
         # create the data bag
         begin
-          rest.post_rest("data", { "name" => @data_bag_name })
+          rest.post("data", { "name" => @data_bag_name })
           ui.info("Created data_bag[#{@data_bag_name}]")
         rescue Net::HTTPServerException => e
           raise unless e.to_s =~ /^409/
@@ -68,7 +68,7 @@ class Chef
                 output
             end)
             item.data_bag(@data_bag_name)
-            rest.post_rest("data/#{@data_bag_name}", item)
+            rest.post("data/#{@data_bag_name}", item)
           end
         end
       end

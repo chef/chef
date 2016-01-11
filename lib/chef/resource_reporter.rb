@@ -121,7 +121,7 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{node_name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :start, :run_id => run_id,
+          server_response = @rest_client.post(resource_history_url, {:action => :start, :run_id => run_id,
                                                                           :start_time => start_time.to_s}, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           handle_error_starting_run(e, resource_history_url)
@@ -230,10 +230,9 @@ class Chef
         Chef::Log.debug run_data.inspect
         compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
         Chef::Log.debug("Sending compressed run data...")
-        # Since we're posting compressed data we can not directly call post_rest which expects JSON
-        reporting_url = @rest_client.create_url(resource_history_url)
+        # Since we're posting compressed data we can not directly call post which expects JSON
         begin
-          @rest_client.raw_http_request(:POST, reporting_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
+          @rest_client.raw_request(:POST, resource_history_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
         rescue StandardError => e
           if e.respond_to? :response
             Chef::FileCache.store("failed-reporting-data.json", Chef::JSONCompat.to_json_pretty(run_data), 0640)

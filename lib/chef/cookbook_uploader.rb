@@ -9,6 +9,7 @@ require 'chef/cookbook/syntax_check'
 require 'chef/cookbook/file_system_file_vendor'
 require 'chef/util/threaded_job_queue'
 require 'chef/sandbox'
+require 'chef/server_api'
 
 class Chef
   class CookbookUploader
@@ -31,7 +32,7 @@ class Chef
     #           uploading the cookbook. This allows frozen CookbookVersion
     #           documents on the server to be overwritten (otherwise a 409 is
     #           returned by the server)
-    # * :rest   A Chef::REST object that you have configured the way you like it.
+    # * :rest   A Chef::ServerAPI object that you have configured the way you like it.
     #           If you don't provide this, one will be created using the values
     #           in Chef::Config.
     # * :concurrency   An integer that decided how many threads will be used to
@@ -39,7 +40,7 @@ class Chef
     def initialize(cookbooks, opts={})
       @opts = opts
       @cookbooks = Array(cookbooks)
-      @rest = opts[:rest] || Chef::REST.new(Chef::Config[:chef_server_url])
+      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url])
       @concurrency = opts[:concurrency] || 10
       @policy_mode = opts[:policy_mode] || false
     end

@@ -23,7 +23,7 @@ require 'chef/client'
 require 'chef/config'
 require 'chef/handler/error_report'
 require 'chef/log'
-require 'chef/rest'
+require 'chef/http'
 require 'mixlib/cli'
 require 'socket'
 require 'uri'
@@ -308,7 +308,7 @@ class Chef
         begin
           case config[:config_file]
           when /^(http|https):\/\//
-            Chef::REST.new("", nil, nil).fetch(config[:config_file]) { |f| apply_config(f.path) }
+            Chef::HTTP.new("").streaming_request(config[:config_file]) { |f| apply_config(f.path) }
           else
             ::File::open(config[:config_file]) { |f| apply_config(f.path) }
           end

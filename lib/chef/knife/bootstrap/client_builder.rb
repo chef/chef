@@ -17,7 +17,7 @@
 #
 
 require 'chef/node'
-require 'chef/rest'
+require 'chef/server_api'
 require 'chef/api_client/registration'
 require 'chef/api_client'
 require 'chef/knife/bootstrap'
@@ -185,22 +185,22 @@ class Chef
         # @param relative_path [String] URI path relative to the chef organization
         # @return [Boolean] if the relative path exists or returns a 404
         def resource_exists?(relative_path)
-          rest.get_rest(relative_path)
+          rest.get(relative_path)
           true
         rescue Net::HTTPServerException => e
           raise unless e.response.code == "404"
           false
         end
 
-        # @return [Chef::REST] REST client using the client credentials
+        # @return [Chef::ServerAPI] REST client using the client credentials
         def client_rest
-          @client_rest ||= Chef::REST.new(chef_server_url, node_name, client_path)
+          @client_rest ||= Chef::ServerAPI.new(chef_server_url, :client_name => node_name, :signing_key_filename => client_path)
         end
 
-        # @return [Chef::REST] REST client using the cli user's knife credentials
+        # @return [Chef::ServerAPI] REST client using the cli user's knife credentials
         # this uses the users's credentials
         def rest
-          @rest ||= Chef::REST.new(chef_server_url)
+          @rest ||= Chef::ServerAPI.new(chef_server_url)
         end
       end
     end

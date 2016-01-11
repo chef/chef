@@ -19,7 +19,6 @@
 require 'forwardable'
 
 require 'chef/log'
-require 'chef/rest'
 require 'chef/run_context'
 require 'chef/config'
 require 'chef/node'

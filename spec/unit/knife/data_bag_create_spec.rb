@@ -28,7 +28,7 @@ describe Chef::Knife::DataBagCreate do
     k
   end
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
@@ -58,7 +58,7 @@ describe Chef::Knife::DataBagCreate do
     end
 
     it "creates a data bag" do
-      expect(rest).to receive(:post_rest).with("data", {"name" => bag_name})
+      expect(rest).to receive(:post).with("data", {"name" => bag_name})
       expect(knife.ui).to receive(:info).with("Created data_bag[#{bag_name}]")
 
       knife.run
@@ -75,8 +75,8 @@ describe Chef::Knife::DataBagCreate do
     it "creates a data bag item" do
       expect(knife).to receive(:create_object).and_yield(raw_hash)
       expect(knife).to receive(:encryption_secret_provided?).and_return(false)
-      expect(rest).to receive(:post_rest).with("data", {'name' => bag_name}).ordered
-      expect(rest).to receive(:post_rest).with("data/#{bag_name}", item).ordered
+      expect(rest).to receive(:post).with("data", {'name' => bag_name}).ordered
+      expect(rest).to receive(:post).with("data/#{bag_name}", item).ordered
 
       knife.run
     end
@@ -99,8 +99,8 @@ describe Chef::Knife::DataBagCreate do
         .to receive(:encrypt_data_bag_item)
         .with(raw_hash, secret)
         .and_return(encoded_data)
-      expect(rest).to receive(:post_rest).with("data", {"name" => bag_name}).ordered
-      expect(rest).to receive(:post_rest).with("data/#{bag_name}", item).ordered
+      expect(rest).to receive(:post).with("data", {"name" => bag_name}).ordered
+      expect(rest).to receive(:post).with("data/#{bag_name}", item).ordered
 
       knife.run
     end

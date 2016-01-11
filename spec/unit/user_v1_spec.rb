@@ -539,8 +539,8 @@ describe Chef::UserV1 do
     before (:each) do
       @user = Chef::UserV1.new
       @user.username "foobar"
-      @http_client = double("Chef::REST mock")
-      allow(Chef::REST).to receive(:new).and_return(@http_client)
+      @http_client = double("Chef::ServerAPI mock")
+      allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
     end
 
     describe "list" do

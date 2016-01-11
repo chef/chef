@@ -65,7 +65,7 @@ class Chef
           item_to_save = edited_item
         end
 
-        rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", item_to_save)
+        rest.put("data/#{@name_args[0]}/#{@name_args[1]}", item_to_save)
         stdout.puts("Saved data_bag_item[#{@name_args[1]}]")
         ui.output(edited_item) if config[:print_after]
       end

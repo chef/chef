@@ -47,3 +47,4 @@ kitchen-tests/nodes/*
 
 # Temporary files present during spec runs
 spec/data/test-dir
+config/

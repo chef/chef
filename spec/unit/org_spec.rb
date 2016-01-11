@@ -136,7 +136,7 @@ describe Chef::Org do
     let(:rest) do
       Chef::Config[:chef_server_root] = "http://www.example.com"
       r = double('rest')
-      allow(Chef::REST).to receive(:new).and_return(r)
+      allow(Chef::ServerAPI).to receive(:new).and_return(r)
       r
     end
 
@@ -151,27 +151,27 @@ describe Chef::Org do
       let(:inflated_response) { {"foobar" => org } }
 
       it "lists all orgs" do
-        expect(rest).to receive(:get_rest).with("organizations").and_return(response)
+        expect(rest).to receive(:get).with("organizations").and_return(response)
         expect(Chef::Org.list).to eq(response)
       end
 
       it "inflate all orgs" do
         allow(Chef::Org).to receive(:load).with("foobar").and_return(org)
-        expect(rest).to receive(:get_rest).with("organizations").and_return(response)
+        expect(rest).to receive(:get).with("organizations").and_return(response)
         expect(Chef::Org.list(true)).to eq(inflated_response)
       end
     end
 
     describe "create" do
       it "creates a new org via the API" do
-        expect(rest).to receive(:post_rest).with("organizations", {:name => "foobar", :full_name => "foo bar bat"}).and_return({})
+        expect(rest).to receive(:post).with("organizations", {:name => "foobar", :full_name => "foo bar bat"}).and_return({})
         org.create
       end
     end
 
     describe "read" do
       it "loads a named org from the API" do
-        expect(rest).to receive(:get_rest).with("organizations/foobar").and_return({"name" => "foobar", "full_name" => "foo bar bat", "private_key" => "private"})
+        expect(rest).to receive(:get).with("organizations/foobar").and_return({"name" => "foobar", "full_name" => "foo bar bat", "private_key" => "private"})
         org = Chef::Org.load("foobar")
         expect(org.name).to eq("foobar")
         expect(org.full_name).to eq("foo bar bat")
@@ -181,14 +181,14 @@ describe Chef::Org do
 
     describe "update" do
       it "updates an existing org on via the API" do
-        expect(rest).to receive(:put_rest).with("organizations/foobar", {:name => "foobar", :full_name => "foo bar bat"}).and_return({})
+        expect(rest).to receive(:put).with("organizations/foobar", {:name => "foobar", :full_name => "foo bar bat"}).and_return({})
         org.update
       end
     end
 
     describe "destroy" do
       it "deletes the specified org via the API" do
-        expect(rest).to receive(:delete_rest).with("organizations/foobar")
+        expect(rest).to receive(:delete).with("organizations/foobar")
         org.destroy
       end
     end

@@ -36,9 +36,9 @@ describe Chef::Knife::CookbookBulkDelete do
       cookbook = Chef::CookbookVersion.new(cookbook_name)
       @cookbooks[cookbook_name] = cookbook
     end
-    @rest = double("Chef::REST")
-    allow(@rest).to receive(:get_rest).and_return(@cookbooks)
-    allow(@rest).to receive(:delete_rest).and_return(true)
+    @rest = double("Chef::ServerAPI")
+    allow(@rest).to receive(:get).and_return(@cookbooks)
+    allow(@rest).to receive(:delete).and_return(true)
     allow(@knife).to receive(:rest).and_return(@rest)
     allow(Chef::CookbookVersion).to receive(:list).and_return(@cookbooks)
 
@@ -49,11 +49,11 @@ describe Chef::Knife::CookbookBulkDelete do
   describe "when there are several cookbooks on the server" do
     before do
       @cheezburger = {'cheezburger' => {"url" => "file:///dev/null", "versions" => [{"url" => "file:///dev/null-cheez", "version" => "1.0.0"}]}}
-      allow(@rest).to receive(:get_rest).with('cookbooks/cheezburger').and_return(@cheezburger)
+      allow(@rest).to receive(:get).with('cookbooks/cheezburger').and_return(@cheezburger)
       @pizza = {'pizza' => {"url" => "file:///dev/null", "versions" => [{"url" => "file:///dev/null-pizza", "version" => "2.0.0"}]}}
-      allow(@rest).to receive(:get_rest).with('cookbooks/pizza').and_return(@pizza)
+      allow(@rest).to receive(:get).with('cookbooks/pizza').and_return(@pizza)
       @lasagna = {'lasagna' => {"url" => "file:///dev/null", "versions" => [{"url" => "file:///dev/null-lasagna", "version" => "3.0.0"}]}}
-      allow(@rest).to receive(:get_rest).with('cookbooks/lasagna').and_return(@lasagna)
+      allow(@rest).to receive(:get).with('cookbooks/lasagna').and_return(@lasagna)
     end
 
     it "should print the cookbooks you are about to delete" do
@@ -69,14 +69,14 @@ describe Chef::Knife::CookbookBulkDelete do
 
     it "should delete each cookbook" do
       {"cheezburger" => "1.0.0", "pizza" => "2.0.0", "lasagna" => '3.0.0'}.each do |cookbook_name, version|
-        expect(@rest).to receive(:delete_rest).with("cookbooks/#{cookbook_name}/#{version}")
+        expect(@rest).to receive(:delete).with("cookbooks/#{cookbook_name}/#{version}")
       end
       @knife.run
     end
 
     it "should only delete cookbooks that match the regex" do
       @knife.name_args = ["cheezburger"]
-      expect(@rest).to receive(:delete_rest).with('cookbooks/cheezburger/1.0.0')
+      expect(@rest).to receive(:delete).with('cookbooks/cheezburger/1.0.0')
       @knife.run
     end
   end

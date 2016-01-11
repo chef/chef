@@ -69,8 +69,8 @@ describe Chef::Knife::CookbookDownload do
         @cookbook_mock = double('cookbook')
         allow(@cookbook_mock).to receive(:version).and_return('1.0.0')
         allow(@cookbook_mock).to receive(:manifest).and_return(@manifest_data)
-        expect(@rest_mock).to receive(:get_rest).with('cookbooks/foobar/1.0.0').
-                                             and_return(@cookbook_mock)
+        expect(Chef::CookbookVersion).to receive(:load).with("foobar", "1.0.0").
+          and_return(@cookbook_mock)
       end
 
       it 'should determine which version if one was not explicitly specified'do
@@ -106,11 +106,10 @@ describe Chef::Knife::CookbookDownload do
             end
 
             @files_mocks.each_pair do |file, mock|
-              expect(@rest_mock).to receive(:get_rest).with("http://example.org/files/#{file}", true).
+              expect(@rest_mock).to receive(:streaming_request).with("http://example.org/files/#{file}").
               and_return(mock)
             end
 
-            expect(@rest_mock).to receive(:sign_on_redirect=).with(false).at_least(:once)
             @files.each do |f|
               expect(FileUtils).to receive(:mv).
                         with("/var/tmp/#{File.basename(f)}", "/var/tmp/chef/foobar-1.0.0/#{f}")

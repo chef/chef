@@ -38,7 +38,7 @@ class Chef
         else
           deprecated_server_message
           nag
-          output rest.post_rest("/search/reindex", {})
+          output rest.post("/search/reindex", {})
         end
 
       end
@@ -50,7 +50,7 @@ class Chef
         # for a node we know won't exist; the 404 response that comes
         # back will give us what we want
         dummy_node = "knife_index_rebuild_test_#{rand(1000000)}"
-        rest.get_rest("/nodes/#{dummy_node}")
+        rest.get("/nodes/#{dummy_node}")
       rescue Net::HTTPServerException => exception
         r = exception.response
         parse_api_info(r)

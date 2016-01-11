@@ -32,7 +32,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
 
   let(:node_name) { "bevell.wat" }
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
 
   let(:client_builder) {
     client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(knife_config: knife_config, chef_config: chef_config, ui: ui)
@@ -53,14 +53,14 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       end
 
       it "exits when the node exists and the user does not want to delete" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}")
+        expect(rest).to receive(:get).with("nodes/#{node_name}")
         expect(ui.stdin).to receive(:readline).and_return('n')
         expect { client_builder.run }.to raise_error(SystemExit)
       end
 
       it "exits when the client exists and the user does not want to delete" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}").and_raise(exception_404)
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}")
+        expect(rest).to receive(:get).with("nodes/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("clients/#{node_name}")
         expect(ui.stdin).to receive(:readline).and_return('n')
         expect { client_builder.run }.to raise_error(SystemExit)
       end
@@ -74,30 +74,30 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       end
 
       it "when both the client and node do not exist it succeeds" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}").and_raise(exception_404)
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("nodes/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("clients/#{node_name}").and_raise(exception_404)
         expect { client_builder.run }.not_to raise_error
       end
 
       it "when we are allowed to delete an old node" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}")
+        expect(rest).to receive(:get).with("nodes/#{node_name}")
         expect(ui.stdin).to receive(:readline).and_return('y')
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("clients/#{node_name}").and_raise(exception_404)
         expect(rest).to receive(:delete).with("nodes/#{node_name}")
         expect { client_builder.run }.not_to raise_error
       end
 
       it "when we are allowed to delete an old client" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}").and_raise(exception_404)
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}")
+        expect(rest).to receive(:get).with("nodes/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("clients/#{node_name}")
         expect(ui.stdin).to receive(:readline).and_return('y')
         expect(rest).to receive(:delete).with("clients/#{node_name}")
         expect { client_builder.run }.not_to raise_error
       end
 
       it "when we are are allowed to delete both an old client and node" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}")
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}")
+        expect(rest).to receive(:get).with("nodes/#{node_name}")
+        expect(rest).to receive(:get).with("clients/#{node_name}")
         expect(ui.stdin).to receive(:readline).twice.and_return('y')
         expect(rest).to receive(:delete).with("nodes/#{node_name}")
         expect(rest).to receive(:delete).with("clients/#{node_name}")
@@ -143,7 +143,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       expect(node).to receive(:save)
     end
 
-    let(:client_rest) { double("Chef::REST (client)") }
+    let(:client_rest) { double("Chef::ServerAPI (client)") }
 
     let(:node) { double("Chef::Node") }
 

@@ -26,8 +26,8 @@ describe Chef::Knife::CookbookSiteUnshare do
     @knife.name_args = ['cookbook_name']
     allow(@knife).to receive(:confirm).and_return(true)
 
-    @rest = double('Chef::REST')
-    allow(@rest).to receive(:delete_rest).and_return(true)
+    @rest = double('Chef::ServerAPI')
+    allow(@rest).to receive(:delete).and_return(true)
     allow(@knife).to receive(:rest).and_return(@rest)
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
@@ -50,20 +50,20 @@ describe Chef::Knife::CookbookSiteUnshare do
     end
 
     it 'should send a delete request to the cookbook site' do
-      expect(@rest).to receive(:delete_rest)
+      expect(@rest).to receive(:delete)
       @knife.run
     end
 
     it 'should log an error and exit when forbidden' do
       exception = double('403 "Forbidden"', :code => '403')
-      allow(@rest).to receive(:delete_rest).and_raise(Net::HTTPServerException.new('403 "Forbidden"', exception))
+      allow(@rest).to receive(:delete).and_raise(Net::HTTPServerException.new('403 "Forbidden"', exception))
       expect(@knife.ui).to receive(:error)
       expect { @knife.run }.to raise_error(SystemExit)
     end
 
-    it 'should re-raise any non-forbidden errors on delete_rest' do
+    it 'should re-raise any non-forbidden errors on delete' do
       exception = double('500 "Application Error"', :code => '500')
-      allow(@rest).to receive(:delete_rest).and_raise(Net::HTTPServerException.new('500 "Application Error"', exception))
+      allow(@rest).to receive(:delete).and_raise(Net::HTTPServerException.new('500 "Application Error"', exception))
       expect { @knife.run }.to raise_error(Net::HTTPServerException)
     end
 

@@ -24,6 +24,7 @@ require 'chef/mixin/from_file'
 require 'chef/run_list'
 require 'chef/mash'
 require 'chef/json_compat'
+require 'chef/server_api'
 require 'chef/search/query'
 
 class Chef
@@ -45,11 +46,11 @@ class Chef
     end
 
     def chef_server_rest
-      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def name(arg=nil)
@@ -170,6 +171,10 @@ class Chef
 
     # Create a Chef::Role from JSON
     def self.json_create(o)
+      from_hash(o)
+    end
+
+    def self.from_hash(o)
       role = new
       role.name(o["name"])
       role.description(o["description"])
@@ -199,42 +204,42 @@ class Chef
         end
         response
       else
-        chef_server_rest.get_rest("roles")
+        chef_server_rest.get("roles")
       end
     end
 
     # Load a role by name from the API
     def self.load(name)
-      chef_server_rest.get_rest("roles/#{name}")
+      from_hash(chef_server_rest.get("roles/#{name}"))
     end
 
     def environment(env_name)
-      chef_server_rest.get_rest("roles/#{@name}/environments/#{env_name}")
+      chef_server_rest.get("roles/#{@name}/environments/#{env_name}")
     end
 
     def environments
-      chef_server_rest.get_rest("roles/#{@name}/environments")
+      chef_server_rest.get("roles/#{@name}/environments")
     end
 
     # Remove this role via the REST API
     def destroy
-      chef_server_rest.delete_rest("roles/#{@name}")
+      chef_server_rest.delete("roles/#{@name}")
     end
 
     # Save this role via the REST API
     def save
       begin
-        chef_server_rest.put_rest("roles/#{@name}", self)
+        chef_server_rest.put("roles/#{@name}", self)
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
-        chef_server_rest.post_rest("roles", self)
+        chef_server_rest.post("roles", self)
       end
       self
     end
 
     # Create the role via the REST API
     def create
-      chef_server_rest.post_rest("roles", self)
+      chef_server_rest.post("roles", self)
       self
     end
 
@@ -258,7 +263,8 @@ class Chef
 
         if js_path && File.exists?(js_path)
           # from_json returns object.class => json_class in the JSON.
-          return Chef::JSONCompat.from_json(IO.read(js_path))
+          hsh = Chef::JSONCompat.parse(IO.read(js_path))
+          return from_hash(hsh)
         elsif rb_path && File.exists?(rb_path)
           role = Chef::Role.new
           role.name(name)

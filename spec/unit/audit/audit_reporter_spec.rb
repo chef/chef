@@ -57,7 +57,6 @@ describe Chef::Audit::AuditReporter do
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
       allow(reporter).to receive(:run_status).and_return(run_status)
-      allow(rest).to receive(:create_url).and_return(true)
       allow(rest).to receive(:post).and_return(true)
       allow(reporter).to receive(:audit_data).and_return(audit_data)
       allow(reporter).to receive(:run_status).and_return(run_status)
@@ -75,16 +74,12 @@ describe Chef::Audit::AuditReporter do
       end
 
       it "posts audit data to server endpoint" do
-        endpoint = "api.opscode.us/orgname/controls"
         headers = {
           'X-Ops-Audit-Report-Protocol-Version' => Chef::Audit::AuditReporter::PROTOCOL_VERSION
         }
 
-        expect(rest).to receive(:create_url).
-          with("controls").
-          and_return(endpoint)
         expect(rest).to receive(:post).
-          with(endpoint, run_data, headers)
+          with("controls", run_data, headers)
         reporter.run_completed(node)
       end
 
@@ -255,7 +250,6 @@ EOM
 
     context "when no prior exception is stored" do
       it "reports no error" do
-        expect(rest).to receive(:create_url)
         expect(rest).to receive(:post)
         reporter.run_failed(run_error)
         expect(run_data).to_not have_key(:error)
@@ -268,7 +262,6 @@ EOM
       end
 
       it "reports the prior error" do
-        expect(rest).to receive(:create_url)
         expect(rest).to receive(:post)
         reporter.run_failed(run_error)
         expect(run_data).to have_key(:error)

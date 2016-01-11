@@ -172,10 +172,11 @@ describe Chef::RunList do
       @role.run_list "one", "two"
       @role.default_attributes :one => :two
       @role.override_attributes :three => :four
+      @role.env_run_list["production"] = Chef::RunList.new( "one", "two", "five")
 
       allow(Chef::Role).to receive(:load).and_return(@role)
-      @rest = double("Chef::REST", { :get_rest => @role, :url => "/" })
-      allow(Chef::REST).to receive(:new).and_return(@rest)
+      @rest = double("Chef::ServerAPI", { :get => @role.to_hash, :url => "/" })
+      allow(Chef::ServerAPI).to receive(:new).and_return(@rest)
 
       @run_list << "role[stubby]"
       @run_list << "kitty"
@@ -196,21 +197,17 @@ describe Chef::RunList do
 
     describe "from the chef server" do
       it "should load the role from the chef server" do
-        #@rest.should_receive(:get_rest).with("roles/stubby")
+        #@rest.should_receive(:get).with("roles/stubby")
         expansion = @run_list.expand("_default", "server")
         expect(expansion.recipes).to eq(['one', 'two', 'kitty'])
       end
 
       it "should default to expanding from the server" do
-        expect(@rest).to receive(:get_rest).with("roles/stubby")
+        expect(@rest).to receive(:get).with("roles/stubby")
         @run_list.expand("_default")
       end
 
       describe "with an environment set" do
-        before do
-          @role.env_run_list["production"] = Chef::RunList.new( "one", "two", "five")
-        end
-
         it "expands the run list using the environment specific run list" do
           expansion = @run_list.expand("production", "server")
           expect(expansion.recipes).to eq(%w{one two five kitty})
@@ -218,7 +215,7 @@ describe Chef::RunList do
 
         describe "and multiply nested roles" do
           before do
-            @multiple_rest_requests = double("Chef::REST")
+            @multiple_rest_requests = double("Chef::ServerAPI")
 
             @role.env_run_list["production"] << "role[prod-base]"
 
@@ -233,10 +230,10 @@ describe Chef::RunList do
           end
 
           it "expands the run list using the specified environment for all nested roles" do
-            allow(Chef::REST).to receive(:new).and_return(@multiple_rest_requests)
-            expect(@multiple_rest_requests).to receive(:get_rest).with("roles/stubby").and_return(@role)
-            expect(@multiple_rest_requests).to receive(:get_rest).with("roles/prod-base").and_return(@role_prod_base)
-            expect(@multiple_rest_requests).to receive(:get_rest).with("roles/nested-deeper").and_return(@role_nested_deeper)
+            allow(Chef::ServerAPI).to receive(:new).and_return(@multiple_rest_requests)
+            expect(@multiple_rest_requests).to receive(:get).with("roles/stubby").and_return(@role.to_hash)
+            expect(@multiple_rest_requests).to receive(:get).with("roles/prod-base").and_return(@role_prod_base.to_hash)
+            expect(@multiple_rest_requests).to receive(:get).with("roles/nested-deeper").and_return(@role_nested_deeper.to_hash)
 
             expansion = @run_list.expand("production", "server")
             expect(expansion.recipes).to eq(%w{one two five prod-secret-sauce kitty})

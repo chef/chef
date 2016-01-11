@@ -342,7 +342,7 @@ EOS
       Chef::Config[:chef_server_root] = "http://www.example.com"
       Chef::Config[:chef_server_url] = "http://www.example.com/organizations/test_org"
       r = double('rest')
-      allow(Chef::REST).to receive(:new).and_return(r)
+      allow(Chef::ServerAPI).to receive(:new).and_return(r)
       r
     end
 
@@ -362,13 +362,13 @@ EOS
         let(:inflated_response) { {"foobar" => user_key} }
 
         it "lists all keys" do
-          expect(rest).to receive(:get_rest).with("users/#{user_key.actor}/keys").and_return(response)
+          expect(rest).to receive(:get).with("users/#{user_key.actor}/keys").and_return(response)
           expect(Chef::Key.list_by_user("foobar")).to eq(response)
         end
 
         it "inflate all keys" do
           allow(Chef::Key).to receive(:load_by_user).with(user_key.actor, "foobar").and_return(user_key)
-          expect(rest).to receive(:get_rest).with("users/#{user_key.actor}/keys").and_return(response)
+          expect(rest).to receive(:get).with("users/#{user_key.actor}/keys").and_return(response)
           expect(Chef::Key.list_by_user("foobar", true)).to eq(inflated_response)
         end
 
@@ -379,13 +379,13 @@ EOS
         let(:inflated_response) { {"foobar" => client_key} }
 
         it "lists all keys" do
-          expect(rest).to receive(:get_rest).with("clients/#{client_key.actor}/keys").and_return(response)
+          expect(rest).to receive(:get).with("clients/#{client_key.actor}/keys").and_return(response)
           expect(Chef::Key.list_by_client("foobar")).to eq(response)
         end
 
         it "inflate all keys" do
           allow(Chef::Key).to receive(:load_by_client).with(client_key.actor, "foobar").and_return(client_key)
-          expect(rest).to receive(:get_rest).with("clients/#{user_key.actor}/keys").and_return(response)
+          expect(rest).to receive(:get).with("clients/#{user_key.actor}/keys").and_return(response)
           expect(Chef::Key.list_by_client("foobar", true)).to eq(inflated_response)
         end
 
@@ -408,7 +408,7 @@ EOS
           end
 
           it "creates a new key via the API with the fingerprint as the name" do
-            expect(rest).to receive(:post_rest).with(url,
+            expect(rest).to receive(:post).with(url,
                                                      {"name" => "12:3e:33:73:0b:f4:ec:72:dc:f0:4c:51:62:27:08:76:96:24:f4:4a",
                                                       "public_key" => key.public_key,
                                                       "expiration_date" => key.expiration_date}).and_return({})
@@ -426,7 +426,7 @@ EOS
 
           context "when create_key is false" do
             it "creates a new key via the API" do
-              expect(rest).to receive(:post_rest).with(url,
+              expect(rest).to receive(:post).with(url,
                                                        {"name" => key.name,
                                                         "public_key" => key.public_key,
                                                         "expiration_date" => key.expiration_date}).and_return({})
@@ -453,13 +453,13 @@ EOS
             end
 
             it "should create a new key via the API" do
-              expect(rest).to receive(:post_rest).with(url, $expected_input).and_return({})
+              expect(rest).to receive(:post).with(url, $expected_input).and_return({})
               key.create
             end
 
             context "when the server returns the private_key via key.create" do
               before do
-                allow(rest).to receive(:post_rest).with(url, $expected_input).and_return({"private_key" => "this_private_key"})
+                allow(rest).to receive(:post).with(url, $expected_input).and_return({"private_key" => "this_private_key"})
               end
 
               it "key.create returns the original key plus the private_key" do
@@ -512,7 +512,7 @@ EOS
           end
 
           it "should update the key via the API" do
-            expect(rest).to receive(:put_rest).with(url, key.to_hash).and_return({})
+            expect(rest).to receive(:put).with(url, key.to_hash).and_return({})
             key.update
           end
         end
@@ -523,7 +523,7 @@ EOS
           end
 
           it "passes @name in the body and the arg in the PUT URL" do
-            expect(rest).to receive(:put_rest).with(update_name_url, key.to_hash).and_return({})
+            expect(rest).to receive(:put).with(update_name_url, key.to_hash).and_return({})
             key.update("old_name")
           end
         end
@@ -532,7 +532,7 @@ EOS
           before do
             key.name "key_name"
             key.create_key true
-            allow(rest).to receive(:put_rest).with(url, key.to_hash).and_return({
+            allow(rest).to receive(:put).with(url, key.to_hash).and_return({
                                                                                   "key" => "key_name",
                                                                                   "public_key" => public_key_string
                                                                                 })
@@ -572,7 +572,7 @@ EOS
     describe "load" do
       shared_examples_for "load" do
         it "should load a named key from the API" do
-          expect(rest).to receive(:get_rest).with(url).and_return({"user" => "foobar", "name" => "test_key_name", "public_key" => public_key_string, "expiration_date" => "infinity"})
+          expect(rest).to receive(:get).with(url).and_return({"user" => "foobar", "name" => "test_key_name", "public_key" => public_key_string, "expiration_date" => "infinity"})
           key = Chef::Key.send(load_method, "foobar", "test_key_name")
           expect(key.actor).to eq("foobar")
           expect(key.name).to eq("test_key_name")
@@ -610,7 +610,7 @@ EOS
         end
         context "when name is not missing" do
           it "should delete the key via the API" do
-            expect(rest).to receive(:delete_rest).with(url).and_return({})
+            expect(rest).to receive(:delete).with(url).and_return({})
             key.destroy
           end
         end

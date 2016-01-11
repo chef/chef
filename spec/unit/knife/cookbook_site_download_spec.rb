@@ -35,7 +35,7 @@ describe Chef::Knife::CookbookSiteDownload do
 
       allow(@knife.ui).to receive(:stderr).and_return(@stderr)
       allow(@knife).to receive(:noauth_rest).and_return(@noauth_rest)
-      expect(@noauth_rest).to receive(:get_rest).
+      expect(@noauth_rest).to receive(:get).
                    with("#{@cookbook_api_url}/apache2").
                    and_return(@current_data)
     end
@@ -66,10 +66,10 @@ describe Chef::Knife::CookbookSiteDownload do
 
       context 'downloading the latest version' do
         before do
-          expect(@noauth_rest).to receive(:get_rest).
+          expect(@noauth_rest).to receive(:get).
                        with(@current_data['latest_version']).
                        and_return(@cookbook_data)
-          expect(@noauth_rest).to receive(:get_rest).
+          expect(@noauth_rest).to receive(:get).
                        with(@cookbook_data['file'], true).
                        and_return(@temp_file)
         end
@@ -131,10 +131,10 @@ describe Chef::Knife::CookbookSiteDownload do
         end
 
         it 'should download the desired version' do
-          expect(@noauth_rest).to receive(:get_rest).
+          expect(@noauth_rest).to receive(:get).
                        with("#{@cookbook_api_url}/apache2/versions/#{@version_us}").
                        and_return(@cookbook_data)
-          expect(@noauth_rest).to receive(:get_rest).
+          expect(@noauth_rest).to receive(:get).
                        with(@cookbook_data['file'], true).
                        and_return(@temp_file)
           expect(FileUtils).to receive(:cp).with(@temp_file.path, @file)

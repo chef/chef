@@ -68,9 +68,9 @@ shared_context "a client run" do
   let(:api_client_exists?) { false }
   let(:enable_fork)        { false }
 
-  let(:http_cookbook_sync) { double("Chef::REST (cookbook sync)") }
-  let(:http_node_load)     { double("Chef::REST (node)") }
-  let(:http_node_save)     { double("Chef::REST (node save)") }
+  let(:http_cookbook_sync) { double("Chef::ServerAPI (cookbook sync)") }
+  let(:http_node_load)     { double("Chef::ServerAPI (node)") }
+  let(:http_node_save)     { double("Chef::ServerAPI (node save)") }
 
   let(:runner)       { instance_double("Chef::Runner") }
   let(:audit_runner) { instance_double("Chef::Audit::Runner", :failed? => false) }
@@ -93,10 +93,11 @@ shared_context "a client run" do
 
   def stub_for_node_load
     #   Client.register will then turn around create another
-    #   Chef::REST object, this time with the client key it got from the
+    #   Chef::ServerAPI object, this time with the client key it got from the
     #   previous step.
-    expect(Chef::REST).to receive(:new).
-      with(Chef::Config[:chef_server_url], fqdn, Chef::Config[:client_key]).
+    expect(Chef::ServerAPI).to receive(:new).
+      with(Chef::Config[:chef_server_url], client_name: fqdn,
+           signing_key_filename: Chef::Config[:client_key]).
       exactly(:once).
       and_return(http_node_load)
 
@@ -115,7 +116,7 @@ shared_context "a client run" do
     # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
     #
     expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-    expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
     expect(http_cookbook_sync).to receive(:post).
       with("environments/_default/cookbook_versions", {:run_list => []}).
       and_return({})
@@ -175,8 +176,9 @@ shared_context "converge completed" do
     allow(node).to receive(:data_for_save).and_return(node.for_json)
 
     # --Client#save_updated_node
-    expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url], fqdn, Chef::Config[:client_key], validate_utf8: false).and_return(http_node_save)
-    expect(http_node_save).to receive(:put_rest).with("nodes/#{fqdn}", node.for_json).and_return(true)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], client_name: fqdn,
+                                                  signing_key_filename: Chef::Config[:client_key], validate_utf8: false).and_return(http_node_save)
+    expect(http_node_save).to receive(:put).with("nodes/#{fqdn}", node.for_json).and_return(true)
   end
 end
 

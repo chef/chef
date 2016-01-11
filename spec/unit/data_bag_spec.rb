@@ -83,18 +83,18 @@ describe Chef::DataBag do
   describe "when saving" do
     before do
       @data_bag.name('piggly_wiggly')
-      @rest = double("Chef::REST")
-      allow(Chef::REST).to receive(:new).and_return(@rest)
+      @rest = double("Chef::ServerAPI")
+      allow(Chef::ServerAPI).to receive(:new).and_return(@rest)
     end
 
     it "should silently proceed when the data bag already exists" do
       exception = double("409 error", :code => "409")
-      expect(@rest).to receive(:post_rest).and_raise(Net::HTTPServerException.new("foo", exception))
+      expect(@rest).to receive(:post).and_raise(Net::HTTPServerException.new("foo", exception))
       @data_bag.save
     end
 
     it "should create the data bag" do
-      expect(@rest).to receive(:post_rest).with("data", @data_bag)
+      expect(@rest).to receive(:post).with("data", @data_bag)
       @data_bag.save
     end
 
@@ -106,7 +106,7 @@ describe Chef::DataBag do
         Chef::Config[:why_run] = false
       end
       it "should not save" do
-        expect(@rest).not_to receive(:post_rest)
+        expect(@rest).not_to receive(:post)
         @data_bag.save
       end
     end
@@ -116,18 +116,18 @@ describe Chef::DataBag do
     describe "from an API call" do
       before do
         Chef::Config[:chef_server_url] = 'https://myserver.example.com'
-        @http_client = double('Chef::REST')
+        @http_client = double('Chef::ServerAPI')
       end
 
       it "should get the data bag from the server" do
-        expect(Chef::REST).to receive(:new).with('https://myserver.example.com').and_return(@http_client)
-        expect(@http_client).to receive(:get_rest).with('data/foo')
+        expect(Chef::ServerAPI).to receive(:new).with('https://myserver.example.com').and_return(@http_client)
+        expect(@http_client).to receive(:get).with('data/foo')
         Chef::DataBag.load('foo')
       end
 
       it "should return the data bag" do
-        allow(Chef::REST).to receive(:new).and_return(@http_client)
-        expect(@http_client).to receive(:get_rest).with('data/foo').and_return({'bar' => 'https://myserver.example.com/data/foo/bar'})
+        allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
+        expect(@http_client).to receive(:get).with('data/foo').and_return({'bar' => 'https://myserver.example.com/data/foo/bar'})
         data_bag = Chef::DataBag.load('foo')
         expect(data_bag).to eq({'bar' => 'https://myserver.example.com/data/foo/bar'})
       end

@@ -98,10 +98,10 @@ describe Chef::PolicyBuilder::Policyfile do
   let(:err_namespace) { Chef::PolicyBuilder::Policyfile }
 
   it "configures a Chef HTTP API client" do
-    http = double("Chef::REST")
+    http = double("Chef::ServerAPI")
     server_url = "https://api.opscode.com/organizations/example"
     Chef::Config[:chef_server_url] = server_url
-    expect(Chef::REST).to receive(:new).with(server_url).and_return(http)
+    expect(Chef::ServerAPI).to receive(:new).with(server_url).and_return(http)
     expect(policy_builder.http_api).to eq(http)
   end
 
@@ -151,7 +151,7 @@ describe Chef::PolicyBuilder::Policyfile do
 
   describe "loading policy data" do
 
-    let(:http_api) { double("Chef::REST") }
+    let(:http_api) { double("Chef::ServerAPI") }
 
     let(:configured_environment) { nil }
 
