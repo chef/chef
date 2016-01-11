@@ -24,6 +24,8 @@ class Chef
 
       provides :chocolatey_package, os: "windows"
 
+      allowed_actions :install, :upgrade, :remove, :uninstall, :purge, :reconfig
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :chocolatey_package
