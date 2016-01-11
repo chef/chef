@@ -53,7 +53,7 @@ else
 end
 
 # Chef Release version pinning
-override :chef, version: 'master'
+override :chef, version: 'local_source'
 override :ohai, version: 'master'
 
 
