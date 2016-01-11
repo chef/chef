@@ -20,6 +20,7 @@ echo '--color\n-fp' > .rspec;
 sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers;
 sudo -E $(which bundle) exec rake spec;
 bundle exec rake style;
+bundle exec bundle-audit check --update;
 "
 
 env:
