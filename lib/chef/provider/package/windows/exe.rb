@@ -48,7 +48,7 @@ class Chef
           end
 
           def package_version
-            new_resource.version || install_file_version
+            new_resource.version
           end
 
           def install_package
@@ -94,18 +94,6 @@ class Chef
           def current_installed_version
             @current_installed_version ||= uninstall_entries.count == 0 ? nil : begin
               uninstall_entries.map { |entry| entry.display_version }.uniq
-            end
-          end
-
-          def install_file_version
-            @install_file_version ||= begin
-              if !new_resource.source.nil? && ::File.exist?(new_resource.source)
-                version_info = Chef::ReservedNames::Win32::File.version_info(new_resource.source)
-                file_version = version_info.FileVersion || version_info.ProductVersion
-                file_version == '' ? nil : file_version
-              else
-                nil
-              end
             end
           end
 
