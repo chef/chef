@@ -4,6 +4,7 @@
 * [pr#4278](https://github.com/chef/chef/pull/4278) make file resource use properties
 * [**Nate Walck**](https://github.com/natewalck)
   [pr#4078](https://github.com/chef/chef/pull/4078) Add `osx_profile` HWRP for OS X
+* [pr#4369](https://github.com/chef/chef/pull/4396) Import omnibus-chef chef project definition and history
 
 ## 12.6.0
 
