@@ -746,7 +746,7 @@ OBSOLETED
       end
 
       def validate_version_constraint(caller_name, dep_name, constraint_str)
-        Chef::VersionConstraint.new(constraint_str)
+        Chef::VersionConstraint::Platform.new(constraint_str)
       rescue Chef::Exceptions::InvalidVersionConstraint => e
         Log.debug(e)
 
