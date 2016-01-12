@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2008, 2009-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -205,10 +205,10 @@ class Chef
         modified = specified_properties.select { |p| new_resource.send(p) != current_resource.send(p) }
         if modified.empty?
           properties_str = if sensitive
-            specified_properties.join(", ")
-          else
-            specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")
-          end
+                             specified_properties.join(", ")
+                           else
+                             specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")
+                           end
           Chef::Log.debug("Skipping update of #{new_resource}: has not changed any of the specified properties #{properties_str}.")
           return false
         end
@@ -217,10 +217,10 @@ class Chef
         property_size = modified.map { |p| p.size }.max
         modified.map! do |p|
           properties_str = if sensitive
-            '(suppressed sensitive property)'
-          else
-            "#{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})"
-          end
+                             '(suppressed sensitive property)'
+                           else
+                             "#{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})"
+                           end
           "  set #{p.to_s.ljust(property_size)} to #{properties_str}"
         end
         converge_by([ "update #{current_resource.identity}" ] + modified, &converge_block)
@@ -232,10 +232,10 @@ class Chef
         created = properties.map do |property|
           default = ' (default value)' unless new_resource.property_is_set?(property)
           properties_str = if sensitive
-            '(suppressed sensitive property)'
-          else
-            new_resource.send(property).inspect
-          end
+                             '(suppressed sensitive property)'
+                           else
+                             new_resource.send(property).inspect
+                           end
           "  set #{property.to_s.ljust(property_size)} to #{properties_str}#{default}"
         end
 
@@ -299,10 +299,10 @@ class Chef
             EOM
           end
           dsl_methods =
-             resource.class.public_instance_methods +
-             resource.class.protected_instance_methods -
-             provider_class.instance_methods -
-             resource.class.properties.keys
+            resource.class.public_instance_methods +
+            resource.class.protected_instance_methods -
+            provider_class.instance_methods -
+            resource.class.properties.keys
           def_delegators(:new_resource, *dsl_methods)
         end
         include @included_resource_dsl_module

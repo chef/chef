@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (steve@opscode.com)
-# Copyright:: Copyright 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -135,7 +135,7 @@ class Chef
 
     def inspect
       "Chef::User name:'#{name}' admin:'#{admin.inspect}'" +
-      "public_key:'#{public_key}' private_key:#{private_key}"
+        "public_key:'#{public_key}' private_key:#{private_key}"
     end
 
     # Class Methods
@@ -161,10 +161,10 @@ class Chef
     def self.list(inflate=false)
       response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get('users')
       users = if response.is_a?(Array)
-        transform_ohc_list_response(response) # OHC/OPC
-      else
-        response # OSC
-      end
+                transform_ohc_list_response(response) # OHC/OPC
+              else
+                response # OSC
+              end
       if inflate
         users.inject({}) do |user_map, (name, _url)|
           user_map[name] = Chef::User.load(name)

@@ -71,33 +71,33 @@ class Chef
 
       def self.net_api_error!(code)
         msg = case code
-        when NERR_InvalidComputer
-          "The user does not have access to the requested information."
-        when NERR_NotPrimary
-          "The operation is allowed only on the primary domain controller of the domain."
-        when NERR_SpeGroupOp
-          "This operation is not allowed on this special group."
-        when NERR_LastAdmin
-          "This operation is not allowed on the last administrative account."
-        when NERR_BadUsername
-          "The user name or group name parameter is invalid."
-        when NERR_BadPassword
-          "The password parameter is invalid."
-        when NERR_UserNotFound
-          raise Chef::Exceptions::UserIDNotFound, code
-        when NERR_PasswordTooShort
-          <<END
+              when NERR_InvalidComputer
+                "The user does not have access to the requested information."
+              when NERR_NotPrimary
+                "The operation is allowed only on the primary domain controller of the domain."
+              when NERR_SpeGroupOp
+                "This operation is not allowed on this special group."
+              when NERR_LastAdmin
+                "This operation is not allowed on the last administrative account."
+              when NERR_BadUsername
+                "The user name or group name parameter is invalid."
+              when NERR_BadPassword
+                "The password parameter is invalid."
+              when NERR_UserNotFound
+                raise Chef::Exceptions::UserIDNotFound, code
+              when NERR_PasswordTooShort
+                <<END
 The password is shorter than required. (The password could also be too
 long, be too recent in its change history, not have enough unique characters,
 or not meet another password policy requirement.)
 END
-        when NERR_GroupNotFound
-          "The group name could not be found."
-        when ERROR_ACCESS_DENIED
-          "The user does not have access to the requested information."
-        else
-          "Received unknown error code (#{code})"
-        end
+              when NERR_GroupNotFound
+                "The group name could not be found."
+              when ERROR_ACCESS_DENIED
+                "The user does not have access to the requested information."
+              else
+                "Received unknown error code (#{code})"
+              end
 
         raise Chef::Exceptions::Win32NetAPIError.new(msg, code)
       end
@@ -145,7 +145,7 @@ END
           nread = entries_read_ptr.read_long
           nread.times do |i|
             member = LOCALGROUP_MEMBERS_INFO_0.new(buf.read_pointer +
-                       (i * LOCALGROUP_MEMBERS_INFO_0.size))
+                                                   (i * LOCALGROUP_MEMBERS_INFO_0.size))
             member_sid = Chef::ReservedNames::Win32::Security::SID.new(member[:lgrmi0_sid])
             group_members << member_sid.to_s
           end

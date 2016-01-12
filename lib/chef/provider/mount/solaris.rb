@@ -221,10 +221,10 @@ class Chef
 
         def vfstab_entry
           actual_options = unless options.nil?
-            tempops = options.dup
-            tempops.delete('noauto')
-            tempops
-          end
+                             tempops = options.dup
+                             tempops.delete('noauto')
+                             tempops
+                           end
           autostr = mount_at_boot? ? 'yes' : 'no'
           passstr = pass == 0 ? '-' : pass
           optstr = (actual_options.nil? || actual_options.empty?) ? '-' : actual_options.join(',')
@@ -236,7 +236,7 @@ class Chef
           found = false
           ::File.readlines(VFSTAB).reverse_each do |line|
             if !found && line =~ /^#{device_regex}\s+\S+\s+#{Regexp.escape(mount_point)}/
-              found = true
+                found = true
               Chef::Log.debug("#{new_resource} is removed from vfstab")
               next
             end

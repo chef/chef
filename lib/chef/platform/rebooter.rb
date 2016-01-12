@@ -31,12 +31,12 @@ class Chef
           reboot_info = node.run_context.reboot_info
 
           cmd = if Chef::Platform.windows?
-            # should this do /f as well? do we then need a minimum delay to let apps quit?
-            "shutdown /r /t #{reboot_info[:delay_mins]*60} /c \"#{reboot_info[:reason]}\""
-          else
-            # probably Linux-only.
-            "shutdown -r +#{reboot_info[:delay_mins]} \"#{reboot_info[:reason]}\""
-          end
+                  # should this do /f as well? do we then need a minimum delay to let apps quit?
+                  "shutdown /r /t #{reboot_info[:delay_mins]*60} /c \"#{reboot_info[:reason]}\""
+                else
+                  # probably Linux-only.
+                  "shutdown -r +#{reboot_info[:delay_mins]} \"#{reboot_info[:reason]}\""
+                end
 
           Chef::Log.warn "Rebooting server at a recipe's request. Details: #{reboot_info.inspect}"
           shell_out!(cmd)

@@ -300,15 +300,15 @@ class Chef
         if segment == :files || segment == :templates
           error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
           error_locations = if filename.is_a?(Array)
-            filename.map{|name| "  #{File.join(segment.to_s, name)}"}
-          else
-            [
-              "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
-              "  #{segment}/#{node[:platform]}/#{filename}",
-              "  #{segment}/default/#{filename}",
-              "  #{segment}/#{filename}",
-            ]
-          end
+                              filename.map{|name| "  #{File.join(segment.to_s, name)}"}
+                            else
+                              [
+                                "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
+                                "  #{segment}/#{node[:platform]}/#{filename}",
+                                "  #{segment}/default/#{filename}",
+                                "  #{segment}/#{filename}",
+                              ]
+                            end
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
           # Strip the root_dir prefix off all files for readability
@@ -354,7 +354,7 @@ class Chef
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
         if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
-          specificity_dirname = $1
+            specificity_dirname = $1
           non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)}\/(.+)$/, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
@@ -385,11 +385,11 @@ class Chef
 
         # extract the preference part from the path.
         if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
-          # Note the specificy_dirname includes the segment and
-          # dirname argument as above, which is what
-          # preferences_for_path returns. It could be
-          # "files/ubuntu-9.10/dirname", for example.
-          specificity_dirname = $1
+            # Note the specificy_dirname includes the segment and
+            # dirname argument as above, which is what
+            # preferences_for_path returns. It could be
+            # "files/ubuntu-9.10/dirname", for example.
+            specificity_dirname = $1
 
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
@@ -413,42 +413,42 @@ class Chef
       # only files and templates can be platform-specific
       if segment.to_sym == :files || segment.to_sym == :templates
         relative_search_path = if path.is_a?(Array)
-          path
-        else
-          begin
-            platform, version = Chef::Platform.find_platform_and_version(node)
-          rescue ArgumentError => e
-            # Skip platform/version if they were not found by find_platform_and_version
-            if e.message =~ /Cannot find a (?:platform|version)/
-              platform = "/unknown_platform/"
-              version = "/unknown_platform_version/"
-            else
-              raise
-            end
-          end
+                                 path
+                               else
+                                 begin
+                                   platform, version = Chef::Platform.find_platform_and_version(node)
+                                 rescue ArgumentError => e
+                                   # Skip platform/version if they were not found by find_platform_and_version
+                                   if e.message =~ /Cannot find a (?:platform|version)/
+                                     platform = "/unknown_platform/"
+                                     version = "/unknown_platform_version/"
+                                   else
+                                     raise
+                                   end
+                                 end
 
-          fqdn = node[:fqdn]
+                                 fqdn = node[:fqdn]
 
-          # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
-          search_versions = []
-          parts = version.to_s.split('.')
+                                 # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
+                                 search_versions = []
+                                 parts = version.to_s.split('.')
 
-          parts.size.times do
-            search_versions << parts.join('.')
-            parts.pop
-          end
+                                 parts.size.times do
+                                   search_versions << parts.join('.')
+                                   parts.pop
+                                 end
 
-          # Most specific to least specific places to find the path
-          search_path = [ File.join("host-#{fqdn}", path) ]
-          search_versions.each do |v|
-            search_path << File.join("#{platform}-#{v}", path)
-          end
-          search_path << File.join(platform.to_s, path)
-          search_path << File.join("default", path)
-          search_path << path
+                                 # Most specific to least specific places to find the path
+                                 search_path = [ File.join("host-#{fqdn}", path) ]
+                                 search_versions.each do |v|
+                                   search_path << File.join("#{platform}-#{v}", path)
+                                 end
+                                 search_path << File.join(platform.to_s, path)
+                                 search_path << File.join("default", path)
+                                 search_path << path
 
-          search_path
-        end
+                                 search_path
+                               end
         relative_search_path.map {|relative_path| File.join(segment.to_s, relative_path)}
       else
         if segment.to_sym == :root_files

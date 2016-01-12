@@ -164,10 +164,10 @@ class Chef
       # Expands the node's run list. Stores the run_list_expansion object for later use.
       def expand_run_list
         @run_list_expansion = if Chef::Config[:solo]
-          node.expand!('disk')
-        else
-          node.expand!('server')
-        end
+                                node.expand!('disk')
+                              else
+                                node.expand!('server')
+                              end
 
         # @run_list_expansion is a RunListExpansion.
         #

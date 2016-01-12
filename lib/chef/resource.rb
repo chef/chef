@@ -257,7 +257,7 @@ class Chef
           notifies_before(action, resource)
         else
           raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
-          "Valid timings are: :delayed, :immediate, :immediately, :before"
+            "Valid timings are: :delayed, :immediate, :immediately, :before"
         end
       end
 
@@ -732,10 +732,10 @@ class Chef
     #
     def provider(arg=nil)
       klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
-        lookup_provider_constant(arg)
-      else
-        arg
-      end
+                lookup_provider_constant(arg)
+              else
+                arg
+              end
       set_or_return(:provider, klass, kind_of: [ Class ]) ||
         self.class.action_class
     end
@@ -1198,17 +1198,17 @@ class Chef
     # @api private
     def self.declare_action_class(&block)
       @action_class ||= begin
-        if superclass.respond_to?(:action_class)
-          base_provider = superclass.action_class
-        end
-        base_provider ||= Chef::Provider
+                          if superclass.respond_to?(:action_class)
+                            base_provider = superclass.action_class
+                          end
+                          base_provider ||= Chef::Provider
 
-        resource_class = self
-        Class.new(base_provider) do
-          include ActionClass
-          self.resource_class = resource_class
-        end
-      end
+                          resource_class = self
+                          Class.new(base_provider) do
+                            include ActionClass
+                            self.resource_class = resource_class
+                          end
+                        end
       @action_class.class_eval(&block) if block
       @action_class
     end

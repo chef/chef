@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,11 +31,11 @@ describe Chef::Resource::File do
     run_context = Chef::RunContext.new(node, {}, events)
 
     use_path = if opts[:use_relative_path]
-      Dir.chdir(Dir.tmpdir)
-      File.basename(path)
-    else
-      path
-    end
+                 Dir.chdir(Dir.tmpdir)
+                 File.basename(path)
+               else
+                 path
+               end
 
     Chef::Resource::File.new(use_path, run_context)
   end

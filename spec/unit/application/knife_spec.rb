@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,10 +104,10 @@ describe Chef::Application::Knife do
 
     it "does not expand a full path" do
       full_path = if windows?
-        'C:/chef/client.pem'
-      else
-        '/etc/chef/client.pem'
-      end
+                    'C:/chef/client.pem'
+                  else
+                    '/etc/chef/client.pem'
+                  end
       with_argv(*%W{noop knife command -k #{full_path}}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run

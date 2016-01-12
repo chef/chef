@@ -317,10 +317,10 @@ class Chef
                   run_error || converge_error
                 else
                   e = if run_error == converge_error
-                    Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
-                  else
-                    Chef::Exceptions::RunFailedWrappingError.new(run_error, converge_error, audit_error)
-                  end
+                        Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
+                      else
+                        Chef::Exceptions::RunFailedWrappingError.new(run_error, converge_error, audit_error)
+                      end
                   e.fill_backtrace
                   e
                 end

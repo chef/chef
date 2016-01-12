@@ -160,7 +160,7 @@ class Chef
           end
         end
 
-       def load_service
+        def load_service
           session = @session_type ? "-S #{@session_type} " : ''
           cmd = 'launchctl load -w ' + session + @plist
           shell_out_as_user(cmd)
@@ -206,7 +206,7 @@ class Chef
           end
         end
 
-      private
+        private
 
         def find_service_label
           # CHEF-5223 "you can't glob for a file that hasn't been converged
