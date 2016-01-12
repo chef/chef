@@ -101,7 +101,7 @@ EOH
   param($testregkeyname, $testregvaluename)
   #{dsc_reg_code}
 EOH
-      }
+  }
 
   let(:dsc_user_prefix) { 'dsc' }
   let(:dsc_user_suffix) { 'chefx' }
@@ -186,7 +186,7 @@ environment "whatsmydir"
     Ensure = 'Present'
 }
 EOH
-}
+  }
 
   let(:dsc_config_name) {
     dsc_test_resource_base.name

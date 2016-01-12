@@ -250,7 +250,7 @@ describe Chef::Provider::Service::Openbsd do
       current_resource.running(false)
       allow(provider).to receive(:service_enable_variable_name).and_return "#{new_resource.service_name}_enable"
       expect(::File).to receive(:open).with("/etc/rc.d/#{new_resource.service_name}")
-     end
+    end
 
     it "should create a current resource with the name of the new resource" do
       expect(Chef::Resource::Service).to receive(:new).and_return(current_resource)

@@ -107,7 +107,7 @@ describe Chef::Provider::Mdadm do
         expect(@provider).not_to receive(:shell_out!)
         @provider.run_action(:assemble)
         expect(@new_resource).not_to be_updated_by_last_action
-      end
+        end
     end
 
     describe "when stopping the metadevice" do

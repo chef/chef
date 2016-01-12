@@ -59,8 +59,8 @@ D\t/roles/x.json
 D\t/users/admin.json
 D\t/users/x.json
 EOM
+        end
       end
-    end
 
       when_the_repository 'has an identical copy of each thing' do
 
@@ -354,8 +354,8 @@ D\t/roles/x.json
 D\t/users/admin.json
 D\t/users/x.json
 EOM
+        end
       end
-    end
 
       when_the_repository 'has an identical copy of each thing' do
         before do

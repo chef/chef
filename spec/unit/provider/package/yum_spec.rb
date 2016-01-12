@@ -261,7 +261,7 @@ describe Chef::Provider::Package::Yum do
          allow(@yum_cache).to receive(:installed_version) do |package_name, arch|
            # nothing installed for package_name/new_package_name
          nil
-        end
+         end
         allow(@yum_cache).to receive(:candidate_version) do |package_name, arch|
           if package_name == "testing.noarch"
             nil

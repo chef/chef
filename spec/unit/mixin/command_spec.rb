@@ -53,7 +53,7 @@ describe Chef::Mixin::Command, :volatile do
             popen4("ruby -e 'while gets; end'", :waitlast => true) do |pid, stdin, stdout, stderr|
               (1..5).each { |i| stdin.puts "#{i}" }
             end
-          end
+        end
         }.not_to raise_error
       end
 

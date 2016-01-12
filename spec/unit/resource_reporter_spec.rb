@@ -207,7 +207,7 @@ describe Chef::ResourceReporter do
         @resource_reporter.resource_completed(@implementation_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
         @resource_reporter.resource_completed(@new_resource)
-      end
+        end
 
         it "does not collect data about the nested resource" do
           expect(@resource_reporter.updated_resources.size).to eq(1)

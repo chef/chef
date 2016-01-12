@@ -86,7 +86,7 @@ describe Chef::CookbookLoader do
         seen = Array.new
         cookbook_loader.each do |cookbook_name, cookbook|
           seen << cookbook_name
-          end
+        end
         expect(seen[0]).to eq("angrybash")
         expect(seen[1]).to eq("apache2")
         expect(seen[2]).to eq("borken")
