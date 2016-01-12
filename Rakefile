@@ -45,6 +45,13 @@ task :register_eventlog do
   end
 end
 
+
+require "chefstyle"
+require "rubocop/rake_task"
+RuboCop::RakeTask.new(:style) do |task|
+  task.options += ["--display-cop-names", "--no-color"]
+end
+
 begin
   require 'yard'
   DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]

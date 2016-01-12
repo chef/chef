@@ -1,0 +1,4 @@
+AllCops:
+  Exclude:
+    - "spec/data/**/*"
+    - "vendor/**/*"
