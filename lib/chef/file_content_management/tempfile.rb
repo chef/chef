@@ -65,6 +65,7 @@ class Chef
       def tempfile_basename
         basename = ::File.basename(@new_resource.name)
         basename.insert 0, "." unless Chef::Platform.windows?  # dotfile if we're not on windows
+        basename << '-chef-'
         basename
       end
 
