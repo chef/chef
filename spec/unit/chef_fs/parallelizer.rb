@@ -205,14 +205,11 @@ describe Chef::ChefFS::Parallelizer do
         started = false
         @occupying_job_finished = occupying_job_finished = [ false ]
         @thread = Thread.new do
-          begin
-            parallelizer.parallelize([0], :main_thread_processing => false) do |x|
-              started = true
-              sleep(0.3)
-              occupying_job_finished[0] = true
-            end.wait
-          ensure
-          end
+          parallelizer.parallelize([0], :main_thread_processing => false) do |x|
+            started = true
+            sleep(0.3)
+            occupying_job_finished[0] = true
+          end.wait
         end
         while !started
           sleep(0.01)

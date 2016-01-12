@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2009-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -163,7 +163,7 @@ class Chef
       end
     end
 
-    def destroy(data_bag=data_bag(), databag_item=name)
+    def destroy(data_bag=self.data_bag(), databag_item=name)
       chef_server_rest.delete("data/#{data_bag}/#{databag_item}")
     end
 

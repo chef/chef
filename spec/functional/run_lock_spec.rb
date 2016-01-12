@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -321,7 +321,7 @@ describe Chef::RunLock do
     attr_reader :pid
 
     def last_event
-      while true
+      loop do
         line = readline_nonblock(read_from_process)
         break if line.nil?
         event, time = line.split("@")
