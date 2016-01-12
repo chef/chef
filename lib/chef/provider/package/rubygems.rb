@@ -137,7 +137,7 @@ class Chef
               spec.version
             else
               # This is probably going to end badly...
-              logger.warn { "#{@new_resource} gem package #{source} does not satisfy the requirements #{gem_dependency.to_s}" }
+              logger.warn { "#{@new_resource} gem package #{source} does not satisfy the requirements #{gem_dependency}" }
               nil
             end
           end
@@ -445,7 +445,7 @@ class Chef
             logger.debug { "#{@new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
             gemspec
           else
-            logger.debug { "#{@new_resource} no installed version found for #{gem_dependency.to_s}"}
+            logger.debug { "#{@new_resource} no installed version found for #{gem_dependency}"}
             nil
           end
         end

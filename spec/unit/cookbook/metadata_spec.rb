@@ -891,31 +891,31 @@ describe Chef::Cookbook::Metadata do
        :suggestions,
        :conflicting,
        :replacing].each do |to_check|
-        it "should transform deprecated greater than syntax for :#{to_check.to_s}" do
+        it "should transform deprecated greater than syntax for :#{to_check}" do
           @hash[to_check.to_s]["foo::bar"] = ">> 0.2"
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
           expect(deserial.send(to_check)["foo::bar"]).to eq('> 0.2')
         end
 
-        it "should transform deprecated less than syntax for :#{to_check.to_s}" do
+        it "should transform deprecated less than syntax for :#{to_check}" do
           @hash[to_check.to_s]["foo::bar"] = "<< 0.2"
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
           expect(deserial.send(to_check)["foo::bar"]).to eq('< 0.2')
         end
 
-        it "should ignore multiple dependency constraints for :#{to_check.to_s}" do
+        it "should ignore multiple dependency constraints for :#{to_check}" do
           @hash[to_check.to_s]["foo::bar"] = [ ">= 1.0", "<= 5.2" ]
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
           expect(deserial.send(to_check)["foo::bar"]).to eq([])
         end
 
-        it "should accept an empty array of dependency constraints for :#{to_check.to_s}" do
+        it "should accept an empty array of dependency constraints for :#{to_check}" do
           @hash[to_check.to_s]["foo::bar"] = []
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
           expect(deserial.send(to_check)["foo::bar"]).to eq([])
         end
 
-        it "should accept single-element arrays of dependency constraints for :#{to_check.to_s}" do
+        it "should accept single-element arrays of dependency constraints for :#{to_check}" do
           @hash[to_check.to_s]["foo::bar"] = [ ">= 2.0" ]
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
           expect(deserial.send(to_check)["foo::bar"]).to eq(">= 2.0")

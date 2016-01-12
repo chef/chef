@@ -331,7 +331,7 @@ E
         edited_data = Tempfile.open([filename, ".js"]) do |tempfile|
           tempfile.sync = true
           tempfile.puts Chef::JSONCompat.to_json(object)
-          system("#{Shell.editor.to_s} #{tempfile.path}")
+          system("#{Shell.editor} #{tempfile.path}")
           tempfile.rewind
           tempfile.read
         end

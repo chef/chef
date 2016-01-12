@@ -88,7 +88,7 @@ class Chef
         resource_class = Chef::Resource.resource_for_node(parent_resource.guard_interpreter, parent_resource.node)
 
         if resource_class.nil?
-          raise ArgumentError, "Specified guard_interpreter resource #{parent_resource.guard_interpreter.to_s} unknown for this platform"
+          raise ArgumentError, "Specified guard_interpreter resource #{parent_resource.guard_interpreter} unknown for this platform"
         end
 
         if ! resource_class.ancestors.include?(Chef::Resource::Execute)

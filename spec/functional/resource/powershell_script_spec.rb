@@ -81,7 +81,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       # PowerShell 4.0 and later versions return a 32-bit signed value.
       file = Tempfile.new(['foo', '.ps1'])
       begin
-        file.write "exit #{negative_exit_status.to_s}"
+        file.write "exit #{negative_exit_status}"
         file.close
         resource.code(". \"#{file.path}\"")
 

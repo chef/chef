@@ -144,7 +144,7 @@ class Chef
 
       def invoke_resource(method, output_format=:object)
         properties = translate_type(@new_resource.properties)
-        switches = "-Method #{method.to_s} -Name #{@new_resource.resource}"\
+        switches = "-Method #{method} -Name #{@new_resource.resource}"\
                    " -Property #{properties} -Verbose"
         if module_name != :none
           switches += " -Module #{module_name}"

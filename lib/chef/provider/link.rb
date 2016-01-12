@@ -80,7 +80,7 @@ class Chef
               true
             end
           end
-          a.failure_message Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a #{@new_resource.link_type.to_s} link."
+          a.failure_message Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a #{@new_resource.link_type} link."
           a.whyrun("Would assume the link at #{@new_resource.target_file} was previously created")
         end
       end

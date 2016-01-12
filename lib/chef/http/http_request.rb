@@ -127,7 +127,7 @@ class Chef
         # http://redmine.ruby-lang.org/issues/show/2758
         if e.to_s =~ /#{Regexp.escape(%q|undefined method `closed?' for nil:NilClass|)}/
           Chef::Log.debug("Rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
-          Chef::Log.debug("#{e.class.name}: #{e.to_s}")
+          Chef::Log.debug("#{e.class.name}: #{e}")
           Chef::Log.debug(e.backtrace.join("\n"))
           raise Errno::ECONNREFUSED, "Connection refused attempting to contact #{url.scheme}://#{host}:#{port}"
         else

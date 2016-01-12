@@ -121,7 +121,7 @@ class Chef
         # file must exist in cookbook
         if new_profile.end_with?('.mobileconfig')
           unless cookbook_file_available?(new_profile)
-            error_string = "#{self.to_s}: '#{new_profile}' not found in cookbook"
+            error_string = "#{self}: '#{new_profile}' not found in cookbook"
             raise Chef::Exceptions::FileNotFound, error_string
           end
           cookbook_profile = cache_cookbook_profile(new_profile)

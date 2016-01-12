@@ -123,7 +123,7 @@ class Chef
         end
         begin
           error_message = "You provided '#{arg}' as a weekday, acceptable values are "
-          error_message << Provider::Cron::WEEKDAY_SYMBOLS.map {|sym| ":#{sym.to_s}"}.join(', ')
+          error_message << Provider::Cron::WEEKDAY_SYMBOLS.map {|sym| ":#{sym}"}.join(', ')
           error_message << " and a string in crontab format"
           if (arg.is_a?(Symbol) && !Provider::Cron::WEEKDAY_SYMBOLS.include?(arg)) ||
             (!arg.is_a?(Symbol) && integerize(arg) > 7) ||

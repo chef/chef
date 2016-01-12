@@ -40,7 +40,7 @@ describe Chef::Resource::Link do
   end
 
   { :create => false, :delete => false, :blues => true }.each do |action,bad_value|
-    it "should #{bad_value ? 'not' : ''} accept #{action.to_s}" do
+    it "should #{bad_value ? 'not' : ''} accept #{action}" do
       if bad_value
         expect { @resource.action action }.to raise_error(ArgumentError)
       else

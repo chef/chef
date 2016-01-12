@@ -186,12 +186,12 @@ class Chef
 
     # Called prior to starting the application, by the run method
     def setup_application
-      raise Chef::Exceptions::Application, "#{self.to_s}: you must override setup_application"
+      raise Chef::Exceptions::Application, "#{self}: you must override setup_application"
     end
 
     # Actually run the application
     def run_application
-      raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"
+      raise Chef::Exceptions::Application, "#{self}: you must override run_application"
     end
 
     # Initializes Chef::Client instance and runs it
@@ -307,7 +307,7 @@ class Chef
     class << self
       def debug_stacktrace(e)
         message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-        chef_stacktrace_out = "Generated at #{Time.now.to_s}\n"
+        chef_stacktrace_out = "Generated at #{Time.now}\n"
         chef_stacktrace_out += message
 
         Chef::FileCache.store("chef-stacktrace.out", chef_stacktrace_out)

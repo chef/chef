@@ -96,15 +96,15 @@ class Chef
         end
 
         def add_member(member)
-          raise Chef::Exceptions::Group, "you must override add_member in #{self.to_s}"
+          raise Chef::Exceptions::Group, "you must override add_member in #{self}"
         end
 
         def remove_member(member)
-          raise Chef::Exceptions::Group, "you must override remove_member in #{self.to_s}"
+          raise Chef::Exceptions::Group, "you must override remove_member in #{self}"
         end
 
         def set_members(members)
-          raise Chef::Exceptions::Group, "you must override set_members in #{self.to_s}"
+          raise Chef::Exceptions::Group, "you must override set_members in #{self}"
         end
 
         # Little bit of magic as per Adam's useradd provider to pull the assign the command line flags
@@ -117,7 +117,7 @@ class Chef
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
                 opts << " #{option} '#{@new_resource.send(field)}'"
-                Chef::Log.debug("#{@new_resource} set #{field.to_s} to #{@new_resource.send(field)}")
+                Chef::Log.debug("#{@new_resource} set #{field} to #{@new_resource.send(field)}")
               end
             end
           end
