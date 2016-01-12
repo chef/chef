@@ -1,0 +1,135 @@
+GIT
+  remote: git://github.com/chef/chef-acceptance.git
+  revision: 47f5f54e561981802122168ca01ae03907965312
+  specs:
+    chef-acceptance (0.2.0)
+      thor (~> 0.19)
+
+GIT
+  remote: git://github.com/chef/mixlib-install.git
+  revision: 90533f4268765ed48b4b0bd22b5aa4d9fcef0b48
+  specs:
+    mixlib-install (0.8.0.alpha.3)
+      artifactory (~> 2.3.0)
+      mixlib-versioning (~> 1.1.0)
+
+GIT
+  remote: git://github.com/sersut/test-kitchen.git
+  revision: fd05389ec556fdcac96b92b1aea2a9ed48802e75
+  branch: sersut/mixlib-install-update
+  specs:
+    test-kitchen (1.4.3.dev.0)
+      mixlib-shellout (>= 1.2, < 3.0)
+      net-scp (~> 1.1)
+      net-ssh (~> 2.7, < 2.10)
+      safe_yaml (~> 1.0)
+      thor (~> 0.18)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    artifactory (2.3.2)
+    builder (3.2.2)
+    coderay (1.1.0)
+    diff-lcs (1.2.5)
+    docker-api (1.24.1)
+      excon (>= 0.38.0)
+      json
+    excon (0.45.4)
+    ffi (1.9.10)
+    gssapi (1.2.0)
+      ffi (>= 1.0.1)
+    gyoku (1.3.1)
+      builder (>= 2.1.2)
+    httpclient (2.7.1)
+    inspec (0.9.8)
+      json (~> 1.8)
+      method_source (~> 0.8)
+      pry (~> 0)
+      r-train (~> 0.9, >= 0.9.3)
+      rainbow (~> 2)
+      rspec (~> 3.3)
+      rspec-its (~> 1.2)
+      rubyzip (~> 1.1)
+      thor (~> 0.19)
+    json (1.8.3)
+    kitchen-inspec (0.10.0)
+      inspec (~> 0.9)
+    kitchen-vagrant (0.19.0)
+      test-kitchen (~> 1.4)
+    little-plugger (1.1.4)
+    logging (2.0.0)
+      little-plugger (~> 1.1)
+      multi_json (~> 1.10)
+    method_source (0.8.2)
+    mixlib-shellout (2.2.5)
+    mixlib-versioning (1.1.0)
+    multi_json (1.11.2)
+    net-scp (1.2.1)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.9.2)
+    nori (2.6.0)
+    pry (0.10.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    r-train (0.9.3)
+      docker-api (~> 1.22)
+      json (~> 1.8)
+      mixlib-shellout (~> 2.1)
+      net-scp (~> 1.2)
+      net-ssh (~> 2.9)
+      winrm (~> 1.3)
+      winrm-transport (~> 1.0)
+    rainbow (2.0.0)
+    rspec (3.4.0)
+      rspec-core (~> 3.4.0)
+      rspec-expectations (~> 3.4.0)
+      rspec-mocks (~> 3.4.0)
+    rspec-core (3.4.1)
+      rspec-support (~> 3.4.0)
+    rspec-expectations (3.4.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-its (1.2.0)
+      rspec-core (>= 3.0.0)
+      rspec-expectations (>= 3.0.0)
+    rspec-mocks (3.4.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-support (3.4.1)
+    rubyntlm (0.4.0)
+    rubyzip (1.1.7)
+    safe_yaml (1.0.4)
+    slop (3.6.0)
+    thor (0.19.1)
+    uuidtools (2.1.5)
+    windows_chef_zero (2.0.0)
+      test-kitchen (>= 1.2.1)
+    winrm (1.5.0)
+      builder (>= 2.1.2)
+      gssapi (~> 1.2)
+      gyoku (~> 1.0)
+      httpclient (~> 2.2, >= 2.2.0.2)
+      logging (>= 1.6.1, < 3.0)
+      nori (~> 2.0)
+      rubyntlm (~> 0.4.0)
+      uuidtools (~> 2.1.2)
+    winrm-transport (1.0.3)
+      rubyzip (~> 1.1, >= 1.1.7)
+      winrm (~> 1.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  chef-acceptance!
+  kitchen-inspec
+  kitchen-vagrant
+  mixlib-install!
+  test-kitchen!
+  windows_chef_zero
+  winrm-transport
+
+BUNDLED WITH
+   1.11.2
