@@ -5,7 +5,7 @@
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2009, 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -156,19 +156,19 @@ class Chef
         req_path << "?#{query}" if query
 
         @http_request = case method.to_s.downcase
-        when GET
-          Net::HTTP::Get.new(req_path, headers)
-        when POST
-          Net::HTTP::Post.new(req_path, headers)
-        when PUT
-          Net::HTTP::Put.new(req_path, headers)
-        when DELETE
-          Net::HTTP::Delete.new(req_path, headers)
-        when HEAD
-          Net::HTTP::Head.new(req_path, headers)
-        else
-          raise ArgumentError, "You must provide :GET, :PUT, :POST, :DELETE or :HEAD as the method"
-        end
+                        when GET
+                          Net::HTTP::Get.new(req_path, headers)
+                        when POST
+                          Net::HTTP::Post.new(req_path, headers)
+                        when PUT
+                          Net::HTTP::Put.new(req_path, headers)
+                        when DELETE
+                          Net::HTTP::Delete.new(req_path, headers)
+                        when HEAD
+                          Net::HTTP::Head.new(req_path, headers)
+                        else
+                          raise ArgumentError, "You must provide :GET, :PUT, :POST, :DELETE or :HEAD as the method"
+                        end
 
         @http_request.body = request_body if (request_body && @http_request.request_body_permitted?)
         # Optionally handle HTTP Basic Authentication

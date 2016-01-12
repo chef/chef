@@ -2,7 +2,7 @@
 # Author:: Stanislav Vitvitskiy
 # Author:: Nuo Yan (nuo@opscode.com)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2009, 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -229,9 +229,9 @@ class Chef
           next_part = read(how_much_next_part)
           result = current_part + if next_part
                                     next_part
-          else
-            ''
-          end
+                                  else
+                                    ''
+                                  end
         else
           @part_offset += how_much_current_part
           result = current_part

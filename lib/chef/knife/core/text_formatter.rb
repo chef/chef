@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,14 +27,14 @@ class Chef
         def initialize(data, ui)
           @ui = ui
           @data = if data.respond_to?(:display_hash)
-            data.display_hash
-          elsif data.kind_of?(Array)
-            data
-          elsif data.respond_to?(:to_hash)
-            data.to_hash
-          else
-            data
-          end
+                    data.display_hash
+                  elsif data.kind_of?(Array)
+                    data
+                  elsif data.respond_to?(:to_hash)
+                    data.to_hash
+                  else
+                    data
+                  end
         end
 
         def formatted_data
@@ -83,4 +83,3 @@ class Chef
     end
   end
 end
-

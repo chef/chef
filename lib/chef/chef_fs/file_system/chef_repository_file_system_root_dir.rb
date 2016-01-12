@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,10 +73,10 @@ class Chef
 
         def children
           @children ||= begin
-            result = child_paths.keys.sort.map { |name| make_child_entry(name) }
-            result += CHILDREN.map { |name| make_child_entry(name) }
-            result.select { |c| c && c.exists? }.sort_by { |c| c.name }
-          end
+                          result = child_paths.keys.sort.map { |name| make_child_entry(name) }
+                          result += CHILDREN.map { |name| make_child_entry(name) }
+                          result.select { |c| c && c.exists? }.sort_by { |c| c.name }
+                        end
         end
 
         def can_have_child?(name, is_dir)
@@ -168,27 +168,27 @@ class Chef
             dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
           else
             data_handler = case name
-              when 'clients'
-                Chef::ChefFS::DataHandler::ClientDataHandler.new
-              when 'environments'
-                Chef::ChefFS::DataHandler::EnvironmentDataHandler.new
-              when 'nodes'
-                Chef::ChefFS::DataHandler::NodeDataHandler.new
-              when 'policies'
-                Chef::ChefFS::DataHandler::PolicyDataHandler.new
-              when 'policy_groups'
-                Chef::ChefFS::DataHandler::PolicyGroupDataHandler.new
-              when 'roles'
-                Chef::ChefFS::DataHandler::RoleDataHandler.new
-              when 'users'
-                Chef::ChefFS::DataHandler::UserDataHandler.new
-              when 'groups'
-                Chef::ChefFS::DataHandler::GroupDataHandler.new
-              when 'containers'
-                Chef::ChefFS::DataHandler::ContainerDataHandler.new
-              else
-                raise "Unknown top level path #{name}"
-              end
+                           when 'clients'
+                             Chef::ChefFS::DataHandler::ClientDataHandler.new
+                           when 'environments'
+                             Chef::ChefFS::DataHandler::EnvironmentDataHandler.new
+                           when 'nodes'
+                             Chef::ChefFS::DataHandler::NodeDataHandler.new
+                           when 'policies'
+                             Chef::ChefFS::DataHandler::PolicyDataHandler.new
+                           when 'policy_groups'
+                             Chef::ChefFS::DataHandler::PolicyGroupDataHandler.new
+                           when 'roles'
+                             Chef::ChefFS::DataHandler::RoleDataHandler.new
+                           when 'users'
+                             Chef::ChefFS::DataHandler::UserDataHandler.new
+                           when 'groups'
+                             Chef::ChefFS::DataHandler::GroupDataHandler.new
+                           when 'containers'
+                             Chef::ChefFS::DataHandler::ContainerDataHandler.new
+                           else
+                             raise "Unknown top level path #{name}"
+                           end
             dirs = paths.map { |path| ChefRepositoryFileSystemEntry.new(name, self, path, data_handler) }
           end
           MultiplexedDir.new(dirs)

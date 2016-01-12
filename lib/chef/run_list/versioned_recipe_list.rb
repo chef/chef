@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,10 +71,10 @@ class Chef
       def with_fully_qualified_names_and_version_constraints
         self.map do |recipe_name|
           qualified_recipe = if recipe_name.include?('::')
-            recipe_name
-          else
-            "#{recipe_name}::default"
-          end
+                               recipe_name
+                             else
+                               "#{recipe_name}::default"
+                             end
 
           version = @versions[recipe_name]
           qualified_recipe = "#{qualified_recipe}@#{version}" if version

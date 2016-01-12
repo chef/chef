@@ -256,10 +256,10 @@ RSpec.describe ChefConfig::PathHelper do
       it "joins, cleanpaths, and escapes characters reserved by glob" do
         args = ["this/*path", "[needs]", "escaping?"]
         escaped_path = if ChefConfig.windows?
-          "this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
-        else
-          "this/\\*path/\\[needs\\]/escaping\\?"
-        end
+                         "this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
+                       else
+                         "this/\\*path/\\[needs\\]/escaping\\?"
+                       end
         expect(path_helper).to receive(:join).with(*args).and_call_original
         expect(path_helper).to receive(:cleanpath).and_call_original
         expect(path_helper.escape_glob(*args)).to eq(escaped_path)

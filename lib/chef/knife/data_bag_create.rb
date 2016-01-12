@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2009-2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2009-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,7 +66,8 @@ class Chef
                 Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
               else
                 output
-            end)
+              end
+            )
             item.data_bag(@data_bag_name)
             rest.post("data/#{@data_bag_name}", item)
           end

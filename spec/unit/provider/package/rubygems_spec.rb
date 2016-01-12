@@ -223,10 +223,10 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   it "determines the installed versions of gems from the source index (part2: the unmockening)" do
     allow($stdout).to receive(:write)
     path_to_gem = if windows?
-      `where gem`.split[1]
-    else
-      `which gem`.strip
-    end
+                    `where gem`.split[1]
+                  else
+                    `which gem`.strip
+                  end
     skip("cant find your gem executable") if path_to_gem.empty?
     gem_env = Chef::Provider::Package::Rubygems::AlternateGemEnvironment.new(path_to_gem)
     expected = ['rspec-core', Gem::Version.new(RSpec::Core::Version::STRING)]
@@ -261,7 +261,7 @@ RubyGems Environment:
   - REMOTE SOURCES:
      - https://rubygems.org/
      - http://gems.github.com/
-JRUBY_GEM_ENV
+    JRUBY_GEM_ENV
     expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('jruby_gem_env', :stdout => gem_env_out))
     expected = ['ruby', Gem::Platform.new('universal-java-1.6')]
     expect(@gem_env.gem_platforms).to eq(expected)
@@ -303,7 +303,7 @@ RubyGems Environment:
   - REMOTE SOURCES:
      - https://rubygems.org/
      - http://gems.github.com/
-RBX_GEM_ENV
+    RBX_GEM_ENV
     expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('rbx_gem_env', :stdout => gem_env_out))
     expect(@gem_env.gem_platforms).to eq(Gem.platforms)
     expect(Chef::Provider::Package::Rubygems::AlternateGemEnvironment.platform_cache['/usr/weird/bin/gem']).to eq(Gem.platforms)
@@ -459,8 +459,8 @@ describe Chef::Provider::Package::Rubygems do
         @provider.current_resource.version('0.0.1')
         version = Gem::Version.new(@spec_version)
         expect(@provider.gem_env).to receive(:candidate_version_from_remote).
-                          with(Gem::Dependency.new('rspec-core', @spec_version), "http://mygems.example.com").
-                          and_return(version)
+          with(Gem::Dependency.new('rspec-core', @spec_version), "http://mygems.example.com").
+          and_return(version)
         expect(@provider.candidate_version).to eq(@spec_version)
       end
 

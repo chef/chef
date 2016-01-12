@@ -99,13 +99,13 @@ class Chef
             end
 
             command << case @new_resource.device_type
-            when :device
-              " #{device_real}"
-            when :label
-              " -L #{@new_resource.device}"
-            when :uuid
-              " -U #{@new_resource.device}"
-            end
+                       when :device
+                         " #{device_real}"
+                       when :label
+                         " -L #{@new_resource.device}"
+                       when :uuid
+                         " -U #{@new_resource.device}"
+                       end
             command << " #{@new_resource.mount_point}"
             shell_out!(command)
             Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
@@ -174,7 +174,7 @@ class Chef
           end
         end
 
+      end
     end
-   end
   end
 end

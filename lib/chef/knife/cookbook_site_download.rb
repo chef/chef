@@ -1,5 +1,5 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2009-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,8 +63,8 @@ class Chef
 
       def current_cookbook_data
         @current_cookbook_data ||= begin
-          noauth_rest.get "#{cookbooks_api_url}/#{@name_args[0]}"
-        end
+                                     noauth_rest.get "#{cookbooks_api_url}/#{@name_args[0]}"
+                                   end
       end
 
       def current_cookbook_deprecated?
@@ -73,14 +73,14 @@ class Chef
 
       def desired_cookbook_data
         @desired_cookbook_data ||= begin
-          uri = if @name_args.length == 1
-            current_cookbook_data['latest_version']
-          else
-            specific_cookbook_version_url
-          end
+                                     uri = if @name_args.length == 1
+                                             current_cookbook_data['latest_version']
+                                           else
+                                             specific_cookbook_version_url
+                                           end
 
-          noauth_rest.get uri
-        end
+                                     noauth_rest.get uri
+                                   end
       end
 
       def download_cookbook

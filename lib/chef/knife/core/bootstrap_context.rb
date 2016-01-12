@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,7 +66,7 @@ class Chef
 log_location     STDOUT
 chef_server_url  "#{@chef_config[:chef_server_url]}"
 validation_client_name "#{@chef_config[:validation_client_name]}"
-CONFIG
+          CONFIG
           if @config[:chef_node_name]
             client_rb << %Q{node_name "#{@config[:chef_node_name]}"\n}
           else
@@ -84,15 +84,15 @@ CONFIG
           # or when specified in the knife config.
           if @config[:node_ssl_verify_mode] || knife_config.has_key?(:ssl_verify_mode)
             value = case @config[:node_ssl_verify_mode]
-            when "peer"
-              :verify_peer
-            when "none"
-              :verify_none
-            when nil
-              knife_config[:ssl_verify_mode]
-            else
-              nil
-            end
+                    when "peer"
+                      :verify_peer
+                    when "none"
+                      :verify_none
+                    when nil
+                      knife_config[:ssl_verify_mode]
+                    else
+                      nil
+                    end
 
             if value
               client_rb << %Q{ssl_verify_mode :#{value}\n}
@@ -147,10 +147,10 @@ CONFIG
             installer_version_string = ["-p"]
           else
             chef_version_string = if knife_config[:bootstrap_version]
-              knife_config[:bootstrap_version]
-            else
-              Chef::VERSION.split(".").first
-            end
+                                    knife_config[:bootstrap_version]
+                                  else
+                                    Chef::VERSION.split(".").first
+                                  end
 
             installer_version_string = ["-v", chef_version_string]
 
@@ -184,7 +184,7 @@ CONFIG
           if @chef_config[:trusted_certs_dir]
             Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(@chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
               content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
-                         IO.read(File.expand_path(cert)) + "\nEOP\n"
+                IO.read(File.expand_path(cert)) + "\nEOP\n"
             end
           end
           content

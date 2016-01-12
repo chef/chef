@@ -363,7 +363,7 @@ user password using shadow hash.")
           # Shadow info is saved as binary plist. Convert the info to binary plist.
           shadow_info_binary = StringIO.new
           command = Mixlib::ShellOut.new("plutil -convert binary1 -o - -",
-            :input => shadow_info.to_plist, :live_stream => shadow_info_binary)
+                                         :input => shadow_info.to_plist, :live_stream => shadow_info_binary)
           command.run_command
 
           if user_info.nil?
@@ -391,13 +391,13 @@ user password using shadow hash.")
 
           if mac_osx_version_10_7?
             hash_value = if salted_sha512?(new_resource.password)
-              new_resource.password
-            else
-              # Create a random 4 byte salt
-              salt = OpenSSL::Random.random_bytes(4)
-              encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + new_resource.password)
-              hash_value = salt.unpack('H*').first + encoded_password
-            end
+                           new_resource.password
+                         else
+                           # Create a random 4 byte salt
+                           salt = OpenSSL::Random.random_bytes(4)
+                           encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + new_resource.password)
+                           hash_value = salt.unpack('H*').first + encoded_password
+                         end
 
             shadow_info["SALTED-SHA512"] = StringIO.new
             shadow_info["SALTED-SHA512"].string = convert_to_binary(hash_value)

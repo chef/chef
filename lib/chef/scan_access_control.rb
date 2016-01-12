@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -128,11 +128,11 @@ class Chef
 
     def stat
       @stat ||= if @new_resource.instance_of?(Chef::Resource::Link)
-        ::File.lstat(@new_resource.path)
-      else
-        realpath = ::File.realpath(@new_resource.path)
-        ::File.stat(realpath)
-      end
+                  ::File.lstat(@new_resource.path)
+                else
+                  realpath = ::File.realpath(@new_resource.path)
+                  ::File.stat(realpath)
+                end
     end
   end
 end

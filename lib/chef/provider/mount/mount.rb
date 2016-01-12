@@ -104,13 +104,13 @@ class Chef
             command = "mount -t #{@new_resource.fstype}"
             command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
             command << case @new_resource.device_type
-            when :device
-              " #{device_real}"
-            when :label
-              " -L #{@new_resource.device}"
-            when :uuid
-              " -U #{@new_resource.device}"
-            end
+                       when :device
+                         " #{device_real}"
+                       when :label
+                         " -L #{@new_resource.device}"
+                       when :uuid
+                         " -U #{@new_resource.device}"
+                       end
             command << " #{@new_resource.mount_point}"
             shell_out!(command)
             Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
@@ -170,7 +170,7 @@ class Chef
             found = false
             ::File.readlines("/etc/fstab").reverse_each do |line|
               if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
-                found = true
+                  found = true
                 Chef::Log.debug("#{@new_resource} is removed from fstab")
                 next
               else
@@ -259,9 +259,9 @@ class Chef
 
         def mount_options_unchanged?
           @current_resource.fstype == @new_resource.fstype and
-          @current_resource.options == @new_resource.options and
-          @current_resource.dump == @new_resource.dump and
-          @current_resource.pass == @new_resource.pass
+            @current_resource.options == @new_resource.options and
+            @current_resource.dump == @new_resource.dump and
+            @current_resource.pass == @new_resource.pass
         end
 
       end

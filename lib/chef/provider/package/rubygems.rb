@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2008, 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -161,17 +161,17 @@ class Chef
           def find_newest_remote_version(gem_dependency, *sources)
             available_gems = dependency_installer.find_gems_with_sources(gem_dependency)
             spec, source = if available_gems.respond_to?(:last)
-              # DependencyInstaller sorts the results such that the last one is
-              # always the one it considers best.
-              spec_with_source = available_gems.last
-              spec_with_source && spec_with_source
-            else
-              # Rubygems 2.0 returns a Gem::Available set, which is a
-              # collection of AvailableSet::Tuple structs
-              available_gems.pick_best!
-              best_gem = available_gems.set.first
-              best_gem && [best_gem.spec, best_gem.source]
-            end
+                             # DependencyInstaller sorts the results such that the last one is
+                             # always the one it considers best.
+                             spec_with_source = available_gems.last
+                             spec_with_source && spec_with_source
+                           else
+                             # Rubygems 2.0 returns a Gem::Available set, which is a
+                             # collection of AvailableSet::Tuple structs
+                             available_gems.pick_best!
+                             best_gem = available_gems.set.first
+                             best_gem && [best_gem.spec, best_gem.source]
+                           end
 
             version = spec && spec.version
             if version
@@ -438,8 +438,8 @@ class Chef
             gemspec = matching_installed_versions.last
             logger.debug { "#{@new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}"}
             gemspec
-          # If no version matching the requirements exists, the latest installed
-          # version is the current version.
+            # If no version matching the requirements exists, the latest installed
+            # version is the current version.
           elsif !all_installed_versions.empty?
             gemspec = all_installed_versions.last
             logger.debug { "#{@new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
@@ -456,8 +456,8 @@ class Chef
 
         def all_installed_versions
           @all_installed_versions ||= begin
-            @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name, '>= 0'))
-          end
+                                        @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name, '>= 0'))
+                                      end
         end
 
         def gem_sources
@@ -482,14 +482,14 @@ class Chef
 
         def candidate_version
           @candidate_version ||= begin
-            if target_version_already_installed?(@current_resource.version, @new_resource.version)
-              nil
-            elsif source_is_remote?
-              @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
-            else
-              @gem_env.candidate_version_from_file(gem_dependency, @new_resource.source).to_s
-            end
-          end
+                                   if target_version_already_installed?(@current_resource.version, @new_resource.version)
+                                     nil
+                                   elsif source_is_remote?
+                                     @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
+                                   else
+                                     @gem_env.candidate_version_from_file(gem_dependency, @new_resource.source).to_s
+                                   end
+                                 end
         end
 
         def target_version_already_installed?(current_version, new_version)

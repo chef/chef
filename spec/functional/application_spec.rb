@@ -47,10 +47,10 @@ describe Chef::Application do
 
     it "saves built proxy to ENV which shell_out can use" do
       so = if windows?
-        shell_out("echo %http_proxy%")
-      else
-        shell_out("echo $http_proxy")
-      end
+             shell_out("echo %http_proxy%")
+           else
+             shell_out("echo $http_proxy")
+           end
 
       expect(so.stdout.chomp).to eq("http://proxy.example.org:8080")
     end
