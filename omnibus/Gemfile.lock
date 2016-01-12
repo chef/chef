@@ -1,16 +1,16 @@
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: 7cbfe423d0720041c9007a0ddb15abc3b6480416
+  revision: 1baba87d3fca8de9fbba0fb5971e116c6eee519e
   specs:
     omnibus-software (4.0.0)
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: b6422a3f9678a6f5cc145c9b0a488409ac0af73c
+  revision: 90a563f20be5526ddcb6d6290b0439af6ad10823
   specs:
     omnibus (5.0.0)
       aws-sdk (~> 2)
-      chef-sugar (~> 3.0)
+      chef-sugar (~> 3.3)
       cleanroom (~> 1.0)
       mixlib-shellout (~> 2.0)
       mixlib-versioning
@@ -63,7 +63,7 @@ GEM
     chef-config (12.6.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
-    chef-sugar (3.2.0)
+    chef-sugar (3.3.0)
     cleanroom (1.0.0)
     dep-selector-libgecode (1.0.2)
     dep_selector (1.0.3)
