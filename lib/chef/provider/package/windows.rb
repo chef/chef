@@ -109,7 +109,7 @@ class Chef
                       io.seek(io.tell() - overlap)
                     end
                   end
-                 end
+                end
 
                 # if file is named 'setup.exe' assume installshield
                 if basename == 'setup.exe'

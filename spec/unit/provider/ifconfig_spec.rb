@@ -39,7 +39,7 @@ describe Chef::Provider::Ifconfig do
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
 
- end
+  end
   describe Chef::Provider::Ifconfig, "load_current_resource" do
     before do
       @status = double(:stdout => "", :exitstatus => 1)

@@ -244,7 +244,7 @@ describe Chef::Provider::Mount::Mount do
 
        @provider.load_current_resource
        expect(@provider.current_resource.enabled).to be_falsey
-     end
+    end
 
     it "should set enabled to false if the mount point is not last in fstab" do
       line_1 = "#{@new_resource.device} #{@new_resource.mount_point}  ext3  defaults  1 2\n"

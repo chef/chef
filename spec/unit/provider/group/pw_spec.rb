@@ -119,7 +119,7 @@ describe Chef::Provider::Group::Pw do
     end
   end
 
-  describe"load_current_resource" do
+  describe "load_current_resource" do
     before (:each) do
       @provider.action = :create
       @provider.load_current_resource

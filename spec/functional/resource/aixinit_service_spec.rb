@@ -38,7 +38,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
   def valide_symlinks(expected_output, run_level = nil, status = nil, priority = nil)
     directory = []
-    if priority.is_a?Hash
+    if priority.is_a? Hash
       priority.each do |level,o|
         directory << "/etc/rc.d/rc#{level}.d/#{(o[0] == :start ? 'S' : 'K')}#{o[1]}#{new_resource.service_name}"
       end

@@ -100,7 +100,7 @@ describe Chef::Provider::Service::Gentoo do
         end
       end
 
-  end
+    end
 
     it "should return the current_resource" do
       expect(@provider.load_current_resource).to eq(@current_resource)

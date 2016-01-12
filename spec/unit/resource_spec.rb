@@ -1001,14 +1001,14 @@ describe Chef::Resource do
     it "when set to false should show compiled resource for failed resource" do
       expect { resource_file.run_action(action) }.to raise_error { |err|
             expect(compiled_resource_data(resource_file, action, err)).to match 'path "/nonexistent/CHEF-5098/file"'
-          }
+      }
     end
 
     it "when set to true should show compiled resource for failed resource" do
       resource_file.sensitive true
       expect { resource_file.run_action(action) }.to raise_error { |err|
             expect(compiled_resource_data(resource_file, action, err)).to eql("suppressed sensitive resource output")
-          }
+      }
     end
 
   end

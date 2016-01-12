@@ -582,7 +582,7 @@ describe Chef::Cookbook::Metadata do
       expect {
         metadata.attribute("db/mysql/databases", :type => "hash")
       }.not_to raise_error
-    end
+     end
 
     it "should let required be required, recommended or optional" do
       expect {
@@ -720,7 +720,7 @@ describe Chef::Cookbook::Metadata do
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.not_to raise_error
-     end
+    end
 
     it "should error if default is not a choice" do
       expect {

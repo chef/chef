@@ -126,7 +126,7 @@ shared_examples_for "a content deploy strategy" do
       security_descriptor_invariants.inject({}) do |prop_map, property|
         prop_map[property] = descriptor.send(property)
         prop_map
-       end
+      end
     end
 
     before do

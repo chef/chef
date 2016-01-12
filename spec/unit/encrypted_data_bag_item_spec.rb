@@ -67,7 +67,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       expect(final_data["encrypted_data"]).to eq encryptor.encrypted_data
       expect(final_data["iv"]).to eq Base64.encode64(encryptor.iv)
       expect(final_data["version"]).to eq 1
-      expect(final_data["cipher"]).to eq"aes-256-cbc"
+      expect(final_data["cipher"]).to eq "aes-256-cbc"
     end
   end
 
