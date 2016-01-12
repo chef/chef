@@ -53,12 +53,8 @@ describe Chef::Provider::Package::Windows::Exe do
     entries
   end
   let(:provider) { Chef::Provider::Package::Windows::Exe.new(new_resource, :nsis, uninstall_entry) }
-  let(:file_version) { nil }
-  let(:product_version) { nil }
-  let(:version_info) { instance_double("Chef::ReservedNames::Win32::File::Version_info", FileVersion: file_version, ProductVersion: product_version) }
 
   before(:each) do
-    allow(Chef::ReservedNames::Win32::File).to receive(:version_info).and_return(version_info)
     allow(::File).to receive(:exist?).with(Chef::Util::PathHelper.canonical_path(resource_source, false)).and_return(true)
   end
 
@@ -103,73 +99,13 @@ describe Chef::Provider::Package::Windows::Exe do
       end
     end
 
-    context "file version is empty" do
-      let(:file_version) { '' }
-
-      it "returns nil" do
-        expect(provider.package_version).to eql(nil)
-      end
-
-      it "returns the version of a package if given" do
-        new_resource.version('v55555')
-        expect(provider.package_version).to eql('v55555')
-      end
+    it "returns the version attribute if given" do
+      new_resource.version('v55555')
+      expect(provider.package_version).to eql('v55555')
     end
 
-    context "both file and product version are in installer" do
-      let(:file_version) { '1.1.1' }
-      let(:product_version) { '1.1' }
-
-      it "returns the file version" do
-        expect(provider.package_version).to eql('1.1.1')
-      end
-
-      it "returns the version of a package if given" do
-        new_resource.version('v55555')
-        expect(provider.package_version).to eql('v55555')
-      end
-    end
-
-    context "only file version is in installer" do
-      let(:file_version) { '1.1.1' }
-
-      it "returns the file version" do
-        expect(provider.package_version).to eql('1.1.1')
-      end
-
-      it "returns the version of a package if given" do
-        new_resource.version('v55555')
-        expect(provider.package_version).to eql('v55555')
-      end
-    end
-
-    context "only product version is in installer" do
-      let(:product_version) { '1.1' }
-
-      it "returns the product version" do
-        expect(provider.package_version).to eql('1.1')
-      end
-
-      it "returns the version of a package if given" do
-        new_resource.version('v55555')
-        expect(provider.package_version).to eql('v55555')
-      end
-    end
-
-    context "no version info is in installer" do
-      let(:file_version) { nil }
-      let(:product_version) { nil }
-
-      it "returns the version of a package" do
-        new_resource.version('v55555')
-        expect(provider.package_version).to eql('v55555')
-      end
-    end
-
-    context "no version info is in installer and none in attribute" do
-      it "returns the version of a package" do
-        expect(provider.package_version).to eql(nil)
-      end
+    it "returns nil if no version given" do
+      expect(provider.package_version).to eql(nil)
     end
   end
 

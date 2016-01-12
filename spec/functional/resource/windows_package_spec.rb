@@ -37,11 +37,11 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
     new_resource
   end
 
-  describe "multi package scenario" do
+  describe "install package" do
     let(:pkg_name) { 'Microsoft Visual C++ 2005 Redistributable' }
+    let(:pkg_checksum) { 'd6832398e3bc9156a660745f427dc1c2392ce4e9a872e04f41f62d0c6bae07a8' }
     let(:pkg_path) { 'https://download.microsoft.com/download/6/B/B/6BB661D6-A8AE-4819-B79F-236472F6070C/vcredist_x86.exe' }
     let(:pkg_checksum) { nil }
-    let(:pkg_version) { '8.0.59193' }
     let(:pkg_type) { :custom }
     let(:pkg_options) { "/Q" }
 
@@ -57,6 +57,7 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
 
     context "installing additional version" do
       let(:pkg_path) { 'https://download.microsoft.com/download/e/1/c/e1c773de-73ba-494a-a5ba-f24906ecf088/vcredist_x86.exe' }
+      let(:pkg_checksum) { 'eb00f891919d4f894ab725b158459db8834470c382dc60cd3c3ee2c6de6da92c' }
       let(:pkg_version) { '8.0.56336' }
 
       it "installs older version" do
@@ -127,11 +128,6 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
       let(:pkg_path) { 'http://iweb.dl.sourceforge.net/project/ultradefrag/stable-release/6.1.1/ultradefrag-6.1.1.bin.amd64.exe' }
       let(:pkg_checksum) { '11d53ed4c426c8c867ad43f142b7904226ffd9938c02e37086913620d79e3c09' }
       
-      it "finds the correct package version" do
-        subject.run_action(:install)
-        expect(subject.version).to eq('6.1.1')
-      end
-
       it "finds the correct installer type" do
         subject.run_action(:install)
         expect(subject.provider_for_action(:install).installer_type).to eq(:nsis)
@@ -142,11 +138,6 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
       let(:pkg_name) { 'Mercurial 3.6.1 (64-bit)' }
       let(:pkg_path) { 'http://mercurial.selenic.com/release/windows/Mercurial-3.6.1-x64.exe' }
       let(:pkg_checksum) { 'febd29578cb6736163d232708b834a2ddd119aa40abc536b2c313fc5e1b5831d' }
-
-      it "finds the correct package version" do
-        subject.run_action(:install)
-        expect(subject.version).to eq(nil) # Mercurial does not include versioning
-      end
 
       it "finds the correct installer type" do
         subject.run_action(:install)
