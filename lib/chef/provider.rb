@@ -94,7 +94,7 @@ class Chef
     end
 
     def load_current_resource
-      raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
+      raise Chef::Exceptions::Override, "You must override load_current_resource in #{self}"
     end
 
     def define_resource_requirements
@@ -104,7 +104,7 @@ class Chef
     end
 
     def action_nothing
-      Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
+      Chef::Log.debug("Doing nothing for #{@new_resource}")
       true
     end
 
@@ -209,7 +209,7 @@ class Chef
           else
             specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")
           end
-          Chef::Log.debug("Skipping update of #{new_resource.to_s}: has not changed any of the specified properties #{properties_str}.")
+          Chef::Log.debug("Skipping update of #{new_resource}: has not changed any of the specified properties #{properties_str}.")
           return false
         end
 

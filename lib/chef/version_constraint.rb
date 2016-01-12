@@ -50,7 +50,7 @@ class Chef
     end
 
     def inspect
-      "(#{to_s})"
+      "(#{self})"
     end
 
     def to_s

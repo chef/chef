@@ -57,7 +57,7 @@ class Chef
             "cannot execute script with requested architecture 'i386' on Windows Nano Server"
         elsif ! node_supports_windows_architecture?(node, desired_architecture)
           raise Chef::Exceptions::Win32ArchitectureIncorrect,
-            "cannot execute script with requested architecture '#{desired_architecture.to_s}' on a system with architecture '#{node_windows_architecture(node)}'"
+            "cannot execute script with requested architecture '#{desired_architecture}' on a system with architecture '#{node_windows_architecture(node)}'"
         end
       end
     end

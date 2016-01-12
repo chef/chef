@@ -55,7 +55,7 @@ class Chef
             end
             raw_file = grab_file_from_uri(uri)
           rescue SocketError, Errno::ECONNREFUSED, Errno::ENOENT, Errno::EACCES, Timeout::Error, Net::HTTPServerException, Net::HTTPFatalError, Net::FTPError => e
-            Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e.to_s}")
+            Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e}")
             if source = sources.shift
               Chef::Log.info("#{@new_resource} trying to download from another mirror")
               retry

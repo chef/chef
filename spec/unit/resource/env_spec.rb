@@ -39,7 +39,7 @@ describe Chef::Resource::Env do
   end
 
   { :create => false, :delete => false, :modify => false, :flibber => true }.each do |action,bad_value|
-    it "should #{bad_value ? 'not' : ''} accept #{action.to_s}" do
+    it "should #{bad_value ? 'not' : ''} accept #{action}" do
       if bad_value
         expect { @resource.action action }.to raise_error(ArgumentError)
       else

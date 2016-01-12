@@ -70,7 +70,7 @@ class Chef
 
       def property(property_name, value=nil)
         if not property_name.is_a?(Symbol)
-          raise TypeError, "A property name of type Symbol must be specified, '#{property_name.to_s}' of type #{property_name.class.to_s} was given"
+          raise TypeError, "A property name of type Symbol must be specified, '#{property_name}' of type #{property_name.class} was given"
         end
 
         if value.nil?

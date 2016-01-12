@@ -157,7 +157,7 @@ class Chef
           puts "\n"
           puts "resources updated this run:"
           updated_resources.each do |resource|
-            puts "* #{resource.to_s}"
+            puts "* #{resource}"
             updates_by_resource[resource.name].flatten.each do |update|
               puts "  - #{update}"
             end

@@ -53,7 +53,7 @@ class Chef
             begin
               version_constraint = Chef::VersionConstraint::Platform.new(platform_version)
               if version_constraint.include?(version)
-                Chef::Log.debug("Platform #{name.to_s} version #{version} found")
+                Chef::Log.debug("Platform #{name} version #{version} found")
                 provider_map.merge!(provider)
               end
             rescue Chef::Exceptions::InvalidPlatformVersion

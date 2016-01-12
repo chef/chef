@@ -31,7 +31,7 @@ describe Chef::Resource::Deploy do
 
   class << self
     def resource_has_a_string_attribute(attr_name)
-      it "has a String attribute for #{attr_name.to_s}" do
+      it "has a String attribute for #{attr_name}" do
         @resource.send(attr_name, "this is a string")
         expect(@resource.send(attr_name)).to eql("this is a string")
         expect {@resource.send(attr_name, 8675309)}.to raise_error(ArgumentError)
@@ -39,7 +39,7 @@ describe Chef::Resource::Deploy do
     end
 
     def resource_has_a_boolean_attribute(attr_name, opts={:defaults_to=>false})
-      it "has a Boolean attribute for #{attr_name.to_s}" do
+      it "has a Boolean attribute for #{attr_name}" do
         expect(@resource.send(attr_name)).to eql(opts[:defaults_to])
         @resource.send(attr_name, !opts[:defaults_to])
         expect(@resource.send(attr_name)).to eql( !opts[:defaults_to] )

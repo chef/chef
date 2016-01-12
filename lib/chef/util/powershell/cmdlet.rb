@@ -38,7 +38,7 @@ class Powershell
       when :object
         @json_format = true
       else
-        raise ArgumentError, "Invalid output format #{output_format.to_s} specified"
+        raise ArgumentError, "Invalid output format #{output_format} specified"
       end
 
       @cmdlet = cmdlet
@@ -114,7 +114,7 @@ class Powershell
     def command_switches_string(switches)
       command_switches = switches.map do | switch_name, switch_value |
         if switch_name.class != Symbol
-          raise ArgumentError, "Invalid type `#{switch_name} `for PowerShell switch '#{switch_name.to_s}'. The switch must be specified as a Symbol'"
+          raise ArgumentError, "Invalid type `#{switch_name} `for PowerShell switch '#{switch_name}'. The switch must be specified as a Symbol'"
         end
 
         validate_switch_name!(switch_name)
@@ -133,7 +133,7 @@ class Powershell
         when String
           switch_argument = escape_string_parameter_value(switch_value)
         else
-          raise ArgumentError, "Invalid argument type `#{switch_value.class}` specified for PowerShell switch `:#{switch_name.to_s}`. Arguments to PowerShell must be of type `String`, `Numeric`, `Float`, `FalseClass`, or `TrueClass`"
+          raise ArgumentError, "Invalid argument type `#{switch_value.class}` specified for PowerShell switch `:#{switch_name}`. Arguments to PowerShell must be of type `String`, `Numeric`, `Float`, `FalseClass`, or `TrueClass`"
         end
 
         switch_present ? ["-#{switch_name.to_s.downcase}", switch_argument].join(' ').strip : ''

@@ -99,7 +99,7 @@ class Chef
           configuration_document = generate_configuration_document(config_directory, configuration_flags)
           @operations[operation].call(config_manager, configuration_document, shellout_flags)
         rescue Exception => e
-          Chef::Log.error("DSC operation failed: #{e.message.to_s}")
+          Chef::Log.error("DSC operation failed: #{e.message}")
           raise e
         ensure
           ::FileUtils.rm_rf(config_directory)

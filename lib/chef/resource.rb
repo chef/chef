@@ -658,7 +658,7 @@ class Chef
 
     def inspect
       ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
-      ivars.inject("<#{to_s}") do |str, ivar|
+      ivars.inject("<#{self}") do |str, ivar|
         str << " #{ivar}: #{instance_variable_get(ivar).inspect}"
       end << ">"
     end
@@ -1332,7 +1332,7 @@ class Chef
       if enclosing_provider && enclosing_provider.respond_to?(method_symbol)
         enclosing_provider.send(method_symbol, *args, &block)
       else
-        raise NoMethodError, "undefined method `#{method_symbol.to_s}' for #{self.class.to_s}"
+        raise NoMethodError, "undefined method `#{method_symbol}' for #{self.class}"
       end
     end
 
