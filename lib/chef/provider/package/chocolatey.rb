@@ -40,6 +40,19 @@ class Chef
           current_resource
         end
 
+        def define_resource_requirements
+          super
+
+          # Chocolatey source attribute points to an alternate feed
+          # and not a package specific alternate source like other providers
+          # so we want to assert candidates exist for the alternate source
+          requirements.assert(:upgrade, :install) do |a|
+            a.assertion  { candidates_exist_for_all_uninstalled? }
+            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
+            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
+          end
+        end
+
         # Lazy initializer for candidate_version.  A nil value means that there is no candidate
         # version and the package is not installable (generally an error).
         #
@@ -191,15 +204,18 @@ class Chef
         end
 
         # Available packages in chocolatey as a Hash of names mapped to versions
+        # If pinning a package to a specific version, filter out all non matching versions
         # (names are downcased for case-insensitive matching)
         #
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
           @available_packages ||=
             begin
-              cmd = [ "list -r #{package_name_array.join ' '}" ]
+              cmd = [ "list -ar #{package_name_array.join ' '}" ]
               cmd.push( "-source #{new_resource.source}" ) if new_resource.source
-              parse_list_output(*cmd)
+              parse_list_output(*cmd).reject do |name,version|
+                desired_name_versions[name] && desired_name_versions[name] != version
+              end
             end
         end
 

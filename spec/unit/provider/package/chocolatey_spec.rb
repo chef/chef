@@ -54,7 +54,7 @@ git|2.6.2
 munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
-    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -r #{package_names.join ' '}#{args}", {timeout: timeout}).and_return(remote_list_obj)
+    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -ar #{package_names.join ' '}#{args}", {timeout: timeout}).and_return(remote_list_obj)
   end
 
   describe "#initialize" do
@@ -284,11 +284,29 @@ munin-node|1.6.1.20130823
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
 
+    it "installing a package version that does not exist throws an error" do
+      allow_remote_list(["git"])
+      new_resource.package_name("git")
+      new_resource.version("2.7.0")
+      provider.load_current_resource
+      expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
+
     it "installing multiple packages with a package that does not exist throws an error" do
       allow_remote_list(["git", "package-does-not-exist"])
       new_resource.package_name(["git", "package-does-not-exist"])
       provider.load_current_resource
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
+
+    context "alternate source" do
+      it "installing a package that does not exist throws an error" do
+        allow_remote_list(["package-does-not-exist"], " -source alternate_source")
+        new_resource.package_name("package-does-not-exist")
+        new_resource.source("alternate_source")
+        provider.load_current_resource
+        expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+      end
     end
   end
 
@@ -330,9 +348,9 @@ munin-node|1.6.1.20130823
 
     it "version pins work as well" do
       allow_remote_list(["git"])
-      new_resource.version("99.99.99.99")
+      new_resource.version("2.6.2")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y -version 99.99.99.99 git", {:timeout=>timeout})
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y -version 2.6.2 git", {:timeout=>timeout})
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -357,6 +375,16 @@ munin-node|1.6.1.20130823
       new_resource.package_name(["git", "package-does-not-exist"])
       provider.load_current_resource
       expect { provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
+    end
+
+    context "alternate source" do
+      it "installing a package that does not exist throws an error" do
+        allow_remote_list(["package-does-not-exist"], " -source alternate_source")
+        new_resource.package_name("package-does-not-exist")
+        new_resource.source("alternate_source")
+        provider.load_current_resource
+        expect { provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
+      end
     end
   end
 
