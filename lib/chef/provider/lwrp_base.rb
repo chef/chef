@@ -53,7 +53,7 @@ class Chef
 
         def build_from_file(cookbook_name, filename, run_context)
           if LWRPBase.loaded_lwrps[filename]
-            Chef::Log.info("LWRP provider #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
+            Chef::Log.debug("LWRP provider #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
             return loaded_lwrps[filename]
           end
 
