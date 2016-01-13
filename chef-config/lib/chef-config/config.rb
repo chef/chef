@@ -144,12 +144,19 @@ module ChefConfig
 
     # Location of acls on disk. String or array of strings.
     # Defaults to <chef_repo_path>/acls.
-    # Only applies to Enterprise Chef commands.
     default(:acl_path) { derive_path_from_chef_repo_path("acls") }
 
     # Location of clients on disk. String or array of strings.
     # Defaults to <chef_repo_path>/acls.
     default(:client_path) { derive_path_from_chef_repo_path("clients") }
+
+    # Location of containers on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/containers.
+    default(:container_path) { derive_path_from_chef_repo_path("containers") }
+
+    # Location of cookbook_artifacts on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/cookbook_artifacts.
+    default(:cookbook_artifact_path) { derive_path_from_chef_repo_path("cookbook_artifacts") }
 
     # Location of cookbooks on disk. String or array of strings.
     # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
@@ -162,11 +169,6 @@ module ChefConfig
           Array(derive_path_from_chef_repo_path("site-cookbooks")).flatten
       end
     end
-
-    # Location of containers on disk. String or array of strings.
-    # Defaults to <chef_repo_path>/containers.
-    # Only applies to Enterprise Chef commands.
-    default(:container_path) { derive_path_from_chef_repo_path("containers") }
 
     # Location of data bags on disk. String or array of strings.
     # Defaults to <chef_repo_path>/data_bags.

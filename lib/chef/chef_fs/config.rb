@@ -33,6 +33,7 @@ class Chef
         "acls" => "acl",
         "clients" => "client",
         "cookbooks" => "cookbook",
+        "cookbook_artifacts" => "cookbook_artifact",
         "containers" => "container",
         "data_bags" => "data_bag",
         "environments" => "environment",

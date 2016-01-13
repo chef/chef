@@ -162,7 +162,7 @@ class Chef
               return NonexistentFSObject.new(name, self)
             end
             case name
-            when "cookbooks"
+            when "cookbooks", "cookbook_artifacts"
               if versioned_cookbooks
                 dirs = paths.map { |path| ChefRepositoryFileSystemVersionedCookbooksDir.new(name, self, path) }
               else
