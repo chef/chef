@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (steve@opscode.com)
-# Copyright:: Copyright 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -90,11 +90,6 @@ class Chef
 
     def email(arg=nil)
       set_or_return(:email,
-                    arg, :kind_of => String)
-    end
-
-    def password(arg=nil)
-      set_or_return(:password,
                     arg, :kind_of => String)
     end
 

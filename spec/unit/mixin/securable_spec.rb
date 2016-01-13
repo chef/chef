@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Author:: Mark Mzyk (<mmzyk@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -227,9 +227,9 @@ describe Chef::Mixin::Securable do
       expect { @securable.mode 0111 }.not_to raise_error
       expect { @securable.mode 73 }.not_to raise_error
 
-      expect { @securable.mode -01 }.to raise_error(ArgumentError)
+      expect { @securable.mode(-01) }.to raise_error(ArgumentError)
       expect { @securable.mode 010000 }.to raise_error(ArgumentError)
-      expect { @securable.mode -1 }.to raise_error(ArgumentError)
+      expect { @securable.mode(-1) }.to raise_error(ArgumentError)
       expect { @securable.mode 4096 }.to raise_error(ArgumentError)
     end
 
