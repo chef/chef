@@ -395,6 +395,9 @@ class Chef
       def msg(message)
       end
 
+      # Called when an attribute is changed by simple assignment
+      def attribute_changed(precedence, keys, value)
+      end
     end
   end
 end

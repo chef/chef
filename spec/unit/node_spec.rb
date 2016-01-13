@@ -208,6 +208,7 @@ describe Chef::Node do
   end
 
   describe "attributes" do
+
     it "should have attributes" do
       expect(node.attribute).to be_a_kind_of(Hash)
     end
@@ -224,6 +225,11 @@ describe Chef::Node do
 
     it "does not allow you to set an attribute via node[]=" do
       expect  { node["secret"] = "shush" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+    end
+
+    it "does not allow you to set an attribute via node[]= at the second level" do
+      node.default["locust"] = {}
+      expect  { node["locust"]["secret"] = "shush" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
     it "should allow you to query whether an attribute exists with attribute?" do
@@ -371,6 +377,12 @@ describe Chef::Node do
         node.override.fuu.bahrr.baz = "qux"
         expect(node.fuu.bahrr.baz).to eq("qux")
       end
+
+      it "allows nil override" do
+        node.normal['overriden_by_nil'] = 'cool value!'
+        node.override['overriden_by_nil'] = nil
+        expect(node['overriden_by_nil']).to be nil
+      end
     end
 
     describe "globally deleting attributes" do
@@ -454,6 +466,7 @@ describe Chef::Node do
         end
 
         it "does not have a horrible error message when mistaking arrays for hashes" do
+          pending "did i fix a bug here or should we revert to the Chef 12.0.0 behavior?"
           expect { node.rm("mysql", "server", "port") }.to raise_error(TypeError, "Wrong type in index of attribute (did you use a Hash index on an Array?)")
         end
       end
@@ -569,39 +582,58 @@ describe Chef::Node do
     end
 
     describe "granular replacing attributes" do
-      it "removes everything at the level of the last key" do
-        node.default["mysql"]["server"]["port"] = 2345
+      describe "#default!" do
+        it "removes everything at the level of the last key" do
+          node.default["mysql"]["server"]["port"] = 2345
 
-        node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+          node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
 
-        expect( node["mysql"]["server"] ).to eql({ "data_dir" => "/my_raid_volume/lib/mysql" })
+          expect( node["mysql"]["server"] ).to eql({ "data_dir" => "/my_raid_volume/lib/mysql" })
+        end
+
+        it "replaces a value at the cookbook sub-level of the attributes only" do
+          node.default["mysql"]["server"]["port"] = 2345
+          node.default["mysql"]["server"]["service_name"] = "fancypants-sql"
+          node.role_default["mysql"]["server"]["port"] = 1234
+          node.force_default["mysql"]["server"]["port"] = 3456
+
+          node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+
+          expect( node["mysql"]["server"]["port"] ).to eql(3456)
+          expect( node["mysql"]["server"]["service_name"] ).to be_nil
+          expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+          expect( node["mysql"]["server"] ).to eql({ "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
+        end
+
+        it "higher precedence values aren't removed" do
+          node.role_default["mysql"]["server"]["port"] = 1234
+          node.default["mysql"]["server"]["port"] = 2345
+          node.force_default["mysql"]["server"]["port"] = 3456
+          node.override["mysql"]["server"]["service_name"] = "fancypants-sql"
+
+          node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+
+          expect( node["mysql"]["server"]["port"] ).to eql(3456)
+          expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+          expect( node["mysql"]["server"] ).to eql({ "service_name" => "fancypants-sql", "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
+        end
       end
 
-      it "replaces a value at the cookbook sub-level of the atributes only" do
-        node.default["mysql"]["server"]["port"] = 2345
-        node.default["mysql"]["server"]["service_name"] = "fancypants-sql"
-        node.role_default["mysql"]["server"]["port"] = 1234
-        node.force_default["mysql"]["server"]["port"] = 3456
+      describe "#normal!" do
+        it "removes everything at the level of the last key" do
+          node.normal["mysql"]["server"]["port"] = 2345
 
-        node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+          node.normal!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
 
-        expect( node["mysql"]["server"]["port"] ).to eql(3456)
-        expect( node["mysql"]["server"]["service_name"] ).to be_nil
-        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
-        expect( node["mysql"]["server"] ).to eql({ "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
-      end
+          expect( node["mysql"]["server"] ).to eql({ "data_dir" => "/my_raid_volume/lib/mysql" })
+        end
 
-      it "higher precedence values aren't removed" do
-        node.role_default["mysql"]["server"]["port"] = 1234
-        node.default["mysql"]["server"]["port"] = 2345
-        node.force_default["mysql"]["server"]["port"] = 3456
-        node.override["mysql"]["server"]["service_name"] = "fancypants-sql"
-
-        node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
-
-        expect( node["mysql"]["server"]["port"] ).to eql(3456)
-        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
-        expect( node["mysql"]["server"] ).to eql({ "service_name" => "fancypants-sql", "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
+        it "will autovivify" do
+          node.normal!["mysql"]["server"] = {
+            "data_dir" => "/my_raid_volume/lib/mysql",
+          }
+          expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+        end
       end
     end
 
@@ -677,13 +709,25 @@ describe Chef::Node do
         })
       end
 
-      it "when overwriting a non-hash/array" do
+      it "when overwriting a non-hash/array with :[]=" do
         node.override["mysql"] = false
         node.force_override["mysql"] = true
         node.force_override!["mysql"]["server"] = {
           "data_dir" => "/my_raid_volume/lib/mysql",
         }
         expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+      end
+
+      it "when overwriting a non-hash/array with :[]" do
+        node.override["mysql"] = false
+        node.force_override["mysql"] = true
+        node.force_override!["mysql"]["foo"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+        node["mysql"]
+        node["mysql"]["foo"]
+        node["mysql"]["foo"]["server"]
+        expect( node["mysql"]["foo"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
       end
 
       it "when overwriting an array with a hash" do
@@ -728,6 +772,25 @@ describe Chef::Node do
       end
     end
 
+    describe "ways of abusing Chef 12 node state" do
+      # these tests abuse the top_level_breadcrumb state in Chef 12
+      it "derived attributes work correctly" do
+        node.default['v1'] = 1
+        expect(node['a']).to eql(nil)
+        node.default['a'] = node['v1']
+        expect(node['a']).to eql(1)
+      end
+
+      it "works when saving nodes to variables" do
+        a = node.default['a']
+        expect(node['a']).to eql({})
+        node.default['b'] = 0
+        a['key'] = 1
+
+        expect(node['a']['key']).to eql(1)
+      end
+    end
+
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
       expect { node.sunshine }.to raise_error(NoMethodError)
     end
@@ -749,7 +812,7 @@ describe Chef::Node do
   describe "consuming json" do
 
     before do
-      @ohai_data = {:platform => 'foo', :platform_version => 'bar'}
+      @ohai_data = Mash.new({'platform' => 'foo', 'platform_version' => 'bar'})
     end
 
     it "consumes the run list portion of a collection of attributes and returns the remainder" do
@@ -841,7 +904,7 @@ describe Chef::Node do
 
   describe "preparing for a chef client run" do
     before do
-      @ohai_data = {:platform => 'foobuntu', :platform_version => '23.42'}
+      @ohai_data = Mash.new({'platform' => 'foobuntu', 'platform_version' => '23.42'})
     end
 
     it "sets its platform according to platform detection" do

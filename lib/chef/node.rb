@@ -30,7 +30,6 @@ require 'chef/environment'
 require 'chef/server_api'
 require 'chef/run_list'
 require 'chef/node/attribute'
-require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
 require 'chef/whitelist'
@@ -76,7 +75,7 @@ class Chef
       @policy_name = nil
       @policy_group = nil
 
-      @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
+      @attributes = Chef::Node::Attribute.new(node: self)
 
       @run_state = {}
     end
@@ -184,110 +183,19 @@ class Chef
       @attributes
     end
 
+    attr_accessor :attributes
     alias :attribute :attributes
     alias :construct_attributes :attributes
 
-    # Return an attribute of this node.  Returns nil if the attribute is not found.
-    def [](attrib)
-      attributes[attrib]
-    end
+    def_delegators :attributes, :[], :normal, :default, :override
+    def_delegators :attributes, :normal_unless, :default_unless, :override_unless
 
-    # Set a normal attribute of this node, but auto-vivify any Mashes that
-    # might be missing
-    def normal
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.normal
-    end
+    def_delegators :attributes, :set, :set_unless
 
-    alias_method :set, :normal
+    def_delegators :attributes, :default_attrs, :normal_attrs, :override_attrs, :automatic_attrs
+    def_delegators :attributes, :default_attrs=, :normal_attrs=, :override_attrs=, :automatic_attrs=
 
-    # Set a normal attribute of this node, auto-vivifying any mashes that are
-    # missing, but if the final value already exists, don't set it
-    def normal_unless
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = true
-      attributes.normal
-    end
-
-    alias_method :set_unless, :normal_unless
-
-    # Set a default of this node, but auto-vivify any Mashes that might
-    # be missing
-    def default
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.default
-    end
-
-    # Set a default attribute of this node, auto-vivifying any mashes that are
-    # missing, but if the final value already exists, don't set it
-    def default_unless
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = true
-      attributes.default
-    end
-
-    # Set an override attribute of this node, but auto-vivify any Mashes that
-    # might be missing
-    def override
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.override
-    end
-
-    # Set an override attribute of this node, auto-vivifying any mashes that
-    # are missing, but if the final value already exists, don't set it
-    def override_unless
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = true
-      attributes.override
-    end
-
-    alias :override_attrs :override
-    alias :default_attrs :default
-    alias :normal_attrs :normal
-
-    def override_attrs=(new_values)
-      attributes.override = new_values
-    end
-
-    def default_attrs=(new_values)
-      attributes.default = new_values
-    end
-
-    def normal_attrs=(new_values)
-      attributes.normal = new_values
-    end
-
-    def automatic_attrs
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.automatic
-    end
-
-    def automatic_attrs=(new_values)
-      attributes.automatic = new_values
-    end
-
-    # Return true if this Node has a given attribute, false if not.  Takes either a symbol or
-    # a string.
-    #
-    # Only works on the top level. Preferred way is to use the normal [] style
-    # lookup and call attribute?()
-    def attribute?(attrib)
-      attributes.attribute?(attrib)
-    end
-
-    # Yield each key of the top level to the block.
-    def each(&block)
-      attributes.each(&block)
-    end
-
-    # Iterates over each attribute, passing the attribute and value to the block.
-    def each_attribute(&block)
-      attributes.each_attribute(&block)
-    end
+    def_delegators :attributes, :attribute?, :each, :each_attribute
 
     # Only works for attribute fetches, setting is no longer supported
     def method_missing(symbol, *args)
@@ -352,7 +260,15 @@ class Chef
       Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
       consume_attributes(json_cli_attrs)
 
-      self.automatic_attrs = ohai_data
+      if ohai_data.is_a?(::Mash)
+        # if we are passed a Mash (normally what ohai does, then we just want to wrap
+        # that Mash and not run through convert_value'ing the whole thing
+        wrap_automatic_attrs(ohai_data)
+      else
+        # some consumers send us just a Hash (mostly our own spec tests), so wrap it in
+        # a Mash and take the perf hit of convert_value'ing it
+        wrap_automatic_attrs(::Mash.new(ohai_data))
+      end
 
       platform, version = Chef::Platform.find_platform_and_version(self)
       Chef::Log.debug("Platform is #{platform} version #{version}")
@@ -466,13 +382,10 @@ class Chef
 
     # Transform the node to a Hash
     def to_hash
-      index_hash = Hash.new
+      index_hash = attributes.to_hash
       index_hash["chef_type"] = "node"
       index_hash["name"] = name
       index_hash["chef_environment"] = chef_environment
-      attribute.each do |key, value|
-        index_hash[key] = value
-      end
       index_hash["recipe"] = run_list.recipe_names if run_list.recipe_names.length > 0
       index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
       index_hash["run_list"] = run_list.run_list_items
@@ -543,10 +456,10 @@ class Chef
       if o.has_key?("attributes")
         node.normal_attrs = o["attributes"]
       end
-      node.automatic_attrs = Mash.new(o["automatic"]) if o.has_key?("automatic")
-      node.normal_attrs = Mash.new(o["normal"]) if o.has_key?("normal")
-      node.default_attrs = Mash.new(o["default"]) if o.has_key?("default")
-      node.override_attrs = Mash.new(o["override"]) if o.has_key?("override")
+      node.automatic_attrs = o["automatic"] if o.has_key?("automatic")
+      node.normal_attrs = o["normal"] if o.has_key?("normal")
+      node.default_attrs = o["default"] if o.has_key?("default")
+      node.override_attrs = o["override"] if o.has_key?("override")
 
       if o.has_key?("run_list")
         node.run_list.reset!(o["run_list"])
