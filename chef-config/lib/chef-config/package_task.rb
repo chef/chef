@@ -105,7 +105,7 @@ module ChefConfig
     end
 
     def define
-      fail 'Need to provide package root and module name' if root_path.nil? || module_name.nil?
+      raise 'Need to provide package root and module name' if root_path.nil? || module_name.nil?
 
       desc 'Build Gems of component dependencies'
       task :package_components do
