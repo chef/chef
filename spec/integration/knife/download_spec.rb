@@ -1148,6 +1148,7 @@ Created /containers/nodes.json
 Created /containers/policies.json
 Created /containers/roles.json
 Created /containers/sandboxes.json
+Created /cookbook_artifacts
 Created /cookbooks
 Created /data_bags
 Created /environments
@@ -1172,6 +1173,7 @@ EOM
           # acl_for %w(organizations foo groups blah)
           client "x", {}
           cookbook "x", "1.0.0"
+          cookbook_artifact "x", "1x1", { "metadata.rb" => cb_metadata("x", "1.0.0") }
           container "x", {}
           data_bag "x", { "y" => {} }
           environment "x", {}
@@ -1184,7 +1186,7 @@ EOM
           policy_group "x", {
             "policies" => {
               "x" => { "revision_id" => "1.0.0" },
-              "blah" => { "revision_id" => "1.0.0" },
+              "blah" => { "revision_id" => "1.0.0" }
             }
           }
           role "x", {}
@@ -1209,6 +1211,8 @@ EOM
           knife("download /").should_succeed <<EOM
 Created /clients/x.json
 Created /containers/x.json
+Created /cookbook_artifacts/x-1x1
+Created /cookbook_artifacts/x-1x1/metadata.rb
 Created /cookbooks/x
 Created /cookbooks/x/metadata.rb
 Created /data_bags/x
@@ -1233,6 +1237,7 @@ EOM
             file "clients/x.json", { "public_key" => ChefZero::PUBLIC_KEY }
             file "containers/x.json", {}
             file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.0")
+            file "cookbook_artifacts/x-1x1/metadata.rb", cb_metadata("x", "1.0.0")
             file "data_bags/x/y.json", {}
             file "environments/x.json", {}
             file "groups/x.json", {}
@@ -1257,6 +1262,7 @@ EOM
             file "clients/x.json", { "validator" => true }
             file "containers/x.json", {}
             file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.1")
+            file "cookbook_artifacts/x-1x1/metadata.rb", cb_metadata("x", "1.0.1")
             file "data_bags/x/y.json", { "a" => "b" }
             file "environments/x.json", { "description" => "foo" }
             file "groups/x.json", { "description" => "foo" }
@@ -1267,7 +1273,7 @@ EOM
             file "policy_groups/x.json", {
               "policies" => {
                 "x" => { "revision_id" => "1.0.1" },
-                "y" => { "revision_id" => "1.0.0" },
+                "y" => { "revision_id" => "1.0.0" }
               }
             }
             file "roles/x.json", { "run_list" => [ "blah" ] }
@@ -1276,6 +1282,7 @@ EOM
           it "knife download updates everything" do
             knife("download /").should_succeed <<EOM
 Updated /clients/x.json
+Updated /cookbook_artifacts/x-1x1/metadata.rb
 Updated /cookbooks/x/metadata.rb
 Updated /data_bags/x/y.json
 Updated /environments/x.json

@@ -50,7 +50,6 @@ class Chef
               result = []
               root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
                 cookbooks["versions"].each do |cookbook_version|
-                  puts cookbook_version
                   result << VersionedCookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self)
                 end
               end
