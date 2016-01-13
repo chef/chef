@@ -52,7 +52,6 @@ class Chef
       @public_key = nil
       @private_key = nil
       @create_key = nil
-      @password = nil
     end
 
     def chef_root_rest_v0
