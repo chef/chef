@@ -28,23 +28,23 @@ class Chef
   module ChefFS
     module FileSystem
       module ChefServer
+        # Unversioned cookbook.
+        #
+        #   /cookbooks/NAME
+        #
+        # Children look like:
+        #
+        # - metadata.rb
+        # - attributes/
+        # - libraries/
+        # - recipes/
+        #
         class CookbookDir < BaseFSDir
           def initialize(name, parent, options = {})
             super(name, parent)
             @exists = options[:exists]
-            # If the name is apache2-1.0.0 and versioned_cookbooks is on, we know
-            # the actual cookbook_name and version.
-            if root.versioned_cookbooks
-              if name =~ VALID_VERSIONED_COOKBOOK_NAME
-                @cookbook_name = $1
-                @version = $2
-              else
-                @exists = false
-              end
-            else
-              @cookbook_name = name
-              @version = root.cookbook_version # nil unless --cookbook-version specified in download/diff
-            end
+            @cookbook_name = name
+            @version = root.cookbook_version # nil unless --cookbook-version specified in download/diff
           end
 
           attr_reader :cookbook_name, :version
@@ -60,10 +60,6 @@ class Chef
             :providers => { :ruby_only => true, :recursive => true },
             :root_files => { }
           }
-
-          # See Erchef code
-          # https://github.com/opscode/chef_objects/blob/968a63344d38fd507f6ace05f73d53e9cd7fb043/src/chef_regex.erl#L94
-          VALID_VERSIONED_COOKBOOK_NAME = /^([.a-zA-Z0-9_-]+)-(\d+\.\d+\.\d+)$/
 
           def add_child(child)
             @children << child

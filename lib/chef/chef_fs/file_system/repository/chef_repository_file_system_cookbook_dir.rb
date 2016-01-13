@@ -18,6 +18,7 @@
 
 require 'chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_entry'
 require 'chef/chef_fs/file_system/chef_server/cookbook_dir'
+require 'chef/chef_fs/file_system/chef_server/versioned_cookbook_dir'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/cookbook/chefignore'
 require 'chef/cookbook/cookbook_version_loader'
@@ -27,25 +28,9 @@ class Chef
     module FileSystem
       module Repository
         class ChefRepositoryFileSystemCookbookDir < ChefRepositoryFileSystemCookbookEntry
-          def initialize(name, parent, file_path = nil)
-            super(name, parent, file_path)
-          end
-
           def chef_object
             begin
-              loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
-              # We need the canonical cookbook name if we are using versioned cookbooks, but we don't
-              # want to spend a lot of time adding code to the main Chef libraries
-              if root.versioned_cookbooks
-                canonical_name = canonical_cookbook_name(File.basename(file_path))
-                raise "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z"  unless canonical_name
-
-                # KLUDGE: We shouldn't have to use instance_variable_set
-                loader.instance_variable_set(:@cookbook_name, canonical_name)
-              end
-
-              loader.load_cookbooks
-              cb = loader.cookbook_version
+              cb = cookbook_version
               if !cb
                 Chef::Log.error("Cookbook #{file_path} empty.")
                 raise "Cookbook #{file_path} empty."
@@ -74,7 +59,7 @@ class Chef
 
           # Exposed as a class method so that it can be used elsewhere
           def self.canonical_cookbook_name(entry_name)
-            name_match = Chef::ChefFS::FileSystem::ChefServer::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(entry_name)
+            name_match = Chef::ChefFS::FileSystem::ChefServer::VersionedCookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(entry_name)
             return nil if name_match.nil?
             return name_match[1]
           end
@@ -96,6 +81,12 @@ class Chef
           def make_child_entry(child_name)
             segment_info = Chef::ChefFS::FileSystem::ChefServer::CookbookDir::COOKBOOK_SEGMENT_INFO[child_name.to_sym] || {}
             ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, segment_info[:ruby_only], segment_info[:recursive])
+          end
+
+          def cookbook_version
+            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
+            loader.load_cookbooks
+            cb = loader.cookbook_version
           end
         end
       end

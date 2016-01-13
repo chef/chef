@@ -20,6 +20,7 @@ require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/repository/chef_repository_file_system_entry'
 require 'chef/chef_fs/file_system/repository/chef_repository_file_system_acls_dir'
 require 'chef/chef_fs/file_system/repository/chef_repository_file_system_cookbooks_dir'
+require 'chef/chef_fs/file_system/repository/chef_repository_file_system_versioned_cookbooks_dir'
 require 'chef/chef_fs/file_system/repository/chef_repository_file_system_data_bags_dir'
 require 'chef/chef_fs/file_system/multiplexed_dir'
 require 'chef/chef_fs/data_handler/client_data_handler'
@@ -162,7 +163,11 @@ class Chef
             end
             case name
             when 'cookbooks'
-              dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
+              if versioned_cookbooks
+                dirs = paths.map { |path| ChefRepositoryFileSystemVersionedCookbooksDir.new(name, self, path) }
+              else
+                dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
+              end
             when 'data_bags'
               dirs = paths.map { |path| ChefRepositoryFileSystemDataBagsDir.new(name, self, path) }
             when 'acls'
