@@ -75,13 +75,39 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
       end
     end
 
-    context 'installing a bogus package' do
-      let(:package_name) { 'blah' }
-      let(:package_source) { nil }
+    it 'raises if package is not found' do
+      subject.package_name 'blah'
+      expect{ subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
+    end
 
-      it 'raises if package is not found' do
-        expect{ subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
-      end
+     it 'raises if package version is not found' do
+      subject.version '3.0'
+      expect{ subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
+    end
+  end
+
+  context 'upgrading a package' do
+    after { Chef::Resource::ChocolateyPackage.new(package_name, run_context).run_action(:remove) }
+
+    it 'upgrades to a specific version' do
+      subject.version '1.0'
+      subject.run_action(:install)
+      expect(package_list.call).to eq("#{package_name}|1.0")
+
+      subject.version '1.5'
+      subject.run_action(:upgrade)
+      expect(package_list.call).to eq("#{package_name}|1.5")
+    end
+
+    it 'upgrades to the latest version if no version given' do
+      subject.version '1.0'
+      subject.run_action(:install)
+      expect(package_list.call).to eq("#{package_name}|1.0")
+
+      subject2 = Chef::Resource::ChocolateyPackage.new('test-A', run_context)
+      subject2.source package_source
+      subject2.run_action(:upgrade)
+      expect(package_list.call).to eq("#{package_name}|2.0")
     end
   end
 
