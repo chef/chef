@@ -49,7 +49,7 @@ class Chef
 
           def children
             @children ||= begin
-              result = root.get_json(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
+              result = root.get_json(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, exists: true) }
               result.sort_by(&:name)
             end
           end

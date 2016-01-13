@@ -17,23 +17,33 @@
 #
 
 require 'chef/chef_fs/file_system/chef_server/cookbooks_dir'
+require 'chef/chef_fs/file_system/chef_server/versioned_cookbook_dir'
 
 class Chef
   module ChefFS
     module FileSystem
       module ChefServer
-        # cookbooks/
-        #   apache2-1.0.0/
-        #   apache2-1.0.1/
-        #   mysql-2.0.5/
+        # /cookbooks
+        #
+        # Its children look like:
+        #
+        # - apache2-1.0.0
+        # - apache2-1.0.1
+        # - mysql-2.0.5
+        #
         class VersionedCookbooksDir < CookbooksDir
+
+          def make_child_entry(name)
+            result = @children.select { |child| child.name == name }.first if @children
+            result || VersionedCookbookDir.new(name, self)
+          end
 
           def children
             @children ||= begin
               result = []
               root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
                 cookbooks['versions'].each do |cookbook_version|
-                  result << CookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self, :exists => true)
+                  result << VersionedCookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self)
                 end
               end
               result.sort_by(&:name)
@@ -81,7 +91,7 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            is_dir && name =~ Chef::ChefFS::FileSystem::ChefServer::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME
+            is_dir && name =~ Chef::ChefFS::FileSystem::ChefServer::VersionedCookbookDir::VALID_VERSIONED_COOKBOOK_NAME
           end
         end
       end

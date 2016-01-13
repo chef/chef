@@ -18,6 +18,7 @@
 
 require 'chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_entry'
 require 'chef/chef_fs/file_system/chef_server/cookbook_dir'
+require 'chef/chef_fs/file_system/chef_server/versioned_cookbook_dir'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/cookbook/chefignore'
 require 'chef/cookbook/cookbook_version_loader'
@@ -74,7 +75,7 @@ class Chef
 
           # Exposed as a class method so that it can be used elsewhere
           def self.canonical_cookbook_name(entry_name)
-            name_match = Chef::ChefFS::FileSystem::ChefServer::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(entry_name)
+            name_match = Chef::ChefFS::FileSystem::ChefServer::VersionedCookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(entry_name)
             return nil if name_match.nil?
             return name_match[1]
           end
