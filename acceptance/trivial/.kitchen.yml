@@ -1,0 +1,27 @@
+driver:
+  name: vagrant
+  forward_agent: yes
+  customize:
+    cpus: 2
+    memory: 1024
+
+provisioner:
+  name: chef_zero
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-14.04
+    run_list:
+#  - name: windows-server-2012r2-standard
+#    driver:
+#      box: chef/windows-server-2012r2-standard # private
+
+suites:
+  - name: chef-current-install
+    provisioner:
+      product_name: chef
+      product_version: latest
+      channel: current
+    run_list:
