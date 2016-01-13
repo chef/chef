@@ -50,7 +50,8 @@ ConEmu|15.10.25.0
     remote_list_stdout = <<-EOF
 chocolatey|0.9.9.11
 ConEmu|15.10.25.1
-git|2.6.2
+Git|2.6.1
+Git|2.6.2
 munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
@@ -68,10 +69,22 @@ munin-node|1.6.1.20130823
   end
 
   describe "#candidate_version" do
-    it "should set the candidate_version correctly" do
+    it "should set the candidate_version to the latest version when not pinning" do
       allow_remote_list(["git"])
       expect(provider.candidate_version).to eql(["2.6.2"])
     end
+
+    it "should set the candidate_version to pinned version if available" do
+      allow_remote_list(["git"])
+      new_resource.version('2.6.1')
+      expect(provider.candidate_version).to eql(["2.6.1"])
+    end
+
+    it "should set the candidate_version to nill if pinning to bogus version" do
+      allow_remote_list(["git"])
+      new_resource.version('2.5.0')
+      expect(provider.candidate_version).to eql([nil])
+    end    
 
     it "should set the candidate_version to nil if there is no candidate" do
       allow_remote_list(["vim"])
@@ -209,7 +222,7 @@ munin-node|1.6.1.20130823
       new_resource.package_name("ConEmu")
       new_resource.version("15.10.25.1")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 ConEmu", {:timeout=>timeout}).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 conemu", {:timeout=>timeout}).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -222,7 +235,7 @@ munin-node|1.6.1.20130823
       new_resource.package_name(["chocolatey", "ConEmu"])
       new_resource.version([nil, "15.10.25.1"])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 ConEmu", {:timeout=>timeout}).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 conemu", {:timeout=>timeout}).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -242,7 +255,7 @@ munin-node|1.6.1.20130823
       new_resource.package_name(["ConEmu", "git"])
       new_resource.version(["15.10.25.1", nil])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 ConEmu", {:timeout=>timeout}).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 conemu", {:timeout=>timeout}).and_return(double)
       expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y git", {:timeout=>timeout}).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
@@ -323,7 +336,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["ConEmu"])
       new_resource.package_name("ConEmu")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y ConEmu", {:timeout=>timeout}).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y conemu", {:timeout=>timeout}).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
