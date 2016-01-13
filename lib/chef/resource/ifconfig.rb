@@ -50,7 +50,7 @@ class Chef
         set_or_return(
           :target,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -58,7 +58,7 @@ class Chef
         set_or_return(
           :device,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -66,7 +66,7 @@ class Chef
         set_or_return(
           :hwaddr,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -74,7 +74,7 @@ class Chef
         set_or_return(
           :inet_addr,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -82,7 +82,7 @@ class Chef
         set_or_return(
           :bcast,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -90,7 +90,7 @@ class Chef
         set_or_return(
           :mask,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -98,7 +98,7 @@ class Chef
         set_or_return(
           :mtu,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -106,7 +106,7 @@ class Chef
         set_or_return(
           :metric,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -114,7 +114,7 @@ class Chef
         set_or_return(
           :onboot,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -122,7 +122,7 @@ class Chef
         set_or_return(
           :network,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -130,7 +130,7 @@ class Chef
         set_or_return(
           :bootproto,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -138,7 +138,7 @@ class Chef
         set_or_return(
           :onparent,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
     end

@@ -147,7 +147,7 @@ class Chef
                 # /environments
                 EnvironmentsDir.new("environments", self, nil, Chef::ChefFS::DataHandler::EnvironmentDataHandler.new),
                 # /roles
-                RestListDir.new("roles", self, nil, Chef::ChefFS::DataHandler::RoleDataHandler.new)
+                RestListDir.new("roles", self, nil, Chef::ChefFS::DataHandler::RoleDataHandler.new),
               ]
               if repo_mode == 'hosted_everything'
                 result += [
@@ -179,7 +179,7 @@ class Chef
                   # /nodes
                   NodesDir.new("nodes", self, nil, Chef::ChefFS::DataHandler::NodeDataHandler.new),
                   # /users
-                  RestListDir.new("users", self, nil, Chef::ChefFS::DataHandler::UserDataHandler.new)
+                  RestListDir.new("users", self, nil, Chef::ChefFS::DataHandler::UserDataHandler.new),
                 ]
               end
               result.sort_by { |child| child.name }

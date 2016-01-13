@@ -249,7 +249,7 @@ describe Chef::CookbookVersion do
                   ["1.2", "1.3.0"],
                   ["1.2", "1.3"],
                   ["1.2", "2.1.1"],
-                  ["1.2", "2.1"]
+                  ["1.2", "2.1"],
                  ]
       examples.each do |smaller, larger|
         sm = Chef::CookbookVersion.new("foo", '/tmp/blah')

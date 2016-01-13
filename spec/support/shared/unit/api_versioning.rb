@@ -47,7 +47,7 @@ shared_examples_for "user and client reregister" do
     {
       "min_version" => min_version,
       "max_version" => max_version,
-      "request_version" => "30"
+      "request_version" => "30",
     }
   }
 

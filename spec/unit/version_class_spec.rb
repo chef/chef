@@ -90,7 +90,7 @@ describe Chef::Version do
                   ["1.2", "1.3.0"],
                   ["1.2", "1.3"],
                   ["1.2", "2.1.1"],
-                  ["1.2", "2.1"]
+                  ["1.2", "2.1"],
                  ]
       examples.each do |smaller, larger|
         sm = Chef::Version.new(smaller)
@@ -158,7 +158,7 @@ describe Chef::Version do
        [ "1.2.2", :>=, "1.2.1", true ],
        [ "1.2.2", :==, "1.2.1", false ],
        [ "1.2.2", :<=, "1.2.1", false ],
-       [ "1.2.2", :<, "1.2.1", false ]
+       [ "1.2.2", :<, "1.2.1", false ],
       ].each do |spec|
         it "(#{spec.first(3).join(' ')}) should be #{spec[3]}" do
           got = Chef::Version.new(spec[0]).send(spec[1],

@@ -180,7 +180,7 @@ describe Chef::Provider::RemoteFile::Content do
       Timeout::Error,
       Net::HTTPServerException,
       Net::HTTPFatalError,
-      Net::FTPError
+      Net::FTPError,
     ].each do |exception|
       describe "with an exception of #{exception}" do
         before do

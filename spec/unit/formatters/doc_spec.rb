@@ -34,9 +34,9 @@ describe Chef::Formatters::Base do
         "recipe[apt::default]",
         "recipe[java::default]",
         "recipe[jenkins::master]",
-        "recipe[policyfile_demo::default]"
+        "recipe[policyfile_demo::default]",
       ],
-      "cookbook_locks"=> { }
+      "cookbook_locks"=> { },
     }
 
     formatter.policyfile_loaded(minimal_policyfile)

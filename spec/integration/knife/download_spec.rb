@@ -314,7 +314,7 @@ EOM
           data_bag 'x', {
             'added' => {},
             'modified' => { 'foo' => 'bar' },
-            'unmodified' => {}
+            'unmodified' => {},
           }
         end
 
@@ -810,7 +810,7 @@ EOM
           data_bag 'x', {
             'added' => {},
             'modified' => { 'foo' => 'bar' },
-            'unmodified' => {}
+            'unmodified' => {},
           }
         end
 
@@ -1184,7 +1184,7 @@ EOM
           policy_group 'x', {
             'policies' => {
               'x' => { 'revision_id' => '1.0.0' },
-              'blah' => { 'revision_id' => '1.0.0' }
+              'blah' => { 'revision_id' => '1.0.0' },
             }
           }
           role 'x', {}
@@ -1267,7 +1267,7 @@ EOM
             file 'policy_groups/x.json', {
               'policies' => {
                 'x' => { 'revision_id' => '1.0.1' },
-                'y' => { 'revision_id' => '1.0.0' }
+                'y' => { 'revision_id' => '1.0.0' },
               }
             }
             file 'roles/x.json', { 'run_list' => [ 'blah' ] }

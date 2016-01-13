@@ -64,7 +64,7 @@ describe Chef::Resource::RemoteDirectory do
       File.join(path, 'remotesubdir', 'remote_subdir_file1.txt'),
       File.join(path, 'remotesubdir', 'remote_subdir_file2.txt'),
       File.join(path, 'remotesubdir', '.a_dotfile'),
-      File.join(path, '.a_dotdir', '.a_dotfile_in_a_dotdir')
+      File.join(path, '.a_dotdir', '.a_dotfile_in_a_dotdir'),
     ]
   end
 

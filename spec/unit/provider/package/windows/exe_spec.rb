@@ -42,7 +42,7 @@ describe Chef::Provider::Package::Windows::Exe do
   let(:uninstall_hash) do
     [{
       'DisplayVersion' => 'outdated',
-      'UninstallString' => File.join("uninst_dir", "uninst_file")
+      'UninstallString' => File.join("uninst_dir", "uninst_file"),
     }]
   end
   let(:uninstall_entry) do
@@ -122,12 +122,12 @@ describe Chef::Provider::Package::Windows::Exe do
         [
           {
           'DisplayVersion' => 'v1',
-          'UninstallString' => File.join("uninst_dir1", "uninst_file1")
+          'UninstallString' => File.join("uninst_dir1", "uninst_file1"),
           },
           {
           'DisplayVersion' => 'v2',
-          'UninstallString' => File.join("uninst_dir2", "uninst_file2")
-          }
+          'UninstallString' => File.join("uninst_dir2", "uninst_file2"),
+          },
         ]
       end
 

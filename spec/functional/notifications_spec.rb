@@ -106,7 +106,7 @@ describe "Notifications" do
       { resource: package_resource.to_s, action: :install, notification_type: :before, notifying_resource: log_resource.to_s },
       # Then it runs the actual action
       { resource: log_resource.to_s,     action: :write },
-      { resource: package_resource.to_s, action: :nothing }
+      { resource: package_resource.to_s, action: :nothing },
     ]
   end
 
@@ -140,7 +140,7 @@ describe "Notifications" do
       # Then it does NOT run the before action
       # Then it runs the actual action
       { resource: log_resource.to_s,     action: :write },
-      { resource: package_resource.to_s, action: :nothing }
+      { resource: package_resource.to_s, action: :nothing },
     ]
   end
 

@@ -8,7 +8,7 @@ class Chef
         def normalize(policy_group, entry)
           defaults = {
             "name" => remove_dot_json(entry.name),
-            "policies" => {}
+            "policies" => {},
           }
           result = normalize_hash(policy_group, defaults)
           result.delete("uri") # not useful data

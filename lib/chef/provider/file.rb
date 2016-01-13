@@ -246,7 +246,7 @@ class Chef
         else
           [ Chef::Exceptions::FileTypeMismatch,
             "File #{path} exists, but is a #{file_type_string(@new_resource.path)}, set force_unlink to true to remove",
-            "Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource"
+            "Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource",
           ]
         end
       end
@@ -267,7 +267,7 @@ class Chef
           [ Chef::Exceptions::FileTypeMismatch,
             "File #{path} exists, but is a symlink to #{real_path} which is a #{file_type_string(real_path)}. " +
             "Disable manage_symlink_source and set force_unlink to remove it.",
-            "Assuming symlink #{path} or source file #{real_path} would have been fixed by a previous resource"
+            "Assuming symlink #{path} or source file #{real_path} would have been fixed by a previous resource",
           ]
         end
       rescue Errno::ELOOP

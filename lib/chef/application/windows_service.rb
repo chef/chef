@@ -198,7 +198,7 @@ class Chef
           result = shell_out(
             "chef-client #{config_params}",
             :timeout => Chef::Config[:windows_service][:watchdog_timeout],
-            :logger => Chef::Log
+            :logger => Chef::Log,
           )
           Chef::Log.debug "#{result.stdout}"
           Chef::Log.debug "#{result.stderr}"

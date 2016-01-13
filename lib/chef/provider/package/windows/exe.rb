@@ -61,7 +61,7 @@ class Chef
                 "\"#{new_resource.source}\"",
                 unattended_flags,
                 expand_options(new_resource.options),
-                "& exit %%%%ERRORLEVEL%%%%"
+                "& exit %%%%ERRORLEVEL%%%%",
               ].join(" "), timeout: new_resource.timeout, returns: new_resource.returns
             )
           end
@@ -86,7 +86,7 @@ class Chef
               ::File.basename(uninstall_string),
               expand_options(new_resource.options),
               " ",
-              unattended_flags
+              unattended_flags,
             ].join
             %Q{start "" /wait #{uninstall_string} & exit %%%%ERRORLEVEL%%%%}
           end

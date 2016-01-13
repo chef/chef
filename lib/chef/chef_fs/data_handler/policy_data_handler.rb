@@ -21,7 +21,7 @@ class Chef
             'name' => name,
             'revision_id' => revision_id,
             'run_list' => [],
-            'cookbook_locks' => {}
+            'cookbook_locks' => {},
           }
           normalize_hash(policy, defaults)
         end

@@ -106,7 +106,7 @@ describe Chef::Environment do
       @cookbook_versions = {
         "apt"     => "= 1.0.0",
         "god"     => "= 2.0.0",
-        "apache2" => "= 4.2.0"
+        "apache2" => "= 4.2.0",
       }
     end
 
@@ -221,10 +221,10 @@ describe Chef::Environment do
         "cookbook_versions" => {
           "apt" => "= 1.2.3",
           "god" => ">= 4.2.0",
-          "apache2" => "= 2.0.0"
+          "apache2" => "= 2.0.0",
         },
         "json_class" => "Chef::Environment",
-        "chef_type" => "environment"
+        "chef_type" => "environment",
       }
       @environment = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@data))
     end
@@ -245,7 +245,7 @@ describe Chef::Environment do
       @cookbook_versions = {
         "apt"     => "= 1.0.0",
         "god"     => "= 2.0.0",
-        "apache2" => "= 4.2.0"
+        "apache2" => "= 4.2.0",
       }
     end
 
@@ -422,7 +422,7 @@ describe Chef::Environment do
           },
           "json_class" => "Chef::Environment",
           "description" => "desc",
-          "chef_type" => "environment"
+          "chef_type" => "environment",
         }
         expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(Chef::JSONCompat.to_json(environment_hash))
         environment = Chef::Environment.load('foo')

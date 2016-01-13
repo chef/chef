@@ -47,7 +47,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
     gems = [ double('knife-ec2-0.5.12') ]
     gem_files = [
       '/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_base.rb',
-      '/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_otherstuff.rb'
+      '/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_otherstuff.rb',
     ]
     expect($LOAD_PATH).to receive(:map).and_return([])
     if Gem::Specification.respond_to? :latest_specs
@@ -135,7 +135,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
         # `SubcommandLoader::MATCHES_CHEF_GEM` should make it clear why we want
         # to test these two cases.
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-bar-1.0.0/lib/chef/knife/chef-bar.rb",
-        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/bar-chef-1.0.0/lib/chef/knife/bar-chef.rb"
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/bar-chef-1.0.0/lib/chef/knife/bar-chef.rb",
       ]
     end
 
@@ -153,7 +153,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-#{Chef::VERSION}/lib/chef/knife/chef-foo.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-#{Chef::VERSION}/lib/chef/knife/foo-chef.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-bar-1.0.0/lib/chef/knife/chef-bar.rb",
-        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/bar-chef-1.0.0/lib/chef/knife/bar-chef.rb"
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/bar-chef-1.0.0/lib/chef/knife/bar-chef.rb",
       ]
     end
 

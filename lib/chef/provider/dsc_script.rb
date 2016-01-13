@@ -92,7 +92,7 @@ class Chef
         shellout_flags = {
           :cwd => @dsc_resource.cwd,
           :environment => @dsc_resource.environment,
-          :timeout => @dsc_resource.timeout
+          :timeout => @dsc_resource.timeout,
         }
 
         begin
@@ -119,7 +119,7 @@ class Chef
         shellout_flags = {
           :cwd => @dsc_resource.cwd,
           :environment => @dsc_resource.environment,
-          :timeout => @dsc_resource.timeout
+          :timeout => @dsc_resource.timeout,
         }
 
         generator = Chef::Util::DSC::ConfigurationGenerator.new(@run_context.node, config_directory)

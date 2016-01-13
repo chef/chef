@@ -93,7 +93,7 @@ describe Chef::Knife::IndexRebuild do
       let(:api_info) do
         {"flavor" => "osc",
           "version" => "11.0.0",
-          "erchef" => "1.2.3"
+          "erchef" => "1.2.3",
         }
       end
       let(:server_specific_stubs!) do

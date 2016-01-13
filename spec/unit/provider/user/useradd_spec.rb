@@ -34,7 +34,7 @@ describe Chef::Provider::User::Useradd do
     'gid' => "-g",
     'uid' => "-u",
     'shell' => "-s",
-    'password' => "-p"
+    'password' => "-p",
   }
 
   include_examples "a useradd-based user provider", supported_useradd_options

@@ -105,7 +105,7 @@ class Chef
             'home' => 'home_dir',
             'uid' => 'user_id',
             'shell' => 'script_path',
-            'password' => 'password'
+            'password' => 'password',
           }
 
           field_list.sort{ |a,b| a[0] <=> b[0] }.each do |field, option|

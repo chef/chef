@@ -83,7 +83,7 @@ describe Chef::Knife::KeyShow do
       actor_field_name => "charmander",
       "name" => "charmander-key",
       "public_key" => "some-public-key",
-      "expiration_date" => "infinity"
+      "expiration_date" => "infinity",
     }
   }
 

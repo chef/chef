@@ -33,7 +33,7 @@ describe Chef::Knife::ClientEdit do
         "validator" => false,
         "admin" => false,
         "chef_type" => "client",
-        "create_key" => true
+        "create_key" => true,
       }
     }
 

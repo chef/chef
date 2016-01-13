@@ -134,7 +134,7 @@ E
         {
           'test_cookbook1' => Chef::CookbookVersion.new('test_cookbook1', '/tmp/blah'),
           'test_cookbook2' => Chef::CookbookVersion.new('test_cookbook2', '/tmp/blah'),
-          'test_cookbook3' => Chef::CookbookVersion.new('test_cookbook3', '/tmp/blah')
+          'test_cookbook3' => Chef::CookbookVersion.new('test_cookbook3', '/tmp/blah'),
         }
       end
 

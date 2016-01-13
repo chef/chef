@@ -216,7 +216,7 @@ EOM
     before :each do
       Chef::Config.cookbook_path = [
         File.join(Chef::Config.chef_repo_path, 'cookbooks1'),
-        File.join(Chef::Config.chef_repo_path, 'cookbooks2')
+        File.join(Chef::Config.chef_repo_path, 'cookbooks2'),
       ]
     end
 
@@ -285,7 +285,7 @@ EOM
     before :each do
       Chef::Config.cookbook_path = [
         File.join(Chef::Config.chef_repo_path, 'cookbooks1'),
-        File.join(Chef::Config.chef_repo_path, 'cookbooks2')
+        File.join(Chef::Config.chef_repo_path, 'cookbooks2'),
       ]
     end
     it 'knife list -Rfp /cookbooks shows the chefignore cookbook' do

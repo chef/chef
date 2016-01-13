@@ -146,7 +146,7 @@ class Chef
           :first_name => @first_name,
           :last_name => @last_name,
           :email => @email,
-          :password => @password
+          :password => @password,
         }
         payload[:public_key] = @public_key unless @public_key.nil?
         payload[:create_key] = @create_key unless @create_key.nil?
@@ -172,7 +172,7 @@ class Chef
           :first_name => @first_name,
           :last_name => @last_name,
           :email => @email,
-          :password => @password
+          :password => @password,
         }
         payload[:middle_name] = @middle_name unless @middle_name.nil?
         payload[:public_key] = @public_key unless @public_key.nil?

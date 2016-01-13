@@ -62,7 +62,7 @@ class Chef
             usri3_primary_group_id: DOMAIN_GROUP_RID_USERS,
             usri3_profile: nil,
             usri3_home_dir_drive: nil,
-            usri3_password_expired: 0
+            usri3_password_expired: 0,
           }.each do |(k,v)|
             s.set(k, v)
           end

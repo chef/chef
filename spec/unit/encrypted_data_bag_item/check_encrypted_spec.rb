@@ -44,8 +44,8 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
         "greeting" => "hello",
         "nested" => {
             "a1" => [1, 2, 3],
-            "a2" => { "b1" => true }
-        }
+            "a2" => { "b1" => true },
+        },
     }}
 
     let(:version) { 1 }

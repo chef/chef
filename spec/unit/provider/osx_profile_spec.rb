@@ -67,7 +67,7 @@ describe Chef::Provider::OsxProfile do
             "ProfileType"=>"Configuration",
             "ProfileUUID"=>"6e95927c-f200-54b4-85c7-52ab99b61c47",
             "ProfileVerificationState"=>"unsigned",
-            "ProfileVersion"=>1}],
+            "ProfileVersion"=>1}]
         }
       end
       # If anything is changed within this profile, be sure to update the
@@ -95,14 +95,14 @@ describe Chef::Provider::OsxProfile do
                 'Forced' => [
                   {
                     'mcx_preference_settings' => {
-                      'idleTime' => 0,
+                      'idleTime' => 0
                     }
-                  }
+                  },
                 ]
               }
-            }
-          }
-        ]
+            },
+          },
+        ],
         }
       end
       let(:no_profiles) do
@@ -232,7 +232,7 @@ describe Chef::Provider::OsxProfile do
           "ProfileType"=>"Configuration",
           "ProfileUUID"=>"1781fbec-3325-565f-9022-8aa28135c3cc",
           "ProfileVerificationState"=>"unsigned",
-          "ProfileVersion"=>1}],
+          "ProfileVersion"=>1}]
       }
     end
     before(:each) do

@@ -44,7 +44,7 @@ class Chef
         set_or_return(
           :code,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -52,7 +52,7 @@ class Chef
         set_or_return(
           :cookie,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -60,7 +60,7 @@ class Chef
         set_or_return(
           :distributed,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -68,7 +68,7 @@ class Chef
         set_or_return(
           :name_type,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -76,7 +76,7 @@ class Chef
         set_or_return(
           :node_name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 

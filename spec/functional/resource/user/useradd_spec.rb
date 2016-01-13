@@ -33,7 +33,7 @@ end
 metadata = { :unix_only => true,
   :requires_root => true,
   :not_supported_on_mac_osx => true,
-  :provider => {:user => user_provider_for_platform}
+  :provider => {:user => user_provider_for_platform},
 }
 
 describe Chef::Provider::User::Useradd, metadata do

@@ -49,7 +49,7 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
       service_display_name: "windows_service spec #{id}}",
       service_description: "Test service for running the windows_service functional spec.",
       service_file_path: global_service_file_path,
-      } )
+      }, )
   }
 
   let(:manager) {

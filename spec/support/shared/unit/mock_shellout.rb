@@ -31,7 +31,7 @@ class MockShellout
     @properties = {
       stdout: "",
       stderr: "",
-      exitstatus: 0
+      exitstatus: 0,
     }.merge(properties)
   end
   def method_missing(name, *args)

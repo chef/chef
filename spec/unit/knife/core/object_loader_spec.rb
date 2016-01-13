@@ -41,7 +41,7 @@ describe Chef::Knife::Core::ObjectLoader do
   {
     'nodes' => Chef::Node,
     'roles' => Chef::Role,
-    'environments' => Chef::Environment
+    'environments' => Chef::Environment,
   }.each do |repo_location, chef_class|
 
     describe "when the file is a #{chef_class}" do

@@ -30,7 +30,7 @@ describe Chef::Search::Query do
     let(:filter_hash) {
       {
         'env' => [ 'chef_environment' ],
-        'ruby_plat' => [ 'languages', 'ruby', 'platform' ]
+        'ruby_plat' => [ 'languages', 'ruby', 'platform' ],
       }
     }
     let(:response) {
@@ -39,30 +39,30 @@ describe Chef::Search::Query do
           { "url" => "#{server_url}/my-name-is-node",
             "data" => {
               "env" => "elysium",
-              "ruby_plat" => "nudibranch"
-            }
+              "ruby_plat" => "nudibranch",
+            },
           },
           { "url" => "#{server_url}/my-name-is-jonas",
             "data" => {
               "env" => "hades",
-              "ruby_plat" => "i386-mingw32"
-            }
+              "ruby_plat" => "i386-mingw32",
+            },
           },
           { "url" => "#{server_url}/my-name-is-flipper",
             "data" => {
               "env" => "elysium",
-              "ruby_plat" => "centos"
-            }
+              "ruby_plat" => "centos",
+            },
           },
           { "url" => "#{server_url}/my-name-is-butters",
             "data" => {
               "env" => "moon",
               "ruby_plat" => "solaris2",
-            }
-          }
+            },
+          },
         ],
         "start" => 0,
-        "total" => 4
+        "total" => 4,
       }
     }
     let(:response_rows) {
@@ -70,7 +70,7 @@ describe Chef::Search::Query do
         { "env" => "elysium", "ruby_plat" => "nudibranch" },
         { "env" => "hades", "ruby_plat" => "i386-mingw32"},
         { "env" => "elysium", "ruby_plat" => "centos"},
-        { "env" => "moon", "ruby_plat" => "solaris2"}
+        { "env" => "moon", "ruby_plat" => "solaris2"},
       ]
     }
   end
@@ -97,10 +97,10 @@ describe Chef::Search::Query do
               "ruby" => {
                 "platform" => "nudibranch",
                 "version" => "1.9.3",
-                "target" => "ming-the-merciless"
+                "target" => "ming-the-merciless",
               }
             }
-          }
+          },
         },
         { "name" => "my-name-is-jonas",
           "chef_environment" => "hades",
@@ -111,10 +111,10 @@ describe Chef::Search::Query do
               "ruby" => {
                 "platform" => "i386-mingw32",
                 "version" => "1.9.3",
-                "target" => "bilbo"
+                "target" => "bilbo",
               }
             }
-          }
+          },
         },
         { "name" => "my-name-is-flipper",
           "chef_environment" => "elysium",
@@ -125,10 +125,10 @@ describe Chef::Search::Query do
               "ruby" => {
                 "platform" => "centos",
                 "version" => "2.0.0",
-                "target" => "uno"
+                "target" => "uno",
               }
             }
-          }
+          },
         },
         { "name" => "my-name-is-butters",
           "chef_environment" => "moon",
@@ -139,14 +139,14 @@ describe Chef::Search::Query do
               "ruby" => {
                 "platform" => "solaris2",
                 "version" => "2.1.2",
-                "target" => "random"
+                "target" => "random",
               }
             }
-          }
+          },
         },
       ],
       "start" => 0,
-      "total" => 4
+      "total" => 4,
     } }
 
     let(:big_response) {
@@ -159,7 +159,7 @@ describe Chef::Search::Query do
       {
         "start" => 0,
         "total" => 8,
-        "rows" => []
+        "rows" => [],
       }
     }
 

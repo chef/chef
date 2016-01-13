@@ -56,8 +56,8 @@ describe Chef::PolicyBuilder::Policyfile do
       "scm_identifier"=> {
         "vcs"=> "git",
         "rev_id"=> "9d5b09026470c322c3cb5ca8a4157c4d2f16cef3",
-        "remote"=> nil
-      }
+        "remote"=> nil,
+      },
     }
   end
 
@@ -67,7 +67,7 @@ describe Chef::PolicyBuilder::Policyfile do
       "version" => "4.2.0",
       # NOTE: for compatibility mode we include the dotted id in the policyfile to enhance discoverability.
       "dotted_decimal_identifier" => id_to_dotted("feab40e1fca77c7360ccca1481bb8ba5f919ce3a"),
-      "source" => { "api" => "https://community.getchef.com/api/v1/cookbooks/example2" }
+      "source" => { "api" => "https://community.getchef.com/api/v1/cookbooks/example2" },
     }
   end
 
@@ -85,11 +85,11 @@ describe Chef::PolicyBuilder::Policyfile do
 
       "cookbook_locks" => {
         "example1" => example1_lock_data,
-        "example2" => example2_lock_data
+        "example2" => example2_lock_data,
       },
 
       "default_attributes" => policyfile_default_attributes,
-      "override_attributes" => policyfile_override_attributes
+      "override_attributes" => policyfile_override_attributes,
     }
   end
 
@@ -286,7 +286,7 @@ describe Chef::PolicyBuilder::Policyfile do
       it "extracts the cookbooks and versions for display from the policyfile" do
         expected = [
           "example1::default@2.3.5 (168d210)",
-          "example2::server@4.2.0 (feab40e)"
+          "example2::server@4.2.0 (feab40e)",
         ]
 
         expect(policy_builder.run_list_with_versions_for_display).to eq(expected)
@@ -357,7 +357,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:json_attribs) do
               {
                 "policy_name" => "policy_name_from_node_json",
-                "policy_group" => "policy_group_from_node_json"
+                "policy_group" => "policy_group_from_node_json",
               }
             end
 
@@ -378,7 +378,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:extra_chef_config) do
               {
                 policy_name: "policy_name_from_config",
-                policy_group: "policy_group_from_config"
+                policy_group: "policy_group_from_config",
               }
             end
 
@@ -419,7 +419,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:extra_chef_config) do
               {
                 policy_name: "policy_name_from_config",
-                policy_group: "policy_group_from_config"
+                policy_group: "policy_group_from_config",
               }
             end
 
@@ -435,7 +435,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:json_attribs) do
               {
                 "policy_name" => "policy_name_from_node_json",
-                "policy_group" => "policy_group_from_node_json"
+                "policy_group" => "policy_group_from_node_json",
               }
             end
 
@@ -465,7 +465,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:json_attribs) do
               {
                 "policy_name" => "policy_name_from_node_json",
-                "policy_group" => "policy_group_from_node_json"
+                "policy_group" => "policy_group_from_node_json",
               }
             end
 
@@ -480,7 +480,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:extra_chef_config) do
               {
                 policy_name: "policy_name_from_config",
-                policy_group: "policy_group_from_config"
+                policy_group: "policy_group_from_config",
               }
             end
 

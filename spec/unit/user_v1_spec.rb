@@ -261,7 +261,7 @@ describe Chef::UserV1 do
         "password" => "password",
         "public_key" => "turtles",
         "private_key" => "pandas",
-        "create_key" => false
+        "create_key" => false,
       }
       @user = Chef::UserV1.from_json(Chef::JSONCompat.to_json(user))
     end
@@ -341,7 +341,7 @@ describe Chef::UserV1 do
           :middle_name => "some_middle_name",
           :last_name => "some_last_name",
           :email => "some_email",
-          :password => "some_password"
+          :password => "some_password",
         }
       }
 
@@ -364,7 +364,7 @@ describe Chef::UserV1 do
             :last_name => "some_last_name",
             :email => "some_email",
             :password => "some_password",
-            :public_key => "some_public_key"
+            :public_key => "some_public_key",
           }
         }
 
@@ -450,7 +450,7 @@ describe Chef::UserV1 do
           :first_name => "some_first_name",
           :last_name => "some_last_name",
           :email => "some_email",
-          :password => "some_password"
+          :password => "some_password",
         }
       }
       before do
@@ -509,7 +509,7 @@ describe Chef::UserV1 do
     describe "reregister" do
       let(:payload) {
         {
-          "username" => "some_username",
+          "username" => "some_username"
         }
       }
 

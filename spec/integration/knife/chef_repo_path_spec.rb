@@ -278,7 +278,7 @@ EOM
           %w(client cookbook data_bag environment node role user).each do |object_name|
             Chef::Config["#{object_name}_path".to_sym] = [
               File.join(Chef::Config.chef_repo_path, "#{object_name}s"),
-              File.join(Chef::Config.chef_repo_path, "#{object_name}s2")
+              File.join(Chef::Config.chef_repo_path, "#{object_name}s2"),
             ]
           end
           Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, 'chef_repo2')
@@ -516,7 +516,7 @@ EOM
           end
           Chef::Config.chef_repo_path = [
             Chef::Config.chef_repo_path,
-            File.join(Chef::Config.chef_repo_path, 'chef_repo2')
+            File.join(Chef::Config.chef_repo_path, 'chef_repo2'),
           ]
         end
 
@@ -677,7 +677,7 @@ EOM
           Chef::Config.delete(:chef_repo_path)
           Chef::Config.cookbook_path = [
             File.join(@repository_dir, 'cookbooks'),
-            File.join(@repository_dir, 'chef_repo2', 'cookbooks')
+            File.join(@repository_dir, 'chef_repo2', 'cookbooks'),
           ]
         end
 

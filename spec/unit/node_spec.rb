@@ -438,13 +438,13 @@ describe Chef::Node do
       context "with real arrays" do
         before do
           node.role_default["mysql"]["server"] = [ {
-            "port" => 1234,
+            "port" => 1234
           } ]
           node.normal["mysql"]["server"] = [ {
-            "port" => 2345,
+            "port" => 2345
           } ]
           node.override["mysql"]["server"] = [ {
-            "port" => 3456,
+            "port" => 3456
           } ]
         end
 
@@ -610,12 +610,12 @@ describe Chef::Node do
         node.force_default["mysql"]["server"]["port"] = 2345
 
         node.force_default!["mysql"]["server"] = {
-          "data_dir" => "/my_raid_volume/lib/mysql",
+          "data_dir" => "/my_raid_volume/lib/mysql"
         }
 
         expect( node["mysql"]["server"] ).to eql({
-          "data_dir" => "/my_raid_volume/lib/mysql",
-        })
+          "data_dir" => "/my_raid_volume/lib/mysql"
+        },)
       end
 
       it "removes all values from the precedence level when setting" do
@@ -624,14 +624,14 @@ describe Chef::Node do
         node.force_default["mysql"]["server"]["port"] = 3456
 
         node.force_default!["mysql"]["server"] = {
-          "data_dir" => "/my_raid_volume/lib/mysql",
+          "data_dir" => "/my_raid_volume/lib/mysql"
         }
 
         expect( node["mysql"]["server"]["port"] ).to be_nil
         expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
         expect( node["mysql"]["server"] ).to eql({
-          "data_dir" => "/my_raid_volume/lib/mysql",
-        })
+          "data_dir" => "/my_raid_volume/lib/mysql"
+        },)
       end
 
       it "higher precedence levels are not removed" do
@@ -641,7 +641,7 @@ describe Chef::Node do
         node.override["mysql"]["server"]["service_name"] = "fancypants-sql"
 
         node.force_default!["mysql"]["server"] = {
-          "data_dir" => "/my_raid_volume/lib/mysql",
+          "data_dir" => "/my_raid_volume/lib/mysql"
         }
 
         expect( node["mysql"]["server"]["port"] ).to be_nil
@@ -649,12 +649,12 @@ describe Chef::Node do
         expect( node["mysql"]["server"] ).to eql({
           "service_name" => "fancypants-sql",
           "data_dir" => "/my_raid_volume/lib/mysql",
-        })
+        },)
       end
 
       it "will autovivify" do
         node.force_default!["mysql"]["server"] = {
-          "data_dir" => "/my_raid_volume/lib/mysql",
+          "data_dir" => "/my_raid_volume/lib/mysql"
         }
         expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
       end
@@ -666,7 +666,7 @@ describe Chef::Node do
         node.default["mysql"]["server"]["service_name"] = "fancypants-sql"
 
         node.force_override!["mysql"]["server"] = {
-          "data_dir" => "/my_raid_volume/lib/mysql",
+          "data_dir" => "/my_raid_volume/lib/mysql"
         }
 
         expect( node["mysql"]["server"]["port"] ).to be_nil
@@ -674,14 +674,14 @@ describe Chef::Node do
         expect( node["mysql"]["server"] ).to eql({
           "service_name" => "fancypants-sql",
           "data_dir" => "/my_raid_volume/lib/mysql",
-        })
+        },)
       end
 
       it "when overwriting a non-hash/array" do
         node.override["mysql"] = false
         node.force_override["mysql"] = true
         node.force_override!["mysql"]["server"] = {
-          "data_dir" => "/my_raid_volume/lib/mysql",
+          "data_dir" => "/my_raid_volume/lib/mysql"
         }
         expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
       end
@@ -689,11 +689,11 @@ describe Chef::Node do
       it "when overwriting an array with a hash" do
         node.force_override["mysql"][0] = true
         node.force_override!["mysql"]["server"] = {
-          "data_dir" => "/my_raid_volume/lib/mysql",
+          "data_dir" => "/my_raid_volume/lib/mysql"
         }
         expect( node["mysql"]["server"] ).to eql({
-          "data_dir" => "/my_raid_volume/lib/mysql",
-        })
+          "data_dir" => "/my_raid_volume/lib/mysql"
+        },)
       end
     end
 
@@ -1359,21 +1359,21 @@ describe Chef::Node do
         it "should only save whitelisted attributes (and subattributes)" do
           Chef::Config[:automatic_attribute_whitelist] = [
             ["filesystem", "/dev/disk0s2"],
-            "network/interfaces/eth0"
+            "network/interfaces/eth0",
           ]
 
           data = {
             "automatic" => {
               "filesystem" => {
                 "/dev/disk0s2"   => { "size" => "10mb" },
-                "map - autohome" => { "size" => "10mb" }
+                "map - autohome" => { "size" => "10mb" },
               },
               "network" => {
                 "interfaces" => {
                   "eth0" => {},
-                  "eth1" => {}
+                  "eth1" => {},
                 }
-              }
+              },
             },
             "default" => {}, "normal" => {}, "override" => {}
           }
@@ -1387,7 +1387,7 @@ describe Chef::Node do
                 "interfaces" => {
                   "eth0" => {}
                 }
-              }
+              },
             },
             "default" => {}, "normal" => {}, "override" => {}
           }
@@ -1407,11 +1407,11 @@ describe Chef::Node do
             "default" => {
               "foo" => {
                 "bar" => {
-                  "baz" => false,
+                  "baz" => false
                 },
                 "other" => {
-                  "stuff" => true,
-                }
+                  "stuff" => true
+                },
               }
             }
           }
@@ -1420,7 +1420,7 @@ describe Chef::Node do
             "default" => {
               "foo" => {
                 "bar" => {
-                  "baz" => false,
+                  "baz" => false
                 }
               }
             }
@@ -1439,7 +1439,7 @@ describe Chef::Node do
             "automatic" => {
               "filesystem" => {
                 "/dev/disk0s2"   => { "size" => "10mb" },
-                "map - autohome" => { "size" => "10mb" }
+                "map - autohome" => { "size" => "10mb" },
               }
             },
             "default" => {}, "normal" => {}, "override" => {}

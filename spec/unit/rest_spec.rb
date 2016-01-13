@@ -292,7 +292,7 @@ describe Chef::REST do
           'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
           'Host' => host_header,
           'X-REMOTE-REQUEST-ID' => request_id,
-          'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION
+          'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION,
         }
       end
 
@@ -341,7 +341,7 @@ describe Chef::REST do
         let(:custom_headers) do
           {
             'X-Custom-ChefSecret' => 'sharpknives',
-            'X-Custom-RequestPriority' => 'extremely low'
+            'X-Custom-RequestPriority' => 'extremely low',
           }
         end
 
@@ -575,7 +575,7 @@ describe Chef::REST do
                             'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
                             'Host' => host_header,
                             'X-REMOTE-REQUEST-ID'=> request_id,
-                            'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION
+                            'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION,
                             }
         expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
         rest.streaming_request(url, {})
@@ -587,7 +587,7 @@ describe Chef::REST do
                             'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
                             'Host' => host_header,
                             'X-REMOTE-REQUEST-ID'=> request_id,
-                            'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION
+                            'X-Ops-Server-API-Version' => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION,
                             }
         expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
         rest.streaming_request(url, {})

@@ -416,7 +416,7 @@ user password using shadow hash.")
                 salt,
                 iterations,
                 128,
-                OpenSSL::Digest::SHA512.new
+                OpenSSL::Digest::SHA512.new,
               )
             end
 
@@ -570,7 +570,7 @@ user password using shadow hash.")
           :comment => "realname",
           :password => "passwd",
           :auth_authority => "authentication_authority",
-          :shadow_hash => "ShadowHashData"
+          :shadow_hash => "ShadowHashData",
         }.freeze
 
         # Directory where the user plist files are stored for versions 10.7 and above
@@ -701,7 +701,7 @@ user password using shadow hash.")
             salt,
             current_resource.iterations,
             128,
-            OpenSSL::Digest::SHA512.new
+            OpenSSL::Digest::SHA512.new,
           ).unpack('H*').first == current_resource.password
         end
 

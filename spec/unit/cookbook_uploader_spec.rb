@@ -97,7 +97,7 @@ describe Chef::CookbookUploader do
         upload_headers = {
           "content-type" => "application/x-binary",
           "content-md5"  => an_instance_of(String),
-          "accept"       => "application/json"
+          "accept"       => "application/json",
         }
 
         expect(http_client).to receive(:put).

@@ -58,7 +58,7 @@ class Chef
             :files => { :recursive => true },
             :resources => { :ruby_only => true, :recursive => true },
             :providers => { :ruby_only => true, :recursive => true },
-            :root_files => { }
+            :root_files => { },
           }
 
           # See Erchef code

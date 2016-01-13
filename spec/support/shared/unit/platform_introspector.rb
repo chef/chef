@@ -24,7 +24,7 @@ shared_examples_for "a platform introspector" do
     %w{openbsd freebsd}.each do |x|
       @platform_hash[x] = {
         "default" => x,
-        "1.2.3" => "#{x}-1.2.3"
+        "1.2.3" => "#{x}-1.2.3",
       }
     end
     @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
@@ -39,7 +39,7 @@ shared_examples_for "a platform introspector" do
       "debian" => "debian value",
       [:rhel, :fedora] => "redhatty value",
       "suse" => "suse value",
-      :default => "default value"
+      :default => "default value",
     }
   end
 

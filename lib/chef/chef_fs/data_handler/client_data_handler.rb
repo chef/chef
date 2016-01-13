@@ -11,7 +11,7 @@ class Chef
             'clientname' => remove_dot_json(entry.name),
             'admin' => false,
             'validator' => false,
-            'chef_type' => 'client'
+            'chef_type' => 'client',
           }
           # Handle the fact that admin/validator have changed type from string -> boolean
           client['admin'] = (client['admin'] == 'true') if client['admin'].is_a?(String)

@@ -45,7 +45,7 @@ class Chef
           :ProductName,
           :ProductVersion,
           :PrivateBuild,
-          :SpecialBuild
+          :SpecialBuild,
         ].each do |method|
           define_method method do
             begin

@@ -128,21 +128,21 @@ describe Chef::Audit::AuditEventProxy do
         {
           :described_class => described_class,
           :example_group => example_group,
-          :line_number => line
+          :line_number => line,
         }
       }
 
       let(:example_group) {
         {
           :description => group_description,
-          :parent_example_group => parent_group
+          :parent_example_group => parent_group,
         }
       }
 
       let(:parent_group) {
         {
           :description => control_group_name,
-          :parent_example_group => nil
+          :parent_example_group => nil,
         }
       }
 
@@ -155,7 +155,7 @@ describe Chef::Audit::AuditEventProxy do
           :resource_type => resource_type,
           :resource_name => resource_name,
           :context => context,
-          :line_number => line
+          :line_number => line,
         }
       }
 
@@ -287,14 +287,14 @@ describe Chef::Audit::AuditEventProxy do
         let(:parent_group) {
           {
             :description => outer_group_description,
-            :parent_example_group => control_group
+            :parent_example_group => control_group,
           }
         }
 
         let(:control_group) {
           {
             :description => control_group_name,
-            :parent_example_group => nil
+            :parent_example_group => nil,
           }
         }
 

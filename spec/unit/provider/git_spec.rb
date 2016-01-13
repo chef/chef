@@ -224,7 +224,7 @@ SHAS
       {
         :user => deploy_user,
         :environment => { "GIT_SSH" => wrapper, "HOME" => "/home/deployNinja" },
-        :log_tag => "git[web2.0 app]"
+        :log_tag => "git[web2.0 app]",
       }
     end
     before do
@@ -254,7 +254,7 @@ SHAS
         {
           :user => deploy_user,
           :environment => { "GIT_SSH" => wrapper, "HOME" => "/home/masterNinja" },
-          :log_tag => "git[web2.0 app]"
+          :log_tag => "git[web2.0 app]",
         }
       end
       before do

@@ -171,7 +171,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       let(:uninstall_hash) do
         [{
           'DisplayVersion' => 'outdated',
-          'UninstallString' => "blah blah"
+          'UninstallString' => "blah blah",
         }]
       end
       let(:uninstall_key) { "blah" }
@@ -192,7 +192,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
         let(:uninstall_hash) do
           [{
             'DisplayVersion' => 'outdated',
-            'UninstallString' => "MsiExec.exe /X{guid}"
+            'UninstallString' => "MsiExec.exe /X{guid}",
           }]
         end
 
@@ -205,7 +205,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
         let(:uninstall_hash) do
           [{
             'DisplayVersion' => 'outdated',
-            'UninstallString' => %q{"c:/hfhfheru/uninst.exe"}
+            'UninstallString' => %q{"c:/hfhfheru/uninst.exe"},
           }]
         end
 

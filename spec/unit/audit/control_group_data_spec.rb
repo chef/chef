@@ -178,7 +178,7 @@ describe Chef::Audit::ControlGroupData do
         :resource_type => resource_type,
         :resource_name => resource_name,
         :context => context,
-        :line_number => line_number
+        :line_number => line_number,
       }
     }
 

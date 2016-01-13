@@ -176,7 +176,7 @@ describe Chef::ApiClient do
         "private_key" => "monkeypants",
         "admin" => true,
         "validator" => true,
-        "json_class" => "Chef::ApiClient"
+        "json_class" => "Chef::ApiClient",
       }
     end
 
@@ -221,7 +221,7 @@ describe Chef::ApiClient do
       "private_key" => "monkeypants",
       "admin" => true,
       "validator" => true,
-      "json_class" => "Chef::ApiClient"
+      "json_class" => "Chef::ApiClient",
       }
       @http_client = double("Chef::ServerAPI mock")
       allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)

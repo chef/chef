@@ -55,13 +55,13 @@ describe Chef::Knife::CookbookSiteShare do
       allow(@knife).to receive(:do_upload).and_return(true)
       @category_response = {
         "name" => "cookbook_name",
-        "category" => "Testing Category"
+        "category" => "Testing Category",
       }
       @bad_category_response = {
         "error_code" => "NOT_FOUND",
         "error_messages" => [
             "Resource does not exist."
-        ]
+        ],
       }
     end
 

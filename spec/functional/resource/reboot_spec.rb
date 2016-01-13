@@ -24,7 +24,7 @@ describe Chef::Resource::Reboot do
     {
       :delay_mins => 5,
       :requested_by => "reboot resource functional test",
-      :reason => "reboot resource spec test"
+      :reason => "reboot resource spec test",
     }
   end
 

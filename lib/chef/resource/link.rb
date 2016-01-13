@@ -44,7 +44,7 @@ class Chef
         set_or_return(
           :to,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -52,7 +52,7 @@ class Chef
         set_or_return(
           :target_file,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -61,7 +61,7 @@ class Chef
         set_or_return(
           :link_type,
           real_arg,
-          :equal_to => [ :symbolic, :hard ]
+          :equal_to => [ :symbolic, :hard ],
         )
       end
 
@@ -69,7 +69,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :regex => Chef::Config[:group_valid_regex]
+          :regex => Chef::Config[:group_valid_regex],
         )
       end
 
@@ -77,7 +77,7 @@ class Chef
         set_or_return(
           :owner,
           arg,
-          :regex => Chef::Config[:user_valid_regex]
+          :regex => Chef::Config[:user_valid_regex],
         )
       end
 

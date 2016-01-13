@@ -51,7 +51,7 @@ class Chef
           :library_filenames    => {},
           :resource_filenames   => {},
           :provider_filenames   => {},
-          :root_filenames       => {}
+          :root_filenames       => {},
         }
 
         @metadata_filenames = []

@@ -45,7 +45,7 @@ class Chef
         set_or_return(
           :block_name,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
     end

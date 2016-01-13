@@ -37,7 +37,7 @@ describe Chef::Formatters::APIErrorFormatting do
         {
           "min_version" => min_version,
           "max_version" => max_version,
-          "request_version" => request_version
+          "request_version" => request_version,
         }
       }
 

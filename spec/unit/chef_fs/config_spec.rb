@@ -67,8 +67,8 @@ describe Chef::ChefFS::Config do
         node_path: "/base_path/nodes",
         role_path: "/base_path/roles",
         user_path: "/base_path/users",
-        policy_path: "/base_path/policies"
-      })
+        policy_path: "/base_path/policies",
+      },)
     end
 
     let(:chef_fs_config)  { Chef::ChefFS::Config.new(chef_config, Dir.pwd) }

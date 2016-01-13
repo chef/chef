@@ -15,12 +15,12 @@ class Chef
             'json_class' => 'Chef::CookbookVersion',
             'chef_type' => 'cookbook_version',
             'frozen?' => false,
-            'metadata' => {}
-          })
+            'metadata' => {},
+          },)
           result['metadata'] = normalize_hash(result['metadata'], {
             'version' => version,
-            'name' => name
-          })
+            'name' => name,
+          },)
         end
 
         def preserve_key?(key)

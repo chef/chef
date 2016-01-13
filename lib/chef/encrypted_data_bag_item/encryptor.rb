@@ -83,7 +83,7 @@ class Chef::EncryptedDataBagItem
           "encrypted_data" => encrypted_data,
           "iv" => Base64.encode64(iv),
           "version" => 1,
-          "cipher" => algorithm
+          "cipher" => algorithm,
         }
       end
 
@@ -141,7 +141,7 @@ class Chef::EncryptedDataBagItem
           "hmac" => hmac,
           "iv" => Base64.encode64(iv),
           "version" => 2,
-          "cipher" => algorithm
+          "cipher" => algorithm,
         }
       end
 
@@ -176,7 +176,7 @@ class Chef::EncryptedDataBagItem
           "iv" => Base64.encode64(iv),
           "auth_tag" => Base64.encode64(auth_tag),
           "version" => 3,
-          "cipher" => algorithm
+          "cipher" => algorithm,
         }
       end
 

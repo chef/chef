@@ -71,7 +71,7 @@ describe Chef::Knife::Ssh do
         configure_query([@node_foo, @node_bar])
         expect(@knife).to receive(:session_from_list).with([
           ['foo.example.org', nil],
-          ['bar.example.org', nil]
+          ['bar.example.org', nil],
         ])
         @knife.configure_session
       end
@@ -87,7 +87,7 @@ describe Chef::Knife::Ssh do
           configure_query([@node_foo, @node_bar])
           expect(@knife).to receive(:session_from_list).with([
             ['ec2-10-0-0-1.compute-1.amazonaws.com', nil],
-            ['ec2-10-0-0-2.compute-1.amazonaws.com', nil]
+            ['ec2-10-0-0-2.compute-1.amazonaws.com', nil],
           ])
           @knife.configure_session
         end
@@ -105,7 +105,7 @@ describe Chef::Knife::Ssh do
           configure_query([@node_foo, @node_bar])
           expect(@knife).to receive(:session_from_list).with([
             ['foo.example.org', nil],
-            ['bar.example.org', nil]
+            ['bar.example.org', nil],
           ])
           @knife.configure_session
         end

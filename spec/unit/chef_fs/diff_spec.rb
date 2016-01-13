@@ -44,7 +44,7 @@ describe 'diff', :uses_diff => true do
           :sub_a_only_dir => { :subsub => nil },
           :sub_a_only_file => nil,
           :sub_dir_in_a_file_in_b => {},
-          :sub_file_in_a_dir_in_b => nil
+          :sub_file_in_a_dir_in_b => nil,
         },
         :both_files => nil,
         :both_files_different => "a\n",
@@ -56,7 +56,7 @@ describe 'diff', :uses_diff => true do
         :a_only_dir => { :subsub => nil },
         :a_only_file => nil,
         :dir_in_a_file_in_b => {},
-        :file_in_a_dir_in_b => nil
+        :file_in_a_dir_in_b => nil,
       }, /cannot_be_in_a/)
     }
     let(:b) {
@@ -71,7 +71,7 @@ describe 'diff', :uses_diff => true do
           :sub_b_only_dir => { :subsub => nil },
           :sub_b_only_file => nil,
           :sub_dir_in_a_file_in_b => nil,
-          :sub_file_in_a_dir_in_b => {}
+          :sub_file_in_a_dir_in_b => {},
         },
         :both_files => nil,
         :both_files_different => "b\n",
@@ -83,7 +83,7 @@ describe 'diff', :uses_diff => true do
         :b_only_dir => { :subsub => nil },
         :b_only_file => nil,
         :dir_in_a_file_in_b => nil,
-        :file_in_a_dir_in_b => {}
+        :file_in_a_dir_in_b => {},
       }, /cannot_be_in_b/)
     }
     it 'Chef::ChefFS::CommandLine.diff_print(/)' do
@@ -295,7 +295,7 @@ CONTEXT_LINE_NUMBERS
           "b/b_only_dir\n",
           "b/b_only_file\n",
           "b/dir_in_a_file_in_b\n",
-          "b/file_in_a_dir_in_b\n"
+          "b/file_in_a_dir_in_b\n",
       ])
     end
     it 'Chef::ChefFS::CommandLine.diff_print(/) in name-status mode' do
@@ -321,7 +321,7 @@ CONTEXT_LINE_NUMBERS
           "A\tb/b_only_dir\n",
           "A\tb/b_only_file\n",
           "T\tb/dir_in_a_file_in_b\n",
-          "T\tb/file_in_a_dir_in_b\n"
+          "T\tb/file_in_a_dir_in_b\n",
       ])
     end
   end

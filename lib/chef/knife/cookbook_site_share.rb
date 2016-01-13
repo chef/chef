@@ -129,7 +129,7 @@ class Chef
 
         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
           :tarball => File.open(cookbook_filename),
-          :cookbook => category_string
+          :cookbook => category_string,
         })
 
         res = Chef::JSONCompat.from_json(http_resp.body)

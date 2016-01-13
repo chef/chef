@@ -89,7 +89,7 @@ describe Chef::Resource::Execute do
       resource.environment({
         "SAWS_SECRET"  => "supersecret",
         "SAWS_KEY"     => "qwerty",
-      })
+      },)
     end
 
     it "guard inherits :environment value from resource and runs" do

@@ -38,7 +38,7 @@ describe Chef::ChefFS::DataHandler::GroupDataHandler do
       { 'name' => 'worker_bees',
         'clients' => %w(honey sting),
         'users' => %w(fizz buzz),
-        'actors' => %w(honey)
+        'actors' => %w(honey),
       }
     end
 
@@ -46,11 +46,11 @@ describe Chef::ChefFS::DataHandler::GroupDataHandler do
       { 'actors' =>
           { 'users' => %w(fizz buzz),
             'clients'=> %w(honey sting),
-            'groups'=> []
+            'groups'=> [],
           },
         'groupname' => 'workers',
         'name' => 'worker_bees',
-        'orgname' => 'hive'
+        'orgname' => 'hive',
       }
     end
 

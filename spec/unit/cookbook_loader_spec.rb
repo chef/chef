@@ -25,7 +25,7 @@ describe Chef::CookbookLoader do
   let(:repo_paths) do
     [
       File.expand_path(File.join(CHEF_SPEC_DATA, "kitchen")),
-      File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+      File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")),
     ]
   end
 
@@ -179,7 +179,7 @@ describe Chef::CookbookLoader do
       [
         File.join(CHEF_SPEC_DATA, "kitchen"),
         File.join(CHEF_SPEC_DATA, "cookbooks"),
-        File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo")
+        File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo"),
       ]
     end
 
@@ -245,7 +245,7 @@ describe Chef::CookbookLoader do
         [
           File.join(CHEF_SPEC_DATA, "kitchen"),
           File.join(CHEF_SPEC_DATA, "cookbooks"),
-          File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo")
+          File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo"),
         ]
       end
 

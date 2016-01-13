@@ -35,7 +35,7 @@ describe Chef::Provider::Package::Windows::MSI do
   let(:uninstall_hash) do
     [{
       'DisplayVersion' => 'outdated',
-      'UninstallString' => "MsiExec.exe /X{guid}"
+      'UninstallString' => "MsiExec.exe /X{guid}",
     }]
   end
   let(:uninstall_entry) do
@@ -130,12 +130,12 @@ describe Chef::Provider::Package::Windows::MSI do
           [
             {
               'DisplayVersion' => 'outdated',
-              'UninstallString' => "MsiExec.exe /X{guid}"
+              'UninstallString' => "MsiExec.exe /X{guid}",
             },
             {
               'DisplayVersion' => 'really_outdated',
-              'UninstallString' => "MsiExec.exe /X{guid2}"
-            }
+              'UninstallString' => "MsiExec.exe /X{guid2}",
+            },
           ]
         end
 

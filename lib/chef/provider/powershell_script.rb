@@ -131,7 +131,7 @@ EOH
           "-ExecutionPolicy #{execution_policy}",
           # Powershell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-          "-InputFormat None"
+          "-InputFormat None",
         ]
       end
 

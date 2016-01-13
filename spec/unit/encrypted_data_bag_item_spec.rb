@@ -323,7 +323,7 @@ describe Chef::EncryptedDataBagItem do
   let(:plaintext_data) {{
       "id" => "item_name",
       "greeting" => "hello",
-      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }}
+      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }},
   }}
   let(:secret) { "abc123SECRET" }
   let(:encoded_data) { subject.encrypt_data_bag_item(plaintext_data, secret) }

@@ -38,8 +38,8 @@ describe Chef::Provider::Ohai do
       },
       :data2 => {
         :origdata => "somevalue",
-        :newdata => "somevalue"
-      }
+        :newdata => "somevalue",
+      },
     }
     allow(mock_ohai).to receive(:all_plugins).and_return(true)
     allow(mock_ohai).to receive(:data).and_return(mock_ohai[:data],

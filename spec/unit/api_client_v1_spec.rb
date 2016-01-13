@@ -199,7 +199,7 @@ describe Chef::ApiClientV1 do
         "private_key" => "monkeypants",
         "admin" => true,
         "validator" => true,
-        "create_key" => true
+        "create_key" => true,
       }
     end
 
@@ -248,7 +248,7 @@ describe Chef::ApiClientV1 do
         "private_key" => "monkeypants",
         "admin" => true,
         "create_key" => true,
-        "validator" => true
+        "validator" => true,
       }
 
       @http_client = double("Chef::ServerAPI mock")
@@ -332,7 +332,7 @@ describe Chef::ApiClientV1 do
       {
         :name => "some_name",
         :validator => true,
-        :admin => true
+        :admin => true,
       }
     }
 

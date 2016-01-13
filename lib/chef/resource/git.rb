@@ -31,7 +31,7 @@ class Chef
         set_or_return(
           :additional_remotes,
           arg,
-          :kind_of => Hash
+          :kind_of => Hash,
         )
       end
 

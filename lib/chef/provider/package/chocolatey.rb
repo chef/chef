@@ -142,7 +142,7 @@ class Chef
                 "[System.Environment]::GetEnvironmentVariable('ChocolateyInstall', 'MACHINE')"
               ).stdout.chomp,
               'bin',
-              'choco.exe'
+              'choco.exe',
           )
         end
 

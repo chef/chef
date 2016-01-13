@@ -26,7 +26,7 @@ class Chef
         end
         {
             'json_class' => self.class.name,
-            'instance_vars' => instance_vars
+            'instance_vars' => instance_vars,
         }
       end
 

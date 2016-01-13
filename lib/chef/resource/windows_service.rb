@@ -47,7 +47,7 @@ class Chef
         set_or_return(
           :startup_type,
           arg,
-          :equal_to => [ :automatic, :manual, :disabled ]
+          :equal_to => [ :automatic, :manual, :disabled ],
         )
       end
 
@@ -55,7 +55,7 @@ class Chef
         set_or_return(
           :run_as_user,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -63,7 +63,7 @@ class Chef
         set_or_return(
           :run_as_password,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
     end

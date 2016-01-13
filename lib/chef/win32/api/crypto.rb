@@ -54,7 +54,7 @@ class Chef
           :pointer,
           :PCRYPTPROTECT_PROMPTSTRUCT,
           :DWORD,
-          :PDATA_BLOB
+          :PDATA_BLOB,
         ], :BOOL
 
       end

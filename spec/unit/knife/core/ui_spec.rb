@@ -405,8 +405,8 @@ EOM
           "versions" => [
             { "version" => "3.0.0", "url" => "http://url/cookbooks/3.0.0" },
             { "version" => "2.0.0", "url" => "http://url/cookbooks/2.0.0" },
-            { "version" => "1.0.0", "url" => "http://url/cookbooks/1.0.0" }
-          ]
+            { "version" => "1.0.0", "url" => "http://url/cookbooks/1.0.0" },
+          ],
         }
       }
     end

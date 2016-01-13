@@ -326,7 +326,7 @@ class Chef
           :expand_string => ::Win32::Registry::REG_EXPAND_SZ,
           :dword => ::Win32::Registry::REG_DWORD,
           :dword_big_endian => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          :qword => ::Win32::Registry::REG_QWORD
+          :qword => ::Win32::Registry::REG_QWORD,
         }
       end
 
@@ -342,7 +342,7 @@ class Chef
           2 => ::Win32::Registry::REG_EXPAND_SZ,
           4 => ::Win32::Registry::REG_DWORD,
           5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          11 => ::Win32::Registry::REG_QWORD
+          11 => ::Win32::Registry::REG_QWORD,
         }[val_type]
         return value
       end

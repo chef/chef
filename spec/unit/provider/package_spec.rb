@@ -58,7 +58,7 @@ describe Chef::Provider::Package do
       new_resource.response_file("foo")
       expect(provider).to receive(:get_preseed_file).with(
         new_resource.name,
-        provider.candidate_version
+        provider.candidate_version,
       ).and_return("/var/cache/preseed-test")
 
       expect(provider).to receive(:preseed_package).with(
@@ -75,7 +75,7 @@ describe Chef::Provider::Package do
     it "should install the package at the candidate_version if it is not already installed" do
       expect(provider).to receive(:install_package).with(
         new_resource.name,
-        provider.candidate_version
+        provider.candidate_version,
       ).and_return(true)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
@@ -85,7 +85,7 @@ describe Chef::Provider::Package do
       new_resource.version("1.0")
       expect(provider).to receive(:install_package).with(
         new_resource.name,
-        new_resource.version
+        new_resource.version,
       ).and_return(true)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
@@ -96,7 +96,7 @@ describe Chef::Provider::Package do
       allow(current_resource).to receive(:version).and_return("0.99")
       expect(provider).to receive(:install_package).with(
         new_resource.name,
-        new_resource.version
+        new_resource.version,
       ).and_return(true)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
@@ -144,7 +144,7 @@ describe Chef::Provider::Package do
     it "should upgrade the package if the current version is not the candidate version" do
       expect(provider).to receive(:upgrade_package).with(
         new_resource.name,
-        provider.candidate_version
+        provider.candidate_version,
       ).and_return(true)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
@@ -468,7 +468,7 @@ describe "Subclass with use_multipackage_api" do
     provider.candidate_version = [ "1.0" ]
     expect(provider).to receive(:install_package).with(
       [ "vim" ],
-      [ "1.0" ]
+      [ "1.0" ],
     ).and_return(true)
     provider.run_action(:install)
     expect(new_resource).to be_updated_by_last_action
@@ -481,7 +481,7 @@ describe "Subclass with use_multipackage_api" do
     provider.candidate_version = [ "1.0" ]
     expect(provider).to receive(:install_package).with(
       [ "vim" ],
-      [ "1.0" ]
+      [ "1.0" ],
     ).and_return(true)
     provider.run_action(:install)
     expect(new_resource).to be_updated_by_last_action
@@ -494,7 +494,7 @@ describe "Subclass with use_multipackage_api" do
     provider.candidate_version = [ "1.0" ]
     expect(provider).to receive(:upgrade_package).with(
       [ "vim" ],
-      [ "1.0" ]
+      [ "1.0" ],
     ).and_return(true)
     provider.run_action(:upgrade)
     expect(new_resource).to be_updated_by_last_action
@@ -507,7 +507,7 @@ describe "Subclass with use_multipackage_api" do
     provider.candidate_version = [ "1.0" ]
     expect(provider).to receive(:upgrade_package).with(
       [ "vim" ],
-      [ "1.0" ]
+      [ "1.0" ],
     ).and_return(true)
     provider.run_action(:upgrade)
     expect(new_resource).to be_updated_by_last_action
@@ -521,7 +521,7 @@ describe "Subclass with use_multipackage_api" do
     provider.candidate_version = [ "1.0" ]
     expect(provider).to receive(:remove_package).with(
       [ "vim" ],
-      [ nil ]
+      [ nil ],
     ).and_return(true)
     provider.run_action(:remove)
     expect(new_resource).to be_updated_by_last_action
@@ -535,7 +535,7 @@ describe "Subclass with use_multipackage_api" do
     provider.candidate_version = [ "1.0" ]
     expect(provider).to receive(:purge_package).with(
       [ "vim" ],
-      [ nil ]
+      [ nil ],
     ).and_return(true)
     provider.run_action(:purge)
     expect(new_resource).to be_updated_by_last_action
@@ -582,7 +582,7 @@ describe "Chef::Provider::Package - Multi" do
     it "installs the candidate versions when none are installed" do
       expect(provider).to receive(:install_package).with(
         ["emacs", "vi"],
-        ["1.0", "6.2"]
+        ["1.0", "6.2"],
       ).and_return(true)
       provider.run_action(:install)
       expect(new_resource).to be_updated
@@ -591,7 +591,7 @@ describe "Chef::Provider::Package - Multi" do
     it "installs the candidate versions when some are installed" do
       expect(provider).to receive(:install_package).with(
         [ 'vi' ],
-        [ '6.2' ]
+        [ '6.2' ],
       ).and_return(true)
       current_resource.version(['1.0', nil])
       provider.run_action(:install)
@@ -675,7 +675,7 @@ describe "Chef::Provider::Package - Multi" do
       current_resource.version ['0.9', '6.1']
       expect(provider).to receive(:upgrade_package).with(
         new_resource.package_name,
-        provider.candidate_version
+        provider.candidate_version,
       ).and_return(true)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
@@ -685,7 +685,7 @@ describe "Chef::Provider::Package - Multi" do
       current_resource.version ['1.0', '6.1']
       expect(provider).to receive(:upgrade_package).with(
         ["vi"],
-        ["6.2"]
+        ["6.2"],
       ).and_return(true)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action

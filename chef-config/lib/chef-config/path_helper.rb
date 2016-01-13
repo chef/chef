@@ -234,7 +234,7 @@ module ChefConfig
       if node['platform'] == 'mac_os_x' and Gem::Version.new(node['platform_version']) >= Gem::Version.new('10.11')
           # todo: parse rootless.conf for this?
           sip_paths= [
-            '/System', '/bin', '/sbin', '/usr',
+            '/System', '/bin', '/sbin', '/usr'
           ]
           sip_paths.each do |sip_path|
             ChefConfig.logger.info("This is a SIP path, checking if it in exceptions list.")
