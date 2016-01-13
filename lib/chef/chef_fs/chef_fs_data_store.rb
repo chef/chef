@@ -23,7 +23,7 @@ require 'chef_zero/data_store/data_not_found_error'
 require 'chef/chef_fs/file_pattern'
 require 'chef/chef_fs/file_system'
 require 'chef/chef_fs/file_system/not_found_error'
-require 'chef/chef_fs/file_system/memory_root'
+require 'chef/chef_fs/file_system/memory/memory_root'
 require 'fileutils'
 
 class Chef
@@ -503,7 +503,7 @@ class Chef
         end
 
         # Create a little Chef::ChefFS memory filesystem with the data
-        cookbook_fs = Chef::ChefFS::FileSystem::MemoryRoot.new('uploading')
+        cookbook_fs = Chef::ChefFS::FileSystem::Memory::MemoryRoot.new('uploading')
         cookbook = Chef::JSONCompat.parse(data)
         cookbook.each_pair do |key, value|
           if value.is_a?(Array)

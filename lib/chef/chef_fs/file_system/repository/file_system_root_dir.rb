@@ -16,19 +16,18 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/chef_fs/file_system/chef_server/cookbook_subdir'
+require 'chef/chef_fs/file_system/repository/file_system_entry'
 
-describe Chef::ChefFS::FileSystem::ChefServer::CookbookSubdir do
-  let(:root) do
-    Chef::ChefFS::FileSystem::BaseFSDir.new('', nil)
-  end
-
-  let(:cookbook_subdir) do
-    Chef::ChefFS::FileSystem::ChefServer::CookbookSubdir.new('test', root, false, true)
-  end
-
-  it 'can get child' do
-    cookbook_subdir.child('test')
+class Chef
+  module ChefFS
+    module FileSystem
+      module Repository
+        class FileSystemRootDir < FileSystemEntry
+          def initialize(file_path)
+            super("", nil, file_path)
+          end
+        end
+      end
+    end
   end
 end
