@@ -246,7 +246,7 @@ class Chef
       if Chef::Config[:solo]
         load_from_file(name)
       else
-        chef_server_rest.get("environments/#{name}")
+        self.from_hash(chef_server_rest.get("environments/#{name}"))
       end
     end
 
