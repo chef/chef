@@ -16,21 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/cookbooks_dir"
-require "chef/chef_fs/file_system/chef_server/versioned_cookbook_dir"
+require 'chef/chef_fs/file_system/chef_server/cookbooks_dir'
+require 'chef/chef_fs/file_system/chef_server/cookbook_artifact_dir'
 
 class Chef
   module ChefFS
     module FileSystem
       module ChefServer
         #
-        # /cookbooks or /cookbook_artifacts
-        #
-        # Example children of /cookbooks:
-        #
-        # - apache2-1.0.0
-        # - apache2-1.0.1
-        # - mysql-2.0.5
+        # /cookbook_artifacts
         #
         # Example children of /cookbook_artifacts:
         #
@@ -38,20 +32,19 @@ class Chef
         # - apache2-295387a9823745feff239
         # - mysql-1a2b9e1298734dfe90444
         #
-        class VersionedCookbooksDir < CookbooksDir
+        class CookbookArtifactsDir < CookbooksDir
 
           def make_child_entry(name)
             result = @children.select { |child| child.name == name }.first if @children
-            result || VersionedCookbookDir.new(name, self)
+            result || CookbookArtifactDir.new(name, self)
           end
 
           def children
             @children ||= begin
               result = []
               root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
-                cookbooks["versions"].each do |cookbook_version|
-                  puts cookbook_version
-                  result << VersionedCookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self)
+                cookbooks['versions'].each do |cookbook_version|
+                  result << CookbookArtifactDir.new("#{cookbook_name}-#{cookbook_version['identifier']}", self)
                 end
               end
               result.sort_by(&:name)
@@ -99,7 +92,7 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            is_dir && name =~ Chef::ChefFS::FileSystem::ChefServer::VersionedCookbookDir::VALID_VERSIONED_COOKBOOK_NAME
+            is_dir && name.include?('-')
           end
         end
       end

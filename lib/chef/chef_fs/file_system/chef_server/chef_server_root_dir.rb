@@ -21,6 +21,7 @@ require "chef/chef_fs/file_system/chef_server/acls_dir"
 require "chef/chef_fs/file_system/base_fs_dir"
 require "chef/chef_fs/file_system/chef_server/rest_list_dir"
 require "chef/chef_fs/file_system/chef_server/cookbooks_dir"
+require "chef/chef_fs/file_system/chef_server/cookbook_artifacts_dir"
 require "chef/chef_fs/file_system/chef_server/versioned_cookbooks_dir"
 require "chef/chef_fs/file_system/chef_server/data_bags_dir"
 require "chef/chef_fs/file_system/chef_server/nodes_dir"
@@ -158,6 +159,8 @@ class Chef
                   RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
                   # /containers
                   RestListDir.new("containers", self, nil, Chef::ChefFS::DataHandler::ContainerDataHandler.new),
+                  # /cookbook_artifacts
+                  CookbookArtifactsDir.new("cookbook_artifacts", self),
                   # /groups
                   RestListDir.new("groups", self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new),
                   # /nodes
