@@ -82,6 +82,7 @@ class Chef
             @environment = chef_config[:environment]
             @repo_mode = chef_config[:repo_mode]
             @versioned_cookbooks = chef_config[:versioned_cookbooks]
+            @policy_document_native_api = chef_config[:policy_document_native_api]
             @root_name = root_name
             @cookbook_version = options[:cookbook_version] # Used in knife diff and download for server cookbook version
           end
@@ -93,6 +94,7 @@ class Chef
           attr_reader :repo_mode
           attr_reader :cookbook_version
           attr_reader :versioned_cookbooks
+          attr_reader :policy_document_native_api
 
           def fs_description
             "Chef server at #{chef_server_url} (user #{chef_username}), repo_mode = #{repo_mode}"

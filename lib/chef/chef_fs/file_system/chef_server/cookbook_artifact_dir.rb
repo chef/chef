@@ -27,6 +27,10 @@ class Chef
             super(name, parent)
             @cookbook_name, dash, @version = name.rpartition('-')
           end
+
+          def copy_from(other, options = {})
+            raise OperationNotAllowedError.new(:write, self, nil, "cannot be updated: cookbook artifacts are immutable once uploaded")
+          end
         end
       end
     end
