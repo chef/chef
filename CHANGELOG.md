@@ -5,6 +5,7 @@
 * [**Nate Walck**](https://github.com/natewalck)
   [pr#4078](https://github.com/chef/chef/pull/4078) Add `osx_profile` HWRP for OS X
 * [pr#4369](https://github.com/chef/chef/pull/4396) Import omnibus-chef chef project definition and history
+* [pr#4399](https://github.com/chef/chef/pull/4399) Correctly save `policy_name` and `policy_group` with `knife node edit`
 
 ## 12.6.0
 
