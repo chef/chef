@@ -52,7 +52,7 @@ begin
   RuboCop::RakeTask.new(:style) do |task|
     task.options += ["--display-cop-names", "--no-color"]
   end
-rescue
+rescue LoadError
   puts "chefstyle/rubocop is not available.  gem install chefstyle to do style checking."
 end
 
