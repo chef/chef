@@ -188,10 +188,23 @@ class Chef
         elsif path[0] == "cookbooks" && path.length == 2
           # Do nothing.  The entry gets created when the cookbook is created.
 
+        # /policy_groups/GROUP/policies/NAME
+        elsif path[0] == "policy_groups" && path[2] == "policies"
+          # Just set or create the proper entry in the hash
+          update_json(to_chef_fs_path(path[0..1]), {}, *options) do |group|
+            if policies.has_key?(path[3])
+              raise ChefZero::DataStore::DataAlreadyExistsError.new(path, group)
+            end
+
+            group["policies"] ||= {}
+            group["policies"][path[3]] = { "revision_id" => Chef::JSONCompat.parse(data) }
+            group
+          end
+
         # create [/organizations/ORG]/users/NAME (with content '{}')
         # Manipulate the `members.json` file that contains a list of all users
         elsif is_org? && path == [ "users" ]
-          update_json("members.json", []) do |members|
+          update_json("members.json", [], *options) do |members|
             # Format of each entry: { "user": { "username": "jkeiser" } }
             if members.any? { |member| member["user"]["username"] == name }
               raise ChefZero::DataStore::DataAlreadyExistsError.new(path, entry)
@@ -204,7 +217,7 @@ class Chef
         # create [/organizations/ORG]/association_requests/NAME (with content '{}')
         # Manipulate the `invitations.json` file that contains a list of all users
         elsif is_org? && path == [ "association_requests" ]
-          update_json("invitations.json", []) do |invitations|
+          update_json("invitations.json", [], *options) do |invitations|
             # Format of each entry: { "id" => "jkeiser-chef", 'username' => 'jkeiser' }
             if invitations.any? { |member| member["username"] == name }
               raise ChefZero::DataStore::DataAlreadyExistsError.new(path)
@@ -243,19 +256,18 @@ class Chef
 
         # /policy_groups/NAME/policies/POLICYNAME: return the revision of the given policy
         elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 4
-          with_entry(path[0..1]) do |entry|
-            policy_group = Chef::JSONCompat.parse(entry)
-            if !policy_group["policies"] || !policy_group["policies"][path[3]] || !policy_group["policies"][path[3]]
-              raise ChefZero::DataStore::DataNotFoundError.new(path, entry)
-            end
-            # The policy group looks like:
-            # {
-            #   "policies": {
-            #     "x": { "revision_id": "10" }
-            #   }
-            # }
-            Chef::JSONCompat.to_json_pretty(policy_group["policies"][path[3]]["revision_id"])
+          # Just set or create the proper entry in the hash
+          policy_group = get_json(to_chef_fs_path(path[0..1]), {})
+          if !policy_group["policies"] || !policy_group["policies"][path[3]]
+            raise ChefZero::DataStore::DataNotFoundError.new(path, entry)
           end
+          # The policy group looks like:
+          # {
+          #   "policies": {
+          #     "x": { "revision_id": "10" }
+          #   }
+          # }
+          Chef::JSONCompat.to_json_pretty(policy_group["policies"][path[3]]["revision_id"])
 
         # GET [/organizations/ORG]/users/NAME -> /users/NAME
         # Manipulates members.json
@@ -326,6 +338,16 @@ class Chef
           # Write out the files!
           if path[0] == "cookbooks" && path.length == 3
             write_cookbook(path, data, *options)
+
+          # Handle /policy_groups/some_policy_group/policies/some_policy_name
+          elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 4
+            # Just set or create the proper entry in the hash
+            update_json(to_chef_fs_path(path[0..1]), {}, *options) do |group|
+              group["policies"] ||= {}
+              group["policies"][path[3]] = { "revision_id" => Chef::JSONCompat.parse(data) }
+              group
+            end
+
           else
             with_dir(path[0..-2]) do |parent|
               child = parent.child(chef_fs_filename(path))
@@ -342,6 +364,16 @@ class Chef
       def delete(path)
         if use_memory_store?(path)
           @memory_store.delete(path)
+
+        # DELETE /policy_groups/GROUP/policies/POLICY
+        elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 4
+          update_json(to_chef_fs_path(path[0..1]), {}) do |group|
+            unless group["policies"] && group["policies"].has_key?(path[3])
+              raise ChefZero::DataStore::DataNotFoundError.new(path)
+            end
+            group["policies"].delete(path[3])
+            group
+          end
 
         # DELETE [/organizations/ORG]/users/NAME
         # Manipulates members.json
@@ -404,9 +436,9 @@ class Chef
           end
 
         elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 3
-          with_entry([ "policy_groups", path[1] ]) do |entry|
-            policy_group = Chef::JSONCompat.parse(entry.read)
-            (policy_group["policies"] || {}).keys
+          with_entry(path[0..1]) do |entry|
+            policies = Chef::JSONCompat.parse(entry.read)["policies"] || {}
+            policies.keys
           end
 
         elsif path[0] == "cookbooks" && path.length == 1
@@ -468,6 +500,12 @@ class Chef
       def exists?(path)
         if use_memory_store?(path)
           @memory_store.exists?(path)
+
+        # /policy_groups/NAME/policies/POLICYNAME
+        elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 4
+          group = get_json(to_chef_fs_path(path[0..1]), {})
+          group["policies"] && group["policies"].has_key?(path[3])
+
         else
           path_always_exists?(path) || Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path)).exists?
         end
@@ -481,9 +519,6 @@ class Chef
         # /policy_groups/NAME/policies
         elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 3
           exists_dir?(path[0..1])
-        # /policy_groups/NAME/policies/POLICYNAME
-        elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 4
-          exists_dir?(path[0..1]) && list(path[0..2]).include?(path[3])
         else
           Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path)).exists?
         end
@@ -550,11 +585,17 @@ class Chef
           if path.length >= 3
             path[2] = "#{path[2]}.json"
           end
+
         elsif path[0] == "policies"
           path = path.dup
-          if path.length >= 3
-            path[2] = "#{path[2]}.json"
+          if path[2] == "revisions"
+            # Get rid of "revisions"
+            path.delete_at(2)
+            if path.length >= 3
+              path[2] = "#{path[2]}.json"
+            end
           end
+
         elsif path[0] == "cookbooks"
           if path.length == 2
             raise ChefZero::DataStore::DataNotFoundError.new(path)
@@ -618,6 +659,12 @@ class Chef
             end
           end
 
+        elsif path[0] == "policies"
+          if path.length >= 3
+            path[2] = path[2][0..-6]
+            path = path[0..1] + [ "revisions" ] + path[2..-1]
+          end
+
         elsif path.length == 2 && path[0] != "cookbooks"
           path = path.dup
           path[1] = path[1][0..-6]
@@ -671,16 +718,27 @@ class Chef
         metadata[:version] || "0.0.0"
       end
 
-      def update_json(path, default_value)
+      def update_json(path, default_value, *options)
         entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path)
         begin
           input = Chef::JSONCompat.parse(entry.read)
-          output = yield input.dup
-          entry.write(Chef::JSONCompat.to_json_pretty(output)) if output != input
+          output = yield input
+          entry.write(Chef::JSONCompat.to_json_pretty(output)) if output != Chef::JSONCompat.parse(entry.read)
         rescue Chef::ChefFS::FileSystem::NotFoundError
           # Send the default value to the caller, and create the entry if the caller updates it
           output = yield default_value
-          entry.parent.create_child(entry.name, Chef::JSONCompat.to_json_pretty(output)) if output != []
+          parent = entry.parent
+          parent = ensure_dir(parent) if options.include?(:create_dir)
+          parent.create_child(entry.name, Chef::JSONCompat.to_json_pretty(output)) if output != []
+        end
+      end
+
+      def ensure_dir(entry)
+        return entry if entry.exists?
+        parent = entry.parent
+        if parent
+          ensure_dir(parent)
+          parent.create_child(entry.name)
         end
       end
 
