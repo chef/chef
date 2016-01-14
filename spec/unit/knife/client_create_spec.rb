@@ -29,7 +29,7 @@ describe Chef::Knife::ClientCreate do
     {
       "name" => "adam",
       "validator" => false,
-      "admin" => false
+      "admin" => false,
     }
   end
 

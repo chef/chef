@@ -130,7 +130,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
         let(:expected_hash) {
           {
             actor_field_name => "charmander",
-            "name" => new_keyname
+            "name" => new_keyname,
           }
         }
         before do
@@ -161,7 +161,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
             actor_field_name => "charmander",
             "public_key" => public_key,
             "name" => new_keyname,
-            "expiration_date" => "infinity"
+            "expiration_date" => "infinity",
           }
         }
         before do
@@ -181,7 +181,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
         let(:expected_hash) {
           {
             actor_field_name => "charmander",
-            "create_key" => true
+            "create_key" => true,
           }
         }
 
@@ -200,7 +200,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
         let(:expected_hash) {
           {
             actor_field_name => "charmander",
-            "public_key" => public_key
+            "public_key" => public_key,
           }
         }
         before do
@@ -219,7 +219,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
           {
             actor_field_name => "charmander",
             "public_key" => public_key,
-            "private_key" => "super_private"
+            "private_key" => "super_private",
           }
         }
 

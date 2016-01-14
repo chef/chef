@@ -384,25 +384,25 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
        "action" => "should return false if home matches",
        "current_resource_home" => [ "/home/laurent" ],
        "new_resource_home" => [ "/home/laurent" ],
-       "expected_result" => false
+       "expected_result" => false,
      },
      {
        "action" => "should return true if home doesn't match",
        "current_resource_home" => [ "/home/laurent" ],
        "new_resource_home" => [ "/something/else" ],
-       "expected_result" => true
+       "expected_result" => true,
      },
      {
        "action" => "should return false if home only differs by trailing slash",
        "current_resource_home" => [ "/home/laurent" ],
        "new_resource_home" => [ "/home/laurent/", "/home/laurent" ],
-       "expected_result" => false
+       "expected_result" => false,
      },
      {
        "action" => "should return false if home is an equivalent path",
        "current_resource_home" => [ "/home/laurent" ],
        "new_resource_home" => [ "/home/./laurent", "/home/laurent" ],
-       "expected_result" => false
+       "expected_result" => false,
      },
     ].each do |home_check|
       it home_check["action"] do

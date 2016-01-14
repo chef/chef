@@ -48,21 +48,21 @@ class Chef
         :@role_override,
         :@env_override,
         :@force_override,
-        :@automatic
+        :@automatic,
       ].freeze
 
       DEFAULT_COMPONENTS = [
         :@default,
         :@env_default,
         :@role_default,
-        :@force_default
+        :@force_default,
       ]
 
       OVERRIDE_COMPONENTS = [
         :@override,
         :@role_override,
         :@env_override,
-        :@force_override
+        :@force_override,
       ]
 
       [:all?,

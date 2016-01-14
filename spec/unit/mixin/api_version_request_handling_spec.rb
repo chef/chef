@@ -54,7 +54,7 @@ describe Chef::Mixin::ApiVersionRequestHandling do
         let(:return_hash) {
           {
             "min_version" => min_server_version,
-            "max_version" => max_server_version
+            "max_version" => max_server_version,
           }
         }
 

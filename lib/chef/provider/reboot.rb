@@ -40,7 +40,7 @@ class Chef
           :delay_mins => @new_resource.delay_mins,
           :reason => @new_resource.reason,
           :timestamp => Time.now,
-          :requested_by => @new_resource.name
+          :requested_by => @new_resource.name,
           )
       end
 

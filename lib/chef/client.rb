@@ -391,7 +391,7 @@ class Chef
     def register_reporters
       [
         Chef::ResourceReporter.new(rest),
-        Chef::Audit::AuditReporter.new(rest)
+        Chef::Audit::AuditReporter.new(rest),
       ].each do |r|
         events.register(r)
       end

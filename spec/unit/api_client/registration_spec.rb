@@ -48,7 +48,7 @@ describe Chef::ApiClient::Registration do
   let(:server_v10_response) do
     {
       "uri" => "https://chef.local/clients/#{client_name}",
-      "private_key" => "--begin rsa key etc--"
+      "private_key" => "--begin rsa key etc--",
     }
   end
 
@@ -73,7 +73,7 @@ describe Chef::ApiClient::Registration do
       "uri" => "",
       "chef_key" => {
         "public_key" => generated_public_key.to_pem
-      }
+      },
     }
   end
 

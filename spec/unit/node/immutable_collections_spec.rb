@@ -24,7 +24,7 @@ describe Chef::Node::ImmutableMash do
     @data_in = {:top => {:second_level => "some value"},
                 "top_level_2" => %w[array of values],
                 :top_level_3 => [{:hash_array => 1, :hash_array_b => 2}],
-                :top_level_4 => {:level2 => {:key => "value"}}
+                :top_level_4 => {:level2 => {:key => "value"}},
     }
     @immutable_mash = Chef::Node::ImmutableMash.new(@data_in)
   end
@@ -94,7 +94,7 @@ describe Chef::Node::ImmutableMash do
     :reject!,
     :replace,
     :select!,
-    :shift
+    :shift,
   ].each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
       expect { @immutable_mash.send(mutator) }.to raise_error
@@ -151,7 +151,7 @@ describe Chef::Node::ImmutableArray do
     :sort!,
     :sort_by!,
     :uniq!,
-    :unshift
+    :unshift,
   ].each do |mutator|
     it "does not allow mutation via `#{mutator}" do
       expect { @immutable_array.send(mutator)}.to raise_error

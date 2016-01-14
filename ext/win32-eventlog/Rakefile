@@ -46,7 +46,7 @@ task :register => EVT_SHARED_OBJECT do
       :source => "Application",
       :key_name => "Chef",
       :event_message_file => dll_file,
-      :category_message_file => dll_file
+      :category_message_file => dll_file,
     )
   rescue Errno::EIO => e
     puts "Skipping event log registration due to missing privileges: #{e}"

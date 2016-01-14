@@ -284,7 +284,7 @@ EOM
     let(:ordered_control_groups) {
       {
         "foo" => control_group_foo,
-        "bar" => control_group_bar
+        "bar" => control_group_bar,
       }
     }
 

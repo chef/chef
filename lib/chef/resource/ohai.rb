@@ -37,7 +37,7 @@ class Chef
         set_or_return(
           :plugin,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -45,7 +45,7 @@ class Chef
         set_or_return(
           :name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
     end

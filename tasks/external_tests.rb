@@ -52,7 +52,7 @@ EXTERNAL_PROJECTS = {
   "chef-rewind"           => "rake spec",
   "poise"                 => "rake spec",
   "halite"                => "rake spec",
-  "knife-windows"         => "rake unit_spec"
+  "knife-windows"         => "rake unit_spec",
 }
 
 task :external_specs => EXTERNAL_PROJECTS.keys.map { |g| :"#{g.sub("-","_")}_spec" }

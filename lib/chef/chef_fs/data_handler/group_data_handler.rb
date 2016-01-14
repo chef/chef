@@ -28,7 +28,7 @@ class Chef
           result['actors'] = {
             'users' => result['users'],
             'clients' => result['clients'],
-            'groups' => result['groups']
+            'groups' => result['groups'],
           }
           result.delete('users')
           result.delete('clients')

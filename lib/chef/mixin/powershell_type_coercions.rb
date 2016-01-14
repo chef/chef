@@ -28,7 +28,7 @@ class Chef
           FalseClass => { :type => lambda { |x| '$false' }},
           TrueClass => { :type => lambda { |x| '$true' }},
           Hash => {:type => Proc.new { |x| translate_hash(x)}},
-          Array => {:type => Proc.new { |x| translate_array(x)}}
+          Array => {:type => Proc.new { |x| translate_array(x)}},
         }
       end
 

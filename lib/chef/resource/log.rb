@@ -58,7 +58,7 @@ class Chef
         set_or_return(
           :message,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -67,7 +67,7 @@ class Chef
         set_or_return(
           :level,
           arg,
-          :equal_to => [ :debug, :info, :warn, :error, :fatal ]
+          :equal_to => [ :debug, :info, :warn, :error, :fatal ],
         )
       end
 

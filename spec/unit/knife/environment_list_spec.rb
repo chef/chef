@@ -28,7 +28,7 @@ describe Chef::Knife::EnvironmentList do
     @environments = {
       "production" => "http://localhost:4000/environments/production",
       "development" => "http://localhost:4000/environments/development",
-      "testing" => "http://localhost:4000/environments/testing"
+      "testing" => "http://localhost:4000/environments/testing",
     }
     allow(Chef::Environment).to receive(:list).and_return @environments
   end

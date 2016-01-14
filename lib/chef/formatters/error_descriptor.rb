@@ -49,7 +49,7 @@ class Chef
       def for_json()
         {
           'title' => @title,
-          'sections' => @sections
+          'sections' => @sections,
         }
       end
 

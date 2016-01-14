@@ -60,15 +60,15 @@ describe Chef::ChefFS::FileSystem do
         :a => {
           :aa => {
             :c => '',
-            :zz => ''
+            :zz => '',
           },
           :ab => {
-            :c => '',
-          }
+            :c => ''
+          },
         },
         :x => '',
-        :y => {}
-      })
+        :y => {},
+      },)
     }
     context 'list' do
       it '/**' do

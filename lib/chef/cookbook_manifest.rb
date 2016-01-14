@@ -193,8 +193,8 @@ class Chef
         :templates => Array.new,
         :resources => Array.new,
         :providers => Array.new,
-        :root_files => Array.new
-      })
+        :root_files => Array.new,
+      },)
       @checksums = {}
 
       if !root_paths || root_paths.size == 0
@@ -215,8 +215,8 @@ class Chef
             :name => file_name,
             :path => path,
             :checksum => csum,
-            :specificity => specificity
-          })
+            :specificity => specificity,
+          },)
 
           manifest[segment] << rs
         end

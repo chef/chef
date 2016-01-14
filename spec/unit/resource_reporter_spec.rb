@@ -696,8 +696,8 @@ describe Chef::ResourceReporter do
         expect(@rest_client).to receive(:raw_request).ordered do |method, url, headers, data|
           expect(method).to eq(:POST)
           expect(headers).to eq({'Content-Encoding' => 'gzip',
-                             'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION
-          })
+                             'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION,
+          },)
           data_stream = Zlib::GzipReader.new(StringIO.new(data))
           data = data_stream.read
           expect(data).to eq(Chef::JSONCompat.to_json(@expected_data))

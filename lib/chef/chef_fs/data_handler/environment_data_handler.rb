@@ -13,8 +13,8 @@ class Chef
             'default_attributes' => {},
             'override_attributes' => {},
             'json_class' => 'Chef::Environment',
-            'chef_type' => 'environment'
-          })
+            'chef_type' => 'environment',
+          },)
         end
 
         def preserve_key?(key)

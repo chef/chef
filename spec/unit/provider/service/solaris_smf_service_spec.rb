@@ -42,7 +42,7 @@ describe Chef::Provider::Service::Solaris do
       'logfile      /var/svc/log/application-chef:default.log',
       'restarter    svc:/system/svc/restarter:default',
       'contract_id  1115271',
-      'dependency   require_all/error svc:/milestone/multi-user:default (online)'
+      'dependency   require_all/error svc:/milestone/multi-user:default (online)',
     ].join("\n")
 
     # disabled / stopped service (svcs -l chef)
@@ -56,7 +56,7 @@ describe Chef::Provider::Service::Solaris do
       'logfile      /var/svc/log/application-chef:default.log',
       'restarter    svc:/system/svc/restarter:default',
       'contract_id  1115271',
-      'dependency   require_all/error svc:/milestone/multi-user:default (online)'
+      'dependency   require_all/error svc:/milestone/multi-user:default (online)',
     ].join("\n")
 
     # disabled / stopped service (svcs -l chef)
@@ -70,7 +70,7 @@ describe Chef::Provider::Service::Solaris do
       'logfile      /var/svc/log/application-chef:default.log',
       'restarter    svc:/system/svc/restarter:default',
       'contract_id  1115271',
-      'dependency   require_all/error svc:/milestone/multi-user:default (online)'
+      'dependency   require_all/error svc:/milestone/multi-user:default (online)',
     ].join("\n")
 
     # shell_out! return value for a service that is running

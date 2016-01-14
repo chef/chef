@@ -176,7 +176,7 @@ class Chef
         set_or_return(
           :maintainer,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -191,7 +191,7 @@ class Chef
         set_or_return(
           :maintainer_email,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -206,7 +206,7 @@ class Chef
         set_or_return(
           :license,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -221,7 +221,7 @@ class Chef
         set_or_return(
           :description,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -236,7 +236,7 @@ class Chef
         set_or_return(
           :long_description,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -267,7 +267,7 @@ class Chef
         set_or_return(
           :name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -490,8 +490,8 @@ class Chef
             :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] },
             :source_url => { :kind_of => String },
             :issues_url => { :kind_of => String },
-            :privacy => { :kind_of => [ TrueClass, FalseClass ] }
-          }
+            :privacy => { :kind_of => [ TrueClass, FalseClass ] },
+          },
         )
         options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
         validate_choice_array(options)
@@ -507,8 +507,8 @@ class Chef
           options,
           {
             :title => { :kind_of => String },
-            :description => { :kind_of => String }
-          }
+            :description => { :kind_of => String },
+          },
         )
         @groupings[name] = options
         @groupings[name]
@@ -571,7 +571,7 @@ class Chef
           ISSUES_URL             => self.issues_url,
           PRIVACY                => self.privacy,
           CHEF_VERSIONS          => gem_requirements_to_array(*self.chef_versions),
-          OHAI_VERSIONS          => gem_requirements_to_array(*self.ohai_versions)
+          OHAI_VERSIONS          => gem_requirements_to_array(*self.ohai_versions),
         }
       end
 
@@ -647,7 +647,7 @@ class Chef
         set_or_return(
           :source_url,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -662,7 +662,7 @@ class Chef
         set_or_return(
           :issues_url,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -679,7 +679,7 @@ class Chef
         set_or_return(
           :privacy,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 

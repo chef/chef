@@ -87,7 +87,7 @@ describe Chef::RunList::VersionedRecipeList do
       [
         {:name => "apt", :version => "1.0.0"},
         {:name => "god", :version => nil},
-        {:name => "apache2", :version => "0.0.1"}
+        {:name => "apache2", :version => "0.0.1"},
       ]
     end
     it "should return an array of hashes with :name and :version" do
@@ -108,7 +108,7 @@ describe Chef::RunList::VersionedRecipeList do
       [
         {:name => "apt", :version => "~> 1.2.0"},
         {:name => "god", :version => nil},
-        {:name => "apache2", :version => "0.0.1"}
+        {:name => "apache2", :version => "0.0.1"},
       ]
     end
 

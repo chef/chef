@@ -464,7 +464,7 @@ describe "Chef::Resource.property validation" do
 
     validation_test 'respond_to: [ :to_s, :split ]',
       [ 'hi' ],
-      [ 1, ],
+      [ 1 ],
       [ nil ]
 
     validation_test 'respond_to: []',

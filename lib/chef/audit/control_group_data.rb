@@ -41,7 +41,7 @@ class Chef
             :run_id => run_id,
             :start_time => start_time,
             :end_time => end_time,
-            :control_groups => control_groups.collect { |c| c.to_hash }
+            :control_groups => control_groups.collect { |c| c.to_hash },
         }
       end
     end
@@ -86,7 +86,7 @@ class Chef
               :status => status,
               :number_succeeded => number_succeeded,
               :number_failed => number_failed,
-              :controls => controls.collect { |c| c.to_hash }
+              :controls => controls.collect { |c| c.to_hash },
         }
         # If there is a duplicate key, metadata will overwrite it
         add_display_only_data(h).merge(metadata)
@@ -129,7 +129,7 @@ class Chef
             :status => status,
             :details => details,
             :resource_type => resource_type,
-            :resource_name => resource_name
+            :resource_name => resource_name,
         }
         h[:context] = context || []
         h

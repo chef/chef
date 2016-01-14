@@ -26,7 +26,7 @@ describe Chef::Knife::Core::BootstrapContext do
     {
       :validation_key => File.join(CHEF_SPEC_DATA, 'ssl', 'private_key.pem'),
       :chef_server_url => 'http://chef.example.com:4444',
-      :validation_client_name => 'chef-validator-testing'
+      :validation_client_name => 'chef-validator-testing',
     }
   end
 

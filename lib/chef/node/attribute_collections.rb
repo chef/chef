@@ -54,7 +54,7 @@ class Chef
         :sort!,
         :sort_by!,
         :uniq!,
-        :unshift
+        :unshift,
       ]
 
       # For all of the methods that may mutate an Array, we override them to
@@ -117,7 +117,7 @@ class Chef
         :reject!,
         :replace,
         :select!,
-        :shift
+        :shift,
       ]
 
       # For all of the mutating methods on Mash, override them so that they

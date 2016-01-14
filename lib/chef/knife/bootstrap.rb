@@ -259,7 +259,7 @@ class Chef
         )
         @chef_vault_handler = Chef::Knife::Bootstrap::ChefVaultHandler.new(
           knife_config: config,
-          ui: ui
+          ui: ui,
         )
       end
 
@@ -340,7 +340,7 @@ class Chef
           config,
           config[:run_list],
           Chef::Config,
-          secret
+          secret,
         )
       end
 

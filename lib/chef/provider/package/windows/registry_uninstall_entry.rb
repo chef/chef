@@ -31,7 +31,7 @@ class Chef
             [
               [::Win32::Registry::HKEY_LOCAL_MACHINE, (::Win32::Registry::Constants::KEY_READ | 0x0100)],
               [::Win32::Registry::HKEY_LOCAL_MACHINE, (::Win32::Registry::Constants::KEY_READ | 0x0200)],
-              [::Win32::Registry::HKEY_CURRENT_USER]
+              [::Win32::Registry::HKEY_CURRENT_USER],
             ].each do |hkey|
               desired = hkey.length > 1 ? hkey[1] : ::Win32::Registry::Constants::KEY_READ
               begin

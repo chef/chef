@@ -66,7 +66,7 @@ class Chef
         with_os_architecture(nil, architecture: arch) do
           shell_out(
             build_powershell_command(script),
-            options
+            options,
           )
         end
       end
@@ -88,7 +88,7 @@ class Chef
           "-ExecutionPolicy Unrestricted",
           # Powershell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-          "-InputFormat None"
+          "-InputFormat None",
         ]
 
         "powershell.exe #{flags.join(' ')} -Command \"#{script}\""

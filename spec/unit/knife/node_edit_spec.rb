@@ -32,7 +32,7 @@ describe Chef::Knife::NodeEdit do
     @knife.config = {
       :editor => 'cat',
       :attribute => nil,
-      :print_after => nil
+      :print_after => nil,
     }
     @knife.name_args = [ "adam" ]
     @node = Chef::Node.new()

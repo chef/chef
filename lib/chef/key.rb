@@ -250,7 +250,7 @@ class Chef
         openssl_key_object = OpenSSL::PKey::RSA.new(public_key)
         data_string = OpenSSL::ASN1::Sequence([
                                                 OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.n),
-                                                OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.e)
+                                                OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.e),
                                               ])
         OpenSSL::Digest::SHA1.hexdigest(data_string.to_der).scan(/../).join(':')
     end

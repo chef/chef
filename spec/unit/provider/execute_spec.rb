@@ -33,7 +33,7 @@ describe Chef::Provider::Execute do
       timeout:      3600,
       returns:      0,
       log_level:    :info,
-      log_tag:      new_resource.to_s
+      log_tag:      new_resource.to_s,
     }
   end
 

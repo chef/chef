@@ -115,7 +115,7 @@ class Chef
                  {:name => { :kind_of => String,
                      :cannot_be => :blank,
                      :regex => /^[\-[:alnum:]_:.]+$/}
-                 })
+                 },)
         @name = arg
       else
         @name
@@ -507,7 +507,7 @@ class Chef
         "default" => attributes.combined_default,
         "override" => attributes.combined_override,
         #Render correctly for run_list items so malformed json does not result
-        "run_list" => @primary_runlist.run_list.map { |item| item.to_s }
+        "run_list" => @primary_runlist.run_list.map { |item| item.to_s },
       }
       # Chef Server rejects node JSON with extra keys; prior to 12.3,
       # "policy_name" and "policy_group" are unknown; after 12.3 they are

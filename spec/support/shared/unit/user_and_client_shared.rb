@@ -74,7 +74,7 @@ shared_examples_for "user or client create" do
           {
             "chef_key" => {
               "public_key" => "some_public_key",
-              "private_key" => "some_private_key"
+              "private_key" => "some_private_key",
             }
           }
         }

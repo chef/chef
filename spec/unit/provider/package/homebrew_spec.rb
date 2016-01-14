@@ -38,7 +38,7 @@ describe Chef::Provider::Package::Homebrew do
         'stable' => '24.3',
         'bottle' => false,
         'devel' => nil,
-        'head' => nil
+        'head' => nil,
       },
       'revision' => 0,
       'installed' => [],
@@ -47,7 +47,7 @@ describe Chef::Provider::Package::Homebrew do
       'dependencies' => [],
       'conflicts_with' => [],
       'caveats' => nil,
-      'options' => []
+      'options' => [],
     }
   end
 
@@ -59,7 +59,7 @@ describe Chef::Provider::Package::Homebrew do
         'stable' => '24.3',
         'bottle' => false,
         'devel' => nil,
-        'head' => 'HEAD'
+        'head' => 'HEAD',
       },
       'revision' => 0,
       'installed' => [{ 'version' => '24.3' }],
@@ -68,7 +68,7 @@ describe Chef::Provider::Package::Homebrew do
       'dependencies' => [],
       'conflicts_with' => [],
       'caveats' => '',
-      'options' => []
+      'options' => [],
     }
   end
 
@@ -80,7 +80,7 @@ describe Chef::Provider::Package::Homebrew do
         'stable' => '24.3-keggy',
         'bottle' => false,
         'devel' => nil,
-        'head' => 'HEAD'
+        'head' => 'HEAD',
       },
       'revision' => 0,
       'installed' => [{ 'version' => '24.3-keggy' }],
@@ -89,7 +89,7 @@ describe Chef::Provider::Package::Homebrew do
       'dependencies' => [],
       'conflicts_with' => [],
       'caveats' => '',
-      'options' => []
+      'options' => [],
     }
   end
 
@@ -101,7 +101,7 @@ describe Chef::Provider::Package::Homebrew do
         'stable' => '24.3-keggy',
         'bottle' => false,
         'devel' => nil,
-        'head' => 'HEAD'
+        'head' => 'HEAD',
       },
       'revision' => 0,
       'installed' => [],
@@ -110,7 +110,7 @@ describe Chef::Provider::Package::Homebrew do
       'dependencies' => [],
       'conflicts_with' => [],
       'caveats' => '',
-      'options' => []
+      'options' => [],
     }
   end
 

@@ -91,7 +91,7 @@ describe "Chef::Resource#identity and #state" do
             resource.y 'bar'
             expect(resource_class.state_properties).to eq [
               resource_class.properties[:x],
-              resource_class.properties[:y]
+              resource_class.properties[:y],
             ]
             expect(resource.state_for_resource_reporter).to eq(x: 'foo', y: 'bar')
           end
@@ -141,7 +141,7 @@ describe "Chef::Resource#identity and #state" do
             it "The subclass's identity includes both x and y" do
               expect(subresource_class.identity_properties).to eq [
                 subresource_class.properties[:x],
-                subresource_class.properties[:y]
+                subresource_class.properties[:y],
               ]
               subresource.x 'foo'
               subresource.y 'bar'
@@ -162,7 +162,7 @@ describe "Chef::Resource#identity and #state" do
                 expect(subresource.state_for_resource_reporter).to eq(x: 'foo', y: 'bar')
                 expect(subresource_class.state_properties).to eq [
                   subresource_class.properties[:x],
-                  subresource_class.properties[:y]
+                  subresource_class.properties[:y],
                 ]
               end
               it "y is the identity" do
@@ -304,7 +304,7 @@ describe "Chef::Resource#identity and #state" do
         expect(resource_class.state_properties).to eq [
           resource_class.properties[:x],
           resource_class.properties[:y],
-          resource_class.properties[:z]
+          resource_class.properties[:z],
         ]
         expect(resource.state_for_resource_reporter).to eq(x: 1, y: 2, z: 3)
       end
@@ -323,7 +323,7 @@ describe "Chef::Resource#identity and #state" do
         resource.z 3
         expect(resource_class.state_properties).to eq [
           resource_class.properties[:x],
-          resource_class.properties[:z]
+          resource_class.properties[:z],
         ]
         expect(resource.state_for_resource_reporter).to eq(x: 1, z: 3)
       end

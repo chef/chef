@@ -111,28 +111,28 @@ shared_context "use Windows permissions", :windows_only do
   let(:expected_read_execute_perms) do
     {
       :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE,
     }
   end
 
   let(:expected_write_perms) do
     {
       :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE,
     }
   end
 
   let(:expected_modify_perms) do
     {
       :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
     }
   end
 
   let(:expected_full_control_perms) do
     {
       :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_ALL,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS,
     }
   end
 
@@ -470,7 +470,7 @@ shared_examples_for "a securable resource without existing target" do
         expect(explicit_aces).to eq([
           ACE.access_allowed(SID.Guest, Security::FILE_GENERIC_READ | Security::FILE_GENERIC_WRITE | Security::FILE_GENERIC_EXECUTE | Security::DELETE),
           ACE.access_allowed(SID.Administrators, Security::FILE_GENERIC_READ | Security::FILE_GENERIC_EXECUTE),
-          ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_READ)
+          ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_READ),
         ])
       end
 
@@ -483,7 +483,7 @@ shared_examples_for "a securable resource without existing target" do
         expect(explicit_aces).to eq([
           ACE.access_allowed(SID.Guest, Security::FILE_GENERIC_READ),
           ACE.access_allowed(SID.Administrators, Security::FILE_GENERIC_WRITE | Security::DELETE),
-          ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_EXECUTE)
+          ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_EXECUTE),
         ])
       end
 

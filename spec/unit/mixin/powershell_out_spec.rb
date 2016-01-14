@@ -31,7 +31,7 @@ describe Chef::Mixin::PowershellOut do
       ret = double("Mixlib::ShellOut")
       expect(object).to receive(:shell_out).with(
         "powershell.exe #{flags} -Command \"Get-Process\"",
-        {}
+        {},
       ).and_return(ret)
       expect(object.powershell_out("Get-Process")).to eql(ret)
     end
@@ -40,7 +40,7 @@ describe Chef::Mixin::PowershellOut do
       ret = double("Mixlib::ShellOut")
       expect(object).to receive(:shell_out).with(
         "powershell.exe #{flags} -Command \"Get-Process\"",
-        timeout: 600
+        timeout: 600,
       ).and_return(ret)
       expect(object.powershell_out("Get-Process", timeout: 600)).to eql(ret)
     end
@@ -51,7 +51,7 @@ describe Chef::Mixin::PowershellOut do
       mixlib_shellout = double("Mixlib::ShellOut")
       expect(object).to receive(:shell_out).with(
         "powershell.exe #{flags} -Command \"Get-Process\"",
-        {}
+        {},
       ).and_return(mixlib_shellout)
       expect(mixlib_shellout).to receive(:error!)
       expect(object.powershell_out!("Get-Process")).to eql(mixlib_shellout)
@@ -61,7 +61,7 @@ describe Chef::Mixin::PowershellOut do
       mixlib_shellout = double("Mixlib::ShellOut")
       expect(object).to receive(:shell_out).with(
         "powershell.exe #{flags} -Command \"Get-Process\"",
-        timeout: 600
+        timeout: 600,
       ).and_return(mixlib_shellout)
       expect(mixlib_shellout).to receive(:error!)
       expect(object.powershell_out!("Get-Process", timeout: 600)).to eql(mixlib_shellout)

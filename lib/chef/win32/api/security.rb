@@ -239,7 +239,7 @@ class Chef
              :SE_DS_OBJECT_ALL,
              :SE_PROVIDER_DEFINED_OBJECT,
              :SE_WMIGUID_OBJECT,
-             :SE_REGISTRY_WOW64_32KEY
+             :SE_REGISTRY_WOW64_32KEY,
         ]
 
         SID_NAME_USE = enum :SID_NAME_USE, [
@@ -312,7 +312,7 @@ class Chef
              :SecurityAnonymous,
              :SecurityIdentification,
              :SecurityImpersonation,
-             :SecurityDelegation
+             :SecurityDelegation,
         ]
 
 
@@ -351,7 +351,7 @@ class Chef
               ACCESS_ALLOWED_ACE_TYPE,
               ACCESS_DENIED_ACE_TYPE,
               SYSTEM_AUDIT_ACE_TYPE,
-              SYSTEM_ALARM_ACE_TYPE
+              SYSTEM_ALARM_ACE_TYPE,
             ].include?(ace_type)
           end
         end

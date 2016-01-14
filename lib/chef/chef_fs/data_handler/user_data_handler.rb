@@ -14,8 +14,8 @@ class Chef
             'chef_type' => 'webui_user',
             'salt' => nil,
             'password' => nil,
-            'openid' => nil
-          })
+            'openid' => nil,
+          },)
         end
 
         def preserve_key?(key)

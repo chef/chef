@@ -132,7 +132,7 @@ EOM
         'cookbook_versions' => { 'blah' => '= 1.0.0'},
         'override_attributes' => { 'x' => 'y' },
         'description' => 'woo',
-        'name' => 'x'
+        'name' => 'x',
       }
     end
     it 'knife show shows the attributes in a predetermined order', :skip => (RUBY_VERSION < "1.9") do

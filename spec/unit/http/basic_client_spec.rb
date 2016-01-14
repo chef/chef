@@ -89,7 +89,7 @@ describe "HTTP Connection" do
           {
             "https_proxy" => "https://proxy.mycorp.com:8080",
             "https_proxy_user" => "jane_username",
-            "https_proxy_pass" => "opensesame"
+            "https_proxy_pass" => "opensesame",
           }
         end
 

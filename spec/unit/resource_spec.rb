@@ -820,7 +820,7 @@ describe Chef::Resource do
       runner = Chef::Runner.new(run_context)
       Chef::Platform.set(
         :resource => :cat,
-        :provider => Chef::Provider::SnakeOil
+        :provider => Chef::Provider::SnakeOil,
       )
 
       resource1.only_if { snitch_var1 = 1 }

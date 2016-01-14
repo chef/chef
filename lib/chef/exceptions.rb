@@ -344,7 +344,7 @@ class Chef
           result = {
             "message" => message,
             "non_existent_cookbooks" => non_existent_cookbooks,
-            "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions
+            "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions,
           }
           Chef::JSONCompat.to_json(result, *a)
         end
@@ -379,7 +379,7 @@ class Chef
             "message" => message,
             "unsatisfiable_run_list_item" => run_list_item,
             "non_existent_cookbooks" => non_existent_cookbooks,
-            "most_constrained_cookbooks" => most_constrained_cookbooks
+            "most_constrained_cookbooks" => most_constrained_cookbooks,
           }
           Chef::JSONCompat.to_json(result, *a)
         end

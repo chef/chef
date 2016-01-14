@@ -57,7 +57,7 @@ describe Chef::Knife::CookbookMetadata do
         @bar.version = '2.0.0'
         @cookbook_loader = {
           "foo" => @foo,
-          "bar" => @bar
+          "bar" => @bar,
         }
         expect(@cookbook_loader).to receive(:load_cookbooks).and_return(@cookbook_loader)
         expect(@knife).to receive(:generate_metadata).with('foo')
@@ -123,7 +123,7 @@ describe Chef::Knife::CookbookMetadata do
     end
 
     { Chef::Exceptions::ObsoleteDependencySyntax => 'obsolote dependency',
-      Chef::Exceptions::InvalidVersionConstraint => 'invalid version constraint'
+      Chef::Exceptions::InvalidVersionConstraint => 'invalid version constraint',
     }.each_pair do |klass, description|
       it "should print an error and exit when an #{description} syntax exception is encountered" do
         exception = klass.new("#{description} blah")
@@ -157,7 +157,7 @@ describe Chef::Knife::CookbookMetadata do
     end
 
     { Chef::Exceptions::ObsoleteDependencySyntax => 'obsolote dependency',
-      Chef::Exceptions::InvalidVersionConstraint => 'invalid version constraint'
+      Chef::Exceptions::InvalidVersionConstraint => 'invalid version constraint',
     }.each_pair do |klass, description|
       it "should print an error and exit when an #{description} syntax exception is encountered" do
         expect(File).to receive(:exist?).with("#{@cookbook_dir}/foobar/metadata.json").

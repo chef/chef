@@ -26,14 +26,14 @@ describe "Chef::Application::WindowsService", :windows_only do
     {
       log_location: STDOUT,
       config_file: "test_config_file",
-      log_level: :info
+      log_level: :info,
     }
   end
   let(:timeout) { 7200 }
   let(:shellout_options) do
     {
       :timeout => timeout,
-      :logger => Chef::Log
+      :logger => Chef::Log,
     }
   end
 
@@ -52,7 +52,7 @@ describe "Chef::Application::WindowsService", :windows_only do
   it "passes DEFAULT_LOG_LOCATION to chef-client instead of STDOUT" do
     expect(subject).to receive(:shell_out).with(
       "chef-client  --no-fork -c test_config_file -L #{Chef::Application::WindowsService::DEFAULT_LOG_LOCATION}",
-      shellout_options
+      shellout_options,
     ).and_return(shell_out_result)
     subject.service_main
   end
@@ -63,7 +63,7 @@ describe "Chef::Application::WindowsService", :windows_only do
       {
         log_location: tempfile.path,
         config_file: "test_config_file",
-        log_level: :info
+        log_level: :info,
       }
     end
 
@@ -74,7 +74,7 @@ describe "Chef::Application::WindowsService", :windows_only do
     it "uses the configured log location" do
       expect(subject).to receive(:shell_out).with(
         "chef-client  --no-fork -c test_config_file -L #{tempfile.path}",
-        shellout_options
+        shellout_options,
       ).and_return(shell_out_result)
       subject.service_main
     end
@@ -84,14 +84,14 @@ describe "Chef::Application::WindowsService", :windows_only do
         {
           log_location: Chef::Log::WinEvt.new,
           config_file: "test_config_file",
-          log_level: :info
+          log_level: :info,
         }
       end
 
       it "does not pass log location to new process" do
         expect(subject).to receive(:shell_out).with(
           "chef-client  --no-fork -c test_config_file",
-          shellout_options
+          shellout_options,
         ).and_return(shell_out_result)
         subject.service_main
       end
@@ -108,7 +108,7 @@ describe "Chef::Application::WindowsService", :windows_only do
     it "passes watchdog timeout to new process" do
       expect(subject).to receive(:shell_out).with(
         "chef-client  --no-fork -c test_config_file -L #{Chef::Application::WindowsService::DEFAULT_LOG_LOCATION}",
-        shellout_options
+        shellout_options,
       ).and_return(shell_out_result)
       subject.service_main
     end

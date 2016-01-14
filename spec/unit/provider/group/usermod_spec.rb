@@ -52,7 +52,7 @@ describe Chef::Provider::Group::Usermod do
         "suse" => "-a -G",
         "opensuse" => "-a -G",
         "smartos" => "-G",
-        "omnios" => "-G"
+        "omnios" => "-G",
       }
 
       before do

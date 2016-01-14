@@ -42,7 +42,7 @@ describe Chef::DSL::PlatformIntrospection::PlatformDependentValue do
       :openbsd => {:default => 'free, functional, secure'},
       [:redhat, :centos, :fedora, :scientific] => {:default => '"stable"'},
       :ubuntu => {'10.04' => 'using upstart more', :default => 'using init more'},
-      :default => 'bork da bork'
+      :default => 'bork da bork',
     }
     @platform_specific_value = Chef::DSL::PlatformIntrospection::PlatformDependentValue.new(platform_hash)
   end
@@ -91,7 +91,7 @@ describe Chef::DSL::PlatformIntrospection::PlatformFamilyDependentValue do
       [:rhel, "fedora"] => "redhatty value",
       "suse" => @array_values,
       :gentoo => "gentoo value",
-      :default => "default value"
+      :default => "default value",
     }
 
     @platform_family_value = Chef::DSL::PlatformIntrospection::PlatformFamilyDependentValue.new(@platform_family_hash)

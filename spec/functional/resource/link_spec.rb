@@ -422,7 +422,7 @@ describe Chef::Resource::Link do
 
       {
         '../' => 'with a relative link destination',
-        '' => 'with a bare filename for the link destination'
+        '' => 'with a bare filename for the link destination',
       }.each do |prefix, desc|
         context desc do
           let(:to) { "#{prefix}#{File.basename(absolute_to)}" }

@@ -49,8 +49,8 @@ describe Chef::Knife::CookbookShow do
             "versions" => [
               { "version" => "0.10.0", "url" => "http://url/cookbooks/cookbook_name/0.10.0" },
               { "version" => "0.9.0", "url" => "http://url/cookbookx/cookbook_name/0.9.0" },
-              { "version" => "0.8.0", "url" => "http://url/cookbooks/cookbook_name/0.8.0" }
-            ]
+              { "version" => "0.8.0", "url" => "http://url/cookbooks/cookbook_name/0.8.0" },
+            ],
           }
         }
       end
@@ -92,8 +92,8 @@ describe Chef::Knife::CookbookShow do
               :name => "default.rb",
               :path => "recipes/default.rb",
               :checksum => "1234",
-              :url => "http://example.org/files/default.rb"
-            }
+              :url => "http://example.org/files/default.rb",
+            },
           ]
         }
         @cookbook_response.manifest = @manifest
@@ -117,8 +117,8 @@ describe Chef::Knife::CookbookShow do
               :name => "default.rb",
               :path => "recipes/default.rb",
               :checksum => "1234",
-              :url => "http://example.org/files/default.rb"
-            }
+              :url => "http://example.org/files/default.rb",
+            },
           ]
         }
         @response = "Example recipe text"
@@ -143,28 +143,28 @@ describe Chef::Knife::CookbookShow do
               :path => "files/host-examplehost.example.org/afile.rb",
               :checksum => "1111",
               :specificity => "host-examplehost.example.org",
-              :url => "http://example.org/files/1111"
+              :url => "http://example.org/files/1111",
             },
             {
               :name => "afile.rb",
               :path => "files/ubuntu-9.10/afile.rb",
               :checksum => "2222",
               :specificity => "ubuntu-9.10",
-              :url => "http://example.org/files/2222"
+              :url => "http://example.org/files/2222",
             },
             {
               :name => "afile.rb",
               :path => "files/ubuntu/afile.rb",
               :checksum => "3333",
               :specificity => "ubuntu",
-              :url => "http://example.org/files/3333"
+              :url => "http://example.org/files/3333",
             },
             {
               :name => "afile.rb",
               :path => "files/default/afile.rb",
               :checksum => "4444",
               :specificity => "default",
-              :url => "http://example.org/files/4444"
+              :url => "http://example.org/files/4444",
             },
           ]
         }

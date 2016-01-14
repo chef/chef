@@ -86,7 +86,7 @@ class Chef
       set_or_return(
         :data_bag,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        :regex => /^[\-[:alnum:]_]+$/,
       )
     end
 
@@ -120,7 +120,7 @@ class Chef
         "json_class" => self.class.name,
         "chef_type"  => "data_bag_item",
         "data_bag"   => data_bag,
-        "raw_data"   => raw_data
+        "raw_data"   => raw_data,
       }
       Chef::JSONCompat.to_json(result, *a)
     end

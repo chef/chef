@@ -203,7 +203,7 @@ describe Chef::Cookbook::Metadata do
       :version => "0.6.0",
       :source_url => "http://example.com",
       :issues_url => "http://example.com/issues",
-      :privacy => true
+      :privacy => true,
     }
     params.sort { |a,b| a.to_s <=> b.to_s }.each do |field, field_value|
       describe field do
@@ -434,7 +434,7 @@ describe Chef::Cookbook::Metadata do
     it "should allow you set a grouping" do
       group = {
         "title" => "MySQL Tuning",
-        "description" => "Setting from the my.cnf file that allow you to tune your mysql server"
+        "description" => "Setting from the my.cnf file that allow you to tune your mysql server",
       }
       expect(metadata.grouping("/db/mysql/databases/tuning", group)).to eq(group)
     end
@@ -470,7 +470,7 @@ describe Chef::Cookbook::Metadata do
         "default" => [ ],
         "source_url" => "http://example.com",
         "issues_url" => "http://example.com/issues",
-        "privacy" => true
+        "privacy" => true,
       }
       expect(metadata.attribute("/db/mysql/databases", attrs)).to eq(attrs)
     end
@@ -654,7 +654,7 @@ describe Chef::Cookbook::Metadata do
       options = {
         :type => "string",
         :choice => [ "test1", "test2" ],
-        :default => "test1"
+        :default => "test1",
       }
       expect {
         metadata.attribute("test_cookbook/test", options)
@@ -663,7 +663,7 @@ describe Chef::Cookbook::Metadata do
       options = {
         :type => "boolean",
         :choice => [ true, false ],
-        :default => true
+        :default => true,
       }
       expect {
         metadata.attribute("test_cookbook/test", options)
@@ -672,7 +672,7 @@ describe Chef::Cookbook::Metadata do
       options = {
         :type => "numeric",
         :choice => [ 1337, 420 ],
-        :default => 1337
+        :default => 1337,
       }
       expect {
         metadata.attribute("test_cookbook/test", options)
@@ -681,7 +681,7 @@ describe Chef::Cookbook::Metadata do
       options = {
         :type => "numeric",
         :choice => [ true, "false" ],
-        :default => false
+        :default => false,
       }
       expect {
         metadata.attribute("test_cookbook/test", options)
@@ -692,14 +692,14 @@ describe Chef::Cookbook::Metadata do
       expect {
         attrs = {
           :calculated => true,
-          :default => [ "I thought you said calculated" ]
+          :default => [ "I thought you said calculated" ],
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.to raise_error(ArgumentError)
       expect {
         attrs = {
           :calculated => true,
-          :default => "I thought you said calculated"
+          :default => "I thought you said calculated",
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.to raise_error(ArgumentError)
@@ -709,14 +709,14 @@ describe Chef::Cookbook::Metadata do
       expect {
         attrs = {
           :choice => [ "a", "b", "c"],
-          :default => "b"
+          :default => "b",
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.not_to raise_error
       expect {
         attrs = {
           :choice => [ "a", "b", "c", "d", "e"],
-          :default => ["b", "d"]
+          :default => ["b", "d"],
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.not_to raise_error
@@ -726,14 +726,14 @@ describe Chef::Cookbook::Metadata do
       expect {
         attrs = {
           :choice => [ "a", "b", "c"],
-          :default => "d"
+          :default => "d",
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.to raise_error(ArgumentError)
       expect {
         attrs = {
           :choice => [ "a", "b", "c", "d", "e"],
-          :default => ["b", "z"]
+          :default => ["b", "z"],
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.to raise_error(ArgumentError)

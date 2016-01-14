@@ -67,7 +67,7 @@ class Chef
       set_or_return(
         :description,
         arg,
-        :kind_of => String
+        :kind_of => String,
       )
     end
 
@@ -75,7 +75,7 @@ class Chef
       set_or_return(
         :default_attributes,
         arg,
-        :kind_of => Hash
+        :kind_of => Hash,
       )
     end
 
@@ -87,7 +87,7 @@ class Chef
       set_or_return(
         :override_attributes,
         arg,
-        :kind_of => Hash
+        :kind_of => Hash,
       )
     end
 
@@ -103,8 +103,8 @@ class Chef
           :kind_of => Hash,
           :callbacks => {
             "should be a valid set of cookbook version requirements" => lambda { |cv| Chef::Environment.validate_cookbook_versions(cv) }
-          }
-        }
+          },
+        },
       )
     end
 
@@ -115,7 +115,7 @@ class Chef
         :version => {
           :callbacks => { "should be a valid version requirement" => lambda { |v| Chef::Environment.validate_cookbook_version(v) } }
         }
-      })
+      },)
       @cookbook_versions[cookbook] = version
     end
 
@@ -127,7 +127,7 @@ class Chef
         "json_class" => self.class.name,
         "chef_type" => "environment",
         "default_attributes" => @default_attributes,
-        "override_attributes" => @override_attributes
+        "override_attributes" => @override_attributes,
       }
       result
     end

@@ -81,7 +81,7 @@ class Chef
       result = {
         "name" => @name,
         "public_key" => @public_key,
-        "admin" => @admin
+        "admin" => @admin,
       }
       result["private_key"] = @private_key if @private_key
       result["password"] = @password if @password

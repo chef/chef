@@ -52,7 +52,7 @@ describe Chef::Provider::User::Pw do
       'home' => "-d",
       'gid' => "-g",
       'uid' => "-u",
-      'shell' => "-s"
+      'shell' => "-s",
     }
     field_list.each do |attribute, option|
       it "should check for differences in #{attribute} between the new and current resources" do

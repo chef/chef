@@ -24,7 +24,7 @@ describe Chef::Platform::Rebooter do
     {
       :delay_mins => 5,
       :requested_by => "reboot resource functional test",
-      :reason => "rebooter spec test"
+      :reason => "rebooter spec test",
     }
   end
 
@@ -44,7 +44,7 @@ describe Chef::Platform::Rebooter do
   let(:expected) do
     {
       :windows => 'shutdown /r /t 300 /c "rebooter spec test"',
-      :linux => 'shutdown -r +5 "rebooter spec test"'
+      :linux => 'shutdown -r +5 "rebooter spec test"',
     }
   end
 

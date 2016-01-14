@@ -119,12 +119,12 @@ class Chef
               :required => false,
             },
             :resource => {
-              :kind_of => Symbol,
+              :kind_of => Symbol
             },
             :provider => {
-              :kind_of => [ String, Symbol, Class ],
-            }
-          }
+              :kind_of => [ String, Symbol, Class ]
+            },
+          },
         )
         if args.has_key?(:platform)
           if args.has_key?(:version)

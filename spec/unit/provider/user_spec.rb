@@ -114,7 +114,7 @@ describe Chef::Provider::User do
       :gid => :gid,
       :comment => :gecos,
       :home => :dir,
-      :shell => :shell
+      :shell => :shell,
     }
     user_attrib_map.each do |user_attrib, getpwnam_attrib|
       it "should set the current resources #{user_attrib} based on getpwnam #{getpwnam_attrib}" do
@@ -198,7 +198,7 @@ describe Chef::Provider::User do
         'gid' => [1000, 1001],
         'home' => ["/home/adam", "/Users/adam"],
         'shell'=> ["/usr/bin/zsh", "/bin/bash"],
-        'password'=> ["abcd","12345"]
+        'password'=> ["abcd","12345"],
       }
     }
 

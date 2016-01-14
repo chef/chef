@@ -24,14 +24,14 @@ describe Chef::Knife::EnvironmentCompare do
     
     @environments = {
       "cita" => "http://localhost:4000/environments/cita",
-      "citm" => "http://localhost:4000/environments/citm"
+      "citm" => "http://localhost:4000/environments/citm",
     }
 
     allow(@knife).to receive(:environment_list).and_return(@environments)
 
     @constraints = {
       "cita" => { "foo" => "= 1.0.1", "bar" => "= 0.0.4" },
-      "citm" => { "foo" => "= 1.0.1", "bar" => "= 0.0.2" }
+      "citm" => { "foo" => "= 1.0.1", "bar" => "= 0.0.2" },
     }
  
     allow(@knife).to receive(:constraint_list).and_return(@constraints)

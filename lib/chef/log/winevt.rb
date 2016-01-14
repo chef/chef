@@ -54,7 +54,7 @@ class Chef
           :event_type => ::Win32::EventLog::INFO_TYPE,
           :source => SOURCE,
           :event_id => INFO_EVENT_ID,
-          :data => [msg]
+          :data => [msg],
         )
       end
 
@@ -63,7 +63,7 @@ class Chef
           :event_type => ::Win32::EventLog::WARN_TYPE,
           :source => SOURCE,
           :event_id => WARN_EVENT_ID,
-          :data => [msg]
+          :data => [msg],
         )
       end
 
@@ -72,7 +72,7 @@ class Chef
           :event_type => ::Win32::EventLog::INFO_TYPE,
           :source => SOURCE,
           :event_id => DEBUG_EVENT_ID,
-          :data => [msg]
+          :data => [msg],
         )
       end
 
@@ -81,7 +81,7 @@ class Chef
           :event_type => ::Win32::EventLog::ERROR_TYPE,
           :source => SOURCE,
           :event_id => ERROR_EVENT_ID,
-          :data => [msg]
+          :data => [msg],
         )
       end
 
@@ -90,7 +90,7 @@ class Chef
           :event_type => ::Win32::EventLog::ERROR_TYPE,
           :source => SOURCE,
           :event_id => FATAL_EVENT_ID,
-          :data => [msg]
+          :data => [msg],
         )
       end
 

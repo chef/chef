@@ -61,7 +61,7 @@ class Chef
     def to_hash
       result = {
         "name" => @name,
-        "full_name" => @full_name
+        "full_name" => @full_name,
       }
       result["private_key"] = @private_key if @private_key
       result["guid"] = @guid if @guid

@@ -180,7 +180,7 @@ describe Chef::FileContentManagement::Deploy::Cp do
       :uid,
       :gid,
       :mode,
-      :ino
+      :ino,
     ]
   end
 
@@ -188,7 +188,7 @@ describe Chef::FileContentManagement::Deploy::Cp do
     [
       :owner,
       :group,
-      :dacl
+      :dacl,
     ]
   end
 
@@ -202,7 +202,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix, :unix_only do
     [
       :uid,
       :gid,
-      :mode
+      :mode,
     ]
   end
 
@@ -220,7 +220,7 @@ describe Chef::FileContentManagement::Deploy::MvWindows, :windows_only do
       [
        :owner,
        :group,
-       :dacl
+       :dacl,
       ]
     end
 

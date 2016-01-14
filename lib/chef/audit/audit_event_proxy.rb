@@ -84,7 +84,7 @@ class Chef
             :resource_type => resource_type,
             :resource_name => resource_name,
             :context => describe_groups,
-            :line_number => example.metadata[:line_number]
+            :line_number => example.metadata[:line_number],
         }
       end
 

@@ -157,7 +157,7 @@ describe Chef::HTTP::ValidateContentLength do
     let(:response_headers) {
       {
         "content-length" => content_length_value,
-        "transfer-encoding" => "chunked"
+        "transfer-encoding" => "chunked",
       }
     }
 

@@ -443,12 +443,12 @@ EOS
                 actor_type => "foobar",
                 "name" => key.name,
                 "create_key" => true,
-                "expiration_date" => key.expiration_date
+                "expiration_date" => key.expiration_date,
               }
               $expected_input = {
                 "name" => key.name,
                 "create_key" => true,
-                "expiration_date" => key.expiration_date
+                "expiration_date" => key.expiration_date,
               }
             end
 
@@ -534,8 +534,8 @@ EOS
             key.create_key true
             allow(rest).to receive(:put).with(url, key.to_hash).and_return({
                                                                                   "key" => "key_name",
-                                                                                  "public_key" => public_key_string
-                                                                                })
+                                                                                  "public_key" => public_key_string,
+                                                                                },)
 
           end
 
