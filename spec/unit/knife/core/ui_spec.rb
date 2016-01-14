@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::UI do
   before do
@@ -33,10 +33,10 @@ describe Chef::Knife::UI do
   end
 
   describe "edit" do
-    ruby_for_json = { 'foo' => 'bar' }
+    ruby_for_json = { "foo" => "bar" }
     json_from_ruby = "{\n  \"foo\": \"bar\"\n}"
     json_from_editor = "{\n  \"bar\": \"foo\"\n}"
-    ruby_from_editor = { 'bar' => 'foo' }
+    ruby_from_editor = { "bar" => "foo" }
     my_editor = "veeeye"
     temp_path = "/tmp/bar/baz"
 
@@ -66,12 +66,12 @@ describe Chef::Knife::UI do
       before do
         @ui.config[:disable_editing] = false
         @ui.config[:editor] = my_editor
-        @mock = double('Tempfile')
+        @mock = double("Tempfile")
         expect(@mock).to receive(:sync=).with(true)
         expect(@mock).to receive(:puts).with(json_from_ruby)
         expect(@mock).to receive(:close)
         expect(@mock).to receive(:path).at_least(:once).and_return(temp_path)
-        expect(Tempfile).to receive(:open).with([ 'knife-edit-', '.json' ]).and_yield(@mock)
+        expect(Tempfile).to receive(:open).with([ "knife-edit-", ".json" ]).and_yield(@mock)
       end
       context "and the editor works" do
         before do
@@ -114,8 +114,8 @@ describe Chef::Knife::UI do
       before do
         @ui.config[:disable_editing] = false
         @ui.config[:editor] = my_editor
-        @tempfile = Tempfile.new([ 'knife-edit-', '.json' ])
-        expect(Tempfile).to receive(:open).with([ 'knife-edit-', '.json' ]).and_yield(@tempfile)
+        @tempfile = Tempfile.new([ "knife-edit-", ".json" ])
+        expect(Tempfile).to receive(:open).with([ "knife-edit-", ".json" ]).and_yield(@tempfile)
       end
 
       context "and the editor works" do
@@ -192,7 +192,7 @@ describe Chef::Knife::UI do
     end
 
     it "formats hashes appropriately" do
-      @ui.output({'hi' => 'a', 'lo' => 'b' })
+      @ui.output({"hi" => "a", "lo" => "b" })
       expect(@out.string).to eq <<EOM
 hi: a
 lo: b
@@ -205,7 +205,7 @@ EOM
     end
 
     it "formats arrays appropriately" do
-      @ui.output([ 'a', 'b' ])
+      @ui.output([ "a", "b" ])
       expect(@out.string).to eq <<EOM
 a
 b
@@ -218,17 +218,17 @@ EOM
     end
 
     it "formats single-member arrays appropriately" do
-      @ui.output([ 'a' ])
+      @ui.output([ "a" ])
       expect(@out.string).to eq("a\n")
     end
 
     it "formats nested single-member arrays appropriately" do
-      @ui.output([ [ 'a' ] ])
+      @ui.output([ [ "a" ] ])
       expect(@out.string).to eq("a\n")
     end
 
     it "formats nested arrays appropriately" do
-      @ui.output([ [ 'a', 'b' ], [ 'c', 'd' ]])
+      @ui.output([ [ "a", "b" ], [ "c", "d" ]])
       expect(@out.string).to eq <<EOM
 a
 b
@@ -239,7 +239,7 @@ EOM
     end
 
     it "formats nested arrays with single- and empty subarrays appropriately" do
-      @ui.output([ [ 'a', 'b' ], [ 'c' ], [], [ 'd', 'e' ]])
+      @ui.output([ [ "a", "b" ], [ "c" ], [], [ "d", "e" ]])
       expect(@out.string).to eq <<EOM
 a
 b
@@ -253,7 +253,7 @@ EOM
     end
 
     it "formats arrays of hashes with extra lines in between for readability" do
-      @ui.output([ { 'a' => 'b', 'c' => 'd' }, { 'x' => 'y' }, { 'm' => 'n', 'o' => 'p' }])
+      @ui.output([ { "a" => "b", "c" => "d" }, { "x" => "y" }, { "m" => "n", "o" => "p" }])
       expect(@out.string).to eq <<EOM
 a: b
 c: d
@@ -266,7 +266,7 @@ EOM
     end
 
     it "formats hashes with empty array members appropriately" do
-      @ui.output({ 'a' => [], 'b' => 'c' })
+      @ui.output({ "a" => [], "b" => "c" })
       expect(@out.string).to eq <<EOM
 a:
 b: c
@@ -274,7 +274,7 @@ EOM
     end
 
     it "formats hashes with single-member array values appropriately" do
-      @ui.output({ 'a' => [ 'foo' ], 'b' => 'c' })
+      @ui.output({ "a" => [ "foo" ], "b" => "c" })
       expect(@out.string).to eq <<EOM
 a: foo
 b: c
@@ -282,7 +282,7 @@ EOM
     end
 
     it "formats hashes with array members appropriately" do
-      @ui.output({ 'a' => [ 'foo', 'bar' ], 'b' => 'c' })
+      @ui.output({ "a" => [ "foo", "bar" ], "b" => "c" })
       expect(@out.string).to eq <<EOM
 a:
   foo
@@ -292,7 +292,7 @@ EOM
     end
 
     it "formats hashes with single-member nested array values appropriately" do
-      @ui.output({ 'a' => [ [ 'foo' ] ], 'b' => 'c' })
+      @ui.output({ "a" => [ [ "foo" ] ], "b" => "c" })
       expect(@out.string).to eq <<EOM
 a:
   foo
@@ -301,14 +301,14 @@ EOM
     end
 
     it "formats hashes with nested array values appropriately" do
-      @ui.output({ 'a' => [ [ 'foo', 'bar' ], [ 'baz', 'bjork' ] ], 'b' => 'c' })
+      @ui.output({ "a" => [ [ "foo", "bar" ], [ "baz", "bjork" ] ], "b" => "c" })
       # XXX: using a HEREDOC at this point results in a line with required spaces which auto-whitespace removal settings
       # on editors will remove and will break this test.
       expect(@out.string).to eq("a:\n  foo\n  bar\n  \n  baz\n  bjork\nb: c\n")
     end
 
     it "formats hashes with hash values appropriately" do
-      @ui.output({ 'a' => { 'aa' => 'bb', 'cc' => 'dd' }, 'b' => 'c' })
+      @ui.output({ "a" => { "aa" => "bb", "cc" => "dd" }, "b" => "c" })
       expect(@out.string).to eq <<EOM
 a:
   aa: bb
@@ -318,7 +318,7 @@ EOM
     end
 
     it "formats hashes with empty hash values appropriately" do
-      @ui.output({ 'a' => { }, 'b' => 'c' })
+      @ui.output({ "a" => { }, "b" => "c" })
       expect(@out.string).to eq <<EOM
 a:
 b: c
@@ -432,7 +432,7 @@ EOM
 
     context "when running on Windows" do
       before(:each) do
-        stdout = double('StringIO', :tty? => true)
+        stdout = double("StringIO", :tty? => true)
         allow(@ui).to receive(:stdout).and_return(stdout)
         allow(ChefConfig).to receive(:windows?) { true }
         Chef::Config.reset
@@ -464,7 +464,7 @@ EOM
     let(:output) {stdout.string}
 
     let(:question) { "monkeys rule" }
-    let(:answer) { 'y' }
+    let(:answer) { "y" }
 
     let(:default_choice) { nil }
     let(:append_instructions) { true }
@@ -583,7 +583,7 @@ EOM
       out = StringIO.new
       allow(@ui).to receive(:stdout).and_return(out)
       allow(@ui).to receive(:stdin).and_return(StringIO.new(" \n"))
-      expect(@ui.ask_question("your chef server URL? ", :default => 'http://localhost:4000')).to eq("http://localhost:4000")
+      expect(@ui.ask_question("your chef server URL? ", :default => "http://localhost:4000")).to eq("http://localhost:4000")
       expect(out.string).to eq("your chef server URL? [http://localhost:4000] ")
     end
   end

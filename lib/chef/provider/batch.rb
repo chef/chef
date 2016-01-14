@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/windows_script'
+require "chef/provider/windows_script"
 
 class Chef
   class Provider
@@ -25,7 +25,7 @@ class Chef
       provides :batch, os: "windows"
 
       def initialize (new_resource, run_context)
-        super(new_resource, run_context, '.bat')
+        super(new_resource, run_context, ".bat")
       end
 
       def command
@@ -37,7 +37,7 @@ class Chef
       end
 
       def flags
-        @new_resource.flags.nil? ? '/c' : new_resource.flags + ' /c'
+        @new_resource.flags.nil? ? "/c" : new_resource.flags + " /c"
       end
 
     end

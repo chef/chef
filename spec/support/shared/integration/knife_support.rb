@@ -15,14 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/config'
-require 'chef/knife'
-require 'chef/application/knife'
-require 'logger'
-require 'chef/log'
+require "chef/config"
+require "chef/knife"
+require "chef/application/knife"
+require "logger"
+require "chef/log"
 
 module KnifeSupport
-  DEBUG = ENV['DEBUG']
+  DEBUG = ENV["DEBUG"]
   def knife(*args, &block)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
@@ -37,7 +37,7 @@ module KnifeSupport
     Chef::Config[:concurrency] = 1
 
     # Work on machines where we can't access /var
-    checksums_cache_dir = Dir.mktmpdir('checksums') do |checksums_cache_dir|
+    checksums_cache_dir = Dir.mktmpdir("checksums") do |checksums_cache_dir|
       Chef::Config[:cache_options] = {
         :path => checksums_cache_dir,
         :skip_expires => true,
@@ -146,11 +146,11 @@ module KnifeSupport
     private
 
     def should_result_in(expected)
-      expected[:stdout] = '' if !expected[:stdout]
-      expected[:stderr] = '' if !expected[:stderr]
+      expected[:stdout] = "" if !expected[:stdout]
+      expected[:stderr] = "" if !expected[:stderr]
       expected[:exit_code] = 0 if !expected[:exit_code]
       # TODO make this go away
-      stderr_actual = @stderr.sub(/^WARNING: No knife configuration file found\n/, '')
+      stderr_actual = @stderr.sub(/^WARNING: No knife configuration file found\n/, "")
 
       if expected[:stderr].is_a?(Regexp)
         expect(stderr_actual).to match(expected[:stderr])

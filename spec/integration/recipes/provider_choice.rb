@@ -1,4 +1,4 @@
-require 'support/shared/integration/integration_helper'
+require "support/shared/integration/integration_helper"
 
 describe "Recipe DSL methods" do
   include IntegrationSupport
@@ -26,7 +26,7 @@ describe "Recipe DSL methods" do
 
       it "provider_thingy 'blah' runs the provider and warns" do
         recipe = converge {
-          provider_thingy 'blah' do; end
+          provider_thingy "blah" do; end
         }
         expect(recipe.logged_warnings).to match /hello from Chef::Provider::ProviderThingy/
         expect(recipe.logged_warnings).to match /you must use 'provides' to provide DSL/i

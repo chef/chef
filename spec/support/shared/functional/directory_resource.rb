@@ -48,7 +48,7 @@ shared_examples_for "a directory resource" do
           expect(File).not_to exist(path)
 
           resource.recursive(true)
-          @recursive_path = File.join(path, 'red-headed-stepchild')
+          @recursive_path = File.join(path, "red-headed-stepchild")
           resource.path(@recursive_path)
           resource.run_action(:create)
         end
@@ -133,7 +133,7 @@ shared_examples_for "a directory resource" do
 
       context "with the recursive option" do
         before do
-          FileUtils.mkdir(File.join(path, 'red-headed-stepchild'))
+          FileUtils.mkdir(File.join(path, "red-headed-stepchild"))
           resource.recursive(true)
           resource.run_action(:delete)
         end
@@ -152,7 +152,7 @@ shared_context Chef::Resource::Directory do
   # deployment strategies more completely.
   let(:test_file_dir) do
     if windows?
-      File.join(ENV['systemdrive'], "test-dir")
+      File.join(ENV["systemdrive"], "test-dir")
     else
       File.join(CHEF_SPEC_DATA, "test-dir")
     end

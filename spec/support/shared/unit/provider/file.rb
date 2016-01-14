@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 if windows?
-  require 'chef/win32/file'
+  require "chef/win32/file"
 end
 
 # Filesystem stubs
@@ -37,7 +37,7 @@ end
 
 # forwards-vs-reverse slashes on windows sucks
 def windows_path
-  windows? ? normalized_path.gsub(/\\/, '/') : normalized_path
+  windows? ? normalized_path.gsub(/\\/, "/") : normalized_path
 end
 
 # this is all getting a bit stupid, CHEF-4802 cut to remove all this
@@ -460,7 +460,7 @@ shared_examples_for Chef::Provider::File do
       before { setup_normal_file }
 
       let(:tempfile) {
-        t = double('Tempfile', :path => "/tmp/foo-bar-baz", :closed? => true)
+        t = double("Tempfile", :path => "/tmp/foo-bar-baz", :closed? => true)
         allow(content).to receive(:tempfile).and_return(t)
         t
       }
@@ -507,7 +507,7 @@ shared_examples_for Chef::Provider::File do
         before do
           setup_normal_file
           provider.load_current_resource
-          tempfile = double('Tempfile', :path => "/tmp/foo-bar-baz")
+          tempfile = double("Tempfile", :path => "/tmp/foo-bar-baz")
           allow(content).to receive(:tempfile).and_return(tempfile)
           expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(true)
           expect(tempfile).to receive(:close).once
@@ -520,7 +520,7 @@ shared_examples_for Chef::Provider::File do
           let(:diff_for_reporting) { "+++\n---\n+foo\n-bar\n" }
           before do
             allow(provider).to receive(:contents_changed?).and_return(true)
-            diff = double('Diff', :for_output => ['+++','---','+foo','-bar'],
+            diff = double("Diff", :for_output => ["+++","---","+foo","-bar"],
                                   :for_reporting => diff_for_reporting )
             allow(diff).to receive(:diff).with(resource_path, tempfile_path).and_return(true)
             expect(provider).to receive(:diff).at_least(:once).and_return(diff)
@@ -584,13 +584,13 @@ shared_examples_for Chef::Provider::File do
       end
 
       it "raises an exception when the content object returns a tempfile with a nil path" do
-        tempfile = double('Tempfile', :path => nil)
+        tempfile = double("Tempfile", :path => nil)
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
         expect{ provider.send(:do_contents_changes) }.to raise_error
       end
 
       it "raises an exception when the content object returns a tempfile that does not exist" do
-        tempfile = double('Tempfile', :path => "/tmp/foo-bar-baz")
+        tempfile = double("Tempfile", :path => "/tmp/foo-bar-baz")
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
         expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(false)
         expect{ provider.send(:do_contents_changes) }.to raise_error

@@ -15,14 +15,14 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookSiteDownload < Knife
 
       deps do
-        require 'fileutils'
+        require "fileutils"
       end
 
       banner "knife cookbook site download COOKBOOK [VERSION] (options)"
@@ -39,12 +39,12 @@ class Chef
 
       def run
         if current_cookbook_deprecated?
-          message = 'DEPRECATION: This cookbook has been deprecated. '
+          message = "DEPRECATION: This cookbook has been deprecated. "
           message << "It has been replaced by #{replacement_cookbook}."
           ui.warn message
 
           unless config[:force]
-            ui.warn 'Use --force to force download deprecated cookbook.'
+            ui.warn "Use --force to force download deprecated cookbook."
             return
           end
         end
@@ -53,12 +53,12 @@ class Chef
       end
 
       def version
-        @version = desired_cookbook_data['version']
+        @version = desired_cookbook_data["version"]
       end
 
       private
       def cookbooks_api_url
-        'https://supermarket.chef.io/api/v1/cookbooks'
+        "https://supermarket.chef.io/api/v1/cookbooks"
       end
 
       def current_cookbook_data
@@ -68,13 +68,13 @@ class Chef
       end
 
       def current_cookbook_deprecated?
-        current_cookbook_data['deprecated'] == true
+        current_cookbook_data["deprecated"] == true
       end
 
       def desired_cookbook_data
         @desired_cookbook_data ||= begin
                                      uri = if @name_args.length == 1
-                                             current_cookbook_data['latest_version']
+                                             current_cookbook_data["latest_version"]
                                            else
                                              specific_cookbook_version_url
                                            end
@@ -98,7 +98,7 @@ class Chef
       end
 
       def replacement_cookbook
-        replacement = File.basename(current_cookbook_data['replacement'])
+        replacement = File.basename(current_cookbook_data["replacement"])
       end
 
       def specific_cookbook_version_url

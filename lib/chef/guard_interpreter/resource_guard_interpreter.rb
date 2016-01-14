@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/guard_interpreter'
+require "chef/guard_interpreter"
 
 class Chef
   class GuardInterpreter
@@ -100,7 +100,7 @@ class Chef
         # See https://github.com/chef/chef/issues/3485.
         empty_events = Chef::EventDispatch::Dispatcher.new
         anonymous_run_context = Chef::RunContext.new(parent_resource.node.dup, {}, empty_events)
-        interpreter_resource = resource_class.new('Guard resource', anonymous_run_context)
+        interpreter_resource = resource_class.new("Guard resource", anonymous_run_context)
         interpreter_resource.is_guard_interpreter = true
 
         interpreter_resource

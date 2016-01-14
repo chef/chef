@@ -19,12 +19,12 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/mash'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/version_constraint'
-require 'chef/server_api'
+require "chef/config"
+require "chef/mash"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/version_constraint"
+require "chef/server_api"
 
 class Chef
   class Environment
@@ -39,8 +39,8 @@ class Chef
     COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
 
     def initialize(chef_server_rest: nil)
-      @name = ''
-      @description = ''
+      @name = ""
+      @description = ""
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @cookbook_versions = Hash.new

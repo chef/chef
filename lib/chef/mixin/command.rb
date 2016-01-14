@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/exceptions'
-require 'tmpdir'
-require 'fcntl'
-require 'etc'
+require "chef/log"
+require "chef/exceptions"
+require "tmpdir"
+require "fcntl"
+require "etc"
 
 class Chef
   module Mixin
@@ -50,11 +50,11 @@ class Chef
       # NOTE: run_command is deprecated in favor of using Chef::Shellout which now comes from the mixlib-shellout gem. NOTE #
 
       if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-        require 'chef/mixin/command/windows'
+        require "chef/mixin/command/windows"
         include ::Chef::Mixin::Command::Windows
         extend  ::Chef::Mixin::Command::Windows
       else
-        require 'chef/mixin/command/unix'
+        require "chef/mixin/command/unix"
         include ::Chef::Mixin::Command::Unix
         extend  ::Chef::Mixin::Command::Unix
       end

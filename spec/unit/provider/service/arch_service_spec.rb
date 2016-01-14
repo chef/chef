@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 # most of this code has been ripped from init_service_spec.rb
 # and is only slightly modified to match "arch" needs.
@@ -45,7 +45,7 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
     it "should set the current resources service name to the new resources service name" do
       allow(@provider).to receive(:shell_out).and_return(OpenStruct.new(:exitstatus => 0, :stdout => ""))
       @provider.load_current_resource
-      expect(@provider.current_resource.service_name).to eq('chef')
+      expect(@provider.current_resource.service_name).to eq("chef")
     end
   end
 
@@ -155,7 +155,7 @@ RUNNING_PS
 
   it "should return existing entries in DAEMONS array" do
     allow(::File).to receive(:read).with("/etc/rc.conf").and_return("DAEMONS=(network !apache ssh)")
-    expect(@provider.daemons).to eq(['network', '!apache', 'ssh'])
+    expect(@provider.daemons).to eq(["network", "!apache", "ssh"])
   end
 
   context "when the current service status is known" do
@@ -180,7 +180,7 @@ RUNNING_PS
 
       it "should add chef to DAEMONS array" do
         allow(::File).to receive(:read).with("/etc/rc.conf").and_return("DAEMONS=(network)")
-        expect(@provider).to receive(:update_daemons).with(['network', 'chef'])
+        expect(@provider).to receive(:update_daemons).with(["network", "chef"])
         @provider.enable_service()
       end
     end
@@ -201,7 +201,7 @@ RUNNING_PS
 
       it "should remove chef from DAEMONS array" do
         allow(::File).to receive(:read).with("/etc/rc.conf").and_return("DAEMONS=(network chef)")
-        expect(@provider).to receive(:update_daemons).with(['network', '!chef'])
+        expect(@provider).to receive(:update_daemons).with(["network", "!chef"])
         @provider.disable_service()
       end
     end

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'win32/registry' if (RUBY_PLATFORM =~ /mswin|mingw32|windows/)
+require "win32/registry" if (RUBY_PLATFORM =~ /mswin|mingw32|windows/)
 
 class Chef
   class Provider
@@ -39,7 +39,7 @@ class Chef
                   reg.each_key do |key, _wtime|
                     begin
                       entry = reg.open(key, desired)
-                      display_name = read_registry_property(entry, 'DisplayName')
+                      display_name = read_registry_property(entry, "DisplayName")
                       if display_name == package_name
                         entries.push(RegistryUninstallEntry.new(hkey, key, entry))
                       end
@@ -67,9 +67,9 @@ class Chef
             @hive = hive
             @key = key
             @data = registry_data
-            @display_name = RegistryUninstallEntry.read_registry_property(registry_data, 'DisplayName')
-            @display_version = RegistryUninstallEntry.read_registry_property(registry_data, 'DisplayVersion')
-            @uninstall_string = RegistryUninstallEntry.read_registry_property(registry_data, 'UninstallString')
+            @display_name = RegistryUninstallEntry.read_registry_property(registry_data, "DisplayName")
+            @display_version = RegistryUninstallEntry.read_registry_property(registry_data, "DisplayVersion")
+            @uninstall_string = RegistryUninstallEntry.read_registry_property(registry_data, "UninstallString")
           end
 
           attr_reader :hive

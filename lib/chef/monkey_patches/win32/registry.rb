@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/registry'
-require 'chef/win32/unicode'
-require 'win32/registry'
+require "chef/win32/api/registry"
+require "chef/win32/unicode"
+require "win32/registry"
 
 module Win32
   class Registry
@@ -59,7 +59,7 @@ module Win32
         when REG_DWORD
           data = API.packdw(data.to_i)
         when REG_DWORD_BIG_ENDIAN
-          data = [data.to_i].pack('N')
+          data = [data.to_i].pack("N")
         when REG_QWORD
           data = API.packqw(data.to_i)
         else

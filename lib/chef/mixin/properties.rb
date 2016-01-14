@@ -1,6 +1,6 @@
-require 'chef/delayed_evaluator'
-require 'chef/mixin/params_validate'
-require 'chef/property'
+require "chef/delayed_evaluator"
+require "chef/mixin/params_validate"
+require "chef/property"
 
 class Chef
   module Mixin

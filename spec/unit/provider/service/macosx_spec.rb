@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Macosx do
   describe ".gather_plist_dirs" do
     context "when HOME directory is set" do
       before do
-        allow(Chef::Util::PathHelper).to receive(:home).with('Library', 'LaunchAgents').and_yield('/Users/someuser/Library/LaunchAgents')
+        allow(Chef::Util::PathHelper).to receive(:home).with("Library", "LaunchAgents").and_yield("/Users/someuser/Library/LaunchAgents")
       end
 
       it "includes users's LaunchAgents folder" do
@@ -32,7 +32,7 @@ describe Chef::Provider::Service::Macosx do
 
     context "when HOME directory is not set" do
       before do
-        allow(Chef::Util::PathHelper).to receive(:home).with('Library', 'LaunchAgents').and_return(nil)
+        allow(Chef::Util::PathHelper).to receive(:home).with("Library", "LaunchAgents").and_return(nil)
       end
 
       it "doesn't include user's LaunchAgents folder" do
@@ -61,20 +61,20 @@ XML
     ["Daemon", "Agent"].each do |service_type|
       ["redis-server", "io.redis.redis-server"].each do |service_name|
         ["10.9", "10.10", "10.11"].each do |platform_version|
-          let(:plist) {'/Library/LaunchDaemons/io.redis.redis-server.plist'}
+          let(:plist) {"/Library/LaunchDaemons/io.redis.redis-server.plist"}
           let(:session) { StringIO.new }
-          if service_type == 'Agent'
-            let(:plist) {'/Library/LaunchAgents/io.redis.redis-server.plist'}
-            let(:session) {'-S Aqua '}
-            let(:su_cmd) {'su -l igor -c'}
+          if service_type == "Agent"
+            let(:plist) {"/Library/LaunchAgents/io.redis.redis-server.plist"}
+            let(:session) {"-S Aqua "}
+            let(:su_cmd) {"su -l igor -c"}
             if platform_version == "10.9"
-              let(:su_cmd) {'su igor -c'}
+              let(:su_cmd) {"su igor -c"}
             end
           end
-          let(:service_label) {'io.redis.redis-server'}
+          let(:service_label) {"io.redis.redis-server"}
           before do
             allow(Dir).to receive(:glob).and_return([plist], [])
-            allow(Etc).to receive(:getlogin).and_return('igor')
+            allow(Etc).to receive(:getlogin).and_return("igor")
             allow(node).to receive(:[]).with("platform_version").and_return(platform_version)
             cmd = "launchctl list #{service_label}"
             allow(provider).to receive(:shell_out_with_systems_locale).
@@ -263,7 +263,7 @@ SVC_LIST
               end
 
               it "starts service via launchctl if service found" do
-                cmd = 'launchctl load -w ' + session + plist
+                cmd = "launchctl load -w " + session + plist
                 expect(provider).to receive(:shell_out_with_systems_locale).
                         with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
                         and_return(0)
@@ -295,7 +295,7 @@ SVC_LIST
               end
 
               it "stops the service via launchctl if service found" do
-                cmd = 'launchctl unload -w '+ plist
+                cmd = "launchctl unload -w "+ plist
                 expect(provider).to receive(:shell_out_with_systems_locale).
                         with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
                         and_return(0)

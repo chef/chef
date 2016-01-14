@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'cgi'
+require "cgi"
 describe Chef::Mixin::Template, "render_template" do
 
   let(:sep) { Chef::Platform.windows? ? "\r\n" : "\n" }
@@ -85,10 +85,10 @@ describe Chef::Mixin::Template, "render_template" do
       @events = Chef::EventDispatch::Dispatcher.new
       @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
-      @rendered_file_location = Dir.tmpdir + '/openldap_stuff.conf'
+      @rendered_file_location = Dir.tmpdir + "/openldap_stuff.conf"
 
       @resource = Chef::Resource::Template.new(@rendered_file_location)
-      @resource.cookbook_name = 'openldap'
+      @resource.cookbook_name = "openldap"
       @current_resource = @resource.dup
 
       @content_provider = Chef::Provider::Template::Content.new(@resource, @current_resource, @run_context)
@@ -117,7 +117,7 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should render partials from a different cookbook" do
-      @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, 'apache2', @node)
+      @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, "apache2", @node)
 
       output = @template_context.render_template_from_string("before {<%= render('test.erb', :cookbook => 'openldap').strip %>} after")
       expect(output).to eq("before {We could be diving for pearls!} after")
@@ -144,7 +144,7 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should pass the original variables to partials" do
-      @template_context[:secret] = 'candy'
+      @template_context[:secret] = "candy"
 
       output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after")
       output == "before {super secret is candy} after"
@@ -161,7 +161,7 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should pass variables to partials even if they are named the same" do
-      @template_context[:secret] = 'one'
+      @template_context[:secret] = "one"
 
       output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'two' } %>} after <%= @secret %>")
       expect(output).to eq("before {super secret is two} after one")
@@ -206,7 +206,7 @@ describe Chef::Mixin::Template, "render_template" do
           def render_template_from_string
           end
         end
-        ['node', 'render', 'render_template', 'render_template_from_string'].each do |method_name|
+        ["node", "render", "render_template", "render_template_from_string"].each do |method_name|
           expect(Chef::Log).to receive(:warn).with(/^Core template method `#{method_name}' overridden by extension module/)
         end
         @template_context._extend_modules([mod])

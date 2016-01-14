@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Daemon do
   before do
@@ -74,7 +74,7 @@ describe Chef::Daemon do
 
     before do
       allow(Chef::Application).to receive(:fatal!).and_return(true)
-      Chef::Config[:user] = 'aj'
+      Chef::Config[:user] = "aj"
       allow(Dir).to receive(:chdir)
     end
 
@@ -86,7 +86,7 @@ describe Chef::Daemon do
     describe "when the user and group options are supplied" do
 
       before do
-        Chef::Config[:group] = 'staff'
+        Chef::Config[:group] = "staff"
       end
 
       it "should log an appropriate info message" do

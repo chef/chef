@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'chef/resource/file'
-require 'chef/provider/remote_file'
-require 'chef/mixin/securable'
-require 'chef/mixin/uris'
+require "uri"
+require "chef/resource/file"
+require "chef/provider/remote_file"
+require "chef/mixin/securable"
+require "chef/mixin/uris"
 
 class Chef
   class Resource

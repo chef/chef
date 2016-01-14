@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs'
-require 'chef/chef_fs/path_utils'
+require "chef/chef_fs"
+require "chef/chef_fs/path_utils"
 
 class Chef
   module ChefFS
@@ -70,7 +70,7 @@ class Chef
       #   abc/def.could_match_children?('x') == false
       #   a**z.could_match_children?('ab/cd') == true
       def could_match_children?(path)
-        return false if path == '' # Empty string is not a path
+        return false if path == "" # Empty string is not a path
 
         argument_is_absolute = Chef::ChefFS::PathUtils::is_absolute?(path)
         return false if is_absolute != argument_is_absolute
@@ -125,7 +125,7 @@ class Chef
       def exact_path
         return nil if has_double_star || exact_parts.any? { |part| part.nil? }
         result = Chef::ChefFS::PathUtils::join(*exact_parts)
-        is_absolute ? Chef::ChefFS::PathUtils::join('', result) : result
+        is_absolute ? Chef::ChefFS::PathUtils::join("", result) : result
       end
 
       # Returns the normalized version of the pattern, with / as the directory
@@ -199,12 +199,12 @@ class Chef
             end
 
             # Skip // and /./ (pretend it's not there)
-            if exact == '' || exact == '.'
+            if exact == "" || exact == "."
               next
             end
 
             # Back up when you see .. (unless the prior part has ** in it, in which case .. must be preserved)
-            if exact == '..'
+            if exact == ".."
               if @is_absolute && normalized_parts.length == 0
                 # If we are at the root, just pretend the .. isn't there
                 next
@@ -234,7 +234,7 @@ class Chef
 
           @regexp = Regexp.new("^#{full_regexp_parts.join(Chef::ChefFS::PathUtils::regexp_path_separator)}$")
           @normalized_pattern = Chef::ChefFS::PathUtils.join(*normalized_parts)
-          @normalized_pattern = Chef::ChefFS::PathUtils.join('', @normalized_pattern) if @is_absolute
+          @normalized_pattern = Chef::ChefFS::PathUtils.join("", @normalized_pattern) if @is_absolute
         end
       end
 
@@ -249,7 +249,7 @@ class Chef
       end
 
       def self.regexp_escape_characters
-        [ '[', '\\', '^', '$', '.', '|', '?', '*', '+', '(', ')', '{', '}' ]
+        [ "[", '\\', "^", "$", ".", "|", "?", "*", "+", "(", ")", "{", "}" ]
       end
 
       def self.pattern_to_regexp(pattern)
@@ -264,16 +264,16 @@ class Chef
           else
             case part
             # **, * and ? happen on both platforms.
-            when '**'
+            when "**"
               exact = nil
               has_double_star = true
-              regexp << '.*'
-            when '*'
+              regexp << ".*"
+            when "*"
               exact = nil
               regexp << '[^\/]*'
-            when '?'
+            when "?"
               exact = nil
-              regexp << '.'
+              regexp << "."
             else
               if part[0,1] == '\\' && part.length == 2
                 # backslash escapes are only supported on Unix, and are handled here by leaving the escape on (it means the same thing in a regex)
@@ -283,7 +283,7 @@ class Chef
                 else
                   regexp << part[1,1]
                 end
-              elsif part[0,1] == '[' && part.length > 1
+              elsif part[0,1] == "[" && part.length > 1
                 # [...] happens only on Unix, and is handled here by *not* backslashing (it means the same thing in and out of regex)
                 exact = nil
                 regexp << part

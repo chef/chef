@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/cookbook/metadata'
+require "spec_helper"
+require "chef/cookbook/metadata"
 
 describe Chef::Cookbook::Metadata do
 
@@ -142,11 +142,11 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "has an empty source_url string" do
-      expect(metadata.source_url).to eq('')
+      expect(metadata.source_url).to eq("")
     end
 
     it "has an empty issues_url string" do
-      expect(metadata.issues_url).to eq('')
+      expect(metadata.issues_url).to eq("")
     end
 
     it "is not private" do
@@ -189,7 +189,7 @@ describe Chef::Cookbook::Metadata do
   describe "adding a supported platform" do
     it "should support adding a supported platform with a single expression" do
       metadata.supports("ubuntu", ">= 8.04")
-      expect(metadata.platforms["ubuntu"]).to eq('>= 8.04')
+      expect(metadata.platforms["ubuntu"]).to eq(">= 8.04")
     end
   end
 
@@ -311,17 +311,17 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "strips out self-dependencies", :chef_lt_13_only do
-      metadata.name('foo')
+      metadata.name("foo")
       expect(Chef::Log).to receive(:warn).with(
         "Ignoring self-dependency in cookbook foo, please remove it (in the future this will be fatal)."
       )
-      metadata.depends('foo')
+      metadata.depends("foo")
       expect(metadata.dependencies).to eql({})
     end
 
     it "errors on self-dependencies", :chef_gte_13_only do
-      metadata.name('foo')
-      expect { metadata.depends('foo') }.to raise_error
+      metadata.name("foo")
+      expect { metadata.depends("foo") }.to raise_error
       # FIXME: add the error type
     end
   end
@@ -462,10 +462,10 @@ describe Chef::Cookbook::Metadata do
       attrs = {
         "display_name" => "MySQL Databases",
         "description" => "Description of MySQL",
-        "choice" => ['dedicated', 'shared'],
+        "choice" => ["dedicated", "shared"],
         "calculated" => false,
-        "type" => 'string',
-        "required" => 'recommended',
+        "type" => "string",
+        "required" => "recommended",
         "recipes" => [ "mysql::server", "mysql::master" ],
         "default" => [ ],
         "source_url" => "http://example.com",
@@ -519,16 +519,16 @@ describe Chef::Cookbook::Metadata do
         metadata.attribute("db/mysql/databases", :privacy => false)
       }.not_to raise_error
       expect {
-        metadata.attribute("db/mysql/databases", :privacy => 'true')
+        metadata.attribute("db/mysql/databases", :privacy => "true")
       }.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but an array of strings for choice" do
       expect {
-        metadata.attribute("db/mysql/databases", :choice => ['dedicated', 'shared'])
+        metadata.attribute("db/mysql/databases", :choice => ["dedicated", "shared"])
       }.not_to raise_error
       expect {
-        metadata.attribute("db/mysql/databases", :choice => [10, 'shared'])
+        metadata.attribute("db/mysql/databases", :choice => [10, "shared"])
       }.to raise_error(ArgumentError)
       expect {
         metadata.attribute("db/mysql/databases", :choice => Hash.new)
@@ -586,13 +586,13 @@ describe Chef::Cookbook::Metadata do
 
     it "should let required be required, recommended or optional" do
       expect {
-        metadata.attribute("db/mysql/databases", :required => 'required')
+        metadata.attribute("db/mysql/databases", :required => "required")
       }.not_to raise_error
       expect {
-        metadata.attribute("db/mysql/databases", :required => 'recommended')
+        metadata.attribute("db/mysql/databases", :required => "recommended")
       }.not_to raise_error
       expect {
-        metadata.attribute("db/mysql/databases", :required => 'optional')
+        metadata.attribute("db/mysql/databases", :required => "optional")
       }.not_to raise_error
     end
 
@@ -612,7 +612,7 @@ describe Chef::Cookbook::Metadata do
 
     it "should set required to 'optional' by default" do
       metadata.attribute("db/mysql/databases", {})
-      expect(metadata.attributes["db/mysql/databases"][:required]).to eq('optional')
+      expect(metadata.attributes["db/mysql/databases"][:required]).to eq("optional")
     end
 
     it "should make sure recipes is an array" do
@@ -742,7 +742,7 @@ describe Chef::Cookbook::Metadata do
 
   describe "recipes" do
     let(:cookbook) do
-      c = Chef::CookbookVersion.new('test_cookbook')
+      c = Chef::CookbookVersion.new("test_cookbook")
       c.recipe_files = [ "default.rb", "enlighten.rb" ]
       c
     end
@@ -894,13 +894,13 @@ describe Chef::Cookbook::Metadata do
         it "should transform deprecated greater than syntax for :#{to_check}" do
           @hash[to_check.to_s]["foo::bar"] = ">> 0.2"
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq('> 0.2')
+          expect(deserial.send(to_check)["foo::bar"]).to eq("> 0.2")
         end
 
         it "should transform deprecated less than syntax for :#{to_check}" do
           @hash[to_check.to_s]["foo::bar"] = "<< 0.2"
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq('< 0.2')
+          expect(deserial.send(to_check)["foo::bar"]).to eq("< 0.2")
         end
 
         it "should ignore multiple dependency constraints for :#{to_check}" do

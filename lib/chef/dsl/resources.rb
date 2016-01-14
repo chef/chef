@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/dsl/cheffish'
-require 'chef/dsl/chef_provisioning'
+require "chef/dsl/cheffish"
+require "chef/dsl/chef_provisioning"
 
 class Chef
   module DSL

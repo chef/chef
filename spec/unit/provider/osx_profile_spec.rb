@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::OsxProfile do
   let(:shell_out_success) do
-    double('shell_out', :exitstatus => 0, :error? => false)
+    double("shell_out", :exitstatus => 0, :error? => false)
   end
-  describe 'action_create' do
+  describe "action_create" do
       let(:node) { Chef::Node.new }
       let(:events) { Chef::EventDispatch::Dispatcher.new }
       let(:run_context) { Chef::RunContext.new(node, {}, events) }
@@ -74,28 +74,28 @@ describe Chef::Provider::OsxProfile do
       # ProfileUUID in all_profiles to match the new config specific UUID
       let(:test_profile) do
       {
-        'PayloadIdentifier' => 'com.testprofile.screensaver',
-        'PayloadRemovalDisallowed' => false,
-        'PayloadScope' => 'System',
-        'PayloadType' => 'Configuration',
-        'PayloadUUID' => '1781fbec-3325-565f-9022-8aa28135c3cc',
-        'PayloadOrganization' => 'Chef',
-        'PayloadVersion' => 1,
-        'PayloadDisplayName' => 'Screensaver Settings',
-        'PayloadContent'=> [
+        "PayloadIdentifier" => "com.testprofile.screensaver",
+        "PayloadRemovalDisallowed" => false,
+        "PayloadScope" => "System",
+        "PayloadType" => "Configuration",
+        "PayloadUUID" => "1781fbec-3325-565f-9022-8aa28135c3cc",
+        "PayloadOrganization" => "Chef",
+        "PayloadVersion" => 1,
+        "PayloadDisplayName" => "Screensaver Settings",
+        "PayloadContent"=> [
           {
-            'PayloadType' => 'com.apple.ManagedClient.preferences',
-            'PayloadVersion' => 1,
-            'PayloadIdentifier' => 'com.testprofile.screensaver',
-            'PayloadUUID' => '73fc30e0-1e57-0131-c32d-000c2944c108',
-            'PayloadEnabled' => true,
-            'PayloadDisplayName' => 'com.apple.screensaver',
-            'PayloadContent' => {
-              'com.apple.screensaver' => {
-                'Forced' => [
+            "PayloadType" => "com.apple.ManagedClient.preferences",
+            "PayloadVersion" => 1,
+            "PayloadIdentifier" => "com.testprofile.screensaver",
+            "PayloadUUID" => "73fc30e0-1e57-0131-c32d-000c2944c108",
+            "PayloadEnabled" => true,
+            "PayloadDisplayName" => "com.apple.screensaver",
+            "PayloadContent" => {
+              "com.apple.screensaver" => {
+                "Forced" => [
                   {
-                    'mcx_preference_settings' => {
-                      'idleTime' => 0
+                    "mcx_preference_settings" => {
+                      "idleTime" => 0
                     }
                   },
                 ]
@@ -111,16 +111,16 @@ describe Chef::Provider::OsxProfile do
 
     before(:each) do
       allow(provider).to receive(:cookbook_file_available?).and_return(true)
-      allow(provider).to receive(:cache_cookbook_profile).and_return('/tmp/test.mobileconfig.remote')
+      allow(provider).to receive(:cache_cookbook_profile).and_return("/tmp/test.mobileconfig.remote")
       allow(provider).to receive(:get_new_profile_hash).and_return(test_profile)
       allow(provider).to receive(:get_installed_profiles).and_return(all_profiles)
       allow(provider).to receive(:read_plist).and_return(all_profiles)
       allow(::File).to receive(:unlink).and_return(true)
     end
 
-    it 'should build the get all profiles shellout command correctly' do
-      profile_name = 'com.testprofile.screensaver.mobileconfig'
-      tempfile = '/tmp/allprofiles.plist'
+    it "should build the get all profiles shellout command correctly" do
+      profile_name = "com.testprofile.screensaver.mobileconfig"
+      tempfile = "/tmp/allprofiles.plist"
       new_resource.profile_name profile_name
       allow(provider).to receive(:generate_tempfile).and_return(tempfile)
       allow(provider).to receive(:get_installed_profiles).and_call_original
@@ -129,29 +129,29 @@ describe Chef::Provider::OsxProfile do
       provider.load_current_resource
     end
 
-    it 'should use profile name as profile when no profile is set' do
-      profile_name = 'com.testprofile.screensaver.mobileconfig'
+    it "should use profile name as profile when no profile is set" do
+      profile_name = "com.testprofile.screensaver.mobileconfig"
       new_resource.profile_name profile_name
       provider.load_current_resource
       expect(new_resource.profile_name).to eql(profile_name)
     end
 
-    it 'should use identifier from specified profile' do
+    it "should use identifier from specified profile" do
       new_resource.profile test_profile
       provider.load_current_resource
       expect(
         provider.instance_variable_get(:@new_profile_identifier)
-        ).to eql(test_profile['PayloadIdentifier'])
+        ).to eql(test_profile["PayloadIdentifier"])
     end
 
-    it 'should install when not installed' do
+    it "should install when not installed" do
       new_resource.profile test_profile
       allow(provider).to receive(:get_installed_profiles).and_return(no_profiles)
       provider.load_current_resource
       expect { provider.run_action(:install) }.to_not raise_error
     end
 
-    it 'does not install if the profile is already installed' do
+    it "does not install if the profile is already installed" do
       new_resource.profile test_profile
       allow(provider).to receive(:get_installed_profiles).and_return(all_profiles)
       provider.load_current_resource
@@ -159,40 +159,40 @@ describe Chef::Provider::OsxProfile do
       expect { provider.action_install }.to_not raise_error
     end
 
-    it 'should install when installed but uuid differs' do
+    it "should install when installed but uuid differs" do
       new_resource.profile test_profile
-      all_profiles['_computerlevel'][1]['ProfileUUID'] = '1781fbec-3325-565f-9022-9bb39245d4dd'
+      all_profiles["_computerlevel"][1]["ProfileUUID"] = "1781fbec-3325-565f-9022-9bb39245d4dd"
       provider.load_current_resource
       expect { provider.run_action(:install) }.to_not raise_error
     end
 
-    it 'should build the shellout install command correctly' do
-      profile_path = '/tmp/test.mobileconfig'
+    it "should build the shellout install command correctly" do
+      profile_path = "/tmp/test.mobileconfig"
       new_resource.profile test_profile
       # Change the profile so it triggers an install
-      all_profiles['_computerlevel'][1]['ProfileUUID'] = '1781fbec-3325-565f-9022-9bb39245d4dd'
+      all_profiles["_computerlevel"][1]["ProfileUUID"] = "1781fbec-3325-565f-9022-9bb39245d4dd"
       provider.load_current_resource
       allow(provider).to receive(:write_profile_to_disk).and_return(profile_path)
       expect(provider).to receive(:shell_out).with("profiles -I -F '#{profile_path}'").and_return(shell_out_success)
       provider.action_install()
     end
 
-    it 'should fail if there is no identifier inside the profile' do
-      test_profile.delete('PayloadIdentifier')
+    it "should fail if there is no identifier inside the profile" do
+      test_profile.delete("PayloadIdentifier")
       new_resource.profile test_profile
-      error_message = 'The specified profile does not seem to be valid'
+      error_message = "The specified profile does not seem to be valid"
       expect{provider.run_action(:install)}.to raise_error(RuntimeError, error_message)
     end
 
   end
 
-  describe 'action_remove' do
+  describe "action_remove" do
     let(:node) { Chef::Node.new }
     let(:events) { Chef::EventDispatch::Dispatcher.new }
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
     let(:new_resource) { Chef::Resource::OsxProfile.new("Profile Test", run_context) }
     let(:provider) { Chef::Provider::OsxProfile.new(new_resource, run_context) }
-    let(:current_resource) { Chef::Resource::OsxProfile.new('Profile Test') }
+    let(:current_resource) { Chef::Resource::OsxProfile.new("Profile Test") }
     let(:all_profiles) do
       {"_computerlevel"=>
         [{"ProfileDisplayName"=>"ScreenSaver Settings",
@@ -240,24 +240,24 @@ describe Chef::Provider::OsxProfile do
       allow(provider).to receive(:get_installed_profiles).and_return(all_profiles)
     end
 
-    it 'should use resource name for identifier when not specified' do
-      new_resource.profile_name 'com.testprofile.screensaver'
+    it "should use resource name for identifier when not specified" do
+      new_resource.profile_name "com.testprofile.screensaver"
       new_resource.action(:remove)
       provider.load_current_resource
       expect(provider.instance_variable_get(:@new_profile_identifier)
         ).to eql(new_resource.profile_name)
     end
 
-    it 'should use specified identifier' do
-      new_resource.identifier 'com.testprofile.screensaver'
+    it "should use specified identifier" do
+      new_resource.identifier "com.testprofile.screensaver"
       new_resource.action(:remove)
       provider.load_current_resource
       expect(provider.instance_variable_get(:@new_profile_identifier)
         ).to eql(new_resource.identifier)
     end
 
-    it 'should build the shellout remove command correctly' do
-      new_resource.identifier 'com.testprofile.screensaver'
+    it "should build the shellout remove command correctly" do
+      new_resource.identifier "com.testprofile.screensaver"
       new_resource.action(:remove)
       provider.load_current_resource
       expect(provider).to receive(:shell_out).with("profiles -R -p '#{new_resource.identifier}'").and_return(shell_out_success)

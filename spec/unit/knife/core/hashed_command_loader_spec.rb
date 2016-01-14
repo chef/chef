@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
   before do
@@ -42,7 +42,7 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
   }
 
   let(:loader) { Chef::Knife::SubcommandLoader::HashedCommandLoader.new(
-    File.join(CHEF_SPEC_DATA, 'knife-site-subcommands'),
+    File.join(CHEF_SPEC_DATA, "knife-site-subcommands"),
     plugin_manifest)}
 
   describe "#list_commands" do

@@ -28,14 +28,14 @@ describe Chef::Knife::CookbookSiteInstall do
                       :merge_updates_from => true) }
   let(:install_path) {
     if Chef::Platform.windows?
-      'C:/tmp/chef'
+      "C:/tmp/chef"
     else
-      '/var/tmp/chef'
+      "/var/tmp/chef"
     end
   }
 
   before(:each) do
-    require 'chef/knife/core/cookbook_scm_repo'
+    require "chef/knife/core/cookbook_scm_repo"
 
     allow(knife.ui).to receive(:stdout).and_return(stdout)
     knife.config = {}

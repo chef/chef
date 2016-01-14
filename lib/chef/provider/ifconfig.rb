@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/mixin/command'
-require 'chef/mixin/shell_out'
-require 'chef/provider'
-require 'chef/resource/file'
-require 'chef/exceptions'
-require 'erb'
+require "chef/log"
+require "chef/mixin/command"
+require "chef/mixin/shell_out"
+require "chef/provider"
+require "chef/resource/file"
+require "chef/exceptions"
+require "erb"
 
 #  Recipe example:
 #
@@ -218,7 +218,7 @@ class Chef
       end
 
       def loopback_device
-        'lo'
+        "lo"
       end
     end
   end

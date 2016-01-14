@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef-config/config'
-require 'chef-config/exceptions'
-require 'chef-config/logger'
-require 'chef-config/path_helper'
-require 'chef-config/windows'
+require "chef-config/config"
+require "chef-config/exceptions"
+require "chef-config/logger"
+require "chef-config/path_helper"
+require "chef-config/windows"
 
 module ChefConfig
   class WorkstationConfigLoader
@@ -99,24 +99,24 @@ module ChefConfig
       candidate_configs = []
 
       # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
-      if env['KNIFE_HOME']
-        candidate_configs << File.join(env['KNIFE_HOME'], 'config.rb')
-        candidate_configs << File.join(env['KNIFE_HOME'], 'knife.rb')
+      if env["KNIFE_HOME"]
+        candidate_configs << File.join(env["KNIFE_HOME"], "config.rb")
+        candidate_configs << File.join(env["KNIFE_HOME"], "knife.rb")
       end
       # Look for $PWD/knife.rb
       if Dir.pwd
-        candidate_configs << File.join(Dir.pwd, 'config.rb')
-        candidate_configs << File.join(Dir.pwd, 'knife.rb')
+        candidate_configs << File.join(Dir.pwd, "config.rb")
+        candidate_configs << File.join(Dir.pwd, "knife.rb")
       end
       # Look for $UPWARD/.chef/knife.rb
       if chef_config_dir
-        candidate_configs << File.join(chef_config_dir, 'config.rb')
-        candidate_configs << File.join(chef_config_dir, 'knife.rb')
+        candidate_configs << File.join(chef_config_dir, "config.rb")
+        candidate_configs << File.join(chef_config_dir, "knife.rb")
       end
       # Look for $HOME/.chef/knife.rb
-      PathHelper.home('.chef') do |dot_chef_dir|
-        candidate_configs << File.join(dot_chef_dir, 'config.rb')
-        candidate_configs << File.join(dot_chef_dir, 'knife.rb')
+      PathHelper.home(".chef") do |dot_chef_dir|
+        candidate_configs << File.join(dot_chef_dir, "config.rb")
+        candidate_configs << File.join(dot_chef_dir, "knife.rb")
       end
 
       candidate_configs.find do | candidate_config |
@@ -126,9 +126,9 @@ module ChefConfig
 
     def working_directory
       a = if ChefConfig.windows?
-            env['CD']
+            env["CD"]
           else
-            env['PWD']
+            env["PWD"]
           end || Dir.pwd
 
       a

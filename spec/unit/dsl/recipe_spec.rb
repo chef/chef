@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/dsl/recipe'
+require "spec_helper"
+require "chef/dsl/recipe"
 
 
 RecipeDSLExampleClass = Struct.new(:cookbook_name, :recipe_name)

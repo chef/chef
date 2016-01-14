@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'pp'
-require 'chef/log'
+require "pp"
+require "chef/log"
 
 class Chef
   class HTTP
@@ -73,18 +73,18 @@ class Chef
       private
 
       def response_content_length(response)
-        return nil if response['content-length'].nil?
-        if response['content-length'].is_a?(Array)
-          response['content-length'].first.to_i
+        return nil if response["content-length"].nil?
+        if response["content-length"].is_a?(Array)
+          response["content-length"].first.to_i
         else
-          response['content-length'].to_i
+          response["content-length"].to_i
         end
       end
 
       def validate(http_response, response_length)
         content_length    = response_content_length(http_response)
-        transfer_encoding = http_response['transfer-encoding']
-        content_encoding  = http_response['content-encoding']
+        transfer_encoding = http_response["transfer-encoding"]
+        content_encoding  = http_response["content-encoding"]
 
         if content_length.nil?
           Chef::Log.debug "HTTP server did not include a Content-Length header in response, cannot identify truncated downloads."

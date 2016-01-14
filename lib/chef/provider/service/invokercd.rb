@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
+require "chef/provider/service/init"
 
 class Chef
   class Provider
     class Service
       class Invokercd < Chef::Provider::Service::Init
 
-        provides :service, platform_family: 'debian', override: true do |node|
+        provides :service, platform_family: "debian", override: true do |node|
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:invokercd)
         end
 

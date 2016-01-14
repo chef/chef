@@ -1,5 +1,5 @@
-require 'support/shared/integration/integration_helper'
-require 'chef/mixin/shell_out'
+require "support/shared/integration/integration_helper"
+require "chef/mixin/shell_out"
 
 describe "LWRPs" do
   include IntegrationSupport
@@ -20,17 +20,17 @@ describe "LWRPs" do
 
   when_the_repository "has a cookbook named l-w-r-p" do
     before do
-      directory 'cookbooks/l-w-r-p' do
+      directory "cookbooks/l-w-r-p" do
 
-        file 'resources/foo.rb', <<EOM
+        file "resources/foo.rb", <<EOM
 default_action :create
 EOM
-        file 'providers/foo.rb', <<EOM
+        file "providers/foo.rb", <<EOM
 action :create do
 end
 EOM
 
-        file 'recipes/default.rb', <<EOM
+        file "recipes/default.rb", <<EOM
 l_w_r_p_foo "me"
 EOM
 
@@ -38,7 +38,7 @@ EOM
     end
 
     it "should complete with success" do
-      file 'config/client.rb', <<EOM
+      file "config/client.rb", <<EOM
 local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 log_level :warn

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'proxifier'
+require "proxifier"
 
 class Chef
   module Mixin
@@ -25,9 +25,9 @@ class Chef
       # make the TCPSocket respect ENV['https_proxy'] or ENV['http_proxy'] if
       # they are present
       def proxified_socket(host, port)
-        proxy = ENV['https_proxy'] || ENV['http_proxy'] || false
+        proxy = ENV["https_proxy"] || ENV["http_proxy"] || false
         if proxy
-          Proxifier.Proxy(proxy, no_proxy: ENV['no_proxy']).open(host, port)
+          Proxifier.Proxy(proxy, no_proxy: ENV["no_proxy"]).open(host, port)
         else
           TCPSocket.new(host, port)
         end

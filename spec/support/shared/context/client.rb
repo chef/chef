@@ -1,5 +1,5 @@
 
-require 'spec_helper'
+require "spec_helper"
 
 # Stubs a basic client object
 shared_context "client" do
@@ -140,7 +140,7 @@ shared_context "a client run" do
 
   before do
     Chef::Config[:client_fork] = enable_fork
-    Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
+    Chef::Config[:cache_path] = windows? ? 'C:\chef' : "/var/chef"
     Chef::Config[:why_run] = false
     Chef::Config[:audit_mode] = :enabled
 

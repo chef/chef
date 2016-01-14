@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -28,7 +28,7 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'kernel32'
+        ffi_lib "kernel32"
 
         safe_attach_function :GetCurrentProcess, [], :HANDLE
         safe_attach_function :GetProcessHandleCount, [ :HANDLE, :LPDWORD ], :BOOL

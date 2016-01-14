@@ -19,11 +19,11 @@
 # limitations under the License.
 #
 
-require 'stringio'
-require 'chef/file_cache'
-require 'chef/json_compat'
-require 'chef/digester'
-require 'chef/exceptions'
+require "stringio"
+require "chef/file_cache"
+require "chef/json_compat"
+require "chef/digester"
+require "chef/exceptions"
 
 class Chef
   class Provider
@@ -172,7 +172,7 @@ class Chef
           # Scrub and truncate in accordance with the goals of keeping the name
           # human-readable but within the bounds of local file system
           # path length limits
-          uri.gsub(/\W/, '_')[0..63]
+          uri.gsub(/\W/, "_")[0..63]
         end
 
         def sanitized_cache_file_basename

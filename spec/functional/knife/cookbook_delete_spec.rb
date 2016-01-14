@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
+require "spec_helper"
+require "tiny_server"
 
 describe Chef::Knife::CookbookDelete do
   before(:all) do
@@ -32,7 +32,7 @@ describe Chef::Knife::CookbookDelete do
 
     Chef::Config[:node_name] = nil
     Chef::Config[:client_key] = nil
-    Chef::Config[:chef_server_url] = 'http://localhost:9000'
+    Chef::Config[:chef_server_url] = "http://localhost:9000"
   end
 
   after(:all) do
@@ -44,7 +44,7 @@ describe Chef::Knife::CookbookDelete do
 
     before do
       @knife.name_args = %w{no-such-cookbook}
-      @api.get("/cookbooks/no-such-cookbook", 404, Chef::JSONCompat.to_json({'error'=>'dear Tim, no. -Sent from my iPad'}))
+      @api.get("/cookbooks/no-such-cookbook", 404, Chef::JSONCompat.to_json({"error"=>"dear Tim, no. -Sent from my iPad"}))
     end
 
     around do |ex|
@@ -71,7 +71,7 @@ describe Chef::Knife::CookbookDelete do
   context "when there is only one version of a cookbook" do
     before do
       @knife.name_args = %w{obsolete-cookbook}
-      @cookbook_list = {'obsolete-cookbook' => { 'versions' => ['version' => '1.0.0']} }
+      @cookbook_list = {"obsolete-cookbook" => { "versions" => ["version" => "1.0.0"]} }
       @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 
@@ -112,9 +112,9 @@ describe Chef::Knife::CookbookDelete do
   context "when there are several versions of a cookbook" do
     before do
       @knife.name_args = %w{obsolete-cookbook}
-      versions = ['1.0.0', '1.1.0', '1.2.0']
-      with_version = lambda { |version| { 'version' => version } }
-      @cookbook_list = {'obsolete-cookbook' => { 'versions' => versions.map(&with_version) } }
+      versions = ["1.0.0", "1.1.0", "1.2.0"]
+      with_version = lambda { |version| { "version" => version } }
+      @cookbook_list = {"obsolete-cookbook" => { "versions" => versions.map(&with_version) } }
       @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 

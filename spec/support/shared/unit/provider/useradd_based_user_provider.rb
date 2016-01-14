@@ -60,14 +60,14 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil" do
         allow(@new_resource).to receive(attribute).and_return("hola")
-        expect(provider.universal_options).to eql([option, 'hola'])
+        expect(provider.universal_options).to eql([option, "hola"])
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management" do
         allow(@new_resource).to receive(:supports).and_return({:manage_home => false,
                                                     :non_unique => false})
         allow(@new_resource).to receive(attribute).and_return("hola")
-        expect(provider.universal_options).to eql([option, 'hola'])
+        expect(provider.universal_options).to eql([option, "hola"])
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management (using real attributes)" do
@@ -75,7 +75,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         allow(@new_resource).to receive(:non_unique).and_return(false)
         allow(@new_resource).to receive(:non_unique).and_return(false)
         allow(@new_resource).to receive(attribute).and_return("hola")
-        expect(provider.universal_options).to eql([option, 'hola'])
+        expect(provider.universal_options).to eql([option, "hola"])
       end
     end
 
@@ -83,7 +83,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       combined_opts = []
       supported_useradd_options.sort{ |a,b| a[0] <=> b[0] }.each do |attribute, option|
         allow(@new_resource).to receive(attribute).and_return("hola")
-        combined_opts << option << 'hola'
+        combined_opts << option << "hola"
       end
       expect(provider.universal_options).to eql(combined_opts)
     end
@@ -156,17 +156,17 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       provider.current_resource = @current_resource
       provider.new_resource.manage_home true
       provider.new_resource.home "/Users/mud"
-      provider.new_resource.gid '23'
+      provider.new_resource.gid "23"
     end
 
     it "runs useradd with the computed command options" do
       command = ["useradd",
-                  "-c",  'Adam Jacob',
-                  "-g", '23' ]
-      command.concat(["-p", 'abracadabra']) if supported_useradd_options.key?("password")
-      command.concat([ "-s", '/usr/bin/zsh',
-                       "-u", '1000',
-                       "-d", '/Users/mud',
+                  "-c",  "Adam Jacob",
+                  "-g", "23" ]
+      command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
+      command.concat([ "-s", "/usr/bin/zsh",
+                       "-u", "1000",
+                       "-d", "/Users/mud",
                        "-m",
                        "adam" ])
       expect(provider).to receive(:shell_out!).with(*command).and_return(true)
@@ -183,11 +183,11 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
       it "should not include -m or -d in the command options" do
         command = ["useradd",
-                    "-c", 'Adam Jacob',
-                    "-g", '23']
-        command.concat(["-p", 'abracadabra']) if supported_useradd_options.key?("password")
-        command.concat([ "-s", '/usr/bin/zsh',
-                         "-u", '1000',
+                    "-c", "Adam Jacob",
+                    "-g", "23"]
+        command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
+        command.concat([ "-s", "/usr/bin/zsh",
+                         "-u", "1000",
                          "-r",
                          "adam" ])
         expect(provider).to receive(:shell_out!).with(*command).and_return(true)
@@ -202,15 +202,15 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     before(:each) do
       provider.new_resource.manage_home true
       provider.new_resource.home "/Users/mud"
-      provider.new_resource.gid '23'
+      provider.new_resource.gid "23"
     end
 
     # CHEF-3423, -m must come before the username
     # CHEF-4305, -d must come before -m to support CentOS/RHEL 5
     it "runs usermod with the computed command options" do
       command = ["usermod",
-                  "-g", '23',
-                  "-d", '/Users/mud',
+                  "-g", "23",
+                  "-d", "/Users/mud",
                   "-m",
                   "adam" ]
       expect(provider).to receive(:shell_out!).with(*command).and_return(true)
@@ -220,8 +220,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "does not set the -r option to usermod" do
       @new_resource.system(true)
       command = ["usermod",
-                  "-g", '23',
-                  "-d", '/Users/mud',
+                  "-g", "23",
+                  "-d", "/Users/mud",
                   "-m",
                   "adam" ]
       expect(provider).to receive(:shell_out!).with(*command).and_return(true)
@@ -231,7 +231,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "CHEF-3429: does not set -m if we aren't changing the home directory" do
       expect(provider).to receive(:updating_home?).and_return(false)
       command = ["usermod",
-                  "-g", '23',
+                  "-g", "23",
                   "adam" ]
       expect(provider).to receive(:shell_out!).with(*command).and_return(true)
       provider.manage_user
@@ -307,7 +307,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     end
 
     it "should raise a Chef::Exceptions::User if passwd -S fails on anything other than redhat/centos" do
-      @node.automatic_attrs[:platform] = 'ubuntu'
+      @node.automatic_attrs[:platform] = "ubuntu"
       expect(provider).to receive(:shell_out!).
         with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
         and_return(passwd_s_status)
@@ -315,7 +315,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
     end
 
-    ['redhat', 'centos'].each do |os|
+    ["redhat", "centos"].each do |os|
       it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is version 0.73-1" do
         @node.automatic_attrs[:platform] = os
         expect(passwd_s_status).to receive(:exitstatus).and_return(1)

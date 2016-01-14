@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
+require "spec_helper"
+require "tiny_server"
 
 describe Chef::Knife::Exec do
   before(:all) do
@@ -32,7 +32,7 @@ describe Chef::Knife::Exec do
 
     Chef::Config[:node_name] = nil
     Chef::Config[:client_key] = nil
-    Chef::Config[:chef_server_url] = 'http://localhost:9000'
+    Chef::Config[:chef_server_url] = "http://localhost:9000"
 
     $output = StringIO.new
   end

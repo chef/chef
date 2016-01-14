@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/log'
-require 'chef/resource/file'
-require 'chef/mixin/checksum'
-require 'chef/provider'
-require 'etc'
-require 'fileutils'
-require 'chef/scan_access_control'
-require 'chef/win32/registry'
+require "chef/config"
+require "chef/log"
+require "chef/resource/file"
+require "chef/mixin/checksum"
+require "chef/provider"
+require "etc"
+require "fileutils"
+require "chef/scan_access_control"
+require "chef/win32/registry"
 
 class Chef
 

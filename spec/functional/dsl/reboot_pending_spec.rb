@@ -47,19 +47,19 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations' do
       let(:reg_key) { 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager' }
-      let(:original_set) { registry.value_exists?(reg_key, { :name => 'PendingFileRenameOperations' }) }
+      let(:original_set) { registry.value_exists?(reg_key, { :name => "PendingFileRenameOperations" }) }
 
       it "returns true if the registry value exists" do
-        skip 'found existing registry key' if original_set
+        skip "found existing registry key" if original_set
         registry.set_value(reg_key,
-            { :name => 'PendingFileRenameOperations', :type => :multi_string, :data => ['\??\C:\foo.txt|\??\C:\bar.txt'] })
+            { :name => "PendingFileRenameOperations", :type => :multi_string, :data => ['\??\C:\foo.txt|\??\C:\bar.txt'] })
 
         expect(recipe.reboot_pending?).to be_truthy
       end
 
       after do
         unless original_set
-          registry.delete_value(reg_key, { :name => 'PendingFileRenameOperations' })
+          registry.delete_value(reg_key, { :name => "PendingFileRenameOperations" })
         end
       end
     end
@@ -69,7 +69,7 @@ describe Chef::DSL::RebootPending, :windows_only do
       let(:original_set) { registry.key_exists?(reg_key) }
 
       it "returns true if the registry key exists" do
-        skip 'found existing registry key' if original_set
+        skip "found existing registry key" if original_set
         pending "Permissions are limited to 'TrustedInstaller' by default"
         registry.create_key(reg_key, false)
 
@@ -88,7 +88,7 @@ describe Chef::DSL::RebootPending, :windows_only do
       let(:original_set) { registry.key_exists?(reg_key) }
 
       it "returns true if the registry key exists" do
-        skip 'found existing registry key' if original_set
+        skip "found existing registry key" if original_set
         registry.create_key(reg_key, false)
 
         expect(recipe.reboot_pending?).to be_truthy
@@ -103,7 +103,7 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe "when there is nothing to indicate a reboot is pending" do
       it "should return false" do
-        skip 'reboot pending' if @any_flag.any? { |_,v| v == true }
+        skip "reboot pending" if @any_flag.any? { |_,v| v == true }
         expect(recipe.reboot_pending?).to be_falsey
       end
     end

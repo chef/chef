@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class XMLEscapingTestHarness
   include Chef::Mixin::XMLEscape

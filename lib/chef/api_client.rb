@@ -17,13 +17,13 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
-require 'chef/server_api'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/server_api"
 
 # DEPRECATION NOTE
 #
@@ -38,7 +38,7 @@ class Chef
 
     # Create a new Chef::ApiClient object.
     def initialize
-      @name = ''
+      @name = ""
       @public_key = nil
       @private_key = nil
       @admin = false
@@ -116,7 +116,7 @@ class Chef
         "public_key" => @public_key,
         "validator" => @validator,
         "admin" => @admin,
-        'json_class' => self.class.name,
+        "json_class" => self.class.name,
         "chef_type" => "client",
       }
       result["private_key"] = @private_key if @private_key

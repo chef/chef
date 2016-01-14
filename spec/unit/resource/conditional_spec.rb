@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Resource::Conditional do
   before do
@@ -89,17 +89,17 @@ describe Chef::Resource::Conditional do
       end
     end
 
-    describe 'after running a command which timed out' do
+    describe "after running a command which timed out" do
       before do
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
         allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
-      it 'indicates that resource convergence should not continue' do
+      it "indicates that resource convergence should not continue" do
         expect(@conditional.continue?).to be_falsey
       end
 
-      it 'should log a warning' do
+      it "should log a warning" do
         expect(Chef::Log).to receive(:warn).with("Command 'false' timed out")
         @conditional.continue?
       end
@@ -169,17 +169,17 @@ describe Chef::Resource::Conditional do
       end
     end
 
-    describe 'after running a command which timed out' do
+    describe "after running a command which timed out" do
       before do
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource,  "false")
         allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
-      it 'indicates that resource convergence should continue' do
+      it "indicates that resource convergence should continue" do
         expect(@conditional.continue?).to be_truthy
       end
 
-      it 'should log a warning' do
+      it "should log a warning" do
         expect(Chef::Log).to receive(:warn).with("Command 'false' timed out")
         @conditional.continue?
       end

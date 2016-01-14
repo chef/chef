@@ -15,13 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
-require 'chef/server_api'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/server_api"
 
 # TODO
 # DEPRECATION NOTE
@@ -41,7 +41,7 @@ class Chef
     include Chef::Mixin::ParamsValidate
 
     def initialize
-      @name = ''
+      @name = ""
       @public_key = nil
       @private_key = nil
       @password = nil
@@ -142,11 +142,11 @@ class Chef
 
     def self.from_hash(user_hash)
       user = Chef::User.new
-      user.name user_hash['name']
-      user.private_key user_hash['private_key'] if user_hash.key?('private_key')
-      user.password user_hash['password'] if user_hash.key?('password')
-      user.public_key user_hash['public_key']
-      user.admin user_hash['admin']
+      user.name user_hash["name"]
+      user.private_key user_hash["private_key"] if user_hash.key?("private_key")
+      user.password user_hash["password"] if user_hash.key?("password")
+      user.public_key user_hash["public_key"]
+      user.admin user_hash["admin"]
       user
     end
 
@@ -159,7 +159,7 @@ class Chef
     end
 
     def self.list(inflate=false)
-      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get('users')
+      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get("users")
       users = if response.is_a?(Array)
                 transform_ohc_list_response(response) # OHC/OPC
               else
@@ -187,7 +187,7 @@ class Chef
     def self.transform_ohc_list_response(response)
       new_response = Hash.new
       response.each do |u|
-        name = u['user']['username']
+        name = u["user"]["username"]
         new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"
       end
       new_response

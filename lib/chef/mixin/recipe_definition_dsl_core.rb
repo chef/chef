@@ -24,7 +24,7 @@
 # This constant (module name) will eventually be deprecated and then removed.
 ###
 
-require 'chef/mixin/deprecation'
+require "chef/mixin/deprecation"
 
 class Chef
   module Mixin

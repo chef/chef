@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/node_map'
+require "spec_helper"
+require "chef/node_map"
 
 describe Chef::NodeMap do
 
@@ -27,7 +27,7 @@ describe Chef::NodeMap do
 
   describe "with a bad filter name" do
     it "should raise an error" do
-      expect{ node_map.set(node, :thing, on_platform_family: 'rhel') }.to raise_error
+      expect{ node_map.set(node, :thing, on_platform_family: "rhel") }.to raise_error
     end
   end
 
@@ -156,7 +156,7 @@ describe Chef::NodeMap do
       expect(node_map.get(node, :chef_gem)).to eql(:foo)
     end
     it "should handle :on_platforms => [ 'windows' ]" do
-      node_map.set(:dsc_script, :foo, :on_platforms => [ 'windows' ])
+      node_map.set(:dsc_script, :foo, :on_platforms => [ "windows" ])
       allow(node).to receive(:[]).with(:platform).and_return("windows")
       expect(node_map.get(node, :dsc_script)).to eql(:foo)
     end

@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
-require 'fileutils'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
+require "fileutils"
 
 describe Chef::Resource::Service, :requires_root, :aix_only do
 
@@ -130,7 +130,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
     context "when the service doesn't set a priority" do
       it "creates symlink with status S" do
         new_resource.run_action(:enable)
-        valide_symlinks(["/etc/rc.d/rc2.d/Schefinittest"],2,'S')
+        valide_symlinks(["/etc/rc.d/rc2.d/Schefinittest"],2,"S")
       end
     end
 
@@ -141,7 +141,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
       it "creates a symlink with status S and a priority" do
         new_resource.run_action(:enable)
-        valide_symlinks(["/etc/rc.d/rc2.d/S75chefinittest"], 2,'S',75)
+        valide_symlinks(["/etc/rc.d/rc2.d/S75chefinittest"], 2,"S",75)
       end
     end
 
@@ -153,7 +153,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
       it "create symlink with status start (S) or stop (K) and a priority " do
         new_resource.run_action(:enable)
-        valide_symlinks(["/etc/rc.d/rc2.d/S20chefinittest", "/etc/rc.d/rc3.d/K10chefinittest"], 2,'S',new_resource.priority)
+        valide_symlinks(["/etc/rc.d/rc2.d/S20chefinittest", "/etc/rc.d/rc3.d/K10chefinittest"], 2,"S",new_resource.priority)
       end
     end
   end
@@ -171,7 +171,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
       it "creates symlink with status K" do
         new_resource.run_action(:disable)
-        valide_symlinks(["/etc/rc.d/rc2.d/Kchefinittest"], 2,'K')
+        valide_symlinks(["/etc/rc.d/rc2.d/Kchefinittest"], 2,"K")
       end
     end
 
@@ -187,7 +187,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
       it "creates a symlink with status K and a priority" do
         new_resource.run_action(:disable)
-        valide_symlinks(["/etc/rc.d/rc2.d/K25chefinittest"], 2,'K',25)
+        valide_symlinks(["/etc/rc.d/rc2.d/K25chefinittest"], 2,"K",25)
       end
     end
 
@@ -204,7 +204,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
       it "create symlink with status stop (K) and a priority " do
         new_resource.run_action(:disable)
-        valide_symlinks(["/etc/rc.d/rc2.d/K80chefinittest"], 2,'K',80)
+        valide_symlinks(["/etc/rc.d/rc2.d/K80chefinittest"], 2,"K",80)
       end
     end
   end

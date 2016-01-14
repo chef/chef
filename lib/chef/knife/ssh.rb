@@ -16,23 +16,23 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
-require 'chef/knife'
+require "chef/mixin/shell_out"
+require "chef/knife"
 
 class Chef
   class Knife
     class Ssh < Knife
 
       deps do
-        require 'net/ssh'
-        require 'net/ssh/multi'
-        require 'chef/monkey_patches/net-ssh-multi'
-        require 'readline'
-        require 'chef/exceptions'
-        require 'chef/search/query'
-        require 'chef/mixin/command'
-        require 'chef/util/path_helper'
-        require 'mixlib/shellout'
+        require "net/ssh"
+        require "net/ssh/multi"
+        require "chef/monkey_patches/net-ssh-multi"
+        require "readline"
+        require "chef/exceptions"
+        require "chef/search/query"
+        require "chef/mixin/command"
+        require "chef/util/path_helper"
+        require "mixlib/shellout"
       end
 
       include Chef::Mixin::ShellOut
@@ -109,8 +109,8 @@ class Chef
         :default => true
 
       option :on_error,
-        :short => '-e',
-        :long => '--exit-on-error',
+        :short => "-e",
+        :long => "--exit-on-error",
         :description => "Immediately exit if an error is encountered",
         :boolean => true,
         :proc => Proc.new { :raise }
@@ -140,8 +140,8 @@ class Chef
       def configure_gateway
         config[:ssh_gateway] ||= Chef::Config[:knife][:ssh_gateway]
         if config[:ssh_gateway]
-          gw_host, gw_user = config[:ssh_gateway].split('@').reverse
-          gw_host, gw_port = gw_host.split(':')
+          gw_host, gw_user = config[:ssh_gateway].split("@").reverse
+          gw_host, gw_port = gw_host.split(":")
           gw_opts = session_options(gw_host, gw_port, gw_user)
           user = gw_opts.delete(:user)
 
@@ -190,7 +190,7 @@ class Chef
               node[:cloud][:public_hostname] &&
               !node[:cloud][:public_hostname].empty?
           Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target")
-          attribute = 'cloud.public_hostname'
+          attribute = "cloud.public_hostname"
         else
           # falling back to default of fqdn
           Chef::Log.debug("Using node attribute 'fqdn' as the ssh target")
@@ -246,7 +246,7 @@ class Chef
           opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
           if !config[:host_key_verify]
             opts[:paranoid] = false
-            opts[:user_known_hosts_file] = '/dev/null'
+            opts[:user_known_hosts_file] = "/dev/null"
           end
         end
       end
@@ -301,7 +301,7 @@ class Chef
         exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
-        command.force_encoding('binary') if command.respond_to?(:force_encoding)
+        command.force_encoding("binary") if command.respond_to?(:force_encoding)
         subsession.open_channel do |ch|
           ch.request_pty
           ch.exec command do |ch, success|
@@ -367,8 +367,8 @@ class Chef
         loop do
           command = read_line
           case command
-          when 'quit!'
-            puts 'Bye!'
+          when "quit!"
+            puts "Bye!"
             break
           when /^on (.+?); (.+)$/
             raw_list = $1.split(" ")
@@ -386,7 +386,7 @@ class Chef
 
       def screen
         tf = Tempfile.new("knife-ssh-screen")
-        Chef::Util::PathHelper.home('.screenrc') do |screenrc_path|
+        Chef::Util::PathHelper.home(".screenrc") do |screenrc_path|
           if File.exist? screenrc_path
             tf.puts("source #{screenrc_path}")
           end
@@ -439,7 +439,7 @@ class Chef
 
       def macterm
         begin
-          require 'appscript'
+          require "appscript"
         rescue LoadError
           STDERR.puts "You need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install"
           raise
@@ -447,7 +447,7 @@ class Chef
 
         Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate
         Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
-        term = Appscript.app('Terminal')
+        term = Appscript.app("Terminal")
         window = term.windows.first.get
 
         (session.servers_for.size - 1).times do |i|
@@ -457,7 +457,7 @@ class Chef
 
         session.servers_for.each_with_index do |server, tab_number|
           cmd = "unset PROMPT_COMMAND; echo -e \"\\033]0;#{server.host}\\007\"; ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}"
-          Appscript.app('Terminal').do_script(cmd, :in => window.tabs[tab_number + 1].get)
+          Appscript.app("Terminal").do_script(cmd, :in => window.tabs[tab_number + 1].get)
         end
       end
 

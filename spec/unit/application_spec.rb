@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Application do
   before do
@@ -51,7 +51,7 @@ describe Chef::Application do
       @app.reconfigure
     end
 
-    it 'should not receive set_specific_recipes' do
+    it "should not receive set_specific_recipes" do
       expect(@app).to_not receive(:set_specific_recipes)
       @app.reconfigure
     end
@@ -298,18 +298,18 @@ describe Chef::Application do
     end
   end
 
-  describe 'run_chef_client' do
-    context 'with an application' do
+  describe "run_chef_client" do
+    context "with an application" do
       let(:app) { Chef::Application.new }
 
-      context 'when called with an invalid argument' do
+      context "when called with an invalid argument" do
         before do
           allow(app).to receive(:fork_chef_client).and_return(true)
           allow(app).to receive(:run_with_graceful_exit_option).and_return(true)
         end
 
-        it 'should raise an argument error detailing the problem' do
-          specific_recipes_regexp = Regexp.new 'received non-Array like specific_recipes argument'
+        it "should raise an argument error detailing the problem" do
+          specific_recipes_regexp = Regexp.new "received non-Array like specific_recipes argument"
           expect { app.run_chef_client(nil) }.to raise_error(ArgumentError, specific_recipes_regexp)
         end
       end
@@ -320,7 +320,7 @@ describe Chef::Application do
           allow(app).to receive(:run_with_graceful_exit_option).and_return(true)
         end
 
-        it 'should be cool' do
+        it "should be cool" do
           expect { app.run_chef_client([]) }.not_to raise_error
         end
       end

@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/version_class'
-require 'chef/version_constraint'
+require "chef/version_class"
+require "chef/version_constraint"
 
 describe Chef::RunList do
   before(:each) do
@@ -30,21 +30,21 @@ describe Chef::RunList do
 
   describe "<<" do
     it "should add a recipe to the run list and recipe list with the fully qualified name" do
-      @run_list << 'recipe[needy]'
-      expect(@run_list).to include('recipe[needy]')
+      @run_list << "recipe[needy]"
+      expect(@run_list).to include("recipe[needy]")
       expect(@run_list.recipes).to include("needy")
     end
 
     it "should add a role to the run list and role list with the fully qualified name" do
       @run_list << "role[woot]"
-      expect(@run_list).to include('role[woot]')
-      expect(@run_list.roles).to include('woot')
+      expect(@run_list).to include("role[woot]")
+      expect(@run_list.roles).to include("woot")
     end
 
     it "should accept recipes that are unqualified" do
       @run_list << "needy"
-      expect(@run_list).to include('recipe[needy]')
-      expect(@run_list.recipes.include?('needy')).to eq(true)
+      expect(@run_list).to include("recipe[needy]")
+      expect(@run_list.recipes.include?("needy")).to eq(true)
     end
 
     it "should not allow duplicates" do
@@ -59,7 +59,7 @@ describe Chef::RunList do
       @run_list << "recipe[needy@0.1.0]"
       expect(@run_list.run_list.length).to eq(2)
       expect(@run_list.recipes.length).to eq(2)
-      expect(@run_list.recipes.include?('needy')).to eq(true)
+      expect(@run_list.recipes.include?("needy")).to eq(true)
     end
 
     it "should not allow duplicate versions of a recipe" do
@@ -74,13 +74,13 @@ describe Chef::RunList do
     # Testing only the basic functionality here
     # since full behavior is tested above.
     it "should add a recipe to the run_list" do
-      @run_list.add 'recipe[needy]'
-      expect(@run_list).to include('recipe[needy]')
+      @run_list.add "recipe[needy]"
+      expect(@run_list).to include("recipe[needy]")
     end
 
     it "should add a role to the run_list" do
-      @run_list.add 'role[needy]'
-      expect(@run_list).to include('role[needy]')
+      @run_list.add "role[needy]"
+      expect(@run_list).to include("role[needy]")
     end
   end
 
@@ -112,20 +112,20 @@ describe Chef::RunList do
 
   describe "[]" do
     it "should let you look up a member in the run list by position" do
-      @run_list << 'recipe[loulou]'
-      expect(@run_list[0]).to eq('recipe[loulou]')
+      @run_list << "recipe[loulou]"
+      expect(@run_list[0]).to eq("recipe[loulou]")
     end
   end
 
   describe "[]=" do
     it "should let you set a member of the run list by position" do
-      @run_list[0] = 'recipe[loulou]'
-      expect(@run_list[0]).to eq('recipe[loulou]')
+      @run_list[0] = "recipe[loulou]"
+      expect(@run_list[0]).to eq("recipe[loulou]")
     end
 
     it "should properly expand a member of the run list given by position" do
-      @run_list[0] = 'loulou'
-      expect(@run_list[0]).to eq('recipe[loulou]')
+      @run_list[0] = "loulou"
+      expect(@run_list[0]).to eq("recipe[loulou]")
     end
   end
 
@@ -199,7 +199,7 @@ describe Chef::RunList do
       it "should load the role from the chef server" do
         #@rest.should_receive(:get).with("roles/stubby")
         expansion = @run_list.expand("_default", "server")
-        expect(expansion.recipes).to eq(['one', 'two', 'kitty'])
+        expect(expansion.recipes).to eq(["one", "two", "kitty"])
       end
 
       it "should default to expanding from the server" do
@@ -270,7 +270,7 @@ describe Chef::RunList do
       allow(Chef::Role).to receive(:from_disk).with("stubby").and_return(@role)
       allow(Chef::Role).to receive(:from_disk).with("dog").and_return(dog)
 
-      expansion = @run_list.expand("_default", 'disk')
+      expansion = @run_list.expand("_default", "disk")
       expect(expansion.recipes[2]).to eq("three")
       expect(expansion.default_attrs[:seven]).to eq(:nine)
     end
@@ -284,7 +284,7 @@ describe Chef::RunList do
       allow(Chef::Role).to receive(:from_disk).with("stubby").and_return(@role)
       expect(Chef::Role).to receive(:from_disk).with("dog").once.and_return(dog)
 
-      expansion = @run_list.expand("_default", 'disk')
+      expansion = @run_list.expand("_default", "disk")
       expect(expansion.recipes[2]).to eq("three")
       expect(expansion.recipes[3]).to eq("kitty")
       expect(expansion.default_attrs[:seven]).to eq(:nine)

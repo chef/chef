@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/dsl/powershell'
+require "chef/exceptions"
+require "chef/dsl/powershell"
 
 class Chef
   class Resource
@@ -95,7 +95,7 @@ class Chef
         if module_name
           @imports[module_name] ||= []
           if args.length == 0
-            @imports[module_name] << '*'
+            @imports[module_name] << "*"
           else
             @imports[module_name].push(*args)
           end

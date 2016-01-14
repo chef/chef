@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require 'forwardable'
-require 'chef/platform/query_helpers'
-require 'chef/knife/core/generic_presenter'
-require 'tempfile'
+require "forwardable"
+require "chef/platform/query_helpers"
+require "chef/knife/core/generic_presenter"
+require "tempfile"
 
 class Chef
   class Knife
@@ -57,7 +57,7 @@ class Chef
 
       def highline
         @highline ||= begin
-          require 'highline'
+          require "highline"
           HighLine.new
         end
       end
@@ -175,7 +175,7 @@ class Chef
       def edit_data(data, parse_output=true)
         output = Chef::JSONCompat.to_json_pretty(data)
         if (!config[:disable_editing])
-          Tempfile.open([ 'knife-edit-', '.json' ]) do |tf|
+          Tempfile.open([ "knife-edit-", ".json" ]) do |tf|
             tf.sync = true
             tf.puts output
             tf.close
@@ -217,11 +217,11 @@ class Chef
       def confirmation_instructions(default_choice)
         case default_choice
         when true
-          '? (Y/n) '
+          "? (Y/n) "
         when false
-          '? (y/N) '
+          "? (y/N) "
         else
-          '? (Y/N) '
+          "? (Y/N) "
         end
       end
 

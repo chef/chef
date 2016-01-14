@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/provider/package/windows/msi'
+require "spec_helper"
+require "chef/provider/package/windows/msi"
 
 describe Chef::Provider::Package::Windows::MSI do
-  let(:node) { double('Chef::Node') }
-  let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
-  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
+  let(:node) { double("Chef::Node") }
+  let(:events) { double("Chef::Events").as_null_object }  # mock all the methods
+  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
   let(:package_name) { "calculator" }
   let(:resource_source) { "calculator.msi" }
   let(:resource_version) { nil }
@@ -34,14 +34,14 @@ describe Chef::Provider::Package::Windows::MSI do
   end
   let(:uninstall_hash) do
     [{
-      'DisplayVersion' => 'outdated',
-      'UninstallString' => "MsiExec.exe /X{guid}",
+      "DisplayVersion" => "outdated",
+      "UninstallString" => "MsiExec.exe /X{guid}",
     }]
   end
   let(:uninstall_entry) do
     entries = []
     uninstall_hash.each do |entry|
-      entries.push(Chef::Provider::Package::Windows::RegistryUninstallEntry.new('hive', 'key', entry))
+      entries.push(Chef::Provider::Package::Windows::RegistryUninstallEntry.new("hive", "key", entry))
     end
     entries
   end
@@ -129,12 +129,12 @@ describe Chef::Provider::Package::Windows::MSI do
         let(:uninstall_hash) do
           [
             {
-              'DisplayVersion' => 'outdated',
-              'UninstallString' => "MsiExec.exe /X{guid}",
+              "DisplayVersion" => "outdated",
+              "UninstallString" => "MsiExec.exe /X{guid}",
             },
             {
-              'DisplayVersion' => 'really_outdated',
-              'UninstallString' => "MsiExec.exe /X{guid2}",
+              "DisplayVersion" => "really_outdated",
+              "UninstallString" => "MsiExec.exe /X{guid2}",
             },
           ]
         end

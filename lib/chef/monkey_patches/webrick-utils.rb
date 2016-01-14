@@ -1,4 +1,4 @@
-require 'webrick/utils'
+require "webrick/utils"
 
 module WEBrick
   module Utils

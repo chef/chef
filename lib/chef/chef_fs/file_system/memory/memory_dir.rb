@@ -1,5 +1,5 @@
-require 'chef/chef_fs/file_system/base_fs_dir'
-require 'chef/chef_fs/file_system/memory/memory_file'
+require "chef/chef_fs/file_system/base_fs_dir"
+require "chef/chef_fs/file_system/memory/memory_file"
 
 class Chef
   module ChefFS
@@ -26,15 +26,15 @@ class Chef
           end
 
           def add_file(path, value)
-            path_parts = path.split('/')
-            dir = add_dir(path_parts[0..-2].join('/'))
+            path_parts = path.split("/")
+            dir = add_dir(path_parts[0..-2].join("/"))
             file = MemoryFile.new(path_parts[-1], dir, value)
             dir.add_child(file)
             file
           end
 
           def add_dir(path)
-            path_parts = path.split('/')
+            path_parts = path.split("/")
             dir = self
             path_parts.each do |path_part|
               subdir = dir.child(path_part)

@@ -1,4 +1,4 @@
-require 'support/shared/integration/integration_helper'
+require "support/shared/integration/integration_helper"
 
 describe "Chef::Resource#identity and #state" do
   include IntegrationSupport
@@ -26,7 +26,7 @@ describe "Chef::Resource#identity and #state" do
   end
 
   def self.english_join(values)
-    return '<nothing>' if values.size == 0
+    return "<nothing>" if values.size == 0
     return values[0].inspect if values.size == 1
     "#{values[0..-2].map { |v| v.inspect }.join(", ")} and #{values[-1].inspect}"
   end
@@ -55,8 +55,8 @@ describe "Chef::Resource#identity and #state" do
       it "name is the default identity" do
         expect(resource_class.identity_properties).to eq [ Chef::Resource.properties[:name] ]
         expect(Chef::Resource.properties[:name].identity?).to be_falsey
-        expect(resource.name).to eq 'blah'
-        expect(resource.identity).to eq 'blah'
+        expect(resource.name).to eq "blah"
+        expect(resource.identity).to eq "blah"
       end
 
       it "identity_properties :x changes the identity" do
@@ -65,11 +65,11 @@ describe "Chef::Resource#identity and #state" do
         expect(Chef::Resource.properties[:name].identity?).to be_falsey
         expect(resource_class.properties[:x].identity?).to be_truthy
 
-        expect(resource.x 'woo').to eq 'woo'
-        expect(resource.x).to eq 'woo'
+        expect(resource.x "woo").to eq "woo"
+        expect(resource.x).to eq "woo"
 
-        expect(resource.name).to eq 'blah'
-        expect(resource.identity).to eq 'woo'
+        expect(resource.name).to eq "blah"
+        expect(resource.identity).to eq "woo"
       end
 
       with_property ":y, identity: true" do
@@ -81,19 +81,19 @@ describe "Chef::Resource#identity and #state" do
           end
 
           it "only returns :x as identity" do
-            resource.x 'foo'
-            resource.y 'bar'
+            resource.x "foo"
+            resource.y "bar"
             expect(resource_class.identity_properties).to eq [ resource_class.properties[:x] ]
-            expect(resource.identity).to eq 'foo'
+            expect(resource.identity).to eq "foo"
           end
           it "does not flip y.desired_state off" do
-            resource.x 'foo'
-            resource.y 'bar'
+            resource.x "foo"
+            resource.y "bar"
             expect(resource_class.state_properties).to eq [
               resource_class.properties[:x],
               resource_class.properties[:y],
             ]
-            expect(resource.state_for_resource_reporter).to eq(x: 'foo', y: 'bar')
+            expect(resource.state_for_resource_reporter).to eq(x: "foo", y: "bar")
           end
         end
       end
@@ -106,14 +106,14 @@ describe "Chef::Resource#identity and #state" do
           end
         end
         let(:subresource) do
-          subresource_class.new('sub')
+          subresource_class.new("sub")
         end
 
         it "name is the default identity on the subclass" do
           expect(subresource_class.identity_properties).to eq [ Chef::Resource.properties[:name] ]
           expect(Chef::Resource.properties[:name].identity?).to be_falsey
-          expect(subresource.name).to eq 'sub'
-          expect(subresource.identity).to eq 'sub'
+          expect(subresource.name).to eq "sub"
+          expect(subresource.identity).to eq "sub"
         end
 
         context "With identity_properties :x on the superclass" do
@@ -128,8 +128,8 @@ describe "Chef::Resource#identity and #state" do
             expect(Chef::Resource.properties[:name].identity?).to be_falsey
             expect(subresource_class.properties[:x].identity?).to be_truthy
 
-            subresource.x 'foo'
-            expect(subresource.identity).to eq 'foo'
+            subresource.x "foo"
+            expect(subresource.identity).to eq "foo"
           end
 
           context "With property :y, identity: true on the subclass" do
@@ -143,9 +143,9 @@ describe "Chef::Resource#identity and #state" do
                 subresource_class.properties[:x],
                 subresource_class.properties[:y],
               ]
-              subresource.x 'foo'
-              subresource.y 'bar'
-              expect(subresource.identity).to eq(x: 'foo', y: 'bar')
+              subresource.x "foo"
+              subresource.y "bar"
+              expect(subresource.identity).to eq(x: "foo", y: "bar")
             end
           end
 
@@ -157,9 +157,9 @@ describe "Chef::Resource#identity and #state" do
                 end
               end
               it "y is part of state" do
-                subresource.x 'foo'
-                subresource.y 'bar'
-                expect(subresource.state_for_resource_reporter).to eq(x: 'foo', y: 'bar')
+                subresource.x "foo"
+                subresource.y "bar"
+                expect(subresource.state_for_resource_reporter).to eq(x: "foo", y: "bar")
                 expect(subresource_class.state_properties).to eq [
                   subresource_class.properties[:x],
                   subresource_class.properties[:y],
@@ -167,9 +167,9 @@ describe "Chef::Resource#identity and #state" do
               end
               it "y is the identity" do
                 expect(subresource_class.identity_properties).to eq [ subresource_class.properties[:y] ]
-                subresource.x 'foo'
-                subresource.y 'bar'
-                expect(subresource.identity).to eq 'bar'
+                subresource.x "foo"
+                subresource.y "bar"
+                expect(subresource.identity).to eq "bar"
               end
               it "y still has validation" do
                 expect { subresource.y 12 }.to raise_error Chef::Exceptions::ValidationFailed
@@ -191,8 +191,8 @@ describe "Chef::Resource#identity and #state" do
     with_property ":x, desired_state: false" do
       it "identity_properties does not change desired_state" do
         resource_class.identity_properties :x
-        resource.x 'hi'
-        expect(resource.identity).to eq 'hi'
+        resource.x "hi"
+        expect(resource.identity).to eq "hi"
         expect(resource_class.properties[:x].desired_state?).to be_falsey
         expect(resource_class.state_properties).to eq []
         expect(resource.state_for_resource_reporter).to eq({})
@@ -247,8 +247,8 @@ describe "Chef::Resource#identity and #state" do
     with_property ":x, identity: true" do
       it "name is only part of the identity if an identity attribute is defined" do
         expect(resource_class.identity_properties).to eq [ resource_class.properties[:x] ]
-        resource.x 'woo'
-        expect(resource.identity).to eq 'woo'
+        resource.x "woo"
+        expect(resource.identity).to eq "woo"
       end
     end
 
@@ -262,29 +262,29 @@ describe "Chef::Resource#identity and #state" do
         expect { resource_class.identity_attr }.to raise_error Chef::Exceptions::MultipleIdentityError
       end
       it "identity returns all identity values in a hash if multiple are defined" do
-        resource.x 'foo'
-        resource.y 'bar'
-        resource.z 'baz'
-        expect(resource.identity).to eq(x: 'foo', y: 'bar', z: 'baz')
+        resource.x "foo"
+        resource.y "bar"
+        resource.z "baz"
+        expect(resource.identity).to eq(x: "foo", y: "bar", z: "baz")
       end
       it "identity returns all values whether any value is set or not" do
-        expect(resource.identity).to eq(x: 'xxx', y: 'yyy', z: 'zzz')
+        expect(resource.identity).to eq(x: "xxx", y: "yyy", z: "zzz")
       end
       it "identity_properties wipes out any other identity attributes if multiple are defined" do
         resource_class.identity_properties :y
-        resource.x 'foo'
-        resource.y 'bar'
-        resource.z 'baz'
-        expect(resource.identity).to eq 'bar'
+        resource.x "foo"
+        resource.y "bar"
+        resource.z "baz"
+        expect(resource.identity).to eq "bar"
       end
     end
 
     with_property ":x, identity: true, name_property: true" do
       it "identity when x is not defined returns the value of x" do
-        expect(resource.identity).to eq 'blah'
+        expect(resource.identity).to eq "blah"
       end
       it "state when x is not defined returns the value of x" do
-        expect(resource.state_for_resource_reporter).to eq(x: 'blah')
+        expect(resource.state_for_resource_reporter).to eq(x: "blah")
       end
     end
   end
@@ -397,7 +397,7 @@ describe "Chef::Resource#identity and #state" do
       end
       it "state_properties(:x) does not turn off validation" do
         resource_class.state_properties(:x)
-        expect { resource.x 'ouch' }.to raise_error Chef::Exceptions::ValidationFailed
+        expect { resource.x "ouch" }.to raise_error Chef::Exceptions::ValidationFailed
       end
       it "state_properties(:x) does not turn off identity" do
         resource_class.state_properties(:x)
@@ -459,7 +459,7 @@ describe "Chef::Resource#identity and #state" do
           end
         end
         let(:subresource) do
-          subresource_class.new('blah')
+          subresource_class.new("blah")
         end
 
         it "state_properties(:x) adds x to desired state" do

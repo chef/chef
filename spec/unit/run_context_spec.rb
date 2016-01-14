@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/lib/library_load_order'
+require "spec_helper"
+require "support/lib/library_load_order"
 
 describe Chef::RunContext do
   let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")) }
@@ -104,7 +104,7 @@ describe Chef::RunContext do
       expect(node).to receive(:loaded_recipe).with(:test, "default")
       expect(node).to receive(:loaded_recipe).with(:test, "one")
       expect(node).to receive(:loaded_recipe).with(:test, "two")
-      run_context.load(node.run_list.expand('_default'))
+      run_context.load(node.run_list.expand("_default"))
     end
 
     it "should load all the definitions in the cookbooks for this node" do

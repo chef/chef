@@ -1,4 +1,4 @@
-require 'chef/platform'
+require "chef/platform"
 
 #
 # ChefFS was designed to be a near-1:1 translation between Chef server endpoints

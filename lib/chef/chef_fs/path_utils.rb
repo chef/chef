@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs'
-require 'pathname'
+require "chef/chef_fs"
+require "pathname"
 
 class Chef
   module ChefFS
@@ -45,9 +45,9 @@ class Chef
         # Determine if it started with a slash
         absolute = parts[0].length == 0 || parts[0].length > 0 && parts[0] =~ /^#{regexp_path_separator}/
         # Remove leading and trailing slashes from each part so that the join will work (and the slash at the end will go away)
-        parts = parts.map { |part| part.gsub(/^#{regexp_path_separator}+|#{regexp_path_separator}+$/, '') }
+        parts = parts.map { |part| part.gsub(/^#{regexp_path_separator}+|#{regexp_path_separator}+$/, "") }
         # Don't join empty bits
-        result = parts.select { |part| part != '' }.join('/')
+        result = parts.select { |part| part != "" }.join("/")
         # Put the / back on
         absolute ? "/#{result}" : result
       end
@@ -57,7 +57,7 @@ class Chef
       end
 
       def self.regexp_path_separator
-        Chef::ChefFS::windows? ? '[\/\\\\]' : '/'
+        Chef::ChefFS::windows? ? '[\/\\\\]' : "/"
       end
 
       # Given a server path, determines if it is absolute.
@@ -113,7 +113,7 @@ class Chef
         candidate_fragment = path[0, ancestor.length]
         return nil unless PathUtils.os_path_eq?(candidate_fragment, ancestor)
         if ancestor.length == path.length
-          ''
+          ""
         elsif path[ancestor.length,1] =~ /#{PathUtils.regexp_path_separator}/
           path[ancestor.length+1..-1]
         else

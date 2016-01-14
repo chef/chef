@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'zlib'
-require 'chef/http/http_request'
+require "zlib"
+require "chef/http/http_request"
 
 class Chef
   class HTTP
@@ -132,7 +132,7 @@ class Chef
       def handle_options(opts)
         opts.each do |name, value|
           case name.to_s
-          when 'disable_gzip'
+          when "disable_gzip"
             @disable_gzip = value
           end
         end

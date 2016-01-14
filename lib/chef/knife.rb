@@ -17,20 +17,20 @@
 # limitations under the License.
 #
 
-require 'forwardable'
-require 'chef/version'
-require 'mixlib/cli'
-require 'chef/workstation_config_loader'
-require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/path_sanity'
-require 'chef/knife/core/subcommand_loader'
-require 'chef/knife/core/ui'
-require 'chef/local_mode'
-require 'chef/server_api'
-require 'chef/http/authenticator'
-require 'chef/http/http_request'
-require 'chef/http'
-require 'pp'
+require "forwardable"
+require "chef/version"
+require "mixlib/cli"
+require "chef/workstation_config_loader"
+require "chef/mixin/convert_to_class_name"
+require "chef/mixin/path_sanity"
+require "chef/knife/core/subcommand_loader"
+require "chef/knife/core/ui"
+require "chef/local_mode"
+require "chef/server_api"
+require "chef/http/authenticator"
+require "chef/http/http_request"
+require "chef/http"
+require "pp"
 
 class Chef
   class Knife
@@ -116,15 +116,15 @@ class Chef
     end
 
     def self.subcommand_category
-      @category || snake_case_name.split('_').first unless unnamed?
+      @category || snake_case_name.split("_").first unless unnamed?
     end
 
     def self.snake_case_name
-      convert_to_snake_case(name.split('::').last) unless unnamed?
+      convert_to_snake_case(name.split("::").last) unless unnamed?
     end
 
     def self.common_name
-      snake_case_name.split('_').join(' ')
+      snake_case_name.split("_").join(" ")
     end
 
     # Does this class have a name? (Classes created via Class.new don't)
@@ -201,7 +201,7 @@ class Chef
       # config file is read may be lost. If the KNIFE_DEBUG variable is set, we
       # setup the logger for debug logging to stderr immediately to catch info
       # from early in the setup process.
-      if ENV['KNIFE_DEBUG']
+      if ENV["KNIFE_DEBUG"]
         Chef::Log.init($stderr)
         Chef::Log.level(:debug)
       end
@@ -262,7 +262,7 @@ class Chef
     end
 
     def self.list_commands(preferred_category=nil)
-      category_desc = preferred_category ? preferred_category + " " : ''
+      category_desc = preferred_category ? preferred_category + " " : ""
       msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
       subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
         next if category =~ /deprecated/i
@@ -289,16 +289,16 @@ class Chef
       super() # having to call super in initialize is the most annoying anti-pattern :(
       @ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, config)
 
-      command_name_words = self.class.snake_case_name.split('_')
+      command_name_words = self.class.snake_case_name.split("_")
 
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
-      @name_args.delete(command_name_words.join('-'))
+      @name_args.delete(command_name_words.join("-"))
       @name_args.reject! { |name_arg| command_name_words.delete(name_arg) }
 
       # knife node run_list add requires that we have extra logic to handle
       # the case that command name words could be joined by an underscore :/
-      command_name_words = command_name_words.join('_')
+      command_name_words = command_name_words.join("_")
       @name_args.reject! { |name_arg| command_name_words == name_arg }
 
       if config[:help]
@@ -361,7 +361,7 @@ class Chef
         Chef::Config[:log_level] = :debug
       end
 
-      Chef::Config[:log_level] = :debug if ENV['KNIFE_DEBUG']
+      Chef::Config[:log_level] = :debug if ENV["KNIFE_DEBUG"]
 
       Chef::Config[:node_name]         = config[:node_name]       if config[:node_name]
       Chef::Config[:client_key]        = config[:client_key]      if config[:client_key]
@@ -504,7 +504,7 @@ class Chef
     #--
     # TODO: this code belongs in Chef::REST
     def format_rest_error(response)
-      Array(Chef::JSONCompat.from_json(response.body)["error"]).join('; ')
+      Array(Chef::JSONCompat.from_json(response.body)["error"]).join("; ")
     rescue Exception
       response.body
     end
@@ -553,14 +553,14 @@ class Chef
 
     def rest
       @rest ||= begin
-        require 'chef/server_api'
+        require "chef/server_api"
         Chef::ServerAPI.new(Chef::Config[:chef_server_url])
       end
     end
 
     def noauth_rest
       @rest ||= begin
-        require 'chef/http/simple_json'
+        require "chef/http/simple_json"
         Chef::HTTP::SimpleJSON.new(Chef::Config[:chef_server_url])
       end
     end

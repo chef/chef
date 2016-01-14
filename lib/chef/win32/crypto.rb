@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/win32/error'
-require 'chef/win32/api/memory'
-require 'chef/win32/api/crypto'
-require 'chef/win32/unicode'
-require 'digest'
+require "chef/win32/error"
+require "chef/win32/api/memory"
+require "chef/win32/api/crypto"
+require "chef/win32/unicode"
+require "digest"
 
 class Chef
   module ReservedNames::Win32

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_entry'
-require 'chef/chef_fs/file_system/chef_server/acls_dir'
-require 'chef/chef_fs/data_handler/acl_data_handler'
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/chef_server/acls_dir"
+require "chef/chef_fs/data_handler/acl_data_handler"
 
 class Chef
   module ChefFS
@@ -30,7 +30,7 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            is_dir ? Chef::ChefFS::FileSystem::ChefServer::AclsDir::ENTITY_TYPES.include?(name) : name == 'organization.json'
+            is_dir ? Chef::ChefFS::FileSystem::ChefServer::AclsDir::ENTITY_TYPES.include?(name) : name == "organization.json"
           end
         end
       end

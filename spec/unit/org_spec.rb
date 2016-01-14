@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/org'
-require 'tempfile'
+require "chef/org"
+require "tempfile"
 
 describe Chef::Org do
   let(:org) { Chef::Org.new("an_org") }
@@ -135,7 +135,7 @@ describe Chef::Org do
   describe "API Interactions" do
     let(:rest) do
       Chef::Config[:chef_server_root] = "http://www.example.com"
-      r = double('rest')
+      r = double("rest")
       allow(Chef::ServerAPI).to receive(:new).and_return(r)
       r
     end

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'net/ssh'
-require 'net/ssh/multi'
+require "spec_helper"
+require "net/ssh"
+require "net/ssh/multi"
 
 describe Chef::Knife::Ssh do
   before(:each) do
@@ -54,7 +54,7 @@ describe Chef::Knife::Ssh do
           @knife.config[:attribute] = "ipaddress"
           Chef::Config[:knife][:ssh_attribute] = "ipaddress" # this value will be in the config file
           configure_query([@node_foo, @node_bar])
-          expect(@knife).to receive(:session_from_list).with([['10.0.0.1', nil], ['10.0.0.2', nil]])
+          expect(@knife).to receive(:session_from_list).with([["10.0.0.1", nil], ["10.0.0.2", nil]])
           @knife.configure_session
         end
 
@@ -62,7 +62,7 @@ describe Chef::Knife::Ssh do
           Chef::Config[:knife][:ssh_attribute] = "config_file" # this value will be in the config file
           @knife.config[:attribute] = "ipaddress" # this is the value of the command line via #configure_attribute
           configure_query([@node_foo, @node_bar])
-          expect(@knife).to receive(:session_from_list).with([['10.0.0.1', nil], ['10.0.0.2', nil]])
+          expect(@knife).to receive(:session_from_list).with([["10.0.0.1", nil], ["10.0.0.2", nil]])
           @knife.configure_session
         end
       end
@@ -70,8 +70,8 @@ describe Chef::Knife::Ssh do
       it "searchs for and returns an array of fqdns" do
         configure_query([@node_foo, @node_bar])
         expect(@knife).to receive(:session_from_list).with([
-          ['foo.example.org', nil],
-          ['bar.example.org', nil],
+          ["foo.example.org", nil],
+          ["bar.example.org", nil],
         ])
         @knife.configure_session
       end
@@ -86,8 +86,8 @@ describe Chef::Knife::Ssh do
         it "returns an array of cloud public hostnames" do
           configure_query([@node_foo, @node_bar])
           expect(@knife).to receive(:session_from_list).with([
-            ['ec2-10-0-0-1.compute-1.amazonaws.com', nil],
-            ['ec2-10-0-0-2.compute-1.amazonaws.com', nil],
+            ["ec2-10-0-0-1.compute-1.amazonaws.com", nil],
+            ["ec2-10-0-0-2.compute-1.amazonaws.com", nil],
           ])
           @knife.configure_session
         end
@@ -97,15 +97,15 @@ describe Chef::Knife::Ssh do
 
       context "when cloud hostnames are available but empty" do
         before do
-          @node_foo.automatic_attrs[:cloud][:public_hostname] = ''
-          @node_bar.automatic_attrs[:cloud][:public_hostname] = ''
+          @node_foo.automatic_attrs[:cloud][:public_hostname] = ""
+          @node_bar.automatic_attrs[:cloud][:public_hostname] = ""
         end
 
         it "returns an array of fqdns" do
           configure_query([@node_foo, @node_bar])
           expect(@knife).to receive(:session_from_list).with([
-            ['foo.example.org', nil],
-            ['bar.example.org', nil],
+            ["foo.example.org", nil],
+            ["bar.example.org", nil],
           ])
           @knife.configure_session
         end
@@ -143,7 +143,7 @@ describe Chef::Knife::Ssh do
 
       it "returns an array of provided values" do
         @knife.instance_variable_set(:@name_args, ["foo.example.org bar.example.org"])
-        expect(@knife).to receive(:session_from_list).with(['foo.example.org', 'bar.example.org'])
+        expect(@knife).to receive(:session_from_list).with(["foo.example.org", "bar.example.org"])
         @knife.configure_session
       end
     end
@@ -159,7 +159,7 @@ describe Chef::Knife::Ssh do
       Chef::Config[:knife][:ssh_attribute] = nil
       @knife.config[:attribute] = nil
       @node_foo.automatic_attrs[:cloud][:public_hostname] = "ec2-10-0-0-1.compute-1.amazonaws.com"
-      @node_bar.automatic_attrs[:cloud][:public_hostname] = ''
+      @node_bar.automatic_attrs[:cloud][:public_hostname] = ""
     end
 
     it "should return fqdn by default" do
@@ -190,21 +190,21 @@ describe Chef::Knife::Ssh do
     before :each do
       @knife.instance_variable_set(:@longest, 0)
       ssh_config = {:timeout => 50, :user => "locutus", :port => 23 }
-      allow(Net::SSH).to receive(:configuration_for).with('the.b.org').and_return(ssh_config)
+      allow(Net::SSH).to receive(:configuration_for).with("the.b.org").and_return(ssh_config)
     end
 
     it "uses the port from an ssh config file" do
-      @knife.session_from_list([['the.b.org', nil]])
+      @knife.session_from_list([["the.b.org", nil]])
       expect(@knife.session.servers[0].port).to eq(23)
     end
 
     it "uses the port from a cloud attr" do
-      @knife.session_from_list([['the.b.org', 123]])
+      @knife.session_from_list([["the.b.org", 123]])
       expect(@knife.session.servers[0].port).to eq(123)
     end
 
     it "uses the user from an ssh config file" do
-      @knife.session_from_list([['the.b.org', 123]])
+      @knife.session_from_list([["the.b.org", 123]])
       expect(@knife.session.servers[0].user).to eq("locutus")
     end
   end
@@ -279,7 +279,7 @@ describe Chef::Knife::Ssh do
       expect(@query).to receive(:search).and_return([[@node_foo]])
       allow(Chef::Search::Query).to receive(:new).and_return(@query)
       allow(@knife).to receive(:ssh_command).and_return(exit_code)
-      @knife.name_args = ['*:*', 'false']
+      @knife.name_args = ["*:*", "false"]
     end
 
     context "with an error" do

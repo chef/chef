@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/json_compat'
-require 'chef/mixin/params_validate'
-require 'chef/exceptions'
-require 'chef/server_api'
+require "chef/json_compat"
+require "chef/mixin/params_validate"
+require "chef/exceptions"
+require "chef/server_api"
 
 class Chef
   # Class for interacting with a chef key object. Can be used to create new keys,
@@ -149,9 +149,9 @@ class Chef
       end
 
       payload = {"name" => @name}
-      payload['public_key'] = @public_key unless @public_key.nil?
-      payload['create_key'] = @create_key if @create_key
-      payload['expiration_date'] = @expiration_date unless @expiration_date.nil?
+      payload["public_key"] = @public_key unless @public_key.nil?
+      payload["create_key"] = @create_key if @create_key
+      payload["expiration_date"] = @expiration_date unless @expiration_date.nil?
       result = chef_rest.post("#{api_base}/#{@actor}/keys", payload)
       # append the private key to the current key if the server returned one,
       # since the POST endpoint just returns uri and private_key if needed.
@@ -210,11 +210,11 @@ class Chef
       else
         raise Chef::Exceptions::MissingKeyAttribute, "The hash passed to from_hash does not contain the key 'user' or 'client'. Please pass a hash that defines one of those keys."
       end
-      key.name key_hash['name'] if key_hash.key?('name')
-      key.public_key key_hash['public_key'] if key_hash.key?('public_key')
-      key.private_key key_hash['private_key'] if key_hash.key?('private_key')
-      key.create_key key_hash['create_key'] if key_hash.key?('create_key')
-      key.expiration_date key_hash['expiration_date'] if key_hash.key?('expiration_date')
+      key.name key_hash["name"] if key_hash.key?("name")
+      key.public_key key_hash["public_key"] if key_hash.key?("public_key")
+      key.private_key key_hash["private_key"] if key_hash.key?("private_key")
+      key.create_key key_hash["create_key"] if key_hash.key?("create_key")
+      key.expiration_date key_hash["expiration_date"] if key_hash.key?("expiration_date")
       key
     end
 
@@ -252,7 +252,7 @@ class Chef
                                                 OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.n),
                                                 OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.e),
                                               ])
-        OpenSSL::Digest::SHA1.hexdigest(data_string.to_der).scan(/../).join(':')
+        OpenSSL::Digest::SHA1.hexdigest(data_string.to_der).scan(/../).join(":")
     end
 
     private

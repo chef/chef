@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Shell::ModelWrapper do
   before do
@@ -81,14 +81,14 @@ describe Shell::ModelWrapper do
     end
 
     it "searches for objects using the given query string" do
-      expect(@searcher).to receive(:search).with(:node, 'name:app*').and_yield(@node_1).and_yield(@node_2)
+      expect(@searcher).to receive(:search).with(:node, "name:app*").and_yield(@node_1).and_yield(@node_2)
       expect(@wrapper.find("name:app*")).to include(@node_1, @node_2)
     end
 
     it "creates a 'AND'-joined query string from a HASH" do
       # Hash order woes
-      expect(@searcher).to receive(:search).with(:node, 'name:app* AND name:app*').and_yield(@node_1).and_yield(@node_2)
-      expect(@wrapper.find(:name=>"app*",'name'=>"app*")).to include(@node_1, @node_2)
+      expect(@searcher).to receive(:search).with(:node, "name:app* AND name:app*").and_yield(@node_1).and_yield(@node_2)
+      expect(@wrapper.find(:name=>"app*","name"=>"app*")).to include(@node_1, @node_2)
     end
 
   end

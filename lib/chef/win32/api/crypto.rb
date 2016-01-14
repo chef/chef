@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -28,7 +28,7 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'Crypt32'
+        ffi_lib "Crypt32"
 
         CRYPTPROTECT_UI_FORBIDDEN  = 0x1
         CRYPTPROTECT_LOCAL_MACHINE = 0x4

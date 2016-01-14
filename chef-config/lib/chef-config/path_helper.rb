@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef-config/windows'
-require 'chef-config/logger'
-require 'chef-config/exceptions'
+require "chef-config/windows"
+require "chef-config/logger"
+require "chef-config/exceptions"
 
 module ChefConfig
   class PathHelper
@@ -32,7 +32,7 @@ module ChefConfig
         loop do
           slash = path.rindex(/[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(path_separator)}]/, end_slash - 1)
           if !slash
-            return end_slash == path.size ? '.' : path_separator
+            return end_slash == path.size ? "." : path_separator
           elsif slash == end_slash - 1
             end_slash = slash
           else
@@ -64,8 +64,8 @@ module ChefConfig
       leading_slashes = /^[#{path_separator_regex}]+/
 
       args.flatten.inject() do |joined_path, component|
-        joined_path = joined_path.sub(trailing_slashes, '')
-        component = component.sub(leading_slashes, '')
+        joined_path = joined_path.sub(trailing_slashes, "")
+        component = component.sub(leading_slashes, "")
         joined_path += "#{path_separator}#{component}"
       end
     end
@@ -201,12 +201,12 @@ module ChefConfig
         # HOMESHARE HOMEPATH
         # USERPROFILE
 
-        paths << ENV['HOME']
-        paths << ENV['HOMEDRIVE'] + ENV['HOMEPATH'] if ENV['HOMEDRIVE'] && ENV['HOMEPATH']
-        paths << ENV['HOMESHARE'] + ENV['HOMEPATH'] if ENV['HOMESHARE'] && ENV['HOMEPATH']
-        paths << ENV['USERPROFILE']
+        paths << ENV["HOME"]
+        paths << ENV["HOMEDRIVE"] + ENV["HOMEPATH"] if ENV["HOMEDRIVE"] && ENV["HOMEPATH"]
+        paths << ENV["HOMESHARE"] + ENV["HOMEPATH"] if ENV["HOMESHARE"] && ENV["HOMEPATH"]
+        paths << ENV["USERPROFILE"]
       end
-      paths << Dir.home if ENV['HOME']
+      paths << Dir.home if ENV["HOME"]
 
       # Depending on what environment variables we're using, the slashes can go in any which way.
       # Just change them all to / to keep things consistent.
@@ -231,10 +231,10 @@ module ChefConfig
 
     # Determine if the given path is protected by OS X System Integrity Protection.
     def self.is_sip_path?(path, node)
-      if node['platform'] == 'mac_os_x' and Gem::Version.new(node['platform_version']) >= Gem::Version.new('10.11')
+      if node["platform"] == "mac_os_x" and Gem::Version.new(node["platform_version"]) >= Gem::Version.new("10.11")
           # todo: parse rootless.conf for this?
           sip_paths= [
-            '/System', '/bin', '/sbin', '/usr'
+            "/System", "/bin", "/sbin", "/usr"
           ]
           sip_paths.each do |sip_path|
             ChefConfig.logger.info("This is a SIP path, checking if it in exceptions list.")
@@ -249,9 +249,9 @@ module ChefConfig
     def self.writable_sip_path?(path)
       # todo: parse rootless.conf for this?
       sip_exceptions = [
-        '/System/Library/Caches', '/System/Library/Extensions',
-        '/System/Library/Speech', '/System/Library/User Template',
-        '/usr/libexec/cups', '/usr/local', '/usr/share/man'
+        "/System/Library/Caches", "/System/Library/Extensions",
+        "/System/Library/Speech", "/System/Library/User Template",
+        "/usr/libexec/cups", "/usr/local", "/usr/share/man"
       ]
       sip_exceptions.each do |exception_path|
         return true if path.start_with?(exception_path)

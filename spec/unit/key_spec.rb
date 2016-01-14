@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/key'
+require "chef/key"
 
 describe Chef::Key do
   # whether user or client irrelevent to these tests
@@ -341,7 +341,7 @@ EOS
     let(:rest) do
       Chef::Config[:chef_server_root] = "http://www.example.com"
       Chef::Config[:chef_server_url] = "http://www.example.com/organizations/test_org"
-      r = double('rest')
+      r = double("rest")
       allow(Chef::ServerAPI).to receive(:new).and_return(r)
       r
     end

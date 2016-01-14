@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/event_dispatch/dispatcher'
+require "spec_helper"
+require "chef/event_dispatch/dispatcher"
 
 describe Chef::EventDispatch::Dispatcher do
 

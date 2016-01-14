@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::ResourceCollection::StepableIterator do
   CRSI = Chef::ResourceCollection::StepableIterator

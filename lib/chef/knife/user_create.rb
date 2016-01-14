@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/osc_user_create'
+require "chef/knife"
+require "chef/knife/osc_user_create"
 
 class Chef
   class Knife
@@ -27,8 +27,8 @@ class Chef
       attr_accessor :user_field
 
       deps do
-        require 'chef/user_v1'
-        require 'chef/json_compat'
+        require "chef/user_v1"
+        require "chef/json_compat"
       end
 
       option :file,

@@ -25,7 +25,7 @@ if Chef::Platform::windows? and not Chef::Platform::windows_server_2003?
       end
     end
 
-    require 'win32/eventlog'
+    require "win32/eventlog"
     Chef::Win32EventLogLoaded = true
   end
 end

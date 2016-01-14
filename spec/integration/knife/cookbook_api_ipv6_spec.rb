@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'support/shared/integration/integration_helper'
-require 'chef/mixin/shell_out'
+require "support/shared/integration/integration_helper"
+require "chef/mixin/shell_out"
 
 describe "Knife cookbook API integration with IPv6", :workstation, :not_supported_on_gce do
   include IntegrationSupport
@@ -84,8 +84,8 @@ END_CLIENT_RB
         end
 
         before do
-          file 'config/knife.rb', knife_rb_content
-          file 'config/knifeuser.pem', client_key
+          file "config/knife.rb", knife_rb_content
+          file "config/knifeuser.pem", client_key
         end
 
         it "successfully uploads a cookbook" do

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::OscUserCreate.load_deps
 
@@ -34,13 +34,13 @@ describe Chef::Knife::OscUserCreate do
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
     allow(@knife.ui).to receive(:stderr).and_return(@stderr)
 
-    @knife.name_args = [ 'a_user' ]
+    @knife.name_args = [ "a_user" ]
     @knife.config[:user_password] = "foobar"
     @user = Chef::User.new
     @user.name "a_user"
     @user_with_private_key = Chef::User.new
     @user_with_private_key.name "a_user"
-    @user_with_private_key.private_key 'private_key'
+    @user_with_private_key.private_key "private_key"
     allow(@user).to receive(:create).and_return(@user_with_private_key)
     allow(Chef::User).to receive(:new).and_return(@user)
     allow(Chef::User).to receive(:from_hash).and_return(@user)
@@ -61,7 +61,7 @@ describe Chef::Knife::OscUserCreate do
   end
 
   it "exits with an error if password is blank" do
-    @knife.config[:user_password] = ''
+    @knife.config[:user_password] = ""
     expect { @knife.run }.to raise_error SystemExit
     expect(@stderr.string).to match /You must specify a non-blank password/
   end
@@ -86,7 +86,7 @@ describe Chef::Knife::OscUserCreate do
   it "writes the private key to a file when --file is specified" do
     @knife.config[:file] = "/tmp/a_file"
     filehandle = double("filehandle")
-    expect(filehandle).to receive(:print).with('private_key')
+    expect(filehandle).to receive(:print).with("private_key")
     expect(File).to receive(:open).with("/tmp/a_file", "w").and_yield(filehandle)
     @knife.run
   end

@@ -106,7 +106,7 @@ class Chef
         end
 
         def set(platforms, value)
-          if platforms.to_s == 'default'
+          if platforms.to_s == "default"
             @values["default"] = value
           else
             assert_valid_platform_values!(platforms, value)
@@ -212,7 +212,7 @@ class Chef
         private
 
         def set(platform_family, value)
-          if platform_family.to_s == 'default'
+          if platform_family.to_s == "default"
             @values["default"] = value
           else
             Array(platform_family).each { |family| @values[family.to_s] = value }
@@ -256,5 +256,5 @@ end
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
-require 'chef/mixin/language'
+require "chef/mixin/language"
 

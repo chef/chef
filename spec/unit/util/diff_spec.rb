@@ -17,8 +17,8 @@
 #
 
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 shared_context "using file paths with spaces" do
   let!(:old_tempfile) { Tempfile.new("chef-util diff-spec") }

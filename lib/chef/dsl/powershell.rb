@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/util/powershell/ps_credential'
+require "chef/util/powershell/ps_credential"
 
 class Chef
   module DSL
     module Powershell
-      def ps_credential(username='placeholder', password)
+      def ps_credential(username="placeholder", password)
         Chef::Util::Powershell::PSCredential.new(username, password)
       end
     end

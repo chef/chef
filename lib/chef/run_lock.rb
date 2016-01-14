@@ -15,14 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/mixin/create_path'
-require 'fcntl'
+require "chef/mixin/create_path"
+require "fcntl"
 if Chef::Platform.windows?
-  require 'chef/win32/mutex'
+  require "chef/win32/mutex"
 end
-require 'chef/config'
-require 'chef/exceptions'
-require 'timeout'
+require "chef/config"
+require "chef/exceptions"
+require "timeout"
 
 class Chef
 
@@ -132,7 +132,7 @@ class Chef
     def create_lock
       # ensure the runlock_file path exists
       create_path(File.dirname(runlock_file))
-      @runlock = File.open(runlock_file,'a+')
+      @runlock = File.open(runlock_file,"a+")
     end
 
     # @api private solely for race condition tests
@@ -143,7 +143,7 @@ class Chef
         # If we support FD_CLOEXEC, then use it.
         # NB: ruby-2.0.0-p195 sets FD_CLOEXEC by default, but not
         # ruby-1.8.7/1.9.3
-        if Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
+        if Fcntl.const_defined?("F_SETFD") && Fcntl.const_defined?("FD_CLOEXEC")
           runlock.fcntl(Fcntl::F_SETFD, runlock.fcntl(Fcntl::F_GETFD, 0) | Fcntl::FD_CLOEXEC)
         end
         # Flock will return 0 if it can acquire the lock otherwise it

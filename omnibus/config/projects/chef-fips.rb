@@ -18,7 +18,7 @@
 # This is the chef client build with FIPS mode enabled.
 # It's a stub for now and produces identical results
 #
-chef_project_contents = IO.read(File.expand_path('../chef.rb', __FILE__))
+chef_project_contents = IO.read(File.expand_path("../chef.rb", __FILE__))
 self.instance_eval chef_project_contents
 
 name "chef-fips"

@@ -17,9 +17,9 @@
 
 # I love you Merb (lib/merb-core/server.rb)
 
-require 'chef/config'
-require 'chef/run_lock'
-require 'etc'
+require "chef/config"
+require "chef/run_lock"
+require "etc"
 
 class Chef
   class Daemon

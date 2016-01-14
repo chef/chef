@@ -18,7 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/provider/user/useradd'
+require "chef/provider/user/useradd"
 
 class Chef
   class Provider
@@ -45,14 +45,14 @@ class Chef
         end
 
         def check_lock
-          shadow_line = shell_out!('getent', 'shadow', new_resource.username).stdout.strip rescue nil
+          shadow_line = shell_out!("getent", "shadow", new_resource.username).stdout.strip rescue nil
 
           # if the command fails we return nil, this can happen if the user
           # in question doesn't exist
           return nil if shadow_line.nil?
 
           # convert "dave:NP:16507::::::\n" to "NP"
-          fields = shadow_line.split(':')
+          fields = shadow_line.split(":")
 
           # '*LK*...' and 'LK' are both considered locked,
           # so look for LK at the beginning of the shadow entry
@@ -63,11 +63,11 @@ class Chef
         end
 
         def lock_user
-          shell_out!('passwd', '-l', new_resource.username)
+          shell_out!("passwd", "-l", new_resource.username)
         end
 
         def unlock_user
-          shell_out!('passwd', '-u', new_resource.username)
+          shell_out!("passwd", "-u", new_resource.username)
         end
 
       private

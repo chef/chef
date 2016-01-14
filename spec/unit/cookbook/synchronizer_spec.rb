@@ -1,6 +1,6 @@
-require 'spec_helper'
-require 'chef/cookbook/synchronizer'
-require 'chef/cookbook_version'
+require "spec_helper"
+require "chef/cookbook/synchronizer"
+require "chef/cookbook_version"
 
 describe Chef::CookbookCacheCleaner do
   describe "when cleaning up unused cookbook components" do
@@ -164,8 +164,8 @@ describe Chef::CookbookSynchronizer do
       valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
       obsolete_cb_files = %w{cookbooks/old1/recipes/default.rb cookbooks/old2/recipes/default.rb}
       expect(file_cache).to receive(:find).with(File.join(%w{cookbooks ** {*,.*}})).and_return(valid_cached_cb_files + obsolete_cb_files)
-      expect(file_cache).to receive(:delete).with('cookbooks/old1/recipes/default.rb')
-      expect(file_cache).to receive(:delete).with('cookbooks/old2/recipes/default.rb')
+      expect(file_cache).to receive(:delete).with("cookbooks/old1/recipes/default.rb")
+      expect(file_cache).to receive(:delete).with("cookbooks/old2/recipes/default.rb")
       allow(synchronizer).to receive(:cache).and_return(file_cache)
       synchronizer.remove_old_cookbooks
     end
@@ -186,7 +186,7 @@ describe Chef::CookbookSynchronizer do
       expect(synchronizer).to receive(:have_cookbook?).with("valid1").at_least(:once).and_return(true)
       # valid2 is a cookbook not in our run_list (we're simulating an override run_list where valid2 needs to be preserved)
       expect(synchronizer).to receive(:have_cookbook?).with("valid2").at_least(:once).and_return(false)
-      expect(file_cache).to receive(:delete).with('cookbooks/valid1/recipes/deleted.rb')
+      expect(file_cache).to receive(:delete).with("cookbooks/valid1/recipes/deleted.rb")
       expect(synchronizer).to receive(:cookbook_segment).with("valid1", "recipes").at_least(:once).and_return([ { "path" => "recipes/default.rb" }])
       allow(synchronizer).to receive(:cache).and_return(file_cache)
       synchronizer.remove_deleted_files
@@ -224,7 +224,7 @@ describe Chef::CookbookSynchronizer do
 
     # Fetch and copy default.rb recipe
     expect(server_api).to receive(:streaming_request).
-      with('http://chef.example.com/abc123').
+      with("http://chef.example.com/abc123").
       and_return(cookbook_a_default_recipe_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_recipes_default_rb", "cookbooks/cookbook_a/recipes/default.rb")
@@ -234,7 +234,7 @@ describe Chef::CookbookSynchronizer do
 
     # Fetch and copy default.rb attribute file
     expect(server_api).to receive(:streaming_request).
-      with('http://chef.example.com/abc456').
+      with("http://chef.example.com/abc456").
       and_return(cookbook_a_default_attribute_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_attributes_default_rb", "cookbooks/cookbook_a/attributes/default.rb")
@@ -252,7 +252,7 @@ describe Chef::CookbookSynchronizer do
       and_return(false)
 
     expect(server_api).to receive(:streaming_request).
-      with('http://chef.example.com/megaman.conf').
+      with("http://chef.example.com/megaman.conf").
       and_return(cookbook_a_file_default_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_file_default_tempfile", "cookbooks/cookbook_a/files/default/megaman.conf")
@@ -261,7 +261,7 @@ describe Chef::CookbookSynchronizer do
       and_return("/file-cache/cookbooks/cookbook_a/default/megaman.conf")
 
     expect(server_api).to receive(:streaming_request).
-      with('http://chef.example.com/ffffff').
+      with("http://chef.example.com/ffffff").
       and_return(cookbook_a_template_default_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_template_default_tempfile", "cookbooks/cookbook_a/templates/default/apache2.conf.erb")
@@ -281,7 +281,7 @@ describe Chef::CookbookSynchronizer do
 
     # Fetch and copy default.rb recipe
     expect(server_api).to receive(:streaming_request).
-      with('http://chef.example.com/abc123').
+      with("http://chef.example.com/abc123").
       and_return(cookbook_a_default_recipe_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_recipes_default_rb", "cookbooks/cookbook_a/recipes/default.rb")
@@ -297,7 +297,7 @@ describe Chef::CookbookSynchronizer do
 
     # Fetch and copy default.rb attribute file
     expect(server_api).to receive(:streaming_request).
-      with('http://chef.example.com/abc456').
+      with("http://chef.example.com/abc456").
       and_return(cookbook_a_default_attribute_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_attributes_default_rb", "cookbooks/cookbook_a/attributes/default.rb")
@@ -323,7 +323,7 @@ describe Chef::CookbookSynchronizer do
 
     # Fetch and copy megaman.conf
     expect(server_api).to receive(:streaming_request).
-      with('http://chef.example.com/megaman.conf').
+      with("http://chef.example.com/megaman.conf").
       and_return(cookbook_a_file_default_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_file_default_tempfile", "cookbooks/cookbook_a/files/default/megaman.conf")
@@ -334,7 +334,7 @@ describe Chef::CookbookSynchronizer do
 
     # Fetch and copy apache2.conf template
     expect(server_api).to receive(:streaming_request).
-      with('http://chef.example.com/ffffff').
+      with("http://chef.example.com/ffffff").
       and_return(cookbook_a_template_default_tempfile)
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_template_default_tempfile", "cookbooks/cookbook_a/templates/default/apache2.conf.erb")
@@ -442,7 +442,7 @@ describe Chef::CookbookSynchronizer do
         it "does not fetch templates or cookbook files" do
           # Implicitly tested in previous test; this test is just for behavior specification.
           expect(server_api).not_to receive(:streaming_request).
-            with('http://chef.example.com/ffffff')
+            with("http://chef.example.com/ffffff")
 
           synchronizer.sync_cookbooks
         end

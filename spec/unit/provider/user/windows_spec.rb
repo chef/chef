@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class Chef
   class Util
@@ -104,7 +104,7 @@ describe Chef::Provider::User::Windows do
       end
 
       it "marks the home_dir attribute to be updated" do
-        expect(@provider.set_options[:home_dir]).to eq('/home/adam')
+        expect(@provider.set_options[:home_dir]).to eq("/home/adam")
       end
 
       it "ignores the primary_group_id attribute" do
@@ -116,11 +116,11 @@ describe Chef::Provider::User::Windows do
       end
 
       it "marks the script_path attribute to be updated" do
-        expect(@provider.set_options[:script_path]).to eq('/usr/bin/zsh')
+        expect(@provider.set_options[:script_path]).to eq("/usr/bin/zsh")
       end
 
       it "marks the password attribute to be updated" do
-        expect(@provider.set_options[:password]).to eq('abracadabra')
+        expect(@provider.set_options[:password]).to eq("abracadabra")
       end
     end
   end

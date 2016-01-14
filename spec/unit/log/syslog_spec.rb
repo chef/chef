@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef'
+require "spec_helper"
+require "chef"
 
 describe "Chef::Log::Syslog", :unix_only => true do
   let(:syslog) { Chef::Log::Syslog.new }

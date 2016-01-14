@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/platform/priority_map'
+require "chef/exceptions"
+require "chef/platform/priority_map"
 
 class Chef
   #

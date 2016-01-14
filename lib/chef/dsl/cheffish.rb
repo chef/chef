@@ -57,7 +57,7 @@ class Chef
         public_instance_methods(false).each do |method_name|
           remove_method(method_name)
         end
-        require 'cheffish'
+        require "cheffish"
       end
     end
   end

@@ -18,22 +18,22 @@
 # limitations under the License.
 #
 
-require 'forwardable'
-require 'chef/config'
-require 'chef/nil_argument'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mixin/deep_merge'
-require 'chef/dsl/include_attribute'
-require 'chef/dsl/platform_introspection'
-require 'chef/environment'
-require 'chef/server_api'
-require 'chef/run_list'
-require 'chef/node/attribute'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
-require 'chef/whitelist'
+require "forwardable"
+require "chef/config"
+require "chef/nil_argument"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mixin/deep_merge"
+require "chef/dsl/include_attribute"
+require "chef/dsl/platform_introspection"
+require "chef/environment"
+require "chef/server_api"
+require "chef/run_list"
+require "chef/node/attribute"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/whitelist"
 
 class Chef
   class Node
@@ -69,7 +69,7 @@ class Chef
       @chef_server_rest = chef_server_rest
       @name = nil
 
-      @chef_environment = '_default'
+      @chef_environment = "_default"
       @primary_runlist = Chef::RunList.new
       @override_runlist = Chef::RunList.new
 
@@ -433,7 +433,7 @@ class Chef
     # run_list is mutated? Or perhaps do something smarter like
     # on-demand generation of default_attrs and override_attrs,
     # invalidated only when run_list is mutated?
-    def expand!(data_source = 'server')
+    def expand!(data_source = "server")
       expansion = run_list.expand(chef_environment, data_source)
       raise Chef::Exceptions::MissingRole, expansion if expansion.errors?
 
@@ -500,7 +500,7 @@ class Chef
       result = {
         "name" => name,
         "chef_environment" => chef_environment,
-        'json_class' => self.class.name,
+        "json_class" => self.class.name,
         "automatic" => attributes.automatic,
         "normal" => attributes.normal,
         "chef_type" => "node",
@@ -586,7 +586,7 @@ class Chef
     def self.find_or_create(node_name)
       load(node_name)
     rescue Net::HTTPServerException => e
-      raise unless e.response.code == '404'
+      raise unless e.response.code == "404"
       node = build(node_name)
       node.create
     end

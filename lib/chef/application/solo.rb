@@ -16,22 +16,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef'
-require 'chef/application'
-require 'chef/client'
-require 'chef/config'
-require 'chef/daemon'
-require 'chef/log'
-require 'chef/rest'
-require 'chef/config_fetcher'
-require 'fileutils'
+require "chef"
+require "chef/application"
+require "chef/client"
+require "chef/config"
+require "chef/daemon"
+require "chef/log"
+require "chef/rest"
+require "chef/config_fetcher"
+require "fileutils"
 
 class Chef::Application::Solo < Chef::Application
 
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => Chef::Config.platform_specific_path('/etc/chef/solo.rb'),
+    :default => Chef::Config.platform_specific_path("/etc/chef/solo.rb"),
     :description => "The configuration file to use"
 
   option :formatter,
@@ -59,7 +59,7 @@ class Chef::Application::Solo < Chef::Application
     :default      => false
 
   option :color,
-    :long         => '--[no-]color',
+    :long         => "--[no-]color",
     :boolean      => true,
     :default      => !Chef::Platform.windows?,
     :description  => "Use colored output, defaults to enabled"
@@ -153,7 +153,7 @@ class Chef::Application::Solo < Chef::Application
     :long         => "--override-runlist RunlistItem,RunlistItem...",
     :description  => "Replace current run list with specified items",
     :proc         => lambda{|items|
-      items = items.split(',')
+      items = items.split(",")
       items.compact.map{|item|
         Chef::RunList::RunListItem.new(item)
       }
@@ -166,20 +166,20 @@ class Chef::Application::Solo < Chef::Application
     :boolean      => true
 
   option :why_run,
-    :short        => '-W',
-    :long         => '--why-run',
-    :description  => 'Enable whyrun mode',
+    :short        => "-W",
+    :long         => "--why-run",
+    :description  => "Enable whyrun mode",
     :boolean      => true
 
   option :ez,
-    :long         => '--ez',
-    :description  => 'A memorial for Ezra Zygmuntowicz',
+    :long         => "--ez",
+    :description  => "A memorial for Ezra Zygmuntowicz",
     :boolean      => true
 
   option :environment,
-    :short        => '-E ENVIRONMENT',
-    :long         => '--environment ENVIRONMENT',
-    :description  => 'Set the Chef Environment on the node'
+    :short        => "-E ENVIRONMENT",
+    :long         => "--environment ENVIRONMENT",
+    :description  => "Set the Chef Environment on the node"
 
   option :run_lock_timeout,
     :long         => "--run-lock-timeout SECONDS",
@@ -212,13 +212,13 @@ class Chef::Application::Solo < Chef::Application
 
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
-      recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
+      recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
 
       Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
       FileUtils.rm_rf(recipes_path, :secure => true)
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p(recipes_path)
-      tarball_path = File.join(recipes_path, 'recipes.tgz')
+      tarball_path = File.join(recipes_path, "recipes.tgz")
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
       Mixlib::ShellOut.new("tar zxvf #{tarball_path} -C #{recipes_path}").run_command
     end
@@ -303,7 +303,7 @@ EOH
 
   def fetch_recipe_tarball(url, path)
     Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
-    File.open(path, 'wb') do |f|
+    File.open(path, "wb") do |f|
       open(url) do |r|
         f.write(r.read)
       end

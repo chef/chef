@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/util/dsc/resource_info'
-require 'chef/exceptions'
+require "chef/log"
+require "chef/util/dsc/resource_info"
+require "chef/exceptions"
 
 class Chef
   class Util
@@ -109,7 +109,7 @@ class Chef
                 # What If: [machinename]: LCM: [op_action op_type] message
                 # extract op_action, op_type, and message
                 operation, info = match.captures
-                op_action, op_type = operation.strip.split(' ').map {|m| m.downcase.to_sym}
+                op_action, op_type = operation.strip.split(" ").map {|m| m.downcase.to_sym}
             else
               op_action = op_type = :info
               if match = line.match(/^.*?:.*?: \s+(.*)/)

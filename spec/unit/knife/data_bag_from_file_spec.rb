@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item'
-require 'tempfile'
+require "chef/data_bag_item"
+require "chef/encrypted_data_bag_item"
+require "tempfile"
 
 Chef::Knife::DataBagFromFile.load_deps
 

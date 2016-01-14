@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/key_edit_base'
+require "chef/knife"
+require "chef/knife/key_edit_base"
 
 class Chef
   class Knife
@@ -30,7 +30,7 @@ class Chef
     class ClientKeyEdit < Knife
       include Chef::Knife::KeyEditBase
 
-      banner 'knife client key edit CLIENT KEYNAME (options)'
+      banner "knife client key edit CLIENT KEYNAME (options)"
 
       attr_reader :actor
 
@@ -45,7 +45,7 @@ class Chef
       end
 
       def actor_field_name
-        'client'
+        "client"
       end
 
       def service_object
@@ -53,11 +53,11 @@ class Chef
       end
 
       def actor_missing_error
-        'You must specify a client name'
+        "You must specify a client name"
       end
 
       def keyname_missing_error
-        'You must specify a key name'
+        "You must specify a key name"
       end
 
       def apply_params!(params)

@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/solaris'
+require "chef/resource/package"
+require "chef/provider/package/solaris"
 
 class Chef
   class Resource

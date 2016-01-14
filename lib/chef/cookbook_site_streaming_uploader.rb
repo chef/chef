@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'net/http'
-require 'mixlib/authentication/signedheaderauth'
-require 'openssl'
+require "uri"
+require "net/http"
+require "mixlib/authentication/signedheaderauth"
+require "openssl"
 
 class Chef
   # == Chef::CookbookSiteStreamingUploader
@@ -31,7 +31,7 @@ class Chef
   # inspired by http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
   class CookbookSiteStreamingUploader
 
-    DefaultHeaders = { 'accept' => 'application/json', 'x-chef-version' => ::Chef::VERSION }
+    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION }
 
     class << self
 
@@ -73,7 +73,7 @@ class Chef
       end
 
       def make_request(http_verb, to_url, user_id, secret_key_filename, params = {}, headers = {})
-        boundary = '----RubyMultipartClient' + rand(1000000).to_s + 'ZZZZZ'
+        boundary = "----RubyMultipartClient" + rand(1000000).to_s + "ZZZZZ"
         parts = []
         content_file = nil
 
@@ -138,7 +138,7 @@ class Chef
                 Net::HTTP::Post.new(url.path, headers)
               end
         req.content_length = body_stream.size
-        req.content_type = 'multipart/form-data; boundary=' + boundary unless parts.empty?
+        req.content_type = "multipart/form-data; boundary=" + boundary unless parts.empty?
         req.body_stream = body_stream
 
         http = Chef::HTTP::BasicClient.new(url).http_client
@@ -206,7 +206,7 @@ class Chef
 
       def read(how_much, dst_buf = nil)
         if @part_no >= @parts.size
-          dst_buf.replace('') if dst_buf
+          dst_buf.replace("") if dst_buf
           return dst_buf
         end
 
@@ -230,13 +230,13 @@ class Chef
           result = current_part + if next_part
                                     next_part
                                   else
-                                    ''
+                                    ""
                                   end
         else
           @part_offset += how_much_current_part
           result = current_part
         end
-        dst_buf ? dst_buf.replace(result || '') : result
+        dst_buf ? dst_buf.replace(result || "") : result
       end
     end
 

@@ -25,8 +25,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch"
     ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root', Win32::Registry::KEY_ALL_ACCESS) do |reg|
-      reg['RootType1', Win32::Registry::REG_SZ] = 'fibrous'
-      reg.write('Roots', Win32::Registry::REG_MULTI_SZ, ["strong roots", "healthy tree"])
+      reg["RootType1", Win32::Registry::REG_SZ] = "fibrous"
+      reg.write("Roots", Win32::Registry::REG_MULTI_SZ, ["strong roots", "healthy tree"])
     end
 
     events = Chef::EventDispatch::Dispatcher.new

@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/mixin/params_validate'
-require 'chef/node'
-require 'chef/resource_collection'
+require "chef/exceptions"
+require "chef/mixin/params_validate"
+require "chef/node"
+require "chef/resource_collection"
 
 class Chef
   # == Chef::Runner

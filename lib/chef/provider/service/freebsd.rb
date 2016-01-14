@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
-require 'chef/provider/service/init'
-require 'chef/mixin/command'
+require "chef/resource/service"
+require "chef/provider/service/init"
+require "chef/mixin/command"
 
 class Chef
   class Provider
@@ -119,11 +119,11 @@ class Chef
         private
 
         def read_rc_conf
-          ::File.open("/etc/rc.conf", 'r') { |file| file.readlines }
+          ::File.open("/etc/rc.conf", "r") { |file| file.readlines }
         end
 
         def write_rc_conf(lines)
-          ::File.open("/etc/rc.conf", 'w') do |file|
+          ::File.open("/etc/rc.conf", "w") do |file|
             lines.each { |line| file.puts(line) }
           end
         end

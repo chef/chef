@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class ConvertToClassTestHarness
   include Chef::Mixin::ConvertToClassName

@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/exceptions'
-require 'lib/chef/chef_fs/config.rb'
+require "spec_helper"
+require "chef/exceptions"
+require "lib/chef/chef_fs/config.rb"
 
 describe Chef::ChefFS::Config do
   describe "initialize" do
     it "warns when hosted setups use 'everything'" do
       base_config = Hash.new()
-      base_config[:repo_mode] = 'everything'
-      base_config[:chef_server_url] = 'http://foo.com/organizations/fake_org/'
+      base_config[:repo_mode] = "everything"
+      base_config[:chef_server_url] = "http://foo.com/organizations/fake_org/"
 
       ui = double("ui")
       expect(ui).to receive(:warn)
@@ -35,8 +35,8 @@ describe Chef::ChefFS::Config do
 
     it "doesn't warn when hosted setups use 'hosted_everything'" do
       base_config = Hash.new()
-      base_config[:repo_mode] = 'hosted_everything'
-      base_config[:chef_server_url] = 'http://foo.com/organizations/fake_org/'
+      base_config[:repo_mode] = "hosted_everything"
+      base_config[:chef_server_url] = "http://foo.com/organizations/fake_org/"
 
       ui = double("ui")
       expect(ui).to receive(:warn).exactly(0).times
@@ -46,8 +46,8 @@ describe Chef::ChefFS::Config do
 
     it "doesn't warn when non-hosted setups use 'everything'" do
       base_config = Hash.new()
-      base_config[:repo_mode] = 'everything'
-      base_config[:chef_server_url] = 'http://foo.com/'
+      base_config[:repo_mode] = "everything"
+      base_config[:chef_server_url] = "http://foo.com/"
 
       ui = double("ui")
       expect(ui).to receive(:warn).exactly(0).times

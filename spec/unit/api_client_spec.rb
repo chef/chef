@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/api_client'
-require 'tempfile'
+require "chef/api_client"
+require "tempfile"
 
 # DEPRECATION NOTE
 #
@@ -226,7 +226,7 @@ describe Chef::ApiClient do
       @http_client = double("Chef::ServerAPI mock")
       allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
       expect(@http_client).to receive(:get).with("clients/black").and_return(client)
-      @client = Chef::ApiClient.load(client['name'])
+      @client = Chef::ApiClient.load(client["name"])
     end
 
     it "should deserialize to a Chef::ApiClient object" do
@@ -258,7 +258,7 @@ describe Chef::ApiClient do
   describe "with correctly configured API credentials" do
     before do
       Chef::Config[:node_name] = "silent-bob"
-      Chef::Config[:client_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
+      Chef::Config[:client_key] = File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)
     end
 
     after do

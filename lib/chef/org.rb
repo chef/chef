@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/json_compat'
-require 'chef/mixin/params_validate'
-require 'chef/server_api'
+require "chef/json_compat"
+require "chef/mixin/params_validate"
+require "chef/server_api"
 
 class Chef
   class Org
@@ -27,7 +27,7 @@ class Chef
 
     def initialize(name)
       @name = name
-      @full_name = ''
+      @full_name = ""
       # The Chef API returns the private key of the validator
       # client on create
       @private_key = nil
@@ -104,7 +104,7 @@ class Chef
       request_body = {:user => username}
       response = chef_rest.post "organizations/#{@name}/association_requests", request_body
       association_id = response["uri"].split("/").last
-      chef_rest.put "users/#{username}/association_requests/#{association_id}", { :response => 'accept' }
+      chef_rest.put "users/#{username}/association_requests/#{association_id}", { :response => "accept" }
     end
 
     def dissociate_user(username)
@@ -113,10 +113,10 @@ class Chef
 
     # Class methods
     def self.from_hash(org_hash)
-      org = Chef::Org.new(org_hash['name'])
-      org.full_name org_hash['full_name']
-      org.private_key org_hash['private_key'] if org_hash.key?('private_key')
-      org.guid org_hash['guid'] if org_hash.key?('guid')
+      org = Chef::Org.new(org_hash["name"])
+      org.full_name org_hash["full_name"]
+      org.private_key org_hash["private_key"] if org_hash.key?("private_key")
+      org.guid org_hash["guid"] if org_hash.key?("guid")
       org
     end
 
@@ -134,7 +134,7 @@ class Chef
     end
 
     def self.list(inflate=false)
-      orgs = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get('organizations')
+      orgs = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("organizations")
       if inflate
         orgs.inject({}) do |org_map, (name, _url)|
           org_map[name] = Chef::Org.load(name)

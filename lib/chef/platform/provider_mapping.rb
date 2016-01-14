@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/exceptions'
-require 'chef/mixin/params_validate'
-require 'chef/version_constraint/platform'
-require 'chef/provider'
+require "chef/log"
+require "chef/exceptions"
+require "chef/mixin/params_validate"
+require "chef/version_constraint/platform"
+require "chef/provider"
 
 class Chef
   class Platform
@@ -197,7 +197,7 @@ class Chef
 
         def resource_matching_provider(platform, version, resource_type)
           if resource_type.kind_of?(Chef::Resource)
-            class_name = resource_type.class.name ? resource_type.class.name.split('::').last :
+            class_name = resource_type.class.name ? resource_type.class.name.split("::").last :
               convert_to_class_name(resource_type.resource_name.to_s)
 
             if Chef::Provider.const_defined?(class_name)

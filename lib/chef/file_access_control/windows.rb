@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/win32/security'
-require 'chef/win32/file'
+require "chef/win32/security"
+require "chef/win32/file"
 
 class Chef
   class FileAccessControl

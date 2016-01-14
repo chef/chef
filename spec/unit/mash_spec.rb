@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mash'
+require "spec_helper"
+require "chef/mash"
 
 describe Mash do
   it "should duplicate a simple key/value mash to a new mash" do

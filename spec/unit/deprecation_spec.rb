@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/deprecation/warnings'
+require "spec_helper"
+require "chef/deprecation/warnings"
 
 describe Chef::Deprecation do
 
   # Support code for Chef::Deprecation
 
   def self.class_from_string(str)
-    str.split('::').inject(Object) do |mod, class_name|
+    str.split("::").inject(Object) do |mod, class_name|
       mod.const_get(class_name)
     end
   end
@@ -59,33 +59,33 @@ describe Chef::Deprecation do
     end
   end
 
-  context 'when Chef::Config[:treat_deprecation_warnings_as_errors] is off' do
+  context "when Chef::Config[:treat_deprecation_warnings_as_errors] is off" do
     before do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
     end
 
-    context 'deprecation warning messages' do
+    context "deprecation warning messages" do
       RSpec::Matchers.define_negated_matcher :a_non_empty_array, :be_empty
 
-      it 'should be enabled for deprecated methods' do
+      it "should be enabled for deprecated methods" do
         expect(Chef::Log).to receive(:warn).with(a_non_empty_array)
         TestClass.new.deprecated_method(10)
       end
 
-      it 'should contain stack trace' do
+      it "should contain stack trace" do
         expect(Chef::Log).to receive(:warn).with(a_string_including(".rb"))
         TestClass.new.deprecated_method(10)
       end
     end
 
-    it 'deprecated methods should still be called' do
+    it "deprecated methods should still be called" do
       test_instance = TestClass.new
       test_instance.deprecated_method(10)
       expect(test_instance.get_value).to eq(10)
     end
   end
 
-  it 'should raise when deprecation warnings are treated as errors' do
+  it "should raise when deprecation warnings are treated as errors" do
     # rspec should set this
     expect(Chef::Config[:treat_deprecation_warnings_as_errors]).to be true
     test_instance = TestClass.new

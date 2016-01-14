@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/http/authenticator'
+require "chef/http/authenticator"
 
 class Chef
   module Formatters
@@ -106,7 +106,7 @@ E
       # Parses JSON from the error response sent by Chef Server and returns the
       # error message
       def format_rest_error
-        Array(Chef::JSONCompat.from_json(exception.response.body)["error"]).join('; ')
+        Array(Chef::JSONCompat.from_json(exception.response.body)["error"]).join("; ")
       rescue Exception
         safe_format_rest_error
       end

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Package::Zypper do
   let!(:new_resource) { Chef::Resource::ZypperPackage.new("cups") }

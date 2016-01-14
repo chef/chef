@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::ResourceCollection::ResourceList do
   let(:resource_list) { Chef::ResourceCollection::ResourceList.new() }

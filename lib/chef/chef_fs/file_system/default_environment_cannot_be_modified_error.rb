@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/operation_not_allowed_error'
+require "chef/chef_fs/file_system/operation_not_allowed_error"
 
 class Chef
   module ChefFS

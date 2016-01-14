@@ -19,7 +19,7 @@
 # Shared context used by both Powershell and Batch script provider
 # tests.
 
-require 'chef/platform/query_helpers'
+require "chef/platform/query_helpers"
 
 shared_context Chef::Resource::WindowsScript do
   before(:all) do
@@ -56,11 +56,11 @@ shared_context Chef::Resource::WindowsScript do
         if resource_architecture
           expected_architecture = resource_architecture
         else
-          expected_architecture = @ohai_reader.data['kernel']['machine'].to_sym
+          expected_architecture = @ohai_reader.data["kernel"]["machine"].to_sym
         end
       end
       let(:expected_architecture_output) do
-        expected_architecture == :i386 ? 'X86' : 'AMD64'
+        expected_architecture == :i386 ? "X86" : "AMD64"
       end
       let(:guard_script_suffix) do
         "guard"
@@ -99,7 +99,7 @@ shared_context Chef::Resource::WindowsScript do
         it "executes a 64-bit guard", :windows64_only do
           resource.only_if resource_guard_command, :architecture => guard_architecture
           resource.run_action(:run)
-          expect(get_guard_process_architecture).to eq('amd64')
+          expect(get_guard_process_architecture).to eq("amd64")
         end
       end
 
@@ -108,7 +108,7 @@ shared_context Chef::Resource::WindowsScript do
         it "executes a 32-bit guard" do
           resource.only_if resource_guard_command, :architecture => guard_architecture
           resource.run_action(:run)
-          expect(get_guard_process_architecture).to eq('x86')
+          expect(get_guard_process_architecture).to eq("x86")
         end
       end
 
@@ -138,8 +138,8 @@ shared_context Chef::Resource::WindowsScript do
       before(:each) do
         @dir = Dir.mktmpdir("Jerry Smith")
         @original_env = ENV.to_hash.dup
-        ENV.delete('TMP')
-        ENV['TMP'] = @dir
+        ENV.delete("TMP")
+        ENV["TMP"] = @dir
       end
 
       after(:each) do
@@ -183,7 +183,7 @@ shared_context Chef::Resource::WindowsScript do
     end
   end
 
-  def get_windows_script_output(suffix = '')
+  def get_windows_script_output(suffix = "")
     File.read("#{script_output_path}#{suffix}")
   end
 
@@ -195,7 +195,7 @@ shared_context Chef::Resource::WindowsScript do
     get_process_architecture(guard_script_suffix)
   end
 
-  def get_process_architecture(suffix = '')
+  def get_process_architecture(suffix = "")
     get_windows_script_output(suffix).strip.downcase
   end
 

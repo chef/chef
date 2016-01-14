@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-require 'ostruct'
+require "ostruct"
 
-require 'spec_helper'
+require "spec_helper"
 
 if Chef::Platform.windows?
-  require 'chef/win32/file' #probably need this in spec_helper
+  require "chef/win32/file" #probably need this in spec_helper
 end
 
 describe Chef::Resource::Link, :not_supported_on_win2k3 do
@@ -39,7 +39,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
   end
 
   def canonicalize(path)
-    Chef::Platform.windows? ? path.gsub('/', '\\') : path
+    Chef::Platform.windows? ? path.gsub("/", '\\') : path
   end
 
   describe "when the target is a symlink" do
@@ -80,13 +80,13 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       # We test create in unit tests because there is no other way to ensure
       # it does no work.  Other create and delete scenarios are covered in
       # the functional tests for links.
-      context 'when the desired state is identical' do
+      context "when the desired state is identical" do
         let(:new_resource) do
           result = Chef::Resource::Link.new("#{CHEF_SPEC_DATA}/fofile-link")
           result.to "#{CHEF_SPEC_DATA}/fofile"
           result
         end
-        it 'create does no work' do
+        it "create does no work" do
           expect(provider.access_controls).not_to receive(:set_all)
           provider.run_action(:create)
         end
@@ -164,7 +164,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         expect(provider.current_resource.target_file).to eq("#{CHEF_SPEC_DATA}/fofile-link")
       end
       it "should update the current source of the existing link with an empty string" do
-        expect(provider.current_resource.to).to eq('')
+        expect(provider.current_resource.to).to eq("")
       end
       it "should not set the owner" do
         expect(provider.current_resource.owner).to eq(nil)
@@ -191,7 +191,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         expect(provider.current_resource.target_file).to eq("#{CHEF_SPEC_DATA}/fofile-link")
       end
       it "should update the current source of the existing link with an empty string" do
-        expect(provider.current_resource.to).to eq('')
+        expect(provider.current_resource.to).to eq("")
       end
       it "should not set the owner" do
         expect(provider.current_resource.owner).to eq(nil)
@@ -233,14 +233,14 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       # We test create in unit tests because there is no other way to ensure
       # it does no work.  Other create and delete scenarios are covered in
       # the functional tests for links.
-      context 'when the desired state is identical' do
+      context "when the desired state is identical" do
         let(:new_resource) do
           result = Chef::Resource::Link.new("#{CHEF_SPEC_DATA}/fofile-link")
           result.to "#{CHEF_SPEC_DATA}/fofile"
           result.link_type :hard
           result
         end
-        it 'create does no work' do
+        it "create does no work" do
           expect(provider.file_class).not_to receive(:symlink)
           expect(provider.file_class).not_to receive(:link)
           expect(provider.access_controls).not_to receive(:set_all)

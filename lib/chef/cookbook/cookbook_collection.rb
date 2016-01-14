@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/mash'
+require "chef/mash"
 
 class Chef
   # == Chef::CookbookCollection

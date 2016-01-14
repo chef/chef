@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
-require 'chef/mixin/command'
-require 'chef/resource/env'
+require "chef/provider"
+require "chef/mixin/command"
+require "chef/resource/env"
 
 class Chef
   class Provider

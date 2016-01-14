@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe "Chef class" do
   let(:platform) { "debian" }
 
   let(:node) do
     node = Chef::Node.new
-    node.automatic['platform'] = platform
+    node.automatic["platform"] = platform
     node
   end
 
@@ -86,7 +86,7 @@ describe "Chef class" do
   end
 
   context '#event_handler' do
-    it 'adds a new handler' do
+    it "adds a new handler" do
       x = 1
       Chef.event_handler do
         on :converge_start do
@@ -98,7 +98,7 @@ describe "Chef class" do
       expect(x).to eq(2)
     end
 
-    it 'raise error if unknown event type is passed' do
+    it "raise error if unknown event type is passed" do
       expect do
         Chef.event_handler do
           on :yolo do

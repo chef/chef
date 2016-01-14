@@ -17,7 +17,7 @@
 #
 
 # rename to cookbook not coookbook
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::CookbookShow do
   before(:each) do
@@ -33,7 +33,7 @@ describe Chef::Knife::CookbookShow do
 
   describe "run" do
     describe "with 0 arguments: help" do
-      it 'should should print usage and exit when given no arguments' do
+      it "should should print usage and exit when given no arguments" do
         @knife.name_args = []
         expect(@knife).to receive(:show_usage)
         expect(@knife.ui).to receive(:fatal)

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tempfile'
+require "spec_helper"
+require "tempfile"
 
 describe Chef::Util::FileEdit do
 
@@ -93,7 +93,7 @@ twice
   end
 
   let(:target_file) do
-    f = Tempfile.open('file_edit_spec')
+    f = Tempfile.open("file_edit_spec")
     f.write(starting_content)
     f.close
     f

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/from_file'
-require 'chef/mixin/params_validate'
+require "chef/mixin/from_file"
+require "chef/mixin/params_validate"
 
 class Chef
   class ResourceDefinition

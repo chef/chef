@@ -21,7 +21,7 @@ class Chef
     class Group
       class Dscl < Chef::Provider::Group
 
-        provides :group, os: 'darwin'
+        provides :group, os: "darwin"
 
         def dscl(*args)
           host = "."
@@ -53,14 +53,14 @@ class Chef
 
           if group_info
             group_info.each_line do |line|
-              key, val = line.split(': ')
+              key, val = line.split(": ")
               val.strip! if val
               case key.downcase
-              when 'primarygroupid'
+              when "primarygroupid"
                 @new_resource.gid(val) unless @new_resource.gid
                 @current_resource.gid(val)
-              when 'groupmembership'
-                @current_resource.members(val.split(' '))
+              when "groupmembership"
+                @current_resource.members(val.split(" "))
               end
             end
           end

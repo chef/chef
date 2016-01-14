@@ -15,34 +15,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'support/shared/integration/integration_helper'
-require 'chef/knife/serve'
-require 'chef/server_api'
+require "support/shared/integration/integration_helper"
+require "chef/knife/serve"
+require "chef/server_api"
 
-describe 'knife serve', :workstation do
+describe "knife serve", :workstation do
   include IntegrationSupport
   include KnifeSupport
   include AppServerSupport
 
-  when_the_repository 'also has one of each thing' do
-    before { file 'nodes/x.json', { 'foo' => 'bar' } }
+  when_the_repository "also has one of each thing" do
+    before { file "nodes/x.json", { "foo" => "bar" } }
 
-    it 'knife serve serves up /nodes/x' do
+    it "knife serve serves up /nodes/x" do
       exception = nil
       t = Thread.new do
         begin
-          knife('serve --chef-zero-port=8890')
+          knife("serve --chef-zero-port=8890")
         rescue
           exception = $!
         end
       end
       begin
         Chef::Config.log_level = :debug
-        Chef::Config.chef_server_url = 'http://localhost:8890'
+        Chef::Config.chef_server_url = "http://localhost:8890"
         Chef::Config.node_name = nil
         Chef::Config.client_key = nil
         api = Chef::ServerAPI.new
-        expect(api.get('nodes/x')['name']).to eq('x')
+        expect(api.get("nodes/x")["name"]).to eq("x")
       rescue
         if exception
           raise exception

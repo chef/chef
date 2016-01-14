@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'rack'
-require 'stringio'
+require "rack"
+require "stringio"
 
 module AppServerSupport
   def start_app_server(app, port)

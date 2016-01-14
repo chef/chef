@@ -1,5 +1,5 @@
-require 'chef/formatters/base'
-require 'chef/config'
+require "chef/formatters/base"
+require "chef/config"
 
 class Chef
   module Formatters
@@ -334,7 +334,7 @@ class Chef
 
       # Called before handlers run
       def handlers_start(handler_count)
-        puts ''
+        puts ""
         puts "Running handlers:"
         indent
       end

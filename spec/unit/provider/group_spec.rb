@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::User do
 
@@ -41,7 +41,7 @@ describe Chef::Provider::User do
       :gid => 20,
       :mem => [ "root", "aj" ],
       )
-    allow(Etc).to receive(:getgrnam).with('wheel').and_return(@pw_group)
+    allow(Etc).to receive(:getgrnam).with("wheel").and_return(@pw_group)
   end
 
   it "assumes the group exists by default" do
@@ -52,7 +52,7 @@ describe Chef::Provider::User do
 
     it "sets the group name of the current resource to the group name of the new resource" do
       @provider.load_current_resource
-      expect(@provider.current_resource.group_name).to eq('wheel')
+      expect(@provider.current_resource.group_name).to eq("wheel")
     end
 
     it "does not modify the desired gid if set" do

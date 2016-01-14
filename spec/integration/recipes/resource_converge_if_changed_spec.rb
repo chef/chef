@@ -1,4 +1,4 @@
-require 'support/shared/integration/integration_helper'
+require "support/shared/integration/integration_helper"
 
 describe "Resource::ActionClass#converge_if_changed" do
   include IntegrationSupport
@@ -23,10 +23,10 @@ describe "Resource::ActionClass#converge_if_changed" do
       result = Class.new(Chef::Resource) do
         def self.to_s; resource_name; end
         def self.inspect; resource_name.inspect; end
-        property :identity1, identity: true, default: 'default_identity1'
-        property :control1, desired_state: false, default: 'default_control1'
-        property :state1, default: 'default_state1'
-        property :state2, default: 'default_state2'
+        property :identity1, identity: true, default: "default_identity1"
+        property :control1, desired_state: false, default: "default_control1"
+        property :state1, default: "default_state1"
+        property :state2, default: "default_state2"
         attr_accessor :converged
         def initialize(*args)
           super
@@ -51,8 +51,8 @@ describe "Resource::ActionClass#converge_if_changed" do
       context "and current_resource with state1=current, state2=current" do
         before :each do
           resource_class.load_current_value do
-            state1 'current_state1'
-            state2 'current_state2'
+            state1 "current_state1"
+            state2 "current_state2"
           end
         end
 
@@ -198,8 +198,8 @@ EOM
       context "and current_resource with identity1=current, control1=current" do
         before :each do
           resource_class.load_current_value do
-            identity1 'current_identity1'
-            control1 'current_control1'
+            identity1 "current_identity1"
+            control1 "current_control1"
           end
         end
 
@@ -314,8 +314,8 @@ EOM
       context "and current_resource with state1=current, state2=current" do
         before :each do
           resource_class.load_current_value do
-            state1 'current_state1'
-            state2 'current_state2'
+            state1 "current_state1"
+            state2 "current_state2"
           end
         end
 

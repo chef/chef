@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::Subversion do
 
@@ -42,7 +42,7 @@ describe Chef::Resource::Subversion do
   end
 
   it "sets svn info arguments to --no-auth-cache by default" do
-    expect(@svn.svn_info_args).to eq('--no-auth-cache')
+    expect(@svn.svn_info_args).to eq("--no-auth-cache")
   end
 
   it "resets svn info arguments to nil when given false in the setter" do
@@ -51,7 +51,7 @@ describe Chef::Resource::Subversion do
   end
 
   it "sets svn arguments to --no-auth-cache by default" do
-    expect(@svn.svn_arguments).to eq('--no-auth-cache')
+    expect(@svn.svn_arguments).to eq("--no-auth-cache")
   end
 
   it "sets svn binary to nil by default" do

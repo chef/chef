@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/repository/file_system_entry'
-require 'chef/chef_fs/file_system/not_found_error'
+require "chef/chef_fs/file_system/repository/file_system_entry"
+require "chef/chef_fs/file_system/not_found_error"
 
 class Chef
   module ChefFS
@@ -54,11 +54,11 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            !is_dir && name[-5..-1] == '.json'
+            !is_dir && name[-5..-1] == ".json"
           end
 
           def write(file_contents)
-            if file_contents && write_pretty_json && name[-5..-1] == '.json'
+            if file_contents && write_pretty_json && name[-5..-1] == ".json"
               file_contents = minimize(file_contents, self)
             end
             super(file_contents)

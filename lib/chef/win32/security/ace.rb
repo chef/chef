@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/win32/security'
-require 'chef/win32/security/sid'
-require 'chef/win32/memory'
+require "chef/win32/security"
+require "chef/win32/security/sid"
+require "chef/win32/memory"
 
-require 'ffi'
+require "ffi"
 
 class Chef
   module ReservedNames::Win32

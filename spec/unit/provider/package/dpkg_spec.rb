@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Package::Dpkg do
   let(:node) { Chef::Node.new }
@@ -114,7 +114,7 @@ Conflicts: wget-ssl
       expect(provider.current_resource.package_name).to eq(["wget"])
     end
 
-    describe 'gets the source package version from dpkg-deb' do
+    describe "gets the source package version from dpkg-deb" do
       def check_version(version)
         status = double(:stdout => "wget\t#{version}", :exitstatus => 0)
         expect(provider).to receive(:shell_out!).with("dpkg-deb -W #{source}", timeout: 900).and_return(status)
@@ -123,20 +123,20 @@ Conflicts: wget-ssl
         expect(provider.candidate_version).to eq([version])
       end
 
-      it 'if short version provided' do
-        check_version('1.11.4')
+      it "if short version provided" do
+        check_version("1.11.4")
       end
 
-      it 'if extended version provided' do
-        check_version('1.11.4-1ubuntu1')
+      it "if extended version provided" do
+        check_version("1.11.4-1ubuntu1")
       end
 
-      it 'if distro-specific version provided' do
-        check_version('1.11.4-1ubuntu1~lucid')
+      it "if distro-specific version provided" do
+        check_version("1.11.4-1ubuntu1~lucid")
       end
 
-      it 'returns the version if an epoch is used' do
-        check_version('1:1.8.3-2')
+      it "returns the version if an epoch is used" do
+        check_version("1:1.8.3-2")
       end
     end
 
@@ -156,7 +156,7 @@ Conflicts: wget-ssl
 
       it "gets the source package version from dpkg-deb correctly when the package version has `~', `-', `+' or `.' characters" do
         provider.load_current_resource
-        expect(provider.candidate_version).to eq(['1.2.3+3141592-1ubuntu1~lucid'])
+        expect(provider.candidate_version).to eq(["1.2.3+3141592-1ubuntu1~lucid"])
       end
     end
 

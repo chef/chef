@@ -104,7 +104,7 @@ class Chef
                 else
                   Kernel.exec(cmd)
                 end
-                raise 'forty-two'
+                raise "forty-two"
               rescue Exception => e
                 Marshal.dump(e, ps.last)
                 ps.last.flush

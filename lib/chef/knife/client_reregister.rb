@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class ClientReregister < Knife
 
       deps do
-        require 'chef/api_client_v1'
-        require 'chef/json_compat'
+        require "chef/api_client_v1"
+        require "chef/json_compat"
       end
 
       banner "knife client reregister CLIENT (options)"

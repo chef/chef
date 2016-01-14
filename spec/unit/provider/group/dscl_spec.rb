@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Group::Dscl do
   before do
@@ -293,7 +293,7 @@ describe Chef::Provider::Group::Dscl do
   end
 end
 
-describe 'Test DSCL loading' do
+describe "Test DSCL loading" do
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -320,12 +320,12 @@ EOF
 
   end
 
-  it 'should parse gid properly' do
+  it "should parse gid properly" do
     allow(File).to receive(:exists?).and_return(true)
     expect(@current_resource.gid).to eq("999")
   end
-  it 'should parse members properly' do
+  it "should parse members properly" do
     allow(File).to receive(:exists?).and_return(true)
-    expect(@current_resource.members).to eq(['waka', 'bar'])
+    expect(@current_resource.members).to eq(["waka", "bar"])
   end
 end

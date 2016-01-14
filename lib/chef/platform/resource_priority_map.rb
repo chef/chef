@@ -1,5 +1,5 @@
-require 'singleton'
-require 'chef/platform/priority_map'
+require "singleton"
+require "chef/platform/priority_map"
 
 class Chef
   class Platform

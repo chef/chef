@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-require 'chef/monologger'
-require 'tempfile'
-require 'spec_helper'
+require "chef/monologger"
+require "tempfile"
+require "spec_helper"
 
 describe MonoLogger do
   it "should disable buffering when passed an IO stream" do

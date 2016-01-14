@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
 describe Chef::Resource::Cron, :requires_root, :unix_only do
 
@@ -55,17 +55,17 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   # Actual tests
   let(:new_resource) do
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
-    new_resource.user  'root'
+    new_resource.user  "root"
     # @hourly is not supported on solaris, aix
     if ohai[:platform] == "solaris" || ohai[:platform] == "solaris2" || ohai[:platform] == "aix"
       new_resource.minute "0 * * * *"
     else
-      new_resource.minute '@hourly'
+      new_resource.minute "@hourly"
     end
-    new_resource.hour ''
-    new_resource.day ''
-    new_resource.month ''
-    new_resource.weekday ''
+    new_resource.hour ""
+    new_resource.day ""
+    new_resource.month ""
+    new_resource.weekday ""
     new_resource.command "/bin/true"
     new_resource
   end
@@ -107,7 +107,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   exclude_solaris = ["solaris", "opensolaris", "solaris2", "omnios"].include?(ohai[:platform])
   describe "create action with various attributes", :external => exclude_solaris do
     def create_and_validate_with_attribute(resource, attribute, value)
-      if ohai[:platform] == 'aix'
+      if ohai[:platform] == "aix"
          expect {resource.run_action(:create)}.to raise_error(Chef::Exceptions::Cron, /Aix cron entry does not support environment variables. Please set them in script and use script in cron./)
       else
         resource.run_action(:create)
@@ -117,7 +117,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
 
     def cron_attribute_should_exists(cron_name, attribute, value)
-      return if ['aix', 'solaris'].include?(ohai[:platform])
+      return if ["aix", "solaris"].include?(ohai[:platform])
       # Test if the attribute exists on newly created cron
       cron_should_exists(cron_name, "")
       expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{attribute.upcase}=#{value}\"").exitstatus).to eq(0)

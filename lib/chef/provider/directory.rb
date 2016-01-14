@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/log'
-require 'chef/resource/directory'
-require 'chef/provider'
-require 'chef/provider/file'
-require 'fileutils'
+require "chef/config"
+require "chef/log"
+require "chef/resource/directory"
+require "chef/provider"
+require "chef/provider/file"
+require "fileutils"
 
 class Chef
   class Provider

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/core/subcommand_loader'
+require "chef/knife"
+require "chef/knife/core/subcommand_loader"
 
 class Chef
   class Knife
@@ -44,15 +44,15 @@ class Chef
                  else
                    { Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY => {}}
                  end
-        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]['plugins_paths'] = Chef::Knife.subcommand_files
-        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]['plugins_by_category'] = Chef::Knife.subcommands_by_category
+        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]["plugins_paths"] = Chef::Knife.subcommand_files
+        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]["plugins_by_category"] = Chef::Knife.subcommands_by_category
         output
       end
 
       def write_hash(data)
-        plugin_manifest_dir = File.expand_path('..', Chef::Knife::SubcommandLoader.plugin_manifest_path)
+        plugin_manifest_dir = File.expand_path("..", Chef::Knife::SubcommandLoader.plugin_manifest_path)
         FileUtils.mkdir_p(plugin_manifest_dir) unless File.directory?(plugin_manifest_dir)
-        File.open(Chef::Knife::SubcommandLoader.plugin_manifest_path, 'w') do |f|
+        File.open(Chef::Knife::SubcommandLoader.plugin_manifest_path, "w") do |f|
           f.write(Chef::JSONCompat.to_json_pretty(data))
           ui.msg "Knife subcommands are cached in #{Chef::Knife::SubcommandLoader.plugin_manifest_path}. Delete this file to disable the caching."
         end

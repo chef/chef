@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
@@ -35,7 +35,7 @@ class Chef
         @mount_point = name
         @device = nil
         @device_type = :device
-        @fsck_device = '-'
+        @fsck_device = "-"
         @fstype = "auto"
         @options = ["defaults"]
         @dump = 0
@@ -102,7 +102,7 @@ class Chef
                             )
 
         if ret.is_a? String
-          ret.gsub(/,/, ' ').split(/ /)
+          ret.gsub(/,/, " ").split(/ /)
         else
           ret
         end

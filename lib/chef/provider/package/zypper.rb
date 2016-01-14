@@ -19,10 +19,10 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
-require 'singleton'
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
+require "singleton"
 
 class Chef
   class Provider
@@ -38,8 +38,8 @@ class Chef
 
           is_installed=false
           is_out_of_date=false
-          version=''
-          oud_version=''
+          version=""
+          oud_version=""
           Chef::Log.debug("#{new_resource} checking zypper")
           status = shell_out_with_timeout("zypper --non-interactive info #{new_resource.package_name}")
           status.stdout.each_line do |line|

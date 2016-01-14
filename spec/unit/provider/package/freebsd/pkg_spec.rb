@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
   before(:each) do
@@ -30,7 +30,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
 
     @provider = Chef::Provider::Package::Freebsd::Pkg.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
-    allow(::File).to receive(:exist?).with('/usr/ports/Makefile').and_return(false)
+    allow(::File).to receive(:exist?).with("/usr/ports/Makefile").and_return(false)
   end
 
   describe "when determining the current package state" do
@@ -107,7 +107,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     end
 
     it "should figure out the package name when we have ports" do
-      allow(::File).to receive(:exist?).with('/usr/ports/Makefile').and_return(true)
+      allow(::File).to receive(:exist?).with("/usr/ports/Makefile").and_return(true)
       allow(@provider).to receive(:port_path).and_return("/usr/ports/shells/zsh")
       make_v = OpenStruct.new(:stdout => "zsh-4.3.6_7\n", :exitstatus => 0)
       expect(@provider).to receive(:shell_out!).with("make -V PKGNAME", {cwd: "/usr/ports/shells/zsh", env: nil, returns: [0, 1], timeout: 900}).and_return(make_v)

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Mixin::Securable do
 
@@ -59,32 +59,32 @@ describe Chef::Mixin::Securable do
     end
 
     it "should accept group/owner names that are a single character or digit" do
-      expect { @securable.group 'v' }.not_to raise_error
-      expect { @securable.group '1' }.not_to raise_error
-      expect { @securable.owner 'v' }.not_to raise_error
-      expect { @securable.owner '1' }.not_to raise_error
+      expect { @securable.group "v" }.not_to raise_error
+      expect { @securable.group "1" }.not_to raise_error
+      expect { @securable.owner "v" }.not_to raise_error
+      expect { @securable.owner "1" }.not_to raise_error
     end
 
     it "should not accept group/owner names starting with '-', '+', or '~'" do
-      expect { @securable.group '-test' }.to raise_error(ArgumentError)
-      expect { @securable.group '+test' }.to raise_error(ArgumentError)
-      expect { @securable.group '~test' }.to raise_error(ArgumentError)
-      expect { @securable.group 'te-st' }.not_to raise_error
-      expect { @securable.group 'te+st' }.not_to raise_error
-      expect { @securable.group 'te~st' }.not_to raise_error
-      expect { @securable.owner '-test' }.to raise_error(ArgumentError)
-      expect { @securable.owner '+test' }.to raise_error(ArgumentError)
-      expect { @securable.owner '~test' }.to raise_error(ArgumentError)
-      expect { @securable.owner 'te-st' }.not_to raise_error
-      expect { @securable.owner 'te+st' }.not_to raise_error
-      expect { @securable.owner 'te~st' }.not_to raise_error
+      expect { @securable.group "-test" }.to raise_error(ArgumentError)
+      expect { @securable.group "+test" }.to raise_error(ArgumentError)
+      expect { @securable.group "~test" }.to raise_error(ArgumentError)
+      expect { @securable.group "te-st" }.not_to raise_error
+      expect { @securable.group "te+st" }.not_to raise_error
+      expect { @securable.group "te~st" }.not_to raise_error
+      expect { @securable.owner "-test" }.to raise_error(ArgumentError)
+      expect { @securable.owner "+test" }.to raise_error(ArgumentError)
+      expect { @securable.owner "~test" }.to raise_error(ArgumentError)
+      expect { @securable.owner "te-st" }.not_to raise_error
+      expect { @securable.owner "te+st" }.not_to raise_error
+      expect { @securable.owner "te~st" }.not_to raise_error
     end
 
     it "should not accept group/owner names containing ':', ',' or non-space whitespace" do
-      expect { @securable.group ':test' }.to raise_error(ArgumentError)
-      expect { @securable.group 'te:st' }.to raise_error(ArgumentError)
-      expect { @securable.group ',test' }.to raise_error(ArgumentError)
-      expect { @securable.group 'te,st' }.to raise_error(ArgumentError)
+      expect { @securable.group ":test" }.to raise_error(ArgumentError)
+      expect { @securable.group "te:st" }.to raise_error(ArgumentError)
+      expect { @securable.group ",test" }.to raise_error(ArgumentError)
+      expect { @securable.group "te,st" }.to raise_error(ArgumentError)
       expect { @securable.group "\ttest" }.to raise_error(ArgumentError)
       expect { @securable.group "te\tst" }.to raise_error(ArgumentError)
       expect { @securable.group "\rtest" }.to raise_error(ArgumentError)
@@ -93,10 +93,10 @@ describe Chef::Mixin::Securable do
       expect { @securable.group "te\fst" }.to raise_error(ArgumentError)
       expect { @securable.group "\0test" }.to raise_error(ArgumentError)
       expect { @securable.group "te\0st" }.to raise_error(ArgumentError)
-      expect { @securable.owner ':test' }.to raise_error(ArgumentError)
-      expect { @securable.owner 'te:st' }.to raise_error(ArgumentError)
-      expect { @securable.owner ',test' }.to raise_error(ArgumentError)
-      expect { @securable.owner 'te,st' }.to raise_error(ArgumentError)
+      expect { @securable.owner ":test" }.to raise_error(ArgumentError)
+      expect { @securable.owner "te:st" }.to raise_error(ArgumentError)
+      expect { @securable.owner ",test" }.to raise_error(ArgumentError)
+      expect { @securable.owner "te,st" }.to raise_error(ArgumentError)
       expect { @securable.owner "\ttest" }.to raise_error(ArgumentError)
       expect { @securable.owner "te\tst" }.to raise_error(ArgumentError)
       expect { @securable.owner "\rtest" }.to raise_error(ArgumentError)
@@ -124,10 +124,10 @@ describe Chef::Mixin::Securable do
     end
 
     it "should accept group/owner names in UTF-8" do
-      expect { @securable.group 'tëst' }.not_to raise_error
-      expect { @securable.group 'ë' }.not_to raise_error
-      expect { @securable.owner 'tëst' }.not_to raise_error
-      expect { @securable.owner 'ë' }.not_to raise_error
+      expect { @securable.group "tëst" }.not_to raise_error
+      expect { @securable.group "ë" }.not_to raise_error
+      expect { @securable.owner "tëst" }.not_to raise_error
+      expect { @securable.owner "ë" }.not_to raise_error
     end
 
     it "should accept a unix file mode in string form as an octal number" do
@@ -262,19 +262,19 @@ describe Chef::Mixin::Securable do
       expect { @securable.rights :read, "The Dude", :applies_to_children => true }.not_to raise_error
       expect { @securable.rights :read, "The Dude", :applies_to_children => :containers_only }.not_to raise_error
       expect { @securable.rights :read, "The Dude", :applies_to_children => :objects_only }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => 'poop' }.to raise_error(ArgumentError)
+      expect { @securable.rights :read, "The Dude", :applies_to_children => "poop" }.to raise_error(ArgumentError)
     end
 
     it "should allow you to specify whether the permissions applies_to_self with true/false" do
       expect { @securable.rights :read, "The Dude", :applies_to_children => true, :applies_to_self => false }.not_to raise_error
       expect { @securable.rights :read, "The Dude", :applies_to_self => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_self => 'poop' }.to raise_error(ArgumentError)
+      expect { @securable.rights :read, "The Dude", :applies_to_self => "poop" }.to raise_error(ArgumentError)
     end
 
     it "should allow you to specify whether the permissions applies one_level_deep with true/false" do
       expect { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => false }.not_to raise_error
       expect { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => true }.not_to raise_error
-      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => 'poop' }.to raise_error(ArgumentError)
+      expect { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => "poop" }.to raise_error(ArgumentError)
     end
 
     it "should allow multiple rights and deny_rights declarations" do

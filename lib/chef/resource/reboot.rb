@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 # In using this resource via notifications, it's important to *only* use
 # immediate notifications. Delayed notifications produce unintuitive and

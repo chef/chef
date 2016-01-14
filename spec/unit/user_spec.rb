@@ -21,10 +21,10 @@
 # Open Source Chef Server 11 and should be removed once support
 # for OSC 11 ends. New development should occur in user_spec.rb.
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/user'
-require 'tempfile'
+require "chef/user"
+require "tempfile"
 
 describe Chef::User do
   before(:each) do

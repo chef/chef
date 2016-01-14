@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/util/powershell/cmdlet'
-require 'chef/util/powershell/cmdlet_result'
-require 'chef/exceptions'
+require "chef/util/powershell/cmdlet"
+require "chef/util/powershell/cmdlet_result"
+require "chef/exceptions"
 
 class Chef
 class Util
@@ -53,7 +53,7 @@ class DSC
 
     def add_resource(new_r)
       count = resources.count do |r|
-        r['ResourceType'].casecmp(new_r['ResourceType']) == 0
+        r["ResourceType"].casecmp(new_r["ResourceType"]) == 0
       end
       if count == 0
         resources << new_r
@@ -72,9 +72,9 @@ class DSC
 
     def find_resources(name, module_name, rs)
       found = rs.find_all do |r|
-        name_matches = r['Name'].casecmp(name) == 0
+        name_matches = r["Name"].casecmp(name) == 0
         if name_matches
-          module_name == nil || (r['Module'] and r['Module']['Name'].casecmp(module_name) == 0)
+          module_name == nil || (r["Module"] and r["Module"]["Name"].casecmp(module_name) == 0)
         else
           false
         end
@@ -84,7 +84,7 @@ class DSC
 
     # Returns a list of dsc resources
     def query_resources
-      cmdlet = Chef::Util::Powershell::Cmdlet.new(nil, 'get-dscresource',
+      cmdlet = Chef::Util::Powershell::Cmdlet.new(nil, "get-dscresource",
           :object)
       result = cmdlet.run
       result.return_value

@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/base_fs_dir'
-require 'chef/chef_fs/file_system/chef_server/acl_dir'
-require 'chef/chef_fs/file_system/chef_server/cookbooks_acl_dir'
-require 'chef/chef_fs/file_system/chef_server/acl_entry'
-require 'chef/chef_fs/data_handler/acl_data_handler'
+require "chef/chef_fs/file_system/base_fs_dir"
+require "chef/chef_fs/file_system/chef_server/acl_dir"
+require "chef/chef_fs/file_system/chef_server/cookbooks_acl_dir"
+require "chef/chef_fs/file_system/chef_server/acl_entry"
+require "chef/chef_fs/data_handler/acl_data_handler"
 
 class Chef
   module ChefFS
@@ -42,20 +42,20 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            is_dir ? ENTITY_TYPES.include?(name) : name == 'organization.json'
+            is_dir ? ENTITY_TYPES.include?(name) : name == "organization.json"
           end
 
           def children
             if @children.nil?
               @children = ENTITY_TYPES.map do |entity_type|
                 case entity_type
-                when 'cookbooks'
+                when "cookbooks"
                   CookbooksAclDir.new(entity_type, self)
                 else
                   AclDir.new(entity_type, self)
                 end
               end
-              @children << AclEntry.new('organization.json', self, true) # the org acl is retrieved as GET /organizations/ORGNAME/ANYTHINGATALL/_acl
+              @children << AclEntry.new("organization.json", self, true) # the org acl is retrieved as GET /organizations/ORGNAME/ANYTHINGATALL/_acl
             end
             @children
           end

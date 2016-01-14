@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
 def user_provider_for_platform
   case ohai[:platform]
@@ -50,7 +50,7 @@ describe Chef::Provider::User::Useradd, metadata do
     passwd_file = File.open("/etc/passwd", "rb") {|f| f.read}
     matcher = /^#{Regexp.escape(username)}.+$/
     if passwd_entry = passwd_file.scan(matcher).first
-      PwEntry.new(*passwd_entry.split(':'))
+      PwEntry.new(*passwd_entry.split(":"))
     else
       raise UserNotFound, "no entry matching #{matcher.inspect} found in /etc/passwd"
     end
@@ -82,13 +82,13 @@ describe Chef::Provider::User::Useradd, metadata do
   end
 
   def try_cleanup
-    ['/home/cheftestfoo', '/home/cheftestbar'].each do |f|
+    ["/home/cheftestfoo", "/home/cheftestbar"].each do |f|
       FileUtils.rm_rf(f) if File.exists? f
     end
 
-    ['cf-test'].each do |u|
+    ["cf-test"].each do |u|
       r = Chef::Resource::User.new("DELETE USER", run_context)
-      r.username('cf-test')
+      r.username("cf-test")
       r.run_action(:remove)
     end
   end
@@ -522,7 +522,7 @@ describe Chef::Provider::User::Useradd, metadata do
     end
 
     def shadow_password
-      shadow_entry.split(':')[1]
+      shadow_entry.split(":")[1]
     end
 
     def aix_user_lock_status
@@ -665,10 +665,10 @@ describe Chef::Provider::User::Useradd, metadata do
             # DEBUG: Ran usermod -U chef-functional-test returned 0
             expect(@error).to be_nil
             if ohai[:platform] == "aix"
-              expect(pw_entry.passwd).to eq('*')
+              expect(pw_entry.passwd).to eq("*")
               user_account_should_be_unlocked
             else
-              expect(pw_entry.passwd).to eq('x')
+              expect(pw_entry.passwd).to eq("x")
               expect(shadow_password).to include("!")
             end
           end

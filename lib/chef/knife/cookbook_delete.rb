@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -25,12 +25,12 @@ class Chef
       attr_accessor :cookbook_name, :version
 
       deps do
-        require 'chef/cookbook_version'
+        require "chef/cookbook_version"
       end
 
-      option :all, :short => '-a', :long => '--all', :boolean => true, :description => 'delete all versions'
+      option :all, :short => "-a", :long => "--all", :boolean => true, :description => "delete all versions"
 
-      option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
+      option :purge, :short => "-p", :long => "--purge", :boolean => true, :description => "Permanently remove files from backing data store"
 
       banner "knife cookbook delete COOKBOOK VERSION (options)"
 
@@ -106,7 +106,7 @@ class Chef
         end
         valid_responses[(available_versions.size + 1).to_s] = :all
         question << "#{available_versions.size + 1}. All versions\n\n"
-        responses = ask_question(question).split(',').map { |response| response.strip }
+        responses = ask_question(question).split(",").map { |response| response.strip }
 
         if responses.empty?
           ui.error("No versions specified, exiting")

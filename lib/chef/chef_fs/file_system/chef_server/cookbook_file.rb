@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/base_fs_object'
-require 'chef/http/simple'
-require 'openssl'
+require "chef/chef_fs/file_system/base_fs_object"
+require "chef/http/simple"
+require "openssl"
 
 class Chef
   module ChefFS

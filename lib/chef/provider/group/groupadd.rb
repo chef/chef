@@ -125,7 +125,7 @@ class Chef
         end
 
         def groupadd_options
-          opts = ''
+          opts = ""
           opts << " -r" if @new_resource.system
           opts << " -o" if @new_resource.non_unique
           opts

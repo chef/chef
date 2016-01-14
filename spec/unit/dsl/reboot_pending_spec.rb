@@ -30,13 +30,13 @@ describe Chef::DSL::RebootPending do
 
       context "platform is windows" do
         before do
-          allow(recipe).to receive(:platform?).with('windows').and_return(true)
+          allow(recipe).to receive(:platform?).with("windows").and_return(true)
           allow(recipe).to receive(:registry_key_exists?).and_return(false)
           allow(recipe).to receive(:registry_value_exists?).and_return(false)
         end
   
         it 'should return true if "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations" exists' do
-          allow(recipe).to receive(:registry_value_exists?).with('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => 'PendingFileRenameOperations' }).and_return(true)
+          allow(recipe).to receive(:registry_value_exists?).with('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => "PendingFileRenameOperations" }).and_return(true)
           expect(recipe.reboot_pending?).to be_truthy
         end
   
@@ -66,16 +66,16 @@ describe Chef::DSL::RebootPending do
   
       context "platform is ubuntu" do
         before do
-          allow(recipe).to receive(:platform?).with('ubuntu').and_return(true)
+          allow(recipe).to receive(:platform?).with("ubuntu").and_return(true)
         end
   
-        it 'should return true if /var/run/reboot-required exists' do
-          allow(File).to receive(:exists?).with('/var/run/reboot-required').and_return(true)
+        it "should return true if /var/run/reboot-required exists" do
+          allow(File).to receive(:exists?).with("/var/run/reboot-required").and_return(true)
           expect(recipe.reboot_pending?).to be_truthy
         end
   
-        it 'should return false if /var/run/reboot-required does not exist' do
-          allow(File).to receive(:exists?).with('/var/run/reboot-required').and_return(false)
+        it "should return false if /var/run/reboot-required does not exist" do
+          allow(File).to receive(:exists?).with("/var/run/reboot-required").and_return(false)
           expect(recipe.reboot_pending?).to be_falsey
         end
       end

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/path_utils'
-require 'chef/chef_fs/file_system/operation_not_allowed_error'
+require "chef/chef_fs/path_utils"
+require "chef/chef_fs/file_system/operation_not_allowed_error"
 
 class Chef
   module ChefFS
@@ -29,10 +29,10 @@ class Chef
           if parent
             @path = Chef::ChefFS::PathUtils::join(parent.path, name)
           else
-            if name != ''
+            if name != ""
               raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
             end
-            @path = '/'
+            @path = "/"
           end
         end
 
@@ -146,7 +146,7 @@ class Chef
         def path_for_printing
           if parent
             parent_path = parent.path_for_printing
-            if parent_path == '.'
+            if parent_path == "."
               name
             else
               Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
@@ -180,4 +180,4 @@ class Chef
   end
 end
 
-require 'chef/chef_fs/file_system/nonexistent_fs_object'
+require "chef/chef_fs/file_system/nonexistent_fs_object"

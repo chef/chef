@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
+require "chef/provider/service/init"
 
 class Chef
   class Provider
@@ -79,8 +79,8 @@ class Chef
             unless run_levels.nil? or run_levels.empty?
               all_levels_match = true
               chkconfig.stdout.split(/\s+/)[1..-1].each do |level|
-                index = level.split(':').first
-                status = level.split(':').last
+                index = level.split(":").first
+                status = level.split(":").last
                 if level =~ CHKCONFIG_ON
                   @current_run_levels << index.to_i
                   all_levels_match = false unless run_levels.include?(index.to_i)

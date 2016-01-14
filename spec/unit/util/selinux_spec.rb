@@ -17,7 +17,7 @@
 #
 
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Util::Selinux do
   class TestClass
@@ -40,7 +40,7 @@ describe Chef::Util::Selinux do
   end
 
   it "each part of ENV['PATH'] should be checked" do
-    expected_paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
+    expected_paths = ENV["PATH"].split(File::PATH_SEPARATOR) + [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
 
     expected_paths.each do |bin_path|
       selinux_path = File.join(bin_path, "selinuxenabled")

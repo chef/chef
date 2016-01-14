@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/dsl/include_recipe'
-require 'chef/mixin/deprecation'
+require "chef/dsl/include_recipe"
+require "chef/mixin/deprecation"
 
 class Chef
   module Mixin

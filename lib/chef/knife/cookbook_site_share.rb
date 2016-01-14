@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/mixin/shell_out'
+require "chef/knife"
+require "chef/mixin/shell_out"
 
 class Chef
   class Knife
@@ -26,10 +26,10 @@ class Chef
       include Chef::Mixin::ShellOut
 
       deps do
-        require 'chef/cookbook_loader'
-        require 'chef/cookbook_uploader'
-        require 'chef/cookbook_site_streaming_uploader'
-        require 'mixlib/shellout'
+        require "chef/cookbook_loader"
+        require "chef/cookbook_uploader"
+        require "chef/cookbook_site_streaming_uploader"
+        require "mixlib/shellout"
       end
 
       include Chef::Mixin::ShellOut
@@ -44,8 +44,8 @@ class Chef
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
       option :dry_run,
-        :long => '--dry-run',
-        :short => '-n',
+        :long => "--dry-run",
+        :short => "-n",
         :boolean => true,
         :default => false,
         :description => "Don't take action, only print what files will be uploaded to Supermarket."
@@ -113,7 +113,7 @@ class Chef
             ui.fatal("Received an error from Supermarket: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
             exit(1)
           else
-            data['category']
+            data["category"]
           end
         rescue => e
           ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
@@ -125,7 +125,7 @@ class Chef
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
         uri = "https://supermarket.chef.io/api/v1/cookbooks"
 
-        category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
+        category_string = Chef::JSONCompat.to_json({ "category"=>cookbook_category })
 
         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
           :tarball => File.open(cookbook_filename),
@@ -134,8 +134,8 @@ class Chef
 
         res = Chef::JSONCompat.from_json(http_resp.body)
         if http_resp.code.to_i != 201
-          if res['error_messages']
-            if res['error_messages'][0] =~ /Version already exists/
+          if res["error_messages"]
+            if res["error_messages"][0] =~ /Version already exists/
               ui.error "The same version of this cookbook already exists on Supermarket."
               exit(1)
             else

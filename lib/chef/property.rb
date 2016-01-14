@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/delayed_evaluator'
-require 'chef/chef_class'
-require 'chef/log'
+require "chef/exceptions"
+require "chef/delayed_evaluator"
+require "chef/chef_class"
+require "chef/log"
 
 class Chef
   #

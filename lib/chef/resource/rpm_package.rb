@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/rpm'
+require "chef/resource/package"
+require "chef/provider/package/rpm"
 
 class Chef
   class Resource

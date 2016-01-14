@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -42,15 +42,15 @@ class Chef
       end
 
       def actor_field_name
-        'client'
+        "client"
       end
 
       def actor_missing_error
-        'You must specify a client name'
+        "You must specify a client name"
       end
 
       def keyname_missing_error
-        'You must specify a key name'
+        "You must specify a key name"
       end
 
       def service_object

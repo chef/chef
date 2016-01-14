@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/user_key_list'
-require 'chef/knife/client_key_list'
-require 'chef/knife/key_list'
-require 'chef/key'
+require "spec_helper"
+require "chef/knife/user_key_list"
+require "chef/knife/client_key_list"
+require "chef/knife/key_list"
+require "chef/key"
 
 describe "key list commands that inherit knife" do
   shared_examples_for "a key list command" do

@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'securerandom'
+require "spec_helper"
+require "securerandom"
 
 describe Chef::Audit::AuditData do
 

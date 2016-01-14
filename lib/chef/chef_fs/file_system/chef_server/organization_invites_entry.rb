@@ -1,6 +1,6 @@
-require 'chef/chef_fs/file_system/chef_server/rest_list_entry'
-require 'chef/chef_fs/data_handler/organization_invites_data_handler'
-require 'chef/json_compat'
+require "chef/chef_fs/file_system/chef_server/rest_list_entry"
+require "chef/chef_fs/data_handler/organization_invites_data_handler"
+require "chef/json_compat"
 
 class Chef
   module ChefFS
@@ -24,7 +24,7 @@ class Chef
 
           # /organizations/foo/invites.json -> /organizations/foo/association_requests
           def api_path
-            File.join(parent.api_path, 'association_requests')
+            File.join(parent.api_path, "association_requests")
           end
 
           def exists?
@@ -37,13 +37,13 @@ class Chef
 
           def write(contents)
             desired_invites = minimize_value(Chef::JSONCompat.parse(contents, :create_additions => false))
-            actual_invites = _read_json.inject({}) { |h,val| h[val['username']] = val['id']; h }
+            actual_invites = _read_json.inject({}) { |h,val| h[val["username"]] = val["id"]; h }
             invites = actual_invites.keys
             (desired_invites - invites).each do |invite|
               begin
-                rest.post(api_path, { 'user' => invite })
+                rest.post(api_path, { "user" => invite })
               rescue Net::HTTPServerException => e
-                if e.response.code == '409'
+                if e.response.code == "409"
                   Chef::Log.warn("Could not invite #{invite} to organization #{org}: #{api_error_text(e.response)}")
                 else
                   raise

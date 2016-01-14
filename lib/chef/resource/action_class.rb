@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
+require "chef/exceptions"
 
 class Chef
   class Resource

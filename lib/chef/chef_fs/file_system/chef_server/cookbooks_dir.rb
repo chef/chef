@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/chef_server/rest_list_dir'
-require 'chef/chef_fs/file_system/chef_server/cookbook_dir'
-require 'chef/chef_fs/file_system/operation_failed_error'
-require 'chef/chef_fs/file_system/cookbook_frozen_error'
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir'
-require 'chef/mixin/file_class'
+require "chef/chef_fs/file_system/chef_server/rest_list_dir"
+require "chef/chef_fs/file_system/chef_server/cookbook_dir"
+require "chef/chef_fs/file_system/operation_failed_error"
+require "chef/chef_fs/file_system/cookbook_frozen_error"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir"
+require "chef/mixin/file_class"
 
-require 'tmpdir'
+require "tmpdir"
 
 class Chef
   module ChefFS

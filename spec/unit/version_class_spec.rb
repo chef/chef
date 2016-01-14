@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
-require 'chef/version_class'
+require "spec_helper"
+require "chef/version_class"
 
 describe Chef::Version do
   before do

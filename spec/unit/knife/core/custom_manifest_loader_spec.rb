@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::SubcommandLoader::CustomManifestLoader do
   let(:ec2_server_create_plugin) { "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_server_create.rb" }
@@ -30,7 +30,7 @@ describe Chef::Knife::SubcommandLoader::CustomManifestLoader do
     }
   end
   let(:loader) do
-    Chef::Knife::SubcommandLoader::CustomManifestLoader.new(File.join(CHEF_SPEC_DATA, 'knife-site-subcommands'),
+    Chef::Knife::SubcommandLoader::CustomManifestLoader.new(File.join(CHEF_SPEC_DATA, "knife-site-subcommands"),
                                                             manifest_content)
   end
 

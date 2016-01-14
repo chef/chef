@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class PathSanityTestHarness
   include Chef::Mixin::PathSanity
@@ -31,10 +31,10 @@ describe Chef::Mixin::PathSanity do
   describe "when enforcing path sanity" do
     before do
       Chef::Config[:enforce_path_sanity] = true
-      @ruby_bindir = '/some/ruby/bin'
-      @gem_bindir = '/some/gem/bin'
+      @ruby_bindir = "/some/ruby/bin"
+      @gem_bindir = "/some/gem/bin"
       allow(Gem).to receive(:bindir).and_return(@gem_bindir)
-      allow(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return(@ruby_bindir)
+      allow(RbConfig::CONFIG).to receive(:[]).with("bindir").and_return(@ruby_bindir)
       allow(ChefConfig).to receive(:windows?).and_return(false)
     end
 
@@ -63,10 +63,10 @@ describe Chef::Mixin::PathSanity do
     end
 
     it "does not create entries for Ruby/Gem bindirs if they exist in SANE_PATH or PATH" do
-      ruby_bindir = '/usr/bin'
-      gem_bindir = '/yo/gabba/gabba'
+      ruby_bindir = "/usr/bin"
+      gem_bindir = "/yo/gabba/gabba"
       allow(Gem).to receive(:bindir).and_return(gem_bindir)
-      allow(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return(ruby_bindir)
+      allow(RbConfig::CONFIG).to receive(:[]).with("bindir").and_return(ruby_bindir)
       env = {"PATH" => gem_bindir}
       @sanity.enforce_path_sanity(env)
       expect(env["PATH"]).to eq("/yo/gabba/gabba:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
@@ -76,7 +76,7 @@ describe Chef::Mixin::PathSanity do
       ruby_bindir = 'C:\ruby\bin'
       gem_bindir = 'C:\gems\bin'
       allow(Gem).to receive(:bindir).and_return(gem_bindir)
-      allow(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return(ruby_bindir)
+      allow(RbConfig::CONFIG).to receive(:[]).with("bindir").and_return(ruby_bindir)
       allow(ChefConfig).to receive(:windows?).and_return(true)
       env = {"PATH" => 'C:\Windows\system32;C:\mr\softie'}
       @sanity.enforce_path_sanity(env)

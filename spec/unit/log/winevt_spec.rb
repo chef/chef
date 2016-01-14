@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Log::WinEvt do
   let(:evtlog) { instance_double("Win32::EventLog")}

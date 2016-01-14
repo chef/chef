@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Deploy do
 
@@ -163,9 +163,9 @@ describe Chef::Provider::Deploy do
   end
 
   it "dont care by default if error happens on deploy" do
-    allow(@provider).to receive(:all_releases).and_return(['previous_release'])
+    allow(@provider).to receive(:all_releases).and_return(["previous_release"])
     allow(@provider).to receive(:deploy){ raise "Unexpected error" }
-    allow(@provider).to receive(:previous_release_path).and_return('previous_release')
+    allow(@provider).to receive(:previous_release_path).and_return("previous_release")
     expect(@provider).not_to receive(:rollback)
     expect {
       @provider.run_action(:deploy)
@@ -174,9 +174,9 @@ describe Chef::Provider::Deploy do
 
   it "rollbacks to previous release if error happens on deploy" do
     @resource.rollback_on_error true
-    allow(@provider).to receive(:all_releases).and_return(['previous_release'])
+    allow(@provider).to receive(:all_releases).and_return(["previous_release"])
     allow(@provider).to receive(:deploy){ raise "Unexpected error" }
-    allow(@provider).to receive(:previous_release_path).and_return('previous_release')
+    allow(@provider).to receive(:previous_release_path).and_return("previous_release")
     expect(@provider).to receive(:rollback)
     expect {
       @provider.run_action(:deploy)
@@ -552,7 +552,7 @@ describe Chef::Provider::Deploy do
       expect(@provider).to receive(:execute).with("iGoToHell4this").and_return(mock_execution)
       @resource.user("notCoolMan")
       @resource.group("Ggroup")
-      @resource.environment("APP_ENV" => 'staging')
+      @resource.environment("APP_ENV" => "staging")
       @resource.deploy_to("/my/app")
       expect(mock_execution).to receive(:user).with("notCoolMan")
       expect(mock_execution).to receive(:group).with("Ggroup")

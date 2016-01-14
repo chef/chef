@@ -19,10 +19,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource do
-  let(:cookbook_repo_path) { File.join(CHEF_SPEC_DATA, 'cookbooks') }
+  let(:cookbook_repo_path) { File.join(CHEF_SPEC_DATA, "cookbooks") }
   let(:cookbook_collection) { Chef::CookbookCollection.new(Chef::CookbookLoader.new(cookbook_repo_path)) }
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
@@ -205,7 +205,7 @@ describe Chef::Resource do
     end
 
     it "coerces arrays to names" do
-      expect(resource.name ['a', 'b']).to eql('a, b')
+      expect(resource.name ["a", "b"]).to eql("a, b")
     end
 
     it "should coerce objects to a string" do
@@ -252,13 +252,13 @@ describe Chef::Resource do
     end
 
     it "creates a notification for a resource that is not yet in the resource collection" do
-      resource.notifies(:restart, :service => 'apache')
+      resource.notifies(:restart, :service => "apache")
       expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, resource)
       expect(resource.delayed_notifications).to include(expected_notification)
     end
 
     it "notifies another resource immediately" do
-      resource.notifies_immediately(:restart, :service => 'apache')
+      resource.notifies_immediately(:restart, :service => "apache")
       expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, resource)
       expect(resource.immediate_notifications).to include(expected_notification)
     end
@@ -340,7 +340,7 @@ describe Chef::Resource do
         c = Class.new(Chef::Resource) do
         end
 
-        r = c.new('hi')
+        r = c.new("hi")
         r.declared_type = :d
         expect(c.resource_name).to be_nil
         expect(r.resource_name).to be_nil
@@ -355,7 +355,7 @@ describe Chef::Resource do
           end
         end
 
-        r = c.new('hi')
+        r = c.new("hi")
         r.declared_type = :d
         expect(c.resource_name).to be_nil
         expect(r.resource_name).to eq :blah
@@ -369,7 +369,7 @@ describe Chef::Resource do
           end
         end
 
-        r = c.new('hi')
+        r = c.new("hi")
         r.declared_type = :d
         expect(c.resource_name).to be_nil
         expect(r.resource_name).to be_nil
@@ -379,10 +379,10 @@ describe Chef::Resource do
 
     it "resource_name without provides is honored" do
       c = Class.new(Chef::Resource) do
-        resource_name 'blah'
+        resource_name "blah"
       end
 
-      r = c.new('hi')
+      r = c.new("hi")
       r.declared_type = :d
       expect(c.resource_name).to eq :blah
       expect(r.resource_name).to eq :blah
@@ -394,7 +394,7 @@ describe Chef::Resource do
       end
       c.resource_name = :blah
 
-      r = c.new('hi')
+      r = c.new("hi")
       r.declared_type = :d
       expect(c.resource_name).to eq :blah
       expect(r.resource_name).to eq :blah
@@ -406,7 +406,7 @@ describe Chef::Resource do
         provides :self_resource_name_test_3
       end
 
-      r = c.new('hi')
+      r = c.new("hi")
       r.declared_type = :d
       expect(c.resource_name).to eq :blah
       expect(r.resource_name).to eq :blah
@@ -512,7 +512,7 @@ describe Chef::Resource do
 
     before do
       node.automatic_attrs[:platform] = "fubuntu"
-      node.automatic_attrs[:platform_version] = '10.04'
+      node.automatic_attrs[:platform_version] = "10.04"
     end
 
     it "should default to not retrying if a provider fails for a resource" do
@@ -614,7 +614,7 @@ describe Chef::Resource do
     }
     before do
       node.automatic_attrs[:platform] = "fubuntu"
-      node.automatic_attrs[:platform_version] = '10.04'
+      node.automatic_attrs[:platform_version] = "10.04"
     end
 
     it "does not run only_if if no only_if command is given" do
@@ -643,8 +643,8 @@ describe Chef::Resource do
 
     it "accepts command options for only_if conditionals" do
       expect_any_instance_of(Chef::Resource::Conditional).to receive(:evaluate_command).at_least(1).times
-      resource.only_if("true", :cwd => '/tmp')
-      expect(resource.only_if.first.command_opts).to eq({:cwd => '/tmp'})
+      resource.only_if("true", :cwd => "/tmp")
+      expect(resource.only_if.first.command_opts).to eq({:cwd => "/tmp"})
       resource.run_action(:purr)
     end
 
@@ -656,7 +656,7 @@ describe Chef::Resource do
 
     it "runs not_if as a block when it is a ruby block" do
       expect_any_instance_of(Chef::Resource::Conditional).to receive(:evaluate_block).at_least(1).times
-      resource.not_if { puts 'foo' }
+      resource.not_if { puts "foo" }
       resource.run_action(:purr)
     end
 
@@ -667,8 +667,8 @@ describe Chef::Resource do
     end
 
     it "accepts command options for not_if conditionals" do
-      resource.not_if("pwd" , :cwd => '/tmp')
-      expect(resource.not_if.first.command_opts).to eq({:cwd => '/tmp'})
+      resource.not_if("pwd" , :cwd => "/tmp")
+      expect(resource.not_if.first.command_opts).to eq({:cwd => "/tmp"})
     end
 
     it "accepts multiple not_if conditionals" do
@@ -698,7 +698,7 @@ describe Chef::Resource do
       end
 
       it "should raise Chef::Exceptions::ValidationFailed on an attempt to set the guard_interpreter attribute to something other than a Symbol" do
-        expect { resource.guard_interpreter('command_dot_com') }.to raise_error(Chef::Exceptions::ValidationFailed)
+        expect { resource.guard_interpreter("command_dot_com") }.to raise_error(Chef::Exceptions::ValidationFailed)
       end
 
       it "should not raise an exception when setting the guard interpreter attribute to a Symbol" do
@@ -804,7 +804,7 @@ describe Chef::Resource do
     }
     before do
       node.automatic_attrs[:platform] = "fubuntu"
-      node.automatic_attrs[:platform_version] = '10.04'
+      node.automatic_attrs[:platform_version] = "10.04"
     end
 
     it "should not run only_if/not_if conditionals (CHEF-972)" do
@@ -850,21 +850,21 @@ describe Chef::Resource do
       Chef::Resource.send(:remove_const, :Klz)
     end
 
-    it 'adds mappings for a single platform' do
+    it "adds mappings for a single platform" do
       expect(Chef.resource_handler_map).to receive(:set).with(
-        :dinobot, Chef::Resource::Klz, { platform: ['autobots'] }
+        :dinobot, Chef::Resource::Klz, { platform: ["autobots"] }
       )
-      klz.provides :dinobot, platform: ['autobots']
+      klz.provides :dinobot, platform: ["autobots"]
     end
 
-    it 'adds mappings for multiple platforms' do
+    it "adds mappings for multiple platforms" do
       expect(Chef.resource_handler_map).to receive(:set).with(
-        :energy, Chef::Resource::Klz, { platform: ['autobots', 'decepticons']}
+        :energy, Chef::Resource::Klz, { platform: ["autobots", "decepticons"]}
       )
-      klz.provides :energy, platform: ['autobots', 'decepticons']
+      klz.provides :energy, platform: ["autobots", "decepticons"]
     end
 
-    it 'adds mappings for all platforms' do
+    it "adds mappings for all platforms" do
       expect(Chef.resource_handler_map).to receive(:set).with(
         :tape_deck, Chef::Resource::Klz, {}
       )
@@ -883,7 +883,7 @@ describe Chef::Resource do
         node.name("bumblebee")
         node.automatic[:platform] = "autobots"
         node.automatic[:platform_version] = "6.1"
-        Object.const_set('Soundwave', klz1)
+        Object.const_set("Soundwave", klz1)
         klz1.provides :soundwave
       end
 
@@ -905,8 +905,8 @@ describe Chef::Resource do
         node.name("bumblebee")
         node.automatic[:platform] = "autobots"
         node.automatic[:platform_version] = "6.1"
-        klz2.provides :dinobot, :platform => ['autobots']
-        Object.const_set('Grimlock', klz2)
+        klz2.provides :dinobot, :platform => ["autobots"]
+        Object.const_set("Grimlock", klz2)
         klz2.provides :grimlock
       end
 
@@ -1019,7 +1019,7 @@ describe Chef::Resource do
         allowed_actions(%i{one two})
       end
     end
-    let(:resource) { resource_class.new('test', nil) }
+    let(:resource) { resource_class.new("test", nil) }
     subject { resource.action }
 
     context "with a no action" do
@@ -1041,7 +1041,7 @@ describe Chef::Resource do
     end
 
     context "with a string action" do
-      before { resource.action('two') }
+      before { resource.action("two") }
       it { is_expected.to eq [:two] }
     end
 
@@ -1089,7 +1089,7 @@ describe Chef::Resource do
     end
 
     context "with a string default action" do
-      let(:default_action) { 'one' }
+      let(:default_action) { "one" }
       it { is_expected.to eq [:one] }
     end
 

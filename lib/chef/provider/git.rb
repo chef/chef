@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/log'
-require 'chef/provider'
-require 'fileutils'
+require "chef/exceptions"
+require "chef/log"
+require "chef/provider"
+require "fileutils"
 
 class Chef
   class Provider
@@ -105,7 +105,7 @@ class Chef
       end
 
       def git_minor_version
-        @git_minor_version ||= Gem::Version.new(shell_out!('git --version', run_options).stdout.split.last)
+        @git_minor_version ||= Gem::Version.new(shell_out!("git --version", run_options).stdout.split.last)
       end
 
       def existing_git_clone?
@@ -113,14 +113,14 @@ class Chef
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']
+        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == [".",".."]
       end
 
       def find_current_revision
         Chef::Log.debug("#{@new_resource} finding current git revision")
         if ::File.exist?(::File.join(cwd, ".git"))
           # 128 is returned when we're not in a git repo. this is fine
-          result = shell_out!('git rev-parse HEAD', :cwd => cwd, :returns => [0,128]).stdout.strip
+          result = shell_out!("git rev-parse HEAD", :cwd => cwd, :returns => [0,128]).stdout.strip
         end
         sha_hash?(result) ? result : nil
       end
@@ -141,9 +141,9 @@ class Chef
           remote = @new_resource.remote
 
           args = []
-          args << "-o #{remote}" unless remote == 'origin'
+          args << "-o #{remote}" unless remote == "origin"
           args << "--depth #{@new_resource.depth}" if @new_resource.depth
-          args << "--no-single-branch" if @new_resource.depth and git_minor_version >= Gem::Version.new('1.7.10')
+          args << "--no-single-branch" if @new_resource.depth and git_minor_version >= Gem::Version.new("1.7.10")
 
           Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
 
@@ -250,18 +250,18 @@ class Chef
         # Using such a degenerate annotated tag would be very
         # confusing. We avoid the issue by disallowing the use of
         # annotated tags named 'HEAD'.
-        if rev_search_pattern != 'HEAD'
-          found = find_revision(refs, @new_resource.revision, '^{}')
+        if rev_search_pattern != "HEAD"
+          found = find_revision(refs, @new_resource.revision, "^{}")
         else
-          found = refs_search(refs, 'HEAD')
+          found = refs_search(refs, "HEAD")
         end
         found = find_revision(refs, @new_resource.revision) if found.empty?
         found.size == 1 ? found.first[0] : nil
       end
 
       def find_revision(refs, revision, suffix="")
-        found = refs_search(refs, rev_match_pattern('refs/tags/', revision) + suffix)
-        found = refs_search(refs, rev_match_pattern('refs/heads/', revision) + suffix) if found.empty?
+        found = refs_search(refs, rev_match_pattern("refs/tags/", revision) + suffix)
+        found = refs_search(refs, rev_match_pattern("refs/heads/", revision) + suffix) if found.empty?
         found = refs_search(refs, revision + suffix) if found.empty?
         found
       end
@@ -275,10 +275,10 @@ class Chef
       end
 
       def rev_search_pattern
-        if ['', 'HEAD'].include? @new_resource.revision
-          'HEAD'
+        if ["", "HEAD"].include? @new_resource.revision
+          "HEAD"
         else
-          @new_resource.revision + '*'
+          @new_resource.revision + "*"
         end
       end
 
@@ -300,15 +300,15 @@ class Chef
           # Certain versions of `git` misbehave if git configuration is
           # inaccessible in $HOME. We need to ensure $HOME matches the
           # user who is executing `git` not the user running Chef.
-          env['HOME'] = begin
-            require 'etc'
+          env["HOME"] = begin
+            require "etc"
             Etc.getpwnam(@new_resource.user).dir
           rescue ArgumentError # user not found
             raise Chef::Exceptions::User, "Could not determine HOME for specified user '#{@new_resource.user}' for resource '#{@new_resource.name}'"
           end
         end
         run_opts[:group] = @new_resource.group if @new_resource.group
-        env['GIT_SSH'] = @new_resource.ssh_wrapper if @new_resource.ssh_wrapper
+        env["GIT_SSH"] = @new_resource.ssh_wrapper if @new_resource.ssh_wrapper
         run_opts[:log_tag] = @new_resource.to_s
         run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
         env.merge!(@new_resource.environment) if @new_resource.environment

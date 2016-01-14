@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::TimestampedDeploy, "initialize" do
 
@@ -25,8 +25,8 @@ describe Chef::Resource::TimestampedDeploy, "initialize" do
     provider: Chef::Provider::Deploy::Timestamped,
     name: :timestamped_deploy,
     action: :deploy,
-    os: 'linux',
-    platform_family: 'rhel',
+    os: "linux",
+    platform_family: "rhel",
   )
 
 end

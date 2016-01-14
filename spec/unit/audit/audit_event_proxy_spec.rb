@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/audit/audit_event_proxy'
+require "spec_helper"
+require "chef/audit/audit_event_proxy"
 
 describe Chef::Audit::AuditEventProxy do
 

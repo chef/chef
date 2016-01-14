@@ -1,9 +1,9 @@
-require 'support/shared/integration/integration_helper'
-require 'chef/mixin/shell_out'
-require 'chef/run_lock'
-require 'chef/config'
-require 'timeout'
-require 'fileutils'
+require "support/shared/integration/integration_helper"
+require "chef/mixin/shell_out"
+require "chef/run_lock"
+require "chef/config"
+require "timeout"
+require "fileutils"
 
 describe "chef-solo" do
   include IntegrationSupport
@@ -19,12 +19,12 @@ describe "chef-solo" do
 
   when_the_repository "has a cookbook with a basic recipe" do
     before do
-      file 'cookbooks/x/metadata.rb', cookbook_x_100_metadata_rb
-      file 'cookbooks/x/recipes/default.rb', 'puts "ITWORKS"'
+      file "cookbooks/x/metadata.rb", cookbook_x_100_metadata_rb
+      file "cookbooks/x/recipes/default.rb", 'puts "ITWORKS"'
     end
 
     it "should complete with success" do
-      file 'config/solo.rb', <<EOM
+      file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
@@ -34,12 +34,12 @@ EOM
     end
 
     it "should evaluate its node.json file" do
-      file 'config/solo.rb', <<EOM
+      file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
 
-      file 'config/node.json',<<-E
+      file "config/node.json",<<-E
 {"run_list":["x::default"]}
 E
 
@@ -52,15 +52,15 @@ E
 
   when_the_repository "has a cookbook with an undeclared dependency" do
     before do
-      file 'cookbooks/x/metadata.rb', cookbook_x_100_metadata_rb
-      file 'cookbooks/x/recipes/default.rb', 'include_recipe "ancient::aliens"'
+      file "cookbooks/x/metadata.rb", cookbook_x_100_metadata_rb
+      file "cookbooks/x/recipes/default.rb", 'include_recipe "ancient::aliens"'
 
-      file 'cookbooks/ancient/metadata.rb', cookbook_ancient_100_metadata_rb
-      file 'cookbooks/ancient/recipes/aliens.rb', 'print "it was aliens"'
+      file "cookbooks/ancient/metadata.rb", cookbook_ancient_100_metadata_rb
+      file "cookbooks/ancient/recipes/aliens.rb", 'print "it was aliens"'
     end
 
     it "should exit with an error" do
-      file 'config/solo.rb', <<EOM
+      file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
@@ -72,9 +72,9 @@ EOM
 
   when_the_repository "has a cookbook with an incompatible chef_version" do
     before do
-      file 'cookbooks/x/metadata.rb', cb_metadata('x', '1.0.0', "\nchef_version '~> 999.0'")
-      file 'cookbooks/x/recipes/default.rb', 'puts "ITWORKS"'
-      file 'config/solo.rb', <<EOM
+      file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.0", "\nchef_version '~> 999.0'")
+      file "cookbooks/x/recipes/default.rb", 'puts "ITWORKS"'
+      file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
@@ -89,9 +89,9 @@ EOM
 
   when_the_repository "has a cookbook with an incompatible ohai_version" do
     before do
-      file 'cookbooks/x/metadata.rb', cb_metadata('x', '1.0.0', "\nohai_version '~> 999.0'")
-      file 'cookbooks/x/recipes/default.rb', 'puts "ITWORKS"'
-      file 'config/solo.rb', <<EOM
+      file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.0", "\nohai_version '~> 999.0'")
+      file "cookbooks/x/recipes/default.rb", 'puts "ITWORKS"'
+      file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
@@ -107,10 +107,10 @@ EOM
 
   when_the_repository "has a cookbook with a recipe with sleep" do
     before do
-      directory 'logs'
-      file 'logs/runs.log', ''
-      file 'cookbooks/x/metadata.rb', cookbook_x_100_metadata_rb
-      file 'cookbooks/x/recipes/default.rb', <<EOM
+      directory "logs"
+      file "logs/runs.log", ""
+      file "cookbooks/x/metadata.rb", cookbook_x_100_metadata_rb
+      file "cookbooks/x/recipes/default.rb", <<EOM
 ruby_block "sleeping" do
   block do
     sleep 5
@@ -120,7 +120,7 @@ EOM
     end
 
     it "while running solo concurrently" do
-      file 'config/solo.rb', <<EOM
+      file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
@@ -149,7 +149,7 @@ EOM
       # Unfortunately file / directory helpers in integration tests
       # are implemented using before(:each) so we need to do all below
       # checks in one example.
-      run_log = File.read(path_to('logs/runs.log'))
+      run_log = File.read(path_to("logs/runs.log"))
 
       # both of the runs should succeed
       expect(run_log.lines.reject {|l| !l.include? "INFO: Chef Run complete in"}.length).to eq(2)

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 Chef::Knife::NodeEdit.load_deps
 
 describe Chef::Knife::NodeEdit do
@@ -30,7 +30,7 @@ describe Chef::Knife::NodeEdit do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::NodeEdit.new
     @knife.config = {
-      :editor => 'cat',
+      :editor => "cat",
       :attribute => nil,
       :print_after => nil,
     }

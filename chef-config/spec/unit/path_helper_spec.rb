@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef-config/path_helper'
-require 'spec_helper'
+require "chef-config/path_helper"
+require "spec_helper"
 
 RSpec.describe ChefConfig::PathHelper do
 
@@ -27,30 +27,30 @@ RSpec.describe ChefConfig::PathHelper do
     describe "join" do
 
       it "joins starting with '' resolve to absolute paths" do
-        expect(path_helper.join('', 'a', 'b')).to eq("#{path_helper.path_separator}a#{path_helper.path_separator}b")
+        expect(path_helper.join("", "a", "b")).to eq("#{path_helper.path_separator}a#{path_helper.path_separator}b")
       end
 
       it "joins ending with '' add a / to the end" do
-        expect(path_helper.join('a', 'b', '')).to eq("a#{path_helper.path_separator}b#{path_helper.path_separator}")
+        expect(path_helper.join("a", "b", "")).to eq("a#{path_helper.path_separator}b#{path_helper.path_separator}")
       end
 
     end
 
     describe "dirname" do
       it "dirname('abc') is '.'" do
-        expect(path_helper.dirname('abc')).to eq('.')
+        expect(path_helper.dirname("abc")).to eq(".")
       end
       it "dirname('/') is '/'" do
         expect(path_helper.dirname(path_helper.path_separator)).to eq(path_helper.path_separator)
       end
       it "dirname('a/b/c') is 'a/b'" do
-        expect(path_helper.dirname(path_helper.join('a', 'b', 'c'))).to eq(path_helper.join('a', 'b'))
+        expect(path_helper.dirname(path_helper.join("a", "b", "c"))).to eq(path_helper.join("a", "b"))
       end
       it "dirname('a/b/c/') is 'a/b'" do
-        expect(path_helper.dirname(path_helper.join('a', 'b', 'c', ''))).to eq(path_helper.join('a', 'b'))
+        expect(path_helper.dirname(path_helper.join("a", "b", "c", ""))).to eq(path_helper.join("a", "b"))
       end
       it "dirname('/a/b/c') is '/a/b'" do
-        expect(path_helper.dirname(path_helper.join('', 'a', 'b', 'c'))).to eq(path_helper.join('', 'a', 'b'))
+        expect(path_helper.dirname(path_helper.join("", "a", "b", "c"))).to eq(path_helper.join("", "a", "b"))
       end
     end
   end
@@ -113,11 +113,11 @@ RSpec.describe ChefConfig::PathHelper do
     include_examples("common_functionality")
 
     it "path_separator is /" do
-      expect(path_helper.path_separator).to eq('/')
+      expect(path_helper.path_separator).to eq("/")
     end
 
     it "cleanpath removes extra slashes alone" do
-      expect(path_helper.cleanpath('/a///b/c/d/')).to eq('/a/b/c/d')
+      expect(path_helper.cleanpath("/a///b/c/d/")).to eq("/a/b/c/d")
     end
 
     describe "platform-specific #join behavior" do
@@ -269,7 +269,7 @@ RSpec.describe ChefConfig::PathHelper do
 
   describe "all_homes" do
     before do
-      stub_const('ENV', env)
+      stub_const("ENV", env)
       allow(ChefConfig).to receive(:windows?).and_return(is_windows)
     end
 

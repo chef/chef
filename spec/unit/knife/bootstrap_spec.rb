@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::Bootstrap.load_deps
-require 'net/ssh'
+require "net/ssh"
 
 describe Chef::Knife::Bootstrap do
   before do
@@ -102,7 +102,7 @@ describe Chef::Knife::Bootstrap do
     context "when :bootstrap_template config is set to a template name" do
       let(:bootstrap_template) { "example" }
 
-      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), '../../../lib/chef/knife/bootstrap/templates', "example.erb"))}
+      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), "../../../lib/chef/knife/bootstrap/templates", "example.erb"))}
 
       let(:chef_config_dir_template_path) { "/knife/chef/config/bootstrap/example.erb" }
 
@@ -237,7 +237,7 @@ describe Chef::Knife::Bootstrap do
 
     context "with bootstrap_attribute options" do
       let(:jsonfile) {
-        file = Tempfile.new (['node', '.json'])
+        file = Tempfile.new (["node", ".json"])
         File.open(file.path, "w") {|f| f.puts '{"foo":{"bar":"baz"}}' }
         file
       }
@@ -385,7 +385,7 @@ describe Chef::Knife::Bootstrap do
   end
 
   describe "when transferring trusted certificates" do
-    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), '../../data/trusted_certs')) }
+    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), "../../data/trusted_certs")) }
 
     let(:rendered_template) do
       knife.merge_configs
@@ -509,15 +509,15 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh user" do
-        expect(knife_ssh.config[:ssh_user]).to eq('rooty')
+        expect(knife_ssh.config[:ssh_user]).to eq("rooty")
       end
 
       it "configures the ssh password" do
-        expect(knife_ssh.config[:ssh_password]).to eq('open_sesame')
+        expect(knife_ssh.config[:ssh_password]).to eq("open_sesame")
       end
 
       it "configures the ssh port" do
-        expect(knife_ssh.config[:ssh_port]).to eq('4001')
+        expect(knife_ssh.config[:ssh_port]).to eq("4001")
       end
 
       it "configures the ssh agent forwarding" do
@@ -525,7 +525,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh identity file" do
-        expect(knife_ssh.config[:ssh_identity_file]).to eq('~/.ssh/me.rsa')
+        expect(knife_ssh.config[:ssh_identity_file]).to eq("~/.ssh/me.rsa")
       end
     end
 
@@ -537,8 +537,8 @@ describe Chef::Knife::Bootstrap do
 
       it "use_sudo_password contains description and long params for help" do
         expect(knife.options).to have_key(:use_sudo_password) \
-          and expect(knife.options[:use_sudo_password][:description].to_s).not_to eq('')\
-          and expect(knife.options[:use_sudo_password][:long].to_s).not_to eq('')
+          and expect(knife.options[:use_sudo_password][:description].to_s).not_to eq("")\
+          and expect(knife.options[:use_sudo_password][:long].to_s).not_to eq("")
       end
 
       it "uses the password from --ssh-password for sudo when --use-sudo-password is set" do
@@ -570,11 +570,11 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh user" do
-        expect(knife_ssh.config[:ssh_user]).to eq('curiosity')
+        expect(knife_ssh.config[:ssh_user]).to eq("curiosity")
       end
 
       it "configures the ssh port" do
-        expect(knife_ssh.config[:ssh_port]).to eq('2430')
+        expect(knife_ssh.config[:ssh_port]).to eq("2430")
       end
 
       it "configures the ssh agent forwarding" do
@@ -582,11 +582,11 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh identity file" do
-        expect(knife_ssh.config[:ssh_identity_file]).to eq('~/.ssh/you.rsa')
+        expect(knife_ssh.config[:ssh_identity_file]).to eq("~/.ssh/you.rsa")
       end
 
       it "configures the ssh gateway" do
-        expect(knife_ssh.config[:ssh_gateway]).to eq('towel.blinkenlights.nl')
+        expect(knife_ssh.config[:ssh_gateway]).to eq("towel.blinkenlights.nl")
       end
 
       it "configures the host key verify mode" do
@@ -601,13 +601,13 @@ describe Chef::Knife::Bootstrap do
         knife.config[:ssh_identity_file] = "~/.ssh/me.rsa"
         allow(knife).to receive(:render_template).and_return("")
         k = knife.knife_ssh
-        allow(k).to receive(:get_password).and_return('typed_in_password')
+        allow(k).to receive(:get_password).and_return("typed_in_password")
         allow(knife).to receive(:knife_ssh).and_return(k)
         knife.knife_ssh_with_password_auth
       end
 
       it "prompts the user for a password " do
-        expect(knife_ssh_with_password_auth.config[:ssh_password]).to eq('typed_in_password')
+        expect(knife_ssh_with_password_auth.config[:ssh_password]).to eq("typed_in_password")
       end
 
       it "configures knife not to use the identity file that didn't work previously" do

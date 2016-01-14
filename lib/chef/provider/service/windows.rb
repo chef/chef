@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/simple'
+require "chef/provider/service/simple"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'chef/win32/error'
-  require 'win32/service'
+  require "chef/win32/error"
+  require "win32/service"
 end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
@@ -32,22 +32,22 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   include Chef::ReservedNames::Win32::API::Error rescue LoadError
 
   #Win32::Service.get_start_type
-  AUTO_START = 'auto start'
-  MANUAL = 'demand start'
-  DISABLED = 'disabled'
+  AUTO_START = "auto start"
+  MANUAL = "demand start"
+  DISABLED = "disabled"
 
   #Win32::Service.get_current_state
-  RUNNING = 'running'
-  STOPPED = 'stopped'
-  CONTINUE_PENDING = 'continue pending'
-  PAUSE_PENDING = 'pause pending'
-  PAUSED = 'paused'
-  START_PENDING = 'start pending'
-  STOP_PENDING  = 'stop pending'
+  RUNNING = "running"
+  STOPPED = "stopped"
+  CONTINUE_PENDING = "continue pending"
+  PAUSE_PENDING = "pause pending"
+  PAUSED = "paused"
+  START_PENDING = "start pending"
+  STOP_PENDING  = "stop pending"
 
   TIMEOUT  = 60
 
-  SERVICE_RIGHT = 'SeServiceLogonRight'
+  SERVICE_RIGHT = "SeServiceLogonRight"
 
   def whyrun_supported?
     false
@@ -252,11 +252,11 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   # remove characters that make for broken or wonky filenames.
   def clean_username_for_path(username)
-    username.gsub(/[\/\\. ]+/, '_')
+    username.gsub(/[\/\\. ]+/, "_")
   end
 
   def canonicalize_username(username)
-    username.sub(/^\.?\\+/, '')
+    username.sub(/^\.?\\+/, "")
   end
 
   def current_state

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'securerandom'
+require "securerandom"
 
 class Chef
   class Audit

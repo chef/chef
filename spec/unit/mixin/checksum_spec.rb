@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/checksum'
-require 'stringio'
+require "spec_helper"
+require "chef/mixin/checksum"
+require "stringio"
 
 class Chef::CMCCheck
   include Chef::Mixin::Checksum

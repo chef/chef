@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/encrypted_data_bag_item'
+require "spec_helper"
+require "chef/encrypted_data_bag_item"
 
 module Version0Encryptor
   def self.encrypt_value(plaintext_data, key)

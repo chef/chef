@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/dsl/reboot_pending'
-require 'chef/log'
-require 'chef/platform'
+require "chef/dsl/reboot_pending"
+require "chef/log"
+require "chef/platform"
 
 class Chef
   class Platform

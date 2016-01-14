@@ -1,8 +1,8 @@
-$:.unshift(File.dirname(__FILE__) + '/lib')
-require 'chef/version'
+$:.unshift(File.dirname(__FILE__) + "/lib")
+require "chef/version"
 
 Gem::Specification.new do |s|
-  s.name = 'chef'
+  s.name = "chef"
   s.version = Chef::VERSION
   s.platform = Gem::Platform::RUBY
   s.extra_rdoc_files = ["README.md", "CONTRIBUTING.md", "LICENSE" ]
@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-zero", "~> 4.4.0", ">= 4.2.2"
   s.add_dependency "pry", "~> 0.9"
 
-  s.add_dependency 'plist', '~> 3.1.0'
+  s.add_dependency "plist", "~> 3.1.0"
 
   # Audit mode requires these, so they are non-developmental dependencies now
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_dependency gem, "~> 3.4" }

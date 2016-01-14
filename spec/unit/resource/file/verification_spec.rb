@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::File::Verification do
   let(:t_block) { Proc.new { true } }
@@ -82,27 +82,27 @@ describe Chef::Resource::File::Verification do
       end
 
       it "substitutes \%{file} with the path" do
-        test_command = platform_specific_verify_command('file')
+        test_command = platform_specific_verify_command("file")
         v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
         expect(v.verify(temp_path)).to eq(true)
       end
 
       it "warns about deprecation when \%{file} is used" do
         expect(Chef::Log).to receive(:deprecation).with(/%{file} is deprecated/, /verification_spec\.rb/)
-        test_command = platform_specific_verify_command('file')
+        test_command = platform_specific_verify_command("file")
         Chef::Resource::File::Verification.new(parent_resource, test_command, {})
           .verify(temp_path)
       end
 
       it "does not warn about deprecation when \%{file} is not used" do
         expect(Chef::Log).to_not receive(:deprecation)
-        test_command = platform_specific_verify_command('path')
+        test_command = platform_specific_verify_command("path")
         Chef::Resource::File::Verification.new(parent_resource, test_command, {})
           .verify(temp_path)
       end
 
       it "substitutes \%{path} with the path" do
-        test_command = platform_specific_verify_command('path')
+        test_command = platform_specific_verify_command("path")
         v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
         expect(v.verify(temp_path)).to eq(true)
       end

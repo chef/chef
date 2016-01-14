@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'ohai'
+require "ohai"
 
 class Chef
   class Provider

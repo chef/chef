@@ -18,14 +18,14 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/run_list'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/server_api'
-require 'chef/search/query'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/run_list"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/server_api"
+require "chef/search/query"
 
 class Chef
   class Role
@@ -37,8 +37,8 @@ class Chef
 
     # Create a new Chef::Role object.
     def initialize(chef_server_rest: nil)
-      @name = ''
-      @description = ''
+      @name = ""
+      @description = ""
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @env_run_lists = {"_default" => Chef::RunList.new}
@@ -88,7 +88,7 @@ class Chef
     end
 
     def active_run_list_for(environment)
-      @env_run_lists.has_key?(environment) ? environment : '_default'
+      @env_run_lists.has_key?(environment) ? environment : "_default"
     end
 
     # Per environment run lists
@@ -139,7 +139,7 @@ class Chef
       result = {
         "name" => @name,
         "description" => @description,
-        'json_class' => self.class.name,
+        "json_class" => self.class.name,
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes,
         "chef_type" => "role",

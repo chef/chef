@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookShow < Knife
 
       deps do
-        require 'chef/json_compat'
-        require 'uri'
-        require 'chef/cookbook_version'
+        require "chef/json_compat"
+        require "uri"
+        require "chef/cookbook_version"
       end
 
       banner "knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
@@ -65,7 +65,7 @@ class Chef
           end
 
           cookbook_name, segment, filename = @name_args[0], @name_args[2], @name_args[3]
-          cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
+          cookbook_version = @name_args[1] == "latest" ? "_latest" : @name_args[1]
 
           cookbook = rest.get("cookbooks/#{cookbook_name}/#{cookbook_version}")
           manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)
@@ -76,11 +76,11 @@ class Chef
           pretty_print(temp_file.read)
 
         when 3 # We are showing a specific part of the cookbook
-          cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
+          cookbook_version = @name_args[1] == "latest" ? "_latest" : @name_args[1]
           result = rest.get("cookbooks/#{@name_args[0]}/#{cookbook_version}")
           output(result.manifest[@name_args[2]])
         when 2 # We are showing the whole cookbook data
-          cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
+          cookbook_version = @name_args[1] == "latest" ? "_latest" : @name_args[1]
           output(rest.get("cookbooks/#{@name_args[0]}/#{cookbook_version}"))
         when 1 # We are showing the cookbook versions (all of them)
           cookbook_name = @name_args[0]

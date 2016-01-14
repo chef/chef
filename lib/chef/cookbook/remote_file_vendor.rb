@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/cookbook/file_vendor'
+require "chef/cookbook/file_vendor"
 
 class Chef
   class Cookbook
@@ -48,7 +48,7 @@ class Chef
         found_manifest_record = @manifest[segment].find {|manifest_record| manifest_record[:path] == filename }
         raise "No such file #{filename} in #{@cookbook_name}" unless found_manifest_record
 
-        cache_filename = File.join("cookbooks", @cookbook_name, found_manifest_record['path'])
+        cache_filename = File.join("cookbooks", @cookbook_name, found_manifest_record["path"])
 
         # update valid_cache_entries so the upstream cache cleaner knows what
         # we've used.
@@ -62,7 +62,7 @@ class Chef
         # If the checksums are different between on-disk (current) and on-server
         # (remote, per manifest), do the update. This will also execute if there
         # is no current checksum.
-        if current_checksum != found_manifest_record['checksum']
+        if current_checksum != found_manifest_record["checksum"]
           raw_file = @rest.get(found_manifest_record[:url], true)
 
           Chef::Log.debug("Storing updated #{cache_filename} in the cache.")

@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'forwardable'
+require "forwardable"
 
-require 'chef/log'
-require 'chef/run_context'
-require 'chef/config'
-require 'chef/node'
-require 'chef/exceptions'
+require "chef/log"
+require "chef/run_context"
+require "chef/config"
+require "chef/node"
+require "chef/exceptions"
 
 class Chef
   module PolicyBuilder

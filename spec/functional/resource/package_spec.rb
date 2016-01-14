@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'webrick'
+require "spec_helper"
+require "webrick"
 
 module AptServer
   def enable_testing_apt_source
@@ -239,7 +239,7 @@ describe Chef::Resource::Package, metadata do
             it "does not update the package configuration" do
               package_resource.run_action(:install)
               cmd = shell_out!("debconf-show chef-integration-test")
-              expect(cmd.stdout).to include('chef-integration-test/sample-var: INVALID')
+              expect(cmd.stdout).to include("chef-integration-test/sample-var: INVALID")
               expect(package_resource).to be_updated_by_last_action
             end
 
@@ -276,7 +276,7 @@ describe Chef::Resource::Package, metadata do
               r = base_resource
               r.cookbook_name = "preseed"
               r.response_file("preseed-template-variables.seed")
-              r.response_file_variables({ :template_variable => 'SUPPORTS VARIABLES' })
+              r.response_file_variables({ :template_variable => "SUPPORTS VARIABLES" })
               r
             end
 

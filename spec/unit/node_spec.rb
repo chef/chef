@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Node do
 
@@ -27,32 +27,32 @@ describe Chef::Node do
   it_behaves_like "a platform introspector"
 
   it "creates a node and assigns it a name" do
-    node = Chef::Node.build('solo-node')
-    expect(node.name).to eq('solo-node')
+    node = Chef::Node.build("solo-node")
+    expect(node.name).to eq("solo-node")
   end
 
   it "should validate the name of the node" do
-    expect{Chef::Node.build('solo node')}.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect{Chef::Node.build("solo node")}.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "should be sortable" do
-    n1 = Chef::Node.build('alpha')
-    n2 = Chef::Node.build('beta')
-    n3 = Chef::Node.build('omega')
+    n1 = Chef::Node.build("alpha")
+    n2 = Chef::Node.build("beta")
+    n3 = Chef::Node.build("omega")
     expect([n3, n1, n2].sort).to eq([n1, n2, n3])
   end
 
   it "should share identity only with others of the same name" do
-    n1 = Chef::Node.build('foo')
-    n2 = Chef::Node.build('foo')
-    n3 = Chef::Node.build('bar')
+    n1 = Chef::Node.build("foo")
+    n2 = Chef::Node.build("foo")
+    n3 = Chef::Node.build("bar")
     expect(n1).to eq(n2)
     expect(n1).not_to eq(n3)
   end
 
   describe "when the node does not exist on the server" do
     before do
-      response = OpenStruct.new(:code => '404')
+      response = OpenStruct.new(:code => "404")
       exception = Net::HTTPServerException.new("404 not found", response)
       allow(Chef::Node).to receive(:load).and_raise(exception)
       node.name("created-node")
@@ -62,19 +62,19 @@ describe Chef::Node do
       allow(Chef::Node).to receive(:new).and_return(node)
       expect(node).to receive(:create).and_return(node)
       node = Chef::Node.find_or_create("created-node")
-      expect(node.name).to eq('created-node')
+      expect(node.name).to eq("created-node")
       expect(node).to equal(node)
     end
   end
 
   describe "when the node exists on the server" do
     before do
-      node.name('existing-node')
+      node.name("existing-node")
       allow(Chef::Node).to receive(:load).and_return(node)
     end
 
     it "loads the node via the REST API for find_or_create" do
-      expect(Chef::Node.find_or_create('existing-node')).to equal(node)
+      expect(Chef::Node.find_or_create("existing-node")).to equal(node)
     end
   end
 
@@ -88,7 +88,7 @@ describe Chef::Node do
   describe "initialize" do
     it "should default to the '_default' chef_environment" do
       n = Chef::Node.new
-      expect(n.chef_environment).to eq('_default')
+      expect(n.chef_environment).to eq("_default")
     end
   end
 
@@ -147,7 +147,7 @@ describe Chef::Node do
     end
 
     it "allows policy_name with every valid character" do
-      expect { node.policy_name = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:.' }.to_not raise_error
+      expect { node.policy_name = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:." }.to_not raise_error
     end
 
     it "sets policy_name when given an argument" do
@@ -183,7 +183,7 @@ describe Chef::Node do
     end
 
     it "allows policy_group with every valid character" do
-      expect { node.policy_group = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:.' }.to_not raise_error
+      expect { node.policy_group = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:." }.to_not raise_error
     end
 
     it "sets an environment with chef_environment(something)" do
@@ -291,9 +291,9 @@ describe Chef::Node do
       end
 
       it "should let you use tag as a convience method for the tags attribute" do
-        node.normal['tags'] = ['one', 'two']
-        node.tag('three', 'four')
-        expect(node['tags']).to eq(['one', 'two', 'three', 'four'])
+        node.normal["tags"] = ["one", "two"]
+        node.tag("three", "four")
+        expect(node["tags"]).to eq(["one", "two", "three", "four"])
       end
     end
 
@@ -706,25 +706,25 @@ describe Chef::Node do
     #
     describe "deep merge attribute cache edge conditions" do
       it "does not error with complicated attribute substitution" do
-        node.default['chef_attribute_hell']['attr1'] = "attribute1"
-        node.default['chef_attribute_hell']['attr2'] = "#{node.chef_attribute_hell.attr1}/attr2"
-        expect { node.default['chef_attribute_hell']['attr3'] = "#{node.chef_attribute_hell.attr2}/attr3" }.not_to raise_error
+        node.default["chef_attribute_hell"]["attr1"] = "attribute1"
+        node.default["chef_attribute_hell"]["attr2"] = "#{node.chef_attribute_hell.attr1}/attr2"
+        expect { node.default["chef_attribute_hell"]["attr3"] = "#{node.chef_attribute_hell.attr2}/attr3" }.not_to raise_error
       end
 
       it "caches both strings and symbols correctly" do
-        node.force_default[:solr][:version] = '4.10.2'
+        node.force_default[:solr][:version] = "4.10.2"
         node.force_default[:solr][:data_dir] = "/opt/solr-#{node['solr'][:version]}/example/solr"
         node.force_default[:solr][:xms] = "512M"
         expect(node[:solr][:xms]).to eql("512M")
-        expect(node['solr'][:xms]).to eql("512M")
+        expect(node["solr"][:xms]).to eql("512M")
       end
 
       it "method interpolation syntax also works" do
-        node.default['passenger']['version']     = '4.0.57'
-        node.default['passenger']['root_path']   = "passenger-#{node['passenger']['version']}"
-        node.default['passenger']['root_path_2'] = "passenger-#{node.passenger['version']}"
-        expect(node['passenger']['root_path_2']).to eql("passenger-4.0.57")
-        expect(node[:passenger]['root_path_2']).to eql("passenger-4.0.57")
+        node.default["passenger"]["version"]     = "4.0.57"
+        node.default["passenger"]["root_path"]   = "passenger-#{node['passenger']['version']}"
+        node.default["passenger"]["root_path_2"] = "passenger-#{node.passenger['version']}"
+        expect(node["passenger"]["root_path_2"]).to eql("passenger-4.0.57")
+        expect(node[:passenger]["root_path_2"]).to eql("passenger-4.0.57")
       end
     end
 
@@ -749,7 +749,7 @@ describe Chef::Node do
   describe "consuming json" do
 
     before do
-      @ohai_data = {:platform => 'foo', :platform_version => 'bar'}
+      @ohai_data = {:platform => "foo", :platform_version => "bar"}
     end
 
     it "consumes the run list portion of a collection of attributes and returns the remainder" do
@@ -762,7 +762,7 @@ describe Chef::Node do
       attrs = { "chef_environment" => "foo_environment", "bar" => "baz" }
       expect(node.consume_chef_environment(attrs)).to eq({ "bar" => "baz" })
       expect(node.chef_environment).to eq("foo_environment")
-      expect(node['chef_environment']).to be nil
+      expect(node["chef_environment"]).to be nil
     end
 
     it "should overwrites the run list with the run list it consumes" do
@@ -805,7 +805,7 @@ describe Chef::Node do
     end
 
     it "should set the tags attribute to an empty array if it is nil" do
-      node.attributes.normal = { 'tags' => nil }
+      node.attributes.normal = { "tags" => nil }
       node.consume_external_attrs(@ohai_data, {})
       expect(node.tags).to eql([])
     end
@@ -841,22 +841,22 @@ describe Chef::Node do
 
   describe "preparing for a chef client run" do
     before do
-      @ohai_data = {:platform => 'foobuntu', :platform_version => '23.42'}
+      @ohai_data = {:platform => "foobuntu", :platform_version => "23.42"}
     end
 
     it "sets its platform according to platform detection" do
       node.consume_external_attrs(@ohai_data, {})
-      expect(node.automatic_attrs[:platform]).to eq('foobuntu')
-      expect(node.automatic_attrs[:platform_version]).to eq('23.42')
+      expect(node.automatic_attrs[:platform]).to eq("foobuntu")
+      expect(node.automatic_attrs[:platform_version]).to eq("23.42")
     end
 
     it "consumes the run list from provided json attributes" do
-      node.consume_external_attrs(@ohai_data, {"run_list" => ['recipe[unicorn]']})
-      expect(node.run_list).to eq(['recipe[unicorn]'])
+      node.consume_external_attrs(@ohai_data, {"run_list" => ["recipe[unicorn]"]})
+      expect(node.run_list).to eq(["recipe[unicorn]"])
     end
 
     it "saves non-runlist json attrs for later" do
-      expansion = Chef::RunList::RunListExpansion.new('_default', [])
+      expansion = Chef::RunList::RunListExpansion.new("_default", [])
       allow(node.run_list).to receive(:expand).and_return(expansion)
       node.consume_external_attrs(@ohai_data, {"foo" => "bar"})
       node.expand!
@@ -868,7 +868,7 @@ describe Chef::Node do
   describe "when expanding its run list and merging attributes" do
     before do
       @environment = Chef::Environment.new.tap do |e|
-        e.name('rspec_env')
+        e.name("rspec_env")
         e.default_attributes("env default key" => "env default value")
         e.override_attributes("env override key" => "env override value")
       end
@@ -879,15 +879,15 @@ describe Chef::Node do
     end
 
     it "sets the 'recipes' automatic attribute to the recipes in the expanded run_list" do
-      @expansion.recipes << 'recipe[chef::client]' << 'recipe[nginx::default]'
+      @expansion.recipes << "recipe[chef::client]" << "recipe[nginx::default]"
       node.expand!
-      expect(node.automatic_attrs[:recipes]).to eq(['recipe[chef::client]', 'recipe[nginx::default]'])
+      expect(node.automatic_attrs[:recipes]).to eq(["recipe[chef::client]", "recipe[nginx::default]"])
     end
 
     it "sets the 'roles' automatic attribute to the expanded role list" do
-      @expansion.instance_variable_set(:@applied_roles, {'arf' => nil, 'countersnark' => nil})
+      @expansion.instance_variable_set(:@applied_roles, {"arf" => nil, "countersnark" => nil})
       node.expand!
-      expect(node.automatic_attrs[:roles].sort).to eq(['arf', 'countersnark'])
+      expect(node.automatic_attrs[:roles].sort).to eq(["arf", "countersnark"])
     end
 
     it "applies default attributes from the environment as environment defaults" do
@@ -1152,7 +1152,7 @@ describe Chef::Node do
       expect(h["chef_environment"]).to eq("dev")
     end
 
-    it 'should return an empty array for empty run_list' do
+    it "should return an empty array for empty run_list" do
       expect(node.to_hash["run_list"]).to eq([])
     end
   end
@@ -1170,11 +1170,11 @@ describe Chef::Node do
       expect(json).to match(/run_list/)
     end
 
-    it 'should serialize valid json with a run list', :json => true do
+    it "should serialize valid json with a run list", :json => true do
       #This test came about because activesupport mucks with Chef json serialization
       #Test should pass with and without Activesupport
-      node.run_list << {"type" => "role", "name" => 'Cthulu'}
-      node.run_list << {"type" => "role", "name" => 'Hastur'}
+      node.run_list << {"type" => "role", "name" => "Cthulu"}
+      node.run_list << {"type" => "role", "name" => "Hastur"}
       json = Chef::JSONCompat.to_json(node)
       expect(json).to match(/\"run_list\":\[\"role\[Cthulu\]\",\"role\[Hastur\]\"\]/)
     end

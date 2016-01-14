@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/uris'
-require 'chef/resource/package'
-require 'chef/provider/package/windows'
-require 'chef/win32/error' if RUBY_PLATFORM =~ /mswin|mingw|windows/
+require "chef/mixin/uris"
+require "chef/resource/package"
+require "chef/provider/package/windows"
+require "chef/win32/error" if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
 class Chef
   class Resource
@@ -34,7 +34,7 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @source ||= source(@package_name) if @package_name.downcase.end_with?('.msi')
+        @source ||= source(@package_name) if @package_name.downcase.end_with?(".msi")
       end
 
       # Unique to this resource

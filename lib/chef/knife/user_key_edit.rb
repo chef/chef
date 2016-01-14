@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/key_edit_base'
+require "chef/knife"
+require "chef/knife/key_edit_base"
 
 class Chef
   class Knife
@@ -30,7 +30,7 @@ class Chef
     class UserKeyEdit < Knife
       include Chef::Knife::KeyEditBase
 
-      banner 'knife user key edit USER KEYNAME (options)'
+      banner "knife user key edit USER KEYNAME (options)"
 
       attr_reader :actor
 
@@ -45,7 +45,7 @@ class Chef
       end
 
       def actor_field_name
-        'user'
+        "user"
       end
 
       def service_object
@@ -53,11 +53,11 @@ class Chef
       end
 
       def actor_missing_error
-        'You must specify a user name'
+        "You must specify a user name"
       end
 
       def keyname_missing_error
-        'You must specify a key name'
+        "You must specify a key name"
       end
 
       def apply_params!(params)

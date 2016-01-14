@@ -16,18 +16,18 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 if Chef::Platform.windows?
-  require 'chef/win32/file/version_info'
+  require "chef/win32/file/version_info"
 end
 
 describe "Chef::ReservedNames::Win32::File::VersionInfo", :windows_only do
-  require 'wmi-lite/wmi'
-  let(:file_path) { ENV['ComSpec'] }
+  require "wmi-lite/wmi"
+  let(:file_path) { ENV["ComSpec"] }
   let(:os_version) do
     wmi = WmiLite::Wmi.new
-    os_info = wmi.first_of('Win32_OperatingSystem')
-    os_info['version']
+    os_info = wmi.first_of("Win32_OperatingSystem")
+    os_info["version"]
   end
 
   subject { Chef::ReservedNames::Win32::File::VersionInfo.new(file_path) }

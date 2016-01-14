@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_entry'
-require 'chef/chef_fs/file_system/chef_server/cookbook_dir'
-require 'chef/chef_fs/file_system/chef_server/versioned_cookbook_dir'
-require 'chef/chef_fs/file_system/not_found_error'
-require 'chef/cookbook/chefignore'
-require 'chef/cookbook/cookbook_version_loader'
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_entry"
+require "chef/chef_fs/file_system/chef_server/cookbook_dir"
+require "chef/chef_fs/file_system/chef_server/versioned_cookbook_dir"
+require "chef/chef_fs/file_system/not_found_error"
+require "chef/cookbook/chefignore"
+require "chef/cookbook/cookbook_version_loader"
 
 class Chef
   module ChefFS
@@ -50,7 +50,7 @@ class Chef
           def can_have_child?(name, is_dir)
             if is_dir
               # Only the given directories will be uploaded.
-              return Chef::ChefFS::FileSystem::ChefServer::CookbookDir::COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) && name != 'root_files'
+              return Chef::ChefFS::FileSystem::ChefServer::CookbookDir::COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) && name != "root_files"
             elsif name == Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE
               return false
             end

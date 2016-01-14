@@ -17,7 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef-config/exceptions'
+require "chef-config/exceptions"
 
 class Chef
   # == Chef::Exceptions
@@ -28,7 +28,7 @@ class Chef
     ConfigurationError = ChefConfig::ConfigurationError
 
     # Backcompat with Chef::ShellOut code:
-    require 'mixlib/shellout/exceptions'
+    require "mixlib/shellout/exceptions"
 
     def self.const_missing(const_name)
       if const_name == :ShellCommandFailed
@@ -274,7 +274,7 @@ class Chef
           super
         when RunList::RunListExpansion
           @expansion = message_or_expansion
-          missing_roles = @expansion.errors.join(', ')
+          missing_roles = @expansion.errors.join(", ")
           super("The expanded run list includes nonexistent roles: #{missing_roles}")
         end
       end
@@ -486,14 +486,14 @@ class Chef
 
     class CookbookChefVersionMismatch < RuntimeError
       def initialize(chef_version, cookbook_name, cookbook_version, *constraints)
-        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(', ')
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(", ")
         super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on chef version #{constraint_str}, but the running chef version is #{chef_version}"
       end
     end
 
     class CookbookOhaiVersionMismatch < RuntimeError
       def initialize(ohai_version, cookbook_name, cookbook_version, *constraints)
-        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(', ')
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(", ")
         super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on ohai version #{constraint_str}, but the running ohai version is #{ohai_version}"
       end
     end
@@ -503,7 +503,7 @@ class Chef
       def initialize(resources_found)
         @resources_found = resources_found
         matches_info = @resources_found.each do |r|
-          if r['Module'].nil?
+          if r["Module"].nil?
             "Resource #{r['Name']} was found in #{r['Module']['Name']}"
           else
             "Resource #{r['Name']} is a binary resource"

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 describe Chef::Provider::Directory do
   let(:tmp_dir) { Dir.mktmpdir }
@@ -200,14 +200,14 @@ describe Chef::Provider::Directory do
 
     describe "on OS X" do
       before do
-        allow(node).to receive(:[]).with("platform").and_return('mac_os_x')
+        allow(node).to receive(:[]).with("platform").and_return("mac_os_x")
         new_resource.path "/usr/bin/chef_test"
         new_resource.recursive false
         allow_any_instance_of(Chef::Provider::File).to receive(:do_selinux)
       end
 
       it "os x 10.10 can write to sip locations" do
-        allow(node).to receive(:[]).with("platform_version").and_return('10.10')
+        allow(node).to receive(:[]).with("platform_version").and_return("10.10")
         allow(Dir).to receive(:mkdir).and_return([true], [])
         allow(::File).to receive(:directory?).and_return(true)
         allow(Chef::FileAccessControl).to receive(:writable?).and_return(true)
@@ -216,7 +216,7 @@ describe Chef::Provider::Directory do
       end
 
       it "os x 10.11 cannot write to sip locations" do
-        allow(node).to receive(:[]).with("platform_version").and_return('10.11')
+        allow(node).to receive(:[]).with("platform_version").and_return("10.11")
         allow(::File).to receive(:directory?).and_return(true)
         allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
         expect {directory.run_action(:create) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
@@ -224,7 +224,7 @@ describe Chef::Provider::Directory do
 
       it "os x 10.11 can write to sip exlcusions" do
         new_resource.path "/usr/local/chef_test"
-        allow(node).to receive(:[]).with("platform_version").and_return('10.11')
+        allow(node).to receive(:[]).with("platform_version").and_return("10.11")
         allow(::File).to receive(:directory?).and_return(true)
         allow(Dir).to receive(:mkdir).and_return([true], [])
         allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)

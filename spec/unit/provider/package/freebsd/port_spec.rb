@@ -17,8 +17,8 @@
 #
 
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Provider::Package::Freebsd::Port do
   before(:each) do
@@ -34,7 +34,7 @@ describe Chef::Provider::Package::Freebsd::Port do
   describe "initialization" do
     it "should create a current resource with the name of the new resource" do
       expect(@provider.current_resource.is_a?(Chef::Resource::Package)).to be_truthy
-      expect(@provider.current_resource.name).to eq('zsh')
+      expect(@provider.current_resource.name).to eq("zsh")
     end
   end
 
@@ -80,7 +80,7 @@ describe Chef::Provider::Package::Freebsd::Port do
       pkg_enabled = OpenStruct.new(:stdout => "yes\n")
       [1000016, 1000000, 901503, 902506, 802511].each do |__freebsd_version|
         @node.automatic_attrs[:os_version] = __freebsd_version
-        expect(@new_resource).to receive(:shell_out!).with('make -V WITH_PKGNG', env: nil).and_return(pkg_enabled)
+        expect(@new_resource).to receive(:shell_out!).with("make -V WITH_PKGNG", env: nil).and_return(pkg_enabled)
         expect(@provider).to receive(:shell_out!).with('pkg info "zsh"', env: nil, returns: [0,70], timeout: 900).and_return(@pkg_info)
         expect(@provider.current_installed_version).to eq("3.1.7")
       end
@@ -100,15 +100,15 @@ describe Chef::Provider::Package::Freebsd::Port do
     end
 
     it "should return candidate version if port exists" do
-      allow(::File).to receive(:exist?).with('/usr/ports/Makefile').and_return(true)
-      allow(@provider).to receive(:port_dir).and_return('/usr/ports/shells/zsh')
+      allow(::File).to receive(:exist?).with("/usr/ports/Makefile").and_return(true)
+      allow(@provider).to receive(:port_dir).and_return("/usr/ports/shells/zsh")
       expect(@provider).to receive(:shell_out!).with("make -V PORTVERSION", cwd: "/usr/ports/shells/zsh", env: nil, returns: [0,1], timeout: 900).
         and_return(@port_version)
       expect(@provider.candidate_version).to eq("5.0.5")
     end
 
     it "should raise exception if ports tree not found" do
-      allow(::File).to receive(:exist?).with('/usr/ports/Makefile').and_return(false)
+      allow(::File).to receive(:exist?).with("/usr/ports/Makefile").and_return(false)
       expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package, "Ports collection could not be found")
     end
   end

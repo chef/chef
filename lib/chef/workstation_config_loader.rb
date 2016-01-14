@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef-config/workstation_config_loader'
+require "chef-config/workstation_config_loader"
 
 class Chef
   WorkstationConfigLoader = ChefConfig::WorkstationConfigLoader

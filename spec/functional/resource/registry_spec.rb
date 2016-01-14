@@ -43,8 +43,8 @@ end
 describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
 
   # parent and key must be single keys, not paths
-  let(:parent) { 'Opscode' }
-  let(:child) { 'Whatever' }
+  let(:parent) { "Opscode" }
+  let(:child) { "Whatever" }
   let(:key_parent) { "SOFTWARE\\" + parent }
   let(:key_child) { "SOFTWARE\\" + parent + "\\" + child }
   # must be under HKLM\SOFTWARE for WOW64 redirection to work

@@ -18,7 +18,7 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
-require 'ostruct'
+require "ostruct"
 
 describe Chef::Provider::Package::SmartOS, "load_current_resource" do
   before(:each) do
@@ -81,8 +81,8 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
       expect(search).to receive(:each_line).
         and_yield("something-varnish-1.1.1   something varnish like\n").
         and_yield("varnish-2.3.4             actual varnish\n")
-      @shell_out = double('shell_out!', :stdout => search)
-      expect(@provider).to receive(:shell_out!).with('/opt/local/bin/pkgin', 'se', 'varnish', :env => nil, :returns => [0,1], :timeout=>900).and_return(@shell_out)
+      @shell_out = double("shell_out!", :stdout => search)
+      expect(@provider).to receive(:shell_out!).with("/opt/local/bin/pkgin", "se", "varnish", :env => nil, :returns => [0,1], :timeout=>900).and_return(@shell_out)
       expect(@provider.candidate_version).to eq("2.3.4")
     end
 
@@ -91,8 +91,8 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
       expect(search).to receive(:each_line).
         and_yield("something-varnish-1.1.1;;something varnish like\n").
         and_yield("varnish-2.3.4;;actual varnish\n")
-      @shell_out = double('shell_out!', :stdout => search)
-      expect(@provider).to receive(:shell_out!).with('/opt/local/bin/pkgin', 'se', 'varnish', :env => nil, :returns => [0,1], :timeout=>900).and_return(@shell_out)
+      @shell_out = double("shell_out!", :stdout => search)
+      expect(@provider).to receive(:shell_out!).with("/opt/local/bin/pkgin", "se", "varnish", :env => nil, :returns => [0,1], :timeout=>900).and_return(@shell_out)
       expect(@provider.candidate_version).to eq("2.3.4")
     end
   end

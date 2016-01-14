@@ -1,4 +1,4 @@
-require 'chef/chef_fs/file_system/memory/memory_dir'
+require "chef/chef_fs/file_system/memory/memory_dir"
 
 class Chef
   module ChefFS
@@ -6,7 +6,7 @@ class Chef
       module Memory
         class MemoryRoot < MemoryDir
           def initialize(pretty_name, cannot_be_in_regex = nil)
-            super('', nil)
+            super("", nil)
             @pretty_name = pretty_name
             @cannot_be_in_regex = cannot_be_in_regex
           end

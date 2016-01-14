@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'rubygems'
-require 'webrick'
-require 'webrick/https'
-require 'rack'
+require "rubygems"
+require "webrick"
+require "webrick/https"
+require "rack"
 #require 'thin'
-require 'singleton'
-require 'open-uri'
-require 'chef/config'
+require "singleton"
+require "open-uri"
+require "chef/config"
 
 module TinyServer
 
@@ -48,9 +48,9 @@ module TinyServer
     # 5 == debug, 3 == warning
     LOGGER = WEBrick::Log.new(STDOUT, 3)
     DEFAULT_OPTIONS = {
-      :server => 'webrick',
+      :server => "webrick",
       :Port => 9000,
-      :Host => 'localhost',
+      :Host => "localhost",
       :environment => :none,
       :Logger => LOGGER,
       :AccessLog => [] # Remove this option to enable the access log when debugging.
@@ -155,7 +155,7 @@ module TinyServer
                       :available_routes => @routes, :request => env}
         # Uncomment me for glorious debugging
         # pp :not_found => debug_info
-        [404, {'Content-Type' => 'application/json'}, [ Chef::JSONCompat.to_json(debug_info) ]]
+        [404, {"Content-Type" => "application/json"}, [ Chef::JSONCompat.to_json(debug_info) ]]
       end
     end
 
@@ -185,7 +185,7 @@ module TinyServer
   end
 
   class Response
-    HEADERS = {'Content-Type' => 'application/json'}
+    HEADERS = {"Content-Type" => "application/json"}
 
     def initialize(response_code=200, data=nil, headers=nil, &block)
       @response_code, @data = response_code, data

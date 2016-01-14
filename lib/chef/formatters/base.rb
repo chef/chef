@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-require 'chef/event_dispatch/base'
-require 'chef/formatters/error_inspectors'
-require 'chef/formatters/error_descriptor'
-require 'chef/formatters/error_mapper'
-require 'chef/formatters/indentable_output_stream'
+require "chef/event_dispatch/base"
+require "chef/formatters/error_inspectors"
+require "chef/formatters/error_descriptor"
+require "chef/formatters/error_mapper"
+require "chef/formatters/indentable_output_stream"
 
 class Chef
 

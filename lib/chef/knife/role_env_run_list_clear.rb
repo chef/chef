@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class RoleEnvRunListClear < Knife
 
       deps do
-        require 'chef/role'
-        require 'chef/json_compat'
+        require "chef/role"
+        require "chef/json_compat"
       end
 
       banner "knife role env_run_list clear [ROLE] [ENVIRONMENT]"

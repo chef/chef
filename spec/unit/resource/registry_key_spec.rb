@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::RegistryKey, "initialize" do
   before(:each) do
@@ -80,38 +80,38 @@ describe Chef::Resource::RegistryKey, "values" do
   end
 
   it "should allow a single proper hash of registry values" do
-    @resource.values( { :name => 'poosh', :type => :string, :data => 'carmen' } )
-    expect(@resource.values).to eql([ { :name => 'poosh', :type => :string, :data => 'carmen' } ])
+    @resource.values( { :name => "poosh", :type => :string, :data => "carmen" } )
+    expect(@resource.values).to eql([ { :name => "poosh", :type => :string, :data => "carmen" } ])
   end
 
   it "should allow an array of proper hashes of registry values" do
-    @resource.values [ { :name => 'poosh', :type => :string, :data => 'carmen' } ]
-    expect(@resource.values).to eql([ { :name => 'poosh', :type => :string, :data => 'carmen' } ])
+    @resource.values [ { :name => "poosh", :type => :string, :data => "carmen" } ]
+    expect(@resource.values).to eql([ { :name => "poosh", :type => :string, :data => "carmen" } ])
   end
 
   it "should return checksummed data if the type is unsafe" do
-    @resource.values( { :name => 'poosh', :type => :binary, :data => 255.chr * 1 })
-    expect(@resource.values).to eql([ { :name => 'poosh', :type => :binary, :data => 'a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89' } ])
+    @resource.values( { :name => "poosh", :type => :binary, :data => 255.chr * 1 })
+    expect(@resource.values).to eql([ { :name => "poosh", :type => :binary, :data => "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89" } ])
   end
 
   it "should throw an exception if the name field is missing" do
-    expect { @resource.values [ { :type => :string, :data => 'carmen' } ] }.to raise_error(ArgumentError)
+    expect { @resource.values [ { :type => :string, :data => "carmen" } ] }.to raise_error(ArgumentError)
   end
 
   it "should throw an exception if the type field is missing" do
-    expect { @resource.values [ { :name => 'poosh', :data => 'carmen' } ] }.to raise_error(ArgumentError)
+    expect { @resource.values [ { :name => "poosh", :data => "carmen" } ] }.to raise_error(ArgumentError)
   end
 
   it "should throw an exception if the data field is missing" do
-    expect { @resource.values [ { :name => 'poosh', :type => :string } ] }.to raise_error(ArgumentError)
+    expect { @resource.values [ { :name => "poosh", :type => :string } ] }.to raise_error(ArgumentError)
   end
 
   it "should throw an exception if extra fields are present" do
-    expect { @resource.values [ { :name => 'poosh', :type => :string, :data => 'carmen', :screwdriver => 'sonic' } ] }.to raise_error(ArgumentError)
+    expect { @resource.values [ { :name => "poosh", :type => :string, :data => "carmen", :screwdriver => "sonic" } ] }.to raise_error(ArgumentError)
   end
 
   it "should not allow a string" do
-    expect { @resource.send(:values, 'souffle') }.to raise_error(ArgumentError)
+    expect { @resource.send(:values, "souffle") }.to raise_error(ArgumentError)
   end
 
   it "should not allow an integer" do
@@ -138,7 +138,7 @@ describe Chef::Resource::RegistryKey, "recursive" do
   end
 
   it "should not allow a string" do
-    expect { @resource.recursive('souffle') }.to raise_error(ArgumentError)
+    expect { @resource.recursive("souffle") }.to raise_error(ArgumentError)
   end
 
   it "should not allow an integer" do
@@ -167,7 +167,7 @@ describe Chef::Resource::RegistryKey, "architecture" do
   end
 
   it "should not allow a string" do
-    expect { @resource.architecture('souffle') }.to raise_error(ArgumentError)
+    expect { @resource.architecture("souffle") }.to raise_error(ArgumentError)
   end
 
   it "should not allow an integer" do
@@ -181,7 +181,7 @@ describe Chef::Resource::RegistryKey, ":unscrubbed_values" do
   end
 
   it "should return unsafe data as-is" do
-    key_values = [ { :name => 'poosh', :type => :binary, :data => 255.chr * 1 } ]
+    key_values = [ { :name => "poosh", :type => :binary, :data => 255.chr * 1 } ]
     @resource.values(key_values)
     expect(@resource.unscrubbed_values).to eql(key_values)
   end
@@ -193,7 +193,7 @@ describe Chef::Resource::RegistryKey, "state" do
   end
 
   it "should return scrubbed values" do
-    @resource.values([ { :name => 'poosh', :type => :binary, :data => 255.chr * 1 } ])
-    expect(@resource.state).to eql( { :values => [{ :name => 'poosh', :type => :binary, :data => 'a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89'}] } )
+    @resource.values([ { :name => "poosh", :type => :binary, :data => 255.chr * 1 } ])
+    expect(@resource.state).to eql( { :values => [{ :name => "poosh", :type => :binary, :data => "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89"}] } )
   end
 end

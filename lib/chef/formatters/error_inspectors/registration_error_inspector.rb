@@ -134,7 +134,7 @@ E
         #--
         # TODO: this code belongs in Chef::REST
         def format_rest_error
-          Array(Chef::JSONCompat.from_json(exception.response.body)["error"]).join('; ')
+          Array(Chef::JSONCompat.from_json(exception.response.body)["error"]).join("; ")
         rescue Exception
           exception.response.body
         end

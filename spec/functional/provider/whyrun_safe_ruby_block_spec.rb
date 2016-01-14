@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::WhyrunSafeRubyBlock do
   let(:node) { Chef::Node.new }

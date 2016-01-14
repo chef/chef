@@ -1,8 +1,8 @@
 
-require 'chef/cookbook_version'
-require 'chef/cookbook/chefignore'
-require 'chef/cookbook/metadata'
-require 'chef/util/path_helper'
+require "chef/cookbook_version"
+require "chef/cookbook/chefignore"
+require "chef/cookbook/metadata"
+require "chef/util/path_helper"
 
 class Chef
   class Cookbook
@@ -78,10 +78,10 @@ class Chef
         # re-raise any exception that occurred when reading the metadata
         raise_metadata_error!
 
-        load_as(:attribute_filenames, 'attributes', '*.rb')
-        load_as(:definition_filenames, 'definitions', '*.rb')
-        load_as(:recipe_filenames, 'recipes', '*.rb')
-        load_recursively_as(:library_filenames, 'libraries', '*.rb')
+        load_as(:attribute_filenames, "attributes", "*.rb")
+        load_as(:definition_filenames, "definitions", "*.rb")
+        load_as(:recipe_filenames, "recipes", "*.rb")
+        load_recursively_as(:library_filenames, "libraries", "*.rb")
         load_recursively_as(:template_filenames, "templates", "*")
         load_recursively_as(:file_filenames, "files", "*")
         load_recursively_as(:resource_filenames, "resources", "*.rb")
@@ -213,7 +213,7 @@ class Chef
       end
 
       def load_root_files
-        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), '*'), File::FNM_DOTMATCH).each do |file|
+        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), "*"), File::FNM_DOTMATCH).each do |file|
           file = Chef::Util::PathHelper.cleanpath(file)
           next if File.directory?(file)
           next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
@@ -223,7 +223,7 @@ class Chef
       end
 
       def load_recursively_as(category, category_dir, glob)
-        file_spec = File.join(Chef::Util::PathHelper.escape_glob(cookbook_path, category_dir), '**', glob)
+        file_spec = File.join(Chef::Util::PathHelper.escape_glob(cookbook_path, category_dir), "**", glob)
         Dir.glob(file_spec, File::FNM_DOTMATCH).each do |file|
           file = Chef::Util::PathHelper.cleanpath(file)
           next if File.directory?(file)
@@ -269,7 +269,7 @@ class Chef
       def apply_json_cookbook_version_metadata(file)
         begin
           data = Chef::JSONCompat.parse(IO.read(file))
-          @metadata.from_hash(data['metadata'])
+          @metadata.from_hash(data["metadata"])
           # the JSON cookbok metadata file is only used by chef-zero.
           # The Chef Server API currently does not enforce that the metadata
           # have a `name` field, but that will cause an error when attempting
@@ -278,7 +278,7 @@ class Chef
           #
           # This behavior can be removed if/when Chef Server enforces that the
           # metadata contains a name key.
-          @metadata.name(data['cookbook_name']) unless data['metadata'].key?('name')
+          @metadata.name(data["cookbook_name"]) unless data["metadata"].key?("name")
         rescue Chef::Exceptions::JSON::ParseError
           Chef::Log.error("Couldn't parse cookbook metadata JSON for #@inferred_cookbook_name in " + file)
           raise
@@ -289,7 +289,7 @@ class Chef
         if uploaded_cookbook_version_file
           begin
             data = Chef::JSONCompat.parse(IO.read(uploaded_cookbook_version_file))
-            @frozen = data['frozen?']
+            @frozen = data["frozen?"]
           rescue Chef::Exceptions::JSON::ParseError
             Chef::Log.error("Couldn't parse cookbook metadata JSON for #@inferred_cookbook_name in #{uploaded_cookbook_version_file}")
             raise

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Platform do
 
@@ -175,7 +175,7 @@ describe Chef::Platform do
     end
 
     it "does not support finding a provider by resource and node -- a run context is required" do
-      expect {Chef::Platform.provider_for_node('node', 'resource')}.to raise_error(NotImplementedError)
+      expect {Chef::Platform.provider_for_node("node", "resource")}.to raise_error(NotImplementedError)
     end
 
     it "should update the provider map with map" do

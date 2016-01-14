@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/provider'
-require 'chef/resource'
-require 'chef/resource/file'
-require 'uuidtools'
+require "chef/log"
+require "chef/provider"
+require "chef/resource"
+require "chef/resource/file"
+require "uuidtools"
 
 class Chef
   class Provider
@@ -44,18 +44,18 @@ class Chef
         )
 
         @new_profile_hash = get_profile_hash(@new_resource.profile)
-        @new_profile_hash['PayloadUUID'] =
+        @new_profile_hash["PayloadUUID"] =
           config_uuid(@new_profile_hash) if @new_profile_hash
 
         if @new_profile_hash
-          @new_profile_identifier = @new_profile_hash['PayloadIdentifier']
+          @new_profile_identifier = @new_profile_hash["PayloadIdentifier"]
         else
           @new_profile_identifier = @new_resource.identifier ||
           @new_resource.profile_name
         end
 
-        current_profile = all_profiles['_computerlevel'].find {
-          |item| item['ProfileIdentifier'] ==
+        current_profile = all_profiles["_computerlevel"].find {
+          |item| item["ProfileIdentifier"] ==
              @new_profile_identifier
         }
         @current_resource.profile(current_profile)
@@ -67,14 +67,14 @@ class Chef
           if @new_profile_identifier
             a.assertion {
               !@new_profile_identifier.nil? and
-              !@new_profile_identifier.end_with?('.mobileconfig') and
+              !@new_profile_identifier.end_with?(".mobileconfig") and
               /^\w+(?:\.\w+)+$/.match(@new_profile_identifier)
             }
             a.failure_message RuntimeError, "when removing using the identifier attribute, it must match the profile identifier"
           else
           new_profile_name = @new_resource.profile_name
             a.assertion {
-              !new_profile_name.end_with?('.mobileconfig') and
+              !new_profile_name.end_with?(".mobileconfig") and
               /^\w+(?:\.\w+)+$/.match(new_profile_name)
             }
             a.failure_message RuntimeError, "When removing by resource name, it must match the profile identifier "
@@ -84,13 +84,13 @@ class Chef
         requirements.assert(:install) do |a|
           if @new_profile_hash.is_a?(Hash)
             a.assertion {
-              @new_profile_hash.include?('PayloadIdentifier')
+              @new_profile_hash.include?("PayloadIdentifier")
             }
             a.failure_message RuntimeError, "The specified profile does not seem to be valid"
           end
           if @new_profile_hash.is_a?(String)
             a.assertion {
-              @new_profile_hash.end_with?('.mobileconfig')
+              @new_profile_hash.end_with?(".mobileconfig")
             }
             a.failure_message RuntimeError, "#{new_profile_hash}' is not a valid profile"
           end
@@ -119,7 +119,7 @@ class Chef
 
       def load_profile_hash(new_profile)
         # file must exist in cookbook
-        if new_profile.end_with?('.mobileconfig')
+        if new_profile.end_with?(".mobileconfig")
           unless cookbook_file_available?(new_profile)
             error_string = "#{self}: '#{new_profile}' not found in cookbook"
             raise Chef::Exceptions::FileNotFound, error_string
@@ -243,8 +243,8 @@ class Chef
           if @new_resource.action.include?(:remove)
             true
           else
-            @current_resource.profile['ProfileUUID'] ==
-              @new_profile_hash['PayloadUUID']
+            @current_resource.profile["ProfileUUID"] ==
+              @new_profile_hash["PayloadUUID"]
           end
         end
       end

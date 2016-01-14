@@ -15,7 +15,7 @@
 #
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/../data/")
 CHEF_SPEC_ASSETS = File.expand_path(File.dirname(__FILE__) + "/../functional/assets/")
-CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, 'test-backup-path')
+CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, "test-backup-path")
 
 Chef::Config[:log_level] = :fatal
 Chef::Config[:persistent_queue] = false
@@ -82,12 +82,12 @@ end
 # This is a helper to canonicalize paths that we're using in the file
 # tests.
 def canonicalize_path(path)
-  windows? ? path.gsub('/', '\\') : path
+  windows? ? path.gsub("/", '\\') : path
 end
 
 # Check if a cmd exists on the PATH
 def which(cmd)
-  paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
+  paths = ENV["PATH"].split(File::PATH_SEPARATOR) + [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
   paths.each do |path|
     filename = File.join(path, cmd)
     return filename if File.executable?(filename)

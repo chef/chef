@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/log'
+require "chef/log"
 
 class Chef
 
@@ -27,10 +27,10 @@ class Chef
   class FileAccessControl
 
     if RUBY_PLATFORM =~ /mswin|mingw|windows/
-      require 'chef/file_access_control/windows'
+      require "chef/file_access_control/windows"
       include FileAccessControl::Windows
     else
-      require 'chef/file_access_control/unix'
+      require "chef/file_access_control/unix"
       include FileAccessControl::Unix
     end
 

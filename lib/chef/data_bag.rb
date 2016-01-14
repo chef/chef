@@ -18,13 +18,13 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/data_bag_item'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/server_api'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/data_bag_item"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/server_api"
 
 class Chef
   class DataBag
@@ -44,7 +44,7 @@ class Chef
 
     # Create a new Chef::DataBag
     def initialize(chef_server_rest: nil)
-      @name = ''
+      @name = ""
       @chef_server_rest = chef_server_rest
     end
 
@@ -58,9 +58,9 @@ class Chef
 
     def to_hash
       result = {
-        'name'       => @name,
-        'json_class' => self.class.name,
-        'chef_type'  => 'data_bag',
+        "name"       => @name,
+        "json_class" => self.class.name,
+        "chef_type"  => "data_bag",
       }
       result
     end

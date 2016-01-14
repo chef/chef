@@ -63,13 +63,13 @@ class Chef
         super
         @deploy_to = name
         @environment = nil
-        @repository_cache = 'cached-copy'
+        @repository_cache = "cached-copy"
         @copy_exclude = []
         @purge_before_symlink = %w{log tmp/pids public/system}
         @create_dirs_before_symlink = %w{tmp public config}
         @symlink_before_migrate = {"config/database.yml" => "config/database.yml"}
         @symlinks = {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
-        @revision = 'HEAD'
+        @revision = "HEAD"
         @migrate = false
         @rollback_on_error = false
         @remote = "origin"

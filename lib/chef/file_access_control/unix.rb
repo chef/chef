@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'chef/log'
+require "chef/log"
 
 class Chef
   class FileAccessControl

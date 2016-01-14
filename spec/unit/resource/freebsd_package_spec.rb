@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Resource::FreebsdPackage do
   before(:each) do
@@ -48,7 +48,7 @@ describe Chef::Resource::FreebsdPackage do
   describe "Assigning provider after creation" do
     describe "if ports specified as source" do
       it "should be Freebsd::Port" do
-        @resource.source('ports')
+        @resource.source("ports")
         @resource.after_created
         expect(@resource.provider).to eq(Chef::Provider::Package::Freebsd::Port)
       end

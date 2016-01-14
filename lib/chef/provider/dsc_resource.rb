@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/util/powershell/cmdlet'
-require 'chef/util/dsc/local_configuration_manager'
-require 'chef/mixin/powershell_type_coercions'
-require 'chef/util/dsc/resource_store'
+require "chef/util/powershell/cmdlet"
+require "chef/util/dsc/local_configuration_manager"
+require "chef/mixin/powershell_type_coercions"
+require "chef/util/dsc/resource_store"
 
 class Chef
   class Provider
@@ -61,7 +61,7 @@ class Chef
           a.assertion { supports_refresh_mode_enabled? || dsc_refresh_mode_disabled? }
           err = ["The LCM must have its RefreshMode set to Disabled for" \
                  " PowerShell versions before 5.0.10586.0."]
-          a.failure_message Chef::Exceptions::ProviderNotFound, err.join(' ')
+          a.failure_message Chef::Exceptions::ProviderNotFound, err.join(" ")
           a.whyrun err + ["Assuming a previous resource sets the RefreshMode."]
           a.block_action!
         end
@@ -109,10 +109,10 @@ class Chef
                   "Could not find #{dsc_resource_name}. Check to make "\
                   "sure that it shows up when running Get-DscResource"
               when 1
-                if found[0]['Module'].nil?
+                if found[0]["Module"].nil?
                   :none
                 else
-                  found[0]['Module']['Name']
+                  found[0]["Module"]["Name"]
                 end
               else
                 raise Chef::Exceptions::MultipleDscResourcesFound, found
@@ -136,7 +136,7 @@ class Chef
 
       def set_resource
         result = invoke_resource(:set)
-        if return_dsc_resource_result(result, 'RebootRequired')
+        if return_dsc_resource_result(result, "RebootRequired")
           create_reboot_resource
         end
         result.return_value

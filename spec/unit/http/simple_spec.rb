@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::HTTP::Simple do
   it "should have content length validation middleware after compressor middleware" do

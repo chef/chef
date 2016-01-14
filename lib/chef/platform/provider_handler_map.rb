@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'singleton'
-require 'chef/platform/handler_map'
+require "singleton"
+require "chef/platform/handler_map"
 
 class Chef
   class Platform

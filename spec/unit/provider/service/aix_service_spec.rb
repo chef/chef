@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Aix do
   before(:each) do
@@ -133,7 +133,7 @@ describe Chef::Provider::Service::Aix do
     end
 
     it "should call the start command for groups" do
-      @provider.instance_eval('@is_resource_group = true')
+      @provider.instance_eval("@is_resource_group = true")
       expect(@provider).to receive(:shell_out!).with("startsrc -g #{@new_resource.service_name}")
 
       @provider.start_service
@@ -152,7 +152,7 @@ describe Chef::Provider::Service::Aix do
     end
 
     it "should call the stop command for groups" do
-      @provider.instance_eval('@is_resource_group = true')
+      @provider.instance_eval("@is_resource_group = true")
       expect(@provider).to receive(:shell_out!).with("stopsrc -g #{@new_resource.service_name}")
 
       @provider.stop_service
@@ -171,7 +171,7 @@ describe Chef::Provider::Service::Aix do
     end
 
     it "should call the reload command for groups" do
-      @provider.instance_eval('@is_resource_group = true')
+      @provider.instance_eval("@is_resource_group = true")
       expect(@provider).to receive(:shell_out!).with("refresh -g #{@new_resource.service_name}")
 
       @provider.reload_service

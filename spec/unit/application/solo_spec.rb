@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Application::Solo do
 
@@ -34,7 +34,7 @@ describe Chef::Application::Solo do
   end
 
   describe "configuring the application" do
-    it 'should call set_specific_recipes' do
+    it "should call set_specific_recipes" do
       expect(app).to receive(:set_specific_recipes)
       app.reconfigure
     end
@@ -106,7 +106,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     describe "when the recipe_url configuration option is specified" do
       let(:tarfile) { StringIO.new("remote_tarball_content") }
       let(:target_file) { StringIO.new }
-      let(:shellout) { double(run_command: nil, error!: nil, stdout: '') }
+      let(:shellout) { double(run_command: nil, error!: nil, stdout: "") }
      
       before do
         Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"

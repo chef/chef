@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/http/json_input'
+require "spec_helper"
+require "chef/http/json_input"
 
 describe Chef::HTTP::JSONInput do
 

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/util/powershell/cmdlet'
+require "chef/util/powershell/cmdlet"
 
 class Chef::Util::DSC
   class ConfigurationGenerator
@@ -27,9 +27,9 @@ class Chef::Util::DSC
 
     def configuration_document_from_script_code(code, configuration_flags, imports, shellout_flags)
       Chef::Log.debug("DSC: DSC code:\n '#{code}'")
-      generated_script_path = write_document_generation_script(code, 'chef_dsc', imports)
+      generated_script_path = write_document_generation_script(code, "chef_dsc", imports)
       begin
-        configuration_document_from_script_path(generated_script_path, 'chef_dsc', configuration_flags, shellout_flags)
+        configuration_document_from_script_path(generated_script_path, "chef_dsc", configuration_flags, shellout_flags)
       ensure
         ::FileUtils.rm(generated_script_path)
       end
@@ -97,7 +97,7 @@ Configuration '#{configuration_name}'
     def generate_import_resource_statements(imports)
       if imports
         imports.map do |resource_module, resources|
-          if resources.length == 0 || resources.include?('*')
+          if resources.length == 0 || resources.include?("*")
             "Import-DscResource -ModuleName #{resource_module}"
           else
             "Import-DscResource -ModuleName #{resource_module} -Name #{resources.join(',')}"
@@ -114,7 +114,7 @@ Configuration '#{configuration_name}'
 
     def write_document_generation_script(code, configuration_name, imports)
       script_path = "#{@config_directory}/chef_dsc_config.ps1"
-      ::File.open(script_path, 'wt') do | script |
+      ::File.open(script_path, "wt") do | script |
         script.write(configuration_code(code, configuration_name, imports))
       end
       script_path
@@ -131,7 +131,7 @@ Configuration '#{configuration_name}'
     end
 
     def get_configuration_document(document_path)
-      ::File.open(document_path, 'rb') do | file |
+      ::File.open(document_path, "rb") do | file |
         file.read
       end
     end

@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/cookbook_uploader'
+require "chef/knife"
+require "chef/cookbook_uploader"
 
 class Chef
   class Knife
@@ -29,9 +29,9 @@ class Chef
       MATCH_CHECKSUM = /[0-9a-f]{32,}/
 
       deps do
-        require 'chef/exceptions'
-        require 'chef/cookbook_loader'
-        require 'chef/cookbook_uploader'
+        require "chef/exceptions"
+        require "chef/cookbook_loader"
+        require "chef/cookbook_uploader"
       end
 
       banner "knife cookbook upload [COOKBOOKS...] (options)"
@@ -43,8 +43,8 @@ class Chef
         :proc => lambda { |o| o.split(":") }
 
       option :freeze,
-        :long => '--freeze',
-        :description => 'Freeze this version of the cookbook so that it cannot be overwritten',
+        :long => "--freeze",
+        :description => "Freeze this version of the cookbook so that it cannot be overwritten",
         :boolean => true
 
       option :all,
@@ -53,19 +53,19 @@ class Chef
         :description => "Upload all cookbooks, rather than just a single cookbook"
 
       option :force,
-        :long => '--force',
+        :long => "--force",
         :boolean => true,
         :description => "Update cookbook versions even if they have been frozen"
 
       option :concurrency,
-        :long => '--concurrency NUMBER_OF_THREADS',
+        :long => "--concurrency NUMBER_OF_THREADS",
         :description => "How many concurrent threads will be used",
         :default => 10,
         :proc => lambda { |o| o.to_i }
 
       option :environment,
-        :short => '-E',
-        :long  => '--environment ENVIRONMENT',
+        :short => "-E",
+        :long  => "--environment ENVIRONMENT",
         :description => "Set ENVIRONMENT's version dependency match the version you're uploading.",
         :default => nil
 
@@ -118,7 +118,7 @@ class Chef
             end
             ui.info("Uploaded all cookbooks.")
           else
-            cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(', ') : config[:cookbook_path]
+            cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(", ") : config[:cookbook_path]
             ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
           end
         else
@@ -287,7 +287,7 @@ WARNING
         if @server_side_cookbooks[cookbook_name].nil?
           false
         else
-          versions = @server_side_cookbooks[cookbook_name]['versions'].collect {|versions| versions["version"]}
+          versions = @server_side_cookbooks[cookbook_name]["versions"].collect {|versions| versions["version"]}
           Log.debug "Versions of cookbook '#{cookbook_name}' returned by the server: #{versions.join(", ")}"
           @server_side_cookbooks[cookbook_name]["versions"].each do |versions_hash|
             if Chef::VersionConstraint.new(version).include?(versions_hash["version"])

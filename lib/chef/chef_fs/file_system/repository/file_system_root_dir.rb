@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/repository/file_system_entry'
+require "chef/chef_fs/file_system/repository/file_system_entry"
 
 class Chef
   module ChefFS

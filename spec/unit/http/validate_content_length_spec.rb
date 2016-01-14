@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'stringio'
+require "spec_helper"
+require "stringio"
 
 describe Chef::HTTP::ValidateContentLength do
   class TestClient < Chef::HTTP
@@ -44,7 +44,7 @@ describe Chef::HTTP::ValidateContentLength do
   }
 
   let(:response) {
-    m = double('HttpResponse', :body => response_body)
+    m = double("HttpResponse", :body => response_body)
     allow(m).to receive(:[]) do |key|
       response_headers[key]
     end

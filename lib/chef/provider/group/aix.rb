@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/provider/group/groupadd'
-require 'chef/mixin/shell_out'
+require "chef/provider/group/groupadd"
+require "chef/mixin/shell_out"
 
 class Chef
   class Provider
     class Group
       class Aix < Chef::Provider::Group::Groupadd
-        provides :group, platform: 'aix'
+        provides :group, platform: "aix"
 
         def required_binaries
           [ "/usr/bin/mkgroup",

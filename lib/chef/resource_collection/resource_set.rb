@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/resource_collection/resource_collection_serialization'
+require "chef/resource"
+require "chef/resource_collection/resource_collection_serialization"
 
 class Chef
   class ResourceCollection

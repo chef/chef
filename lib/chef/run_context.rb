@@ -17,15 +17,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/resource_collection'
-require 'chef/cookbook_version'
-require 'chef/node'
-require 'chef/role'
-require 'chef/log'
-require 'chef/recipe'
-require 'chef/run_context/cookbook_compiler'
-require 'chef/event_dispatch/events_output_stream'
-require 'forwardable'
+require "chef/resource_collection"
+require "chef/cookbook_version"
+require "chef/node"
+require "chef/role"
+require "chef/log"
+require "chef/recipe"
+require "chef/run_context/cookbook_compiler"
+require "chef/event_dispatch/events_output_stream"
+require "forwardable"
 
 class Chef
 
@@ -349,7 +349,7 @@ ERROR_MESSAGE
       end
 
       Chef::Log.debug("Loading recipe file #{recipe_file}")
-      recipe = Chef::Recipe.new('@recipe_files', recipe_file, self)
+      recipe = Chef::Recipe.new("@recipe_files", recipe_file, self)
       recipe.from_file(recipe_file)
       recipe
     end

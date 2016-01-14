@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/chef_fs/path_utils'
+require "chef/log"
+require "chef/chef_fs/path_utils"
 
 class Chef
   module ChefFS
@@ -115,7 +115,7 @@ class Chef
         @cwd = File.expand_path(cwd)
         @cookbook_version = options[:cookbook_version]
 
-        if @chef_config[:repo_mode] == 'everything' && is_hosted? && !ui.nil?
+        if @chef_config[:repo_mode] == "everything" && is_hosted? && !ui.nil?
           ui.warn %Q{You have repo_mode set to 'everything', but your chef_server_url
               looks like it might be a hosted setup.  If this is the case please use
               hosted_everything or allow repo_mode to default}
@@ -123,9 +123,9 @@ class Chef
         # Default to getting *everything* from the server.
         if !@chef_config[:repo_mode]
           if is_hosted?
-            @chef_config[:repo_mode] = 'hosted_everything'
+            @chef_config[:repo_mode] = "hosted_everything"
           else
-            @chef_config[:repo_mode] = 'everything'
+            @chef_config[:repo_mode] = "everything"
           end
         end
       end
@@ -143,7 +143,7 @@ class Chef
       end
 
       def create_chef_fs
-        require 'chef/chef_fs/file_system/chef_server/chef_server_root_dir'
+        require "chef/chef_fs/file_system/chef_server/chef_server_root_dir"
         Chef::ChefFS::FileSystem::ChefServer::ChefServerRootDir.new("remote", @chef_config, :cookbook_version => @cookbook_version)
       end
 
@@ -152,7 +152,7 @@ class Chef
       end
 
       def create_local_fs
-        require 'chef/chef_fs/file_system/repository/chef_repository_file_system_root_dir'
+        require "chef/chef_fs/file_system/repository/chef_repository_file_system_root_dir"
         Chef::ChefFS::FileSystem::Repository::ChefRepositoryFileSystemRootDir.new(object_paths, Array(chef_config[:chef_repo_path]).flatten, @chef_config)
       end
 
@@ -198,7 +198,7 @@ class Chef
           # path and use realpath because a repo_path if provided *must* exist.
           realest_chef_repo_path = Chef::ChefFS::PathUtils.realest_path(chef_repo_path, @cwd)
           if Chef::ChefFS::PathUtils.os_path_eq?(target_path, realest_chef_repo_path)
-            return '/'
+            return "/"
           end
         end
 
@@ -216,10 +216,10 @@ class Chef
         server_path = entry.path
         if base_path && server_path[0,base_path.length] == base_path
           if server_path == base_path
-            return '.'
-          elsif server_path[base_path.length,1] == '/'
+            return "."
+          elsif server_path[base_path.length,1] == "/"
             return server_path[base_path.length + 1, server_path.length - base_path.length - 1]
-          elsif base_path == '/' && server_path[0,1] == '/'
+          elsif base_path == "/" && server_path[0,1] == "/"
             return server_path[1, server_path.length - 1]
           end
         end
@@ -232,9 +232,9 @@ class Chef
         @object_paths ||= begin
           result = {}
           case @chef_config[:repo_mode]
-          when 'static'
+          when "static"
             object_names = %w(cookbooks data_bags environments roles)
-          when 'hosted_everything'
+          when "hosted_everything"
             object_names = %w(acls clients cookbooks containers data_bags environments groups nodes roles policies policy_groups)
           else
             object_names = %w(clients cookbooks data_bags environments nodes roles users)

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/unformatter'
+require "spec_helper"
+require "chef/mixin/unformatter"
 
 class Chef::UnformatterTest
   include Chef::Mixin::Unformatter

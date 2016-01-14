@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 # DEPRECATION NOTE
 # This code only remains to support users still operating with
@@ -29,7 +29,7 @@ describe Chef::Knife::OscUserList do
     @knife = Chef::Knife::OscUserList.new
   end
 
-  it 'lists the users' do
+  it "lists the users" do
     expect(Chef::User).to receive(:list)
     expect(@knife).to receive(:format_list_for_display)
     @knife.run

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
-require 'chef/resource/service'
-require 'chef/mixin/command'
+require "chef/provider/service"
+require "chef/resource/service"
+require "chef/mixin/command"
 
 class Chef
   class Provider
@@ -96,11 +96,11 @@ class Chef
 
           # check service state
           @maintenance = false
-          case status['state']
-          when 'online'
+          case status["state"]
+          when "online"
             @current_resource.enabled(true)
             @current_resource.running(true)
-          when 'maintenance'
+          when "maintenance"
             @maintenance = true
           end
 

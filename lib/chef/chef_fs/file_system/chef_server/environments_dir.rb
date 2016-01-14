@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/base_fs_dir'
-require 'chef/chef_fs/file_system/chef_server/rest_list_entry'
-require 'chef/chef_fs/file_system/not_found_error'
-require 'chef/chef_fs/file_system/default_environment_cannot_be_modified_error'
+require "chef/chef_fs/file_system/base_fs_dir"
+require "chef/chef_fs/file_system/chef_server/rest_list_entry"
+require "chef/chef_fs/file_system/not_found_error"
+require "chef/chef_fs/file_system/default_environment_cannot_be_modified_error"
 
 class Chef
   module ChefFS
@@ -27,7 +27,7 @@ class Chef
       module ChefServer
         class EnvironmentsDir < RestListDir
           def make_child_entry(name, exists = nil)
-            if name == '_default.json'
+            if name == "_default.json"
               DefaultEnvironmentEntry.new(name, self, exists)
             else
               super

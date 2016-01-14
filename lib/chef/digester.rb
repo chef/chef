@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'openssl'
-require 'singleton'
+require "openssl"
+require "singleton"
 
 class Chef
   class Digester
@@ -60,7 +60,7 @@ class Chef
     private
 
     def checksum_file(file, digest)
-      File.open(file, 'rb') { |f| checksum_io(f, digest) }
+      File.open(file, "rb") { |f| checksum_io(f, digest) }
     end
 
     def checksum_io(io, digest)

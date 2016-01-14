@@ -19,7 +19,7 @@ class Chef
 
       def highline
         @highline ||= begin
-          require 'highline'
+          require "highline"
           HighLine.new
         end
       end
@@ -110,7 +110,7 @@ class Chef
       def print_string(string, options)
         if string.empty?
           if options[:end_line]
-            print_line('', options)
+            print_line("", options)
           end
         else
           string.lines.each do |line|
@@ -136,7 +136,7 @@ class Chef
 
       def move_to_next_line
         if @line_started
-          @out.puts ''
+          @out.puts ""
           @line_started = false
         end
       end
@@ -151,11 +151,11 @@ class Chef
             if @current_stream != options[:stream]
               @out.print "#{(' ' * indent)}[#{options[:name]}] "
             else
-              @out.print ' ' * (indent + 3 + options[:name].size)
+              @out.print " " * (indent + 3 + options[:name].size)
             end
           else
             # Otherwise, just print indents.
-            @out.print ' ' * indent
+            @out.print " " * indent
           end
 
           if @current_stream != options[:stream]

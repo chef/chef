@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Route do
   before do
@@ -25,9 +25,9 @@ describe Chef::Provider::Route do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
-    @new_resource = Chef::Resource::Route.new('10.0.0.10')
+    @new_resource = Chef::Resource::Route.new("10.0.0.10")
     @new_resource.gateway "10.0.0.9"
-    @current_resource = Chef::Resource::Route.new('10.0.0.10')
+    @current_resource = Chef::Resource::Route.new("10.0.0.10")
     @current_resource.gateway "10.0.0.9"
 
     @provider = Chef::Provider::Route.new(@new_resource, @run_context)
@@ -36,14 +36,14 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "hex2ip" do
     it "should return nil if ip address is invalid" do
-      expect(@provider.hex2ip('foo')).to be_nil # does not even look like an ip
-      expect(@provider.hex2ip('ABCDEFGH')).to be_nil # 8 chars, but invalid
+      expect(@provider.hex2ip("foo")).to be_nil # does not even look like an ip
+      expect(@provider.hex2ip("ABCDEFGH")).to be_nil # 8 chars, but invalid
     end
 
     it "should return quad-dotted notation for a valid IP" do
-      expect(@provider.hex2ip('01234567')).to eq('103.69.35.1')
-      expect(@provider.hex2ip('0064a8c0')).to eq('192.168.100.0')
-      expect(@provider.hex2ip('00FFFFFF')).to eq('255.255.255.0')
+      expect(@provider.hex2ip("01234567")).to eq("103.69.35.1")
+      expect(@provider.hex2ip("0064a8c0")).to eq("192.168.100.0")
+      expect(@provider.hex2ip("00FFFFFF")).to eq("255.255.255.0")
     end
   end
 
@@ -51,7 +51,7 @@ describe Chef::Provider::Route do
   describe Chef::Provider::Route, "load_current_resource" do
     context "on linux" do
       before do
-        @node.automatic_attrs[:os] = 'linux'
+        @node.automatic_attrs[:os] = "linux"
         routing_table = "Iface	Destination	Gateway 	Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT\n" +
                         "eth0	0064A8C0	0984A8C0	0003	0	0	0	00FFFFFF	0	0	0\n"
         route_file = StringIO.new(routing_table)
@@ -59,7 +59,7 @@ describe Chef::Provider::Route do
       end
 
       it "should set is_running to false when a route is not detected" do
-        resource = Chef::Resource::Route.new('10.10.10.0/24')
+        resource = Chef::Resource::Route.new("10.10.10.0/24")
         allow(resource).to receive(:gateway).and_return("10.0.0.1")
         allow(resource).to receive(:device).and_return("eth0")
         provider = Chef::Provider::Route.new(resource, @run_context)
@@ -69,7 +69,7 @@ describe Chef::Provider::Route do
       end
 
       it "should detect existing routes and set is_running attribute correctly" do
-        resource = Chef::Resource::Route.new('192.168.100.0/24')
+        resource = Chef::Resource::Route.new("192.168.100.0/24")
         allow(resource).to receive(:gateway).and_return("192.168.132.9")
         allow(resource).to receive(:device).and_return("eth0")
         provider = Chef::Provider::Route.new(resource, @run_context)
@@ -79,7 +79,7 @@ describe Chef::Provider::Route do
       end
 
       it "should use gateway value when matching routes" do
-        resource = Chef::Resource::Route.new('192.168.100.0/24')
+        resource = Chef::Resource::Route.new("192.168.100.0/24")
         allow(resource).to receive(:gateway).and_return("10.10.10.10")
         allow(resource).to receive(:device).and_return("eth0")
         provider = Chef::Provider::Route.new(resource, @run_context)
@@ -110,11 +110,11 @@ describe Chef::Provider::Route do
     end
 
     it "should not delete config file for :add action (CHEF-3332)" do
-      @node.automatic_attrs[:platform] = 'centos'
+      @node.automatic_attrs[:platform] = "centos"
 
       route_file = StringIO.new
       expect(File).to receive(:new).and_return(route_file)
-      @resource_add = Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
+      @resource_add = Chef::Resource::Route.new("192.168.1.0/24 via 192.168.0.1")
       @run_context.resource_collection << @resource_add
       allow(@provider).to receive(:run_command).and_return(true)
 
@@ -145,7 +145,7 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "generate_command for action_add" do
     it "should include a netmask when a one is specified" do
-      allow(@new_resource).to receive(:netmask).and_return('255.255.0.0')
+      allow(@new_resource).to receive(:netmask).and_return("255.255.0.0")
       expect(@provider.generate_command(:add)).to match(/\/\d{1,2}\s/)
     end
 
@@ -166,7 +166,7 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "generate_command for action_delete" do
     it "should include a netmask when a one is specified" do
-      allow(@new_resource).to receive(:netmask).and_return('255.255.0.0')
+      allow(@new_resource).to receive(:netmask).and_return("255.255.0.0")
       expect(@provider.generate_command(:delete)).to match(/\/\d{1,2}\s/)
     end
 
@@ -187,7 +187,7 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "config_file_contents for action_add" do
     it "should include a netmask when a one is specified" do
-      allow(@new_resource).to receive(:netmask).and_return('255.255.0.0')
+      allow(@new_resource).to receive(:netmask).and_return("255.255.0.0")
       expect(@provider.config_file_contents(:add, { :target => @new_resource.target, :netmask => @new_resource.netmask})).to match(/\/\d{1,2}.*\n$/)
     end
 
@@ -224,13 +224,13 @@ describe Chef::Provider::Route do
     end
 
     it "should put all routes for a device in a route config file" do
-      @node.automatic_attrs[:platform] = 'centos'
+      @node.automatic_attrs[:platform] = "centos"
 
       route_file = StringIO.new
       expect(File).to receive(:new).and_return(route_file)
-      @run_context.resource_collection << Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
-      @run_context.resource_collection << Chef::Resource::Route.new('192.168.2.0/24 via 192.168.0.1')
-      @run_context.resource_collection << Chef::Resource::Route.new('192.168.3.0/24 via 192.168.0.1')
+      @run_context.resource_collection << Chef::Resource::Route.new("192.168.1.0/24 via 192.168.0.1")
+      @run_context.resource_collection << Chef::Resource::Route.new("192.168.2.0/24 via 192.168.0.1")
+      @run_context.resource_collection << Chef::Resource::Route.new("192.168.3.0/24 via 192.168.0.1")
 
       @provider.action = :add
       @provider.generate_config

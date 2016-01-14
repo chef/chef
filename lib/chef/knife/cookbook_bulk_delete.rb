@@ -17,18 +17,18 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookBulkDelete < Knife
 
       deps do
-        require 'chef/knife/cookbook_delete'
-        require 'chef/cookbook_version'
+        require "chef/knife/cookbook_delete"
+        require "chef/cookbook_version"
       end
 
-      option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
+      option :purge, :short => "-p", :long => "--purge", :boolean => true, :description => "Permanently remove files from backing data store"
 
       banner "knife cookbook bulk delete REGEX (options)"
 

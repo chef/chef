@@ -18,15 +18,15 @@
 # limitations under the License.
 #
 
-require 'forwardable'
+require "forwardable"
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/data_bag'
-require 'chef/mash'
-require 'chef/server_api'
-require 'chef/json_compat'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/data_bag"
+require "chef/mash"
+require "chef/server_api"
+require "chef/json_compat"
 
 class Chef
   class DataBagItem
@@ -95,10 +95,10 @@ class Chef
     end
 
     def object_name
-      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.has_key?('id')
+      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.has_key?("id")
       raise Exceptions::ValidationFailed, "You must have declared what bag this item belongs to!" unless data_bag
 
-      id = raw_data['id']
+      id = raw_data["id"]
       "data_bag_item_#{data_bag}_#{id}"
     end
 
@@ -168,7 +168,7 @@ class Chef
     end
 
     # Save this Data Bag Item via RESTful API
-    def save(item_id=@raw_data['id'])
+    def save(item_id=@raw_data["id"])
       r = chef_server_rest
       begin
         if Chef::Config[:why_run]
@@ -210,7 +210,7 @@ class Chef
     end
 
     def id
-      @raw_data['id']
+      @raw_data["id"]
     end
 
   end

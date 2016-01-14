@@ -21,7 +21,7 @@ class Chef
     class Group
       class Groupmod < Chef::Provider::Group
 
-        provides :group, os: 'netbsd'
+        provides :group, os: "netbsd"
 
         def load_current_resource
           super

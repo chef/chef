@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 if windows?
-  require 'chef/win32/security'
-  require 'tmpdir'
-  require 'fileutils'
+  require "chef/win32/security"
+  require "tmpdir"
+  require "fileutils"
 end
 
-describe 'Chef::ReservedNames::Win32::Security', :windows_only do
+describe "Chef::ReservedNames::Win32::Security", :windows_only do
 
   def monkeyfoo
     File.join(CHEF_SPEC_DATA, "monkeyfoo").gsub("/", "\\")

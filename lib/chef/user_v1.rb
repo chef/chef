@@ -15,15 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
-require 'chef/mixin/api_version_request_handling'
-require 'chef/exceptions'
-require 'chef/server_api'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/mixin/api_version_request_handling"
+require "chef/exceptions"
+require "chef/server_api"
 
 # OSC 11 BACKWARDS COMPATIBILITY NOTE (remove after OSC 11 support ends)
 #
@@ -155,12 +155,12 @@ class Chef
         new_user = chef_root_rest_v1.post("users", payload)
 
         # get the private_key out of the chef_key hash if it exists
-        if new_user['chef_key']
-          if new_user['chef_key']['private_key']
-            new_user['private_key'] = new_user['chef_key']['private_key']
+        if new_user["chef_key"]
+          if new_user["chef_key"]["private_key"]
+            new_user["private_key"] = new_user["chef_key"]["private_key"]
           end
-          new_user['public_key'] = new_user['chef_key']['public_key']
-          new_user.delete('chef_key')
+          new_user["public_key"] = new_user["chef_key"]["public_key"]
+          new_user.delete("chef_key")
         end
       rescue Net::HTTPServerException => e
         # rescue API V0 if 406 and the server supports V0
@@ -259,16 +259,16 @@ class Chef
 
     def self.from_hash(user_hash)
       user = Chef::UserV1.new
-      user.username user_hash['username']
-      user.display_name user_hash['display_name'] if user_hash.key?('display_name')
-      user.first_name user_hash['first_name'] if user_hash.key?('first_name')
-      user.middle_name user_hash['middle_name'] if user_hash.key?('middle_name')
-      user.last_name user_hash['last_name'] if user_hash.key?('last_name')
-      user.email user_hash['email'] if user_hash.key?('email')
-      user.password user_hash['password'] if user_hash.key?('password')
-      user.public_key user_hash['public_key'] if user_hash.key?('public_key')
-      user.private_key user_hash['private_key'] if user_hash.key?('private_key')
-      user.create_key user_hash['create_key'] if user_hash.key?('create_key')
+      user.username user_hash["username"]
+      user.display_name user_hash["display_name"] if user_hash.key?("display_name")
+      user.first_name user_hash["first_name"] if user_hash.key?("first_name")
+      user.middle_name user_hash["middle_name"] if user_hash.key?("middle_name")
+      user.last_name user_hash["last_name"] if user_hash.key?("last_name")
+      user.email user_hash["email"] if user_hash.key?("email")
+      user.password user_hash["password"] if user_hash.key?("password")
+      user.public_key user_hash["public_key"] if user_hash.key?("public_key")
+      user.private_key user_hash["private_key"] if user_hash.key?("private_key")
+      user.create_key user_hash["create_key"] if user_hash.key?("create_key")
       user
     end
 
@@ -281,7 +281,7 @@ class Chef
     end
 
     def self.list(inflate=false)
-      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get('users')
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("users")
       users = if response.is_a?(Array)
                 # EC 11 / CS 12 V0, V1
                 #   GET /organizations/<org>/users
@@ -317,7 +317,7 @@ class Chef
     def self.transform_list_response(response)
       new_response = Hash.new
       response.each do |u|
-        name = u['user']['username']
+        name = u["user"]["username"]
         new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"
       end
       new_response

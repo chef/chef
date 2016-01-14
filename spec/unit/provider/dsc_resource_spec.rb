@@ -16,8 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef'
-require 'spec_helper'
+require "chef"
+require "spec_helper"
 
 describe Chef::Provider::DscResource do
   let (:events) { Chef::EventDispatch::Dispatcher.new }
@@ -27,41 +27,41 @@ describe Chef::Provider::DscResource do
     Chef::Provider::DscResource.new(resource, run_context)
   end
 
-  context 'when Powershell does not support Invoke-DscResource' do
+  context "when Powershell does not support Invoke-DscResource" do
     let (:node) {
       node = Chef::Node.new
-      node.automatic[:languages][:powershell][:version] = '4.0'
+      node.automatic[:languages][:powershell][:version] = "4.0"
       node
     }
-    it 'raises a ProviderNotFound exception' do
+    it "raises a ProviderNotFound exception" do
       expect(provider).not_to receive(:meta_configuration)
       expect{provider.run_action(:run)}.to raise_error(
               Chef::Exceptions::ProviderNotFound, /5\.0\.10018\.0/)
     end
   end
 
-  context 'when Powershell supports Invoke-DscResource' do
+  context "when Powershell supports Invoke-DscResource" do
 
-    context 'when RefreshMode is not set to Disabled' do
-      context 'and the WMF 5 is a preview release' do
+    context "when RefreshMode is not set to Disabled" do
+      context "and the WMF 5 is a preview release" do
         let (:node) {
           node = Chef::Node.new
-          node.automatic[:languages][:powershell][:version] = '5.0.10018.0'
+          node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
           node
         }
-        it 'raises an exception' do
+        it "raises an exception" do
           expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(false)
           expect { provider.run_action(:run) }.to raise_error(
             Chef::Exceptions::ProviderNotFound, /Disabled/)
         end
       end
-      context 'and the WMF is 5 RTM or newer' do
+      context "and the WMF is 5 RTM or newer" do
         let (:node) {
           node = Chef::Node.new
-          node.automatic[:languages][:powershell][:version] = '5.0.10586.0'
+          node.automatic[:languages][:powershell][:version] = "5.0.10586.0"
           node
         }
-        it 'does not raises an exception' do
+        it "does not raises an exception" do
           expect(provider).to receive(:test_resource)
           expect(provider).to receive(:set_resource)
           expect(provider).to receive(:reboot_if_required)
@@ -71,21 +71,21 @@ describe Chef::Provider::DscResource do
     end
   end
   
-  context 'when the LCM supports Invoke-DscResource' do
+  context "when the LCM supports Invoke-DscResource" do
     let (:node) {
       node = Chef::Node.new
-      node.automatic[:languages][:powershell][:version] = '5.0.10018.0'
+      node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
       node
     }
 
-    it 'does not update the resource if it is up to date' do
+    it "does not update the resource if it is up to date" do
       expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(true)
       provider.run_action(:run)
       expect(resource).not_to be_updated
     end
 
-    it 'converges the resource if it is not up to date' do
+    it "converges the resource if it is not up to date" do
       expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:set_resource)
@@ -93,21 +93,21 @@ describe Chef::Provider::DscResource do
       expect(resource).to be_updated
     end
     
-    it 'flags the resource as reboot required when required' do
+    it "flags the resource as reboot required when required" do
       expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
-        and_return(double(:stdout => '', :return_value =>nil))
+        and_return(double(:stdout => "", :return_value =>nil))
       expect(provider).to receive(:return_dsc_resource_result).and_return(true)
       expect(provider).to receive(:create_reboot_resource)
       provider.run_action(:run)
     end
     
-    it 'does not flag the resource as reboot required when not required' do
+    it "does not flag the resource as reboot required when not required" do
       expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
-        and_return(double(:stdout => '', :return_value =>nil))
+        and_return(double(:stdout => "", :return_value =>nil))
       expect(provider).to receive(:return_dsc_resource_result).and_return(false)
       expect(provider).to_not receive(:create_reboot_resource)
       provider.run_action(:run)

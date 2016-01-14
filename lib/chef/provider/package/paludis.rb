@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/resource/package'
+require "chef/provider/package"
+require "chef/resource/package"
 
 class Chef
   class Provider
@@ -33,15 +33,15 @@ class Chef
 
           Chef::Log.debug("Checking package status for #{@new_resource.package_name}")
           installed = false
-          re = Regexp.new('(.*)[[:blank:]](.*)[[:blank:]](.*)$')
+          re = Regexp.new("(.*)[[:blank:]](.*)[[:blank:]](.*)$")
 
           shell_out!("cave -L warning print-ids -M none -m \"#{@new_resource.package_name}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             res = re.match(line)
             unless res.nil?
               case res[3]
-              when 'accounts', 'installed-accounts'
+              when "accounts", "installed-accounts"
                 next
-              when 'installed'
+              when "installed"
                 installed = true
                 @current_resource.version(res[2])
               else

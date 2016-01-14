@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "chef/mixin/shell_out"
 
 metadata = {
   :mac_osx_only => true,

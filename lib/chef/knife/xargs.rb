@@ -1,4 +1,4 @@
-require 'chef/chef_fs/knife'
+require "chef/chef_fs/knife"
 
 class Chef
   class Knife
@@ -8,65 +8,65 @@ class Chef
       category "path-based"
 
       deps do
-        require 'chef/chef_fs/file_system'
-        require 'chef/chef_fs/file_system/not_found_error'
+        require "chef/chef_fs/file_system"
+        require "chef/chef_fs/file_system/not_found_error"
       end
 
       # TODO modify to remote-only / local-only pattern (more like delete)
       option :local,
-        :long => '--local',
+        :long => "--local",
         :boolean => true,
         :description => "Xargs local files instead of remote"
 
       option :patterns,
-        :long => '--pattern [PATTERN]',
-        :short => '-p [PATTERN]',
+        :long => "--pattern [PATTERN]",
+        :short => "-p [PATTERN]",
         :description => "Pattern on command line (if these are not specified, a list of patterns is expected on standard input).  Multiple patterns may be passed in this way.",
         :arg_arity => [1,-1]
 
       option :diff,
-        :long => '--[no-]diff',
+        :long => "--[no-]diff",
         :default => true,
         :boolean => true,
         :description => "Whether to show a diff when files change (default: true)"
 
       option :dry_run,
-        :long => '--dry-run',
+        :long => "--dry-run",
         :boolean => true,
         :description => "Prevents changes from actually being uploaded to the server."
 
       option :force,
-        :long => '--[no-]force',
+        :long => "--[no-]force",
         :boolean => true,
         :default => false,
         :description => "Force upload of files even if they are not changed (quicker and harmless, but doesn't print out what it changed)"
 
       option :replace_first,
-        :long => '--replace-first REPLACESTR',
-        :short => '-J REPLACESTR',
+        :long => "--replace-first REPLACESTR",
+        :short => "-J REPLACESTR",
         :description => "String to replace with filenames.  -J will only replace the FIRST occurrence of the replacement string."
 
       option :replace_all,
-        :long => '--replace REPLACESTR',
-        :short => '-I REPLACESTR',
+        :long => "--replace REPLACESTR",
+        :short => "-I REPLACESTR",
         :description => "String to replace with filenames.  -I will replace ALL occurrence of the replacement string."
 
       option :max_arguments_per_command,
-        :long => '--max-args MAXARGS',
-        :short => '-n MAXARGS',
+        :long => "--max-args MAXARGS",
+        :short => "-n MAXARGS",
         :description => "Maximum number of arguments per command line."
 
       option :max_command_line,
-        :long => '--max-chars LENGTH',
-        :short => '-s LENGTH',
+        :long => "--max-chars LENGTH",
+        :short => "-s LENGTH",
         :description => "Maximum size of command line, in characters"
 
       option :verbose_commands,
-        :short => '-t',
+        :short => "-t",
         :description => "Print command to be run on the command line"
 
       option :null_separator,
-        :short => '-0',
+        :short => "-0",
         :boolean => true,
         :description => "Use the NULL character (\0) as a separator, instead of whitespace"
 
@@ -151,7 +151,7 @@ class Chef
       end
 
       def create_command(files)
-        command = name_args.join(' ')
+        command = name_args.join(" ")
 
         # Create the (empty) tempfiles
         tempfiles = {}
@@ -167,7 +167,7 @@ class Chef
         end
 
         # Create the command
-        paths = tempfiles.keys.map { |tempfile| tempfile.path }.join(' ')
+        paths = tempfiles.keys.map { |tempfile| tempfile.path }.join(" ")
         if config[:replace_all]
           final_command = command.gsub(config[:replace_all], paths)
         elsif config[:replace_first]

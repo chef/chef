@@ -26,8 +26,8 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @svn_arguments = '--no-auth-cache'
-        @svn_info_args = '--no-auth-cache'
+        @svn_arguments = "--no-auth-cache"
+        @svn_info_args = "--no-auth-cache"
         @svn_binary = nil
       end
 

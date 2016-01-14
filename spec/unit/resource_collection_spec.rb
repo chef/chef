@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::ResourceCollection do
   let(:rc) { Chef::ResourceCollection.new() }
@@ -65,7 +65,7 @@ describe Chef::ResourceCollection do
     end
 
     it "should accept named arguments in any order" do
-      rc.insert(resource, :instance_name => 'foo', :resource_type =>'bar')
+      rc.insert(resource, :instance_name => "foo", :resource_type =>"bar")
       expect(rc[0]).to eq(resource)
     end
 

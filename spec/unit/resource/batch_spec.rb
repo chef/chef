@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Batch do
 
@@ -25,7 +25,7 @@ describe Chef::Resource::Batch do
 
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
-    node.automatic[:os] = 'windows'
+    node.automatic[:os] = "windows"
 
     run_context = Chef::RunContext.new(node, nil, nil)
 
@@ -41,7 +41,7 @@ describe Chef::Resource::Batch do
     let(:resource_instance) { @resource }
     let(:resource_instance_name ) { @resource.command }
     let(:resource_name) { :batch }
-    let(:interpreter_file_name) { 'cmd.exe' }
+    let(:interpreter_file_name) { "cmd.exe" }
 
     it_should_behave_like "a Windows script resource"
   end

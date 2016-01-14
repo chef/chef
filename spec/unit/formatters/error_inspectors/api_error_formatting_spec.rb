@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/formatters/error_inspectors/api_error_formatting'
+require "spec_helper"
+require "chef/formatters/error_inspectors/api_error_formatting"
 
 describe Chef::Formatters::APIErrorFormatting do
   let(:class_instance) { (Class.new { include Chef::Formatters::APIErrorFormatting }).new }
@@ -43,7 +43,7 @@ describe Chef::Formatters::APIErrorFormatting do
 
       before do
         # mock out the header
-        allow(response).to receive(:[]).with('x-ops-server-api-version').and_return(Chef::JSONCompat.to_json(return_hash))
+        allow(response).to receive(:[]).with("x-ops-server-api-version").and_return(Chef::JSONCompat.to_json(return_hash))
       end
 
       it "prints an error about client and server API version incompatibility with a min API version" do
@@ -65,7 +65,7 @@ describe Chef::Formatters::APIErrorFormatting do
     context "when response.body['error'] != 'invalid-x-ops-server-api-version'" do
 
       before do
-        allow(response).to receive(:[]).with('x-ops-server-api-version').and_return(nil)
+        allow(response).to receive(:[]).with("x-ops-server-api-version").and_return(nil)
       end
 
       it "forwards the error_description to describe_http_error" do

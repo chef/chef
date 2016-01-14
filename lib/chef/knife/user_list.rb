@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 # NOTE: only knife user command that is backwards compatible with OSC 11,
 # so no deprecation warnings are necessary.
@@ -25,8 +25,8 @@ class Chef
     class UserList < Knife
 
       deps do
-        require 'chef/user_v1'
-        require 'chef/json_compat'
+        require "chef/user_v1"
+        require "chef/json_compat"
       end
 
       banner "knife user list (options)"

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/mount'
+require "chef/provider/mount"
 
 class Chef
   class Provider

@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'spec_helper'
-require 'chef/resource/resource_notification'
+require "spec_helper"
+require "chef/resource/resource_notification"
 
 describe Chef::Resource::Notification do
 

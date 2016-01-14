@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/lib/library_load_order'
+require "spec_helper"
+require "support/lib/library_load_order"
 
 describe Chef::RunContext::ChildRunContext do
   context "with a run context with stuff in it" do
@@ -46,14 +46,14 @@ describe Chef::RunContext::ChildRunContext do
 
       it "audits is not the same as the parent" do
         expect(child.audits.object_id).not_to eq run_context.audits.object_id
-        child.audits['hi'] = 'lo'
-        expect(child.audits['hi']).to eq('lo')
-        expect(run_context.audits['hi']).not_to eq('lo')
+        child.audits["hi"] = "lo"
+        expect(child.audits["hi"]).to eq("lo")
+        expect(run_context.audits["hi"]).not_to eq("lo")
       end
 
       it "resource_collection is not the same as the parent" do
         expect(child.resource_collection.object_id).not_to eq run_context.resource_collection.object_id
-        f = Chef::Resource::File.new('hi', child)
+        f = Chef::Resource::File.new("hi", child)
         child.resource_collection.insert(f)
         expect(child.resource_collection).to include f
         expect(run_context.resource_collection).not_to include f
@@ -61,17 +61,17 @@ describe Chef::RunContext::ChildRunContext do
 
       it "immediate_notification_collection is not the same as the parent" do
         expect(child.immediate_notification_collection.object_id).not_to eq run_context.immediate_notification_collection.object_id
-        src = Chef::Resource::File.new('hi', child)
-        dest = Chef::Resource::File.new('argh', child)
+        src = Chef::Resource::File.new("hi", child)
+        dest = Chef::Resource::File.new("argh", child)
         notification = Chef::Resource::Notification.new(dest, :create, src)
         child.notifies_immediately(notification)
-        expect(child.immediate_notification_collection['file[hi]']).to eq([notification])
-        expect(run_context.immediate_notification_collection['file[hi]']).not_to eq([notification])
+        expect(child.immediate_notification_collection["file[hi]"]).to eq([notification])
+        expect(run_context.immediate_notification_collection["file[hi]"]).not_to eq([notification])
       end
 
       it "immediate_notifications is not the same as the parent" do
-        src = Chef::Resource::File.new('hi', child)
-        dest = Chef::Resource::File.new('argh', child)
+        src = Chef::Resource::File.new("hi", child)
+        dest = Chef::Resource::File.new("argh", child)
         notification = Chef::Resource::Notification.new(dest, :create, src)
         child.notifies_immediately(notification)
         expect(child.immediate_notifications(src)).to eq([notification])
@@ -80,17 +80,17 @@ describe Chef::RunContext::ChildRunContext do
 
       it "delayed_notification_collection is not the same as the parent" do
         expect(child.delayed_notification_collection.object_id).not_to eq run_context.delayed_notification_collection.object_id
-        src = Chef::Resource::File.new('hi', child)
-        dest = Chef::Resource::File.new('argh', child)
+        src = Chef::Resource::File.new("hi", child)
+        dest = Chef::Resource::File.new("argh", child)
         notification = Chef::Resource::Notification.new(dest, :create, src)
         child.notifies_delayed(notification)
-        expect(child.delayed_notification_collection['file[hi]']).to eq([notification])
-        expect(run_context.delayed_notification_collection['file[hi]']).not_to eq([notification])
+        expect(child.delayed_notification_collection["file[hi]"]).to eq([notification])
+        expect(run_context.delayed_notification_collection["file[hi]"]).not_to eq([notification])
       end
 
       it "delayed_notifications is not the same as the parent" do
-        src = Chef::Resource::File.new('hi', child)
-        dest = Chef::Resource::File.new('argh', child)
+        src = Chef::Resource::File.new("hi", child)
+        dest = Chef::Resource::File.new("argh", child)
         notification = Chef::Resource::Notification.new(dest, :create, src)
         child.notifies_delayed(notification)
         expect(child.delayed_notifications(src)).to eq([notification])
@@ -104,7 +104,7 @@ describe Chef::RunContext::ChildRunContext do
 
       context "after load('include::default')" do
         before do
-          run_list = Chef::RunList.new('include::default').expand('_default')
+          run_list = Chef::RunList.new("include::default").expand("_default")
           # TODO not sure why we had to do this to get everything to work ...
           node.automatic_attrs[:recipes] = []
           child.load(run_list)

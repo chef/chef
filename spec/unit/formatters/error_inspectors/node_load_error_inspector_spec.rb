@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 # spec_helper loads the shared examples already.
 #require 'support/shared/unit/api_error_inspector_spec'

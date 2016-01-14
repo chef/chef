@@ -16,61 +16,61 @@
 # limitations under the License.
 #
 
-require 'chef'
-require 'chef/util/dsc/resource_store'
+require "chef"
+require "chef/util/dsc/resource_store"
 
 describe Chef::Util::DSC::ResourceStore do
   let(:resource_store) { Chef::Util::DSC::ResourceStore.new }
   let(:resource_a) { {
-    'ResourceType' => 'AFoo',
-    'Name' => 'Foo',
-    'Module' => {'Name' => 'ModuleA'},
+    "ResourceType" => "AFoo",
+    "Name" => "Foo",
+    "Module" => {"Name" => "ModuleA"},
     }
   }
 
   let(:resource_b) { {
-    'ResourceType' => 'BFoo',
-    'Name' => 'Foo',
-    'Module' => {'Name' => 'ModuleB'},
+    "ResourceType" => "BFoo",
+    "Name" => "Foo",
+    "Module" => {"Name" => "ModuleB"},
     }
   }
 
-  context 'when resources are not cached' do
+  context "when resources are not cached" do
     context 'when calling #resources' do
-      it 'returns an empty array' do
+      it "returns an empty array" do
         expect(resource_store.resources).to eql([])
       end
     end
 
     context 'when calling #find' do
-      it 'returns an empty list if it cannot find any matching resources' do
+      it "returns an empty list if it cannot find any matching resources" do
         expect(resource_store).to receive(:query_resource).and_return([])
-        expect(resource_store.find('foo')).to eql([])
+        expect(resource_store.find("foo")).to eql([])
       end
 
-      it 'returns the resource if it is found (comparisons are case insensitive)' do
+      it "returns the resource if it is found (comparisons are case insensitive)" do
         expect(resource_store).to receive(:query_resource).and_return([resource_a])
-        expect(resource_store.find('foo')).to eql([resource_a])
+        expect(resource_store.find("foo")).to eql([resource_a])
       end
 
-      it 'returns multiple resoures if they are found' do
+      it "returns multiple resoures if they are found" do
         expect(resource_store).to receive(:query_resource).and_return([resource_a, resource_b])
-        expect(resource_store.find('foo')).to include(resource_a, resource_b)
+        expect(resource_store.find("foo")).to include(resource_a, resource_b)
       end
 
-      it 'deduplicates resources by ResourceName' do
+      it "deduplicates resources by ResourceName" do
         expect(resource_store).to receive(:query_resource).and_return([resource_a, resource_a])
-        resource_store.find('foo')
+        resource_store.find("foo")
         expect(resource_store.resources).to eq([resource_a])
       end
     end
   end
 
-  context 'when resources are cached' do
-    it 'recalls resources from the cache if present' do
+  context "when resources are cached" do
+    it "recalls resources from the cache if present" do
       expect(resource_store).not_to receive(:query_resource)
       expect(resource_store).to receive(:resources).and_return([resource_a])
-      resource_store.find('foo')
+      resource_store.find("foo")
     end
   end
 end

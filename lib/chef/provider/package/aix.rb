@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 #
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
-require 'chef/mixin/get_source_from_package'
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
+require "chef/mixin/get_source_from_package"
 
 class Chef
   class Provider

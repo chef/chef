@@ -1,5 +1,5 @@
-require 'support/shared/integration/integration_helper'
-require 'chef/mixin/shell_out'
+require "support/shared/integration/integration_helper"
+require "chef/mixin/shell_out"
 
 describe "LWRPs with inline resources" do
   include IntegrationSupport
@@ -29,7 +29,7 @@ describe "LWRPs with inline resources" do
         use_inline_resources
         def action_a
           r = new_resource
-          ruby_block 'run a' do
+          ruby_block "run a" do
             block { r.ran_a "ran a" }
           end
         end
@@ -39,8 +39,8 @@ describe "LWRPs with inline resources" do
     it "this is totally a bug, but for backcompat purposes, it adds the resources to the main resource collection and does not get marked updated" do
       r = nil
       expect_recipe {
-        r = lwrp_inline_resources_test 'hi'
-      }.to have_updated('ruby_block[run a]', :run)
+        r = lwrp_inline_resources_test "hi"
+      }.to have_updated("ruby_block[run a]", :run)
       expect(r.ran_a).to eq "ran a"
     end
   end
@@ -58,7 +58,7 @@ describe "LWRPs with inline resources" do
 
         action :a do
           r = new_resource
-          ruby_block 'run a' do
+          ruby_block "run a" do
             block { r.ran_a "ran a" }
           end
         end
@@ -68,7 +68,7 @@ describe "LWRPs with inline resources" do
           r = new_resource
           # Grab ran_a right now, before we converge
           ran_a = r.ran_a
-          ruby_block 'run b' do
+          ruby_block "run b" do
             block { r.ran_b "ran b: ran_a value was #{ran_a.inspect}" }
           end
         end
@@ -78,34 +78,34 @@ describe "LWRPs with inline resources" do
     it "resources declared in b are executed immediately inline" do
       r = nil
       expect_recipe {
-        r = lwrp_inline_resources_test2 'hi' do
+        r = lwrp_inline_resources_test2 "hi" do
           action :b
         end
-      }.to have_updated('lwrp_inline_resources_test2[hi]', :b).
-       and have_updated('ruby_block[run a]', :run).
-       and have_updated('ruby_block[run b]', :run)
+      }.to have_updated("lwrp_inline_resources_test2[hi]", :b).
+       and have_updated("ruby_block[run a]", :run).
+       and have_updated("ruby_block[run b]", :run)
       expect(r.ran_b).to eq "ran b: ran_a value was \"ran a\""
     end
   end
 
   when_the_repository "has a cookbook with a nested LWRP" do
     before do
-      directory 'cookbooks/x' do
+      directory "cookbooks/x" do
 
-        file 'resources/do_nothing.rb', <<-EOM
+        file "resources/do_nothing.rb", <<-EOM
           actions :create, :nothing
           default_action :create
         EOM
-        file 'providers/do_nothing.rb', <<-EOM
+        file "providers/do_nothing.rb", <<-EOM
           action :create do
           end
         EOM
 
-        file 'resources/my_machine.rb', <<-EOM
+        file "resources/my_machine.rb", <<-EOM
           actions :create, :nothing
           default_action :create
         EOM
-        file 'providers/my_machine.rb', <<-EOM
+        file "providers/my_machine.rb", <<-EOM
           use_inline_resources
           action :create do
             x_do_nothing 'a'
@@ -113,7 +113,7 @@ describe "LWRPs with inline resources" do
           end
         EOM
 
-        file 'recipes/default.rb', <<-EOM
+        file "recipes/default.rb", <<-EOM
           x_my_machine "me"
           x_my_machine "you"
         EOM
@@ -122,7 +122,7 @@ describe "LWRPs with inline resources" do
     end
 
     it "should complete with success" do
-      file 'config/client.rb', <<EOM
+      file "config/client.rb", <<EOM
 local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 log_level :warn

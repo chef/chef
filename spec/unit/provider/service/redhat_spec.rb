@@ -17,7 +17,7 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
-require 'ostruct'
+require "ostruct"
 
 shared_examples_for "define_resource_requirements_common" do
   it "should raise an error if /sbin/chkconfig does not exist" do
@@ -44,7 +44,7 @@ describe "Chef::Provider::Service::Redhat" do
 
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = {:ps => 'foo'}
+    @node.automatic_attrs[:command] = {:ps => "foo"}
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 

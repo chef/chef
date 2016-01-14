@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
 # Chef::Resource::Group are turned off on Mac OS X 10.6 due to caching
 # issues around Etc.getgrnam() not picking up the group membership
@@ -79,8 +79,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   def windows_domain_user?(user_name)
     domain, user = user_name.split('\\')
 
-    if user && domain != '.'
-      computer_name = ENV['computername']
+    if user && domain != "."
+      computer_name = ENV["computername"]
       domain.downcase != computer_name.downcase
     end
   end
@@ -378,7 +378,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
     describe "when running on Windows", :windows_only do
       describe "when members are Active Directory domain identities", :windows_domain_joined_only do
-        let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
+        let(:computer_domain) { ohai[:kernel]["cs_info"]["domain"].split(".")[0] }
         let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
 
         include_examples "correct group management"
@@ -415,7 +415,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
     describe "running on windows", :windows_only do
       describe "when members are Windows domain identities", :windows_domain_joined_only do
-        let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
+        let(:computer_domain) { ohai[:kernel]["cs_info"]["domain"].split(".")[0] }
         let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
 
         include_examples "correct group management"

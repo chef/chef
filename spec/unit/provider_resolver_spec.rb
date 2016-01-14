@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/convert_to_class_name'
-require 'chef/provider_resolver'
-require 'chef/platform/service_helpers'
-require 'support/shared/integration/integration_helper'
-require 'tmpdir'
-require 'fileutils'
+require "spec_helper"
+require "chef/mixin/convert_to_class_name"
+require "chef/provider_resolver"
+require "chef/platform/service_helpers"
+require "support/shared/integration/integration_helper"
+require "tmpdir"
+require "fileutils"
 
 include Chef::Mixin::ConvertToClassName
 
@@ -48,7 +48,7 @@ describe Chef::ProviderResolver do
       node.automatic[:platform_family] = platform_family
       node.automatic[:platform] = platform
       node.automatic[:platform_version] = platform_version
-      node.automatic[:kernel] = { machine: 'i386' }
+      node.automatic[:kernel] = { machine: "i386" }
       node
     end
     let(:run_context) { Chef::RunContext.new(node, nil, nil) }
@@ -73,7 +73,7 @@ describe Chef::ProviderResolver do
     end
 
     def self.on_platform(platform, *tags,
-      platform_version: '11.0.1',
+      platform_version: "11.0.1",
       platform_family: nil,
       os: nil,
       &block)
@@ -147,17 +147,17 @@ describe Chef::ProviderResolver do
         services.each do |service|
           case service
           when :debian
-            file 'usr/sbin/update-rc.d', ''
+            file "usr/sbin/update-rc.d", ""
           when :invokercd
-            file 'usr/sbin/invoke-rc.d', ''
+            file "usr/sbin/invoke-rc.d", ""
           when :insserv
-            file 'sbin/insserv', ''
+            file "sbin/insserv", ""
           when :upstart
-            file 'sbin/initctl', ''
+            file "sbin/initctl", ""
           when :redhat
-            file 'sbin/chkconfig', ''
+            file "sbin/chkconfig", ""
           when :systemd
-            file 'proc/1/comm', "systemd\n"
+            file "proc/1/comm", "systemd\n"
           else
             raise ArgumentError, service
           end
@@ -178,7 +178,7 @@ describe Chef::ProviderResolver do
           when :usr_local_etc_rcd
             file "usr/local/etc/rc.d/#{service_name}", ""
           when :systemd
-            file 'proc/1/comm', "systemd\n"
+            file "proc/1/comm", "systemd\n"
             file "etc/systemd/system/#{service_name}.service", ""
           else
             raise ArgumentError, config
@@ -480,7 +480,7 @@ describe Chef::ProviderResolver do
         end
       end
 
-      on_platform %w(freebsd netbsd), platform_version: '3.1.4' do
+      on_platform %w(freebsd netbsd), platform_version: "3.1.4" do
         it "returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
           stub_service_providers
           stub_service_configs(:usr_local_etc_rcd)

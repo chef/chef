@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/data_bag'
+require "spec_helper"
+require "chef/data_bag"
 
 describe Chef::DataBag do
   before(:each) do
@@ -58,7 +58,7 @@ describe Chef::DataBag do
 
   describe "deserialize" do
     before(:each) do
-      @data_bag.name('mars_volta')
+      @data_bag.name("mars_volta")
       @deserial = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@data_bag))
     end
 
@@ -82,7 +82,7 @@ describe Chef::DataBag do
 
   describe "when saving" do
     before do
-      @data_bag.name('piggly_wiggly')
+      @data_bag.name("piggly_wiggly")
       @rest = double("Chef::ServerAPI")
       allow(Chef::ServerAPI).to receive(:new).and_return(@rest)
     end
@@ -115,21 +115,21 @@ describe Chef::DataBag do
   describe "when loading" do
     describe "from an API call" do
       before do
-        Chef::Config[:chef_server_url] = 'https://myserver.example.com'
-        @http_client = double('Chef::ServerAPI')
+        Chef::Config[:chef_server_url] = "https://myserver.example.com"
+        @http_client = double("Chef::ServerAPI")
       end
 
       it "should get the data bag from the server" do
-        expect(Chef::ServerAPI).to receive(:new).with('https://myserver.example.com').and_return(@http_client)
-        expect(@http_client).to receive(:get).with('data/foo')
-        Chef::DataBag.load('foo')
+        expect(Chef::ServerAPI).to receive(:new).with("https://myserver.example.com").and_return(@http_client)
+        expect(@http_client).to receive(:get).with("data/foo")
+        Chef::DataBag.load("foo")
       end
 
       it "should return the data bag" do
         allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
-        expect(@http_client).to receive(:get).with('data/foo').and_return({'bar' => 'https://myserver.example.com/data/foo/bar'})
-        data_bag = Chef::DataBag.load('foo')
-        expect(data_bag).to eq({'bar' => 'https://myserver.example.com/data/foo/bar'})
+        expect(@http_client).to receive(:get).with("data/foo").and_return({"bar" => "https://myserver.example.com/data/foo/bar"})
+        data_bag = Chef::DataBag.load("foo")
+        expect(data_bag).to eq({"bar" => "https://myserver.example.com/data/foo/bar"})
       end
     end
 
@@ -138,7 +138,7 @@ describe Chef::DataBag do
     end
 
     def dir_glob_stub(path, returns = [])
-      expect(Dir).to receive(:glob).with(File.join(path, 'foo/*.json')).and_return(returns)
+      expect(Dir).to receive(:glob).with(File.join(path, "foo/*.json")).and_return(returns)
     end
 
     shared_examples_for "data bag in solo mode" do |data_bag_path|
@@ -157,7 +157,7 @@ describe Chef::DataBag do
           file_dir_stub(path)
           dir_glob_stub(path)
         end
-        Chef::DataBag.load('foo')
+        Chef::DataBag.load("foo")
       end
 
       it "should get the data bag from the data_bag_path by symbolic name" do
@@ -172,57 +172,57 @@ describe Chef::DataBag do
         @paths.each do |path|
           file_dir_stub(path)
           if path == @paths.first
-            dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
+            dir_glob_stub(path, [File.join(path, "foo/bar.json"), File.join(path, "foo/baz.json")])
           else
             dir_glob_stub(path)
           end
         end
-        expect(IO).to receive(:read).with(File.join(@paths.first, 'foo/bar.json')).and_return('{"id": "bar", "name": "Bob Bar" }')
-        expect(IO).to receive(:read).with(File.join(@paths.first, 'foo/baz.json')).and_return('{"id": "baz", "name": "John Baz" }')
-        data_bag = Chef::DataBag.load('foo')
-        expect(data_bag).to eq({ 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar' }, 'baz' => { 'id' => 'baz', 'name' => 'John Baz' }})
+        expect(IO).to receive(:read).with(File.join(@paths.first, "foo/bar.json")).and_return('{"id": "bar", "name": "Bob Bar" }')
+        expect(IO).to receive(:read).with(File.join(@paths.first, "foo/baz.json")).and_return('{"id": "baz", "name": "John Baz" }')
+        data_bag = Chef::DataBag.load("foo")
+        expect(data_bag).to eq({ "bar" => { "id" => "bar", "name" => "Bob Bar" }, "baz" => { "id" => "baz", "name" => "John Baz" }})
       end
 
       it "should raise if data bag has items with similar names but different content" do
         @paths.each do |path|
           file_dir_stub(path)
           item_with_different_content = "{\"id\": \"bar\", \"name\": \"Bob Bar\", \"path\": \"#{path}\"}"
-          expect(IO).to receive(:read).with(File.join(path, 'foo/bar.json')).and_return(item_with_different_content)
+          expect(IO).to receive(:read).with(File.join(path, "foo/bar.json")).and_return(item_with_different_content)
           if data_bag_path.is_a?(String)
-            dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
+            dir_glob_stub(path, [File.join(path, "foo/bar.json"), File.join(path, "foo/baz.json")])
             item_2_with_different_content = '{"id": "bar", "name": "John Baz"}'
-            expect(IO).to receive(:read).with(File.join(path, 'foo/baz.json')).and_return(item_2_with_different_content)
+            expect(IO).to receive(:read).with(File.join(path, "foo/baz.json")).and_return(item_2_with_different_content)
           else
-            dir_glob_stub(path, [File.join(path, 'foo/bar.json')])
+            dir_glob_stub(path, [File.join(path, "foo/bar.json")])
           end
         end
-        expect { Chef::DataBag.load('foo') }.to raise_error(Chef::Exceptions::DuplicateDataBagItem)
+        expect { Chef::DataBag.load("foo") }.to raise_error(Chef::Exceptions::DuplicateDataBagItem)
       end
 
       it "should return data bag if it has items with similar names and the same content" do
         @paths.each do |path|
           file_dir_stub(path)
-          dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
+          dir_glob_stub(path, [File.join(path, "foo/bar.json"), File.join(path, "foo/baz.json")])
           item_with_same_content = '{"id": "bar", "name": "Bob Bar"}'
-          expect(IO).to receive(:read).with(File.join(path, 'foo/bar.json')).and_return(item_with_same_content)
-          expect(IO).to receive(:read).with(File.join(path, 'foo/baz.json')).and_return(item_with_same_content)
+          expect(IO).to receive(:read).with(File.join(path, "foo/bar.json")).and_return(item_with_same_content)
+          expect(IO).to receive(:read).with(File.join(path, "foo/baz.json")).and_return(item_with_same_content)
         end
-        data_bag = Chef::DataBag.load('foo')
-        test_data_bag = { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar'} }
+        data_bag = Chef::DataBag.load("foo")
+        test_data_bag = { "bar" => { "id" => "bar", "name" => "Bob Bar"} }
         expect(data_bag).to eq(test_data_bag)
       end
 
       it "should merge data bag items if there are no conflicts" do
         @paths.each_with_index do |path, index|
           file_dir_stub(path)
-          dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
+          dir_glob_stub(path, [File.join(path, "foo/bar.json"), File.join(path, "foo/baz.json")])
           test_item_with_same_content = '{"id": "bar", "name": "Bob Bar"}'
-          expect(IO).to receive(:read).with(File.join(path, 'foo/bar.json')).and_return(test_item_with_same_content)
+          expect(IO).to receive(:read).with(File.join(path, "foo/bar.json")).and_return(test_item_with_same_content)
           test_uniq_item = "{\"id\": \"baz_#{index}\", \"name\": \"John Baz\", \"path\": \"#{path}\"}"
-          expect(IO).to receive(:read).with(File.join(path, 'foo/baz.json')).and_return(test_uniq_item)
+          expect(IO).to receive(:read).with(File.join(path, "foo/baz.json")).and_return(test_uniq_item)
         end
-        data_bag = Chef::DataBag.load('foo')
-        test_data_bag = { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar'} }
+        data_bag = Chef::DataBag.load("foo")
+        test_data_bag = { "bar" => { "id" => "bar", "name" => "Bob Bar"} }
         @paths.each_with_index do |path, index|
           test_data_bag["baz_#{index}"] = { "id" => "baz_#{index}", "name" => "John Baz", "path" => path }
         end
@@ -232,17 +232,17 @@ describe Chef::DataBag do
       it "should return the data bag list" do
         @paths.each do |path|
           file_dir_stub(path)
-          expect(Dir).to receive(:glob).and_return([File.join(path, 'foo'), File.join(path, 'bar')])
+          expect(Dir).to receive(:glob).and_return([File.join(path, "foo"), File.join(path, "bar")])
         end
         data_bag_list = Chef::DataBag.list
-        expect(data_bag_list).to eq({ 'bar' => 'bar', 'foo' => 'foo' })
+        expect(data_bag_list).to eq({ "bar" => "bar", "foo" => "foo" })
       end
 
-      it 'should raise an error if the configured data_bag_path is invalid' do
+      it "should raise an error if the configured data_bag_path is invalid" do
         file_dir_stub(@paths.first, false)
 
         expect {
-          Chef::DataBag.load('foo')
+          Chef::DataBag.load("foo")
         }.to raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' is invalid"
       end
 

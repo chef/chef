@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'support/shared/unit/provider/file'
+require "support/shared/unit/provider/file"
 
 
 describe Chef::Provider::RemoteFile do
@@ -32,12 +32,12 @@ describe Chef::Provider::RemoteFile do
   end
 
   let(:content) do
-    content = double('Chef::Provider::File::Content::RemoteFile')
+    content = double("Chef::Provider::File::Content::RemoteFile")
   end
 
-  let(:node) { double('Chef::Node') }
-  let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
-  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
+  let(:node) { double("Chef::Node") }
+  let(:events) { double("Chef::Events").as_null_object }  # mock all the methods
+  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
   let(:enclosing_directory) {
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
   }

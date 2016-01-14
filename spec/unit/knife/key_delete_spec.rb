@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/user_key_delete'
-require 'chef/knife/client_key_delete'
-require 'chef/knife/key_delete'
-require 'chef/key'
+require "spec_helper"
+require "chef/knife/user_key_delete"
+require "chef/knife/client_key_delete"
+require "chef/knife/key_delete"
+require "chef/key"
 
 describe "key delete commands that inherit knife" do
   shared_examples_for "a key delete command" do

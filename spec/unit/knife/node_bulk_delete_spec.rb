@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::NodeBulkDelete do
   before(:each) do
@@ -78,10 +78,10 @@ describe Chef::Knife::NodeBulkDelete do
     end
 
     it "should only delete nodes that match the regex" do
-      @knife.name_args = ['adam']
-      expect(@inflatedish_list['adam']).to receive(:destroy)
-      expect(@inflatedish_list['brent']).not_to receive(:destroy)
-      expect(@inflatedish_list['jacob']).not_to receive(:destroy)
+      @knife.name_args = ["adam"]
+      expect(@inflatedish_list["adam"]).to receive(:destroy)
+      expect(@inflatedish_list["brent"]).not_to receive(:destroy)
+      expect(@inflatedish_list["jacob"]).not_to receive(:destroy)
       @knife.run
     end
 

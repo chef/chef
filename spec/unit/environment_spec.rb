@@ -19,8 +19,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/environment'
+require "spec_helper"
+require "chef/environment"
 
 describe Chef::Environment do
   before(:each) do
@@ -73,12 +73,12 @@ describe Chef::Environment do
 
   describe "default attributes" do
     it "should let you set the attributes hash explicitly" do
-      expect(@environment.default_attributes({ :one => 'two' })).to eq({ :one => 'two' })
+      expect(@environment.default_attributes({ :one => "two" })).to eq({ :one => "two" })
     end
 
     it "should let you return the attributes hash" do
-      @environment.default_attributes({ :one => 'two' })
-      expect(@environment.default_attributes).to eq({ :one => 'two' })
+      @environment.default_attributes({ :one => "two" })
+      expect(@environment.default_attributes).to eq({ :one => "two" })
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
@@ -88,12 +88,12 @@ describe Chef::Environment do
 
   describe "override attributes" do
     it "should let you set the attributes hash explicitly" do
-      expect(@environment.override_attributes({ :one => 'two' })).to eq({ :one => 'two' })
+      expect(@environment.override_attributes({ :one => "two" })).to eq({ :one => "two" })
     end
 
     it "should let you return the attributes hash" do
-      @environment.override_attributes({ :one => 'two' })
-      expect(@environment.override_attributes).to eq({ :one => 'two' })
+      @environment.override_attributes({ :one => "two" })
+      expect(@environment.override_attributes).to eq({ :one => "two" })
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
@@ -393,7 +393,7 @@ describe Chef::Environment do
     describe "in solo mode" do
       before do
         Chef::Config[:solo] = true
-        Chef::Config[:environment_path] = '/var/chef/environments'
+        Chef::Config[:environment_path] = "/var/chef/environments"
       end
 
       after do
@@ -402,17 +402,17 @@ describe Chef::Environment do
 
       it "should get the environment from the environment_path" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
-        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
-        expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(false)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).exactly(2).times.and_return(true)
+        expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(true)
         role_dsl="name \"foo\"\ndescription \"desc\"\n"
-        expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(role_dsl)
-        Chef::Environment.load('foo')
+        expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(role_dsl)
+        Chef::Environment.load("foo")
       end
 
       it "should return a Chef::Environment object from JSON" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(true)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(true)
         environment_hash = {
           "name" => "foo",
           "default_attributes" => {
@@ -424,44 +424,44 @@ describe Chef::Environment do
           "description" => "desc",
           "chef_type" => "environment",
         }
-        expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(Chef::JSONCompat.to_json(environment_hash))
-        environment = Chef::Environment.load('foo')
+        expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(Chef::JSONCompat.to_json(environment_hash))
+        environment = Chef::Environment.load("foo")
 
         expect(environment).to be_a_kind_of(Chef::Environment)
-        expect(environment.name).to eq(environment_hash['name'])
-        expect(environment.description).to eq(environment_hash['description'])
-        expect(environment.default_attributes).to eq(environment_hash['default_attributes'])
+        expect(environment.name).to eq(environment_hash["name"])
+        expect(environment.description).to eq(environment_hash["description"])
+        expect(environment.default_attributes).to eq(environment_hash["default_attributes"])
       end
 
       it "should return a Chef::Environment object from Ruby DSL" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
-        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
-        expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(false)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).exactly(2).times.and_return(true)
+        expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(true)
         role_dsl="name \"foo\"\ndescription \"desc\"\n"
-        expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(role_dsl)
-        environment = Chef::Environment.load('foo')
+        expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(role_dsl)
+        environment = Chef::Environment.load("foo")
 
         expect(environment).to be_a_kind_of(Chef::Environment)
-        expect(environment.name).to eq('foo')
-        expect(environment.description).to eq('desc')
+        expect(environment.name).to eq("foo")
+        expect(environment.description).to eq("desc")
       end
 
-      it 'should raise an error if the configured environment_path is invalid' do
+      it "should raise an error if the configured environment_path is invalid" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(false)
 
         expect {
-          Chef::Environment.load('foo')
+          Chef::Environment.load("foo")
         }.to raise_error Chef::Exceptions::InvalidEnvironmentPath, "Environment path '/var/chef/environments' is invalid"
       end
 
-      it 'should raise an error if the file does not exist' do
+      it "should raise an error if the file does not exist" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
-        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(false)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(false)
+        expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(false)
 
         expect {
-          Chef::Environment.load('foo')
+          Chef::Environment.load("foo")
         }.to raise_error Chef::Exceptions::EnvironmentNotFound, "Environment 'foo' could not be loaded from disk"
       end
     end

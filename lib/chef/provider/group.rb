@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/command'
-require 'etc'
+require "chef/provider"
+require "chef/mixin/shell_out"
+require "chef/mixin/command"
+require "etc"
 
 class Chef
   class Provider

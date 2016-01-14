@@ -20,10 +20,10 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package'
-require 'chef/mixin/get_source_from_package'
-require 'chef/exceptions'
+require "chef/resource/package"
+require "chef/provider/package"
+require "chef/mixin/get_source_from_package"
+require "chef/exceptions"
 
 class Chef
   class Provider
@@ -53,7 +53,7 @@ class Chef
           # Below are incomplete/missing features for this package provider
           requirements.assert(:all_actions) do |a|
             a.assertion { !new_resource.source }
-            a.failure_message(Chef::Exceptions::Package, 'The openbsd package provider does not support the source attribute')
+            a.failure_message(Chef::Exceptions::Package, "The openbsd package provider does not support the source attribute")
           end
           requirements.assert(:all_actions) do |a|
             a.assertion do
@@ -63,7 +63,7 @@ class Chef
                 true
               end
             end
-            a.failure_message(Chef::Exceptions::Package, 'The openbsd package provider does not support providing a version and flavor')
+            a.failure_message(Chef::Exceptions::Package, "The openbsd package provider does not support providing a version and flavor")
           end
         end
 
@@ -122,12 +122,12 @@ class Chef
         end
 
         def version_string(version)
-          ver  = ''
+          ver  = ""
           ver += "-#{version}" if version
         end
 
         def pkg_path
-          ENV['PKG_PATH'] || "http://ftp.OpenBSD.org/pub/#{node.kernel.name}/#{node.kernel.release}/packages/#{node.kernel.machine}/"
+          ENV["PKG_PATH"] || "http://ftp.OpenBSD.org/pub/#{node.kernel.name}/#{node.kernel.release}/packages/#{node.kernel.machine}/"
         end
 
       end
