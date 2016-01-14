@@ -369,8 +369,7 @@ describe Chef::Client do
       expect(node.chef_environment).to eq("_default")
       Chef::Config[:environment] = "A"
 
-      test_env = Chef::Environment.new
-      test_env.name("A")
+      test_env = {"name" => "A"}
 
       mock_chef_rest = double("Chef::ServerAPI")
       expect(mock_chef_rest).to receive(:get).with("environments/A").and_return(test_env)
