@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/user_key_edit'
-require 'chef/knife/client_key_edit'
-require 'chef/knife/key_edit'
-require 'chef/key'
+require "spec_helper"
+require "chef/knife/user_key_edit"
+require "chef/knife/client_key_edit"
+require "chef/knife/key_edit"
+require "chef/key"
 
 describe "key edit commands that inherit knife" do
   shared_examples_for "a key edit command" do

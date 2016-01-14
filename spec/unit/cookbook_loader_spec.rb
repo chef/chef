@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::CookbookLoader do
   before do
@@ -223,7 +223,7 @@ describe Chef::CookbookLoader do
     end
 
     it "should not load the cookbook again when accessed" do
-      expect(cookbook_loader).not_to receive('load_cookbook')
+      expect(cookbook_loader).not_to receive("load_cookbook")
       cookbook_loader["openldap"]
     end
 

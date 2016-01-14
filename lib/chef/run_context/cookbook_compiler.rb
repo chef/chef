@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'set'
-require 'chef/log'
-require 'chef/recipe'
-require 'chef/resource/lwrp_base'
-require 'chef/provider/lwrp_base'
-require 'chef/resource_definition_list'
+require "set"
+require "chef/log"
+require "chef/recipe"
+require "chef/resource/lwrp_base"
+require "chef/provider/lwrp_base"
+require "chef/resource_definition_list"
 
 class Chef
   class RunContext

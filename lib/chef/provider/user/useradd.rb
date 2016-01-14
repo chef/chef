@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'pathname'
-require 'chef/provider/user'
+require "pathname"
+require "chef/provider/user"
 
 class Chef
   class Provider
@@ -63,7 +63,7 @@ class Chef
 
           raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if passwd_s.stdout.empty?
 
-          status_line = passwd_s.stdout.split(' ')
+          status_line = passwd_s.stdout.split(" ")
           case status_line[1]
           when /^P/
             @locked = false
@@ -75,11 +75,11 @@ class Chef
 
           unless passwd_s.exitstatus == 0
             raise_lock_error = false
-            if ['redhat', 'centos'].include?(node[:platform])
-              passwd_version_check = shell_out!('rpm -q passwd')
+            if ["redhat", "centos"].include?(node[:platform])
+              passwd_version_check = shell_out!("rpm -q passwd")
               passwd_version = passwd_version_check.stdout.chomp
 
-              unless passwd_version == 'passwd-0.73-1'
+              unless passwd_version == "passwd-0.73-1"
                 raise_lock_error = true
               end
             else

@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tempfile'
+require "spec_helper"
+require "tempfile"
 
-require 'chef/api_client/registration'
+require "chef/api_client/registration"
 
 describe Chef::ApiClient::Registration do
 
@@ -63,7 +63,7 @@ describe Chef::ApiClient::Registration do
   let(:response_409) { Net::HTTPConflict.new("1.1", "409", "Conflict") }
   let(:exception_409) { Net::HTTPServerException.new("409 conflict", response_409) }
 
-  let(:generated_private_key_pem) { IO.read(File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)) }
+  let(:generated_private_key_pem) { IO.read(File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)) }
   let(:generated_private_key) { OpenSSL::PKey::RSA.new(generated_private_key_pem) }
   let(:generated_public_key) { generated_private_key.public_key }
 
@@ -88,7 +88,7 @@ describe Chef::ApiClient::Registration do
 
   before do
     Chef::Config[:validation_client_name] = "test-validator"
-    Chef::Config[:validation_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
+    Chef::Config[:validation_key] = File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)
     allow(OpenSSL::PKey::RSA).to receive(:generate).with(2048).and_return(generated_private_key)
   end
 
@@ -196,7 +196,7 @@ describe Chef::ApiClient::Registration do
 
   describe "when writing the private key to disk" do
     before do
-      allow(registration).to receive(:private_key).and_return('--begin rsa key etc--')
+      allow(registration).to receive(:private_key).and_return("--begin rsa key etc--")
     end
 
     # Permission read via File.stat is busted on windows, though creating the
@@ -215,8 +215,8 @@ describe Chef::ApiClient::Registration do
       expect(IO.read(key_location)).to eq("--begin rsa key etc--")
     end
 
-    context 'when the client key location is a symlink' do
-      it 'does not follow the symlink', :unix_only do
+    context "when the client key location is a symlink" do
+      it "does not follow the symlink", :unix_only do
         expected_flags = (File::CREAT|File::TRUNC|File::RDWR)
 
         if defined?(File::NOFOLLOW)
@@ -226,12 +226,12 @@ describe Chef::ApiClient::Registration do
         expect(registration.file_flags).to eq(expected_flags)
       end
 
-      context 'with follow_client_key_symlink set to true' do
+      context "with follow_client_key_symlink set to true" do
         before do
           Chef::Config[:follow_client_key_symlink] = true
         end
 
-        it 'follows the symlink', :unix_only do
+        it "follows the symlink", :unix_only do
           expect(registration.file_flags).to eq(File::CREAT|File::TRUNC|File::RDWR)
         end
       end

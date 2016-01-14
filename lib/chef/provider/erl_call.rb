@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/mixin/command'
-require 'chef/provider'
+require "chef/log"
+require "chef/mixin/command"
+require "chef/provider"
 
 class Chef
   class Provider
@@ -89,7 +89,7 @@ class Chef
             end
 
             # fail if the first 4 characters aren't "{ok,"
-            unless stdout_output[0..3].include?('{ok,')
+            unless stdout_output[0..3].include?("{ok,")
               raise Chef::Exceptions::ErlCall, stdout_output
             end
 

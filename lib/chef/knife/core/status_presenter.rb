@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife/core/text_formatter'
-require 'chef/knife/core/generic_presenter'
+require "chef/knife/core/text_formatter"
+require "chef/knife/core/generic_presenter"
 
 class Chef
   class Knife
@@ -32,18 +32,18 @@ class Chef
         def self.included(includer)
           includer.class_eval do
             option :medium_output,
-              :short   => '-m',
-              :long    => '--medium',
+              :short   => "-m",
+              :long    => "--medium",
               :boolean => true,
               :default => false,
-              :description => 'Include normal attributes in the output'
+              :description => "Include normal attributes in the output"
 
             option :long_output,
-              :short   => '-l',
-              :long    => '--long',
+              :short   => "-l",
+              :long    => "--long",
               :boolean => true,
               :default => false,
-              :description => 'Include all attributes in the output'
+              :description => "Include all attributes in the output"
           end
         end
       end
@@ -93,13 +93,13 @@ class Chef
         # the volume of output is adjusted accordingly. Uses colors if enabled
         # in the ui object.
         def summarize(list)
-          summarized=''
+          summarized=""
           list.each do |data|
             node = data
             # special case ec2 with their split horizon whatsis.
             ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
             fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
-            name = node['name'] || node.name
+            name = node["name"] || node.name
 
             hours, minutes, _ = time_difference_in_hms(node["ohai_time"])
             hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
@@ -117,20 +117,20 @@ class Chef
             end
 
             line_parts = Array.new
-            line_parts << @ui.color(text, color) + ' ago' << name
+            line_parts << @ui.color(text, color) + " ago" << name
             line_parts << fqdn if fqdn
             line_parts << ip if ip
             line_parts << run_list if run_list
 
-            if node['platform']
-              platform = node['platform']
-              if node['platform_version']
+            if node["platform"]
+              platform = node["platform"]
+              if node["platform_version"]
                 platform << " #{node['platform_version']}"
               end
               line_parts << platform
             end
 
-            summarized=summarized + line_parts.join(', ') + ".\n"
+            summarized=summarized + line_parts.join(", ") + ".\n"
           end
           summarized
         end

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -132,7 +132,7 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'kernel32', 'user32'
+        ffi_lib "kernel32", "user32"
 
         class OSVERSIONINFOEX < FFI::Struct
           layout :dw_os_version_info_size, :DWORD,

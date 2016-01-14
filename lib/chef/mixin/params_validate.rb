@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/constants'
-require 'chef/property'
-require 'chef/delayed_evaluator'
+require "chef/constants"
+require "chef/property"
+require "chef/delayed_evaluator"
 
 class Chef
   module Mixin

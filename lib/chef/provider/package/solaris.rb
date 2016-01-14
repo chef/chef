@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
-require 'chef/mixin/get_source_from_package'
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
+require "chef/mixin/get_source_from_package"
 
 class Chef
   class Provider
@@ -28,7 +28,7 @@ class Chef
         include Chef::Mixin::GetSourceFromPackage
 
         provides :package, platform: "nexentacore"
-        provides :package, platform: "solaris2", platform_version: '< 5.11'
+        provides :package, platform: "solaris2", platform_version: "< 5.11"
         provides :solaris_package, os: "solaris2"
 
         # def initialize(*args)

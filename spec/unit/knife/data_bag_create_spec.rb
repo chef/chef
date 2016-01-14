@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tempfile'
+require "spec_helper"
+require "tempfile"
 
 describe Chef::Knife::DataBagCreate do
   let(:knife) do
@@ -47,7 +47,7 @@ describe Chef::Knife::DataBagCreate do
   end
 
   it "tries to create a data bag with an invalid name when given one argument" do
-    knife.name_args = ['invalid&char']
+    knife.name_args = ["invalid&char"]
     expect(Chef::DataBag).to receive(:validate_name!).with(knife.name_args[0]).and_raise(Chef::Exceptions::InvalidDataBagName)
     expect {knife.run}.to exit_with_code(1)
   end
@@ -75,7 +75,7 @@ describe Chef::Knife::DataBagCreate do
     it "creates a data bag item" do
       expect(knife).to receive(:create_object).and_yield(raw_hash)
       expect(knife).to receive(:encryption_secret_provided?).and_return(false)
-      expect(rest).to receive(:post).with("data", {'name' => bag_name}).ordered
+      expect(rest).to receive(:post).with("data", {"name" => bag_name}).ordered
       expect(rest).to receive(:post).with("data/#{bag_name}", item).ordered
 
       knife.run

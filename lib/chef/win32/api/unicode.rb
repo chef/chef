@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -92,7 +92,7 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'kernel32', 'advapi32'
+        ffi_lib "kernel32", "advapi32"
 
 =begin
 BOOL IsTextUnicode(

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::CookbookVersion, "file specificity" do
   before(:each) do
@@ -444,7 +444,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.host', 'anotherfile2.rb.host'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.host", "anotherfile2.rb.host"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version" do
@@ -457,7 +457,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-full-version", "anotherfile2.rb.platform-full-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & partial version" do
@@ -470,7 +470,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-partial-version", "anotherfile2.rb.platform-partial-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform only" do
@@ -483,7 +483,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform', 'anotherfile2.rb.platform'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform", "anotherfile2.rb.platform"])
     end
 
     it "should return a list of relative paths based on priority preference: default" do
@@ -496,7 +496,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.default', 'anotherfile2.rb.default'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.default", "anotherfile2.rb.default"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 1" do
@@ -509,7 +509,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-full-version", "anotherfile2.rb.platform-full-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & partial version - platform_version variant 1" do
@@ -522,7 +522,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-partial-version", "anotherfile2.rb.platform-partial-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 2" do
@@ -535,7 +535,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-full-version", "anotherfile2.rb.platform-full-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 3" do
@@ -548,7 +548,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-full-version", "anotherfile2.rb.platform-full-version"])
     end
   end
 end

@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/node'
-require 'chef/server_api'
-require 'chef/api_client/registration'
-require 'chef/api_client'
-require 'chef/knife/bootstrap'
-require 'tmpdir'
+require "chef/node"
+require "chef/server_api"
+require "chef/api_client/registration"
+require "chef/api_client"
+require "chef/knife/bootstrap"
+require "tmpdir"
 
 class Chef
   class Knife

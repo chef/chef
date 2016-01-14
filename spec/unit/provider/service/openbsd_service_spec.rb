@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class Chef::Provider::Service::Openbsd
   public :builtin_service_enable_variable_name
@@ -52,8 +52,8 @@ describe Chef::Provider::Service::Openbsd do
   let(:provider) do
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, events)
-    allow(::File).to receive(:read).with('/etc/rc.conf').and_return('')
-    allow(::File).to receive(:read).with('/etc/rc.conf.local').and_return('')
+    allow(::File).to receive(:read).with("/etc/rc.conf").and_return("")
+    allow(::File).to receive(:read).with("/etc/rc.conf.local").and_return("")
     provider = Chef::Provider::Service::Openbsd.new(new_resource,run_context)
     provider.action = :start
     provider
@@ -80,7 +80,7 @@ describe Chef::Provider::Service::Openbsd do
     end
 
     it "should set init_command to nil if it can't find anything" do
-      expect(::File).to receive(:exist?).with('/etc/rc.d/sndiod').and_return(false)
+      expect(::File).to receive(:exist?).with("/etc/rc.d/sndiod").and_return(false)
       expect(provider.init_command).to be nil
     end
   end
@@ -381,7 +381,7 @@ describe Chef::Provider::Service::Openbsd do
   describe Chef::Provider::Service::Openbsd, "enable_service" do
     before do
       provider.current_resource = current_resource
-      allow(FileUtils).to receive(:touch).with('/etc/rc.conf.local')
+      allow(FileUtils).to receive(:touch).with("/etc/rc.conf.local")
     end
     context "is builtin and disabled by default" do
       before do
@@ -398,10 +398,10 @@ describe Chef::Provider::Service::Openbsd do
       end
       context "is disabled" do
         before do
-          provider.rc_conf_local = ''
+          provider.rc_conf_local = ""
         end
         it "should enable the service by adding a line to rc.conf.local" do
-          expect(::File).to receive(:write).with('/etc/rc.conf.local', include("#{provider.builtin_service_enable_variable_name}=\"\""))
+          expect(::File).to receive(:write).with("/etc/rc.conf.local", include("#{provider.builtin_service_enable_variable_name}=\"\""))
           expect(provider.is_enabled?).to be false
           provider.enable_service
           expect(provider.is_enabled?).to be true
@@ -414,7 +414,7 @@ describe Chef::Provider::Service::Openbsd do
       end
       context "is enabled" do
         before do
-          provider.rc_conf_local = ''
+          provider.rc_conf_local = ""
         end
         it "should not change rc.conf.local since it is already enabled" do
           expect(::File).not_to receive(:write)
@@ -426,7 +426,7 @@ describe Chef::Provider::Service::Openbsd do
           provider.rc_conf_local = "#{provider.builtin_service_enable_variable_name}=NO"
         end
         it "should enable the service by removing a line from rc.conf.local" do
-          expect(::File).to receive(:write).with('/etc/rc.conf.local', /^(?!#{provider.builtin_service_enable_variable_name})$/)
+          expect(::File).to receive(:write).with("/etc/rc.conf.local", /^(?!#{provider.builtin_service_enable_variable_name})$/)
           expect(provider.is_enabled?).to be false
           provider.enable_service
           expect(provider.is_enabled?).to be true
@@ -435,7 +435,7 @@ describe Chef::Provider::Service::Openbsd do
     end
     context "is not builtin" do
       before do
-        provider.rc_conf = ''
+        provider.rc_conf = ""
       end
       context "is enabled" do
         before do
@@ -448,10 +448,10 @@ describe Chef::Provider::Service::Openbsd do
       end
       context "is disabled" do
         before do
-          provider.rc_conf_local = ''
+          provider.rc_conf_local = ""
         end
         it "should enable the service by adding it to the pkg_scripts list" do
-          expect(::File).to receive(:write).with('/etc/rc.conf.local', "\npkg_scripts=\"#{new_resource.service_name}\"\n")
+          expect(::File).to receive(:write).with("/etc/rc.conf.local", "\npkg_scripts=\"#{new_resource.service_name}\"\n")
           expect(provider.is_enabled?).to be false
           provider.enable_service
           expect(provider.is_enabled?).to be true
@@ -463,7 +463,7 @@ describe Chef::Provider::Service::Openbsd do
   describe Chef::Provider::Service::Openbsd, "disable_service" do
     before do
       provider.current_resource = current_resource
-      allow(FileUtils).to receive(:touch).with('/etc/rc.conf.local')
+      allow(FileUtils).to receive(:touch).with("/etc/rc.conf.local")
     end
     context "is builtin and disabled by default" do
       before do
@@ -474,7 +474,7 @@ describe Chef::Provider::Service::Openbsd do
           provider.rc_conf_local = "#{provider.builtin_service_enable_variable_name}=\"\""
         end
         it "should disable the service by removing its line from rc.conf.local" do
-          expect(::File).to receive(:write).with('/etc/rc.conf.local', /^(?!#{provider.builtin_service_enable_variable_name})$/)
+          expect(::File).to receive(:write).with("/etc/rc.conf.local", /^(?!#{provider.builtin_service_enable_variable_name})$/)
           expect(provider.is_enabled?).to be true
           provider.disable_service
           expect(provider.is_enabled?).to be false
@@ -482,7 +482,7 @@ describe Chef::Provider::Service::Openbsd do
       end
       context "is disabled" do
         before do
-          provider.rc_conf_local = ''
+          provider.rc_conf_local = ""
         end
         it "should not change rc.conf.local since it is already disabled" do
           expect(::File).not_to receive(:write)
@@ -496,10 +496,10 @@ describe Chef::Provider::Service::Openbsd do
       end
       context "is enabled" do
         before do
-          provider.rc_conf_local = ''
+          provider.rc_conf_local = ""
         end
         it "should disable the service by adding a line to rc.conf.local" do
-          expect(::File).to receive(:write).with('/etc/rc.conf.local', include("#{provider.builtin_service_enable_variable_name}=\"NO\""))
+          expect(::File).to receive(:write).with("/etc/rc.conf.local", include("#{provider.builtin_service_enable_variable_name}=\"NO\""))
           expect(provider.is_enabled?).to be true
           provider.disable_service
           expect(provider.is_enabled?).to be false
@@ -517,14 +517,14 @@ describe Chef::Provider::Service::Openbsd do
     end
     context "is not builtin" do
       before do
-        provider.rc_conf = ''
+        provider.rc_conf = ""
       end
       context "is enabled" do
         before do
           provider.rc_conf_local = "pkg_scripts=\"#{new_resource.service_name}\"\n"
         end
         it "should disable the service by removing it from the pkg_scripts list" do
-          expect(::File).to receive(:write).with('/etc/rc.conf.local', /^(?!#{new_resource.service_name})$/)
+          expect(::File).to receive(:write).with("/etc/rc.conf.local", /^(?!#{new_resource.service_name})$/)
           expect(provider.is_enabled?).to be true
           provider.disable_service
           expect(provider.is_enabled?).to be false
@@ -532,7 +532,7 @@ describe Chef::Provider::Service::Openbsd do
       end
       context "is disabled" do
         before do
-          provider.rc_conf_local = ''
+          provider.rc_conf_local = ""
         end
         it "should not change rc.conf.local since it is already disabled" do
           expect(::File).not_to receive(:write)

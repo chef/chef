@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-require 'stringio'
+require "stringio"
 
 describe Chef::Knife::SslCheck do
 

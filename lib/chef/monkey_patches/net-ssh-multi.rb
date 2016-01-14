@@ -34,11 +34,11 @@
 #
 # See: https://github.com/net-ssh/net-ssh-multi/pull/4
 
-require 'net/ssh/multi/version'
+require "net/ssh/multi/version"
 
 if Net::SSH::Multi::Version::STRING == "1.1.0" || Net::SSH::Multi::Version::STRING == "1.2.0"
 
-  require 'net/ssh/multi'
+  require "net/ssh/multi"
 
   module Net
     module SSH

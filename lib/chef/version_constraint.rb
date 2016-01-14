@@ -14,7 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require 'chef/version_class'
+require "chef/version_class"
 
 class Chef
   class VersionConstraint
@@ -67,9 +67,9 @@ class Chef
     def do_op(other_version)
       if STANDARD_OPS.include? @op
         other_version.send(@op.to_sym, @version)
-      elsif @op == '='
+      elsif @op == "="
         other_version == @version
-      elsif @op == '~>'
+      elsif @op == "~>"
         if @missing_patch_level
           (other_version.major == @version.major &&
            other_version.minor >= @version.minor)
@@ -106,7 +106,7 @@ class Chef
         @op = $1
         @raw_version = $2
         @version = self.class::VERSION_CLASS.new(@raw_version)
-        if @raw_version.split('.').size <= 2
+        if @raw_version.split(".").size <= 2
           @missing_patch_level = true
         end
       else

@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/data_bag_secret_options'
-require 'erubis'
-require 'chef/knife/bootstrap/chef_vault_handler'
-require 'chef/knife/bootstrap/client_builder'
-require 'chef/util/path_helper'
+require "chef/knife"
+require "chef/knife/data_bag_secret_options"
+require "erubis"
+require "chef/knife/bootstrap/chef_vault_handler"
+require "chef/knife/bootstrap/client_builder"
+require "chef/util/path_helper"
 
 class Chef
   class Knife
@@ -32,13 +32,13 @@ class Chef
       attr_accessor :chef_vault_handler
 
       deps do
-        require 'chef/knife/core/bootstrap_context'
-        require 'chef/json_compat'
-        require 'tempfile'
-        require 'highline'
-        require 'net/ssh'
-        require 'net/ssh/multi'
-        require 'chef/knife/ssh'
+        require "chef/knife/core/bootstrap_context"
+        require "chef/json_compat"
+        require "tempfile"
+        require "highline"
+        require "net/ssh"
+        require "net/ssh/multi"
+        require "chef/knife/ssh"
         Chef::Knife::Ssh.load_deps
       end
 
@@ -232,15 +232,15 @@ class Chef
         :boolean     => true
 
       option :bootstrap_vault_file,
-        :long        => '--bootstrap-vault-file VAULT_FILE',
-        :description => 'A JSON file with a list of vault(s) and item(s) to be updated'
+        :long        => "--bootstrap-vault-file VAULT_FILE",
+        :description => "A JSON file with a list of vault(s) and item(s) to be updated"
 
       option :bootstrap_vault_json,
-        :long        => '--bootstrap-vault-json VAULT_JSON',
-        :description => 'A JSON string with the vault(s) and item(s) to be updated'
+        :long        => "--bootstrap-vault-json VAULT_JSON",
+        :description => "A JSON string with the vault(s) and item(s) to be updated"
 
       option :bootstrap_vault_item,
-        :long        => '--bootstrap-vault-item VAULT_ITEM',
+        :long        => "--bootstrap-vault-item VAULT_ITEM",
         :description => 'A single vault and item to update as "vault:item"',
         :proc        => Proc.new { |i|
           (vault, item) = i.split(/:/)
@@ -282,13 +282,13 @@ class Chef
       # @return [String] The DNS or IP that bootstrap will connect to
       def server_name
         if host_descriptor
-          @server_name ||= host_descriptor.split('@').reverse[0]
+          @server_name ||= host_descriptor.split("@").reverse[0]
         end
       end
 
       def user_name
         if host_descriptor
-          @user_name ||= host_descriptor.split('@').reverse[1]
+          @user_name ||= host_descriptor.split("@").reverse[1]
         end
       end
 
@@ -310,9 +310,9 @@ class Chef
 
         # Otherwise search the template directories until we find the right one
         bootstrap_files = []
-        bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap/templates', "#{template}.erb")
+        bootstrap_files << File.join(File.dirname(__FILE__), "bootstrap/templates", "#{template}.erb")
         bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
-        Chef::Util::PathHelper.home('.chef', 'bootstrap', "#{template}.erb") {|p| bootstrap_files << p}
+        Chef::Util::PathHelper.home(".chef", "bootstrap", "#{template}.erb") {|p| bootstrap_files << p}
         bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{template}.erb"))
         bootstrap_files.flatten!
 

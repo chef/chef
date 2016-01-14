@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Cookbook::Chefignore do
   before do
-    @chefignore = Chef::Cookbook::Chefignore.new(File.join(CHEF_SPEC_DATA, 'cookbooks'))
+    @chefignore = Chef::Cookbook::Chefignore.new(File.join(CHEF_SPEC_DATA, "cookbooks"))
   end
 
   it "loads the globs in the chefignore file" do
@@ -32,14 +32,14 @@ describe Chef::Cookbook::Chefignore do
   end
 
   it "determines if a file is ignored" do
-    expect(@chefignore.ignored?('ignored')).to be_truthy
-    expect(@chefignore.ignored?('recipes/ignoreme.rb')).to be_truthy
-    expect(@chefignore.ignored?('recipes/dontignoreme.rb')).to be_falsey
+    expect(@chefignore.ignored?("ignored")).to be_truthy
+    expect(@chefignore.ignored?("recipes/ignoreme.rb")).to be_truthy
+    expect(@chefignore.ignored?("recipes/dontignoreme.rb")).to be_falsey
   end
 
   context "when using the single cookbook pattern" do
     before do
-      @chefignore = Chef::Cookbook::Chefignore.new(File.join(CHEF_SPEC_DATA, 'standalone_cookbook'))
+      @chefignore = Chef::Cookbook::Chefignore.new(File.join(CHEF_SPEC_DATA, "standalone_cookbook"))
     end
 
     it "loads the globs in the chefignore file" do

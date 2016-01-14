@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
+require "chef/mixin/shell_out"
 
 class Chef
   class Provider
@@ -101,13 +101,13 @@ class Chef
           def unattended_flags
             case installer_type
             when :installshield
-              '/s /sms'
+              "/s /sms"
             when :nsis
-              '/S /NCRC'
+              "/S /NCRC"
             when :inno
-              '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART'
+              "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART"
             when :wise
-              '/s'
+              "/s"
             end
           end
         end

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/util/path_helper'
+require "chef/util/path_helper"
 
 class Chef
   module Deprecation
@@ -59,7 +59,7 @@ class Chef
                           @current_resource.path
                         else
                           suppress_resource_reporting = true  # suppress big diffs going to resource reporting service
-                          tempfile = Tempfile.new('chef-tempfile')
+                          tempfile = Tempfile.new("chef-tempfile")
                           tempfile.path
                         end
 

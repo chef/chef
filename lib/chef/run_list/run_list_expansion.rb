@@ -16,13 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/mash'
+require "chef/mash"
 
-require 'chef/mixin/deep_merge'
+require "chef/mixin/deep_merge"
 
-require 'chef/role'
-require 'chef/server_api'
-require 'chef/json_compat'
+require "chef/role"
+require "chef/server_api"
+require "chef/json_compat"
 
 class Chef
   class RunList
@@ -149,7 +149,7 @@ class Chef
 
       def to_hash
         seen_items = {:recipe => {}, :role => {}}
-        {:id => @environment, :run_list => convert_run_list_trace('top level', seen_items)}
+        {:id => @environment, :run_list => convert_run_list_trace("top level", seen_items)}
       end
 
       private
@@ -186,7 +186,7 @@ class Chef
           seen_items[item.type][item.name] = true
           case item.type
             when :recipe
-                {:type => 'recipe', :name => item.name, :version => item.version, :skipped => !!skipped}
+                {:type => "recipe", :name => item.name, :version => item.version, :skipped => !!skipped}
             when :role
               error = @role_errors[item.name]
               missing = @all_missing_roles[item.name]

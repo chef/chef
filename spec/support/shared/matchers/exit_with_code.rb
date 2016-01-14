@@ -1,4 +1,4 @@
-require 'rspec/expectations'
+require "rspec/expectations"
 
 # Lifted from http://stackoverflow.com/questions/1480537/how-can-i-validate-exits-and-aborts-in-rspec
 RSpec::Matchers.define :exit_with_code do |exp_code|

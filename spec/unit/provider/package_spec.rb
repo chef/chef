@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Package do
   let(:node) do
@@ -27,8 +27,8 @@ describe Chef::Provider::Package do
   end
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:new_resource) { Chef::Resource::Package.new('emacs') }
-  let(:current_resource) { Chef::Resource::Package.new('emacs') }
+  let(:new_resource) { Chef::Resource::Package.new("emacs") }
+  let(:current_resource) { Chef::Resource::Package.new("emacs") }
   let(:candidate_version) { "1.0" }
   let(:provider) do
     provider = Chef::Provider::Package.new(new_resource, run_context)
@@ -44,8 +44,8 @@ describe Chef::Provider::Package do
     end
 
     it "raises a Chef::Exceptions::InvalidResourceSpecification if both multipackage and source are provided" do
-      new_resource.package_name(['a', 'b'])
-      new_resource.source('foo')
+      new_resource.package_name(["a", "b"])
+      new_resource.source("foo")
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
     end
 
@@ -187,12 +187,12 @@ describe Chef::Provider::Package do
   describe "When removing the package" do
     before(:each) do
       allow(provider).to receive(:remove_package).and_return(true)
-      current_resource.version '1.4.2'
+      current_resource.version "1.4.2"
     end
 
     it "should remove the package if it is installed" do
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with('emacs', nil)
+      expect(provider).to receive(:remove_package).with("emacs", nil)
       provider.run_action(:remove)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
@@ -201,7 +201,7 @@ describe Chef::Provider::Package do
     it "should remove the package at a specific version if it is installed at that version" do
       new_resource.version "1.4.2"
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with('emacs', '1.4.2')
+      expect(provider).to receive(:remove_package).with("emacs", "1.4.2")
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -231,12 +231,12 @@ describe Chef::Provider::Package do
   describe "When purging the package" do
     before(:each) do
       allow(provider).to receive(:purge_package).and_return(true)
-      current_resource.version '1.4.2'
+      current_resource.version "1.4.2"
     end
 
     it "should purge the package if it is installed" do
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with('emacs', nil)
+      expect(provider).to receive(:purge_package).with("emacs", nil)
       provider.run_action(:purge)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
@@ -245,7 +245,7 @@ describe Chef::Provider::Package do
     it "should purge the package at a specific version if it is installed at that version" do
       new_resource.version "1.4.2"
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with('emacs', '1.4.2')
+      expect(provider).to receive(:purge_package).with("emacs", "1.4.2")
       provider.run_action(:purge)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -280,9 +280,9 @@ describe Chef::Provider::Package do
     end
 
     it "should info log, reconfigure the package and update the resource" do
-      allow(current_resource).to receive(:version).and_return('1.0')
+      allow(current_resource).to receive(:version).and_return("1.0")
       allow(new_resource).to receive(:response_file).and_return(true)
-      expect(provider).to receive(:get_preseed_file).and_return('/var/cache/preseed-test')
+      expect(provider).to receive(:get_preseed_file).and_return("/var/cache/preseed-test")
       allow(provider).to receive(:preseed_package).and_return(true)
       allow(provider).to receive(:reconfig_package).and_return(true)
       expect(Chef::Log).to receive(:info).with("package[emacs] reconfigured")
@@ -301,7 +301,7 @@ describe Chef::Provider::Package do
     end
 
     it "should debug log and not reconfigure the package if no response_file is given" do
-      allow(current_resource).to receive(:version).and_return('1.0')
+      allow(current_resource).to receive(:version).and_return("1.0")
       allow(new_resource).to receive(:response_file).and_return(nil)
       expect(Chef::Log).to receive(:debug).with("package[emacs] no response_file provided - nothing to do")
       expect(provider).not_to receive(:reconfig_package)
@@ -310,7 +310,7 @@ describe Chef::Provider::Package do
     end
 
     it "should debug log and not reconfigure the package if the response_file has not changed" do
-      allow(current_resource).to receive(:version).and_return('1.0')
+      allow(current_resource).to receive(:version).and_return("1.0")
       allow(new_resource).to receive(:response_file).and_return(true)
       expect(provider).to receive(:get_preseed_file).and_return(false)
       allow(provider).to receive(:preseed_package).and_return(false)
@@ -323,19 +323,19 @@ describe Chef::Provider::Package do
 
   describe "when running commands to be implemented by subclasses" do
     it "should raises UnsupportedAction for install" do
-      expect { provider.install_package('emacs', '1.4.2') }.to raise_error(Chef::Exceptions::UnsupportedAction)
+      expect { provider.install_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
 
     it "should raises UnsupportedAction for upgrade" do
-      expect { provider.upgrade_package('emacs', '1.4.2') }.to raise_error(Chef::Exceptions::UnsupportedAction)
+      expect { provider.upgrade_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
 
     it "should raises UnsupportedAction for remove" do
-      expect { provider.remove_package('emacs', '1.4.2') }.to raise_error(Chef::Exceptions::UnsupportedAction)
+      expect { provider.remove_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
 
     it "should raises UnsupportedAction for purge" do
-      expect { provider.purge_package('emacs', '1.4.2') }.to raise_error(Chef::Exceptions::UnsupportedAction)
+      expect { provider.purge_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
 
     it "should raise UnsupportedAction for preseed_package" do
@@ -344,7 +344,7 @@ describe Chef::Provider::Package do
     end
 
     it "should raise UnsupportedAction for reconfig" do
-      expect { provider.reconfig_package('emacs', '1.4.2') }.to raise_error(Chef::Exceptions::UnsupportedAction)
+      expect { provider.reconfig_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
   end
 
@@ -360,52 +360,52 @@ describe Chef::Provider::Package do
     end
     let(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
     let(:new_resource) do
-      new_resource = Chef::Resource::Package.new('emacs')
-      new_resource.response_file('java.response')
-      new_resource.cookbook_name = 'java'
+      new_resource = Chef::Resource::Package.new("emacs")
+      new_resource.response_file("java.response")
+      new_resource.cookbook_name = "java"
       new_resource
     end
 
     describe "creating the cookbook file resource to fetch the response file" do
       before do
-        expect(Chef::FileCache).to receive(:create_cache_path).with('preseed/java').and_return("/tmp/preseed/java")
+        expect(Chef::FileCache).to receive(:create_cache_path).with("preseed/java").and_return("/tmp/preseed/java")
       end
 
       it "sets the preseed resource's runcontext to its own run context" do
         allow(Chef::FileCache).to receive(:create_cache_path).and_return("/tmp/preseed/java")
-        expect(provider.preseed_resource('java', '6').run_context).not_to be_nil
-        expect(provider.preseed_resource('java', '6').run_context).to equal(provider.run_context)
+        expect(provider.preseed_resource("java", "6").run_context).not_to be_nil
+        expect(provider.preseed_resource("java", "6").run_context).to equal(provider.run_context)
       end
 
       it "should set the cookbook name of the remote file to the new resources cookbook name" do
-        expect(provider.preseed_resource('java', '6').cookbook_name).to eq('java')
+        expect(provider.preseed_resource("java", "6").cookbook_name).to eq("java")
       end
 
       it "should set remote files source to the new resources response file" do
-        expect(provider.preseed_resource('java', '6').source).to eq('java.response')
+        expect(provider.preseed_resource("java", "6").source).to eq("java.response")
       end
 
       it "should never back up the cached response file" do
-        expect(provider.preseed_resource('java', '6').backup).to be_falsey
+        expect(provider.preseed_resource("java", "6").backup).to be_falsey
       end
 
       it "sets the install path of the resource to $file_cache/$cookbook/$pkg_name-$pkg_version.seed" do
-        expect(provider.preseed_resource('java', '6').path).to eq('/tmp/preseed/java/java-6.seed')
+        expect(provider.preseed_resource("java", "6").path).to eq("/tmp/preseed/java/java-6.seed")
       end
     end
 
     describe "when installing the preseed file to the cache location" do
-      let(:response_file_destination) { Dir.tmpdir + '/preseed--java--java-6.seed' }
+      let(:response_file_destination) { Dir.tmpdir + "/preseed--java--java-6.seed" }
       let(:response_file_resource) {
         response_file_resource = Chef::Resource::CookbookFile.new(response_file_destination, run_context)
-        response_file_resource.cookbook_name = 'java'
+        response_file_resource.cookbook_name = "java"
         response_file_resource.backup(false)
-        response_file_resource.source('java.response')
+        response_file_resource.source("java.response")
         response_file_resource
       }
 
       before do
-        expect(provider).to receive(:preseed_resource).with('java', '6').and_return(response_file_resource)
+        expect(provider).to receive(:preseed_resource).with("java", "6").and_return(response_file_resource)
       end
 
       after do
@@ -547,7 +547,7 @@ describe "Subclass with use_multipackage_api" do
     current_resource.package_name "vim"
     current_resource.version [ "1.0" ]
     allow(new_resource).to receive(:response_file).and_return(true)
-    expect(provider).to receive(:get_preseed_file).and_return('/var/cache/preseed-test')
+    expect(provider).to receive(:get_preseed_file).and_return("/var/cache/preseed-test")
     allow(provider).to receive(:preseed_package).and_return(true)
     allow(provider).to receive(:reconfig_package).and_return(true)
     expect(provider).to receive(:reconfig_package).with(
@@ -563,8 +563,8 @@ describe "Chef::Provider::Package - Multi" do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:new_resource) { Chef::Resource::Package.new(['emacs', 'vi']) }
-  let(:current_resource) { Chef::Resource::Package.new(['emacs', 'vi']) }
+  let(:new_resource) { Chef::Resource::Package.new(["emacs", "vi"]) }
+  let(:current_resource) { Chef::Resource::Package.new(["emacs", "vi"]) }
   let(:candidate_version) { [ "1.0", "6.2" ] }
   let(:provider) do
     provider = Chef::Provider::Package.new(new_resource, run_context)
@@ -590,30 +590,30 @@ describe "Chef::Provider::Package - Multi" do
 
     it "installs the candidate versions when some are installed" do
       expect(provider).to receive(:install_package).with(
-        [ 'vi' ],
-        [ '6.2' ],
+        [ "vi" ],
+        [ "6.2" ],
       ).and_return(true)
-      current_resource.version(['1.0', nil])
+      current_resource.version(["1.0", nil])
       provider.run_action(:install)
       expect(new_resource).to be_updated
     end
 
     it "installs the specified version when some are out of date" do
-      current_resource.version(['1.0', '6.2'])
-      new_resource.version(['1.0', '6.1'])
+      current_resource.version(["1.0", "6.2"])
+      new_resource.version(["1.0", "6.1"])
       provider.run_action(:install)
       expect(new_resource).to be_updated
     end
 
     it "does not install any version if all are installed at the right version" do
-      current_resource.version(['1.0', '6.2'])
-      new_resource.version(['1.0', '6.2'])
+      current_resource.version(["1.0", "6.2"])
+      new_resource.version(["1.0", "6.2"])
       provider.run_action(:install)
       expect(new_resource).not_to be_updated_by_last_action
     end
 
     it "does not install any version if all are installed, and no version was specified" do
-      current_resource.version(['1.0', '6.2'])
+      current_resource.version(["1.0", "6.2"])
       provider.run_action(:install)
       expect(new_resource).not_to be_updated_by_last_action
     end
@@ -625,42 +625,42 @@ describe "Chef::Provider::Package - Multi" do
     end
 
     it "raises an exception if one is not installed and no candidates are available" do
-      current_resource.version(['1.0', nil])
-      provider.candidate_version = ['1.0', nil]
+      current_resource.version(["1.0", nil])
+      provider.candidate_version = ["1.0", nil]
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "does not raise an exception if the packages are installed or have a candidate" do
-      current_resource.version(['1.0', nil])
-      provider.candidate_version = [nil, '6.2']
+      current_resource.version(["1.0", nil])
+      provider.candidate_version = [nil, "6.2"]
       expect { provider.run_action(:install) }.not_to raise_error
     end
 
     it "raises an exception if an explicit version is asked for, an old version is installed, but no candidate" do
-      new_resource.version ['1.0', '6.2']
-      current_resource.version(['1.0', '6.1'])
-      provider.candidate_version = ['1.0', nil]
+      new_resource.version ["1.0", "6.2"]
+      current_resource.version(["1.0", "6.1"])
+      provider.candidate_version = ["1.0", nil]
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "does not raise an exception if an explicit version is asked for, and is installed, but no candidate" do
-      new_resource.version ['1.0', '6.2']
-      current_resource.version(['1.0', '6.2'])
-      provider.candidate_version = ['1.0', nil]
+      new_resource.version ["1.0", "6.2"]
+      current_resource.version(["1.0", "6.2"])
+      provider.candidate_version = ["1.0", nil]
       expect { provider.run_action(:install) }.not_to raise_error
     end
 
     it "raise an exception if an explicit version is asked for, and is not installed, and no candidate" do
-      new_resource.version ['1.0', '6.2']
-      current_resource.version(['1.0', nil])
-      provider.candidate_version = ['1.0', nil]
+      new_resource.version ["1.0", "6.2"]
+      current_resource.version(["1.0", nil])
+      provider.candidate_version = ["1.0", nil]
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "does not raise an exception if an explicit version is asked for, and is not installed, and there is a candidate" do
-      new_resource.version ['1.0', '6.2']
-      current_resource.version(['1.0', nil])
-      provider.candidate_version = ['1.0', '6.2']
+      new_resource.version ["1.0", "6.2"]
+      current_resource.version(["1.0", nil])
+      provider.candidate_version = ["1.0", "6.2"]
       expect { provider.run_action(:install) }.not_to raise_error
     end
   end
@@ -672,7 +672,7 @@ describe "Chef::Provider::Package - Multi" do
     end
 
     it "should upgrade the package if the current versions are not the candidate version" do
-      current_resource.version ['0.9', '6.1']
+      current_resource.version ["0.9", "6.1"]
       expect(provider).to receive(:upgrade_package).with(
         new_resource.package_name,
         provider.candidate_version,
@@ -682,7 +682,7 @@ describe "Chef::Provider::Package - Multi" do
     end
 
     it "should upgrade the package if some of current versions are not the candidate versions" do
-      current_resource.version ['1.0', '6.1']
+      current_resource.version ["1.0", "6.1"]
       expect(provider).to receive(:upgrade_package).with(
         ["vi"],
         ["6.2"],
@@ -692,7 +692,7 @@ describe "Chef::Provider::Package - Multi" do
     end
 
     it "should not install the package if the current versions are the candidate version" do
-      current_resource.version ['1.0', '6.2']
+      current_resource.version ["1.0", "6.2"]
       expect(provider).not_to receive(:upgrade_package)
       provider.run_action(:upgrade)
       expect(new_resource).not_to be_updated_by_last_action
@@ -705,20 +705,20 @@ describe "Chef::Provider::Package - Multi" do
     end
 
     it "should raise an exception if one is not installed and no candidates are available" do
-      current_resource.version(['1.0', nil])
-      provider.candidate_version = ['1.0', nil]
+      current_resource.version(["1.0", nil])
+      provider.candidate_version = ["1.0", nil]
       expect { provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "should not raise an exception if the packages are installed or have a candidate" do
-      current_resource.version(['1.0', nil])
-      provider.candidate_version = [nil, '6.2']
+      current_resource.version(["1.0", nil])
+      provider.candidate_version = [nil, "6.2"]
       expect { provider.run_action(:upgrade) }.not_to raise_error
     end
 
     it "should not raise an exception if the packages are installed or have a candidate" do
-      current_resource.version(['1.0', nil])
-      provider.candidate_version = [nil, '6.2']
+      current_resource.version(["1.0", nil])
+      provider.candidate_version = [nil, "6.2"]
       expect { provider.run_action(:upgrade) }.not_to raise_error
     end
   end
@@ -726,44 +726,44 @@ describe "Chef::Provider::Package - Multi" do
   describe "When removing multiple packages " do
     before(:each) do
       allow(provider).to receive(:remove_package).and_return(true)
-      current_resource.version ['1.0', '6.2']
+      current_resource.version ["1.0", "6.2"]
     end
 
     it "should remove the packages if all are installed" do
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with(['emacs', 'vi'], nil)
+      expect(provider).to receive(:remove_package).with(["emacs", "vi"], nil)
       provider.run_action(:remove)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should remove the packages if some are installed" do
-      current_resource.version ['1.0', nil]
+      current_resource.version ["1.0", nil]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with(['emacs', 'vi'], nil)
+      expect(provider).to receive(:remove_package).with(["emacs", "vi"], nil)
       provider.run_action(:remove)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should remove the packages at a specific version if they are installed at that version" do
-      new_resource.version ['1.0', '6.2']
+      new_resource.version ["1.0", "6.2"]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with(['emacs', 'vi'], ['1.0', '6.2'])
+      expect(provider).to receive(:remove_package).with(["emacs", "vi"], ["1.0", "6.2"])
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should remove the packages at a specific version any are is installed at that version" do
-      new_resource.version ['0.5', '6.2']
+      new_resource.version ["0.5", "6.2"]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with(['emacs', 'vi'], ['0.5', '6.2'])
+      expect(provider).to receive(:remove_package).with(["emacs", "vi"], ["0.5", "6.2"])
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should not remove the packages at a specific version if they are not installed at that version" do
-      new_resource.version ['0.5', '6.0']
+      new_resource.version ["0.5", "6.0"]
       expect(provider).not_to be_removing_package
       expect(provider).not_to receive(:remove_package)
       provider.run_action(:remove)
@@ -782,44 +782,44 @@ describe "Chef::Provider::Package - Multi" do
   describe "When purging multiple packages " do
     before(:each) do
       allow(provider).to receive(:purge_package).and_return(true)
-      current_resource.version ['1.0', '6.2']
+      current_resource.version ["1.0", "6.2"]
     end
 
     it "should purge the packages if all are installed" do
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with(['emacs', 'vi'], nil)
+      expect(provider).to receive(:purge_package).with(["emacs", "vi"], nil)
       provider.run_action(:purge)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should purge the packages if some are installed" do
-      current_resource.version ['1.0', nil]
+      current_resource.version ["1.0", nil]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with(['emacs', 'vi'], nil)
+      expect(provider).to receive(:purge_package).with(["emacs", "vi"], nil)
       provider.run_action(:purge)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should purge the packages at a specific version if they are installed at that version" do
-      new_resource.version ['1.0', '6.2']
+      new_resource.version ["1.0", "6.2"]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with(['emacs', 'vi'], ['1.0', '6.2'])
+      expect(provider).to receive(:purge_package).with(["emacs", "vi"], ["1.0", "6.2"])
       provider.run_action(:purge)
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should purge the packages at a specific version any are is installed at that version" do
-      new_resource.version ['0.5', '6.2']
+      new_resource.version ["0.5", "6.2"]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with(['emacs', 'vi'], ['0.5', '6.2'])
+      expect(provider).to receive(:purge_package).with(["emacs", "vi"], ["0.5", "6.2"])
       provider.run_action(:purge)
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should not purge the packages at a specific version if they are not installed at that version" do
-      new_resource.version ['0.5', '6.0']
+      new_resource.version ["0.5", "6.0"]
       expect(provider).not_to be_removing_package
       expect(provider).not_to receive(:purge_package)
       provider.run_action(:purge)

@@ -18,10 +18,10 @@
 
 #TODO subversion and git should both extend from a base SCM provider.
 
-require 'chef/log'
-require 'chef/provider'
-require 'chef/mixin/command'
-require 'fileutils'
+require "chef/log"
+require "chef/provider"
+require "chef/mixin/command"
+require "fileutils"
 
 class Chef
   class Provider
@@ -176,7 +176,7 @@ class Chef
           end
           attrs
         end
-        rev = (repo_attrs['Last Changed Rev'] || repo_attrs['Revision'])
+        rev = (repo_attrs["Last Changed Rev"] || repo_attrs["Revision"])
         rev.strip! if rev
         raise "Could not parse `svn info` data: #{svn_info}" if repo_attrs.empty?
         Chef::Log.debug "#{@new_resource} resolved revision #{@new_resource.revision} to #{rev}"
@@ -201,12 +201,12 @@ class Chef
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']
+        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == [".",".."]
       end
 
       def svn_binary
         @new_resource.svn_binary ||
-          (Chef::Platform.windows? ? 'svn.exe' : 'svn')
+          (Chef::Platform.windows? ? "svn.exe" : "svn")
       end
 
       def assert_target_directory_valid!

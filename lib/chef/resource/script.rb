@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource/execute'
-require 'chef/provider/script'
+require "chef/resource/execute"
+require "chef/provider/script"
 
 class Chef
   class Resource

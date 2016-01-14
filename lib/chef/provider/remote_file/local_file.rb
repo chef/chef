@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'tempfile'
-require 'chef/provider/remote_file'
+require "uri"
+require "tempfile"
+require "chef/provider/remote_file"
 
 class Chef
   class Provider

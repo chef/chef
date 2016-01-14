@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/deprecation'
+require "spec_helper"
+require "chef/mixin/deprecation"
 
 describe Chef::Mixin do
   describe "deprecating constants (Class/Module)" do
@@ -46,7 +46,7 @@ describe Chef::Mixin::Deprecation::DeprecatedInstanceVariable do
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
 
-    @deprecated_ivar = Chef::Mixin::Deprecation::DeprecatedInstanceVariable.new('value', 'an_ivar')
+    @deprecated_ivar = Chef::Mixin::Deprecation::DeprecatedInstanceVariable.new("value", "an_ivar")
   end
 
   it "forward method calls to the target object" do

@@ -63,8 +63,8 @@ describe Chef::Mixin::ProxifiedSocket do
     before do
       # I'm purposefully setting both of these because we prefer the https
       # variable
-      ENV['https_proxy'] = https_uri
-      ENV['http_proxy'] = http_uri
+      ENV["https_proxy"] = https_uri
+      ENV["http_proxy"] = http_uri
     end
 
     let(:proxy_uri) { https_uri }
@@ -74,7 +74,7 @@ describe Chef::Mixin::ProxifiedSocket do
       # This is testing that no_proxy is also provided to Proxified
       # when it is set
       before do
-        ENV['no_proxy'] = no_proxy_spec
+        ENV["no_proxy"] = no_proxy_spec
       end
 
       let(:no_proxy_spec) { "somehost1,somehost2" }
@@ -84,7 +84,7 @@ describe Chef::Mixin::ProxifiedSocket do
 
   context "when http_proxy is set" do
     before do
-      ENV['http_proxy'] = http_uri
+      ENV["http_proxy"] = http_uri
     end
 
     let(:proxy_uri) { http_uri }

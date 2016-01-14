@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/powershell_out'
+require "spec_helper"
+require "chef/mixin/powershell_out"
 
 describe Chef::Mixin::PowershellOut do
   let(:shell_out_class) { Class.new { include Chef::Mixin::PowershellOut } }

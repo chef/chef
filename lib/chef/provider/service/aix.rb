@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
+require "chef/provider/service"
 
 class Chef
   class Provider
@@ -98,7 +98,7 @@ class Chef
               @current_resource.running false
             else
               service = shell_out!("lssrc -s #{@new_resource.service_name}").stdout
-              if service.split(' ').last == 'active'
+              if service.split(" ").last == "active"
                 @current_resource.running true
               else
                 @current_resource.running false

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/key'
+require "chef/key"
 
 class Chef
   class Knife

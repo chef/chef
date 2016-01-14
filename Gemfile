@@ -3,7 +3,7 @@ gemspec :name => "chef"
 
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
-gem 'chef-config', path: "chef-config" if File.exists?(__FILE__ + '../chef-config')
+gem "chef-config", path: "chef-config" if File.exists?(__FILE__ + "../chef-config")
 
 group(:docgen) do
   gem "yard"
@@ -25,13 +25,13 @@ end
 group(:development, :test) do
 
   gem "simplecov"
-  gem 'rack', "~> 1.5.1"
+  gem "rack", "~> 1.5.1"
 
   # for testing new chefstyle rules
   # gem 'chefstyle', github: 'chef/chefstyle'
-  gem 'chefstyle', '= 0.1.0'
+  gem "chefstyle", "= 0.1.0"
 
-  gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
+  gem "ruby-shadow", :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 
   # For external tests
 #  gem 'chef-zero', github: 'chef/chef-zero'
@@ -47,8 +47,8 @@ group(:development, :test) do
 #  gem 'chef-rewind'
 end
 
-instance_eval(ENV['GEMFILE_MOD']) if ENV['GEMFILE_MOD']
+instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,
 # add these additional dependencies into chef/Gemfile.local
-eval(IO.read(__FILE__ + '.local'), binding) if File.exists?(__FILE__ + '.local')
+eval(IO.read(__FILE__ + ".local"), binding) if File.exists?(__FILE__ + ".local")

@@ -1,4 +1,4 @@
-require 'chef/formatters/base'
+require "chef/formatters/base"
 
 class Chef
 
@@ -130,7 +130,7 @@ class Chef
 
       # Called after a file in a cookbook is loaded.
       def file_loaded(path)
-        print '.'
+        print "."
       end
 
       def file_load_failed(path, exception)

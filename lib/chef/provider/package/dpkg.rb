@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/resource/package'
+require "chef/provider/package"
+require "chef/resource/package"
 
 class Chef
   class Provider

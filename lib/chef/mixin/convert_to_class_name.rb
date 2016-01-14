@@ -42,7 +42,7 @@ class Chef
 
       def convert_to_snake_case(str, namespace=nil)
         str = str.dup
-        str.sub!(/^#{namespace}(\:\:)?/, '') if namespace
+        str.sub!(/^#{namespace}(\:\:)?/, "") if namespace
         str.gsub!(/[A-Z]/) {|s| "_" + s}
         str.downcase!
         str.sub!(/^\_/, "")
@@ -51,19 +51,19 @@ class Chef
 
       def normalize_snake_case_name(str)
         str = str.dup
-        str.gsub!(/[^A-Za-z0-9_]/,'_')
-        str.gsub!(/^(_+)?/,'')
+        str.gsub!(/[^A-Za-z0-9_]/,"_")
+        str.gsub!(/^(_+)?/,"")
         str
       end
 
       def snake_case_basename(str)
         with_namespace = convert_to_snake_case(str)
-        with_namespace.split("::").last.sub(/^_/, '')
+        with_namespace.split("::").last.sub(/^_/, "")
       end
 
       def filename_to_qualified_string(base, filename)
         file_base = File.basename(filename, ".rb")
-        str = base.to_s + (file_base == 'default' ? '' : "_#{file_base}")
+        str = base.to_s + (file_base == "default" ? "" : "_#{file_base}")
         normalize_snake_case_name(str)
       end
 
@@ -91,7 +91,7 @@ class Chef
       # NameError is raised when the name is not in CamelCase or the constant is
       # unknown.
       def constantize(camel_cased_word)
-        names = camel_cased_word.split('::')
+        names = camel_cased_word.split("::")
 
         # Trigger a built-in NameError exception including the ill-formed constant in the message.
         Object.const_get(camel_cased_word) if names.empty?

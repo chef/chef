@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'etc'
-require 'chef/mixin/homebrew_user'
+require "etc"
+require "chef/mixin/homebrew_user"
 
 class Chef
   class Provider
@@ -46,7 +46,7 @@ class Chef
 
         def install_package(name, version)
           unless current_resource.version == version
-            brew('install', new_resource.options, name)
+            brew("install", new_resource.options, name)
           end
         end
 
@@ -56,19 +56,19 @@ class Chef
           if current_version.nil? or current_version.empty?
             install_package(name, version)
           elsif current_version != version
-            brew('upgrade', new_resource.options, name)
+            brew("upgrade", new_resource.options, name)
           end
         end
 
         def remove_package(name, version)
           if current_resource.version
-            brew('uninstall', new_resource.options, name)
+            brew("uninstall", new_resource.options, name)
           end
         end
 
         # Homebrew doesn't really have a notion of purging, do a "force remove"
         def purge_package(name, version)
-          new_resource.options((new_resource.options || '') << ' --force').strip
+          new_resource.options((new_resource.options || "") << " --force").strip
           remove_package(name, version)
         end
 
@@ -85,7 +85,7 @@ class Chef
         #
         # https://github.com/Homebrew/homebrew/wiki/Querying-Brew
         def brew_info
-          @brew_info ||= Chef::JSONCompat.from_json(brew('info', '--json=v1', new_resource.package_name)).first
+          @brew_info ||= Chef::JSONCompat.from_json(brew("info", "--json=v1", new_resource.package_name)).first
         end
 
         # Some packages (formula) are "keg only" and aren't linked,
@@ -95,14 +95,14 @@ class Chef
         # that brew thinks is linked as the current version.
         #
         def current_installed_version
-          if brew_info['keg_only']
-            if brew_info['installed'].empty?
+          if brew_info["keg_only"]
+            if brew_info["installed"].empty?
               nil
             else
-              brew_info['installed'].last['version']
+              brew_info["installed"].last["version"]
             end
           else
-            brew_info['linked_keg']
+            brew_info["linked_keg"]
           end
         end
 
@@ -116,7 +116,7 @@ class Chef
         #
         # https://github.com/Homebrew/homebrew/wiki/Acceptable-Formulae#stable-versions
         def candidate_version
-          brew_info['versions']['stable']
+          brew_info["versions"]["stable"]
         end
 
         private
@@ -127,7 +127,7 @@ class Chef
 
           Chef::Log.debug "Executing '#{command}' as user '#{homebrew_user.name}'"
           # FIXME: this 1800 second default timeout should be deprecated
-          output = shell_out_with_timeout!(command, :timeout => 1800, :user => homebrew_uid, :environment => { 'HOME' => homebrew_user.dir, 'RUBYOPT' => nil })
+          output = shell_out_with_timeout!(command, :timeout => 1800, :user => homebrew_uid, :environment => { "HOME" => homebrew_user.dir, "RUBYOPT" => nil })
           output.stdout.chomp
         end
 

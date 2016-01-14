@@ -16,19 +16,19 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/config'
+require "chef/knife"
+require "chef/config"
 
 class Chef
   class Knife
     class SslFetch < Chef::Knife
 
       deps do
-        require 'pp'
-        require 'socket'
-        require 'uri'
-        require 'openssl'
-        require 'chef/mixin/proxified_socket'
+        require "pp"
+        require "socket"
+        require "uri"
+        require "openssl"
+        require "chef/mixin/proxified_socket"
         include Chef::Mixin::ProxifiedSocket
       end
 
@@ -104,7 +104,7 @@ class Chef
       # practice.
       # https://tools.ietf.org/html/rfc6125#section-6.4.2
       def normalize_cn(cn)
-        cn.gsub("*", "wildcard").gsub(/[^[:alnum:]\-]/, '_')
+        cn.gsub("*", "wildcard").gsub(/[^[:alnum:]\-]/, "_")
       end
 
       def configuration
@@ -147,7 +147,7 @@ TRUST_TRUST
         ui.error("The service at the given URI (#{uri}) does not accept SSL connections")
 
         if uri.scheme == "http"
-          https_uri = uri.to_s.sub(/^http/, 'https')
+          https_uri = uri.to_s.sub(/^http/, "https")
           ui.error("Perhaps you meant to connect to '#{https_uri}'?")
         end
         exit 1

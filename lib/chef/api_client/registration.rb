@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/server_api'
-require 'chef/exceptions'
+require "chef/config"
+require "chef/server_api"
+require "chef/exceptions"
 
 class Chef
   class ApiClient

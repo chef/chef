@@ -146,6 +146,6 @@ class Chef
   end
 end
 
-require 'chef/exceptions'
-require 'chef/resource'
-require 'chef/log'
+require "chef/exceptions"
+require "chef/resource"
+require "chef/log"

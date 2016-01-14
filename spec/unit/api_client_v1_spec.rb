@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/api_client_v1'
-require 'tempfile'
+require "chef/api_client_v1"
+require "tempfile"
 
 describe Chef::ApiClientV1 do
   before(:each) do
@@ -254,7 +254,7 @@ describe Chef::ApiClientV1 do
       @http_client = double("Chef::ServerAPI mock")
       allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
       expect(@http_client).to receive(:get).with("clients/black").and_return(client)
-      @client = Chef::ApiClientV1.load(client['name'])
+      @client = Chef::ApiClientV1.load(client["name"])
     end
 
     it "should deserialize to a Chef::ApiClientV1 object" do
@@ -290,7 +290,7 @@ describe Chef::ApiClientV1 do
   describe "with correctly configured API credentials" do
     before do
       Chef::Config[:node_name] = "silent-bob"
-      Chef::Config[:client_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
+      Chef::Config[:client_key] = File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)
     end
 
     after do
@@ -326,7 +326,7 @@ describe Chef::ApiClientV1 do
   end
 
   describe "Versioned API Interactions" do
-    let(:response_406) { OpenStruct.new(:code => '406') }
+    let(:response_406) { OpenStruct.new(:code => "406") }
     let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
     let(:payload)  {
       {
@@ -338,8 +338,8 @@ describe Chef::ApiClientV1 do
 
     before do
       @client = Chef::ApiClientV1.new
-      allow(@client).to receive(:chef_rest_v0).and_return(double('chef rest root v0 object'))
-      allow(@client).to receive(:chef_rest_v1).and_return(double('chef rest root v1 object'))
+      allow(@client).to receive(:chef_rest_v0).and_return(double("chef rest root v0 object"))
+      allow(@client).to receive(:chef_rest_v1).and_return(double("chef rest root v1 object"))
       @client.name "some_name"
       @client.validator true
       @client.admin true

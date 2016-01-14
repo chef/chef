@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Template do
 
@@ -44,8 +44,8 @@ describe Chef::Resource::Template do
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, cookbook_collection, events)
     resource = Chef::Resource::Template.new(path, run_context)
-    resource.source('openldap_stuff.conf.erb')
-    resource.cookbook('openldap')
+    resource.source("openldap_stuff.conf.erb")
+    resource.cookbook("openldap")
 
     # NOTE: partials rely on `cookbook_name` getting set by chef internals and
     # ignore the user-set `cookbook` attribute.
@@ -66,14 +66,14 @@ describe Chef::Resource::Template do
 
   context "when the target file does not exist" do
     it "creates the template with the rendered content using the variable attribute when the :create action is run" do
-      resource.source('openldap_variable_stuff.conf.erb')
+      resource.source("openldap_variable_stuff.conf.erb")
       resource.variables(:secret => "nutella")
       resource.run_action(:create)
       expect(IO.read(path)).to eq("super secret is nutella")
     end
 
     it "creates the template with the rendered content using a local erb file when the :create action is run" do
-      resource.source(File.expand_path(File.join(CHEF_SPEC_DATA,'cookbooks','openldap','templates','default','openldap_stuff.conf.erb')))
+      resource.source(File.expand_path(File.join(CHEF_SPEC_DATA,"cookbooks","openldap","templates","default","openldap_stuff.conf.erb")))
       resource.cookbook(nil)
       resource.local(true)
       resource.run_action(:create)

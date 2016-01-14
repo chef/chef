@@ -21,14 +21,14 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'net/https'
-require 'uri'
-require 'chef/http/basic_client'
-require 'chef/monkey_patches/net_http'
-require 'chef/config'
-require 'chef/platform/query_helpers'
-require 'chef/exceptions'
+require "tempfile"
+require "net/https"
+require "uri"
+require "chef/http/basic_client"
+require "chef/monkey_patches/net_http"
+require "chef/config"
+require "chef/platform/query_helpers"
+require "chef/exceptions"
 
 class Chef
 
@@ -204,7 +204,7 @@ class Chef
         # when for most knife/chef-client work we never need/want this loaded.
         Thread.exclusive {
           unless defined?(SocketlessChefZeroClient)
-            require 'chef/http/socketless_chef_zero_client'
+            require "chef/http/socketless_chef_zero_client"
           end
         }
         SocketlessChefZeroClient.new(base_url)
@@ -225,7 +225,7 @@ class Chef
         # The regular expressions used here are to make sure '@url' does not have
         # any trailing slashes and 'path' does not have any leading slashes. This
         # way they are always joined correctly using just one slash.
-        URI.parse(@url.gsub(%r{/+$}, '') + '/' + path.gsub(%r{^/+}, ''))
+        URI.parse(@url.gsub(%r{/+$}, "") + "/" + path.gsub(%r{^/+}, ""))
       end
     end
 
@@ -381,12 +381,12 @@ class Chef
       return nil  unless response.kind_of?(Net::HTTPRedirection)
       # Net::HTTPNotModified is undesired subclass of Net::HTTPRedirection so test for this
       return nil  if response.kind_of?(Net::HTTPNotModified)
-      response['location']
+      response["location"]
     end
 
     def build_headers(method, url, headers={}, json_body=false)
       headers                 = @default_headers.merge(headers)
-      headers['Content-Length'] = json_body.bytesize.to_s if json_body
+      headers["Content-Length"] = json_body.bytesize.to_s if json_body
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers
     end

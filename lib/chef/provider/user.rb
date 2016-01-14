@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
-require 'chef/mixin/command'
-require 'etc'
+require "chef/provider"
+require "chef/mixin/command"
+require "etc"
 
 class Chef
   class Provider
@@ -71,9 +71,9 @@ class Chef
           end
           @current_resource.comment(user_info.gecos)
 
-          if @new_resource.password && @current_resource.password == 'x'
+          if @new_resource.password && @current_resource.password == "x"
             begin
-              require 'shadow'
+              require "shadow"
             rescue LoadError
               @shadow_lib_ok = false
             else

@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/chef_server/rest_list_dir'
-require 'chef/chef_fs/file_system/not_found_error'
-require 'chef/chef_fs/file_system/must_delete_recursively_error'
-require 'chef/chef_fs/data_handler/data_bag_item_data_handler'
+require "chef/chef_fs/file_system/chef_server/rest_list_dir"
+require "chef/chef_fs/file_system/not_found_error"
+require "chef/chef_fs/file_system/must_delete_recursively_error"
+require "chef/chef_fs/data_handler/data_bag_item_data_handler"
 
 class Chef
   module ChefFS

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/policy_builder'
+require "spec_helper"
+require "chef/policy_builder"
 
 describe Chef::PolicyBuilder::ExpandNodeObject do
 

@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'chef/http/simple'
-require 'chef/digester'
-require 'chef/provider/remote_file'
-require 'chef/provider/remote_file/cache_control_data'
+require "chef/http/simple"
+require "chef/digester"
+require "chef/provider/remote_file"
+require "chef/provider/remote_file/cache_control_data"
 
 class Chef
   class Provider
@@ -87,11 +87,11 @@ class Chef
         end
 
         def last_modified_time_from(response)
-          response['last_modified'] || response['date']
+          response["last_modified"] || response["date"]
         end
 
         def etag_from(response)
-          response['etag']
+          response["etag"]
         end
 
         def http_client_opts

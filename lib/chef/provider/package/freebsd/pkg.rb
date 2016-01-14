@@ -19,8 +19,8 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package/freebsd/base'
-require 'chef/util/path_helper'
+require "chef/provider/package/freebsd/base"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
@@ -34,14 +34,14 @@ class Chef
               case @new_resource.source
               when /^http/, /^ftp/
                 if @new_resource.source =~ /\/$/
-                  shell_out_with_timeout!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
+                  shell_out_with_timeout!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, "LC_ALL" => nil }).status
                 else
-                  shell_out_with_timeout!("pkg_add -r #{package_name}", :env => { "PACKAGEROOT" => @new_resource.source, 'LC_ALL' => nil }).status
+                  shell_out_with_timeout!("pkg_add -r #{package_name}", :env => { "PACKAGEROOT" => @new_resource.source, "LC_ALL" => nil }).status
                 end
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               when /^\//
-                shell_out_with_timeout!("pkg_add #{file_candidate_version_path}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}).status
+                shell_out_with_timeout!("pkg_add #{file_candidate_version_path}", :env => { "PKG_PATH" => @new_resource.source , "LC_ALL"=>nil}).status
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               else

@@ -18,16 +18,16 @@
 # limitations under the License.
 #
 
-require 'chef/recipe'
-require 'chef/run_context'
-require 'chef/config'
-require 'chef/client'
-require 'chef/cookbook/cookbook_collection'
-require 'chef/cookbook_loader'
-require 'chef/run_list/run_list_expansion'
-require 'chef/formatters/base'
-require 'chef/formatters/doc'
-require 'chef/formatters/minimal'
+require "chef/recipe"
+require "chef/run_context"
+require "chef/config"
+require "chef/client"
+require "chef/cookbook/cookbook_collection"
+require "chef/cookbook_loader"
+require "chef/run_list/run_list_expansion"
+require "chef/formatters/base"
+require "chef/formatters/doc"
+require "chef/formatters/minimal"
 
 module Shell
   class ShellSession
@@ -235,7 +235,7 @@ module Shell
     # Run the very smallest amount of ohai we can get away with and still
     # hope to have things work. Otherwise we're not very good doppelgangers
     def run_ohai
-      @ohai.require_plugin('os')
+      @ohai.require_plugin("os")
     end
 
     # DoppelGanger implementation of build_node. preserves as many of the node's
@@ -245,7 +245,7 @@ module Shell
       @node = Chef::Node.find_or_create(node_name)
       ohai_data = @ohai.data.merge(@node.automatic_attrs)
       @node.consume_external_attrs(ohai_data,nil)
-      @run_list_expansion = @node.expand!('server')
+      @run_list_expansion = @node.expand!("server")
       @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
       Chef::Log.info("Run List is [#{@node.run_list}]")
       Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")

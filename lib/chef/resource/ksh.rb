@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource/script'
+require "chef/resource/script"
 
 class Chef
   class Resource

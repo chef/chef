@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Package::Rpm do
   let(:provider) { Chef::Provider::Package::Rpm.new(new_resource, run_context) }
@@ -35,10 +35,10 @@ describe Chef::Provider::Package::Rpm do
   end
 
   # `rpm -qp [stuff] $source`
-  let(:rpm_qp_status) { instance_double('Mixlib::ShellOut', exitstatus: rpm_qp_exitstatus, stdout: rpm_qp_stdout) }
+  let(:rpm_qp_status) { instance_double("Mixlib::ShellOut", exitstatus: rpm_qp_exitstatus, stdout: rpm_qp_stdout) }
 
   # `rpm -q [stuff] $package_name`
-  let(:rpm_q_status) { instance_double('Mixlib::ShellOut', exitstatus: rpm_q_exitstatus, stdout: rpm_q_stdout) }
+  let(:rpm_q_status) { instance_double("Mixlib::ShellOut", exitstatus: rpm_q_exitstatus, stdout: rpm_q_stdout) }
 
   before(:each) do
     allow(::File).to receive(:exists?).with("PLEASE STUB File.exists? EXACTLY").and_return(true)

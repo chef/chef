@@ -5,7 +5,7 @@ module ChefNetHTTPExceptionExtensions
   attr_accessor :chef_rest_request
 end
 
-require 'net/http'
+require "net/http"
 module Net
   class HTTPError
     include ChefNetHTTPExceptionExtensions

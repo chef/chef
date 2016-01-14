@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class TinyClass
   include Chef::Mixin::ParamsValidate
@@ -372,12 +372,12 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should allow DelayedEvaluator instance to be set for value regardless of restriction" do
-    value = Chef::DelayedEvaluator.new{ 'test' }
+    value = Chef::DelayedEvaluator.new{ "test" }
     @vo.set_or_return(:test, value, {:kind_of => Numeric})
   end
 
   it "should raise an error when delayed evaluated attribute is not valid" do
-    value = Chef::DelayedEvaluator.new{ 'test' }
+    value = Chef::DelayedEvaluator.new{ "test" }
     @vo.set_or_return(:test, value, {:kind_of => Numeric})
     expect do
       @vo.set_or_return(:test, nil, {:kind_of => Numeric})
@@ -385,22 +385,22 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should create DelayedEvaluator instance when #lazy is used" do
-    @vo.set_or_return(:delayed, @vo.lazy{ 'test' }, {})
+    @vo.set_or_return(:delayed, @vo.lazy{ "test" }, {})
     expect(@vo.instance_variable_get(:@delayed)).to be_a(Chef::DelayedEvaluator)
   end
 
   it "should execute block on each call when DelayedEvaluator" do
-    value = 'fubar'
+    value = "fubar"
     @vo.set_or_return(:test, @vo.lazy{ value }, {})
-    expect(@vo.set_or_return(:test, nil, {})).to eq('fubar')
-    value = 'foobar'
-    expect(@vo.set_or_return(:test, nil, {})).to eq('foobar')
-    value = 'fauxbar'
-    expect(@vo.set_or_return(:test, nil, {})).to eq('fauxbar')
+    expect(@vo.set_or_return(:test, nil, {})).to eq("fubar")
+    value = "foobar"
+    expect(@vo.set_or_return(:test, nil, {})).to eq("foobar")
+    value = "fauxbar"
+    expect(@vo.set_or_return(:test, nil, {})).to eq("fauxbar")
   end
 
   it "should not evaluate non DelayedEvaluator instances" do
-    value = lambda{ 'test' }
+    value = lambda{ "test" }
     @vo.set_or_return(:test, value, {})
     expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
     expect(@vo.set_or_return(:test, nil, {})).to be_a(Proc)

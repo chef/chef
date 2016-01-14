@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class SubclassDirectiveParent
   extend Chef::Mixin::SubclassDirective

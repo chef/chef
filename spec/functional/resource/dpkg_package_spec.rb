@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "chef/mixin/shell_out"
 
 describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch: "x86_64" do
   include Chef::Mixin::ShellOut
@@ -61,7 +61,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
     it "installs a package when given only the filename as a name argument (no source)" do
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test')
+      shell_out!("dpkg -s chef-integration-test")
     end
 
     it "installs a package when given the name and a source argument" do
@@ -69,7 +69,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.source test1_0
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test')
+      shell_out!("dpkg -s chef-integration-test")
     end
 
     it "installs a package when given a different name and a source argument" do
@@ -77,7 +77,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.source test1_0
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test')
+      shell_out!("dpkg -s chef-integration-test")
     end
 
     it "installs a package when given a path as a package_name and no source" do
@@ -85,7 +85,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.package_name test1_0
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test')
+      shell_out!("dpkg -s chef-integration-test")
     end
 
     it "raises an error when the name is not a path and the source is not given" do
@@ -109,15 +109,15 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       shell_out!("dpkg -i #{test1_0}")
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test')
+      shell_out!("dpkg -s chef-integration-test")
     end
 
     it "should handle a multipackage install" do
       set_dpkg_package_name [ test1_0, test2_0 ]
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test')
-      shell_out!('dpkg -s chef-integration-test2')
+      shell_out!("dpkg -s chef-integration-test")
+      shell_out!("dpkg -s chef-integration-test2")
     end
 
     it "should not update multipackages that are up-to-date" do
@@ -125,8 +125,8 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name [ test1_0, test2_0 ]
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test')
-      shell_out!('dpkg -s chef-integration-test2')
+      shell_out!("dpkg -s chef-integration-test")
+      shell_out!("dpkg -s chef-integration-test2")
     end
 
     it "should install the second if the first is installed" do
@@ -134,8 +134,8 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name [ test1_0, test2_0 ]
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test')
-      shell_out!('dpkg -s chef-integration-test2')
+      shell_out!("dpkg -s chef-integration-test")
+      shell_out!("dpkg -s chef-integration-test2")
     end
 
     it "should install the first if the second is installed" do
@@ -143,8 +143,8 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name [ test1_0, test2_0 ]
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test')
-      shell_out!('dpkg -s chef-integration-test2')
+      shell_out!("dpkg -s chef-integration-test")
+      shell_out!("dpkg -s chef-integration-test2")
     end
   end
 
@@ -191,13 +191,13 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       shell_out!("dpkg -i #{test1_0}")
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should do nothing if the package is not installed when the name is a source" do
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should remove a package that is installed when the name is the package name and source is nil" do
@@ -205,14 +205,14 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name "chef-integration-test"
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should do nothing if the package is not installed when the name is the package name and the source is nil" do
       set_dpkg_package_name "chef-integration-test"
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should remove a package that is installed when the name is changed but the source is a package" do
@@ -221,7 +221,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.source test1_0
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should do nothing if the package is not installed when the name is changed but the source is a package" do
@@ -229,7 +229,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.source test1_0
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should remove a package if the name is a file that does not exist, but the source exists" do
@@ -239,7 +239,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.source test1_0
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should do nothing if the package is not installed when the name is a file that does not exist, but the source exists" do
@@ -249,7 +249,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.source test1_0
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should remove a package if the package_name is correct, but the source does not exist" do
@@ -259,7 +259,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.source File.join(test1_0, "make.it.fail")
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should do nothing if the package_name is correct, but the source does not exist, and the package is not installed" do
@@ -268,7 +268,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.source File.join(test1_0, "make.it.fail")
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
+      should_be_purged_or_removed("chef-integration-test")
     end
 
     it "should remove both packages when called with two" do
@@ -276,8 +276,8 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name [ "chef-integration-test", "chef-integration-test2" ]
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
-      should_be_purged_or_removed('chef-integration-test2', action)
+      should_be_purged_or_removed("chef-integration-test")
+      should_be_purged_or_removed("chef-integration-test2", action)
     end
 
     it "should remove a package when only the first one is installed" do
@@ -285,8 +285,8 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name [ "chef-integration-test", "chef-integration-test2" ]
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
-      should_be_purged_or_removed('chef-integration-test2')
+      should_be_purged_or_removed("chef-integration-test")
+      should_be_purged_or_removed("chef-integration-test2")
     end
 
     it "should remove a package when only the second one is installed" do
@@ -294,16 +294,16 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name [ "chef-integration-test", "chef-integration-test2" ]
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
-      should_be_purged_or_removed('chef-integration-test2', action)
+      should_be_purged_or_removed("chef-integration-test")
+      should_be_purged_or_removed("chef-integration-test2", action)
     end
 
     it "should do nothing when both packages are not installed" do
       set_dpkg_package_name [ "chef-integration-test", "chef-integration-test2" ]
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test')
-      should_be_purged_or_removed('chef-integration-test2')
+      should_be_purged_or_removed("chef-integration-test")
+      should_be_purged_or_removed("chef-integration-test2")
     end
   end
 
@@ -318,7 +318,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name "chef-integration-test2"
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      shell_out!('dpkg -s chef-integration-test2')  # its still 'installed'
+      shell_out!("dpkg -s chef-integration-test2")  # its still 'installed'
     end
   end
 
@@ -333,7 +333,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name "chef-integration-test2"
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
-      should_be_purged_or_removed('chef-integration-test2', action)
+      should_be_purged_or_removed("chef-integration-test2", action)
     end
   end
 end

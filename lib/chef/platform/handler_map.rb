@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/node_map'
+require "chef/node_map"
 
 class Chef
   class Platform

@@ -16,24 +16,24 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/chef_fs/file_pattern'
-require 'chef/chef_fs/command_line'
+require "spec_helper"
+require "chef/chef_fs/file_pattern"
+require "chef/chef_fs/command_line"
 
 # Removes the date stamp from the diff and replaces it with ' DATE'
 # example match: "/dev/null\t2012-10-16 16:15:54.000000000 +0000"
 # windows match: "--- /dev/null\tTue Oct 16 18:04:34 2012"
 def remove_os_differences(diff)
   diff = diff.gsub(/([+-]{3}.*)\t.*/, '\1 DATE')
-  diff.gsub(/^@@ -\d(,\d)? \+\d(,\d)? @@/, 'CONTEXT_LINE_NUMBERS')
+  diff.gsub(/^@@ -\d(,\d)? \+\d(,\d)? @@/, "CONTEXT_LINE_NUMBERS")
 end
 
-describe 'diff', :uses_diff => true do
+describe "diff", :uses_diff => true do
   include FileSystemSupport
 
-  context 'with two filesystems with all types of difference' do
+  context "with two filesystems with all types of difference" do
     let(:a) {
-      memory_fs('a', {
+      memory_fs("a", {
         :both_dirs => {
           :sub_both_dirs => { :subsub => nil },
           :sub_both_files => nil,
@@ -60,7 +60,7 @@ describe 'diff', :uses_diff => true do
       }, /cannot_be_in_a/)
     }
     let(:b) {
-      memory_fs('b', {
+      memory_fs("b", {
         :both_dirs => {
           :sub_both_dirs => { :subsub => nil },
           :sub_both_files => nil,
@@ -86,9 +86,9 @@ describe 'diff', :uses_diff => true do
         :file_in_a_dir_in_b => {},
       }, /cannot_be_in_b/)
     }
-    it 'Chef::ChefFS::CommandLine.diff_print(/)' do
+    it "Chef::ChefFS::CommandLine.diff_print(/)" do
       results = []
-      Chef::ChefFS::CommandLine.diff_print(pattern('/'), a, b, nil, nil) do |diff|
+      Chef::ChefFS::CommandLine.diff_print(pattern("/"), a, b, nil, nil) do |diff|
         results << remove_os_differences(diff)
       end
       expect(results).to match_array([
@@ -110,17 +110,17 @@ deleted file
 +++ /dev/null DATE
 CONTEXT_LINE_NUMBERS
 -subsub
-','Only in a/both_dirs: sub_a_only_dir
-','diff --knife a/both_dirs/sub_a_only_file b/both_dirs/sub_a_only_file
+',"Only in a/both_dirs: sub_a_only_dir
+",'diff --knife a/both_dirs/sub_a_only_file b/both_dirs/sub_a_only_file
 deleted file
 --- a/both_dirs/sub_a_only_file DATE
 +++ /dev/null DATE
 CONTEXT_LINE_NUMBERS
 -sub_a_only_file
-','File a/both_dirs/sub_dir_in_a_file_in_b is a directory while file b/both_dirs/sub_dir_in_a_file_in_b is a regular file
-','File a/both_dirs/sub_file_in_a_dir_in_b is a regular file while file b/both_dirs/sub_file_in_a_dir_in_b is a directory
-','Only in b/both_dirs: sub_b_only_dir
-','diff --knife a/both_dirs/sub_b_only_file b/both_dirs/sub_b_only_file
+',"File a/both_dirs/sub_dir_in_a_file_in_b is a directory while file b/both_dirs/sub_dir_in_a_file_in_b is a regular file
+","File a/both_dirs/sub_file_in_a_dir_in_b is a regular file while file b/both_dirs/sub_file_in_a_dir_in_b is a directory
+","Only in b/both_dirs: sub_b_only_dir
+",'diff --knife a/both_dirs/sub_b_only_file b/both_dirs/sub_b_only_file
 new file
 --- /dev/null DATE
 +++ b/both_dirs/sub_b_only_file DATE
@@ -144,17 +144,17 @@ deleted file
 +++ /dev/null DATE
 CONTEXT_LINE_NUMBERS
 -subsub
-','Only in a: a_only_dir
-','diff --knife a/a_only_file b/a_only_file
+',"Only in a: a_only_dir
+",'diff --knife a/a_only_file b/a_only_file
 deleted file
 --- a/a_only_file DATE
 +++ /dev/null DATE
 CONTEXT_LINE_NUMBERS
 -a_only_file
-','File a/dir_in_a_file_in_b is a directory while file b/dir_in_a_file_in_b is a regular file
-','File a/file_in_a_dir_in_b is a regular file while file b/file_in_a_dir_in_b is a directory
-','Only in b: b_only_dir
-','diff --knife a/b_only_file b/b_only_file
+',"File a/dir_in_a_file_in_b is a directory while file b/dir_in_a_file_in_b is a regular file
+","File a/file_in_a_dir_in_b is a regular file while file b/file_in_a_dir_in_b is a directory
+","Only in b: b_only_dir
+",'diff --knife a/b_only_file b/b_only_file
 new file
 --- /dev/null DATE
 +++ b/b_only_file DATE
@@ -162,9 +162,9 @@ CONTEXT_LINE_NUMBERS
 +b_only_file
 ' ])
     end
-    it 'Chef::ChefFS::CommandLine.diff_print(/both_dirs)' do
+    it "Chef::ChefFS::CommandLine.diff_print(/both_dirs)" do
       results = []
-      Chef::ChefFS::CommandLine.diff_print(pattern('/both_dirs'), a, b, nil, nil) do |diff|
+      Chef::ChefFS::CommandLine.diff_print(pattern("/both_dirs"), a, b, nil, nil) do |diff|
         results << remove_os_differences(diff)
       end
       expect(results).to match_array([
@@ -186,17 +186,17 @@ deleted file
 +++ /dev/null DATE
 CONTEXT_LINE_NUMBERS
 -subsub
-','Only in a/both_dirs: sub_a_only_dir
-','diff --knife a/both_dirs/sub_a_only_file b/both_dirs/sub_a_only_file
+',"Only in a/both_dirs: sub_a_only_dir
+",'diff --knife a/both_dirs/sub_a_only_file b/both_dirs/sub_a_only_file
 deleted file
 --- a/both_dirs/sub_a_only_file DATE
 +++ /dev/null DATE
 CONTEXT_LINE_NUMBERS
 -sub_a_only_file
-','File a/both_dirs/sub_dir_in_a_file_in_b is a directory while file b/both_dirs/sub_dir_in_a_file_in_b is a regular file
-','File a/both_dirs/sub_file_in_a_dir_in_b is a regular file while file b/both_dirs/sub_file_in_a_dir_in_b is a directory
-','Only in b/both_dirs: sub_b_only_dir
-','diff --knife a/both_dirs/sub_b_only_file b/both_dirs/sub_b_only_file
+',"File a/both_dirs/sub_dir_in_a_file_in_b is a directory while file b/both_dirs/sub_dir_in_a_file_in_b is a regular file
+","File a/both_dirs/sub_file_in_a_dir_in_b is a regular file while file b/both_dirs/sub_file_in_a_dir_in_b is a directory
+","Only in b/both_dirs: sub_b_only_dir
+",'diff --knife a/both_dirs/sub_b_only_file b/both_dirs/sub_b_only_file
 new file
 --- /dev/null DATE
 +++ b/both_dirs/sub_b_only_file DATE
@@ -204,33 +204,33 @@ CONTEXT_LINE_NUMBERS
 +sub_b_only_file
 ' ])
     end
-    it 'Chef::ChefFS::CommandLine.diff_print(/) with depth 1' do
+    it "Chef::ChefFS::CommandLine.diff_print(/) with depth 1" do
       results = []
-      Chef::ChefFS::CommandLine.diff_print(pattern('/'), a, b, 1, nil) do |diff|
+      Chef::ChefFS::CommandLine.diff_print(pattern("/"), a, b, 1, nil) do |diff|
         results << remove_os_differences(diff)
       end
       expect(results).to match_array([
-'Common subdirectories: b/both_dirs
-','diff --knife a/both_files_different b/both_files_different
+"Common subdirectories: b/both_dirs
+",'diff --knife a/both_files_different b/both_files_different
 --- a/both_files_different DATE
 +++ b/both_files_different DATE
 CONTEXT_LINE_NUMBERS
 -a
 +b
-','Common subdirectories: b/both_dirs_empty
-','Common subdirectories: b/dirs_empty_in_b_filled_in_a
-','Common subdirectories: b/dirs_empty_in_a_filled_in_b
-','Only in a: a_only_dir
-','diff --knife a/a_only_file b/a_only_file
+',"Common subdirectories: b/both_dirs_empty
+","Common subdirectories: b/dirs_empty_in_b_filled_in_a
+","Common subdirectories: b/dirs_empty_in_a_filled_in_b
+","Only in a: a_only_dir
+",'diff --knife a/a_only_file b/a_only_file
 deleted file
 --- a/a_only_file DATE
 +++ /dev/null DATE
 CONTEXT_LINE_NUMBERS
 -a_only_file
-','File a/dir_in_a_file_in_b is a directory while file b/dir_in_a_file_in_b is a regular file
-','File a/file_in_a_dir_in_b is a regular file while file b/file_in_a_dir_in_b is a directory
-','Only in b: b_only_dir
-','diff --knife a/b_only_file b/b_only_file
+',"File a/dir_in_a_file_in_b is a directory while file b/dir_in_a_file_in_b is a regular file
+","File a/file_in_a_dir_in_b is a regular file while file b/file_in_a_dir_in_b is a directory
+","Only in b: b_only_dir
+",'diff --knife a/b_only_file b/b_only_file
 new file
 --- /dev/null DATE
 +++ b/b_only_file DATE
@@ -238,33 +238,33 @@ CONTEXT_LINE_NUMBERS
 +b_only_file
 ' ])
     end
-    it 'Chef::ChefFS::CommandLine.diff_print(/*_*) with depth 0' do
+    it "Chef::ChefFS::CommandLine.diff_print(/*_*) with depth 0" do
       results = []
-      Chef::ChefFS::CommandLine.diff_print(pattern('/*_*'), a, b, 0, nil) do |diff|
+      Chef::ChefFS::CommandLine.diff_print(pattern("/*_*"), a, b, 0, nil) do |diff|
         results << remove_os_differences(diff)
       end
       expect(results).to match_array([
-'Common subdirectories: b/both_dirs
-','diff --knife a/both_files_different b/both_files_different
+"Common subdirectories: b/both_dirs
+",'diff --knife a/both_files_different b/both_files_different
 --- a/both_files_different DATE
 +++ b/both_files_different DATE
 CONTEXT_LINE_NUMBERS
 -a
 +b
-','Common subdirectories: b/both_dirs_empty
-','Common subdirectories: b/dirs_empty_in_b_filled_in_a
-','Common subdirectories: b/dirs_empty_in_a_filled_in_b
-','Only in a: a_only_dir
-','diff --knife a/a_only_file b/a_only_file
+',"Common subdirectories: b/both_dirs_empty
+","Common subdirectories: b/dirs_empty_in_b_filled_in_a
+","Common subdirectories: b/dirs_empty_in_a_filled_in_b
+","Only in a: a_only_dir
+",'diff --knife a/a_only_file b/a_only_file
 deleted file
 --- a/a_only_file DATE
 +++ /dev/null DATE
 CONTEXT_LINE_NUMBERS
 -a_only_file
-','File a/dir_in_a_file_in_b is a directory while file b/dir_in_a_file_in_b is a regular file
-','File a/file_in_a_dir_in_b is a regular file while file b/file_in_a_dir_in_b is a directory
-','Only in b: b_only_dir
-','diff --knife a/b_only_file b/b_only_file
+',"File a/dir_in_a_file_in_b is a directory while file b/dir_in_a_file_in_b is a regular file
+","File a/file_in_a_dir_in_b is a regular file while file b/file_in_a_dir_in_b is a directory
+","Only in b: b_only_dir
+",'diff --knife a/b_only_file b/b_only_file
 new file
 --- /dev/null DATE
 +++ b/b_only_file DATE
@@ -272,9 +272,9 @@ CONTEXT_LINE_NUMBERS
 +b_only_file
 ' ])
     end
-    it 'Chef::ChefFS::CommandLine.diff_print(/) in name-only mode' do
+    it "Chef::ChefFS::CommandLine.diff_print(/) in name-only mode" do
       results = []
-      Chef::ChefFS::CommandLine.diff_print(pattern('/'), a, b, nil, :name_only) do |diff|
+      Chef::ChefFS::CommandLine.diff_print(pattern("/"), a, b, nil, :name_only) do |diff|
         results << remove_os_differences(diff)
       end
       expect(results).to match_array([
@@ -298,9 +298,9 @@ CONTEXT_LINE_NUMBERS
           "b/file_in_a_dir_in_b\n",
       ])
     end
-    it 'Chef::ChefFS::CommandLine.diff_print(/) in name-status mode' do
+    it "Chef::ChefFS::CommandLine.diff_print(/) in name-status mode" do
       results = []
-      Chef::ChefFS::CommandLine.diff_print(pattern('/'), a, b, nil, :name_status) do |diff|
+      Chef::ChefFS::CommandLine.diff_print(pattern("/"), a, b, nil, :name_status) do |diff|
         results << remove_os_differences(diff)
       end
       expect(results).to match_array([

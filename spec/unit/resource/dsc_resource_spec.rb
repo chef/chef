@@ -15,18 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'spec_helper'
+require "spec_helper"
 describe Chef::Resource::DscResource do
-  let(:dsc_test_resource_name) { 'DSCTest' }
+  let(:dsc_test_resource_name) { "DSCTest" }
   let(:dsc_test_property_name) { :DSCTestProperty }
-  let(:dsc_test_property_value) { 'DSCTestValue' }
+  let(:dsc_test_property_value) { "DSCTestValue" }
   let(:dsc_test_reboot_action) { :reboot_now }
   let(:dsc_test_timeout) { 101 }
 
-  context 'when Powershell supports Dsc' do
+  context "when Powershell supports Dsc" do
     let(:dsc_test_run_context) {
       node = Chef::Node.new
-      node.automatic[:languages][:powershell][:version] = '5.0.10018.0'
+      node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
       empty_events = Chef::EventDispatch::Dispatcher.new
       Chef::RunContext.new(node, {}, empty_events)
     }
@@ -72,7 +72,7 @@ describe Chef::Resource::DscResource do
 
       it "raises a TypeError if property_name is not a symbol" do
         expect{
-          dsc_test_resource.property('Foo', dsc_test_property_value)
+          dsc_test_resource.property("Foo", dsc_test_property_value)
         }.to raise_error(TypeError)
       end
 
@@ -87,7 +87,7 @@ describe Chef::Resource::DscResource do
       end
     end
 
-    context 'Powershell DSL methods' do
+    context "Powershell DSL methods" do
       it "responds to :ps_credential" do
         expect(dsc_test_resource.respond_to?(:ps_credential)).to be true
       end

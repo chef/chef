@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class RoleDelete < Knife
 
       deps do
-        require 'chef/role'
-        require 'chef/json_compat'
+        require "chef/role"
+        require "chef/json_compat"
       end
 
       banner "knife role delete ROLE (options)"

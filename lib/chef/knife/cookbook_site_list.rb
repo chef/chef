@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -33,7 +33,7 @@ class Chef
       def run
         if config[:with_uri]
           cookbooks = Hash.new
-          get_cookbook_list.each{ |k,v| cookbooks[k] = v['cookbook'] }
+          get_cookbook_list.each{ |k,v| cookbooks[k] = v["cookbook"] }
           ui.output(format_for_display(cookbooks))
         else
           ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))

@@ -26,10 +26,10 @@
 # injected" into this class by other objects and do not reference the class symbols in those files
 # directly and we do not need to require those files here.
 
-require 'chef/platform/provider_priority_map'
-require 'chef/platform/resource_priority_map'
-require 'chef/platform/provider_handler_map'
-require 'chef/platform/resource_handler_map'
+require "chef/platform/provider_priority_map"
+require "chef/platform/resource_priority_map"
+require "chef/platform/provider_handler_map"
+require "chef/platform/resource_handler_map"
 
 class Chef
   class << self
@@ -56,7 +56,7 @@ class Chef
     #
     # @return[Chef::EventDispatch::Base] handler object
     def event_handler(&block)
-      dsl = Chef::EventDispatch::DSL.new('Chef client DSL')
+      dsl = Chef::EventDispatch::DSL.new("Chef client DSL")
       dsl.instance_eval(&block)
     end
 

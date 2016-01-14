@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/provider/package/windows/exe'
+require "spec_helper"
+require "chef/provider/package/windows/exe"
 
 unless Chef::Platform.windows?
   class Chef
@@ -41,14 +41,14 @@ describe Chef::Provider::Package::Windows::Exe do
   end
   let(:uninstall_hash) do
     [{
-      'DisplayVersion' => 'outdated',
-      'UninstallString' => File.join("uninst_dir", "uninst_file"),
+      "DisplayVersion" => "outdated",
+      "UninstallString" => File.join("uninst_dir", "uninst_file"),
     }]
   end
   let(:uninstall_entry) do
     entries = []
     uninstall_hash.each do |entry|
-      entries.push(Chef::Provider::Package::Windows::RegistryUninstallEntry.new('hive', 'key', entry))
+      entries.push(Chef::Provider::Package::Windows::RegistryUninstallEntry.new("hive", "key", entry))
     end
     entries
   end
@@ -100,8 +100,8 @@ describe Chef::Provider::Package::Windows::Exe do
     end
 
     it "returns the version attribute if given" do
-      new_resource.version('v55555')
-      expect(provider.package_version).to eql('v55555')
+      new_resource.version("v55555")
+      expect(provider.package_version).to eql("v55555")
     end
 
     it "returns nil if no version given" do
@@ -121,19 +121,19 @@ describe Chef::Provider::Package::Windows::Exe do
       let(:uninstall_hash) do
         [
           {
-          'DisplayVersion' => 'v1',
-          'UninstallString' => File.join("uninst_dir1", "uninst_file1"),
+          "DisplayVersion" => "v1",
+          "UninstallString" => File.join("uninst_dir1", "uninst_file1"),
           },
           {
-          'DisplayVersion' => 'v2',
-          'UninstallString' => File.join("uninst_dir2", "uninst_file2"),
+          "DisplayVersion" => "v2",
+          "UninstallString" => File.join("uninst_dir2", "uninst_file2"),
           },
         ]
       end
 
       context "version given and installed" do
         it "removes given version" do
-          new_resource.version('v2')
+          new_resource.version("v2")
           expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \/d\"uninst_dir2\" uninst_file2 \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
           provider.remove_package
         end

@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'ffi'
-require 'chef/reserved_names'
-require 'chef/exceptions'
+require "ffi"
+require "chef/reserved_names"
+require "chef/exceptions"
 
 class Chef
   module ReservedNames::Win32

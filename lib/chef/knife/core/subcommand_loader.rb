@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/version'
-require 'chef/util/path_helper'
-require 'chef/knife/core/gem_glob_loader'
-require 'chef/knife/core/hashed_command_loader'
-require 'chef/knife/core/custom_manifest_loader'
+require "chef/version"
+require "chef/util/path_helper"
+require "chef/knife/core/gem_glob_loader"
+require "chef/knife/core/hashed_command_loader"
+require "chef/knife/core/custom_manifest_loader"
 
 class Chef
   class Knife
@@ -75,7 +75,7 @@ class Chef
       end
 
       def self.plugin_manifest_path
-        Chef::Util::PathHelper.home('.chef', 'plugin_manifest.json')
+        Chef::Util::PathHelper.home(".chef", "plugin_manifest.json")
       end
 
       def initialize(chef_config_dir, env = nil)
@@ -117,15 +117,15 @@ class Chef
         cmd_words = positional_arguments(args)
         load_command(cmd_words)
         result = Chef::Knife.subcommands[find_longest_key(Chef::Knife.subcommands,
-                                                          cmd_words, '_')]
-        result || Chef::Knife.subcommands[args.first.gsub('-', '_')]
+                                                          cmd_words, "_")]
+        result || Chef::Knife.subcommands[args.first.gsub("-", "_")]
       end
 
       def guess_category(args)
         category_words = positional_arguments(args)
-        category_words.map! { |w| w.split('-') }.flatten!
+        category_words.map! { |w| w.split("-") }.flatten!
         find_longest_key(Chef::Knife.subcommands_by_category,
-                         category_words, ' ')
+                         category_words, " ")
       end
 
 
@@ -134,7 +134,7 @@ class Chef
       #
       def find_subcommands_via_dirglob
         # The "require paths" of the core knife subcommands bundled with chef
-        files = Dir[File.join(Chef::Util::PathHelper.escape_glob(File.expand_path('../../../knife', __FILE__)), '*.rb')]
+        files = Dir[File.join(Chef::Util::PathHelper.escape_glob(File.expand_path("../../../knife", __FILE__)), "*.rb")]
         subcommand_files = {}
         files.each do |knife_file|
           rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1]
@@ -163,7 +163,7 @@ Please use Chef::Knife::SubcommandLoader.for_config(chef_config_dir, env)"
       # of words and a separator.  We find the the longest key in the
       # hash composed of the given words joined by the separator.
       #
-      def find_longest_key(hash, words, sep = '_')
+      def find_longest_key(hash, words, sep = "_")
         match = nil
         until match || words.empty?
           candidate = words.join(sep)
@@ -196,8 +196,8 @@ Please use Chef::Knife::SubcommandLoader.for_config(chef_config_dir, env)"
         end
 
         # finally search ~/.chef/plugins/knife/*.rb
-        Chef::Util::PathHelper.home('.chef', 'plugins', 'knife') do |p|
-          user_specific_files.concat Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(p), '*.rb'))
+        Chef::Util::PathHelper.home(".chef", "plugins", "knife") do |p|
+          user_specific_files.concat Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(p), "*.rb"))
         end
 
         user_specific_files

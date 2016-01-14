@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 if Chef::Platform.windows?
-  require 'chef/win32/security'
+  require "chef/win32/security"
 end
 
-describe 'Chef::Win32::Security', :windows_only do
+describe "Chef::Win32::Security", :windows_only do
   it "has_admin_privileges? returns true when running as admin" do
     expect(Chef::ReservedNames::Win32::Security.has_admin_privileges?).to eq(true)
   end
@@ -35,8 +35,8 @@ describe 'Chef::Win32::Security', :windows_only do
     skip "requires user support in mixlib-shellout"
   end
 
-  describe 'get_file_security' do
-    it 'should return a security descriptor when called with a path that exists' do
+  describe "get_file_security" do
+    it "should return a security descriptor when called with a path that exists" do
       security_descriptor = Chef::ReservedNames::Win32::Security.get_file_security(
         "C:\\Program Files")
       # Make sure the security descriptor works
@@ -44,7 +44,7 @@ describe 'Chef::Win32::Security', :windows_only do
     end
   end
 
-  describe 'access_check' do
+  describe "access_check" do
     let(:security_descriptor) {
       Chef::ReservedNames::Win32::Security.get_file_security(
         "C:\\Program Files")
@@ -69,30 +69,30 @@ describe 'Chef::Win32::Security', :windows_only do
 
     let(:desired_access) { Chef::ReservedNames::Win32::Security::FILE_GENERIC_READ }
 
-    it 'should check if the provided token has the desired access' do
+    it "should check if the provided token has the desired access" do
       expect(Chef::ReservedNames::Win32::Security.access_check(security_descriptor, 
                      token, desired_access, mapping)).to be true
     end
   end
 
-  describe 'Chef::Win32::Security::Token' do
+  describe "Chef::Win32::Security::Token" do
     let(:token) {
       Chef::ReservedNames::Win32::Security.open_process_token(
         Chef::ReservedNames::Win32::Process.get_current_process,
         token_rights)
     }
-    context 'with all rights' do
+    context "with all rights" do
       let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_ALL_ACCESS }
 
-      it 'can duplicate a token' do
+      it "can duplicate a token" do
         expect{ token.duplicate_token(:SecurityImpersonation) }.not_to raise_error
       end
     end
 
-    context 'with read only rights' do
+    context "with read only rights" do
       let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_READ }
 
-      it 'raises an exception when trying to duplicate' do
+      it "raises an exception when trying to duplicate" do
         expect{ token.duplicate_token(:SecurityImpersonation) }.to raise_error(Chef::Exceptions::Win32APIError)
       end
     end

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::ClientCreate.load_deps
 
@@ -61,13 +61,13 @@ describe Chef::Knife::ClientCreate do
       # from spec/support/shared/unit/knife_shared.rb
       it_should_behave_like "mandatory field missing" do
         let(:name_args) { [] }
-        let(:fieldname) { 'client name' }
+        let(:fieldname) { "client name" }
       end
     end
 
     context "when clientname is passed" do
       before do
-        knife.name_args = ['adam']
+        knife.name_args = ["adam"]
       end
 
       context "when public_key and prevent_keygen are passed" do
@@ -131,7 +131,7 @@ describe Chef::Knife::ClientCreate do
         it "should write the private key to a file" do
           knife.config[:file] = "/tmp/monkeypants"
           filehandle = double("Filehandle")
-          expect(filehandle).to receive(:print).with('woot')
+          expect(filehandle).to receive(:print).with("woot")
           expect(File).to receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)
           knife.run
         end
@@ -150,14 +150,14 @@ describe Chef::Knife::ClientCreate do
 
       describe "with -p or --public-key" do
         before do
-          knife.config[:public_key] = 'some_key'
-          allow(File).to receive(:read).and_return('some_key')
+          knife.config[:public_key] = "some_key"
+          allow(File).to receive(:read).and_return("some_key")
           allow(File).to receive(:expand_path)
         end
 
         it "sets the public key" do
           knife.run
-          expect(client.public_key).to eq('some_key')
+          expect(client.public_key).to eq("some_key")
         end
       end
 

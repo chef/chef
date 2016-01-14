@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Exceptions do
   exception_to_super_class = {

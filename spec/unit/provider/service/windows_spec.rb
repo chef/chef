@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'mixlib/shellout'
+require "spec_helper"
+require "mixlib/shellout"
 
 describe Chef::Provider::Service::Windows, "load_current_resource" do
   include_context "Win32"
@@ -51,14 +51,14 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
   end
 
   after(:each) do
-    Win32::Service.send(:remove_const, 'AUTO_START') if defined?(Win32::Service::AUTO_START)
-    Win32::Service.send(:remove_const, 'DEMAND_START') if defined?(Win32::Service::DEMAND_START)
-    Win32::Service.send(:remove_const, 'DISABLED') if defined?(Win32::Service::DISABLED)
+    Win32::Service.send(:remove_const, "AUTO_START") if defined?(Win32::Service::AUTO_START)
+    Win32::Service.send(:remove_const, "DEMAND_START") if defined?(Win32::Service::DEMAND_START)
+    Win32::Service.send(:remove_const, "DISABLED") if defined?(Win32::Service::DISABLED)
   end
 
   it "sets the current resources service name to the new resources service name" do
     provider.load_current_resource
-    expect(provider.current_resource.service_name).to eq('chef')
+    expect(provider.current_resource.service_name).to eq("chef")
   end
 
   it "returns the current resource" do

@@ -21,8 +21,8 @@
 module KnifeSpecs
 end
 
-require 'spec_helper'
-require 'uri'
+require "spec_helper"
+require "uri"
 
 describe Chef::Knife do
 
@@ -81,28 +81,28 @@ describe Chef::Knife do
         KnifeSpecs.send(:remove_const, :TestExplicitCategory)
       end
 
-      Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_name_mapping.rb'))
-      Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_explicit_category.rb'))
+      Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_name_mapping.rb"))
+      Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_explicit_category.rb"))
     end
 
     it "has a category based on its name" do
-      expect(KnifeSpecs::TestNameMapping.subcommand_category).to eq('test')
+      expect(KnifeSpecs::TestNameMapping.subcommand_category).to eq("test")
     end
 
     it "has an explicitly defined category if set" do
-      expect(KnifeSpecs::TestExplicitCategory.subcommand_category).to eq('cookbook site')
+      expect(KnifeSpecs::TestExplicitCategory.subcommand_category).to eq("cookbook site")
     end
 
     it "can reference the subcommand by its snake cased name" do
-      expect(Chef::Knife.subcommands['test_name_mapping']).to equal(KnifeSpecs::TestNameMapping)
+      expect(Chef::Knife.subcommands["test_name_mapping"]).to equal(KnifeSpecs::TestNameMapping)
     end
 
     it "lists subcommands by category" do
-      expect(Chef::Knife.subcommands_by_category['test']).to include('test_name_mapping')
+      expect(Chef::Knife.subcommands_by_category["test"]).to include("test_name_mapping")
     end
 
     it "lists subcommands by category when the subcommands have explicit categories" do
-      expect(Chef::Knife.subcommands_by_category['cookbook site']).to include('test_explicit_category')
+      expect(Chef::Knife.subcommands_by_category["cookbook site"]).to include("test_explicit_category")
     end
 
     it "has empty dependency_loader list by default" do
@@ -137,9 +137,9 @@ describe Chef::Knife do
     it "guesses a category from a given ARGV" do
       Chef::Knife.subcommands_by_category["cookbook"] << :cookbook
       Chef::Knife.subcommands_by_category["cookbook site"] << :cookbook_site
-      expect(Chef::Knife.guess_category(%w{cookbook foo bar baz})).to eq('cookbook')
-      expect(Chef::Knife.guess_category(%w{cookbook site foo bar baz})).to eq('cookbook site')
-      expect(Chef::Knife.guess_category(%w{cookbook site --help})).to eq('cookbook site')
+      expect(Chef::Knife.guess_category(%w{cookbook foo bar baz})).to eq("cookbook")
+      expect(Chef::Knife.guess_category(%w{cookbook site foo bar baz})).to eq("cookbook site")
+      expect(Chef::Knife.guess_category(%w{cookbook site --help})).to eq("cookbook site")
     end
 
     it "finds a subcommand class based on ARGV" do
@@ -154,7 +154,7 @@ describe Chef::Knife do
 
     let(:headers) {{"Accept"=>"application/json",
                     "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
-                    'X-Chef-Version' => Chef::VERSION,
+                    "X-Chef-Version" => Chef::VERSION,
                     "Host"=>"api.opscode.piab",
                     "X-REMOTE-REQUEST-ID"=>request_id,
     }}
@@ -195,7 +195,7 @@ describe Chef::Knife do
       if KnifeSpecs.const_defined?(:TestYourself)
         KnifeSpecs.send :remove_const, :TestYourself
       end
-      Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_yourself.rb'))
+      Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
       Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
     end
 
@@ -210,7 +210,7 @@ describe Chef::Knife do
       if KnifeSpecs.const_defined?(:TestYourself)
         KnifeSpecs.send :remove_const, :TestYourself
       end
-      Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_yourself.rb'))
+      Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
       Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
     end
 
@@ -349,12 +349,12 @@ describe Chef::Knife do
 
     before do
       unless KnifeSpecs.const_defined?(:TestYourself)
-        Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_yourself.rb'))
+        Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
       end
     end
 
     it "it parses the options passed to it" do
-      expect(knife.config[:scro]).to eq('scrogramming')
+      expect(knife.config[:scro]).to eq("scrogramming")
     end
 
     it "extracts its command specific args from the full arg list" do
@@ -431,9 +431,9 @@ describe Chef::Knife do
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
 
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to include('The request that Knife sent was using API version 10000000')
-      expect(stderr.string).to include('The Chef server you sent the request to supports a min API verson of 0 and a max API version of 1')
-      expect(stderr.string).to include('Please either update your Chef client or server to be a compatible set')
+      expect(stderr.string).to include("The request that Knife sent was using API version 10000000")
+      expect(stderr.string).to include("The Chef server you sent the request to supports a min API verson of 0 and a max API version of 1")
+      expect(stderr.string).to include("Please either update your Chef client or server to be a compatible set")
     end
 
     it "formats 500s nicely" do
@@ -485,7 +485,7 @@ describe Chef::Knife do
     end
 
     it "formats missing private key errors nicely" do
-      allow(knife).to receive(:run).and_raise(Chef::Exceptions::PrivateKeyMissing.new('key not there'))
+      allow(knife).to receive(:run).and_raise(Chef::Exceptions::PrivateKeyMissing.new("key not there"))
       allow(knife).to receive(:api_key).and_return("/home/root/.chef/no-key-here.pem")
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r[ERROR: Your private key could not be loaded from /home/root/.chef/no-key-here.pem])
@@ -493,7 +493,7 @@ describe Chef::Knife do
     end
 
     it "formats connection refused errors nicely" do
-      allow(knife).to receive(:run).and_raise(Errno::ECONNREFUSED.new('y u no shut up'))
+      allow(knife).to receive(:run).and_raise(Errno::ECONNREFUSED.new("y u no shut up"))
       knife.run_with_pretty_exceptions
       # Errno::ECONNREFUSED message differs by platform
       # *nix = Errno::ECONNREFUSED: Connection refused

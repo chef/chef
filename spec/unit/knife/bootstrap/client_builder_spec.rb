@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 
 describe Chef::Knife::Bootstrap::ClientBuilder do
@@ -42,7 +42,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
   }
 
   context "#sanity_check!" do
-    let(:response_404) { OpenStruct.new(:code => '404') }
+    let(:response_404) { OpenStruct.new(:code => "404") }
     let(:exception_404) { Net::HTTPServerException.new("404 not found", response_404) }
 
     context "in cases where the prompting fails" do
@@ -54,14 +54,14 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
 
       it "exits when the node exists and the user does not want to delete" do
         expect(rest).to receive(:get).with("nodes/#{node_name}")
-        expect(ui.stdin).to receive(:readline).and_return('n')
+        expect(ui.stdin).to receive(:readline).and_return("n")
         expect { client_builder.run }.to raise_error(SystemExit)
       end
 
       it "exits when the client exists and the user does not want to delete" do
         expect(rest).to receive(:get).with("nodes/#{node_name}").and_raise(exception_404)
         expect(rest).to receive(:get).with("clients/#{node_name}")
-        expect(ui.stdin).to receive(:readline).and_return('n')
+        expect(ui.stdin).to receive(:readline).and_return("n")
         expect { client_builder.run }.to raise_error(SystemExit)
       end
     end
@@ -81,7 +81,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
 
       it "when we are allowed to delete an old node" do
         expect(rest).to receive(:get).with("nodes/#{node_name}")
-        expect(ui.stdin).to receive(:readline).and_return('y')
+        expect(ui.stdin).to receive(:readline).and_return("y")
         expect(rest).to receive(:get).with("clients/#{node_name}").and_raise(exception_404)
         expect(rest).to receive(:delete).with("nodes/#{node_name}")
         expect { client_builder.run }.not_to raise_error
@@ -90,7 +90,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       it "when we are allowed to delete an old client" do
         expect(rest).to receive(:get).with("nodes/#{node_name}").and_raise(exception_404)
         expect(rest).to receive(:get).with("clients/#{node_name}")
-        expect(ui.stdin).to receive(:readline).and_return('y')
+        expect(ui.stdin).to receive(:readline).and_return("y")
         expect(rest).to receive(:delete).with("clients/#{node_name}")
         expect { client_builder.run }.not_to raise_error
       end
@@ -98,7 +98,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       it "when we are are allowed to delete both an old client and node" do
         expect(rest).to receive(:get).with("nodes/#{node_name}")
         expect(rest).to receive(:get).with("clients/#{node_name}")
-        expect(ui.stdin).to receive(:readline).twice.and_return('y')
+        expect(ui.stdin).to receive(:readline).twice.and_return("y")
         expect(rest).to receive(:delete).with("nodes/#{node_name}")
         expect(rest).to receive(:delete).with("clients/#{node_name}")
         expect { client_builder.run }.not_to raise_error

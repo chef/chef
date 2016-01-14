@@ -74,7 +74,7 @@ class Chef
 
             MESSAGE
 
-            error_description.section("Additional information:", msg.gsub(/^ {6}/, ''))
+            error_description.section("Additional information:", msg.gsub(/^ {6}/, ""))
           end
         end
 

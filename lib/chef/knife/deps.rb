@@ -1,4 +1,4 @@
-require 'chef/chef_fs/knife'
+require "chef/chef_fs/knife"
 
 class Chef
   class Knife
@@ -8,20 +8,20 @@ class Chef
       category "path-based"
 
       deps do
-        require 'chef/chef_fs/file_system'
-        require 'chef/run_list'
+        require "chef/chef_fs/file_system"
+        require "chef/run_list"
       end
 
       option :recurse,
-        :long => '--[no-]recurse',
+        :long => "--[no-]recurse",
         :boolean => true,
         :description => "List dependencies recursively (default: true).  Only works with --tree."
       option :tree,
-        :long => '--tree',
+        :long => "--tree",
         :boolean => true,
         :description => "Show dependencies in a visual tree.  May show duplicates."
       option :remote,
-        :long => '--remote',
+        :long => "--remote",
         :boolean => true,
         :description => "List dependencies on the server instead of the local filesystem"
 
@@ -73,30 +73,30 @@ class Chef
 
       def get_dependencies(entry)
         begin
-          if entry.parent && entry.parent.path == '/cookbooks'
+          if entry.parent && entry.parent.path == "/cookbooks"
             return entry.chef_object.metadata.dependencies.keys.map { |cookbook| "/cookbooks/#{cookbook}" }
 
-          elsif entry.parent && entry.parent.path == '/nodes'
+          elsif entry.parent && entry.parent.path == "/nodes"
             node = Chef::JSONCompat.parse(entry.read)
             result = []
-            if node['chef_environment'] && node['chef_environment'] != '_default'
+            if node["chef_environment"] && node["chef_environment"] != "_default"
               result << "/environments/#{node['chef_environment']}.json"
             end
-            if node['run_list']
-              result += dependencies_from_runlist(node['run_list'])
+            if node["run_list"]
+              result += dependencies_from_runlist(node["run_list"])
             end
             result
 
-          elsif entry.parent && entry.parent.path == '/roles'
+          elsif entry.parent && entry.parent.path == "/roles"
             role = Chef::JSONCompat.parse(entry.read)
             result = []
-            if role['run_list']
-              dependencies_from_runlist(role['run_list']).each do |dependency|
+            if role["run_list"]
+              dependencies_from_runlist(role["run_list"]).each do |dependency|
                 result << dependency if !result.include?(dependency)
               end
             end
-            if role['env_run_lists']
-              role['env_run_lists'].each_pair do |env,run_list|
+            if role["env_run_lists"]
+              role["env_run_lists"].each_pair do |env,run_list|
                 dependencies_from_runlist(run_list).each do |dependency|
                   result << dependency if !result.include?(dependency)
                 end

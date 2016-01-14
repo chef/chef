@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/yum'
+require "chef/resource/package"
+require "chef/provider/package/yum"
 
 class Chef
   class Resource

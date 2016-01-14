@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'tempfile'
-require 'chef/file_content_management/content_base'
-require 'chef/mixin/uris'
+require "uri"
+require "tempfile"
+require "chef/file_content_management/content_base"
+require "chef/mixin/uris"
 
 class Chef
   class Provider

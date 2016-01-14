@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/json_compat'
+require "chef/json_compat"
 
 class Chef
 class Util

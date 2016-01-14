@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'rake'
+require "rake"
 
 SOURCE = File.join(File.dirname(__FILE__), "..", "MAINTAINERS.toml")
 TARGET = File.join(File.dirname(__FILE__), "..", "MAINTAINERS.md")
@@ -28,9 +28,9 @@ REPOSITORIES = ["chef/chef", "chef/chef-census", "chef/chef-repo",
                 "chef/mixlib-shellout", "chef/ohai", "chef/omnibus-chef"]
 
 begin
-  require 'tomlrb'
-  require 'octokit'
-  require 'pp'
+  require "tomlrb"
+  require "octokit"
+  require "pp"
   task :default => :generate
 
   namespace :maintainers do

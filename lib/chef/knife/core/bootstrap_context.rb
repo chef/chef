@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/run_list'
-require 'chef/util/path_helper'
+require "chef/run_list"
+require "chef/util/path_helper"
 
 class Chef
   class Knife
@@ -125,9 +125,9 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
 
         def start_chef
           # If the user doesn't have a client path configure, let bash use the PATH for what it was designed for
-          client_path = @chef_config[:chef_client_path] || 'chef-client'
+          client_path = @chef_config[:chef_client_path] || "chef-client"
           s = "#{client_path} -j /etc/chef/first-boot.json"
-          s << ' -l debug' if @config[:verbosity] and @config[:verbosity] >= 2
+          s << " -l debug" if @config[:verbosity] and @config[:verbosity] >= 2
           s << " -E #{bootstrap_environment}" unless bootstrap_environment.nil?
           s << " --no-color" unless @config[:color]
           s

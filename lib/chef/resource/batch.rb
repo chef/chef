@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource/windows_script'
+require "chef/resource/windows_script"
 
 class Chef
   class Resource

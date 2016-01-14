@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/powershell_out'
-require 'chef/dsl/resources'
-require 'chef/dsl/definitions'
-require 'chef/dsl/declare_resource'
+require "chef/exceptions"
+require "chef/mixin/shell_out"
+require "chef/mixin/powershell_out"
+require "chef/dsl/resources"
+require "chef/dsl/definitions"
+require "chef/dsl/declare_resource"
 
 class Chef
   module DSL
@@ -106,13 +106,13 @@ class Chef
       end
 
       module FullDSL
-        require 'chef/dsl/data_query'
-        require 'chef/dsl/platform_introspection'
-        require 'chef/dsl/include_recipe'
-        require 'chef/dsl/registry_helper'
-        require 'chef/dsl/reboot_pending'
-        require 'chef/dsl/audit'
-        require 'chef/dsl/powershell'
+        require "chef/dsl/data_query"
+        require "chef/dsl/platform_introspection"
+        require "chef/dsl/include_recipe"
+        require "chef/dsl/registry_helper"
+        require "chef/dsl/reboot_pending"
+        require "chef/dsl/audit"
+        require "chef/dsl/powershell"
         include Chef::DSL::DataQuery
         include Chef::DSL::PlatformIntrospection
         include Chef::DSL::IncludeRecipe
@@ -127,8 +127,8 @@ class Chef
 end
 
 # Avoid circular references for things that are only used in instance methods
-require 'chef/resource'
+require "chef/resource"
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/recipe_definition_dsl_core. Load the file to activate the deprecation code.
-require 'chef/mixin/recipe_definition_dsl_core'
+require "chef/mixin/recipe_definition_dsl_core"

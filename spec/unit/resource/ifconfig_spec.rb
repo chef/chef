@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Ifconfig do
 
@@ -49,8 +49,8 @@ describe Chef::Resource::Ifconfig do
 
   shared_examples "being a platform based on an old Debian" do |platform, version|
     before do
-      @node.automatic_attrs[:os] = 'linux'
-      @node.automatic_attrs[:platform_family] = 'debian'
+      @node.automatic_attrs[:os] = "linux"
+      @node.automatic_attrs[:platform_family] = "debian"
       @node.automatic_attrs[:platform] = platform
       @node.automatic_attrs[:platform_version] = version
     end
@@ -62,8 +62,8 @@ describe Chef::Resource::Ifconfig do
 
   shared_examples "being a platform based on RedHat" do |platform, version|
     before do
-      @node.automatic_attrs[:os] = 'linux'
-      @node.automatic_attrs[:platform_family] = 'rhel'
+      @node.automatic_attrs[:os] = "linux"
+      @node.automatic_attrs[:platform_family] = "rhel"
       @node.automatic_attrs[:platform] = platform
       @node.automatic_attrs[:platform_version] = version
     end
@@ -75,8 +75,8 @@ describe Chef::Resource::Ifconfig do
 
   shared_examples "being a platform based on a recent Debian" do |platform, version|
     before do
-      @node.automatic_attrs[:os] = 'linux'
-      @node.automatic_attrs[:platform_family] = 'debian'
+      @node.automatic_attrs[:os] = "linux"
+      @node.automatic_attrs[:platform_family] = "debian"
       @node.automatic_attrs[:platform] = platform
       @node.automatic_attrs[:platform_version] = version
     end

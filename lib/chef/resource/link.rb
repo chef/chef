@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/mixin/securable'
+require "chef/resource"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
@@ -92,7 +92,7 @@ class Chef
         # sure we are not on such a platform.
 
         if Chef::Platform.windows?
-          require 'chef/win32/file'
+          require "chef/win32/file"
           begin
             Chef::ReservedNames::Win32::File.verify_links_supported!
           rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e

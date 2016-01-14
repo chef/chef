@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
 
 class Chef
   class Provider
@@ -59,7 +59,7 @@ class Chef
             repos = pacman.scan(/\[(.+)\]/).flatten
           end
 
-          package_repos = repos.map {|r| Regexp.escape(r) }.join('|')
+          package_repos = repos.map {|r| Regexp.escape(r) }.join("|")
 
           status = shell_out_with_timeout("pacman -Sl")
           status.stdout.each_line do |line|

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/smartos'
+require "chef/resource/package"
+require "chef/provider/package/smartos"
 
 class Chef
   class Resource

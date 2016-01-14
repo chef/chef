@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Provider::Mount::Aix do
 
@@ -114,7 +114,7 @@ ENABLED
     expect(@provider.current_resource.mounted).to be_truthy
     expect(@provider.current_resource.mount_point).to eql(@new_resource.mount_point)
     expect(@provider.current_resource.fstype).to eql("jfs2")
-    expect(@provider.current_resource.options).to eql(['rw'])
+    expect(@provider.current_resource.options).to eql(["rw"])
   end
 
   describe "mount_fs" do

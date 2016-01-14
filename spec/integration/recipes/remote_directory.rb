@@ -1,4 +1,4 @@
-require 'support/shared/integration/integration_helper'
+require "support/shared/integration/integration_helper"
 
 describe Chef::Resource::RemoteDirectory do
   include IntegrationSupport
@@ -20,7 +20,7 @@ describe Chef::Resource::RemoteDirectory do
 
   when_the_repository "has a cookbook with a source_dir with two subdirectories, each with one file and subdir in a different alphabetical order" do
     before do
-      file 'config/client.rb', <<-EOM
+      file "config/client.rb", <<-EOM
         local_mode true
         cookbook_path "#{path_to('cookbooks')}"
       EOM

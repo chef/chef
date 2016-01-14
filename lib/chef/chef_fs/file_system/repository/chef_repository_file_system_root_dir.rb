@@ -16,22 +16,22 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/base_fs_dir'
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_entry'
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_acls_dir'
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_cookbooks_dir'
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_versioned_cookbooks_dir'
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_data_bags_dir'
-require 'chef/chef_fs/file_system/multiplexed_dir'
-require 'chef/chef_fs/data_handler/client_data_handler'
-require 'chef/chef_fs/data_handler/environment_data_handler'
-require 'chef/chef_fs/data_handler/node_data_handler'
-require 'chef/chef_fs/data_handler/policy_data_handler'
-require 'chef/chef_fs/data_handler/policy_group_data_handler'
-require 'chef/chef_fs/data_handler/role_data_handler'
-require 'chef/chef_fs/data_handler/user_data_handler'
-require 'chef/chef_fs/data_handler/group_data_handler'
-require 'chef/chef_fs/data_handler/container_data_handler'
+require "chef/chef_fs/file_system/base_fs_dir"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_acls_dir"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbooks_dir"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_versioned_cookbooks_dir"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_data_bags_dir"
+require "chef/chef_fs/file_system/multiplexed_dir"
+require "chef/chef_fs/data_handler/client_data_handler"
+require "chef/chef_fs/data_handler/environment_data_handler"
+require "chef/chef_fs/data_handler/node_data_handler"
+require "chef/chef_fs/data_handler/policy_data_handler"
+require "chef/chef_fs/data_handler/policy_group_data_handler"
+require "chef/chef_fs/data_handler/role_data_handler"
+require "chef/chef_fs/data_handler/user_data_handler"
+require "chef/chef_fs/data_handler/group_data_handler"
+require "chef/chef_fs/data_handler/container_data_handler"
 
 class Chef
   module ChefFS
@@ -113,7 +113,7 @@ class Chef
 
           # Used to print out a human-readable file system description
           def fs_description
-            repo_paths = root_paths || [ File.dirname(child_paths['cookbooks'][0]) ]
+            repo_paths = root_paths || [ File.dirname(child_paths["cookbooks"][0]) ]
             result = "repository at #{repo_paths.join(', ')}\n"
             if versioned_cookbooks
               result << "  Multiple versions per cookbook\n"
@@ -162,35 +162,35 @@ class Chef
               return NonexistentFSObject.new(name, self)
             end
             case name
-            when 'cookbooks'
+            when "cookbooks"
               if versioned_cookbooks
                 dirs = paths.map { |path| ChefRepositoryFileSystemVersionedCookbooksDir.new(name, self, path) }
               else
                 dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
               end
-            when 'data_bags'
+            when "data_bags"
               dirs = paths.map { |path| ChefRepositoryFileSystemDataBagsDir.new(name, self, path) }
-            when 'acls'
+            when "acls"
               dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
             else
               data_handler = case name
-                             when 'clients'
+                             when "clients"
                                Chef::ChefFS::DataHandler::ClientDataHandler.new
-                             when 'environments'
+                             when "environments"
                                Chef::ChefFS::DataHandler::EnvironmentDataHandler.new
-                             when 'nodes'
+                             when "nodes"
                                Chef::ChefFS::DataHandler::NodeDataHandler.new
-                             when 'policies'
+                             when "policies"
                                Chef::ChefFS::DataHandler::PolicyDataHandler.new
-                             when 'policy_groups'
+                             when "policy_groups"
                                Chef::ChefFS::DataHandler::PolicyGroupDataHandler.new
-                             when 'roles'
+                             when "roles"
                                Chef::ChefFS::DataHandler::RoleDataHandler.new
-                             when 'users'
+                             when "users"
                                Chef::ChefFS::DataHandler::UserDataHandler.new
-                             when 'groups'
+                             when "groups"
                                Chef::ChefFS::DataHandler::GroupDataHandler.new
-                             when 'containers'
+                             when "containers"
                                Chef::ChefFS::DataHandler::ContainerDataHandler.new
                              else
                                raise "Unknown top level path #{name}"

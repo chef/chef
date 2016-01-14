@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/provider/registry_key'
-require 'chef/resource'
-require 'chef/digester'
+require "chef/provider/registry_key"
+require "chef/resource"
+require "chef/digester"
 
 class Chef
   class Resource

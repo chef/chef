@@ -19,12 +19,12 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/server_api'
-require 'chef/run_context'
-require 'chef/config'
-require 'chef/node'
-require 'chef/chef_class'
+require "chef/log"
+require "chef/server_api"
+require "chef/run_context"
+require "chef/config"
+require "chef/node"
+require "chef/chef_class"
 
 class Chef
   module PolicyBuilder
@@ -164,9 +164,9 @@ class Chef
       # Expands the node's run list. Stores the run_list_expansion object for later use.
       def expand_run_list
         @run_list_expansion = if Chef::Config[:solo]
-                                node.expand!('disk')
+                                node.expand!("disk")
                               else
-                                node.expand!('server')
+                                node.expand!("server")
                               end
 
         # @run_list_expansion is a RunListExpansion.
@@ -249,7 +249,7 @@ class Chef
       def runlist_override_sanity_check!
         # Convert to array and remove whitespace
         if override_runlist.is_a?(String)
-          @override_runlist = override_runlist.split(',').map { |e| e.strip }
+          @override_runlist = override_runlist.split(",").map { |e| e.strip }
         end
         @override_runlist = [override_runlist].flatten.compact
         override_runlist.map! do |item|

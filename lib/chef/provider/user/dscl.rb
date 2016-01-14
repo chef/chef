@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
-require 'chef/provider/user'
-require 'openssl'
-require 'plist'
-require 'chef/util/path_helper'
+require "mixlib/shellout"
+require "chef/provider/user"
+require "openssl"
+require "plist"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
@@ -136,14 +136,14 @@ user password using shadow hash.")
               if shadow_hash["SALTED-SHA512"]
                 # Convert the shadow value from Base64 encoding to hex before consuming them
                 @password_shadow_conversion_algorithm = "SALTED-SHA512"
-                current_resource.password(shadow_hash["SALTED-SHA512"].string.unpack('H*').first)
+                current_resource.password(shadow_hash["SALTED-SHA512"].string.unpack("H*").first)
               elsif shadow_hash["SALTED-SHA512-PBKDF2"]
                 @password_shadow_conversion_algorithm = "SALTED-SHA512-PBKDF2"
                 # Convert the entropy from Base64 encoding to hex before consuming them
-                current_resource.password(shadow_hash["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first)
+                current_resource.password(shadow_hash["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*").first)
                 current_resource.iterations(shadow_hash["SALTED-SHA512-PBKDF2"]["iterations"])
                 # Convert the salt from Base64 encoding to hex before consuming them
-                current_resource.salt(shadow_hash["SALTED-SHA512-PBKDF2"]["salt"].string.unpack('H*').first)
+                current_resource.salt(shadow_hash["SALTED-SHA512-PBKDF2"]["salt"].string.unpack("H*").first)
               else
                 raise(Chef::Exceptions::User,"Unknown shadow_hash format: #{shadow_hash.keys.join(' ')}")
               end
@@ -213,7 +213,7 @@ user password using shadow hash.")
         #
         def dscl_set_uid
           # XXX: mutates the new resource
-          new_resource.uid(get_free_uid) if (new_resource.uid.nil? || new_resource.uid == '')
+          new_resource.uid(get_free_uid) if (new_resource.uid.nil? || new_resource.uid == "")
 
           if uid_used?(new_resource.uid)
             raise(Chef::Exceptions::RequestedUIDUnavailable, "uid #{new_resource.uid} is already in use")
@@ -396,7 +396,7 @@ user password using shadow hash.")
                            # Create a random 4 byte salt
                            salt = OpenSSL::Random.random_bytes(4)
                            encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + new_resource.password)
-                           hash_value = salt.unpack('H*').first + encoded_password
+                           hash_value = salt.unpack("H*").first + encoded_password
                          end
 
             shadow_info["SALTED-SHA512"] = StringIO.new
@@ -664,7 +664,7 @@ user password using shadow hash.")
           result = shell_out("plutil -#{args.join(' ')}")
           raise(Chef::Exceptions::PlistUtilCommandFailed,"plutil error: #{result.inspect}") unless result.exitstatus == 0
           if result.stdout.encoding == Encoding::ASCII_8BIT
-            result.stdout.encode("utf-8", "binary",  :undef => :replace, :invalid => :replace, :replace => '?')
+            result.stdout.encode("utf-8", "binary",  :undef => :replace, :invalid => :replace, :replace => "?")
           else
             result.stdout
           end
@@ -675,7 +675,7 @@ user password using shadow hash.")
         end
 
         def convert_to_binary(string)
-          string.unpack('a2'*(string.size/2)).collect { |i| i.hex.chr }.join
+          string.unpack("a2"*(string.size/2)).collect { |i| i.hex.chr }.join
         end
 
         def salted_sha512?(string)
@@ -702,7 +702,7 @@ user password using shadow hash.")
             current_resource.iterations,
             128,
             OpenSSL::Digest::SHA512.new,
-          ).unpack('H*').first == current_resource.password
+          ).unpack("H*").first == current_resource.password
         end
 
       end

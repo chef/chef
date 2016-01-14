@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
 
 class Chef
   class Provider
@@ -48,7 +48,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { !@new_resource.source }
-            a.failure_message(Chef::Exceptions::Package, 'apt package provider cannot handle source attribute. Use dpkg provider instead')
+            a.failure_message(Chef::Exceptions::Package, "apt package provider cannot handle source attribute. Use dpkg provider instead")
           end
         end
 
@@ -67,7 +67,7 @@ class Chef
             case line
             when /^\s{2}Installed: (.+)$/
               installed_version = $1
-              if installed_version == '(none)'
+              if installed_version == "(none)"
                 Chef::Log.debug("#{@new_resource} current version is nil")
                 installed_version = nil
               else
@@ -76,7 +76,7 @@ class Chef
               end
             when /^\s{2}Candidate: (.+)$/
               candidate_version = $1
-              if candidate_version == '(none)'
+              if candidate_version == "(none)"
                 # This may not be an appropriate assumption, but it shouldn't break anything that already worked -- btm
                 is_virtual_package = true
                 showpkg = shell_out_with_timeout!("apt-cache showpkg #{pkg}").stdout
@@ -141,7 +141,7 @@ class Chef
           version_array = [ version ].flatten
           package_name = name_array.zip(version_array).map do |n, v|
             is_virtual_package[n] ? n : "#{n}=#{v}"
-          end.join(' ')
+          end.join(" ")
           run_noninteractive("apt-get -q -y#{expand_options(default_release_options)}#{expand_options(@new_resource.options)} install #{package_name}")
         end
 
@@ -150,12 +150,12 @@ class Chef
         end
 
         def remove_package(name, version)
-          package_name = [ name ].flatten.join(' ')
+          package_name = [ name ].flatten.join(" ")
           run_noninteractive("apt-get -q -y#{expand_options(@new_resource.options)} remove #{package_name}")
         end
 
         def purge_package(name, version)
-          package_name = [ name ].flatten.join(' ')
+          package_name = [ name ].flatten.join(" ")
           run_noninteractive("apt-get -q -y#{expand_options(@new_resource.options)} purge #{package_name}")
         end
 
@@ -165,7 +165,7 @@ class Chef
         end
 
         def reconfig_package(name, version)
-          package_name = [ name ].flatten.join(' ')
+          package_name = [ name ].flatten.join(" ")
           Chef::Log.info("#{@new_resource} reconfiguring")
           run_noninteractive("dpkg-reconfigure #{package_name}")
         end

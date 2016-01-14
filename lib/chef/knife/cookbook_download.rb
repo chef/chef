@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -27,7 +27,7 @@ class Chef
       attr_accessor :cookbook_name
 
       deps do
-        require 'chef/cookbook_version'
+        require "chef/cookbook_version"
       end
 
       banner "knife cookbook download COOKBOOK [VERSION] (options)"
@@ -87,10 +87,10 @@ class Chef
           next unless manifest.has_key?(segment)
           ui.info("Downloading #{segment}")
           manifest[segment].each do |segment_file|
-            dest = File.join(basedir, segment_file['path'].gsub('/', File::SEPARATOR))
+            dest = File.join(basedir, segment_file["path"].gsub("/", File::SEPARATOR))
             Chef::Log.debug("Downloading #{segment_file['path']} to #{dest}")
             FileUtils.mkdir_p(File.dirname(dest))
-            tempfile = rest.streaming_request(segment_file['url'])
+            tempfile = rest.streaming_request(segment_file["url"])
             FileUtils.mv(tempfile.path, dest)
           end
         end

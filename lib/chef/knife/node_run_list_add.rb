@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class NodeRunListAdd < Knife
 
       deps do
-        require 'chef/node'
-        require 'chef/json_compat'
+        require "chef/node"
+        require "chef/json_compat"
       end
 
       banner "knife node run_list add [NODE] [ENTRY[,ENTRY]] (options)"
@@ -44,11 +44,11 @@ class Chef
         if @name_args.size > 2
           # Check for nested lists and create a single plain one
           entries = @name_args[1..-1].map do |entry|
-            entry.split(',').map { |e| e.strip }
+            entry.split(",").map { |e| e.strip }
           end.flatten
         else
           # Convert to array and remove the extra spaces
-          entries = @name_args[1].split(',').map { |e| e.strip }
+          entries = @name_args[1].split(",").map { |e| e.strip }
         end
 
         if config[:after] && config[:before]

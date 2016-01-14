@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef-config/config'
+require "spec_helper"
+require "chef-config/config"
 
 RSpec.describe ChefConfig::Config do
   before(:each) do
@@ -28,7 +28,7 @@ RSpec.describe ChefConfig::Config do
     ChefConfig::Config.treat_deprecation_warnings_as_errors(true)
 
     # Set environment variable so the setting persists in child processes
-    ENV['CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS'] = "1"
+    ENV["CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS"] = "1"
   end
 
   describe "config attribute writer: chef_server_url" do
@@ -123,7 +123,7 @@ RSpec.describe ChefConfig::Config do
         if is_windows
           it "should return a windows path on windows systems" do
             path = "/etc/chef/cookbooks"
-            allow(ChefConfig::Config).to receive(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
+            allow(ChefConfig::Config).to receive(:env).and_return({ "SYSTEMDRIVE" => "C:" })
             # match on a regex that looks for the base path with an optional
             # system drive at the beginning (c:)
             # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems
@@ -156,10 +156,10 @@ RSpec.describe ChefConfig::Config do
 
         before do
           if is_windows
-            allow(ChefConfig::Config).to receive(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
+            allow(ChefConfig::Config).to receive(:env).and_return({ "SYSTEMDRIVE" => "C:" })
             ChefConfig::Config[:user_home] = 'C:\Users\charlie'
           else
-            ChefConfig::Config[:user_home] = '/Users/charlie'
+            ChefConfig::Config[:user_home] = "/Users/charlie"
           end
 
           allow(ChefConfig::Config).to receive(:path_accessible?).and_return(false)
@@ -250,21 +250,21 @@ RSpec.describe ChefConfig::Config do
 
             context "and config_dir is /a/b/c" do
               before do
-                ChefConfig::Config.config_dir to_platform('/a/b/c')
+                ChefConfig::Config.config_dir to_platform("/a/b/c")
               end
 
               it "cache_path is /a/b/c/local-mode-cache" do
-                expect(ChefConfig::Config.cache_path).to eq(to_platform('/a/b/c/local-mode-cache'))
+                expect(ChefConfig::Config.cache_path).to eq(to_platform("/a/b/c/local-mode-cache"))
               end
             end
 
             context "and config_dir is /a/b/c/" do
               before do
-                ChefConfig::Config.config_dir to_platform('/a/b/c/')
+                ChefConfig::Config.config_dir to_platform("/a/b/c/")
               end
 
               it "cache_path is /a/b/c/local-mode-cache" do
-                expect(ChefConfig::Config.cache_path).to eq(to_platform('/a/b/c/local-mode-cache'))
+                expect(ChefConfig::Config.cache_path).to eq(to_platform("/a/b/c/local-mode-cache"))
               end
             end
           end
@@ -326,7 +326,7 @@ RSpec.describe ChefConfig::Config do
 
             it "does not set derived paths at FS root" do
               ChefConfig::Config.local_mode = true
-              expect(ChefConfig::Config.cache_path.downcase).to eq(to_platform(File.join(Dir.pwd, 'local-mode-cache')).downcase)
+              expect(ChefConfig::Config.cache_path.downcase).to eq(to_platform(File.join(Dir.pwd, "local-mode-cache")).downcase)
             end
 
           end
@@ -371,7 +371,7 @@ RSpec.describe ChefConfig::Config do
             end
 
             it "config_dir is /home/charlie/.chef/" do
-              expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(to_platform("/home/charlie/.chef"), ''))
+              expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(to_platform("/home/charlie/.chef"), ""))
             end
 
             context "and chef is running in local mode" do
@@ -380,7 +380,7 @@ RSpec.describe ChefConfig::Config do
               end
 
               it "config_dir is /home/charlie/.chef/" do
-                expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(to_platform("/home/charlie/.chef"), ''))
+                expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.join(to_platform("/home/charlie/.chef"), ""))
               end
             end
           end
@@ -468,7 +468,7 @@ RSpec.describe ChefConfig::Config do
       describe "ChefConfig::Config[:user_valid_regex]" do
         context "on a platform that is not Windows" do
           it "allows one letter usernames" do
-            any_match = ChefConfig::Config[:user_valid_regex].any? { |regex| regex.match('a') }
+            any_match = ChefConfig::Config[:user_valid_regex].any? { |regex| regex.match("a") }
             expect(any_match).to be_truthy
           end
         end
@@ -543,7 +543,7 @@ RSpec.describe ChefConfig::Config do
 
           it "should fall back to C locale" do
             expect(ChefConfig.logger).to receive(:warn).with("Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support.")
-            expect(ChefConfig::Config.guess_internal_locale).to eq 'C'
+            expect(ChefConfig::Config.guess_internal_locale).to eq "C"
           end
         end
 
@@ -585,8 +585,8 @@ RSpec.describe ChefConfig::Config do
         ChefConfig::Config.http_proxy_pass = proxy_pass
       end
       it "exports ENV['http_proxy']" do
-        expect(ENV).to receive(:[]=).with('http_proxy', "http://http_user:http_pass@localhost:7979")
-        expect(ENV).to receive(:[]=).with('HTTP_PROXY', "http://http_user:http_pass@localhost:7979")
+        expect(ENV).to receive(:[]=).with("http_proxy", "http://http_user:http_pass@localhost:7979")
+        expect(ENV).to receive(:[]=).with("HTTP_PROXY", "http://http_user:http_pass@localhost:7979")
         ChefConfig::Config.export_proxies
       end
     end
@@ -598,8 +598,8 @@ RSpec.describe ChefConfig::Config do
         ChefConfig::Config.https_proxy_pass = proxy_pass
       end
       it "exports ENV['https_proxy']" do
-        expect(ENV).to receive(:[]=).with('https_proxy', "https://http_user:http_pass@localhost:7979")
-        expect(ENV).to receive(:[]=).with('HTTPS_PROXY', "https://http_user:http_pass@localhost:7979")
+        expect(ENV).to receive(:[]=).with("https_proxy", "https://http_user:http_pass@localhost:7979")
+        expect(ENV).to receive(:[]=).with("HTTPS_PROXY", "https://http_user:http_pass@localhost:7979")
         ChefConfig::Config.export_proxies
       end
     end
@@ -611,16 +611,16 @@ RSpec.describe ChefConfig::Config do
         ChefConfig::Config.ftp_proxy_pass = proxy_pass
       end
       it "exports ENV['ftp_proxy']" do
-        expect(ENV).to receive(:[]=).with('ftp_proxy', "ftp://http_user:http_pass@localhost:7979")
-        expect(ENV).to receive(:[]=).with('FTP_PROXY', "ftp://http_user:http_pass@localhost:7979")
+        expect(ENV).to receive(:[]=).with("ftp_proxy", "ftp://http_user:http_pass@localhost:7979")
+        expect(ENV).to receive(:[]=).with("FTP_PROXY", "ftp://http_user:http_pass@localhost:7979")
         ChefConfig::Config.export_proxies
       end
     end
 
     shared_examples "no user pass" do
       it "does not populate the user or password" do
-        expect(ENV).to receive(:[]=).with('http_proxy', "http://localhost:7979")
-        expect(ENV).to receive(:[]=).with('HTTP_PROXY', "http://localhost:7979")
+        expect(ENV).to receive(:[]=).with("http_proxy", "http://localhost:7979")
+        expect(ENV).to receive(:[]=).with("HTTP_PROXY", "http://localhost:7979")
         ChefConfig::Config.export_proxies
       end
     end
@@ -646,8 +646,8 @@ RSpec.describe ChefConfig::Config do
         ChefConfig::Config.http_proxy = "localhost:1111"
       end
       it "automatically adds the scheme to the proxy url" do
-        expect(ENV).to receive(:[]=).with('http_proxy', "http://localhost:1111")
-        expect(ENV).to receive(:[]=).with('HTTP_PROXY', "http://localhost:1111")
+        expect(ENV).to receive(:[]=).with("http_proxy", "http://localhost:1111")
+        expect(ENV).to receive(:[]=).with("HTTP_PROXY", "http://localhost:1111")
         ChefConfig::Config.export_proxies
       end
     end
@@ -655,10 +655,10 @@ RSpec.describe ChefConfig::Config do
     shared_examples "no export" do
       it "does not export any proxy settings" do
         ChefConfig::Config.export_proxies
-        expect(ENV['http_proxy']).to eq(nil)
-        expect(ENV['https_proxy']).to eq(nil)
-        expect(ENV['ftp_proxy']).to eq(nil)
-        expect(ENV['no_proxy']).to eq(nil)
+        expect(ENV["http_proxy"]).to eq(nil)
+        expect(ENV["https_proxy"]).to eq(nil)
+        expect(ENV["ftp_proxy"]).to eq(nil)
+        expect(ENV["no_proxy"]).to eq(nil)
       end
     end
 
@@ -683,8 +683,8 @@ RSpec.describe ChefConfig::Config do
         ChefConfig::Config.no_proxy = "localhost"
       end
       it "exports ENV['no_proxy']" do
-        expect(ENV).to receive(:[]=).with('no_proxy', "localhost")
-        expect(ENV).to receive(:[]=).with('NO_PROXY', "localhost")
+        expect(ENV).to receive(:[]=).with("no_proxy", "localhost")
+        expect(ENV).to receive(:[]=).with("NO_PROXY", "localhost")
         ChefConfig::Config.export_proxies
       end
     end
@@ -707,7 +707,7 @@ RSpec.describe ChefConfig::Config do
       end
 
       it "sets CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS environment variable" do
-        expect(ENV['CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS']).to eq("1")
+        expect(ENV["CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS"]).to eq("1")
       end
 
       it "treats deprecation warnings as errors in child processes when testing" do
@@ -725,7 +725,7 @@ RSpec.describe ChefConfig::Config do
     context "outside of our test environment" do
 
       before do
-        ENV.delete('CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS')
+        ENV.delete("CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS")
         ChefConfig::Config.reset
       end
 

@@ -61,7 +61,7 @@ class Chef
         if File.basename(path) =~ /chefignore/
           path
         else
-          File.join(path, 'chefignore')
+          File.join(path, "chefignore")
         end
       end
 

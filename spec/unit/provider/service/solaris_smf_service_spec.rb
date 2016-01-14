@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Solaris do
   before(:each) do
@@ -24,69 +24,69 @@ describe Chef::Provider::Service::Solaris do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::Service.new('chef')
+    @new_resource = Chef::Resource::Service.new("chef")
 
-    @current_resource = Chef::Resource::Service.new('chef')
+    @current_resource = Chef::Resource::Service.new("chef")
 
     @provider = Chef::Provider::Service::Solaris.new(@new_resource, @run_context)
     allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
 
     # enabled / started service (svcs -l chef)
     enabled_svc_stdout = [
-      'fmri         svc:/application/chef:default',
-      'name         chef service',
-      'enabled      true',
-      'state        online',
-      'next_state   none',
-      'state_time   April  2, 2015 04:25:19 PM EDT',
-      'logfile      /var/svc/log/application-chef:default.log',
-      'restarter    svc:/system/svc/restarter:default',
-      'contract_id  1115271',
-      'dependency   require_all/error svc:/milestone/multi-user:default (online)',
+      "fmri         svc:/application/chef:default",
+      "name         chef service",
+      "enabled      true",
+      "state        online",
+      "next_state   none",
+      "state_time   April  2, 2015 04:25:19 PM EDT",
+      "logfile      /var/svc/log/application-chef:default.log",
+      "restarter    svc:/system/svc/restarter:default",
+      "contract_id  1115271",
+      "dependency   require_all/error svc:/milestone/multi-user:default (online)",
     ].join("\n")
 
     # disabled / stopped service (svcs -l chef)
     disabled_svc_stdout = [
-      'fmri         svc:/application/chef:default',
-      'name         chef service',
-      'enabled      false',
-      'state        disabled',
-      'next_state   none',
-      'state_time   April  2, 2015 04:25:19 PM EDT',
-      'logfile      /var/svc/log/application-chef:default.log',
-      'restarter    svc:/system/svc/restarter:default',
-      'contract_id  1115271',
-      'dependency   require_all/error svc:/milestone/multi-user:default (online)',
+      "fmri         svc:/application/chef:default",
+      "name         chef service",
+      "enabled      false",
+      "state        disabled",
+      "next_state   none",
+      "state_time   April  2, 2015 04:25:19 PM EDT",
+      "logfile      /var/svc/log/application-chef:default.log",
+      "restarter    svc:/system/svc/restarter:default",
+      "contract_id  1115271",
+      "dependency   require_all/error svc:/milestone/multi-user:default (online)",
     ].join("\n")
 
     # disabled / stopped service (svcs -l chef)
     maintenance_svc_stdout = [
-      'fmri         svc:/application/chef:default',
-      'name         chef service',
-      'enabled      true',
-      'state        maintenance',
-      'next_state   none',
-      'state_time   April  2, 2015 04:25:19 PM EDT',
-      'logfile      /var/svc/log/application-chef:default.log',
-      'restarter    svc:/system/svc/restarter:default',
-      'contract_id  1115271',
-      'dependency   require_all/error svc:/milestone/multi-user:default (online)',
+      "fmri         svc:/application/chef:default",
+      "name         chef service",
+      "enabled      true",
+      "state        maintenance",
+      "next_state   none",
+      "state_time   April  2, 2015 04:25:19 PM EDT",
+      "logfile      /var/svc/log/application-chef:default.log",
+      "restarter    svc:/system/svc/restarter:default",
+      "contract_id  1115271",
+      "dependency   require_all/error svc:/milestone/multi-user:default (online)",
     ].join("\n")
 
     # shell_out! return value for a service that is running
-    @enabled_svc_status = double("Status", :exitstatus => 0, :stdout => enabled_svc_stdout, :stdin => '', :stderr => '')
+    @enabled_svc_status = double("Status", :exitstatus => 0, :stdout => enabled_svc_stdout, :stdin => "", :stderr => "")
 
     # shell_out! return value for a service that is disabled
-    @disabled_svc_status = double("Status", :exitstatus => 0, :stdout => disabled_svc_stdout, :stdin => '', :stderr => '')
+    @disabled_svc_status = double("Status", :exitstatus => 0, :stdout => disabled_svc_stdout, :stdin => "", :stderr => "")
 
     # shell_out! return value for a service that is in maintenance mode
-    @maintenance_svc_status = double("Status", :exitstatus => 0, :stdout => maintenance_svc_stdout, :stdin => '', :stderr => '')
+    @maintenance_svc_status = double("Status", :exitstatus => 0, :stdout => maintenance_svc_stdout, :stdin => "", :stderr => "")
 
     # shell_out! return value for a service that does not exist
-    @no_svc_status = double("Status", :exitstatus => 1, :stdout => '', :stdin => '', :stderr => "svcs: Pattern 'chef' doesn't match any instances\n")
+    @no_svc_status = double("Status", :exitstatus => 1, :stdout => "", :stdin => "", :stderr => "svcs: Pattern 'chef' doesn't match any instances\n")
 
     # shell_out! return value for a successful execution
-    @success = double("clear", :exitstatus => 0, :stdout => '', :stdin => '', :stderr => '')
+    @success = double("clear", :exitstatus => 0, :stdout => "", :stdin => "", :stderr => "")
   end
 
   it "should raise an error if /bin/svcs and /usr/sbin/svcadm are not executable" do

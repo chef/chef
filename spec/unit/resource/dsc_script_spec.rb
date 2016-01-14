@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::DscScript do
-  let(:dsc_test_resource_name) { 'DSCTest' }
+  let(:dsc_test_resource_name) { "DSCTest" }
 
-  context 'when Powershell supports Dsc' do
+  context "when Powershell supports Dsc" do
     let(:dsc_test_run_context) {
       node = Chef::Node.new
-      node.automatic[:languages][:powershell][:version] = '4.0'
+      node.automatic[:languages][:powershell][:version] = "4.0"
       empty_events = Chef::EventDispatch::Dispatcher.new
       Chef::RunContext.new(node, {}, empty_events)
     }
@@ -32,10 +32,10 @@ describe Chef::Resource::DscScript do
       Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
     }
     let(:configuration_code) {'echo "This is supposed to create a configuration document."'}
-    let(:configuration_path) {'c:/myconfigs/formatc.ps1'}
-    let(:configuration_name) { 'formatme' }
+    let(:configuration_path) {"c:/myconfigs/formatc.ps1"}
+    let(:configuration_name) { "formatme" }
     let(:configuration_data) { '@{AllNodes = @( @{ NodeName = "localhost"; PSDscAllowPlainTextPassword = $true })}' }
-    let(:configuration_data_script) { 'c:/myconfigs/data/safedata.psd1' }
+    let(:configuration_data_script) { "c:/myconfigs/data/safedata.psd1" }
 
     it "has a default action of `:run`" do
       expect(dsc_test_resource.action).to eq([:run])
@@ -75,9 +75,9 @@ describe Chef::Resource::DscScript do
     end
 
     context "when calling imports" do
-      let(:module_name)   { 'FooModule' }
-      let(:module_name_b)   { 'BarModule' }
-      let(:dsc_resources) { ['ResourceA', 'ResourceB'] }
+      let(:module_name)   { "FooModule" }
+      let(:module_name_b)   { "BarModule" }
+      let(:dsc_resources) { ["ResourceA", "ResourceB"] }
 
       it "allows an arbitrary number of resources to be set for a module to be set" do
         dsc_test_resource.imports module_name, *dsc_resources
@@ -88,7 +88,7 @@ describe Chef::Resource::DscScript do
       it "adds * to the imports when no resources are set for a moudle" do
         dsc_test_resource.imports module_name
         module_imports = dsc_test_resource.imports[module_name]
-        expect(module_imports).to eq(['*'])
+        expect(module_imports).to eq(["*"])
       end
 
       it "allows an arbitrary number of modules" do

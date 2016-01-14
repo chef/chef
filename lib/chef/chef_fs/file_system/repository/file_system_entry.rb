@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/base_fs_dir'
-require 'chef/chef_fs/file_system/chef_server/rest_list_dir'
-require 'chef/chef_fs/file_system/already_exists_error'
-require 'chef/chef_fs/file_system/must_delete_recursively_error'
-require 'chef/chef_fs/file_system/not_found_error'
-require 'chef/chef_fs/path_utils'
-require 'fileutils'
+require "chef/chef_fs/file_system/base_fs_dir"
+require "chef/chef_fs/file_system/chef_server/rest_list_dir"
+require "chef/chef_fs/file_system/already_exists_error"
+require "chef/chef_fs/file_system/must_delete_recursively_error"
+require "chef/chef_fs/file_system/not_found_error"
+require "chef/chef_fs/path_utils"
+require "fileutils"
 
 class Chef
   module ChefFS
@@ -100,7 +100,7 @@ class Chef
           end
 
           def write(content)
-            File.open(file_path, 'wb') do |file|
+            File.open(file_path, "wb") do |file|
               file.write(content)
             end
           end

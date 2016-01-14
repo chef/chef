@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/recipe'
-require 'fileutils'
-require 'chef/dsl/platform_introspection'
-require 'chef/version'
-require 'chef/shell/shell_session'
-require 'chef/shell/model_wrapper'
-require 'chef/server_api'
-require 'chef/json_compat'
+require "tempfile"
+require "chef/recipe"
+require "fileutils"
+require "chef/dsl/platform_introspection"
+require "chef/version"
+require "chef/shell/shell_session"
+require "chef/shell/model_wrapper"
+require "chef/server_api"
+require "chef/json_compat"
 
 module Shell
   module Extensions

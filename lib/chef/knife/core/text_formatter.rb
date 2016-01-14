@@ -42,7 +42,7 @@ class Chef
         end
 
         def text_format(data)
-          buffer = ''
+          buffer = ""
 
           if data.respond_to?(:keys)
             justify_width = data.keys.map {|k| k.to_s.size }.max.to_i + 1

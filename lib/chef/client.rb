@@ -18,41 +18,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/path_sanity'
-require 'chef/log'
-require 'chef/server_api'
-require 'chef/api_client'
-require 'chef/api_client/registration'
-require 'chef/audit/runner'
-require 'chef/node'
-require 'chef/role'
-require 'chef/file_cache'
-require 'chef/run_context'
-require 'chef/runner'
-require 'chef/run_status'
-require 'chef/cookbook/cookbook_collection'
-require 'chef/cookbook/file_vendor'
-require 'chef/cookbook/file_system_file_vendor'
-require 'chef/cookbook/remote_file_vendor'
-require 'chef/event_dispatch/dispatcher'
-require 'chef/event_loggers/base'
-require 'chef/event_loggers/windows_eventlog'
-require 'chef/exceptions'
-require 'chef/formatters/base'
-require 'chef/formatters/doc'
-require 'chef/formatters/minimal'
-require 'chef/version'
-require 'chef/resource_reporter'
-require 'chef/audit/audit_reporter'
-require 'chef/run_lock'
-require 'chef/policy_builder'
-require 'chef/request_id'
-require 'chef/platform/rebooter'
-require 'chef/mixin/deprecation'
-require 'ohai'
-require 'rbconfig'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/path_sanity"
+require "chef/log"
+require "chef/server_api"
+require "chef/api_client"
+require "chef/api_client/registration"
+require "chef/audit/runner"
+require "chef/node"
+require "chef/role"
+require "chef/file_cache"
+require "chef/run_context"
+require "chef/runner"
+require "chef/run_status"
+require "chef/cookbook/cookbook_collection"
+require "chef/cookbook/file_vendor"
+require "chef/cookbook/file_system_file_vendor"
+require "chef/cookbook/remote_file_vendor"
+require "chef/event_dispatch/dispatcher"
+require "chef/event_loggers/base"
+require "chef/event_loggers/windows_eventlog"
+require "chef/exceptions"
+require "chef/formatters/base"
+require "chef/formatters/doc"
+require "chef/formatters/minimal"
+require "chef/version"
+require "chef/resource_reporter"
+require "chef/audit/audit_reporter"
+require "chef/run_lock"
+require "chef/policy_builder"
+require "chef/request_id"
+require "chef/platform/rebooter"
+require "chef/mixin/deprecation"
+require "ohai"
+require "rbconfig"
 
 class Chef
   # == Chef::Client
@@ -886,7 +886,7 @@ class Chef
     attr_reader :specific_recipes
 
     def profiling_prereqs!
-      require 'ruby-prof'
+      require "ruby-prof"
     rescue LoadError
       raise "You must have the ruby-prof gem installed in order to use --profile-ruby"
     end
@@ -934,7 +934,7 @@ class Chef
     end
 
     def has_admin_privileges?
-      require 'chef/win32/security'
+      require "chef/win32/security"
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
     end
@@ -942,6 +942,6 @@ class Chef
 end
 
 # HACK cannot load this first, but it must be loaded.
-require 'chef/cookbook_loader'
-require 'chef/cookbook_version'
-require 'chef/cookbook/synchronizer'
+require "chef/cookbook_loader"
+require "chef/cookbook_version"
+require "chef/cookbook/synchronizer"

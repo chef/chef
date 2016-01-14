@@ -20,19 +20,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'uri'
-require 'net/http'
+require "uri"
+require "net/http"
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined
 # in ohai, not ohai/version
 begin
-  require 'ohai/version' #used in user agent string.
+  require "ohai/version" #used in user agent string.
 rescue LoadError
-  require 'ohai'
+  require "ohai"
 end
 
-require 'chef/version'
+require "chef/version"
 
 class Chef
   class HTTP
@@ -60,7 +60,7 @@ class Chef
 
       HOST_LOWER = "host".freeze
 
-      URI_SCHEME_DEFAULT_PORT = { 'http'  => 80, 'https' => 443 }.freeze
+      URI_SCHEME_DEFAULT_PORT = { "http"  => 80, "https" => 443 }.freeze
 
       def self.user_agent=(ua)
         @user_agent = ua
@@ -139,13 +139,13 @@ class Chef
         @headers = headers.dup
         # No response compression unless we asked for it explicitly:
         @headers[HTTPRequest::ACCEPT_ENCODING] ||= "identity"
-        @headers['X-Chef-Version'] = ::Chef::VERSION
+        @headers["X-Chef-Version"] = ::Chef::VERSION
 
         # Only include port in Host header when it is not the default port
         # for the url scheme (80;443) - Fixes CHEF-5355
         host_header = uri_safe_host.dup
         host_header << ":#{port}" unless URI_SCHEME_DEFAULT_PORT[@url.scheme] == port.to_i
-        @headers['Host'] = host_header unless @headers.keys.any? {|k| k.downcase.to_s == HOST_LOWER }
+        @headers["Host"] = host_header unless @headers.keys.any? {|k| k.downcase.to_s == HOST_LOWER }
 
         @headers
       end

@@ -16,33 +16,33 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::ClientShow do
   before(:each) do
     @knife = Chef::Knife::ClientShow.new
-    @knife.name_args = [ 'adam' ]
-    @client_mock = double('client_mock')
+    @knife.name_args = [ "adam" ]
+    @client_mock = double("client_mock")
   end
 
-  describe 'run' do
-    it 'should list the client' do
-      expect(Chef::ApiClientV1).to receive(:load).with('adam').and_return(@client_mock)
+  describe "run" do
+    it "should list the client" do
+      expect(Chef::ApiClientV1).to receive(:load).with("adam").and_return(@client_mock)
       expect(@knife).to receive(:format_for_display).with(@client_mock)
       @knife.run
     end
 
-    it 'should pretty print json' do
-      @knife.config[:format] = 'json'
+    it "should pretty print json" do
+      @knife.config[:format] = "json"
       @stdout = StringIO.new
       allow(@knife.ui).to receive(:stdout).and_return(@stdout)
       fake_client_contents = {"foo"=>"bar", "baz"=>"qux"}
-      expect(Chef::ApiClientV1).to receive(:load).with('adam').and_return(fake_client_contents)
+      expect(Chef::ApiClientV1).to receive(:load).with("adam").and_return(fake_client_contents)
       @knife.run
       expect(@stdout.string).to eql("{\n  \"foo\": \"bar\",\n  \"baz\": \"qux\"\n}\n")
     end
 
-    it 'should print usage and exit when a client name is not provided' do
+    it "should print usage and exit when a client name is not provided" do
       @knife.name_args = []
       expect(@knife).to receive(:show_usage)
       expect(@knife.ui).to receive(:fatal)

@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system'
-require 'chef/chef_fs/file_system/operation_failed_error'
-require 'chef/chef_fs/file_system/operation_not_allowed_error'
-require 'chef/util/diff'
+require "chef/chef_fs/file_system"
+require "chef/chef_fs/file_system/operation_failed_error"
+require "chef/chef_fs/file_system/operation_not_allowed_error"
+require "chef/util/diff"
 
 class Chef
   module ChefFS
@@ -72,7 +72,7 @@ class Chef
             elsif old_value
               result = "diff --knife #{old_path} #{new_path}\n"
               result << "deleted file\n"
-              result << diff_text(old_path, '/dev/null', old_value, '')
+              result << diff_text(old_path, "/dev/null", old_value, "")
               yield result
             else
               yield "Only in #{format_path.call(old_entry.parent)}: #{old_entry.name}\n"
@@ -87,7 +87,7 @@ class Chef
             elsif new_value
               result = "diff --knife #{old_path} #{new_path}\n"
               result << "new file\n"
-              result << diff_text('/dev/null', new_path, '', new_value)
+              result << diff_text("/dev/null", new_path, "", new_value)
               yield result
             else
               yield "Only in #{format_path.call(new_entry.parent)}: #{new_entry.name}\n"

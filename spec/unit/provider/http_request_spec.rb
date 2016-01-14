@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::HttpRequest do
   before(:each) do
@@ -24,7 +24,7 @@ describe Chef::Provider::HttpRequest do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::HttpRequest.new('adam')
+    @new_resource = Chef::Resource::HttpRequest.new("adam")
     @new_resource.name "adam"
     @new_resource.url "http://www.opscode.com/"
     @new_resource.message "is cool"

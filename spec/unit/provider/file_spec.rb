@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'support/shared/unit/provider/file'
+require "support/shared/unit/provider/file"
 
 describe Chef::Provider::File do
 
@@ -29,12 +29,12 @@ describe Chef::Provider::File do
   end
 
   let(:content) do
-    content = double('Chef::Provider::File::Content')
+    content = double("Chef::Provider::File::Content")
   end
 
-  let(:node) { double('Chef::Node') }
-  let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
-  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
+  let(:node) { double("Chef::Node") }
+  let(:events) { double("Chef::Events").as_null_object }  # mock all the methods
+  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
   let(:enclosing_directory) {
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
   }

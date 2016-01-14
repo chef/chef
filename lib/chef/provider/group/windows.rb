@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/user'
+require "chef/provider/user"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'chef/util/windows/net_group'
+  require "chef/util/windows/net_group"
 end
 
 class Chef
@@ -26,7 +26,7 @@ class Chef
     class Group
       class Windows < Chef::Provider::Group
 
-        provides :group, os: 'windows'
+        provides :group, os: "windows"
 
         def initialize(new_resource,run_context)
           super

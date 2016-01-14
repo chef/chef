@@ -18,12 +18,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'rspec/core/sandbox'
-require 'chef/audit/runner'
-require 'rspec/support/spec/in_sub_process'
-require 'rspec/support/spec/stderr_splitter'
-require 'chef/audit/rspec_formatter'
+require "spec_helper"
+require "rspec/core/sandbox"
+require "chef/audit/runner"
+require "rspec/support/spec/in_sub_process"
+require "rspec/support/spec/stderr_splitter"
+require "chef/audit/rspec_formatter"
 
 describe Chef::Audit::RspecFormatter do
   include RSpec::Support::InSubProcess

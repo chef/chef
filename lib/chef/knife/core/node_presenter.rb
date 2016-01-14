@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife/core/text_formatter'
-require 'chef/knife/core/generic_presenter'
+require "chef/knife/core/text_formatter"
+require "chef/knife/core/generic_presenter"
 
 class Chef
   class Knife
@@ -32,18 +32,18 @@ class Chef
         def self.included(includer)
           includer.class_eval do
             option :medium_output,
-              :short   => '-m',
-              :long    => '--medium',
+              :short   => "-m",
+              :long    => "--medium",
               :boolean => true,
               :default => false,
-              :description => 'Include normal attributes in the output'
+              :description => "Include normal attributes in the output"
 
             option :long_output,
-              :short   => '-l',
-              :long    => '--long',
+              :short   => "-l",
+              :long    => "--long",
               :boolean => true,
               :default => false,
-              :description => 'Include all attributes in the output'
+              :description => "Include all attributes in the output"
           end
         end
       end

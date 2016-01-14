@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/chef_class'
+require "chef/chef_class"
 
 class Chef
   class Platform

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/platform/query_helpers'
-require 'chef/provider/windows_script'
+require "chef/platform/query_helpers"
+require "chef/provider/windows_script"
 
 class Chef
   class Provider
@@ -26,7 +26,7 @@ class Chef
       provides :powershell_script, os: "windows"
 
       def initialize (new_resource, run_context)
-        super(new_resource, run_context, '.ps1')
+        super(new_resource, run_context, ".ps1")
         add_exit_status_wrapper
       end
 
@@ -58,10 +58,10 @@ class Chef
       end
 
       def flags
-        interpreter_flags = [*default_interpreter_flags].join(' ')
+        interpreter_flags = [*default_interpreter_flags].join(" ")
 
         if ! (@new_resource.flags.nil?)
-          interpreter_flags = [@new_resource.flags, interpreter_flags].join(' ')
+          interpreter_flags = [@new_resource.flags, interpreter_flags].join(" ")
         end
 
         interpreter_flags
@@ -78,8 +78,8 @@ class Chef
       end
 
       def validate_script_syntax!
-        interpreter_arguments = default_interpreter_flags.join(' ')
-        Tempfile.open(['chef_powershell_script-user-code', '.ps1']) do | user_script_file |
+        interpreter_arguments = default_interpreter_flags.join(" ")
+        Tempfile.open(["chef_powershell_script-user-code", ".ps1"]) do | user_script_file |
           # Wrap the user's code in a PowerShell script block so that
           # it isn't executed. However, syntactically invalid script
           # in that block will still trigger a syntax error which is
@@ -122,7 +122,7 @@ EOH
         # user input confirmation for files such as PowerShell modules
         # downloaded from the Internet. However, 'Bypass' is not supported
         # prior to PowerShell 3.0, so the fallback is 'Unrestricted'
-        execution_policy = Chef::Platform.supports_powershell_execution_bypass?(run_context.node) ? 'Bypass' : 'Unrestricted'
+        execution_policy = Chef::Platform.supports_powershell_execution_bypass?(run_context.node) ? "Bypass" : "Unrestricted"
 
         [
           "-NoLogo",

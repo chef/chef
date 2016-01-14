@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/util/powershell/cmdlet'
-require 'chef/util/dsc/configuration_generator'
-require 'chef/util/dsc/local_configuration_manager'
-require 'chef/util/path_helper'
+require "chef/util/powershell/cmdlet"
+require "chef/util/dsc/configuration_generator"
+require "chef/util/dsc/local_configuration_manager"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
@@ -65,12 +65,12 @@ class Chef
       def define_resource_requirements
         requirements.assert(:run) do |a|
           err = [
-            'Could not find PowerShell DSC support on the system',
+            "Could not find PowerShell DSC support on the system",
             powershell_info_str,
             "Powershell 4.0 or higher was not detected on your system and is required to use the dsc_script resource.",
           ]
           a.assertion { supports_dsc? }
-          a.failure_message Chef::Exceptions::ProviderNotFound, err.join(' ')
+          a.failure_message Chef::Exceptions::ProviderNotFound, err.join(" ")
           a.whyrun err + ["Assuming a previous resource installs Powershell 4.0 or higher."]
           a.block_action!
         end
@@ -129,7 +129,7 @@ class Chef
         else
           # If code is also not provided, we mimic what the other script resources do (execute nothing)
           Chef::Log.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
-          generator.configuration_document_from_script_code(@dsc_resource.code || '', configuration_flags, @dsc_resource.imports, shellout_flags)
+          generator.configuration_document_from_script_code(@dsc_resource.code || "", configuration_flags, @dsc_resource.imports, shellout_flags)
         end
       end
 
@@ -138,7 +138,7 @@ class Chef
           @dsc_resource.configuration_data_script
         elsif @dsc_resource.configuration_data
           configuration_data_path = "#{config_directory}/chef_dsc_config_data.psd1"
-          ::File.open(configuration_data_path, 'wt') do | script |
+          ::File.open(configuration_data_path, "wt") do | script |
             script.write(@dsc_resource.configuration_data)
           end
           configuration_data_path
@@ -164,7 +164,7 @@ class Chef
           @dsc_resources_info.map do |resource|
             if resource.changes_state?
               # We ignore the last log message because it only contains the time it took, which looks weird
-              cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, '').strip }
+              cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, "").strip }
               "converge DSC resource #{resource.name} by #{cleaned_messages.find_all{ |c| c != ''}.join("\n")}"
             else
               # This is needed because a dsc script can have resources that are both converged and not
@@ -177,7 +177,7 @@ class Chef
         if run_context && run_context.node[:languages] && run_context.node[:languages][:powershell]
           install_info = "Powershell #{run_context.node[:languages][:powershell][:version]} was found on the system."
         else
-          install_info = 'Powershell was not found.'
+          install_info = "Powershell was not found."
         end
       end
     end

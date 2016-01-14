@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'open3'
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
+require "open3"
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
 
 class Chef
   class Provider
@@ -70,7 +70,7 @@ class Chef
           normal_command = "pkg#{expand_options(@new_resource.options)} install -q #{package_name}"
           command =
             if @new_resource.respond_to?(:accept_license) and @new_resource.accept_license
-              normal_command.gsub('-q', '-q --accept')
+              normal_command.gsub("-q", "-q --accept")
             else
               normal_command
             end

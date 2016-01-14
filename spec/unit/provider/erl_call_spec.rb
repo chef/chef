@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::ErlCall do
   before(:each) do
@@ -33,7 +33,7 @@ describe Chef::Provider::ErlCall do
 
     allow(@provider).to receive(:popen4).and_return(@status)
     @stdin = StringIO.new
-    @stdout = StringIO.new('{ok, woohoo}')
+    @stdout = StringIO.new("{ok, woohoo}")
     @stderr = StringIO.new
     @pid = 2342999
   end

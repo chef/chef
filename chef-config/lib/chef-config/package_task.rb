@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'rake'
-require 'rubygems'
-require 'rubygems/package_task'
+require "rake"
+require "rubygems"
+require "rubygems/package_task"
 
 module ChefConfig
   class PackageTask < Rake::TaskLib
@@ -70,9 +70,9 @@ module ChefConfig
       @module_name = module_name
       @component_paths = []
       @module_path = nil
-      @version_file_path = 'VERSION'
-      @package_dir = 'pkg'
-      @git_remote = 'origin'
+      @version_file_path = "VERSION"
+      @package_dir = "pkg"
+      @git_remote = "origin"
       @generate_version_class = false
     end
 
@@ -93,7 +93,7 @@ module ChefConfig
     end
 
     def class_or_module
-      generate_version_class ? 'class' : 'module'
+      generate_version_class ? "class" : "module"
     end
 
     def with_clean_env(&block)
@@ -105,46 +105,46 @@ module ChefConfig
     end
 
     def define
-      raise 'Need to provide package root and module name' if root_path.nil? || module_name.nil?
+      raise "Need to provide package root and module name" if root_path.nil? || module_name.nil?
 
-      desc 'Build Gems of component dependencies'
+      desc "Build Gems of component dependencies"
       task :package_components do
         component_full_paths.each do |component_path|
           Dir.chdir(component_path) do
-            sh 'rake package'
+            sh "rake package"
           end
         end
       end
 
       task :package => :package_components
 
-      desc 'Build and install component dependencies'
+      desc "Build and install component dependencies"
       task :install_components => :package_components do
         component_full_paths.each do |component_path|
           Dir.chdir(component_path) do
-            sh 'rake install'
+            sh "rake install"
           end
         end
       end
 
       task :install => :install_components
 
-      desc 'Clean up builds of component dependencies'
+      desc "Clean up builds of component dependencies"
       task :clobber_component_packages do
         component_full_paths.each do |component_path|
           Dir.chdir(component_path) do
-            sh 'rake clobber_package'
+            sh "rake clobber_package"
           end
         end
       end
 
       task :clobber_package => :clobber_component_packages
 
-      desc 'Update the version number for component dependencies'
+      desc "Update the version number for component dependencies"
       task :update_components_versions do
         component_full_paths.each do |component_path|
           Dir.chdir(component_path) do
-            sh 'rake version'
+            sh "rake version"
           end
         end
       end
@@ -209,11 +209,11 @@ end
         sh %{gem uninstall #{module_path} -x -v #{version} }
       end
 
-      desc 'Build it, tag it and ship it'
+      desc "Build it, tag it and ship it"
       task :ship => [:clobber_package, :gem] do
         sh("git tag #{version}")
         sh("git push #{git_remote} --tags")
-        Dir[File.expand_path('*.gem', full_package_dir)].reverse.each do |built_gem|
+        Dir[File.expand_path("*.gem", full_package_dir)].reverse.each do |built_gem|
           sh("gem push #{built_gem}")
         end
       end

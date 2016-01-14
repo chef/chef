@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 # DEPRECATION NOTE
 # This code only remains to support users still operating with
@@ -30,8 +30,8 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require 'chef/user'
-        require 'chef/json_compat'
+        require "chef/user"
+        require "chef/json_compat"
       end
 
       banner "knife osc_user show USER (options)"

@@ -17,24 +17,24 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
 shared_examples "src service" do
 
   include Chef::Mixin::ShellOut
 
   def service_should_be_started
-    expect(shell_out!("lssrc -a | grep #{new_resource.service_name}").stdout.split(' ').last).to eq("active")
+    expect(shell_out!("lssrc -a | grep #{new_resource.service_name}").stdout.split(" ").last).to eq("active")
   end
 
   def service_should_be_stopped
-    expect(shell_out!("lssrc -a | grep #{new_resource.service_name}").stdout.split(' ').last).to eq("inoperative")
+    expect(shell_out!("lssrc -a | grep #{new_resource.service_name}").stdout.split(" ").last).to eq("inoperative")
   end
 
   def get_service_pid
-    args = shell_out!("lssrc -a | grep #{new_resource.service_name}").stdout.split(' ')
+    args = shell_out!("lssrc -a | grep #{new_resource.service_name}").stdout.split(" ")
     if args.length == 3
       args[1]
     else

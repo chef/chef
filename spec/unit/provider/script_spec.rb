@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Script, "action_run" do
   let(:node) { Chef::Node.new }
@@ -26,9 +26,9 @@ describe Chef::Provider::Script, "action_run" do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
   let(:new_resource) {
-    new_resource = Chef::Resource::Script.new('run some perl code')
+    new_resource = Chef::Resource::Script.new("run some perl code")
     new_resource.code "$| = 1; print 'i like beans'"
-    new_resource.interpreter 'perl'
+    new_resource.interpreter "perl"
     new_resource
   }
 
@@ -58,9 +58,9 @@ describe Chef::Provider::Script, "action_run" do
 
   context "#set_owner_and_group" do
     it "sets the owner and group for the script file" do
-      new_resource.user 'toor'
-      new_resource.group 'wheel'
-      expect(FileUtils).to receive(:chown).with('toor', 'wheel', tempfile.path)
+      new_resource.user "toor"
+      new_resource.group "wheel"
+      expect(FileUtils).to receive(:chown).with("toor", "wheel", tempfile.path)
       provider.set_owner_and_group
     end
   end
@@ -99,13 +99,13 @@ describe Chef::Provider::Script, "action_run" do
         expect(provider.command).to eq(%Q{"perl"  "#{tempfile.path}"})
       end
 
-      it 'should call shell_out! with the command' do
+      it "should call shell_out! with the command" do
         expect(provider).to receive(:shell_out!).with(provider.command, default_opts).and_return(true)
         provider.action_run
       end
 
       it "should set the command to 'interpreter flags tempfile'" do
-        new_resource.flags '-f'
+        new_resource.flags "-f"
         expect(provider.command).to eq(%Q{"perl" -f "#{tempfile.path}"})
       end
     end

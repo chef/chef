@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Provider::Mount::Mount do
   before(:each) do
@@ -42,15 +42,15 @@ describe Chef::Provider::Mount::Mount do
 
   describe "when discovering the current fs state" do
     before do
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => ''))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => ""))
       allow(::File).to receive(:foreach).with("/etc/fstab")
     end
 
     it "should create a current resource with the same mount point and device" do
       @provider.load_current_resource
-      expect(@provider.current_resource.name).to eq('/tmp/foo')
-      expect(@provider.current_resource.mount_point).to eq('/tmp/foo')
-      expect(@provider.current_resource.device).to eq('/dev/sdz1')
+      expect(@provider.current_resource.name).to eq("/tmp/foo")
+      expect(@provider.current_resource.mount_point).to eq("/tmp/foo")
+      expect(@provider.current_resource.device).to eq("/dev/sdz1")
     end
 
     it "should accecpt device_type :uuid", :not_supported_on_solaris do
@@ -134,7 +134,7 @@ describe Chef::Provider::Mount::Mount do
 
     it "should set mounted true if the symlink target of the device is found in the mounts list" do
       # expand the target path to correct specs on Windows
-      target = ::File.expand_path('/dev/mapper/target')
+      target = ::File.expand_path("/dev/mapper/target")
 
       allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
       allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
@@ -266,7 +266,7 @@ describe Chef::Provider::Mount::Mount do
       fstab = "#{@new_resource.device} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
       @provider.load_current_resource
-      expect(@provider.current_resource.options).to eq(options.split(','))
+      expect(@provider.current_resource.options).to eq(options.split(","))
     end
 
     it "should not mangle the mount options if the symlink target is in fstab" do
@@ -279,7 +279,7 @@ describe Chef::Provider::Mount::Mount do
       fstab = "#{target} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
       @provider.load_current_resource
-      expect(@provider.current_resource.options).to eq(options.split(','))
+      expect(@provider.current_resource.options).to eq(options.split(","))
     end
   end
 
@@ -311,7 +311,7 @@ describe Chef::Provider::Mount::Mount do
         @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         @new_resource.device_type :uuid
         allow(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
-        @stdout_mock = double('stdout mock')
+        @stdout_mock = double("stdout mock")
         allow(@stdout_mock).to receive(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
         expect(@provider).to receive(:shell_out!).with("mount -t #{@new_resource.fstype} -o defaults -U #{@new_resource.device} #{@new_resource.mount_point}").and_return(@stdout_mock)
         @provider.mount_fs()

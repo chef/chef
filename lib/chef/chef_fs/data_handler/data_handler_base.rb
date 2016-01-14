@@ -147,7 +147,7 @@ class Chef
         #   environment "desert"'
         #
         def to_ruby_keys(object, keys)
-          result = ''
+          result = ""
           keys.each do |key|
             if object[key]
               if object[key].is_a?(Hash)
@@ -158,7 +158,7 @@ class Chef
                     if first
                       first = false
                     else
-                      result << ' '*key.length
+                      result << " "*key.length
                     end
                     result << " #{k.inspect} => #{v.inspect}\n"
                   end
@@ -191,7 +191,7 @@ class Chef
         #
         def verify_integrity(object, entry, &on_error)
           base_name = remove_dot_json(entry.name)
-          if object['name'] != base_name
+          if object["name"] != base_name
             on_error.call("Name must be '#{base_name}' (is '#{object['name']}')")
           end
         end

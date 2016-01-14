@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
-require 'support/shared/functional/http'
+require "spec_helper"
+require "tiny_server"
+require "support/shared/functional/http"
 
 describe Chef::REST do
   include ChefHTTPShared

@@ -23,10 +23,10 @@
 # generate will call that file, and will be registered as
 # a windows service.
 
-require 'rubygems'
+require "rubygems"
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-require 'chef'
-require 'chef/application/windows_service'
+require "chef"
+require "chef/application/windows_service"
 
 if Chef::Platform.windows?
   Chef::Application::WindowsService.mainloop

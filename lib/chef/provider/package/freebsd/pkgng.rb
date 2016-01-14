@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package/freebsd/base'
+require "chef/provider/package/freebsd/base"
 
 class Chef
   class Provider
@@ -28,17 +28,17 @@ class Chef
             unless @current_resource.version
               case @new_resource.source
               when /^(http|ftp|\/)/
-                shell_out_with_timeout!("pkg add#{expand_options(@new_resource.options)} #{@new_resource.source}", :env => { 'LC_ALL' => nil }).status
+                shell_out_with_timeout!("pkg add#{expand_options(@new_resource.options)} #{@new_resource.source}", :env => { "LC_ALL" => nil }).status
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               else
-                shell_out_with_timeout!("pkg install -y#{expand_options(@new_resource.options)} #{name}", :env => { 'LC_ALL' => nil }).status
+                shell_out_with_timeout!("pkg install -y#{expand_options(@new_resource.options)} #{name}", :env => { "LC_ALL" => nil }).status
               end
             end
           end
 
           def remove_package(name, version)
-            options = @new_resource.options && @new_resource.options.sub(repo_regex, '')
+            options = @new_resource.options && @new_resource.options.sub(repo_regex, "")
             options && !options.empty? || options = nil
             shell_out_with_timeout!("pkg delete -y#{expand_options(options)} #{name}#{version ? '-' + version : ''}", :env => nil).status
           end

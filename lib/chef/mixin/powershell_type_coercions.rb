@@ -25,8 +25,8 @@ class Chef
         @type_coercions ||= {
           Fixnum => { :type => lambda { |x| x.to_s }},
           Float => { :type => lambda { |x| x.to_s }},
-          FalseClass => { :type => lambda { |x| '$false' }},
-          TrueClass => { :type => lambda { |x| '$true' }},
+          FalseClass => { :type => lambda { |x| "$false" }},
+          TrueClass => { :type => lambda { |x| "$true" }},
           Hash => {:type => Proc.new { |x| translate_hash(x)}},
           Array => {:type => Proc.new { |x| translate_array(x)}},
         }
@@ -61,7 +61,7 @@ class Chef
       end
 
       def unsafe?(s)
-        ["'", '#', '`', '"'].any? do |x|
+        ["'", '#', "`", '"'].any? do |x|
           s.include? x
         end
       end

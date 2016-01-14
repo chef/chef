@@ -144,7 +144,7 @@ shared_examples_for "a file with the wrong content" do
   end
 
   context "when diff is enabled" do
-    describe 'sensitive attribute' do
+    describe "sensitive attribute" do
       context "should be insensitive by default" do
         it { expect(resource.sensitive).to(be_falsey) }
       end
@@ -165,7 +165,7 @@ shared_examples_for "a file with the wrong content" do
           end
 
           it "should suppress the diff" do
-            expect(resource.diff).to(include('suppressed sensitive resource'))
+            expect(resource.diff).to(include("suppressed sensitive resource"))
             expect(reporter_messages[1]).to eq("suppressed sensitive resource")
           end
 
@@ -776,7 +776,7 @@ shared_examples_for "a configured file resource" do
   end
 
   context "when the target file is a socket",:unix_only do
-    require 'socket'
+    require "socket"
 
     # It turns out that the path to a socket can have at most ~104
     # bytes. Therefore we are creating our sockets in tmpdir so that
@@ -1020,14 +1020,14 @@ end
 
 shared_context Chef::Resource::File  do
   if windows?
-    require 'chef/win32/file'
+    require "chef/win32/file"
   end
 
   # We create the files in a different directory than tmp to exercise
   # different file deployment strategies more completely.
   let(:test_file_dir) do
     if windows?
-      File.join(ENV['systemdrive'], "test-dir")
+      File.join(ENV["systemdrive"], "test-dir")
     else
       File.join(CHEF_SPEC_DATA, "test-dir")
     end

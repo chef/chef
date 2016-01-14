@@ -1,5 +1,5 @@
 
-require 'chef/exceptions'
+require "chef/exceptions"
 
 class Chef
   class Whitelist

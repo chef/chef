@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-describe 'Chef::ReservedNames::Win32::Memory', :windows_only do
+describe "Chef::ReservedNames::Win32::Memory", :windows_only do
 end

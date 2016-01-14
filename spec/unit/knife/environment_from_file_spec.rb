@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::EnvironmentFromFile.load_deps
 
@@ -39,7 +39,7 @@ describe Chef::Knife::EnvironmentFromFile do
 
   describe "run" do
     it "loads the environment data from a file and saves it" do
-      expect(@knife.loader).to receive(:load_from).with('environments', 'spec.rb').and_return(@environment)
+      expect(@knife.loader).to receive(:load_from).with("environments", "spec.rb").and_return(@environment)
       expect(@environment).to receive(:save)
       @knife.run
     end

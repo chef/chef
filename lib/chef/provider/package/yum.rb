@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/provider/package'
-require 'chef/mixin/which'
-require 'chef/resource/package'
-require 'singleton'
-require 'chef/mixin/get_source_from_package'
+require "chef/config"
+require "chef/provider/package"
+require "chef/mixin/which"
+require "chef/resource/package"
+require "singleton"
+require "chef/mixin/get_source_from_package"
 
 class Chef
   class Provider
@@ -712,7 +712,7 @@ class Chef
             one_line = false
             error = nil
 
-            helper = ::File.join(::File.dirname(__FILE__), 'yum-dump.py')
+            helper = ::File.join(::File.dirname(__FILE__), "yum-dump.py")
             status = nil
 
             begin
@@ -797,12 +797,12 @@ class Chef
           end
 
           def extract_interpreter(file)
-            ::File.open(file, 'r', &:readline)[2..-1].strip
+            ::File.open(file, "r", &:readline)[2..-1].strip
           end
 
           # dnf based systems have a yum shim that has /bin/bash as the interpreter. Don't use this.
           def shabang_or_fallback(interpreter)
-            if interpreter == '/bin/bash'
+            if interpreter == "/bin/bash"
               Chef::Log.warn("Yum executable interpreter is /bin/bash. Falling back to default python.")
               "/usr/bin/python"
             else
@@ -811,7 +811,7 @@ class Chef
           end
 
           def shabang?(file)
-            ::File.open(file, 'r') do |f|
+            ::File.open(file, "r") do |f|
               f.read(2) == '#!'
             end
           rescue Errno::ENOENT
@@ -1245,7 +1245,7 @@ class Chef
             as_array(name).zip(as_array(version)).each do |n, v|
               idx = package_name_array.index(n)
               a = arch_for_name(n)
-              s = ''
+              s = ""
               unless v == current_version_array[idx]
                 s = "#{n}-#{v}#{yum_arch(a)}"
                 repo = @yum.package_repository(n, v, a)
@@ -1253,7 +1253,7 @@ class Chef
                 pkg_string_bits << s
               end
             end
-            pkg_string = pkg_string_bits.join(' ')
+            pkg_string = pkg_string_bits.join(" ")
             Chef::Log.info("#{@new_resource} #{log_method} #{repos.join(' ')}")
             yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{pkg_string}")
           else
@@ -1305,12 +1305,12 @@ class Chef
             remove_str = as_array(name).zip(as_array(version)).map do |n, v|
               a = arch_for_name(n)
               "#{[n, v].join('-')}#{yum_arch(a)}"
-            end.join(' ')
+            end.join(" ")
           else
             remove_str = as_array(name).map do |n|
               a = arch_for_name(n)
               "#{n}#{yum_arch(a)}"
-            end.join(' ')
+            end.join(" ")
           end
           yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} remove #{remove_str}")
 

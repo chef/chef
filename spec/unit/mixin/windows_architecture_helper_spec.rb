@@ -17,8 +17,8 @@
 #
 
 
-require 'spec_helper'
-require 'chef/mixin/windows_architecture_helper'
+require "spec_helper"
+require "chef/mixin/windows_architecture_helper"
 
 
 

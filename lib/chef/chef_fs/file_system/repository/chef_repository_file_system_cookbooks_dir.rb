@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_entry'
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir'
-require 'chef/cookbook/chefignore'
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir"
+require "chef/cookbook/chefignore"
 
 class Chef
   module ChefFS
@@ -50,7 +50,7 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            is_dir && !name.start_with?('.')
+            is_dir && !name.start_with?(".")
           end
 
           def write_cookbook(cookbook_path, cookbook_version_json, from_fs)
@@ -67,7 +67,7 @@ class Chef
               FileUtils.mkdir_p(cookbook_file_path)
             end
             uploaded_cookbook_version_path = File.join(cookbook_file_path, Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE)
-            File.open(uploaded_cookbook_version_path, 'w') do |file|
+            File.open(uploaded_cookbook_version_path, "w") do |file|
               file.write(cookbook_version_json)
             end
           end

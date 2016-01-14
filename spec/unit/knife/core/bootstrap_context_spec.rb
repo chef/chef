@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/core/bootstrap_context'
+require "spec_helper"
+require "chef/knife/core/bootstrap_context"
 
 describe Chef::Knife::Core::BootstrapContext do
   let(:config) { {:foo => :bar, :color => true} }
-  let(:run_list) { Chef::RunList.new('recipe[tmux]', 'role[base]') }
+  let(:run_list) { Chef::RunList.new("recipe[tmux]", "role[base]") }
   let(:chef_config) do
     {
-      :validation_key => File.join(CHEF_SPEC_DATA, 'ssl', 'private_key.pem'),
-      :chef_server_url => 'http://chef.example.com:4444',
-      :validation_client_name => 'chef-validator-testing',
+      :validation_key => File.join(CHEF_SPEC_DATA, "ssl", "private_key.pem"),
+      :chef_server_url => "http://chef.example.com:4444",
+      :validation_client_name => "chef-validator-testing",
     }
   end
 
@@ -57,7 +57,7 @@ describe Chef::Knife::Core::BootstrapContext do
   end
 
   it "reads the validation key" do
-    expect(bootstrap_context.validation_key).to eq IO.read(File.join(CHEF_SPEC_DATA, 'ssl', 'private_key.pem'))
+    expect(bootstrap_context.validation_key).to eq IO.read(File.join(CHEF_SPEC_DATA, "ssl", "private_key.pem"))
   end
 
   it "generates the config file data" do
@@ -75,23 +75,23 @@ EXPECTED
   end
 
   describe "alternate chef-client path" do
-    let(:chef_config){ {:chef_client_path => '/usr/local/bin/chef-client'} }
+    let(:chef_config){ {:chef_client_path => "/usr/local/bin/chef-client"} }
     it "runs chef-client from another path when specified" do
       expect(bootstrap_context.start_chef).to eq "/usr/local/bin/chef-client -j /etc/chef/first-boot.json"
     end
   end
 
   describe "validation key path that contains a ~" do
-    let(:chef_config){ {:validation_key => '~/my.key'} }
+    let(:chef_config){ {:validation_key => "~/my.key"} }
     it "reads the validation key when it contains a ~" do
-      expect(File).to receive(:exist?).with(File.expand_path("my.key", ENV['HOME'])).and_return(true)
-      expect(IO).to receive(:read).with(File.expand_path("my.key", ENV['HOME']))
+      expect(File).to receive(:exist?).with(File.expand_path("my.key", ENV["HOME"])).and_return(true)
+      expect(IO).to receive(:read).with(File.expand_path("my.key", ENV["HOME"]))
       bootstrap_context.validation_key
     end
   end
 
   describe "when an explicit node name is given" do
-    let(:config){ {:chef_node_name => 'foobar.example.com' }}
+    let(:config){ {:chef_node_name => "foobar.example.com" }}
     it "sets the node name in the client.rb" do
       expect(bootstrap_context.config_content).to match(/node_name "foobar\.example\.com"/)
     end
@@ -100,7 +100,7 @@ EXPECTED
   describe "when bootstrapping into a specific environment" do
     let(:config){ {:environment => "prodtastic", :color => true} }
     it "starts chef in the configured environment" do
-      expect(bootstrap_context.start_chef).to eq('chef-client -j /etc/chef/first-boot.json -E prodtastic')
+      expect(bootstrap_context.start_chef).to eq("chef-client -j /etc/chef/first-boot.json -E prodtastic")
     end
   end
 

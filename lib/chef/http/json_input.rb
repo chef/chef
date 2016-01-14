@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/json_compat'
+require "chef/json_compat"
 
 class Chef
   class HTTP
@@ -33,8 +33,8 @@ class Chef
 
       def handle_request(method, url, headers={}, data=false)
         if data && should_encode_as_json?(headers)
-          headers.delete_if { |key, _value| key.downcase == 'content-type' }
-          headers["Content-Type"] = 'application/json'
+          headers.delete_if { |key, _value| key.downcase == "content-type" }
+          headers["Content-Type"] = "application/json"
           json_opts = {}
           json_opts[:validate_utf8] = opts[:validate_utf8] if opts.has_key?(:validate_utf8)
           data = Chef::JSONCompat.to_json(data, json_opts)

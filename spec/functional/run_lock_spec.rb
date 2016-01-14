@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.expand_path('../../spec_helper', __FILE__)
-require 'chef/client'
+require File.expand_path("../../spec_helper", __FILE__)
+require "chef/client"
 
 describe Chef::RunLock do
 
@@ -59,8 +59,8 @@ describe Chef::RunLock do
     BREATHING_ROOM = 1
 
     # ClientProcess is defined below
-    let!(:p1) { ClientProcess.new(self, 'p1') }
-    let!(:p2) { ClientProcess.new(self, 'p2') }
+    let!(:p1) { ClientProcess.new(self, "p1") }
+    let!(:p2) { ClientProcess.new(self, "p2") }
     after(:each) do |example|
       begin
         p1.stop
@@ -103,7 +103,7 @@ describe Chef::RunLock do
           end
 
           it "the lockfile is empty" do
-            expect(IO.read(lockfile)).to eq('')
+            expect(IO.read(lockfile)).to eq("")
           end
 
           context "and a second client gets the lock" do
@@ -157,7 +157,7 @@ describe Chef::RunLock do
         end
 
         it "the lockfile is empty" do
-          expect(IO.read(lockfile)).to eq('')
+          expect(IO.read(lockfile)).to eq("")
         end
 
         it "and a second client tries to acquire the lock, it doesn't get the lock until *after* the first client exits" do

@@ -1,5 +1,5 @@
-require 'spec_helper'
-require 'chef/chef_fs/parallelizer'
+require "spec_helper"
+require "chef/chef_fs/parallelizer"
 
 describe Chef::ChefFS::Parallelizer do
   before :each do
@@ -14,7 +14,7 @@ describe Chef::ChefFS::Parallelizer do
     parallelizer.kill
   end
 
-  context 'With a Parallelizer with 5 threads' do
+  context "With a Parallelizer with 5 threads" do
     let :parallelizer do
       Chef::ChefFS::Parallelizer.new(5)
     end
@@ -44,7 +44,7 @@ describe Chef::ChefFS::Parallelizer do
       it "10 sleep(0.2)s complete within 0.5 seconds" do
         expect(parallelize(1.upto(10), :ordered => false) do |i|
           sleep 0.2
-          'x'
+          "x"
         end.to_a).to eq(%w(x x x x x x x x x x))
         expect(elapsed_time).to be < 0.5
       end
@@ -62,28 +62,28 @@ describe Chef::ChefFS::Parallelizer do
 
       it "An exception in input is passed through but does NOT stop processing" do
         input = TestEnumerable.new(0.5,0.3,0.1) do
-          raise 'hi'
+          raise "hi"
         end
         enum = parallelize(input, :ordered => false) { |x| sleep(x); x }
         results = []
-        expect { enum.each { |value| results << value } }.to raise_error 'hi'
+        expect { enum.each { |value| results << value } }.to raise_error "hi"
         expect(results).to eq([ 0.1, 0.3, 0.5 ])
         expect(elapsed_time).to be < 0.6
       end
 
       it "Exceptions in output are raised after all processing is done" do
         processed = 0
-        enum = parallelize([1,2,'x',3], :ordered => false) do |x|
-          if x == 'x'
+        enum = parallelize([1,2,"x",3], :ordered => false) do |x|
+          if x == "x"
             sleep 0.1
-            raise 'hi'
+            raise "hi"
           end
           sleep 0.2
           processed += 1
           x
         end
         results = []
-        expect { enum.each { |value| results << value } }.to raise_error 'hi'
+        expect { enum.each { |value| results << value } }.to raise_error "hi"
         expect(results.sort).to eq([ 1, 2, 3 ])
         expect(elapsed_time).to be < 0.3
         expect(processed).to eq(3)
@@ -91,16 +91,16 @@ describe Chef::ChefFS::Parallelizer do
 
       it "Exceptions with :stop_on_exception are raised after all processing is done" do
         processed = 0
-        parallelized = parallelize([0.3,0.3,'x',0.3,0.3,0.3,0.3,0.3], :ordered => false, :stop_on_exception => true) do |x|
-          if x == 'x'
+        parallelized = parallelize([0.3,0.3,"x",0.3,0.3,0.3,0.3,0.3], :ordered => false, :stop_on_exception => true) do |x|
+          if x == "x"
             sleep(0.1)
-            raise 'hi'
+            raise "hi"
           end
           sleep(x)
           processed += 1
           x
         end
-        expect { parallelized.to_a }.to raise_error 'hi'
+        expect { parallelized.to_a }.to raise_error "hi"
         expect(processed).to eq(4)
       end
     end
@@ -116,7 +116,7 @@ describe Chef::ChefFS::Parallelizer do
       it "10 sleep(0.2)s complete within 0.5 seconds" do
         expect(parallelize(1.upto(10), :ordered => true) do |i|
           sleep 0.2
-          'x'
+          "x"
         end.to_a).to eq(%w(x x x x x x x x x x))
         expect(elapsed_time).to be < 0.5
       end
@@ -134,28 +134,28 @@ describe Chef::ChefFS::Parallelizer do
 
       it "Exceptions in input are raised in the correct sequence but do NOT stop processing" do
         input = TestEnumerable.new(0.5,0.3,0.1) do
-          raise 'hi'
+          raise "hi"
         end
         results = []
         enum = parallelize(input) { |x| sleep(x); x }
-        expect { enum.each { |value| results << value } }.to raise_error 'hi'
+        expect { enum.each { |value| results << value } }.to raise_error "hi"
         expect(elapsed_time).to be < 0.6
         expect(results).to eq([ 0.5, 0.3, 0.1 ])
       end
 
       it "Exceptions in output are raised in the correct sequence and running processes do NOT stop processing" do
         processed = 0
-        enum = parallelize([1,2,'x',3]) do |x|
-          if x == 'x'
+        enum = parallelize([1,2,"x",3]) do |x|
+          if x == "x"
             sleep(0.1)
-            raise 'hi'
+            raise "hi"
           end
           sleep(0.2)
           processed += 1
           x
         end
         results = []
-        expect { enum.each { |value| results << value } }.to raise_error 'hi'
+        expect { enum.each { |value| results << value } }.to raise_error "hi"
         expect(results).to eq([ 1, 2 ])
         expect(elapsed_time).to be < 0.3
         expect(processed).to eq(3)
@@ -163,16 +163,16 @@ describe Chef::ChefFS::Parallelizer do
 
       it "Exceptions with :stop_on_exception are raised after all processing is done" do
         processed = 0
-        parallelized = parallelize([0.3,0.3,'x',0.3,0.3,0.3,0.3,0.3], :ordered => false, :stop_on_exception => true) do |x|
-          if x == 'x'
+        parallelized = parallelize([0.3,0.3,"x",0.3,0.3,0.3,0.3,0.3], :ordered => false, :stop_on_exception => true) do |x|
+          if x == "x"
             sleep(0.1)
-            raise 'hi'
+            raise "hi"
           end
           sleep(x)
           processed += 1
           x
         end
-        expect { parallelized.to_a }.to raise_error 'hi'
+        expect { parallelized.to_a }.to raise_error "hi"
         expect(processed).to eq(4)
       end
     end

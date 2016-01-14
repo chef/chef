@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookMetadata < Knife
 
       deps do
-        require 'chef/cookbook_loader'
-        require 'chef/cookbook/metadata'
+        require "chef/cookbook_loader"
+        require "chef/cookbook/metadata"
       end
 
       banner "knife cookbook metadata COOKBOOK (options)"
@@ -62,7 +62,7 @@ class Chef
 
       def generate_metadata(cookbook)
         Array(config[:cookbook_path]).reverse.each do |path|
-          file = File.expand_path(File.join(path, cookbook, 'metadata.rb'))
+          file = File.expand_path(File.join(path, cookbook, "metadata.rb"))
           if File.exists?(file)
             generate_metadata_from_file(cookbook, file)
           else
@@ -76,7 +76,7 @@ class Chef
         md = Chef::Cookbook::Metadata.new
         md.name(cookbook)
         md.from_file(file)
-        json_file = File.join(File.dirname(file), 'metadata.json')
+        json_file = File.join(File.dirname(file), "metadata.json")
         File.open(json_file, "w") do |f|
           f.write(Chef::JSONCompat.to_json_pretty(md))
         end
@@ -91,7 +91,7 @@ class Chef
       end
 
       def validate_metadata_json(path, cookbook)
-        json_file = File.join(path, cookbook, 'metadata.json')
+        json_file = File.join(path, cookbook, "metadata.json")
         if File.exist?(json_file)
           Chef::Cookbook::Metadata.validate_json(IO.read(json_file))
         end

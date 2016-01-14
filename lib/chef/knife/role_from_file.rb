@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class RoleFromFile < Knife
 
       deps do
-        require 'chef/role'
-        require 'chef/knife/core/object_loader'
-        require 'chef/json_compat'
+        require "chef/role"
+        require "chef/knife/core/object_loader"
+        require "chef/json_compat"
       end
 
       banner "knife role from file FILE [FILE..] (options)"

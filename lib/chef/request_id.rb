@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'securerandom'
-require 'singleton'
+require "securerandom"
+require "singleton"
 
 class Chef
   class RequestID

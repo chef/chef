@@ -18,13 +18,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'spec/support/shared/context/client'
-require 'spec/support/shared/examples/client'
+require "spec_helper"
+require "spec/support/shared/context/client"
+require "spec/support/shared/examples/client"
 
-require 'chef/run_context'
-require 'chef/server_api'
-require 'rbconfig'
+require "chef/run_context"
+require "chef/server_api"
+require "rbconfig"
 
 class FooError < RuntimeError
 end
@@ -157,7 +157,7 @@ describe Chef::Client do
 
     context "when an override run list is given" do
       it "permits spaces in overriding run list" do
-        Chef::Client.new(nil, :override_runlist => 'role[a], role[b]')
+        Chef::Client.new(nil, :override_runlist => "role[a], role[b]")
       end
 
       describe "calling run" do
@@ -220,7 +220,7 @@ describe Chef::Client do
     describe "when converge completes successfully" do
       include_context "a client run"
       include_context "converge completed"
-      context 'when audit mode is enabled' do
+      context "when audit mode is enabled" do
         describe "when audit phase errors" do
           include_context "audit phase failed with error"
           include_examples "a completed run with audit failure" do
@@ -500,7 +500,7 @@ describe Chef::Client do
       allow_any_instance_of(Chef::RunLock).to receive(:save_pid).and_raise(NoMethodError)
     end
 
-    context 'when audit mode is enabled' do
+    context "when audit mode is enabled" do
       before do
         Chef::Config[:audit_mode] = :enabled
       end
@@ -513,7 +513,7 @@ describe Chef::Client do
       end
     end
 
-    context 'when audit mode is disabled' do
+    context "when audit mode is disabled" do
       before do
         Chef::Config[:audit_mode] = :disabled
       end

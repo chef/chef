@@ -20,7 +20,7 @@ class Chef
   class Provider
     class Group
       class Pw < Chef::Provider::Group
-        provides :group, platform: 'freebsd'
+        provides :group, platform: "freebsd"
 
         def load_current_resource
           super

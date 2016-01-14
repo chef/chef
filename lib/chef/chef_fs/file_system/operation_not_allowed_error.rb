@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/file_system_error'
+require "chef/chef_fs/file_system/file_system_error"
 
 class Chef
   module ChefFS

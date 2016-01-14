@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 require "#{CHEF_SPEC_DATA}/knife_subcommand/test_yourself"
 
 describe Chef::Application::Knife do
@@ -84,7 +84,7 @@ describe Chef::Application::Knife do
 
   describe "when given a path to the client key" do
     it "expands a relative path relative to the CWD" do
-      relative_path = '.chef/client.pem'
+      relative_path = ".chef/client.pem"
       allow(Dir).to receive(:pwd).and_return(CHEF_SPEC_DATA)
       with_argv(*%W{noop knife command -k #{relative_path}}) do
         expect(@knife).to receive(:exit).with(0)
@@ -94,19 +94,19 @@ describe Chef::Application::Knife do
     end
 
     it "expands a ~/home/path to the correct full path" do
-      home_path = '~/.chef/client.pem'
+      home_path = "~/.chef/client.pem"
       with_argv(*%W{noop knife command -k #{home_path}}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:client_key]).to eq(File.join(ENV['HOME'], '.chef/client.pem').gsub((File::ALT_SEPARATOR || '\\'), File::SEPARATOR))
+      expect(Chef::Config[:client_key]).to eq(File.join(ENV["HOME"], ".chef/client.pem").gsub((File::ALT_SEPARATOR || '\\'), File::SEPARATOR))
     end
 
     it "does not expand a full path" do
       full_path = if windows?
-                    'C:/chef/client.pem'
+                    "C:/chef/client.pem"
                   else
-                    '/etc/chef/client.pem'
+                    "/etc/chef/client.pem"
                   end
       with_argv(*%W{noop knife command -k #{full_path}}) do
         expect(@knife).to receive(:exit).with(0)
@@ -135,7 +135,7 @@ describe Chef::Application::Knife do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:environment]).to eq('production')
+      expect(Chef::Config[:environment]).to eq("production")
     end
 
     it "should load the environment from the CLI options" do
@@ -143,7 +143,7 @@ describe Chef::Application::Knife do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:environment]).to eq('development')
+      expect(Chef::Config[:environment]).to eq("development")
     end
 
     it "should override the config file environment with the CLI environment" do
@@ -152,7 +152,7 @@ describe Chef::Application::Knife do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:environment]).to eq('override')
+      expect(Chef::Config[:environment]).to eq("override")
     end
 
     it "should override the config file environment with the CLI environment regardless of order" do
@@ -161,7 +161,7 @@ describe Chef::Application::Knife do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:environment]).to eq('override')
+      expect(Chef::Config[:environment]).to eq("override")
     end
 
     it "should run a sub command with the applications command line option prototype" do

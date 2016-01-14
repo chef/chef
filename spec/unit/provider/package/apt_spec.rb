@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Provider::Package::Apt do
   # XXX: sorry this is ugly and was done quickly to get 12.0.2 out, this file needs a rewrite to use
@@ -356,7 +356,7 @@ mpg123 1.12.1-0ubuntu1
 
         describe "when installing a virtual package" do
           it "should install the package without specifying a version" do
-            @provider.is_virtual_package['libmysqlclient-dev'] = true
+            @provider.is_virtual_package["libmysqlclient-dev"] = true
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y install libmysqlclient-dev",
               :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },
@@ -369,8 +369,8 @@ mpg123 1.12.1-0ubuntu1
         describe "when installing multiple packages" do
           it "can install a virtual package followed by a non-virtual package" do
             # https://github.com/chef/chef/issues/2914
-            @provider.is_virtual_package['libmysqlclient-dev'] = true
-            @provider.is_virtual_package['irssi'] = false
+            @provider.is_virtual_package["libmysqlclient-dev"] = true
+            @provider.is_virtual_package["irssi"] = false
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y install libmysqlclient-dev irssi=0.8.12-7",
               :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil },

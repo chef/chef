@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/chef_server/rest_list_dir'
-require 'chef/chef_fs/file_system/chef_server/data_bag_dir'
+require "chef/chef_fs/file_system/chef_server/rest_list_dir"
+require "chef/chef_fs/file_system/chef_server/data_bag_dir"
 
 class Chef
   module ChefFS
@@ -49,7 +49,7 @@ class Chef
 
           def create_child(name, file_contents)
             begin
-              rest.post(api_path, { 'name' => name })
+              rest.post(api_path, { "name" => name })
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e, "Timeout creating child '#{name}': #{e}")
             rescue Net::HTTPServerException => e

@@ -16,17 +16,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'pp'
-require 'socket'
-require 'chef/config'
-require 'chef/config_fetcher'
-require 'chef/exceptions'
-require 'chef/local_mode'
-require 'chef/log'
-require 'chef/platform'
-require 'mixlib/cli'
-require 'tmpdir'
-require 'rbconfig'
+require "pp"
+require "socket"
+require "chef/config"
+require "chef/config_fetcher"
+require "chef/exceptions"
+require "chef/local_mode"
+require "chef/log"
+require "chef/platform"
+require "mixlib/cli"
+require "tmpdir"
+require "rbconfig"
 
 class Chef
   class Application
@@ -197,7 +197,7 @@ class Chef
     # Initializes Chef::Client instance and runs it
     def run_chef_client(specific_recipes = [])
       unless specific_recipes.respond_to?(:size)
-        raise ArgumentError, 'received non-Array like specific_recipes argument'
+        raise ArgumentError, "received non-Array like specific_recipes argument"
       end
 
       Chef::LocalMode.with_server_connectivity do
@@ -235,7 +235,7 @@ class Chef
     # signal to finish the converge and exists.
     def run_with_graceful_exit_option
       # Override the TERM signal.
-      trap('TERM') do
+      trap("TERM") do
         Chef::Log.debug("SIGTERM received during converge," +
           " finishing converge to exit normally (send SIGINT to terminate immediately)")
       end
@@ -249,7 +249,7 @@ class Chef
       pid = fork do
         # Want to allow forked processes to finish converging when
         # TERM singal is received (exit gracefully)
-        trap('TERM') do
+        trap("TERM") do
           Chef::Log.debug("SIGTERM received during converge," +
             " finishing converge to exit normally (send SIGINT to terminate immediately)")
         end

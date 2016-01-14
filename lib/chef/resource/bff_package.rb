@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/aix'
+require "chef/resource/package"
+require "chef/provider/package/aix"
 
 class Chef
   class Resource

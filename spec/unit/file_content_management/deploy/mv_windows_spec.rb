@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 unless Chef::Platform.windows?
   class Chef
@@ -31,7 +31,7 @@ unless Chef::Platform.windows?
   end
 end
 
-require 'chef/file_content_management/deploy/mv_windows'
+require "chef/file_content_management/deploy/mv_windows"
 
 describe Chef::FileContentManagement::Deploy::MvWindows do
 

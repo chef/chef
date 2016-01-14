@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/apt'
+require "chef/resource/package"
+require "chef/provider/package/apt"
 
 class Chef
   class Resource

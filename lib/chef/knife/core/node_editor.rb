@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/json_compat'
-require 'chef/node'
+require "chef/json_compat"
+require "chef/node"
 
 class Chef
   class Knife
@@ -104,9 +104,9 @@ class Chef
         data = updated_data.dup
 
         unless config[:all_attributes]
-          data['automatic'] = node.automatic_attrs
-          data['default'] = node.default_attrs
-          data['override'] = node.override_attrs
+          data["automatic"] = node.automatic_attrs
+          data["default"] = node.default_attrs
+          data["override"] = node.override_attrs
         end
 
         @updated_node = Node.from_hash(data)

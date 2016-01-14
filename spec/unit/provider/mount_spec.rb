@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Mount do
 
@@ -28,7 +28,7 @@ describe Chef::Provider::Mount do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
   let(:new_resource) do
-    new_resource = Chef::Resource::Mount.new('/tmp/foo')
+    new_resource = Chef::Resource::Mount.new("/tmp/foo")
     new_resource.device      "/dev/sdz1"
     new_resource.name        "/tmp/foo"
     new_resource.mount_point "/tmp/foo"
@@ -38,7 +38,7 @@ describe Chef::Provider::Mount do
 
   let(:current_resource) do
     # this abstract superclass has no load_current_resource to call
-    current_resource = Chef::Resource::Mount.new('/tmp/foo')
+    current_resource = Chef::Resource::Mount.new("/tmp/foo")
     current_resource.device      "/dev/sdz1"
     current_resource.name        "/tmp/foo"
     current_resource.mount_point "/tmp/foo"

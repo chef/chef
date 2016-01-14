@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 describe URI do
 
   describe "when a URI contains an IPv6 literal" do

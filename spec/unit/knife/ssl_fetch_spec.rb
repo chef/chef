@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/ssl_fetch'
+require "spec_helper"
+require "chef/knife/ssl_fetch"
 
 describe Chef::Knife::SslFetch do
 

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/provider/package/windows/exe'
-require 'chef/provider/package/windows/msi'
+require "spec_helper"
+require "chef/provider/package/windows/exe"
+require "chef/provider/package/windows/msi"
 
 describe Chef::Provider::Package::Windows, :windows_only do
   before(:each) do
@@ -26,11 +26,11 @@ describe Chef::Provider::Package::Windows, :windows_only do
     allow(Chef::FileCache).to receive(:create_cache_path).with("package/").and_return(cache_path)
   end
 
-  let(:node) { double('Chef::Node') }
-  let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
-  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
-  let(:resource_source) { 'calculator.msi' }
-  let(:resource_name) { 'calculator' }
+  let(:node) { double("Chef::Node") }
+  let(:events) { double("Chef::Events").as_null_object }  # mock all the methods
+  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
+  let(:resource_source) { "calculator.msi" }
+  let(:resource_name) { "calculator" }
   let(:new_resource) do
     new_resource = Chef::Resource::WindowsPackage.new(resource_name)
     new_resource.source(resource_source) if resource_source
@@ -47,7 +47,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     shared_examples "a local file" do
       before(:each) do
         allow(Chef::Util::PathHelper).to receive(:validate_path)
-        allow(provider).to receive(:package_provider).and_return(double('package_provider',
+        allow(provider).to receive(:package_provider).and_return(double("package_provider",
           :installed_version => "1.0", :package_version => "2.0"))
       end
 
@@ -69,7 +69,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     end
 
     context "when the source is a uri" do
-      let(:resource_source) { 'https://foo.bar/calculator.msi' }
+      let(:resource_source) { "https://foo.bar/calculator.msi" }
 
       context "when the source has not been downloaded" do
         before(:each) do
@@ -134,7 +134,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     end
 
     context "when the source is a uri" do
-      let(:resource_source) { 'https://foo.bar/calculator.msi' }
+      let(:resource_source) { "https://foo.bar/calculator.msi" }
 
       context "when the source has not been downloaded" do
         before(:each) do
@@ -170,15 +170,15 @@ describe Chef::Provider::Package::Windows, :windows_only do
     context "there is no source" do
       let(:uninstall_hash) do
         [{
-          'DisplayVersion' => 'outdated',
-          'UninstallString' => "blah blah",
+          "DisplayVersion" => "outdated",
+          "UninstallString" => "blah blah",
         }]
       end
       let(:uninstall_key) { "blah" }
       let(:uninstall_entry) do
         entries = []
         uninstall_hash.each do |entry|
-          entries.push(Chef::Provider::Package::Windows::RegistryUninstallEntry.new('hive', uninstall_key, entry))
+          entries.push(Chef::Provider::Package::Windows::RegistryUninstallEntry.new("hive", uninstall_key, entry))
         end
         entries
       end
@@ -191,8 +191,8 @@ describe Chef::Provider::Package::Windows, :windows_only do
       context "uninstall string contains MsiExec.exe" do
         let(:uninstall_hash) do
           [{
-            'DisplayVersion' => 'outdated',
-            'UninstallString' => "MsiExec.exe /X{guid}",
+            "DisplayVersion" => "outdated",
+            "UninstallString" => "MsiExec.exe /X{guid}",
           }]
         end
 
@@ -204,8 +204,8 @@ describe Chef::Provider::Package::Windows, :windows_only do
       context "uninstall string ends with uninst.exe" do
         let(:uninstall_hash) do
           [{
-            'DisplayVersion' => 'outdated',
-            'UninstallString' => %q{"c:/hfhfheru/uninst.exe"},
+            "DisplayVersion" => "outdated",
+            "UninstallString" => %q{"c:/hfhfheru/uninst.exe"},
           }]
         end
 
@@ -237,17 +237,17 @@ describe Chef::Provider::Package::Windows, :windows_only do
     end
 
     it "sets installer_type to inno if the source contains inno" do
-      allow(::Kernel).to receive(:open).and_yield(StringIO.new('blah blah inno blah'))
+      allow(::Kernel).to receive(:open).and_yield(StringIO.new("blah blah inno blah"))
       expect(provider.installer_type).to eql(:inno)
     end
 
     it "sets installer_type to wise if the source contains wise" do
-      allow(::Kernel).to receive(:open).and_yield(StringIO.new('blah blah wise blah'))
+      allow(::Kernel).to receive(:open).and_yield(StringIO.new("blah blah wise blah"))
       expect(provider.installer_type).to eql(:wise)
     end
 
     it "sets installer_type to nsis if the source contains nsis" do
-      allow(::Kernel).to receive(:open).and_yield(StringIO.new('blah blah nullsoft blah'))
+      allow(::Kernel).to receive(:open).and_yield(StringIO.new("blah blah nullsoft blah"))
       expect(provider.installer_type).to eql(:nsis)
     end
 
@@ -263,7 +263,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       let(:resource_source) { "setup.exe" }
 
       it "sets installer_type to installshield" do
-        allow(::Kernel).to receive(:open).and_yield(StringIO.new(''))
+        allow(::Kernel).to receive(:open).and_yield(StringIO.new(""))
         expect(provider.installer_type).to eql(:installshield)
       end
     end
@@ -272,7 +272,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       let(:resource_source) { "tomfoolery.now" }
 
       it "raises an error" do
-        allow(::Kernel).to receive(:open).and_yield(StringIO.new(''))
+        allow(::Kernel).to receive(:open).and_yield(StringIO.new(""))
         provider.new_resource.installer_type(nil)
         expect { provider.installer_type }.to raise_error(Chef::Exceptions::CannotDetermineWindowsInstallerType)
       end
@@ -313,7 +313,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     end
 
     context "a version is given and none is installed" do
-      before { new_resource.version('5.5.5') }
+      before { new_resource.version("5.5.5") }
 
       it "installs given version" do
         expect(provider).to receive(:install_package).with("blah", "5.5.5")
@@ -324,7 +324,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     context "a version is given and several are installed" do
       context "given version matches an installed version" do
         before do
-          new_resource.version('5.5.5')
+          new_resource.version("5.5.5")
           allow(provider).to receive(:current_version_array).and_return([ ["5.5.5", "4.3.0", "1.1.1"] ])
         end
         
@@ -336,7 +336,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       context "given version does not match an installed version" do
         before do
-          new_resource.version('5.5.5')
+          new_resource.version("5.5.5")
           allow(provider).to receive(:current_version_array).and_return([ ["5.5.0", "4.3.0", "1.1.1"] ])
         end
         
@@ -350,7 +350,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     context "a version is given and one is installed" do
       context "given version matches installed version" do
         before do
-          new_resource.version('5.5.5')
+          new_resource.version("5.5.5")
           allow(provider).to receive(:current_version_array).and_return(["5.5.5"])
         end
         
@@ -362,7 +362,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       context "given version does not match installed version" do
         before do
-          new_resource.version('5.5.5')
+          new_resource.version("5.5.5")
           allow(provider).to receive(:current_version_array).and_return(["5.5.0"])
         end
         

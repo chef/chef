@@ -17,7 +17,7 @@
 #
 
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource

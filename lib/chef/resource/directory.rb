@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/directory'
-require 'chef/mixin/securable'
+require "chef/resource"
+require "chef/provider/directory"
+require "chef/mixin/securable"
 
 class Chef
   class Resource

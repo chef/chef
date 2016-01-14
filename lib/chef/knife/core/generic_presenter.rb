@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife/core/text_formatter'
+require "chef/knife/core/text_formatter"
 
 class Chef
   class Knife
@@ -80,10 +80,10 @@ class Chef
           when :json
             Chef::JSONCompat.to_json_pretty(data)
           when :yaml
-            require 'yaml'
+            require "yaml"
             YAML::dump(data)
           when :pp
-            require 'stringio'
+            require "stringio"
             # If you were looking for some attribute and there is only one match
             # just dump the attribute value
             if config[:attribute] and data.length == 1
@@ -200,14 +200,14 @@ class Chef
           if config[:with_uri]
             item.inject({}) do |collected, (cookbook, versions)|
               collected[cookbook] = Hash.new
-              versions['versions'].each do |ver|
-                collected[cookbook][ver['version']] = ver['url']
+              versions["versions"].each do |ver|
+                collected[cookbook][ver["version"]] = ver["url"]
               end
               collected
             end
           else
             versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
-              collected[cookbook] = versions["versions"].map {|v| v['version']}
+              collected[cookbook] = versions["versions"].map {|v| v["version"]}
               collected
             end
             key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map {|name| name.size }.max + 2

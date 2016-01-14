@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class SnitchyProvider < Chef::Provider
   def self.all_actions_called

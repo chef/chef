@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
 
 class Chef
   class Provider
@@ -51,12 +51,12 @@ class Chef
 
         def easy_install_binary_path
           path = @new_resource.easy_install_binary
-          path ? path : 'easy_install'
+          path ? path : "easy_install"
         end
 
         def python_binary_path
           path = @new_resource.python_binary
-          path ? path : 'python'
+          path ? path : "python"
         end
 
         def module_name
@@ -77,7 +77,7 @@ class Chef
             rescue
               output = shell_out_with_timeout!("#{python_binary_path} -c \"import sys; print sys.path\"", :returns=>[0,1]).stdout
 
-              output_array = output.gsub(/[\[\]]/,'').split(/\s*,\s*/)
+              output_array = output.gsub(/[\[\]]/,"").split(/\s*,\s*/)
               package_path = ""
 
               output_array.each do |entry|

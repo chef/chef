@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/deprecation/mixin/template'
+require "chef/deprecation/mixin/template"
 
 class Chef
   module Deprecation

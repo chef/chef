@@ -48,8 +48,8 @@ class Chef
 
       def for_json()
         {
-          'title' => @title,
-          'sections' => @sections,
+          "title" => @title,
+          "sections" => @sections,
         }
       end
 

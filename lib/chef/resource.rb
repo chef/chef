@@ -18,32 +18,32 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/dsl/platform_introspection'
-require 'chef/dsl/data_query'
-require 'chef/dsl/registry_helper'
-require 'chef/dsl/reboot_pending'
-require 'chef/dsl/resources'
-require 'chef/mixin/convert_to_class_name'
-require 'chef/guard_interpreter/resource_guard_interpreter'
-require 'chef/resource/conditional'
-require 'chef/resource/conditional_action_not_nothing'
-require 'chef/resource/action_class'
-require 'chef/resource_collection'
-require 'chef/node_map'
-require 'chef/node'
-require 'chef/platform'
-require 'chef/resource/resource_notification'
-require 'chef/provider_resolver'
-require 'chef/resource_resolver'
-require 'chef/provider'
-require 'set'
+require "chef/exceptions"
+require "chef/dsl/platform_introspection"
+require "chef/dsl/data_query"
+require "chef/dsl/registry_helper"
+require "chef/dsl/reboot_pending"
+require "chef/dsl/resources"
+require "chef/mixin/convert_to_class_name"
+require "chef/guard_interpreter/resource_guard_interpreter"
+require "chef/resource/conditional"
+require "chef/resource/conditional_action_not_nothing"
+require "chef/resource/action_class"
+require "chef/resource_collection"
+require "chef/node_map"
+require "chef/node"
+require "chef/platform"
+require "chef/resource/resource_notification"
+require "chef/provider_resolver"
+require "chef/resource_resolver"
+require "chef/provider"
+require "set"
 
-require 'chef/mixin/deprecation'
-require 'chef/mixin/properties'
-require 'chef/mixin/provides'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/powershell_out'
+require "chef/mixin/deprecation"
+require "chef/mixin/properties"
+require "chef/mixin/provides"
+require "chef/mixin/shell_out"
+require "chef/mixin/powershell_out"
 
 class Chef
   class Resource
@@ -88,7 +88,7 @@ class Chef
     # @param name [Object] The name to set, typically a String or Array
     # @return [String] The name of this Resource.
     #
-    property :name, String, coerce: proc { |v| v.is_a?(Array) ? v.join(', ') : v.to_s }, desired_state: false
+    property :name, String, coerce: proc { |v| v.is_a?(Array) ? v.join(", ") : v.to_s }, desired_state: false
 
     #
     # The node the current Chef run is using.
@@ -249,11 +249,11 @@ class Chef
       resources.each do |resource|
 
         case timing.to_s
-        when 'delayed'
+        when "delayed"
           notifies_delayed(action, resource)
-        when 'immediate', 'immediately'
+        when "immediate", "immediately"
           notifies_immediately(action, resource)
-        when 'before'
+        when "before"
           notifies_before(action, resource)
         else
           raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
@@ -670,11 +670,11 @@ class Chef
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       instance_vars = Hash.new
       safe_ivars.each do |iv|
-        instance_vars[iv.to_s.sub(/^@/, '')] = instance_variable_get(iv)
+        instance_vars[iv.to_s.sub(/^@/, "")] = instance_variable_get(iv)
       end
       {
-        'json_class' => self.class.name,
-        'instance_vars' => instance_vars,
+        "json_class" => self.class.name,
+        "instance_vars" => instance_vars,
       }
     end
 
@@ -692,7 +692,7 @@ class Chef
       end
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       safe_ivars.each do |iv|
-        key = iv.to_s.sub(/^@/,'').to_sym
+        key = iv.to_s.sub(/^@/,"").to_sym
         next if result.has_key?(key)
         result[key] = instance_variable_get(iv)
       end
@@ -956,7 +956,7 @@ class Chef
     def self.dsl_name
       Chef.log_deprecation "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead."
       if name
-        name = self.name.split('::')[-1]
+        name = self.name.split("::")[-1]
         convert_to_snake_case(name)
       end
     end
@@ -1009,7 +1009,7 @@ class Chef
     # A::B::BlahDBlah -> blah_d_blah
     #
     def self.use_automatic_resource_name
-      automatic_name = convert_to_snake_case(self.name.split('::')[-1])
+      automatic_name = convert_to_snake_case(self.name.split("::")[-1])
       resource_name automatic_name
     end
 
@@ -1574,4 +1574,4 @@ class Chef
 end
 
 # Requiring things at the bottom breaks cycles
-require 'chef/chef_class'
+require "chef/chef_class"

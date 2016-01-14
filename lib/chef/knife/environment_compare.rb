@@ -16,14 +16,14 @@
 # limitations under the License.
 #
  
-require 'chef/knife'
+require "chef/knife"
  
 class Chef
   class Knife
     class EnvironmentCompare < Knife
  
       deps do
-        require 'chef/environment'
+        require "chef/environment"
       end
  
       banner "knife environment compare [ENVIRONMENT..] (options)"
@@ -60,7 +60,7 @@ class Chef
         cookbooks = rest.get("/cookbooks?num_versions=1") if config[:all]
 
         # display matrix view of in the requested format.
-        if config[:format] == 'summary'
+        if config[:format] == "summary"
           matrix = matrix_output(cookbooks, constraints)
           ui.output(matrix)
         else
@@ -99,7 +99,7 @@ class Chef
       end      
 
       def matrix_output(cookbooks, constraints)
-        rows = [ '' ]
+        rows = [ "" ]
         environments = []
         constraints.each { |e,v| environments << e.to_s }
         columns = environments.count + 1

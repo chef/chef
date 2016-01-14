@@ -17,15 +17,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef'
-require 'chef/application'
-require 'chef/client'
-require 'chef/config'
-require 'chef/log'
-require 'fileutils'
-require 'tempfile'
-require 'chef/providers'
-require 'chef/resources'
+require "chef"
+require "chef/application"
+require "chef/client"
+require "chef/config"
+require "chef/log"
+require "fileutils"
+require "tempfile"
+require "chef/providers"
+require "chef/resources"
 
 class Chef::Application::Apply < Chef::Application
 
@@ -92,9 +92,9 @@ class Chef::Application::Apply < Chef::Application
     :exit         => 0
 
   option :why_run,
-    :short        => '-W',
-    :long         => '--why-run',
-    :description  => 'Enable whyrun mode',
+    :short        => "-W",
+    :long         => "--why-run",
+    :description  => "Enable whyrun mode",
     :boolean      => true
 
   option :profile_ruby,
@@ -104,7 +104,7 @@ class Chef::Application::Apply < Chef::Application
     :default      => false
 
   option :color,
-    :long         => '--[no-]color',
+    :long         => "--[no-]color",
     :boolean      => true,
     :default      => true,
     :description  => "Use colored output, defaults to enabled"
@@ -167,7 +167,7 @@ class Chef::Application::Apply < Chef::Application
   # write recipe to temp file, so in case of error,
   # user gets error w/ context
   def temp_recipe_file
-    @recipe_fh = Tempfile.open('recipe-temporary-file')
+    @recipe_fh = Tempfile.open("recipe-temporary-file")
     @recipe_fh.write(@recipe_text)
     @recipe_fh.rewind
     @recipe_filename = @recipe_fh.path

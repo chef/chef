@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/dsl/powershell'
+require "chef/dsl/powershell"
 
 class Chef
   class Resource

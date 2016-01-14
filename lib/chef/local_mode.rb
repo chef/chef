@@ -14,10 +14,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require 'chef/config'
+require "chef/config"
 if Chef::Platform.windows?
-  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.1')
-    require 'chef/monkey_patches/webrick-utils'
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1")
+    require "chef/monkey_patches/webrick-utils"
   end
 end
 
@@ -54,14 +54,14 @@ class Chef
       if Chef::Config.chef_zero.enabled
         destroy_server_connectivity
 
-        require 'chef_zero/server'
-        require 'chef/chef_fs/chef_fs_data_store'
-        require 'chef/chef_fs/config'
+        require "chef_zero/server"
+        require "chef/chef_fs/chef_fs_data_store"
+        require "chef/chef_fs/config"
 
         @chef_fs = Chef::ChefFS::Config.new.local_fs
         @chef_fs.write_pretty_json = true
         data_store = Chef::ChefFS::ChefFSDataStore.new(@chef_fs)
-        data_store = ChefZero::DataStore::V1ToV2Adapter.new(data_store, 'chef')
+        data_store = ChefZero::DataStore::V1ToV2Adapter.new(data_store, "chef")
         server_options = {}
         server_options[:data_store] = data_store
         server_options[:log_level] = Chef::Log.level
@@ -103,9 +103,9 @@ class Chef
 
     def self.parse_port(port)
       if port.is_a?(String)
-        parts = port.split(',')
+        parts = port.split(",")
         if parts.size == 1
-          a,b = parts[0].split('-',2)
+          a,b = parts[0].split("-",2)
           if b
             a.to_i.upto(b.to_i)
           else

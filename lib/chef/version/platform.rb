@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/version_class'
+require "chef/version_class"
 
 class Chef
   class Version

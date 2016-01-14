@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Audit::AuditReporter do
 
@@ -75,7 +75,7 @@ describe Chef::Audit::AuditReporter do
 
       it "posts audit data to server endpoint" do
         headers = {
-          'X-Ops-Audit-Report-Protocol-Version' => Chef::Audit::AuditReporter::PROTOCOL_VERSION
+          "X-Ops-Audit-Report-Protocol-Version" => Chef::Audit::AuditReporter::PROTOCOL_VERSION
         }
 
         expect(rest).to receive(:post).

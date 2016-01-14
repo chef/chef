@@ -16,19 +16,19 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/chef_fs/file_system/chef_server/cookbook_subdir'
+require "spec_helper"
+require "chef/chef_fs/file_system/chef_server/cookbook_subdir"
 
 describe Chef::ChefFS::FileSystem::ChefServer::CookbookSubdir do
   let(:root) do
-    Chef::ChefFS::FileSystem::BaseFSDir.new('', nil)
+    Chef::ChefFS::FileSystem::BaseFSDir.new("", nil)
   end
 
   let(:cookbook_subdir) do
-    Chef::ChefFS::FileSystem::ChefServer::CookbookSubdir.new('test', root, false, true)
+    Chef::ChefFS::FileSystem::ChefServer::CookbookSubdir.new("test", root, false, true)
   end
 
-  it 'can get child' do
-    cookbook_subdir.child('test')
+  it "can get child" do
+    cookbook_subdir.child("test")
   end
 end

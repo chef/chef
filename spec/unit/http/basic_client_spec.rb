@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/http/basic_client'
+require "spec_helper"
+require "chef/http/basic_client"
 
 describe "HTTP Connection" do
 

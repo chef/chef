@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/exceptions'
-require 'chef/server_api'
+require "chef/config"
+require "chef/exceptions"
+require "chef/server_api"
 
-require 'uri'
+require "uri"
 
 class Chef
   class Search
@@ -40,7 +40,7 @@ class Chef
 
       # Backwards compatability for cookbooks.
       # This can be removed in Chef > 12.
-      def partial_search(type, query='*:*', *args, &block)
+      def partial_search(type, query="*:*", *args, &block)
         Chef::Log.warn(<<-WARNDEP)
 DEPRECATED: The 'partial_search' API is deprecated and will be removed in
 future releases. Please use 'search' with a :filter_result argument to get
@@ -80,7 +80,7 @@ WARNDEP
       # an example of the returned json may be:
       # {"ip_address":"127.0.0.1", "ruby_version": "1.9.3"}
       #
-      def search(type, query='*:*', *args, &block)
+      def search(type, query="*:*", *args, &block)
         validate_type(type)
 
         args_h = hashify_args(*args)
@@ -146,25 +146,25 @@ WARNDEP
         qstr
       end
 
-      def call_rest_service(type, query:'*:*', rows:nil, start:0, sort:'X_CHEF_id_CHEF_X asc', filter_result:nil)
+      def call_rest_service(type, query:"*:*", rows:nil, start:0, sort:"X_CHEF_id_CHEF_X asc", filter_result:nil)
         query_string = create_query_string(type, query, rows, start, sort)
 
         if filter_result
           response = rest.post(query_string, filter_result)
           # response returns rows in the format of
           # { "url" => url_to_node, "data" => filter_result_hash }
-          response['rows'].map! { |row| row['data'] }
+          response["rows"].map! { |row| row["data"] }
         else
           response = rest.get(query_string)
-          response['rows'].map! do |row|
+          response["rows"].map! do |row|
             case type.to_s
-            when 'node'
+            when "node"
               Chef::Node.from_hash(row)
-            when 'role'
+            when "role"
               Chef::Role.from_hash(row)
-            when 'environment'
+            when "environment"
               Chef::Environment.from_hash(row)
-            when 'client'
+            when "client"
               Chef::ApiClient.from_hash(row)
             else
               Chef::DataBagItem.from_hash(row)

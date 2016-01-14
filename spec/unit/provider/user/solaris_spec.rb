@@ -22,8 +22,8 @@
 
 ShellCmdResult = Struct.new(:stdout, :stderr, :exitstatus)
 
-require 'mixlib/shellout'
-require 'spec_helper'
+require "mixlib/shellout"
+require "spec_helper"
 
 describe Chef::Provider::User::Solaris do
 
@@ -73,63 +73,63 @@ describe Chef::Provider::User::Solaris do
     end
   end
 
-  describe 'when managing user locked status' do
+  describe "when managing user locked status" do
     before(:each) do
       @node = Chef::Node.new
       @events = Chef::EventDispatch::Dispatcher.new
       @run_context = Chef::RunContext.new(@node, {}, @events)
 
-      @new_resource = Chef::Resource::User.new('dave')
+      @new_resource = Chef::Resource::User.new("dave")
       @current_resource = @new_resource.dup
 
       @provider = Chef::Provider::User::Solaris.new(@new_resource, @run_context)
       @provider.current_resource = @current_resource
     end
-    describe 'when determining if the user is locked' do
+    describe "when determining if the user is locked" do
 
       # locked shadow lines
       [
-        'dave:LK:::::::',
-        'dave:*LK*:::::::',
-        'dave:*LK*foobar:::::::',
-        'dave:*LK*bahamas10:::::::',
-        'dave:*LK*L....:::::::',
+        "dave:LK:::::::",
+        "dave:*LK*:::::::",
+        "dave:*LK*foobar:::::::",
+        "dave:*LK*bahamas10:::::::",
+        "dave:*LK*L....:::::::",
       ].each do |shadow|
         it "should return true if user is locked with #{shadow}" do
-          shell_return = ShellCmdResult.new(shadow + "\n", '', 0)
-          expect(provider).to receive(:shell_out!).with('getent', 'shadow', @new_resource.username).and_return(shell_return)
+          shell_return = ShellCmdResult.new(shadow + "\n", "", 0)
+          expect(provider).to receive(:shell_out!).with("getent", "shadow", @new_resource.username).and_return(shell_return)
           expect(provider.check_lock).to eql(true)
         end
       end
 
       # unlocked shadow lines
       [
-        'dave:NP:::::::',
-        'dave:*NP*:::::::',
-        'dave:foobar:::::::',
-        'dave:bahamas10:::::::',
-        'dave:L...:::::::',
+        "dave:NP:::::::",
+        "dave:*NP*:::::::",
+        "dave:foobar:::::::",
+        "dave:bahamas10:::::::",
+        "dave:L...:::::::",
       ].each do |shadow|
         it "should return false if user is unlocked with #{shadow}" do
-          shell_return = ShellCmdResult.new(shadow + "\n", '', 0)
-          expect(provider).to receive(:shell_out!).with('getent', 'shadow', @new_resource.username).and_return(shell_return)
+          shell_return = ShellCmdResult.new(shadow + "\n", "", 0)
+          expect(provider).to receive(:shell_out!).with("getent", "shadow", @new_resource.username).and_return(shell_return)
           expect(provider.check_lock).to eql(false)
         end
       end
     end
 
-    describe 'when locking the user' do
-      it 'should run passwd -l with the new resources username' do
-        shell_return = ShellCmdResult.new('', '', 0)
-        expect(provider).to receive(:shell_out!).with('passwd', '-l', @new_resource.username).and_return(shell_return)
+    describe "when locking the user" do
+      it "should run passwd -l with the new resources username" do
+        shell_return = ShellCmdResult.new("", "", 0)
+        expect(provider).to receive(:shell_out!).with("passwd", "-l", @new_resource.username).and_return(shell_return)
         provider.lock_user
       end
     end
 
-    describe 'when unlocking the user' do
-      it 'should run passwd -u with the new resources username' do
-        shell_return = ShellCmdResult.new('', '', 0)
-        expect(provider).to receive(:shell_out!).with('passwd', '-u', @new_resource.username).and_return(shell_return)
+    describe "when unlocking the user" do
+      it "should run passwd -u with the new resources username" do
+        shell_return = ShellCmdResult.new("", "", 0)
+        expect(provider).to receive(:shell_out!).with("passwd", "-u", @new_resource.username).and_return(shell_return)
         provider.unlock_user
       end
     end

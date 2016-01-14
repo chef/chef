@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
-require 'chef/mixin/command'
-require 'chef/util/path_helper'
+require "chef/provider/service/init"
+require "chef/mixin/command"
+require "chef/util/path_helper"
 
 class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
 

@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/uris'
-require 'chef/resource/windows_package'
-require 'chef/provider/package'
-require 'chef/util/path_helper'
-require 'chef/mixin/checksum'
+require "chef/mixin/uris"
+require "chef/resource/windows_package"
+require "chef/provider/package"
+require "chef/util/path_helper"
+require "chef/mixin/checksum"
 
 class Chef
   class Provider
@@ -32,7 +32,7 @@ class Chef
         provides :package, os: "windows"
         provides :windows_package, os: "windows"
 
-        require 'chef/provider/package/windows/registry_uninstall_entry.rb'
+        require "chef/provider/package/windows/registry_uninstall_entry.rb"
 
         def define_resource_requirements
           requirements.assert(:install) do |a|
@@ -60,11 +60,11 @@ class Chef
             case installer_type
             when :msi
               Chef::Log.debug("#{new_resource} is MSI")
-              require 'chef/provider/package/windows/msi'
+              require "chef/provider/package/windows/msi"
               Chef::Provider::Package::Windows::MSI.new(resource_for_provider, uninstall_registry_entries)
             else
               Chef::Log.debug("#{new_resource} is EXE with type '#{installer_type}'")
-              require 'chef/provider/package/windows/exe'
+              require "chef/provider/package/windows/exe"
               Chef::Provider::Package::Windows::Exe.new(resource_for_provider, installer_type, uninstall_registry_entries)
             end
           end
@@ -88,7 +88,7 @@ class Chef
                 :msi
               else
                 # search the binary file for installer type
-                ::Kernel.open(::File.expand_path(source_location), 'rb') do |io|
+                ::Kernel.open(::File.expand_path(source_location), "rb") do |io|
                   filesize = io.size
                   bufsize = 4096 # read 4K buffers
                   overlap = 16 # bytes to overlap between buffer reads
@@ -112,7 +112,7 @@ class Chef
                 end
 
                 # if file is named 'setup.exe' assume installshield
-                if basename == 'setup.exe'
+                if basename == "setup.exe"
                   :installshield
                 else
                   raise Chef::Exceptions::CannotDetermineWindowsInstallerType, "Installer type for Windows Package '#{new_resource.name}' not specified and cannot be determined from file extension '#{file_extension}'"
@@ -151,7 +151,7 @@ class Chef
 
         # @return [String] candidate_version
         def candidate_version
-          @candidate_version ||= (new_resource.version || 'latest')
+          @candidate_version ||= (new_resource.version || "latest")
         end
 
         # @return [Array] current_version(s) as an array

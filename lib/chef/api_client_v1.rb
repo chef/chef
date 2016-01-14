@@ -17,16 +17,16 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
-require 'chef/exceptions'
-require 'chef/mixin/api_version_request_handling'
-require 'chef/server_api'
-require 'chef/api_client'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/exceptions"
+require "chef/mixin/api_version_request_handling"
+require "chef/server_api"
+require "chef/api_client"
 
 # COMPATIBILITY NOTE
 #
@@ -48,7 +48,7 @@ class Chef
 
     # Create a new Chef::ApiClientV1 object.
     def initialize
-      @name = ''
+      @name = ""
       @public_key = nil
       @private_key = nil
       @admin = false
@@ -294,12 +294,12 @@ class Chef
         new_client = chef_rest_v1.post("clients", payload)
 
         # get the private_key out of the chef_key hash if it exists
-        if new_client['chef_key']
-          if new_client['chef_key']['private_key']
-            new_client['private_key'] = new_client['chef_key']['private_key']
+        if new_client["chef_key"]
+          if new_client["chef_key"]["private_key"]
+            new_client["private_key"] = new_client["chef_key"]["private_key"]
           end
-          new_client['public_key'] = new_client['chef_key']['public_key']
-          new_client.delete('chef_key')
+          new_client["public_key"] = new_client["chef_key"]["public_key"]
+          new_client.delete("chef_key")
         end
 
       rescue Net::HTTPServerException => e

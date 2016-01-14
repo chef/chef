@@ -17,14 +17,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/application'
-require 'chef/client'
-require 'chef/config'
-require 'chef/daemon'
-require 'chef/log'
-require 'chef/config_fetcher'
-require 'chef/handler/error_report'
-require 'chef/workstation_config_loader'
+require "chef/application"
+require "chef/client"
+require "chef/config"
+require "chef/daemon"
+require "chef/log"
+require "chef/config_fetcher"
+require "chef/handler/error_report"
+require "chef/workstation_config_loader"
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
@@ -62,7 +62,7 @@ class Chef::Application::Client < Chef::Application
     :default      => false
 
   option :color,
-    :long         => '--[no-]color',
+    :long         => "--[no-]color",
     :boolean      => true,
     :default      => true,
     :description  => "Use colored output, defaults to enabled"
@@ -172,9 +172,9 @@ class Chef::Application::Client < Chef::Application
     :description  => "Use a policyfile's named run list instead of the default run list"
 
   option :environment,
-    :short        => '-E ENVIRONMENT',
-    :long         => '--environment ENVIRONMENT',
-    :description  => 'Set the Chef Environment on the node'
+    :short        => "-E ENVIRONMENT",
+    :long         => "--environment ENVIRONMENT",
+    :description  => "Set the Chef Environment on the node"
 
   option :version,
     :short        => "-v",
@@ -189,7 +189,7 @@ class Chef::Application::Client < Chef::Application
     :long         => "--override-runlist RunlistItem,RunlistItem...",
     :description  => "Replace current run list with specified items for a single run",
     :proc         => lambda{|items|
-      items = items.split(',')
+      items = items.split(",")
       items.compact.map{|item|
         Chef::RunList::RunListItem.new(item)
       }
@@ -200,15 +200,15 @@ class Chef::Application::Client < Chef::Application
     :long         => "--runlist RunlistItem,RunlistItem...",
     :description  => "Permanently replace current run list with specified items",
     :proc         => lambda{|items|
-      items = items.split(',')
+      items = items.split(",")
       items.compact.map{|item|
         Chef::RunList::RunListItem.new(item)
       }
     }
   option :why_run,
-    :short        => '-W',
-    :long         => '--why-run',
-    :description  => 'Enable whyrun mode',
+    :short        => "-W",
+    :long         => "--why-run",
+    :description  => "Enable whyrun mode",
     :boolean      => true
 
   option :client_fork,
@@ -283,7 +283,7 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
-    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
+    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || "" ), (Chef::Config[:lockfile] || "")
 
     set_specific_recipes
 
@@ -305,7 +305,7 @@ class Chef::Application::Client < Chef::Application
     elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
       Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
       FileUtils.mkdir_p(Chef::Config.chef_repo_path)
-      tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
+      tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
       result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
       Chef::Log.debug "#{result.stdout}"
@@ -472,7 +472,7 @@ class Chef::Application::Client < Chef::Application
 
   def fetch_recipe_tarball(url, path)
     Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
-    File.open(path, 'wb') do |f|
+    File.open(path, "wb") do |f|
       open(url) do |r|
         f.write(r.read)
       end

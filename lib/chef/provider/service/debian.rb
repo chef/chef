@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
+require "chef/provider/service/init"
 
 class Chef
   class Provider
     class Service
       class Debian < Chef::Provider::Service::Init
-        provides :service, platform_family: 'debian' do |node|
+        provides :service, platform_family: "debian" do |node|
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)
         end
 

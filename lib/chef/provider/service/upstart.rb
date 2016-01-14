@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
-require 'chef/provider/service/simple'
-require 'chef/mixin/command'
-require 'chef/util/file_edit'
+require "chef/resource/service"
+require "chef/provider/service/simple"
+require "chef/mixin/command"
+require "chef/util/file_edit"
 
 class Chef
   class Provider
     class Service
       class Upstart < Chef::Provider::Service::Simple
 
-        provides :service, platform_family: 'debian', override: true do |node|
+        provides :service, platform_family: "debian", override: true do |node|
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
         end
 
@@ -130,7 +130,7 @@ class Chef
           # Get enabled/disabled state by reading job configuration file
           if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}",'r') do |file|
+            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}","r") do |file|
               while line = file.gets
                 case line
                 when /^start on/

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/lib/library_load_order'
+require "spec_helper"
+require "support/lib/library_load_order"
 
 # These tests rely on fixture data in spec/data/run_context/cookbooks.
 #
@@ -45,7 +45,7 @@ describe Chef::RunContext::CookbookCompiler do
   let(:cookbook_collection) { Chef::CookbookCollection.new(cookbook_loader) }
 
   # Lazy evaluation of `expansion` here is used to mutate the run list before expanding it
-  let(:run_list_expansion) { node.run_list.expand('_default') }
+  let(:run_list_expansion) { node.run_list.expand("_default") }
 
   let(:compiler) do
     Chef::RunContext::CookbookCompiler.new(run_context, run_list_expansion, events)

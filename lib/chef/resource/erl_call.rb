@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/erl_call'
+require "chef/resource"
+require "chef/provider/erl_call"
 
 class Chef
   class Resource

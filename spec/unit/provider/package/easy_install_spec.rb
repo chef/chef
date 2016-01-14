@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Package::EasyInstall do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::EasyInstallPackage.new('boto')
-    @new_resource.version('1.8d')
+    @new_resource = Chef::Resource::EasyInstallPackage.new("boto")
+    @new_resource.version("1.8d")
 
     @provider = Chef::Provider::Package::EasyInstall.new(@new_resource, @run_context)
 

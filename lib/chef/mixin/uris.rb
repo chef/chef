@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'uri'
+require "uri"
 
 class Chef
   module Mixin

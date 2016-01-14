@@ -18,9 +18,9 @@
 
 ShellCmdResult = Struct.new(:stdout, :stderr, :exitstatus)
 
-require 'spec_helper'
-require 'ostruct'
-require 'mixlib/shellout'
+require "spec_helper"
+require "ostruct"
+require "mixlib/shellout"
 
 describe Chef::Provider::User::Dscl do
   before do
@@ -114,32 +114,32 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
   describe "when shelling out to dscl" do
     it "should run dscl with the supplied cmd /Path args" do
-      shell_return = ShellCmdResult.new('stdout', 'err', 0)
+      shell_return = ShellCmdResult.new("stdout", "err", 0)
       expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
-      expect(provider.run_dscl("cmd /Path args")).to eq('stdout')
+      expect(provider.run_dscl("cmd /Path args")).to eq("stdout")
     end
 
     it "returns an empty string from delete commands" do
-      shell_return = ShellCmdResult.new('out', 'err', 23)
+      shell_return = ShellCmdResult.new("out", "err", 23)
       expect(provider).to receive(:shell_out).with("dscl . -delete /Path args").and_return(shell_return)
       expect(provider.run_dscl("delete /Path args")).to eq("")
     end
 
     it "should raise an exception for any other command" do
-      shell_return = ShellCmdResult.new('out', 'err', 23)
-      expect(provider).to receive(:shell_out).with('dscl . -cmd /Path arguments').and_return(shell_return)
+      shell_return = ShellCmdResult.new("out", "err", 23)
+      expect(provider).to receive(:shell_out).with("dscl . -cmd /Path arguments").and_return(shell_return)
       expect { provider.run_dscl("cmd /Path arguments") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'no such key'" do
-      shell_return = ShellCmdResult.new("No such key: ", 'err', 23)
-      expect(provider).to receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
+      shell_return = ShellCmdResult.new("No such key: ", "err", 23)
+      expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
       expect { provider.run_dscl("cmd /Path args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'eDSRecordNotFound'" do
-      shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", 'err', -14136)
-      expect(provider).to receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
+      shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
+      expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
       expect { provider.run_dscl("cmd /Path args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
   end
@@ -197,7 +197,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     it "finds a valid, unused uid when none is specified" do
-      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return('')
+      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return("")
       expect(provider).to receive(:run_dscl).with("create /Users/toor UniqueID 501")
       expect(provider).to receive(:get_free_uid).and_return(501)
       provider.dscl_set_uid
@@ -207,7 +207,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     it "sets the uid specified in the resource" do
       new_resource.uid(1000)
       expect(provider).to receive(:run_dscl).with("create /Users/toor UniqueID 1000").and_return(true)
-      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return('')
+      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return("")
       provider.dscl_set_uid
     end
   end
@@ -219,7 +219,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
     before do
       new_resource.supports({ :manage_home => true })
-      new_resource.home('/Users/toor')
+      new_resource.home("/Users/toor")
 
       provider.current_resource = current_resource
     end
@@ -232,25 +232,25 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
 
     it "raises InvalidHomeDirectory when the resource's home directory doesn't look right" do
-      new_resource.home('epic-fail')
+      new_resource.home("epic-fail")
       expect { provider.dscl_set_home }.to raise_error(Chef::Exceptions::InvalidHomeDirectory)
     end
 
     it "moves the users home to the new location if it exists and the target location is different" do
       new_resource.supports(:manage_home => true)
 
-      current_home = CHEF_SPEC_DATA + '/old_home_dir'
-      current_home_files = [current_home + '/my-dot-emacs', current_home + '/my-dot-vim']
+      current_home = CHEF_SPEC_DATA + "/old_home_dir"
+      current_home_files = [current_home + "/my-dot-emacs", current_home + "/my-dot-vim"]
       current_resource.home(current_home)
       new_resource.gid(23)
-      allow(::File).to receive(:exists?).with('/old/home/toor').and_return(true)
-      allow(::File).to receive(:exists?).with('/Users/toor').and_return(true)
+      allow(::File).to receive(:exists?).with("/old/home/toor").and_return(true)
+      allow(::File).to receive(:exists?).with("/Users/toor").and_return(true)
 
-      expect(FileUtils).to receive(:mkdir_p).with('/Users/toor').and_return(true)
+      expect(FileUtils).to receive(:mkdir_p).with("/Users/toor").and_return(true)
       expect(FileUtils).to receive(:rmdir).with(current_home)
       expect(::Dir).to receive(:glob).with("#{CHEF_SPEC_DATA}/old_home_dir/*",::File::FNM_DOTMATCH).and_return(current_home_files)
       expect(FileUtils).to receive(:mv).with(current_home_files, "/Users/toor", :force => true)
-      expect(FileUtils).to receive(:chown_R).with('toor','23','/Users/toor')
+      expect(FileUtils).to receive(:chown_R).with("toor","23","/Users/toor")
 
       expect(provider).to receive(:run_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'")
       provider.dscl_set_home
@@ -263,7 +263,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
     it "should run ditto to copy any missing files from skel to the new home dir" do
       expect(::File).to receive(:exists?).with("/System/Library/User\ Template/English.lproj").and_return(true)
-      expect(FileUtils).to receive(:chown_R).with('toor', '', '/Users/toor')
+      expect(FileUtils).to receive(:chown_R).with("toor", "", "/Users/toor")
       expect(provider).to receive(:shell_out!).with("ditto '/System/Library/User Template/English.lproj' '/Users/toor'")
       provider.ditto_home
     end
@@ -382,7 +382,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       expect(provider).to receive(:shell_out).with("dscacheutil '-flushcache'")
       expect(provider).to receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
         if user_plist_file.nil?
-          ShellCmdResult.new('Can not find the file', 'Sorry!!', 1)
+          ShellCmdResult.new("Can not find the file", "Sorry!!", 1)
         else
           ShellCmdResult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/#{user_plist_file}.plist.xml")), "", 0)
         end
@@ -656,7 +656,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         it "password_shadow_info should have salted-sha-512 format" do
           shadow_info = provider.prepare_password_shadow_info
           expect(shadow_info).to have_key("SALTED-SHA512")
-          info = shadow_info["SALTED-SHA512"].string.unpack('H*').first
+          info = shadow_info["SALTED-SHA512"].string.unpack("H*").first
           expect(provider.salted_sha512?(info)).to be_truthy
         end
       end
@@ -667,7 +667,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         it "password_shadow_info should have salted-sha-512 format" do
           shadow_info = provider.prepare_password_shadow_info
           expect(shadow_info).to have_key("SALTED-SHA512")
-          info = shadow_info["SALTED-SHA512"].string.unpack('H*').first
+          info = shadow_info["SALTED-SHA512"].string.unpack("H*").first
           expect(provider.salted_sha512?(info)).to be_truthy
           expect(info).to eq(vagrant_sha_512)
         end
@@ -689,7 +689,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("entropy")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
-            info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first
+            info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*").first
             expect(provider.salted_sha512_pbkdf2?(info)).to be_truthy
           end
         end
@@ -705,7 +705,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("entropy")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
             expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
-            info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first
+            info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*").first
             expect(provider.salted_sha512_pbkdf2?(info)).to be_truthy
             expect(info).to eq(vagrant_sha_512_pbkdf2)
           end
@@ -791,8 +791,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       end
 
       it "should raise an exception when the group does not exist" do
-        shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", 'err', -14136)
-        expect(provider).to receive(:shell_out).with('dscl . -read /Groups/newgroup PrimaryGroupID').and_return(shell_return)
+        shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
+        expect(provider).to receive(:shell_out).with("dscl . -read /Groups/newgroup PrimaryGroupID").and_return(shell_return)
         expect { provider.dscl_set_gid }.to raise_error(Chef::Exceptions::GroupIDNotFound)
       end
     end
@@ -814,8 +814,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       new_resource.username "mud"
       new_resource.uid 2342
       new_resource.gid 2342
-      new_resource.home '/Users/death'
-      new_resource.password 'goaway'
+      new_resource.home "/Users/death"
+      new_resource.password "goaway"
     end
 
     it "sets the user, comment field, uid, gid, moves the home directory, sets the shell, and sets the password" do

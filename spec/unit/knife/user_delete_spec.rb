@@ -16,18 +16,18 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::UserDelete do
   let(:knife) { Chef::Knife::UserDelete.new }
-  let(:user) { double('user_object') }
+  let(:user) { double("user_object") }
   let(:stdout) { StringIO.new }
 
   before(:each) do
     Chef::Knife::UserDelete.load_deps
-    knife.name_args = [ 'my_user' ]
+    knife.name_args = [ "my_user" ]
     allow(Chef::UserV1).to receive(:load).and_return(user)
-    allow(user).to receive(:username).and_return('my_user')
+    allow(user).to receive(:username).and_return("my_user")
     allow(knife.ui).to receive(:stderr).and_return(stdout)
     allow(knife.ui).to receive(:stdout).and_return(stdout)
   end
@@ -50,13 +50,13 @@ describe Chef::Knife::UserDelete do
     end
   end
 
-  it 'deletes the user' do
+  it "deletes the user" do
     #expect(knife).to receive(:delete_object).with(Chef::UserV1, 'my_user')
-    expect(knife).to receive(:delete_object).with('my_user')
+    expect(knife).to receive(:delete_object).with("my_user")
     knife.run
   end
 
-  it 'prints usage and exits when a user name is not provided' do
+  it "prints usage and exits when a user name is not provided" do
     knife.name_args = []
     expect(knife).to receive(:show_usage)
     expect(knife.ui).to receive(:fatal)

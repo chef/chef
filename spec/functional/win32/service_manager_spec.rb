@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 if Chef::Platform.windows?
-  require 'chef/application/windows_service_manager'
+  require "chef/application/windows_service_manager"
 end
 
 #

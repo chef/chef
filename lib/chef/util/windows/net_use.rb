@@ -20,8 +20,8 @@
 #see also: WNetAddConnection2 and WNetAddConnection3
 #see also cmd.exe: net use /?
 
-require 'chef/util/windows'
-require 'chef/win32/net'
+require "chef/util/windows"
+require "chef/win32/net"
 
 class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def initialize(localname)
@@ -53,7 +53,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
 
   def from_use_info_struct(ui2_hash)
     ui2_hash.inject({}) do |memo, (k,v)|
-      memo[k.to_s.sub('ui2_', '').to_sym] = v
+      memo[k.to_s.sub("ui2_", "").to_sym] = v
       memo
     end
   end

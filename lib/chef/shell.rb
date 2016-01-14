@@ -15,21 +15,21 @@
 # limitations under the License.
 #
 
-require 'singleton'
-require 'pp'
-require 'etc'
-require 'mixlib/cli'
+require "singleton"
+require "pp"
+require "etc"
+require "mixlib/cli"
 
-require 'chef'
-require 'chef/version'
-require 'chef/client'
-require 'chef/config'
-require 'chef/config_fetcher'
+require "chef"
+require "chef/version"
+require "chef/client"
+require "chef/config"
+require "chef/config_fetcher"
 
-require 'chef/shell/shell_session'
-require 'chef/shell/ext'
-require 'chef/json_compat'
-require 'chef/util/path_helper'
+require "chef/shell/shell_session"
+require "chef/shell/ext"
+require "chef/json_compat"
+require "chef/util/path_helper"
 
 # = Shell
 # Shell is Chef in an IRB session. Shell can interact with a Chef server via the
@@ -180,7 +180,7 @@ module Shell
   end
 
   def self.editor
-    @editor || Chef::Config[:editor] || ENV['EDITOR']
+    @editor || Chef::Config[:editor] || ENV["EDITOR"]
   end
 
   class Options
@@ -216,7 +216,7 @@ FOOTER
 
     option :log_level,
       :short  => "-l LOG_LEVEL",
-      :long   => '--log-level LOG_LEVEL',
+      :long   => "--log-level LOG_LEVEL",
       :description => "Set the logging level",
       :proc         => proc { |level| Chef::Config.log_level = level.to_sym; Shell.setup_logger }
 
@@ -264,7 +264,7 @@ FOOTER
       :short        => "-o RunlistItem,RunlistItem...",
       :long         => "--override-runlist RunlistItem,RunlistItem...",
       :description  => "Replace current run list with specified items",
-      :proc         => lambda { |items| items.split(',').map { |item| Chef::RunList::RunListItem.new(item) }}
+      :proc         => lambda { |items| items.split(",").map { |item| Chef::RunList::RunListItem.new(item) }}
 
     def self.print_help
       instance = new
@@ -296,19 +296,19 @@ FOOTER
     private
 
     def config_file_for_shell_mode(environment)
-      dot_chef_dir = Chef::Util::PathHelper.home('.chef')
+      dot_chef_dir = Chef::Util::PathHelper.home(".chef")
       if config[:config_file]
         config[:config_file]
       elsif environment
         Shell.env = environment
-        config_file_to_try = ::File.join(dot_chef_dir, environment, 'chef_shell.rb')
+        config_file_to_try = ::File.join(dot_chef_dir, environment, "chef_shell.rb")
         unless ::File.exist?(config_file_to_try)
           puts "could not find chef-shell config for environment #{environment} at #{config_file_to_try}"
           exit 1
         end
         config_file_to_try
-      elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, 'chef_shell.rb'))
-        File.join(dot_chef_dir, 'chef_shell.rb')
+      elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, "chef_shell.rb"))
+        File.join(dot_chef_dir, "chef_shell.rb")
       elsif config[:solo]
         Chef::Config.platform_specific_path("/etc/chef/solo.rb")
       elsif config[:client]

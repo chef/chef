@@ -16,24 +16,24 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::CookbookFile::Content do
 
-  let(:new_resource) { double('Chef::Resource::CookbookFile (new)', :cookbook_name => 'apache2', :cookbook => 'apache2') }
+  let(:new_resource) { double("Chef::Resource::CookbookFile (new)", :cookbook_name => "apache2", :cookbook => "apache2") }
   let(:content) do
-    @run_context = double('Chef::RunContext')
-    @current_resource = double('Chef::Resource::CookbookFile (current)')
+    @run_context = double("Chef::RunContext")
+    @current_resource = double("Chef::Resource::CookbookFile (current)")
     Chef::Provider::CookbookFile::Content.new(new_resource, @current_resource, @run_context)
   end
 
   it "prefers the explicit cookbook name on the resource to the implicit one" do
-    allow(new_resource).to receive(:cookbook).and_return('nginx')
-    expect(content.send(:resource_cookbook)).to eq('nginx')
+    allow(new_resource).to receive(:cookbook).and_return("nginx")
+    expect(content.send(:resource_cookbook)).to eq("nginx")
   end
 
   it "falls back to the implicit cookbook name on the resource" do
-    expect(content.send(:resource_cookbook)).to eq('apache2')
+    expect(content.send(:resource_cookbook)).to eq("apache2")
   end
 
 end

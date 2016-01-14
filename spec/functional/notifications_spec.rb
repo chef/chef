@@ -1,5 +1,5 @@
-require 'spec_helper'
-require 'chef/recipe'
+require "spec_helper"
+require "chef/recipe"
 
 
 # The goal of these tests is to make sure that loading resources from a file creates the necessary notifications.

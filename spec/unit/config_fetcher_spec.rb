@@ -1,5 +1,5 @@
-require 'spec_helper'
-require 'chef/config_fetcher'
+require "spec_helper"
+require "chef/config_fetcher"
 
 describe Chef::ConfigFetcher do
   let(:valid_json) { Chef::JSONCompat.to_json({:a=>"b"}) }

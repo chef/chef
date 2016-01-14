@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/simple'
-require 'chef/mixin/command'
-require 'chef/platform/service_helpers'
+require "chef/provider/service/simple"
+require "chef/mixin/command"
+require "chef/platform/service_helpers"
 
 class Chef
   class Provider

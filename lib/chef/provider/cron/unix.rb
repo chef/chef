@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/provider'
-require 'chef/provider/cron'
+require "chef/log"
+require "chef/provider"
+require "chef/provider/cron"
 
 class Chef
   class Provider
@@ -28,12 +28,12 @@ class Chef
       class Unix < Chef::Provider::Cron
         include Chef::Mixin::ShellOut
 
-        provides :cron, os: 'solaris2'
+        provides :cron, os: "solaris2"
 
         private
 
         def read_crontab
-          crontab = shell_out('/usr/bin/crontab -l', :user => @new_resource.user)
+          crontab = shell_out("/usr/bin/crontab -l", :user => @new_resource.user)
           status = crontab.status.exitstatus
 
           Chef::Log.debug crontab.format_for_exception if status > 0

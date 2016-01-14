@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class DataBagDelete < Knife
 
       deps do
-        require 'chef/data_bag'
+        require "chef/data_bag"
       end
 
       banner "knife data bag delete BAG [ITEM] (options)"

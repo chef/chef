@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'functional/resource/base'
-require 'chef/version'
-require 'chef/shell'
-require 'chef/mixin/command/unix'
+require "functional/resource/base"
+require "chef/version"
+require "chef/shell"
+require "chef/mixin/command/unix"
 
 describe Shell do
 
@@ -82,7 +82,7 @@ describe Shell do
       when "aix"
         config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
         path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
-        output = ''
+        output = ""
         status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
           read_until(stdout, "chef (#{Chef::VERSION})>")
           yield stdout, stdin if block_given?
@@ -97,7 +97,7 @@ describe Shell do
         # Windows ruby installs don't (always?) have PTY,
         # so hide the require here
         begin
-          require 'pty'
+          require "pty"
           config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
           path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
           reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")

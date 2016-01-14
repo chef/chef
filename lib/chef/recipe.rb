@@ -18,18 +18,18 @@
 #
 
 
-require 'chef/dsl/recipe'
-require 'chef/dsl/data_query'
-require 'chef/dsl/platform_introspection'
-require 'chef/dsl/include_recipe'
-require 'chef/dsl/registry_helper'
-require 'chef/dsl/reboot_pending'
-require 'chef/dsl/audit'
-require 'chef/dsl/powershell'
+require "chef/dsl/recipe"
+require "chef/dsl/data_query"
+require "chef/dsl/platform_introspection"
+require "chef/dsl/include_recipe"
+require "chef/dsl/registry_helper"
+require "chef/dsl/reboot_pending"
+require "chef/dsl/audit"
+require "chef/dsl/powershell"
 
-require 'chef/mixin/from_file'
+require "chef/mixin/from_file"
 
-require 'chef/mixin/deprecation'
+require "chef/mixin/deprecation"
 
 class Chef
   # == Chef::Recipe

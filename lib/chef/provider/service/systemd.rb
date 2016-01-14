@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
-require 'chef/provider/service/simple'
-require 'chef/mixin/which'
+require "chef/resource/service"
+require "chef/provider/service/simple"
+require "chef/mixin/which"
 
 class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 

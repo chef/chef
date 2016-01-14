@@ -19,10 +19,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/run_list/run_list_item'
-require 'chef/run_list/run_list_expansion'
-require 'chef/run_list/versioned_recipe_list'
-require 'chef/mixin/params_validate'
+require "chef/run_list/run_list_item"
+require "chef/run_list/run_list_expansion"
+require "chef/run_list/versioned_recipe_list"
+require "chef/mixin/params_validate"
 
 class Chef
   class RunList
@@ -138,7 +138,7 @@ class Chef
     # Expands this run_list: recursively expand roles into their included
     # recipes.
     # Returns a RunListExpansion object.
-    def expand(environment, data_source='server', expansion_opts={})
+    def expand(environment, data_source="server", expansion_opts={})
       expansion = expansion_for_data_source(environment, data_source, expansion_opts)
       expansion.expand
       expansion
@@ -155,9 +155,9 @@ class Chef
 
     def expansion_for_data_source(environment, data_source, opts={})
       case data_source.to_s
-      when 'disk'
+      when "disk"
         RunListExpansionFromDisk.new(environment, @run_list_items)
-      when 'server'
+      when "server"
         RunListExpansionFromAPI.new(environment, @run_list_items, opts[:rest])
       end
     end

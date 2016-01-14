@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 if Chef::Platform.windows?
-  require 'chef/win32/crypto'
+  require "chef/win32/crypto"
 end
 
-describe 'Chef::ReservedNames::Win32::Crypto', :windows_only do
+describe "Chef::ReservedNames::Win32::Crypto", :windows_only do
   describe '#encrypt' do
     before(:all) do
       ohai_reader = Ohai::System.new
@@ -35,9 +35,9 @@ describe 'Chef::ReservedNames::Win32::Crypto', :windows_only do
       @run_context = Chef::RunContext.new(new_node, {}, events)
     end
 
-    let (:plaintext) { 'p@assword' }
+    let (:plaintext) { "p@assword" }
 
-    it 'can be decrypted by powershell' do
+    it "can be decrypted by powershell" do
       encrypted = Chef::ReservedNames::Win32::Crypto.encrypt(plaintext)
       resource = Chef::Resource::WindowsScript::PowershellScript.new("Powershell resource functional test", @run_context)
       resource.code <<-EOF

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/version'
-require 'chef/util/path_helper'
+require "chef/version"
+require "chef/util/path_helper"
 class Chef
   class Knife
     class SubcommandLoader
@@ -39,7 +39,7 @@ class Chef
         # subcommand loader has been modified to load the plugins by using Kernel.load
         # with the absolute path.
         def gem_and_builtin_subcommands
-          require 'rubygems'
+          require "rubygems"
           find_subcommands_via_rubygems
         rescue LoadError
           find_subcommands_via_dirglob
@@ -47,7 +47,7 @@ class Chef
 
         def find_subcommands_via_dirglob
           # The "require paths" of the core knife subcommands bundled with chef
-          files = Dir[File.join(Chef::Util::PathHelper.escape_glob(File.expand_path('../../../knife', __FILE__)), '*.rb')]
+          files = Dir[File.join(Chef::Util::PathHelper.escape_glob(File.expand_path("../../../knife", __FILE__)), "*.rb")]
           subcommand_files = {}
           files.each do |knife_file|
             rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1]
@@ -57,7 +57,7 @@ class Chef
         end
 
         def find_subcommands_via_rubygems
-          files = find_files_latest_gems 'chef/knife/*.rb'
+          files = find_files_latest_gems "chef/knife/*.rb"
           subcommand_files = {}
           files.each do |file|
             rel_path = file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*)\.rb/, 1]

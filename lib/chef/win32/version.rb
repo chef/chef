@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
-require 'chef/win32/api/system'
-require 'wmi-lite/wmi'
+require "chef/win32/api"
+require "chef/win32/api/system"
+require "wmi-lite/wmi"
 
 class Chef
   module ReservedNames::Win32
@@ -123,13 +123,13 @@ class Chef
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724439(v=vs.85).aspx
 
         wmi = WmiLite::Wmi.new
-        os_info = wmi.first_of('Win32_OperatingSystem')
-        os_version = os_info['version']
+        os_info = wmi.first_of("Win32_OperatingSystem")
+        os_version = os_info["version"]
 
         # The operating system version is a string in the following form
         # that can be split into components based on the '.' delimiter:
         # MajorVersionNumber.MinorVersionNumber.BuildNumber
-        os_version.split('.').collect { | version_string | version_string.to_i }
+        os_version.split(".").collect { | version_string | version_string.to_i }
       end
 
       def get_version_ex

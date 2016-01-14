@@ -1,15 +1,15 @@
 
-require 'set'
-require 'chef/exceptions'
-require 'chef/knife/cookbook_metadata'
-require 'chef/digester'
-require 'chef/cookbook_manifest'
-require 'chef/cookbook_version'
-require 'chef/cookbook/syntax_check'
-require 'chef/cookbook/file_system_file_vendor'
-require 'chef/util/threaded_job_queue'
-require 'chef/sandbox'
-require 'chef/server_api'
+require "set"
+require "chef/exceptions"
+require "chef/knife/cookbook_metadata"
+require "chef/digester"
+require "chef/cookbook_manifest"
+require "chef/cookbook_version"
+require "chef/cookbook/syntax_check"
+require "chef/cookbook/file_system_file_vendor"
+require "chef/util/threaded_job_queue"
+require "chef/sandbox"
+require "chef/server_api"
 
 class Chef
   class CookbookUploader
@@ -65,11 +65,11 @@ class Chef
       checksums_to_upload = Set.new
 
       # upload the new checksums and commit the sandbox
-      new_sandbox['checksums'].each do |checksum, info|
-        if info['needs_upload'] == true
+      new_sandbox["checksums"].each do |checksum, info|
+        if info["needs_upload"] == true
           checksums_to_upload << checksum
           Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
-          queue << uploader_function_for(checksum_files[checksum], checksum, info['url'], checksums_to_upload)
+          queue << uploader_function_for(checksum_files[checksum], checksum, info["url"], checksums_to_upload)
         else
           Chef::Log.debug("#{checksum_files[checksum]} has not changed")
         end
@@ -77,7 +77,7 @@ class Chef
 
       queue.process(@concurrency)
 
-      sandbox_url = new_sandbox['uri']
+      sandbox_url = new_sandbox["uri"]
       Chef::Log.debug("Committing sandbox")
       # Retry if S3 is claims a checksum doesn't exist (the eventual
       # in eventual consistency)
@@ -123,7 +123,7 @@ class Chef
         file_contents = File.open(file, "rb") {|f| f.read}
 
         # Custom headers. 'content-type' disables JSON serialization of the request body.
-        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, "accept" => 'application/json' }
+        headers = { "content-type" => "application/x-binary", "content-md5" => checksum64, "accept" => "application/json" }
 
         begin
           rest.put(url, file_contents, headers)

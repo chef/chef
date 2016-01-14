@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
-require 'chef/win32/unicode'
+require "chef/win32/api"
+require "chef/win32/unicode"
 
 class Chef
   module ReservedNames::Win32

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_entry'
-require 'chef/chef_fs/data_handler/data_bag_item_data_handler'
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/data_handler/data_bag_item_data_handler"
 
 class Chef
   module ChefFS
@@ -29,7 +29,7 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            is_dir && !name.start_with?('.')
+            is_dir && !name.start_with?(".")
           end
         end
       end

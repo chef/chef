@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/user_key_create'
-require 'chef/knife/client_key_create'
-require 'chef/knife/key_create'
-require 'chef/key'
+require "spec_helper"
+require "chef/knife/user_key_create"
+require "chef/knife/client_key_create"
+require "chef/knife/key_create"
+require "chef/key"
 
 describe "key create commands that inherit knife" do
   shared_examples_for "a key create command" do

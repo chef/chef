@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/platform/query_helpers'
-require 'spec_helper'
+require "chef/platform/query_helpers"
+require "spec_helper"
 
 describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
   include_context Chef::Resource::WindowsScript
 
-  let (:architecture_command) { 'echo $env:PROCESSOR_ARCHITECTURE' }
-  let (:output_command) { ' | out-file -encoding ASCII ' }
+  let (:architecture_command) { "echo $env:PROCESSOR_ARCHITECTURE" }
+  let (:output_command) { " | out-file -encoding ASCII " }
 
   it_behaves_like "a Windows script running on Windows"
 
@@ -59,7 +59,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "returns the exit status 27 for a powershell script that exits with 27" do
       pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
-      file = Tempfile.new(['foo', '.ps1'])
+      file = Tempfile.new(["foo", ".ps1"])
       begin
         file.write "exit 27"
         file.close
@@ -79,7 +79,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
       # Versions of PowerShell prior to 4.0 return a 16-bit unsigned value --
       # PowerShell 4.0 and later versions return a 32-bit signed value.
-      file = Tempfile.new(['foo', '.ps1'])
+      file = Tempfile.new(["foo", ".ps1"])
       begin
         file.write "exit #{negative_exit_status}"
         file.close
@@ -114,7 +114,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     it "returns 0 if the last command was a cmdlet that succeeded and was preceded by a non-cmdlet Windows binary that failed" do
-      resource.code([windows_process_exit_code_not_found_content, cmdlet_exit_code_success_content].join(';'))
+      resource.code([windows_process_exit_code_not_found_content, cmdlet_exit_code_success_content].join(";"))
       resource.returns(0)
       resource.run_action(:run)
     end
@@ -130,7 +130,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "returns 1 if the last command was a cmdlet that failed and was preceded by a successfully executed non-cmdlet Windows binary" do
       pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
-      resource.code([windows_process_exit_code_success_content, cmdlet_exit_code_not_found_content].join(';'))
+      resource.code([windows_process_exit_code_success_content, cmdlet_exit_code_not_found_content].join(";"))
       resource.returns(1)
       expect { resource.run_action(:run) }.not_to raise_error
     end
@@ -138,7 +138,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "raises a Mixlib::ShellOut::ShellCommandFailed error if the script is not syntactically correct" do
       pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
-      resource.code('if({)')
+      resource.code("if({)")
       resource.returns(0)
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
@@ -148,7 +148,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       # The error is a false-positive.
       skip "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
-      resource.code('if({)')
+      resource.code("if({)")
       resource.returns(1)
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
@@ -164,7 +164,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "returns 1 if the last command was a cmdlet that failed and was preceded by an unsuccessfully executed non-cmdlet Windows binary" do
       pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
-      resource.code([arbitrary_nonzero_process_exit_code_content,cmdlet_exit_code_not_found_content].join(';'))
+      resource.code([arbitrary_nonzero_process_exit_code_content,cmdlet_exit_code_not_found_content].join(";"))
       resource.returns(arbitrary_nonzero_process_exit_code)
       resource.run_action(:run)
     end
@@ -172,7 +172,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "returns 0 if the last command was a non-cmdlet Windows binary that succeeded and was preceded by a failed cmdlet" do
       pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
-      resource.code([cmdlet_exit_code_success_content, arbitrary_nonzero_process_exit_code_content].join(';'))
+      resource.code([cmdlet_exit_code_success_content, arbitrary_nonzero_process_exit_code_content].join(";"))
       resource.returns(arbitrary_nonzero_process_exit_code)
       resource.run_action(:run)
     end
@@ -180,7 +180,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "returns a specific error code if the last command was a non-cmdlet Windows binary that failed and was preceded by cmdlet that succeeded" do
       pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
-      resource.code([cmdlet_exit_code_success_content, arbitrary_nonzero_process_exit_code_content].join(';'))
+      resource.code([cmdlet_exit_code_success_content, arbitrary_nonzero_process_exit_code_content].join(";"))
       resource.returns(arbitrary_nonzero_process_exit_code)
       resource.run_action(:run)
     end
@@ -188,7 +188,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "returns a specific error code if the last command was a non-cmdlet Windows binary that failed and was preceded by cmdlet that failed" do
       pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
-      resource.code([cmdlet_exit_code_not_found_content, arbitrary_nonzero_process_exit_code_content].join(';'))
+      resource.code([cmdlet_exit_code_not_found_content, arbitrary_nonzero_process_exit_code_content].join(";"))
       resource.returns(arbitrary_nonzero_process_exit_code)
       resource.run_action(:run)
     end
@@ -226,9 +226,9 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.returns(0)
       resource.run_action(:run)
 
-      is_64_bit = (ENV['PROCESSOR_ARCHITECTURE'] == 'AMD64') || (ENV['PROCESSOR_ARCHITEW6432'] == 'AMD64')
+      is_64_bit = (ENV["PROCESSOR_ARCHITECTURE"] == "AMD64") || (ENV["PROCESSOR_ARCHITEW6432"] == "AMD64")
 
-      detected_64_bit = source_contains_case_insensitive_content?( get_script_output, 'AMD64' )
+      detected_64_bit = source_contains_case_insensitive_content?( get_script_output, "AMD64" )
 
       expect(is_64_bit).to eq(detected_64_bit)
     end
@@ -280,7 +280,7 @@ configuration LCM
       resource.returns(0)
       resource.run_action(:run)
 
-      expect(source_contains_case_insensitive_content?( get_script_output, 'x86' )).to eq(true)
+      expect(source_contains_case_insensitive_content?( get_script_output, "x86" )).to eq(true)
     end
 
     context "when running on a 64-bit version of Windows", :windows64_only do
@@ -290,7 +290,7 @@ configuration LCM
         resource.returns(0)
         resource.run_action(:run)
 
-        expect(source_contains_case_insensitive_content?( get_script_output, 'AMD64' )).to eq(true)
+        expect(source_contains_case_insensitive_content?( get_script_output, "AMD64" )).to eq(true)
       end
     end
 
@@ -311,7 +311,7 @@ configuration LCM
       resource.returns(0)
       resource.run_action(:run)
 
-      expect(source_contains_case_insensitive_content?( get_script_output, 'AMD64' )).to eq(true)
+      expect(source_contains_case_insensitive_content?( get_script_output, "AMD64" )).to eq(true)
     end
 
     it "executes a script with a 32-bit process if :i386 arch is specified", :not_supported_on_nano do
@@ -320,7 +320,7 @@ configuration LCM
       resource.returns(0)
       resource.run_action(:run)
 
-      expect(source_contains_case_insensitive_content?( get_script_output, 'x86' )).to eq(true)
+      expect(source_contains_case_insensitive_content?( get_script_output, "x86" )).to eq(true)
     end
 
     it "raises an error when executing a script with a 32-bit process on Windows Nano Server", :windows_nano_only do

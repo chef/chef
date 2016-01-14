@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system'
-require 'chef/chef_fs/file_system/memory/memory_root'
-require 'chef/chef_fs/file_system/memory/memory_dir'
-require 'chef/chef_fs/file_system/memory/memory_file'
+require "chef/chef_fs/file_system"
+require "chef/chef_fs/file_system/memory/memory_root"
+require "chef/chef_fs/file_system/memory/memory_dir"
+require "chef/chef_fs/file_system/memory/memory_file"
 
 module FileSystemSupport
   def memory_fs(pretty_name, value, cannot_be_in_regex = nil)
@@ -33,7 +33,7 @@ module FileSystemSupport
     dir
   end
 
-  def memory_fs_value(value, name = '', parent = nil)
+  def memory_fs_value(value, name = "", parent = nil)
     if value.is_a?(Hash)
       dir = Chef::ChefFS::FileSystem::Memory::MemoryDir.new(name, parent)
       value.each do |key, child|

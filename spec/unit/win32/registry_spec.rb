@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Win32::Registry do
   include_context "Win32"
@@ -25,9 +25,9 @@ describe Chef::Win32::Registry do
   let(:value1_upcase_name) { {:name => "ONE", :type => :string, :data => "1"} }
   let(:key_path) { 'HKCU\Software\OpscodeNumbers' }
   let(:key) { 'Software\OpscodeNumbers' }
-  let(:key_parent) { 'Software' }
-  let(:key_to_delete) { 'OpscodeNumbers' }
-  let(:sub_key) {'OpscodePrimes'}
+  let(:key_parent) { "Software" }
+  let(:key_to_delete) { "OpscodeNumbers" }
+  let(:sub_key) {"OpscodePrimes"}
   let(:missing_key_path) {'HKCU\Software'}
   let(:registry) { Chef::Win32::Registry.new() }
   let(:hive_mock) { double("::Win32::Registry::KHKEY_CURRENT_USER") }
@@ -49,10 +49,10 @@ describe Chef::Win32::Registry do
   end
 
   after(:each) do
-    Win32::Registry.send(:remove_const, 'KEY_SET_VALUE') if defined?(Win32::Registry::KEY_SET_VALUE)
-    Win32::Registry.send(:remove_const, 'KEY_QUERY_VALUE') if defined?(Win32::Registry::KEY_QUERY_VALUE)
-    Win32::Registry.send(:remove_const, 'KEY_READ') if defined?(Win32::Registry::KEY_READ)
-    Win32::Registry.send(:remove_const, 'KEY_WRITE') if defined?(Win32::Registry::KEY_WRITE)
+    Win32::Registry.send(:remove_const, "KEY_SET_VALUE") if defined?(Win32::Registry::KEY_SET_VALUE)
+    Win32::Registry.send(:remove_const, "KEY_QUERY_VALUE") if defined?(Win32::Registry::KEY_QUERY_VALUE)
+    Win32::Registry.send(:remove_const, "KEY_READ") if defined?(Win32::Registry::KEY_READ)
+    Win32::Registry.send(:remove_const, "KEY_WRITE") if defined?(Win32::Registry::KEY_WRITE)
   end
 
   describe "get_values" do

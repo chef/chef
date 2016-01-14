@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/provider/script'
-require 'chef/mixin/windows_architecture_helper'
+require "chef/provider/script"
+require "chef/mixin/windows_architecture_helper"
 
 class Chef
   class Provider
@@ -29,7 +29,7 @@ class Chef
 
       include Chef::Mixin::WindowsArchitectureHelper
 
-      def initialize( new_resource, run_context, script_extension='')
+      def initialize( new_resource, run_context, script_extension="")
         super( new_resource, run_context )
         @script_extension = script_extension
 

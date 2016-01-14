@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/resource/gem_package'
+require "chef/resource/package"
+require "chef/resource/gem_package"
 
 class Chef
   class Resource

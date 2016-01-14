@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/user_key_show'
-require 'chef/knife/client_key_show'
-require 'chef/knife/key_show'
-require 'chef/key'
+require "spec_helper"
+require "chef/knife/user_key_show"
+require "chef/knife/client_key_show"
+require "chef/knife/key_show"
+require "chef/key"
 
 describe "key show commands that inherit knife" do
   shared_examples_for "a key show command" do
@@ -113,14 +113,14 @@ describe Chef::Knife::KeyShow do
   context "when load_method is :load_by_user" do
     it_should_behave_like "key show run command" do
       let(:load_method) { :load_by_user }
-      let(:actor_field_name) { 'user' }
+      let(:actor_field_name) { "user" }
     end
   end
 
   context "when load_method is :load_by_client" do
     it_should_behave_like "key show run command" do
       let(:load_method) { :load_by_client }
-      let(:actor_field_name) { 'user' }
+      let(:actor_field_name) { "user" }
     end
   end
 end

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'uri'
+require "spec_helper"
+require "uri"
 
 describe Chef::Provider::RemoteFile::CacheControlData do
 
@@ -75,7 +75,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
     # file system API's on both Windows and Unix systems.
     context "when the length of the uri exceeds the path length limits for the local file system" do
       let(:uri_exceeds_file_system_limit) do
-        URI.parse("http://www.bing.com/" + ('0' * 1024))
+        URI.parse("http://www.bing.com/" + ("0" * 1024))
       end
 
       let(:uri) { uri_exceeds_file_system_limit }

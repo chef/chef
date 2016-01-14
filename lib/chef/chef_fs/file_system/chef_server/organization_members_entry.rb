@@ -1,6 +1,6 @@
-require 'chef/chef_fs/file_system/chef_server/rest_list_entry'
-require 'chef/chef_fs/data_handler/organization_members_data_handler'
-require 'chef/json_compat'
+require "chef/chef_fs/file_system/chef_server/rest_list_entry"
+require "chef/chef_fs/data_handler/organization_members_data_handler"
+require "chef/json_compat"
 
 class Chef
   module ChefFS
@@ -24,7 +24,7 @@ class Chef
 
           # /organizations/foo/members.json -> /organizations/foo/users
           def api_path
-            File.join(parent.api_path, 'users')
+            File.join(parent.api_path, "users")
           end
 
           def exists?
@@ -40,7 +40,7 @@ class Chef
             members = minimize_value(_read_json)
             (desired_members - members).each do |member|
               begin
-                rest.post(api_path, 'username' => member)
+                rest.post(api_path, "username" => member)
               rescue Net::HTTPServerException => e
                 if %w(404 405).include?(e.response.code)
                   raise "Chef server at #{api_path} does not allow you to directly add members.  Please either upgrade your Chef server or move the users you want into invitations.json instead of members.json."

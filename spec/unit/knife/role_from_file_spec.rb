@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::RoleFromFile.load_deps
 
@@ -39,7 +39,7 @@ describe Chef::Knife::RoleFromFile do
 
   describe "run" do
     it "should load from a file" do
-      expect(@knife.loader).to receive(:load_from).with('roles', 'adam.rb').and_return(@role)
+      expect(@knife.loader).to receive(:load_from).with("roles", "adam.rb").and_return(@role)
       @knife.run
     end
 
@@ -60,8 +60,8 @@ describe Chef::Knife::RoleFromFile do
   describe "run with multiple arguments" do
     it "should load each file" do
       @knife.name_args = [ "adam.rb", "caleb.rb" ]
-      expect(@knife.loader).to receive(:load_from).with('roles', 'adam.rb').and_return(@role)
-      expect(@knife.loader).to receive(:load_from).with('roles', 'caleb.rb').and_return(@role)
+      expect(@knife.loader).to receive(:load_from).with("roles", "adam.rb").and_return(@role)
+      expect(@knife.loader).to receive(:load_from).with("roles", "caleb.rb").and_return(@role)
       @knife.run
     end
   end

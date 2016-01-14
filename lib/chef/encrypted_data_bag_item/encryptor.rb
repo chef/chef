@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'base64'
-require 'digest/sha2'
-require 'openssl'
-require 'ffi_yajl'
-require 'chef/encrypted_data_bag_item'
-require 'chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format'
-require 'chef/encrypted_data_bag_item/encryption_failure'
-require 'chef/encrypted_data_bag_item/assertions'
+require "base64"
+require "digest/sha2"
+require "openssl"
+require "ffi_yajl"
+require "chef/encrypted_data_bag_item"
+require "chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format"
+require "chef/encrypted_data_bag_item/encryption_failure"
+require "chef/encrypted_data_bag_item/assertions"
 
 class Chef::EncryptedDataBagItem
 
@@ -201,7 +201,7 @@ class Chef::EncryptedDataBagItem
       def openssl_encryptor
         @openssl_encryptor ||= begin
           encryptor = super
-          encryptor.auth_data = ''
+          encryptor.auth_data = ""
           encryptor
         end
       end

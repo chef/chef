@@ -16,18 +16,18 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/exceptions'
-require 'shellwords'
+require "chef/knife"
+require "chef/exceptions"
+require "shellwords"
 
 class Chef
   class Knife
     class CookbookSiteInstall < Knife
 
       deps do
-        require 'chef/mixin/shell_out'
-        require 'chef/knife/core/cookbook_scm_repo'
-        require 'chef/cookbook/metadata'
+        require "chef/mixin/shell_out"
+        require "chef/knife/core/cookbook_scm_repo"
+        require "chef/cookbook/metadata"
       end
 
       banner "knife cookbook site install COOKBOOK [VERSION] (options)"
@@ -156,7 +156,7 @@ class Chef
 
       def convert_path(upstream_file)
         # converts a Windows path (C:\foo) to a mingw path (/c/foo)
-        if ENV['MSYSTEM'] == 'MINGW32'
+        if ENV["MSYSTEM"] == "MINGW32"
           return upstream_file.sub(/^([[:alpha:]]):/, '/\1')
         else
           return Shellwords.escape upstream_file

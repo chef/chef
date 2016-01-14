@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Reboot do
 
@@ -42,7 +42,7 @@ describe Chef::Resource::Reboot do
     create_resource
   end
 
-  shared_context 'testing run context modification' do
+  shared_context "testing run context modification" do
     def test_reboot_action(resource)
       reboot_info = resource.run_context.reboot_info
       expect(reboot_info.keys.sort).to eq([:delay_mins, :reason, :requested_by, :timestamp])
@@ -55,8 +55,8 @@ describe Chef::Resource::Reboot do
   end
 
   # the currently defined behavior for multiple calls to this resource is "last one wins."
-  describe 'the request_reboot_on_successful_run action' do
-    include_context 'testing run context modification'
+  describe "the request_reboot_on_successful_run action" do
+    include_context "testing run context modification"
 
     before do
       resource.run_action(:request_reboot)
@@ -66,19 +66,19 @@ describe Chef::Resource::Reboot do
       resource.run_context.cancel_reboot
     end
 
-    it 'should have modified the run context correctly' do
+    it "should have modified the run context correctly" do
       test_reboot_action(resource)
     end
   end
 
-  describe 'the reboot_interrupt_run action' do
-    include_context 'testing run context modification'
+  describe "the reboot_interrupt_run action" do
+    include_context "testing run context modification"
 
     after do
       resource.run_context.cancel_reboot
     end
 
-    it 'should have modified the run context correctly' do
+    it "should have modified the run context correctly" do
       # this doesn't actually test the flow of Chef::Client#do_run, unfortunately.
       expect {
         resource.run_action(:reboot_now)
@@ -94,7 +94,7 @@ describe Chef::Resource::Reboot do
       resource.run_action(:cancel)
     end
 
-    it 'should have cleared the reboot request' do
+    it "should have cleared the reboot request" do
       # arguably we shouldn't be querying RunContext's internal data directly.
       expect(resource.run_context.reboot_info).to eq({})
       expect(resource.run_context.reboot_requested?).to be_falsey

@@ -19,14 +19,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'mixlib/config'
-require 'pathname'
+require "mixlib/config"
+require "pathname"
 
-require 'chef-config/logger'
-require 'chef-config/windows'
-require 'chef-config/path_helper'
-require 'mixlib/shellout'
-require 'uri'
+require "chef-config/logger"
+require "chef-config/windows"
+require "chef-config/path_helper"
+require "mixlib/shellout"
+require "uri"
 
 module ChefConfig
 
@@ -49,8 +49,8 @@ module ChefConfig
       path = PathHelper.cleanpath(path)
       if ChefConfig.windows?
         # turns \etc\chef\client.rb and \var\chef\client.rb into C:/chef/client.rb
-        if env['SYSTEMDRIVE'] && path[0] == '\\' && path.split('\\')[2] == 'chef'
-          path = PathHelper.join(env['SYSTEMDRIVE'], path.split('\\', 3)[2])
+        if env["SYSTEMDRIVE"] && path[0] == '\\' && path.split('\\')[2] == "chef"
+          path = PathHelper.join(env["SYSTEMDRIVE"], path.split('\\', 3)[2])
         end
       end
       path
@@ -107,10 +107,10 @@ module ChefConfig
     default :chef_repo_path do
       if self.configuration[:cookbook_path]
         if self.configuration[:cookbook_path].kind_of?(String)
-          File.expand_path('..', self.configuration[:cookbook_path])
+          File.expand_path("..", self.configuration[:cookbook_path])
         else
           self.configuration[:cookbook_path].map do |path|
-            File.expand_path('..', path)
+            File.expand_path("..", path)
           end
         end
       else
@@ -123,7 +123,7 @@ module ChefConfig
       # This allows us to run config-free.
       path = cwd
       until File.directory?(PathHelper.join(path, "cookbooks"))
-        new_path = File.expand_path('..', path)
+        new_path = File.expand_path("..", path)
         if new_path == path
           ChefConfig.logger.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
           return Dir.pwd
@@ -145,66 +145,66 @@ module ChefConfig
     # Location of acls on disk. String or array of strings.
     # Defaults to <chef_repo_path>/acls.
     # Only applies to Enterprise Chef commands.
-    default(:acl_path) { derive_path_from_chef_repo_path('acls') }
+    default(:acl_path) { derive_path_from_chef_repo_path("acls") }
 
     # Location of clients on disk. String or array of strings.
     # Defaults to <chef_repo_path>/acls.
-    default(:client_path) { derive_path_from_chef_repo_path('clients') }
+    default(:client_path) { derive_path_from_chef_repo_path("clients") }
 
     # Location of cookbooks on disk. String or array of strings.
     # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
     # is not specified, this is set to [/var/chef/cookbooks, /var/chef/site-cookbooks]).
     default(:cookbook_path) do
       if self.configuration[:chef_repo_path]
-        derive_path_from_chef_repo_path('cookbooks')
+        derive_path_from_chef_repo_path("cookbooks")
       else
-        Array(derive_path_from_chef_repo_path('cookbooks')).flatten +
-          Array(derive_path_from_chef_repo_path('site-cookbooks')).flatten
+        Array(derive_path_from_chef_repo_path("cookbooks")).flatten +
+          Array(derive_path_from_chef_repo_path("site-cookbooks")).flatten
       end
     end
 
     # Location of containers on disk. String or array of strings.
     # Defaults to <chef_repo_path>/containers.
     # Only applies to Enterprise Chef commands.
-    default(:container_path) { derive_path_from_chef_repo_path('containers') }
+    default(:container_path) { derive_path_from_chef_repo_path("containers") }
 
     # Location of data bags on disk. String or array of strings.
     # Defaults to <chef_repo_path>/data_bags.
-    default(:data_bag_path) { derive_path_from_chef_repo_path('data_bags') }
+    default(:data_bag_path) { derive_path_from_chef_repo_path("data_bags") }
 
     # Location of environments on disk. String or array of strings.
     # Defaults to <chef_repo_path>/environments.
-    default(:environment_path) { derive_path_from_chef_repo_path('environments') }
+    default(:environment_path) { derive_path_from_chef_repo_path("environments") }
 
     # Location of groups on disk. String or array of strings.
     # Defaults to <chef_repo_path>/groups.
     # Only applies to Enterprise Chef commands.
-    default(:group_path) { derive_path_from_chef_repo_path('groups') }
+    default(:group_path) { derive_path_from_chef_repo_path("groups") }
 
     # Location of nodes on disk. String or array of strings.
     # Defaults to <chef_repo_path>/nodes.
-    default(:node_path) { derive_path_from_chef_repo_path('nodes') }
+    default(:node_path) { derive_path_from_chef_repo_path("nodes") }
 
     # Location of policies on disk. String or array of strings.
     # Defaults to <chef_repo_path>/policies.
-    default(:policy_path) { derive_path_from_chef_repo_path('policies') }
+    default(:policy_path) { derive_path_from_chef_repo_path("policies") }
 
     # Location of policy_groups on disk. String or array of strings.
     # Defaults to <chef_repo_path>/policy_groups.
-    default(:policy_group_path) { derive_path_from_chef_repo_path('policy_groups') }
+    default(:policy_group_path) { derive_path_from_chef_repo_path("policy_groups") }
 
     # Location of roles on disk. String or array of strings.
     # Defaults to <chef_repo_path>/roles.
-    default(:role_path) { derive_path_from_chef_repo_path('roles') }
+    default(:role_path) { derive_path_from_chef_repo_path("roles") }
 
     # Location of users on disk. String or array of strings.
     # Defaults to <chef_repo_path>/users.
     # Does not apply to Enterprise Chef commands.
-    default(:user_path) { derive_path_from_chef_repo_path('users') }
+    default(:user_path) { derive_path_from_chef_repo_path("users") }
 
     # Location of policies on disk. String or array of strings.
     # Defaults to <chef_repo_path>/policies.
-    default(:policy_path) { derive_path_from_chef_repo_path('policies') }
+    default(:policy_path) { derive_path_from_chef_repo_path("policies") }
 
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
     default :enforce_path_sanity, true
@@ -222,7 +222,7 @@ module ChefConfig
     # this is under the user's home directory.
     default(:cache_path) do
       if local_mode
-        PathHelper.join(config_dir, 'local-mode-cache')
+        PathHelper.join(config_dir, "local-mode-cache")
       else
         primary_cache_root = platform_specific_path("/var")
         primary_cache_path = platform_specific_path("/var/chef")
@@ -231,7 +231,7 @@ module ChefConfig
         # Otherwise, we'll create .chef under the user's home directory and use that as
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
-          secondary_cache_path = PathHelper.join(user_home, '.chef')
+          secondary_cache_path = PathHelper.join(user_home, ".chef")
           ChefConfig.logger.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
         else
@@ -318,7 +318,7 @@ module ChefConfig
     config_context :chef_zero do
       config_strict_mode true
       default(:enabled) { ChefConfig::Config.local_mode }
-      default :host, 'localhost'
+      default :host, "localhost"
       default :port, 8889.upto(9999) # Will try ports from 8889-9999 until one works
     end
     default :chef_server_url, "https://localhost:443"
@@ -327,7 +327,7 @@ module ChefConfig
       # if the chef_server_url is a path to an organization, aka
       # 'some_url.../organizations/*' then remove the '/organization/*' by default
       if self.configuration[:chef_server_url] =~ /\/organizations\/\S*$/
-         self.configuration[:chef_server_url].split('/')[0..-3].join('/')
+         self.configuration[:chef_server_url].split("/")[0..-3].join("/")
       elsif self.configuration[:chef_server_url] # default to whatever chef_server_url is
         self.configuration[:chef_server_url]
       else
@@ -742,7 +742,7 @@ module ChefConfig
     #   pass = password
     # @api private
     def self.export_proxy(scheme, path, user, pass)
-      path = "#{scheme}://#{path}" unless path.include?('://')
+      path = "#{scheme}://#{path}" unless path.include?("://")
       # URI.split returns the following parts:
       # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
       parts = URI.split(URI.encode(path))
@@ -750,7 +750,7 @@ module ChefConfig
       # returns a string for the port.
       parts[3] = parts[3].to_i if parts[3]
       if user && !user.empty?
-        userinfo = URI.encode(URI.encode(user), '@:')
+        userinfo = URI.encode(URI.encode(user), "@:")
         if pass
           userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
         end
@@ -764,8 +764,8 @@ module ChefConfig
 
     # @api private
     def self.export_no_proxy(value)
-      ENV['no_proxy'] = value unless ENV['no_proxy']
-      ENV['NO_PROXY'] = value unless ENV['NO_PROXY']
+      ENV["no_proxy"] = value unless ENV["no_proxy"]
+      ENV["NO_PROXY"] = value unless ENV["NO_PROXY"]
     end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
@@ -793,12 +793,12 @@ module ChefConfig
       cmd.error!
       locales = cmd.stdout.split
       case
-      when locales.include?('C.UTF-8')
-        'C.UTF-8'
-      when locales.include?('en_US.UTF-8'), locales.include?('en_US.utf8')
-        'en_US.UTF-8'
-      when locales.include?('en.UTF-8')
-        'en.UTF-8'
+      when locales.include?("C.UTF-8")
+        "C.UTF-8"
+      when locales.include?("en_US.UTF-8"), locales.include?("en_US.utf8")
+        "en_US.UTF-8"
+      when locales.include?("en.UTF-8")
+        "en.UTF-8"
       else
         # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
         guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
@@ -808,7 +808,7 @@ module ChefConfig
           guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
         else
           ChefConfig.logger.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
-          'C'
+          "C"
         end
       end
     rescue
@@ -817,7 +817,7 @@ module ChefConfig
       else
         ChefConfig.logger.debug "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
       end
-      'en_US.UTF-8'
+      "en_US.UTF-8"
     end
 
     default :internal_locale, guess_internal_locale

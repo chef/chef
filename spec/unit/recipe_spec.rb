@@ -19,8 +19,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/platform/resource_priority_map'
+require "spec_helper"
+require "chef/platform/resource_priority_map"
 
 describe Chef::Recipe do
 

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/http/socketless_chef_zero_client'
+require "chef/http/socketless_chef_zero_client"
 
 describe Chef::HTTP::SocketlessChefZeroClient do
 

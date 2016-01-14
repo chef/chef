@@ -17,22 +17,22 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/from_file'
-require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/enforce_ownership_and_permissions'
-require 'chef/mixin/why_run'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/powershell_out'
-require 'chef/mixin/provides'
-require 'chef/platform/service_helpers'
-require 'chef/node_map'
-require 'forwardable'
+require "chef/mixin/from_file"
+require "chef/mixin/convert_to_class_name"
+require "chef/mixin/enforce_ownership_and_permissions"
+require "chef/mixin/why_run"
+require "chef/mixin/shell_out"
+require "chef/mixin/powershell_out"
+require "chef/mixin/provides"
+require "chef/platform/service_helpers"
+require "chef/node_map"
+require "forwardable"
 
 class Chef
   class Provider
-    require 'chef/mixin/why_run'
-    require 'chef/mixin/shell_out'
-    require 'chef/mixin/provides'
+    require "chef/mixin/why_run"
+    require "chef/mixin/shell_out"
+    require "chef/mixin/provides"
     include Chef::Mixin::WhyRun
     include Chef::Mixin::ShellOut
     include Chef::Mixin::PowershellOut
@@ -217,7 +217,7 @@ class Chef
         property_size = modified.map { |p| p.size }.max
         modified.map! do |p|
           properties_str = if sensitive
-                             '(suppressed sensitive property)'
+                             "(suppressed sensitive property)"
                            else
                              "#{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})"
                            end
@@ -230,9 +230,9 @@ class Chef
         # write down any properties we are setting.
         property_size = properties.map { |p| p.size }.max
         created = properties.map do |property|
-          default = ' (default value)' unless new_resource.property_is_set?(property)
+          default = " (default value)" unless new_resource.property_is_set?(property)
           properties_str = if sensitive
-                             '(suppressed sensitive property)'
+                             "(suppressed sensitive property)"
                            else
                              new_resource.send(property).inspect
                            end
@@ -391,7 +391,7 @@ class Chef
         end
       end
 
-      require 'chef/dsl/recipe'
+      require "chef/dsl/recipe"
       include Chef::DSL::Recipe::FullDSL
     end
 
@@ -455,7 +455,7 @@ class Chef
 end
 
 # Requiring things at the bottom breaks cycles
-require 'chef/chef_class'
-require 'chef/mixin/why_run'
-require 'chef/resource_collection'
-require 'chef/runner'
+require "chef/chef_class"
+require "chef/mixin/why_run"
+require "chef/resource_collection"
+require "chef/runner"

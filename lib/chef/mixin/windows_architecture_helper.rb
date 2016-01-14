@@ -17,10 +17,10 @@
 #
 
 
-require 'chef/exceptions'
-require 'chef/platform/query_helpers'
-require 'chef/win32/process' if Chef::Platform.windows?
-require 'chef/win32/system' if Chef::Platform.windows?
+require "chef/exceptions"
+require "chef/platform/query_helpers"
+require "chef/win32/process" if Chef::Platform.windows?
+require "chef/win32/system" if Chef::Platform.windows?
 
 class Chef
   module Mixin
@@ -48,11 +48,11 @@ class Chef
 
       def with_os_architecture(node, architecture: nil)
         node ||= begin
-          os_arch = ENV['PROCESSOR_ARCHITEW6432'] ||
-                    ENV['PROCESSOR_ARCHITECTURE']
+          os_arch = ENV["PROCESSOR_ARCHITEW6432"] ||
+                    ENV["PROCESSOR_ARCHITECTURE"]
           Hash.new.tap do |n|
             n[:kernel] = Hash.new
-            n[:kernel][:machine] = os_arch == 'AMD64' ? :x86_64 : :i386
+            n[:kernel][:machine] = os_arch == "AMD64" ? :x86_64 : :i386
           end
         end
 

@@ -14,13 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
-require 'chef/version/platform'
+require "spec_helper"
+require "chef/version/platform"
 
 describe Chef::Version::Platform do
 
   it "is a subclass of Chef::Version" do
-    v = Chef::Version::Platform.new('1.1')
+    v = Chef::Version::Platform.new("1.1")
     expect(v).to be_an_instance_of(Chef::Version::Platform)
     expect(v).to be_a_kind_of(Chef::Version)
   end

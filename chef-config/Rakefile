@@ -1,14 +1,14 @@
-require 'rspec/core/rake_task'
-require 'chef-config/package_task'
+require "rspec/core/rake_task"
+require "chef-config/package_task"
 
-ChefConfig::PackageTask.new(File.expand_path('..', __FILE__), 'ChefConfig') do |package|
-  package.module_path = 'chef-config'
+ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "ChefConfig") do |package|
+  package.module_path = "chef-config"
 end
 
 task :default => :spec
 
 desc "Run standard specs"
 RSpec::Core::RakeTask.new(:spec) do |t|
-  t.pattern = FileList['spec/**/*_spec.rb']
+  t.pattern = FileList["spec/**/*_spec.rb"]
 end
 

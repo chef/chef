@@ -19,9 +19,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/openbsd'
-require 'chef/mixin/shell_out'
+require "chef/resource/package"
+require "chef/provider/package/openbsd"
+require "chef/mixin/shell_out"
 
 class Chef
   class Resource

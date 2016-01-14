@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/net'
-require 'chef/win32/error'
-require 'chef/mixin/wide_string'
+require "chef/win32/api/net"
+require "chef/win32/error"
+require "chef/mixin/wide_string"
 
 class Chef
   module ReservedNames::Win32

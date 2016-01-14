@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Scm do
 
@@ -184,7 +184,7 @@ describe Chef::Resource::Scm do
   end
 
   describe "when it has a environment attribute" do
-    let(:test_environment) { {'CHEF_ENV' => '/tmp' } }
+    let(:test_environment) { {"CHEF_ENV" => "/tmp" } }
     before { @resource.environment(test_environment) }
     it "stores this environment" do
       expect(@resource.environment).to eq(test_environment)

@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/util/editor'
-require 'fileutils'
+require "chef/util/editor"
+require "fileutils"
 
 class Chef
   class Util
@@ -61,7 +61,7 @@ class Chef
       #search the file line by line and match each line with the given regex
       #if matched, delete the match (all occurrences) from the line
       def search_file_delete(regex)
-        search_file_replace(regex, '')
+        search_file_replace(regex, "")
       end
 
       #search the file line by line and match each line with the given regex

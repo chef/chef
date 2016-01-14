@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
-require 'chef/mixin/windows_architecture_helper'
-require 'chef/util/powershell/cmdlet_result'
+require "mixlib/shellout"
+require "chef/mixin/windows_architecture_helper"
+require "chef/util/powershell/cmdlet_result"
 
 class Chef
 class Util
@@ -48,11 +48,11 @@ class Powershell
     attr_reader :output_format
 
     def run(switches={}, execution_options={}, *arguments)
-      streams = { :json => CmdletStream.new('json'),
-                  :verbose => CmdletStream.new('verbose'),
+      streams = { :json => CmdletStream.new("json"),
+                  :verbose => CmdletStream.new("verbose"),
                 }
 
-      arguments_string = arguments.join(' ')
+      arguments_string = arguments.join(" ")
 
       switches_string = command_switches_string(switches)
 
@@ -119,7 +119,7 @@ class Powershell
 
         validate_switch_name!(switch_name)
 
-        switch_argument = ''
+        switch_argument = ""
         switch_present = true
 
         case switch_value
@@ -136,10 +136,10 @@ class Powershell
           raise ArgumentError, "Invalid argument type `#{switch_value.class}` specified for PowerShell switch `:#{switch_name}`. Arguments to PowerShell must be of type `String`, `Numeric`, `Float`, `FalseClass`, or `TrueClass`"
         end
 
-        switch_present ? ["-#{switch_name.to_s.downcase}", switch_argument].join(' ').strip : ''
+        switch_present ? ["-#{switch_name.to_s.downcase}", switch_argument].join(" ").strip : ""
       end
 
-      command_switches.join(' ')
+      command_switches.join(" ")
     end
 
     class CmdletStream
@@ -154,8 +154,8 @@ class Powershell
 
       def read
         if File.exist? @filename
-          File.open(@filename, 'rb:bom|UTF-16LE') do |f|
-            f.read.encode('UTF-8')
+          File.open(@filename, "rb:bom|UTF-16LE") do |f|
+            f.read.encode("UTF-8")
           end
         end
       end

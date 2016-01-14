@@ -20,7 +20,7 @@ maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
 
 build_iteration 1
-build_version '12.6.0'
+build_version "12.6.0"
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
@@ -53,8 +53,8 @@ else
 end
 
 # Chef Release version pinning
-override :chef, version: 'local_source'
-override :ohai, version: 'master'
+override :chef, version: "local_source"
+override :ohai, version: "master"
 
 
 dependency "preparation"
@@ -64,7 +64,7 @@ dependency "version-manifest"
 dependency "openssl-customization"
 
 package :rpm do
-  signing_passphrase ENV['OMNIBUS_RPM_SIGNING_PASSPHRASE']
+  signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
 end
 
 proj_to_work_around_cleanroom = self
@@ -79,7 +79,7 @@ project_location_dir = name
 package :msi do
   fast_msi true
   upgrade_code msi_upgrade_code
-  wix_candle_extension 'WixUtilExtension'
+  wix_candle_extension "WixUtilExtension"
   signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
   parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
     ProjectLocationDir: project_location_dir

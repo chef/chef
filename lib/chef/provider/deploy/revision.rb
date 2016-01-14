@@ -19,9 +19,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
-require 'chef/provider/deploy'
-require 'chef/json_compat'
+require "chef/provider"
+require "chef/provider/deploy"
+require "chef/json_compat"
 
 class Chef
   class Provider

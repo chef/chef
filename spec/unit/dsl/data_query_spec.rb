@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/dsl/data_query'
+require "spec_helper"
+require "chef/dsl/data_query"
 
 class DataQueryDSLTester
   include Chef::DSL::DataQuery

@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/api_client_v1'
+require "spec_helper"
+require "chef/api_client_v1"
 
 describe Chef::Knife::ClientEdit do
   before(:each) do
     @knife = Chef::Knife::ClientEdit.new
-    @knife.name_args = [ 'adam' ]
+    @knife.name_args = [ "adam" ]
     @knife.config[:disable_editing] = true
   end
 
-  describe 'run' do
+  describe "run" do
     let(:data) {
       {
         "name" => "adam",
@@ -37,13 +37,13 @@ describe Chef::Knife::ClientEdit do
       }
     }
 
-    it 'should edit the client' do
-      allow(Chef::ApiClientV1).to receive(:load).with('adam').and_return(data)
+    it "should edit the client" do
+      allow(Chef::ApiClientV1).to receive(:load).with("adam").and_return(data)
       expect(@knife).to receive(:edit_data).with(data).and_return(data)
       @knife.run
     end
 
-    it 'should print usage and exit when a client name is not provided' do
+    it "should print usage and exit when a client name is not provided" do
       @knife.name_args = []
       expect(@knife).to receive(:show_usage)
       expect(@knife.ui).to receive(:fatal)

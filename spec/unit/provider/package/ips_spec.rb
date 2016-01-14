@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 # based on the apt specs
 
@@ -34,7 +34,7 @@ describe Chef::Provider::Package::Ips do
 
   def local_output
     stdin  = StringIO.new
-    stdout = ''
+    stdout = ""
     stderr =<<-PKG_STATUS
 pkg: info: no packages matching the following patterns you specified are
 installed on the system.  Try specifying -r to query remotely:
@@ -59,7 +59,7 @@ Packaging Date: April  1, 2012 05:55:52 PM
           FMRI: pkg://omnios/security/sudo@1.8.4.1,5.11-0.151002:20120401T175552Z
 PKG_STATUS
   stdin = StringIO.new
-  stderr = ''
+  stderr = ""
   return OpenStruct.new(:stdout => stdout,:stdin => stdin,:stderr => stderr,:status => @status,:exitstatus => 0)
   end
 

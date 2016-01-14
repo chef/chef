@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/http/auth_credentials'
-require 'chef/exceptions'
-require 'openssl'
+require "chef/http/auth_credentials"
+require "chef/exceptions"
+require "openssl"
 
 class Chef
   class HTTP
@@ -48,7 +48,7 @@ class Chef
 
       def handle_request(method, url, headers={}, data=false)
         headers.merge!(authentication_headers(method, url, data)) if sign_requests?
-        headers.merge!({'X-Ops-Server-API-Version' => @api_version})
+        headers.merge!({"X-Ops-Server-API-Version" => @api_version})
         [method, url, headers, data]
       end
 

@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
-require 'chef/win32/api/security'
-require 'chef/win32/api/system'
-require 'chef/win32/unicode'
+require "chef/win32/api"
+require "chef/win32/api/security"
+require "chef/win32/api/system"
+require "chef/win32/unicode"
 
 class Chef
   module ReservedNames::Win32
@@ -182,7 +182,7 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'kernel32', 'version'
+        ffi_lib "kernel32", "version"
 
         # Does not map directly to a win32 struct
         # see https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464(v=vs.85).aspx

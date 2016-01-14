@@ -18,12 +18,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/config'
-require 'chef/exceptions'
-require 'chef/cookbook/cookbook_version_loader'
-require 'chef/cookbook_version'
-require 'chef/cookbook/chefignore'
-require 'chef/cookbook/metadata'
+require "chef/config"
+require "chef/exceptions"
+require "chef/cookbook/cookbook_version_loader"
+require "chef/cookbook_version"
+require "chef/cookbook/chefignore"
+require "chef/cookbook/metadata"
 
 #
 # CookbookLoader class loads the cookbooks lazily as read

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleEnvRunListSet do
   before(:each) do
@@ -60,9 +60,9 @@ describe Chef::Knife::RoleEnvRunListSet do
     it "should replace all the items in the runlist with what is specified" do
       @setup.run
       @knife.run
-      expect(@role.run_list_for('QA')[0]).to eq("role[owen]") 
-      expect(@role.run_list_for('QA')[1]).to eq("role[mauntel]") 
-      expect(@role.run_list_for('QA')[2]).to be_nil
+      expect(@role.run_list_for("QA")[0]).to eq("role[owen]") 
+      expect(@role.run_list_for("QA")[1]).to eq("role[mauntel]") 
+      expect(@role.run_list_for("QA")[2]).to be_nil
       expect(@role.run_list[0]).to be_nil
     end
 
@@ -86,15 +86,15 @@ describe Chef::Knife::RoleEnvRunListSet do
         @setup.run
         @knife.name_args = [ "will", "QA", "role[coke]", "role[pepsi]" ]
         @knife.run
-        expect(@role.run_list_for('QA')[0]).to eq("role[coke]")
-        expect(@role.run_list_for('QA')[1]).to eq("role[pepsi]")
-        expect(@role.run_list_for('QA')[2]).to be_nil
-        expect(@role.run_list_for('PRD')[0]).to eq('recipe[orange::chicken]')
-        expect(@role.run_list_for('PRD')[1]).to eq('role[monkey]')
-        expect(@role.run_list_for('PRD')[2]).to eq('recipe[duck::type]')
-        expect(@role.run_list_for('PRD')[3]).to eq('role[person]')
-        expect(@role.run_list_for('PRD')[4]).to eq('role[bird]')
-        expect(@role.run_list_for('PRD')[5]).to eq('role[town]')
+        expect(@role.run_list_for("QA")[0]).to eq("role[coke]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[pepsi]")
+        expect(@role.run_list_for("QA")[2]).to be_nil
+        expect(@role.run_list_for("PRD")[0]).to eq("recipe[orange::chicken]")
+        expect(@role.run_list_for("PRD")[1]).to eq("role[monkey]")
+        expect(@role.run_list_for("PRD")[2]).to eq("recipe[duck::type]")
+        expect(@role.run_list_for("PRD")[3]).to eq("role[person]")
+        expect(@role.run_list_for("PRD")[4]).to eq("role[bird]")
+        expect(@role.run_list_for("PRD")[5]).to eq("role[town]")
         expect(@role.run_list[0]).to be_nil
       end
     end

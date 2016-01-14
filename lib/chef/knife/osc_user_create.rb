@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 # DEPRECATION NOTE
 # This code only remains to support users still operating with
@@ -27,8 +27,8 @@ class Chef
     class OscUserCreate < Knife
 
       deps do
-        require 'chef/user'
-        require 'chef/json_compat'
+        require "chef/user"
+        require "chef/json_compat"
       end
 
       option :file,

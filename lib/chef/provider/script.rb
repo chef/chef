@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/provider/execute'
-require 'forwardable'
+require "tempfile"
+require "chef/provider/execute"
+require "forwardable"
 
 class Chef
   class Provider

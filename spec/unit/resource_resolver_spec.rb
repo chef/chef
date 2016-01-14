@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/resource_resolver'
+require "spec_helper"
+require "chef/resource_resolver"
 
 
 describe Chef::ResourceResolver do
@@ -29,9 +29,9 @@ describe Chef::ResourceResolver do
     expect(described_class.list(:package)).to_not be_empty
   end
 
-  context 'instance methods' do
+  context "instance methods" do
     let(:resolver) do
-      described_class.new(Chef::Node.new, 'execute')
+      described_class.new(Chef::Node.new, "execute")
     end
 
     it '#resolve' do

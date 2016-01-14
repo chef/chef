@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'stringio'
+require "stringio"
 
 class Chef
   class Audit

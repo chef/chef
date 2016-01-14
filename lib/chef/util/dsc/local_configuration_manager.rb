@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/util/powershell/cmdlet'
-require 'chef/util/dsc/lcm_output_parser'
+require "chef/util/powershell/cmdlet"
+require "chef/util/dsc/lcm_output_parser"
 
 class Chef::Util::DSC
   class LocalConfigurationManager
@@ -47,7 +47,7 @@ class Chef::Util::DSC
 
     def run_configuration_cmdlet(configuration_document, apply_configuration, shellout_flags)
       Chef::Log.debug("DSC: Calling DSC Local Config Manager to #{apply_configuration ? "set" : "test"} configuration document.")
-      test_only_parameters = ! apply_configuration ? '-whatif; if (! $?) { exit 1 }' : ''
+      test_only_parameters = ! apply_configuration ? "-whatif; if (! $?) { exit 1 }" : ""
 
       start_operation_timing
       command_code = lcm_command_code(@configuration_path, test_only_parameters)
@@ -90,7 +90,7 @@ EOH
     end
 
     def whatif_not_supported?(what_if_exception_output)
-      !! (what_if_exception_output.gsub(/[\r\n]+/, '').gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/i)
+      !! (what_if_exception_output.gsub(/[\r\n]+/, "").gsub(/\s+/, " ") =~ /A parameter cannot be found that matches parameter name 'Whatif'/i)
     end
 
     def dsc_module_import_failure?(what_if_output)
@@ -105,13 +105,13 @@ EOH
         Parser::parse(what_if_output)
       rescue Chef::Exceptions::LCMParser => e
         Chef::Log::warn("Could not parse LCM output: #{e}")
-        [Chef::Util::DSC::ResourceInfo.new('Unknown DSC Resources', true, ['Unknown changes because LCM output was not parsable.'])]
+        [Chef::Util::DSC::ResourceInfo.new("Unknown DSC Resources", true, ["Unknown changes because LCM output was not parsable."])]
       end
     end
 
     def save_configuration_document(configuration_document)
       ::FileUtils.mkdir_p(@configuration_path)
-      ::File.open(configuration_document_path, 'wb') do | file |
+      ::File.open(configuration_document_path, "wb") do | file |
         file.write(configuration_document)
       end
     end
@@ -121,7 +121,7 @@ EOH
     end
 
     def configuration_document_path
-      File.join(@configuration_path,'..mof')
+      File.join(@configuration_path,"..mof")
     end
 
     def clear_execution_time

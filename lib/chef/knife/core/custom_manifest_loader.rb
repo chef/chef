@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-require 'chef/version'
+require "chef/version"
 class Chef
   class Knife
     class SubcommandLoader

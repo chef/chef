@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource/file'
-require 'chef/provider/cookbook_file'
-require 'chef/mixin/securable'
+require "chef/resource/file"
+require "chef/provider/cookbook_file"
+require "chef/mixin/securable"
 
 class Chef
   class Resource

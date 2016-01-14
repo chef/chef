@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::OsxProfile do
   let(:resource) { Chef::Resource::OsxProfile.new(
@@ -54,7 +54,7 @@ describe Chef::Resource::OsxProfile do
   end
 
   it "should allow you to set the profile attribute to a hash" do
-    test_profile = { 'profile' => false }
+    test_profile = { "profile" => false }
     resource.profile test_profile
     expect(resource.profile).to be_a(Hash)
   end

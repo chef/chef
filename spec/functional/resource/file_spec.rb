@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 describe Chef::Resource::File do
   include_context Chef::Resource::File
@@ -102,9 +102,9 @@ describe Chef::Resource::File do
     end
 
     it "only stores the number of requested backups" do
-      resource_without_content.content('foo')
+      resource_without_content.content("foo")
       resource_without_content.run_action(:create)
-      resource_without_content.content('bar')
+      resource_without_content.content("bar")
       resource_without_content.run_action(:create)
       expect(Dir.glob(backup_glob).length).to eq(1)
     end

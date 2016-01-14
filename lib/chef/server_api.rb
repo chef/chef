@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/http'
-require 'chef/http/authenticator'
-require 'chef/http/cookie_manager'
-require 'chef/http/decompressor'
-require 'chef/http/json_input'
-require 'chef/http/json_output'
-require 'chef/http/remote_request_id'
-require 'chef/http/validate_content_length'
+require "chef/http"
+require "chef/http/authenticator"
+require "chef/http/cookie_manager"
+require "chef/http/decompressor"
+require "chef/http/json_input"
+require "chef/http/json_output"
+require "chef/http/remote_request_id"
+require "chef/http/validate_content_length"
 
 class Chef
   class ServerAPI < Chef::HTTP
@@ -69,4 +69,4 @@ class Chef
   end
 end
 
-require 'chef/config'
+require "chef/config"

@@ -19,9 +19,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'uri'
-require 'net/https'
+require "spec_helper"
+require "uri"
+require "net/https"
 
 KEY_DOT_PEM=<<-END_RSA_KEY
 -----BEGIN RSA PRIVATE KEY-----
@@ -56,7 +56,7 @@ Y6S6MeZ69Rp89ma4ttMZ+kwi1+XyHqC/dlcVRW42Zl5Dc7BALRlJjQ==
 
 describe Chef::REST::AuthCredentials do
   before do
-    @key_file_fixture = CHEF_SPEC_DATA + '/ssl/private_key.pem'
+    @key_file_fixture = CHEF_SPEC_DATA + "/ssl/private_key.pem"
     @key = OpenSSL::PKey::RSA.new(IO.read(@key_file_fixture).strip)
     @auth_credentials = Chef::REST::AuthCredentials.new("client-name", @key)
   end
@@ -72,7 +72,7 @@ describe Chef::REST::AuthCredentials do
 
   describe "when loading the private key" do
     it "strips extra whitespace before checking the key" do
-      key_file_fixture = CHEF_SPEC_DATA + '/ssl/private_key_with_whitespace.pem'
+      key_file_fixture = CHEF_SPEC_DATA + "/ssl/private_key_with_whitespace.pem"
       expect {Chef::REST::AuthCredentials.new("client-name", @key_file_fixture)}.not_to raise_error
     end
   end
@@ -131,7 +131,7 @@ describe Chef::REST::RESTRequest do
   end
 
   before do
-    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + '/ssl/private_key.pem')
+    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + "/ssl/private_key.pem")
     @url = URI.parse("http://chef.example.com:4000/?q=chef_is_awesome")
     @req_body = '{"json_data":"as_a_string"}'
     @headers = { "Content-type" =>"application/json",

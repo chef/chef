@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/command_line'
-require 'chef/chef_fs/file_system/chef_server/rest_list_dir'
-require 'chef/chef_fs/file_system/chef_server/cookbook_subdir'
-require 'chef/chef_fs/file_system/chef_server/cookbook_file'
-require 'chef/chef_fs/file_system/not_found_error'
-require 'chef/cookbook_version'
-require 'chef/cookbook_uploader'
+require "chef/chef_fs/command_line"
+require "chef/chef_fs/file_system/chef_server/rest_list_dir"
+require "chef/chef_fs/file_system/chef_server/cookbook_subdir"
+require "chef/chef_fs/file_system/chef_server/cookbook_file"
+require "chef/chef_fs/file_system/not_found_error"
+require "chef/cookbook_version"
+require "chef/cookbook_uploader"
 
 class Chef
   module ChefFS
@@ -82,7 +82,7 @@ class Chef
 
           def can_have_child?(name, is_dir)
             # A cookbook's root may not have directories unless they are segment directories
-            return name != 'root_files' && COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) if is_dir
+            return name != "root_files" && COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) if is_dir
             return true
           end
 
@@ -96,7 +96,7 @@ class Chef
                 # Go through each file in the manifest for the segment, and
                 # add cookbook subdirs and files for it.
                 manifest[segment].each do |segment_file|
-                  parts = segment_file[:path].split('/')
+                  parts = segment_file[:path].split("/")
                   # Get or create the path to the file
                   container = self
                   parts[0,parts.length-1].each do |part|

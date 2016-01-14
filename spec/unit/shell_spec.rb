@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 require "ostruct"
 
 ObjectTestHarness = Proc.new do
@@ -44,7 +44,7 @@ describe Shell do
     Shell.irb_conf = {}
     allow(Shell::ShellSession.instance).to receive(:reset!)
     allow(ChefConfig).to receive(:windows?).and_return(false)
-    allow(Chef::Util::PathHelper).to receive(:home).and_return('/home/foo')
+    allow(Chef::Util::PathHelper).to receive(:home).and_return("/home/foo")
   end
 
   describe "reporting its status" do
@@ -58,7 +58,7 @@ describe Shell do
   describe "configuring IRB" do
     it "configures irb history" do
       Shell.configure_irb
-      expect(Shell.irb_conf[:HISTORY_FILE]).to eq(Chef::Util::PathHelper.home('.chef', 'chef_shell_history'))
+      expect(Shell.irb_conf[:HISTORY_FILE]).to eq(Chef::Util::PathHelper.home(".chef", "chef_shell_history"))
       expect(Shell.irb_conf[:SAVE_HISTORY]).to eq(1000)
     end
 

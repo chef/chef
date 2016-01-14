@@ -20,23 +20,23 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/http'
+require "tempfile"
+require "chef/http"
 class Chef
   class HTTP; end
   class REST < HTTP; end
 end
 
-require 'chef/http/authenticator'
-require 'chef/http/decompressor'
-require 'chef/http/json_input'
-require 'chef/http/json_to_model_output'
-require 'chef/http/cookie_manager'
-require 'chef/http/validate_content_length'
-require 'chef/config'
-require 'chef/exceptions'
-require 'chef/platform/query_helpers'
-require 'chef/http/remote_request_id'
+require "chef/http/authenticator"
+require "chef/http/decompressor"
+require "chef/http/json_input"
+require "chef/http/json_to_model_output"
+require "chef/http/cookie_manager"
+require "chef/http/validate_content_length"
+require "chef/config"
+require "chef/exceptions"
+require "chef/platform/query_helpers"
+require "chef/http/remote_request_id"
 
 class Chef
 

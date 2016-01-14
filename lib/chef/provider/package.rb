@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
-require 'chef/mixin/command'
-require 'chef/mixin/subclass_directive'
-require 'chef/log'
-require 'chef/file_cache'
-require 'chef/platform'
+require "chef/mixin/shell_out"
+require "chef/mixin/command"
+require "chef/mixin/subclass_directive"
+require "chef/log"
+require "chef/file_cache"
+require "chef/platform"
 
 class Chef
   class Provider
@@ -125,13 +125,13 @@ class Chef
           multipackage_api_adapter(package_names_for_targets, versions_for_targets) do |name, version|
             upgrade_package(name, version)
           end
-          log_allow_downgrade = allow_downgrade ? '(allow_downgrade)' : ''
+          log_allow_downgrade = allow_downgrade ? "(allow_downgrade)" : ""
           Chef::Log.info("#{@new_resource} upgraded#{log_allow_downgrade} #{package_names_for_targets} to #{versions_for_targets}")
         end
       end
 
       def upgrade_description
-        log_allow_downgrade = allow_downgrade ? '(allow_downgrade)' : ''
+        log_allow_downgrade = allow_downgrade ? "(allow_downgrade)" : ""
         description = []
         target_version_array.each_with_index do |target_version, i|
           next if target_version.nil?

@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/provider/user'
-require 'chef/exceptions'
+require "chef/provider/user"
+require "chef/exceptions"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'chef/util/windows/net_user'
+  require "chef/util/windows/net_user"
 end
 
 class Chef
@@ -101,11 +101,11 @@ class Chef
           opts = {:name => @new_resource.username}
 
           field_list = {
-            'comment' => 'full_name',
-            'home' => 'home_dir',
-            'uid' => 'user_id',
-            'shell' => 'script_path',
-            'password' => 'password',
+            "comment" => "full_name",
+            "home" => "home_dir",
+            "uid" => "user_id",
+            "shell" => "script_path",
+            "password" => "password",
           }
 
           field_list.sort{ |a,b| a[0] <=> b[0] }.each do |field, option|

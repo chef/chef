@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/event_loggers/base'
-require 'chef/platform/query_helpers'
-require 'chef/win32/eventlog'
+require "chef/event_loggers/base"
+require "chef/platform/query_helpers"
+require "chef/win32/eventlog"
 
 class Chef
   module EventLoggers
@@ -35,14 +35,14 @@ class Chef
       LOG_CATEGORY_ID = 11001
 
       # Since we must install the event logger, this is not really configurable
-      SOURCE = 'Chef'
+      SOURCE = "Chef"
 
       def self.available?
         return Chef::Platform::windows?
       end
 
       def initialize
-        @eventlog = ::Win32::EventLog::open('Application')
+        @eventlog = ::Win32::EventLog::open("Application")
       end
 
       def run_start(version)

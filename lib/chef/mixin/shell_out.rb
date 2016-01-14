@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'mixlib/shellout'
+require "mixlib/shellout"
 
 class Chef
   module Mixin
@@ -35,15 +35,15 @@ class Chef
           env_key = options.has_key?(:env) ? :env : :environment
           options[env_key] ||= {}
           options[env_key] = options[env_key].dup
-          options[env_key]['LC_ALL'] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?('LC_ALL')
-          options[env_key]['LANGUAGE'] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?('LANGUAGE')
-          options[env_key]['LANG'] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?('LANG')
+          options[env_key]["LC_ALL"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LC_ALL")
+          options[env_key]["LANGUAGE"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LANGUAGE")
+          options[env_key]["LANG"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LANG")
           args << options
         else
           args << { :environment => {
-            'LC_ALL' => Chef::Config[:internal_locale],
-            'LANGUAGE' => Chef::Config[:internal_locale],
-            'LANG' => Chef::Config[:internal_locale],
+            "LC_ALL" => Chef::Config[:internal_locale],
+            "LANGUAGE" => Chef::Config[:internal_locale],
+            "LANG" => Chef::Config[:internal_locale],
           } }
         end
 
@@ -114,4 +114,4 @@ class Chef
 end
 
 # Break circular dep
-require 'chef/config'
+require "chef/config"

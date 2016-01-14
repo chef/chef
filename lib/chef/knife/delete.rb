@@ -1,4 +1,4 @@
-require 'chef/chef_fs/knife'
+require "chef/chef_fs/knife"
 
 class Chef
   class Knife
@@ -8,22 +8,22 @@ class Chef
       category "path-based"
 
       deps do
-        require 'chef/chef_fs/file_system'
+        require "chef/chef_fs/file_system"
       end
 
       option :recurse,
-        :short => '-r',
-        :long => '--[no-]recurse',
+        :short => "-r",
+        :long => "--[no-]recurse",
         :boolean => true,
         :default => false,
         :description => "Delete directories recursively."
       option :both,
-        :long => '--both',
+        :long => "--both",
         :boolean => true,
         :default => false,
         :description => "Delete both the local and remote copies."
       option :local,
-        :long => '--local',
+        :long => "--local",
         :boolean => true,
         :default => false,
         :description => "Delete the local copy (leave the remote copy)."

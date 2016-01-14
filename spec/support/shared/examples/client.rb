@@ -1,6 +1,6 @@
 
-require 'spec_helper'
-require 'spec/support/shared/context/client'
+require "spec_helper"
+require "spec/support/shared/context/client"
 
 # requires platform and platform_version be defined
 shared_examples "a completed run" do

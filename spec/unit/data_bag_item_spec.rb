@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/data_bag_item'
+require "spec_helper"
+require "chef/data_bag_item"
 
 describe Chef::DataBagItem do
   let(:data_bag_item) { Chef::DataBagItem.new }
@@ -169,7 +169,7 @@ describe Chef::DataBagItem do
   describe "when deserializing from JSON" do
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
-      data_bag_item.data_bag('mars_volta')
+      data_bag_item.data_bag("mars_volta")
       data_bag_item.raw_data = { "id" => "octahedron", "snooze" => { "finally" => :world_will } }
       data_bag_item
     }
@@ -200,8 +200,8 @@ describe Chef::DataBagItem do
 
   describe "when converting to a string" do
     it "converts to a string in the form data_bag_item[ID]" do
-      data_bag_item['id'] = "heart of darkness"
-      expect(data_bag_item.to_s).to eq('data_bag_item[heart of darkness]')
+      data_bag_item["id"] = "heart of darkness"
+      expect(data_bag_item.to_s).to eq("data_bag_item[heart of darkness]")
     end
 
     it "inspects as data_bag_item[BAG, ID, RAW_DATA]" do
@@ -218,7 +218,7 @@ describe Chef::DataBagItem do
 
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
-      data_bag_item['id'] = "heart of darkness"
+      data_bag_item["id"] = "heart of darkness"
       data_bag_item.raw_data = {"id" => "heart_of_darkness", "author" => "Conrad"}
       data_bag_item.data_bag("books")
       data_bag_item
@@ -263,7 +263,7 @@ describe Chef::DataBagItem do
 
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
-      data_bag_item.data_bag('a_baggy_bag')
+      data_bag_item.data_bag("a_baggy_bag")
       data_bag_item.raw_data = { "id" => "some_id" }
       data_bag_item
     }
@@ -314,8 +314,8 @@ describe Chef::DataBagItem do
       end
 
       it "converts the raw data to a data bag item" do
-        expect(Chef::DataBag).to receive(:load).with('users').and_return({'charlie' => data_bag_item.to_hash})
-        item = Chef::DataBagItem.load('users', 'charlie')
+        expect(Chef::DataBag).to receive(:load).with("users").and_return({"charlie" => data_bag_item.to_hash})
+        item = Chef::DataBagItem.load("users", "charlie")
         expect(item).to be_a_kind_of(Chef::DataBagItem)
         expect(item).to eq(data_bag_item)
       end

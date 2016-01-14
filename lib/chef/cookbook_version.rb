@@ -19,13 +19,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/log'
-require 'chef/cookbook/file_vendor'
-require 'chef/cookbook/metadata'
-require 'chef/version_class'
-require 'chef/digester'
-require 'chef/cookbook_manifest'
-require 'chef/server_api'
+require "chef/log"
+require "chef/cookbook/file_vendor"
+require "chef/cookbook/metadata"
+require "chef/version_class"
+require "chef/digester"
+require "chef/cookbook_manifest"
+require "chef/server_api"
 
 class Chef
 
@@ -327,10 +327,10 @@ class Chef
 
     def preferred_filename_on_disk_location(node, segment, filename, current_filepath=nil)
       manifest_record = preferred_manifest_record(node, segment, filename)
-      if current_filepath && (manifest_record['checksum'] == self.class.checksum_cookbook_file(current_filepath))
+      if current_filepath && (manifest_record["checksum"] == self.class.checksum_cookbook_file(current_filepath))
         nil
       else
-        file_vendor.get_filename(manifest_record['path'])
+        file_vendor.get_filename(manifest_record["path"])
       end
     end
 
@@ -431,10 +431,10 @@ class Chef
 
                                  # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
                                  search_versions = []
-                                 parts = version.to_s.split('.')
+                                 parts = version.to_s.split(".")
 
                                  parts.size.times do
-                                   search_versions << parts.join('.')
+                                   search_versions << parts.join(".")
                                    parts.pop
                                  end
 
@@ -560,7 +560,7 @@ class Chef
 
     # The API returns only a single version of each cookbook in the result from the cookbooks method
     def self.list
-      chef_server_rest.get('cookbooks')
+      chef_server_rest.get("cookbooks")
     end
 
     # Alias latest_cookbooks as list
@@ -569,7 +569,7 @@ class Chef
     end
 
     def self.list_all_versions
-      chef_server_rest.get('cookbooks?num_versions=all')
+      chef_server_rest.get("cookbooks?num_versions=all")
     end
 
     ##
@@ -615,7 +615,7 @@ class Chef
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(filenames)
-      filenames.select{|filename| filename =~ /\.rb$/}.inject({}){|memo, filename| memo[File.basename(filename, '.rb')] = filename ; memo }
+      filenames.select{|filename| filename =~ /\.rb$/}.inject({}){|memo, filename| memo[File.basename(filename, ".rb")] = filename ; memo }
     end
 
     def file_vendor

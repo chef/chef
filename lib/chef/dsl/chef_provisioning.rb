@@ -50,7 +50,7 @@ class Chef
         public_instance_methods(false).each do |method_name|
           remove_method(method_name)
         end
-        require 'chef/provisioning'
+        require "chef/provisioning"
       end
     end
   end

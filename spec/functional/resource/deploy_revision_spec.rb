@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 # Deploy relies heavily on symlinks, so it doesn't work on windows.
 describe Chef::Resource::DeployRevision, :unix_only => true do

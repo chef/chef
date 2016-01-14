@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tempfile'
+require "spec_helper"
+require "tempfile"
 
-require 'chef-config/exceptions'
-require 'chef-config/windows'
-require 'chef-config/workstation_config_loader'
+require "chef-config/exceptions"
+require "chef-config/windows"
+require "chef-config/workstation_config_loader"
 
 RSpec.describe ChefConfig::WorkstationConfigLoader do
 
@@ -45,7 +45,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
     end
 
     it "tests a path's existence" do
-      expect(config_loader.path_exists?('/nope/nope/nope/nope/frab/jab/nab')).to be(false)
+      expect(config_loader.path_exists?("/nope/nope/nope/nope/frab/jab/nab")).to be(false)
       expect(config_loader.path_exists?(__FILE__)).to be(true)
     end
 
@@ -68,7 +68,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
         let(:home) { "/Users/example.user" }
 
         before do
-          allow(ChefConfig::PathHelper).to receive(:home).with('.chef').and_yield(File.join(home, '.chef'))
+          allow(ChefConfig::PathHelper).to receive(:home).with(".chef").and_yield(File.join(home, ".chef"))
           allow(config_loader).to receive(:path_exists?).with("#{home}/.chef/knife.rb").and_return(true)
         end
 

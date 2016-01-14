@@ -17,10 +17,10 @@
 #
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'win32/service'
+  require "win32/service"
 end
-require 'chef/config'
-require 'mixlib/cli'
+require "chef/config"
+require "mixlib/cli"
 
 class Chef
   class Application
@@ -99,11 +99,11 @@ class Chef
         parse_options(params)
 
         case config[:action]
-        when 'install'
+        when "install"
           if service_exists?
             puts "Service #{@service_name} already exists on the system."
           else
-            ruby = File.join(RbConfig::CONFIG['bindir'], 'ruby')
+            ruby = File.join(RbConfig::CONFIG["bindir"], "ruby")
 
             opts = ""
             opts << " -c #{config[:config_file]}" if config[:config_file]
@@ -132,29 +132,29 @@ class Chef
             ) unless @delayed_start.nil?
             puts "Service '#{@service_name}' has successfully been installed."
           end
-        when 'status'
+        when "status"
           if !service_exists?
             puts "Service #{@service_name} doesn't exist on the system."
           else
             puts "State of #{@service_name} service is: #{current_state}"
           end
-        when 'start'
+        when "start"
           # TODO: allow override of startup parameters here?
-          take_action('start', RUNNING)
-        when 'stop'
-          take_action('stop', STOPPED)
-        when 'uninstall', 'delete'
-          take_action('stop', STOPPED)
+          take_action("start", RUNNING)
+        when "stop"
+          take_action("stop", STOPPED)
+        when "uninstall", "delete"
+          take_action("stop", STOPPED)
           unless service_exists?
             puts "Service #{@service_name} doesn't exist on the system."
           else
             ::Win32::Service.delete(@service_name)
             puts "Service #{@service_name} deleted"
           end
-        when 'pause'
-          take_action('pause', PAUSED)
-        when 'resume'
-          take_action('resume', RUNNING)
+        when "pause"
+          take_action("pause", PAUSED)
+        when "resume"
+          take_action("resume", RUNNING)
         end
       end
 

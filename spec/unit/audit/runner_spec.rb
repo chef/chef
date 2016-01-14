@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'rspec/core/sandbox'
-require 'chef/audit/runner'
-require 'chef/audit/audit_event_proxy'
-require 'chef/audit/rspec_formatter'
-require 'rspec/support/spec/in_sub_process'
-require 'rspec/support/spec/stderr_splitter'
+require "spec_helper"
+require "rspec/core/sandbox"
+require "chef/audit/runner"
+require "chef/audit/audit_event_proxy"
+require "chef/audit/rspec_formatter"
+require "rspec/support/spec/in_sub_process"
+require "rspec/support/spec/stderr_splitter"
 
 
 describe Chef::Audit::Runner do
@@ -54,7 +54,7 @@ describe Chef::Audit::Runner do
   context "during #run" do
 
     describe "#setup" do
-      let(:log_location) { File.join(Dir.tmpdir, 'audit_log') }
+      let(:log_location) { File.join(Dir.tmpdir, "audit_log") }
       let(:color) { false }
 
       before do

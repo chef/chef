@@ -19,7 +19,7 @@
 # be able to test only Chef::Application.
 # Regression test for CHEF-5169
 
-require 'chef/application'
+require "chef/application"
 
 describe "Chef::Application" do
   let(:app) { Chef::Application.new }

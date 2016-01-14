@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'etc'
-require 'rexml/document'
-require 'chef/resource/service'
-require 'chef/resource/macosx_service'
-require 'chef/provider/service/simple'
-require 'chef/util/path_helper'
+require "etc"
+require "rexml/document"
+require "chef/resource/service"
+require "chef/resource/macosx_service"
+require "chef/provider/service/simple"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
@@ -36,14 +36,14 @@ class Chef
                          /Library/LaunchDaemons
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
-          Chef::Util::PathHelper.home('Library', 'LaunchAgents') { |p| locations << p }
+          Chef::Util::PathHelper.home("Library", "LaunchAgents") { |p| locations << p }
           locations
         end
 
         PLIST_DIRS = gather_plist_dirs
 
         def this_version_or_newer?(this_version)
-          Gem::Version.new(node['platform_version']) >= Gem::Version.new(this_version)
+          Gem::Version.new(node["platform_version"]) >= Gem::Version.new(this_version)
         end
 
         def load_current_resource
@@ -53,17 +53,17 @@ class Chef
           @plist = @new_resource.plist ? @new_resource.plist : find_service_plist
           @service_label = find_service_label
           # LauchAgents should be loaded as the console user.
-          @console_user = @plist ? @plist.include?('LaunchAgents') : false
+          @console_user = @plist ? @plist.include?("LaunchAgents") : false
           @session_type = @new_resource.session_type
 
           if @console_user
             @console_user = Etc.getlogin
             Chef::Log.debug("#{new_resource} console_user: '#{@console_user}'")
             cmd = "su "
-            param = this_version_or_newer?('10.10') ? '' : '-l '
+            param = this_version_or_newer?("10.10") ? "" : "-l "
             @base_user_cmd = cmd + param + "#{@console_user} -c"
             # Default LauchAgent session should be Aqua
-            @session_type = 'Aqua' if @session_type.nil?
+            @session_type = "Aqua" if @session_type.nil?
           end
 
           Chef::Log.debug("#{new_resource} Plist: '#{@plist}' service_label: '#{@service_label}'")
@@ -161,13 +161,13 @@ class Chef
         end
 
         def load_service
-          session = @session_type ? "-S #{@session_type} " : ''
-          cmd = 'launchctl load -w ' + session + @plist
+          session = @session_type ? "-S #{@session_type} " : ""
+          cmd = "launchctl load -w " + session + @plist
           shell_out_as_user(cmd)
         end
 
         def unload_service
-          cmd = 'launchctl unload -w ' + @plist
+          cmd = "launchctl unload -w " + @plist
           shell_out_as_user(cmd)
         end
 

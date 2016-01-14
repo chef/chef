@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/search/query'
+require "spec_helper"
+require "chef/search/query"
 
 describe Chef::Search::Query do
   let(:rest) { double("Chef::ServerAPI") }
@@ -29,8 +29,8 @@ describe Chef::Search::Query do
     let(:args) { { filter_key => filter_hash } }
     let(:filter_hash) {
       {
-        'env' => [ 'chef_environment' ],
-        'ruby_plat' => [ 'languages', 'ruby', 'platform' ],
+        "env" => [ "chef_environment" ],
+        "ruby_plat" => [ "languages", "ruby", "platform" ],
       }
     }
     let(:response) {
@@ -251,12 +251,12 @@ describe Chef::Search::Query do
 
         it "returns start" do
           start = query.search(:node, "platform:rhel", args)[1]
-          expect(start).to eq(response['start'])
+          expect(start).to eq(response["start"])
         end
 
         it "returns total" do
           total = query.search(:node, "platform:rhel", args)[2]
-          expect(total).to eq(response['total'])
+          expect(total).to eq(response["total"])
         end
 
         it "returns rows with the filter applied" do

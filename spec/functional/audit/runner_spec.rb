@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'rspec/core/sandbox'
-require 'chef/audit/runner'
-require 'rspec/support/spec/in_sub_process'
-require 'rspec/support/spec/stderr_splitter'
-require 'tempfile'
+require "spec_helper"
+require "rspec/core/sandbox"
+require "chef/audit/runner"
+require "rspec/support/spec/in_sub_process"
+require "rspec/support/spec/stderr_splitter"
+require "tempfile"
 
 ##
 # This functional test ensures that our runner can be setup to not interfere with existing RSpec

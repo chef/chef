@@ -1,4 +1,4 @@
-require 'support/shared/integration/integration_helper'
+require "support/shared/integration/integration_helper"
 
 # Houses any classes we declare
 module ResourceActionSpec
@@ -36,7 +36,7 @@ describe "Resource.action" do
         end
       EOM
       expect(ActionJackson.ran_action).to eq :access_attribute
-      expect(ActionJackson.succeeded).to eq 'foo!'
+      expect(ActionJackson.succeeded).to eq "foo!"
     end
 
     it "the action can access public methods" do
@@ -47,7 +47,7 @@ describe "Resource.action" do
         end
       EOM
       expect(ActionJackson.ran_action).to eq :access_method
-      expect(ActionJackson.succeeded).to eq 'foo_public!'
+      expect(ActionJackson.succeeded).to eq "foo_public!"
     end
 
     it "the action can access protected methods" do
@@ -58,7 +58,7 @@ describe "Resource.action" do
         end
       EOM
       expect(ActionJackson.ran_action).to eq :access_protected_method
-      expect(ActionJackson.succeeded).to eq 'foo_protected!'
+      expect(ActionJackson.succeeded).to eq "foo_protected!"
     end
 
     it "the action cannot access private methods" do
@@ -98,7 +98,7 @@ describe "Resource.action" do
         end
       EOM
       expect(ActionJackson.ran_action).to eq :access_class_method
-      expect(ActionJackson.succeeded).to eq 'ruby_block_converged!'
+      expect(ActionJackson.succeeded).to eq "ruby_block_converged!"
     end
 
     it "the action's resources converge before the next resource converges" do
@@ -115,8 +115,8 @@ describe "Resource.action" do
         end
       EOM
       expect(ActionJackson.ran_action).to eq :access_attribute
-      expect(ActionJackson.succeeded).to eq 'foo!'
-      expect(ActionJackson.ruby_block_converged).to eq 'foo!'
+      expect(ActionJackson.succeeded).to eq "foo!"
+      expect(ActionJackson.ruby_block_converged).to eq "foo!"
     end
   end
 
@@ -140,21 +140,21 @@ describe "Resource.action" do
 
       public
       def foo_public
-        'foo_public!'
+        "foo_public!"
       end
       protected
       def foo_protected
-        'foo_protected!'
+        "foo_protected!"
       end
       private
       def foo_private
-        'foo_private!'
+        "foo_private!"
       end
 
       public
       action :access_recipe_dsl do
         ActionJackson.ran_action = :access_recipe_dsl
-        ruby_block 'hi there' do
+        ruby_block "hi there" do
           block do
             ActionJackson.succeeded = true
           end
@@ -205,7 +205,7 @@ describe "Resource.action" do
     end
 
     it "Can retrieve ancestors of action class without crashing" do
-      converge { action_jackson 'hi' }
+      converge { action_jackson "hi" }
       expect { ActionJackson.action_class.ancestors.join(",") }.not_to raise_error
     end
 
@@ -260,9 +260,9 @@ describe "Resource.action" do
 
       it "the default action remains the same even though new actions were specified first" do
         converge {
-          action_jackalope 'hi' do
-            foo 'foo!'
-            bar 'bar!'
+          action_jackalope "hi" do
+            foo "foo!"
+            bar "bar!"
           end
         }
         expect(ActionJackson.ran_action).to eq :access_recipe_dsl
@@ -271,10 +271,10 @@ describe "Resource.action" do
 
       it "new actions run, and can access overridden, new, and overridden attributes" do
         converge {
-          action_jackalope 'hi' do
-            foo 'foo!'
-            bar 'bar!'
-            blarghle 'blarghle!'
+          action_jackalope "hi" do
+            foo "foo!"
+            bar "bar!"
+            blarghle "blarghle!"
             action :access_jackalope
           end
         }
@@ -284,10 +284,10 @@ describe "Resource.action" do
 
       it "overridden actions run, call super, and can access overridden, new, and overridden attributes" do
         converge {
-          action_jackalope 'hi' do
-            foo 'foo!'
-            bar 'bar!'
-            blarghle 'blarghle!'
+          action_jackalope "hi" do
+            foo "foo!"
+            bar "bar!"
+            blarghle "blarghle!"
             action :access_attribute
           end
         }
@@ -299,10 +299,10 @@ describe "Resource.action" do
 
       it "non-overridden actions run and can access overridden and non-overridden variables (but not necessarily new ones)" do
         converge {
-          action_jackalope 'hi' do
-            foo 'foo!'
-            bar 'bar!'
-            blarghle 'blarghle!'
+          action_jackalope "hi" do
+            foo "foo!"
+            bar "bar!"
+            blarghle "blarghle!"
             action :access_attribute2
           end
         }
@@ -328,8 +328,8 @@ describe "Resource.action" do
 
     it "the default action is :nothing" do
       converge {
-        no_action_jackson 'hi' do
-          foo 'foo!'
+        no_action_jackson "hi" do
+          foo "foo!"
           NoActionJackson.action_was = action
         end
       }
@@ -352,7 +352,7 @@ describe "Resource.action" do
 
     it "Running the action works" do
       expect_recipe {
-        weird_action_jackson 'hi'
+        weird_action_jackson "hi"
       }.to be_up_to_date
       expect(WeirdActionJackson.action_was).to eq :"a-b-c d"
     end
@@ -373,7 +373,7 @@ describe "Resource.action" do
         resource_name :resource_action_spec_also_with_x
         property :x
         action :set_x_to_x do
-          resource_action_spec_with_x 'hi' do
+          resource_action_spec_with_x "hi" do
             x x
           end
         end
@@ -381,13 +381,13 @@ describe "Resource.action" do
           __LINE__-4
         end
         action :set_x_to_x_in_non_initializer do
-          r = resource_action_spec_with_x 'hi' do
+          r = resource_action_spec_with_x "hi" do
             x 10
           end
           x_times_2 = r.x*2
         end
         action :set_x_to_10 do
-          resource_action_spec_with_x 'hi' do
+          resource_action_spec_with_x "hi" do
             x 10
           end
         end
@@ -397,7 +397,7 @@ describe "Resource.action" do
 
       it "Using the enclosing resource to set x to x emits a warning that you're using the wrong x" do
         recipe = converge {
-          resource_action_spec_also_with_x 'hi' do
+          resource_action_spec_also_with_x "hi" do
             x 1
             action :set_x_to_x
           end
@@ -409,7 +409,7 @@ describe "Resource.action" do
 
       it "Using the enclosing resource to set x to x outside the initializer emits no warning" do
         expect_recipe {
-          resource_action_spec_also_with_x 'hi' do
+          resource_action_spec_also_with_x "hi" do
             x 1
             action :set_x_to_x_in_non_initializer
           end
@@ -418,7 +418,7 @@ describe "Resource.action" do
 
       it "Using the enclosing resource to set x to 10 emits no warning" do
         expect_recipe {
-          resource_action_spec_also_with_x 'hi' do
+          resource_action_spec_also_with_x "hi" do
             x 1
             action :set_x_to_10
           end
@@ -427,7 +427,7 @@ describe "Resource.action" do
 
       it "Using the enclosing resource to set x to 10 emits no warning" do
         expect_recipe {
-          r = resource_action_spec_also_with_x 'hi'
+          r = resource_action_spec_also_with_x "hi"
           r.x 1
           r.action :set_x_to_10
         }.to emit_no_warnings_or_errors
@@ -442,14 +442,14 @@ describe "Resource.action" do
       property :template
       action :create do
         template "x" do
-          'blah'
+          "blah"
         end
       end
     end
 
     it "Raises an error when attempting to use a template in the action" do
       expect_converge {
-        has_property_named_template 'hi'
+        has_property_named_template "hi"
       }.to raise_error(/Property template of has_property_named_template\[hi\] cannot be passed a block! If you meant to create a resource named template instead, you'll need to first rename the property./)
     end
   end
@@ -484,16 +484,16 @@ describe "Resource.action" do
     end
 
     it "the methods are not available on the resource" do
-      expect { DeclaresActionClassMethods.new('hi').a }.to raise_error(NameError)
-      expect { DeclaresActionClassMethods.new('hi').b }.to raise_error(NameError)
-      expect { DeclaresActionClassMethods.new('hi').c }.to raise_error(NameError)
-      expect { DeclaresActionClassMethods.new('hi').d }.to raise_error(NameError)
+      expect { DeclaresActionClassMethods.new("hi").a }.to raise_error(NameError)
+      expect { DeclaresActionClassMethods.new("hi").b }.to raise_error(NameError)
+      expect { DeclaresActionClassMethods.new("hi").c }.to raise_error(NameError)
+      expect { DeclaresActionClassMethods.new("hi").d }.to raise_error(NameError)
     end
 
     it "the methods are available to the action" do
       r = nil
       expect_recipe {
-        r = declares_action_class_methods 'hi'
+        r = declares_action_class_methods "hi"
       }.to emit_no_warnings_or_errors
       expect(r.x).to eq(10)
     end
@@ -512,17 +512,17 @@ describe "Resource.action" do
       end
 
       it "the methods are not available on the resource" do
-        expect { DeclaresActionClassMethods.new('hi').a }.to raise_error(NameError)
-        expect { DeclaresActionClassMethods.new('hi').b }.to raise_error(NameError)
-        expect { DeclaresActionClassMethods.new('hi').c }.to raise_error(NameError)
-        expect { DeclaresActionClassMethods.new('hi').d }.to raise_error(NameError)
-        expect { DeclaresActionClassMethods.new('hi').e }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new("hi").a }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new("hi").b }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new("hi").c }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new("hi").d }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new("hi").e }.to raise_error(NameError)
       end
 
       it "the methods are available to the action" do
         r = nil
         expect_recipe {
-          r = declares_action_class_methods_too 'hi'
+          r = declares_action_class_methods_too "hi"
         }.to emit_no_warnings_or_errors
         expect(r.x).to eq(15)
       end

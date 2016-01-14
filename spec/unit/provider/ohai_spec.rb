@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/run_context'
+require "chef/run_context"
 
 describe Chef::Provider::Ohai do
   before(:each) do
@@ -63,22 +63,22 @@ describe Chef::Provider::Ohai do
 
   describe "when reloading ohai" do
     before do
-      @node.automatic_attrs[:origdata] = 'somevalue'
+      @node.automatic_attrs[:origdata] = "somevalue"
     end
 
     it "applies updated ohai data to the node" do
-      expect(@node[:origdata]).to eq('somevalue')
+      expect(@node[:origdata]).to eq("somevalue")
       expect(@node[:newdata]).to be_nil
       @provider.run_action(:reload)
-      expect(@node[:origdata]).to eq('somevalue')
-      expect(@node[:newdata]).to eq('somevalue')
+      expect(@node[:origdata]).to eq("somevalue")
+      expect(@node[:newdata]).to eq("somevalue")
     end
 
     it "should reload a specific plugin and cause node to pick up new values" do
       @new_resource.plugin "someplugin"
       @provider.run_action(:reload)
-      expect(@node[:origdata]).to eq('somevalue')
-      expect(@node[:newdata]).to eq('somevalue')
+      expect(@node[:origdata]).to eq("somevalue")
+      expect(@node[:newdata]).to eq("somevalue")
     end
   end
 end

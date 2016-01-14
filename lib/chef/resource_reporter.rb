@@ -19,9 +19,9 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'securerandom'
-require 'chef/event_dispatch/base'
+require "uri"
+require "securerandom"
+require "chef/event_dispatch/base"
 
 class Chef
   class ResourceReporter < EventDispatch::Base
@@ -97,7 +97,7 @@ class Chef
     attr_reader :run_id
     attr_reader :error_descriptions
 
-    PROTOCOL_VERSION = '0.1.0'
+    PROTOCOL_VERSION = "0.1.0"
 
     def initialize(rest_client)
       if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
@@ -232,7 +232,7 @@ class Chef
         Chef::Log.debug("Sending compressed run data...")
         # Since we're posting compressed data we can not directly call post which expects JSON
         begin
-          @rest_client.raw_request(:POST, resource_history_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
+          @rest_client.raw_request(:POST, resource_history_url, headers({"Content-Encoding" => "gzip"}), compressed_data)
         rescue StandardError => e
           if e.respond_to? :response
             Chef::FileCache.store("failed-reporting-data.json", Chef::JSONCompat.to_json_pretty(run_data), 0640)
@@ -247,7 +247,7 @@ class Chef
     end
 
     def headers(additional_headers = {})
-      options = {'X-Ops-Reporting-Protocol-Version' => PROTOCOL_VERSION}
+      options = {"X-Ops-Reporting-Protocol-Version" => PROTOCOL_VERSION}
       options.merge(additional_headers)
     end
 

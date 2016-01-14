@@ -18,8 +18,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'rubygems'
+require "rubygems"
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-require 'chef/application/solo'
+require "chef/application/solo"
 
 Chef::Application::Solo.new.run

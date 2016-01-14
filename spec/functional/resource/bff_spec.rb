@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
 # Run the test only for AIX platform.
-describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform] != 'aix' do
+describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform] != "aix" do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
@@ -43,7 +43,7 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
   before(:all) do
     @pkg_name = "PkgA.rte"
     @pkg_path = "/tmp/PkgA.1.0.0.0.bff"
-    FileUtils.cp 'spec/functional/assets/PkgA.1.0.0.0.bff' , @pkg_path
+    FileUtils.cp "spec/functional/assets/PkgA.1.0.0.0.bff" , @pkg_path
   end
 
   after(:all) do
@@ -78,7 +78,7 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
     before(:each) do
       shell_out("installp -aYF -d #{@pkg_path} #{@pkg_name}")
       @pkg_path = "/tmp/PkgA.2.0.0.0.bff"
-      FileUtils.cp 'spec/functional/assets/PkgA.2.0.0.0.bff' , @pkg_path
+      FileUtils.cp "spec/functional/assets/PkgA.2.0.0.0.bff" , @pkg_path
     end
 
     it "should upgrade package" do

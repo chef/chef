@@ -20,8 +20,8 @@
 #
 
 require File.expand_path("../../spec_helper", __FILE__)
-require 'chef/resource_reporter'
-require 'socket'
+require "chef/resource_reporter"
+require "socket"
 
 describe Chef::ResourceReporter do
   before(:all) do
@@ -51,7 +51,7 @@ describe Chef::ResourceReporter do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @run_status = Chef::RunStatus.new(@node, @events)
     @run_list = Chef::RunList.new
-    @run_list << 'recipe[lobster]' << 'role[rage]' << 'recipe[fist]'
+    @run_list << "recipe[lobster]" << "role[rage]" << "recipe[fist]"
     @expansion = Chef::RunList::RunListExpansion.new("_default", @run_list.run_list_items)
     @run_id = @run_status.run_id
     allow(Time).to receive(:now).and_return(@start_time, @end_time)
@@ -446,7 +446,7 @@ describe Chef::ResourceReporter do
     context "when the resource is a RegistryKey with binary data" do
       let(:new_resource) do
         resource = Chef::Resource::RegistryKey.new('Wubba\Lubba\Dub\Dubs')
-        resource.values([ { :name => 'rick', :type => :binary, :data => 255.chr * 1 } ])
+        resource.values([ { :name => "rick", :type => :binary, :data => 255.chr * 1 } ])
         allow(resource).to receive(:cookbook_name).and_return(@cookbook_name)
         allow(resource).to receive(:cookbook_version).and_return(@cookbook_version)
         resource
@@ -454,7 +454,7 @@ describe Chef::ResourceReporter do
 
       let(:current_resource) do
         resource = Chef::Resource::RegistryKey.new('Wubba\Lubba\Dub\Dubs')
-        resource.values([ { :name => 'rick', :type => :binary, :data => 255.chr * 1 } ])
+        resource.values([ { :name => "rick", :type => :binary, :data => 255.chr * 1 } ])
         resource
       end
 
@@ -568,12 +568,12 @@ describe Chef::ResourceReporter do
 
       it "sets before to {} instead of nil" do
         expect(@first_update_report).to have_key("before")
-        expect(@first_update_report['before']).to eq({})
+        expect(@first_update_report["before"]).to eq({})
       end
 
       it "sets after to {} instead of 'Running'" do
         expect(@first_update_report).to have_key("after")
-        expect(@first_update_report['after']).to eq({})
+        expect(@first_update_report["after"]).to eq({})
       end
     end
 
@@ -593,7 +593,7 @@ describe Chef::ResourceReporter do
         expect(@rest_client).to receive(:post).
           with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id,
                                                :start_time => @start_time.to_s},
-               {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
+               {"X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
       end
 
@@ -622,7 +622,7 @@ describe Chef::ResourceReporter do
         @error = Net::HTTPServerException.new("500 message", @response)
         expect(@rest_client).to receive(:post).
           with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
-               {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
+               {"X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
       end
 
@@ -652,7 +652,7 @@ describe Chef::ResourceReporter do
         @error = Net::HTTPServerException.new("500 message", @response)
         expect(@rest_client).to receive(:post).
           with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
-               {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
+               {"X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
       end
 
@@ -673,7 +673,7 @@ describe Chef::ResourceReporter do
         response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/@run_id"}
         expect(@rest_client).to receive(:post).
           with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
-               {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
+               {"X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_return(response)
         @resource_reporter.run_started(@run_status)
       end
@@ -695,8 +695,8 @@ describe Chef::ResourceReporter do
 
         expect(@rest_client).to receive(:raw_request).ordered do |method, url, headers, data|
           expect(method).to eq(:POST)
-          expect(headers).to eq({'Content-Encoding' => 'gzip',
-                             'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION,
+          expect(headers).to eq({"Content-Encoding" => "gzip",
+                             "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION,
           },)
           data_stream = Zlib::GzipReader.new(StringIO.new(data))
           data = data_stream.read

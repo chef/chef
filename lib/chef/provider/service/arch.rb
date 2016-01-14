@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
+require "chef/provider/service/init"
 
 class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
@@ -50,7 +50,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   def daemons
     entries = []
     if ::File.read("/etc/rc.conf").match(/DAEMONS=\((.*)\)/m)
-      entries += $1.gsub(/\\?[\r\n]/, ' ').gsub(/# *[^ ]+/,' ').split(' ') if $1.length > 0
+      entries += $1.gsub(/\\?[\r\n]/, " ").gsub(/# *[^ ]+/," ").split(" ") if $1.length > 0
     end
 
     yield(entries) if block_given?

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class Chef::Provider::Service::Freebsd
   public :service_enable_variable_name

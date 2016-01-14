@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::RemoteFile do
 
@@ -36,13 +36,13 @@ describe Chef::Resource::RemoteFile do
   it "says its provider is RemoteFile when the source is an absolute URI" do
     @resource.source("http://www.google.com/robots.txt")
     expect(@resource.provider).to eq(Chef::Provider::RemoteFile)
-    expect(Chef::Platform.find_provider(:noplatform, 'noversion', @resource)).to eq(Chef::Provider::RemoteFile)
+    expect(Chef::Platform.find_provider(:noplatform, "noversion", @resource)).to eq(Chef::Provider::RemoteFile)
   end
 
   it "says its provider is RemoteFile when the source is a network share" do
     @resource.source("\\\\fakey\\fakerton\\fake.txt")
     expect(@resource.provider).to eq(Chef::Provider::RemoteFile)
-    expect(Chef::Platform.find_provider(:noplatform, 'noversion', @resource)).to eq(Chef::Provider::RemoteFile)
+    expect(Chef::Platform.find_provider(:noplatform, "noversion", @resource)).to eq(Chef::Provider::RemoteFile)
   end
 
   describe "source" do
@@ -60,7 +60,7 @@ describe Chef::Resource::RemoteFile do
       expect(@resource.source).to eql([ "\\\\fakey\\fakerton\\fake.txt" ])
     end
 
-    it 'should accept file URIs with spaces' do
+    it "should accept file URIs with spaces" do
       @resource.source("file:///C:/foo bar")
       expect(@resource.source).to eql(["file:///C:/foo bar"])
     end

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::UserEdit do
   let(:knife) { Chef::Knife::UserEdit.new }
@@ -28,7 +28,7 @@ describe Chef::Knife::UserEdit do
     Chef::Knife::UserEdit.load_deps
     allow(knife.ui).to receive(:stderr).and_return(@stderr)
     allow(knife.ui).to receive(:stdout).and_return(@stdout)
-    knife.name_args = [ 'my_user' ]
+    knife.name_args = [ "my_user" ]
     knife.config[:disable_editing] = true
   end
 
@@ -50,14 +50,14 @@ describe Chef::Knife::UserEdit do
     end
   end
 
-  it 'loads and edits the user' do
+  it "loads and edits the user" do
     data = { "username" => "my_user" }
     allow(Chef::UserV1).to receive(:load).with("my_user").and_return(data)
     expect(knife).to receive(:edit_data).with(data).and_return(data)
     knife.run
   end
 
-  it 'prints usage and exits when a user name is not provided' do
+  it "prints usage and exits when a user name is not provided" do
     knife.name_args = []
     expect(knife).to receive(:show_usage)
     expect(knife.ui).to receive(:fatal)

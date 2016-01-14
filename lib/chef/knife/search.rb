@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/core/node_presenter'
+require "chef/knife"
+require "chef/knife/core/node_presenter"
 
 class Chef
   class Knife
@@ -26,10 +26,10 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require 'chef/node'
-        require 'chef/environment'
-        require 'chef/api_client'
-        require 'chef/search/query'
+        require "chef/node"
+        require "chef/environment"
+        require "chef/api_client"
+        require "chef/search/query"
       end
 
       include Knife::Core::NodeFormattingOptions
@@ -80,7 +80,7 @@ class Chef
         read_cli_args
         fuzzify_query
 
-        if @type == 'node'
+        if @type == "node"
           ui.use_presenter Knife::Core::NodePresenter
         end
 

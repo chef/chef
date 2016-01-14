@@ -20,10 +20,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'uri'
-require 'net/http'
-require 'chef/http/ssl_policies'
-require 'chef/http/http_request'
+require "uri"
+require "net/http"
+require "chef/http/ssl_policies"
+require "chef/http/http_request"
 
 class Chef
   class HTTP
@@ -72,7 +72,7 @@ class Chef
           Chef::Log.debug("---- End HTTP Status/Header Data ----")
 
           # For non-400's, log the request and response bodies
-          if !response.code || !response.code.start_with?('2')
+          if !response.code || !response.code.start_with?("2")
             if response.body
               Chef::Log.debug("---- HTTP Response Body ----")
               Chef::Log.debug(response.body)
@@ -111,7 +111,7 @@ class Chef
           end 
         end
         
-        no_proxy = Chef::Config[:no_proxy] || env['NO_PROXY'] || env['no_proxy']
+        no_proxy = Chef::Config[:no_proxy] || env["NO_PROXY"] || env["no_proxy"]
         excludes = no_proxy.to_s.split(/\s*,\s*/).compact
         excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
         return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }

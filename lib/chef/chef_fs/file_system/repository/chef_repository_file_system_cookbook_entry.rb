@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_entry'
-require 'chef/chef_fs/file_system/repository/chef_repository_file_system_cookbooks_dir'
-require 'chef/chef_fs/file_system/not_found_error'
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbooks_dir"
+require "chef/chef_fs/file_system/not_found_error"
 
 class Chef
   module ChefFS
@@ -40,9 +40,9 @@ class Chef
 
           def can_have_child?(name, is_dir)
             if is_dir
-              return recursive && name != '.' && name != '..'
+              return recursive && name != "." && name != ".."
             elsif ruby_only
-              return false if name[-3..-1] != '.rb'
+              return false if name[-3..-1] != ".rb"
             end
 
             # Check chefignore

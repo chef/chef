@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'chef/event_dispatch/base'
-require 'chef/audit/control_group_data'
-require 'time'
+require "chef/event_dispatch/base"
+require "chef/audit/control_group_data"
+require "time"
 
 class Chef
   class Audit
@@ -28,7 +28,7 @@ class Chef
       attr_reader :rest_client, :audit_data, :ordered_control_groups, :run_status
       private :rest_client, :audit_data, :ordered_control_groups, :run_status
 
-      PROTOCOL_VERSION = '0.1.1'
+      PROTOCOL_VERSION = "0.1.1"
 
       def initialize(rest_client)
         @rest_client = rest_client
@@ -154,7 +154,7 @@ class Chef
       end
 
       def headers(additional_headers = {})
-        options = {'X-Ops-Audit-Report-Protocol-Version' => PROTOCOL_VERSION}
+        options = {"X-Ops-Audit-Report-Protocol-Version" => PROTOCOL_VERSION}
         options.merge(additional_headers)
       end
 

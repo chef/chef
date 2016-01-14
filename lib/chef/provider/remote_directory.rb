@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-require 'chef/provider/directory'
-require 'chef/resource/file'
-require 'chef/resource/directory'
-require 'chef/resource/cookbook_file'
-require 'chef/mixin/file_class'
-require 'chef/platform/query_helpers'
-require 'chef/util/path_helper'
-require 'chef/deprecation/warnings'
-require 'chef/deprecation/provider/remote_directory'
+require "chef/provider/directory"
+require "chef/resource/file"
+require "chef/resource/directory"
+require "chef/resource/cookbook_file"
+require "chef/mixin/file_class"
+require "chef/platform/query_helpers"
+require "chef/util/path_helper"
+require "chef/deprecation/warnings"
+require "chef/deprecation/provider/remote_directory"
 
-require 'forwardable'
+require "forwardable"
 
 class Chef
   class Provider
@@ -104,9 +104,9 @@ class Chef
       #
       def purge_unmanaged_files
         if purge
-          Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(path), '**', '*'), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
+          Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(path), "**", "*"), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
             # skip '.' and '..'
-            next if ['.','..'].include?(Pathname.new(file).basename().to_s)
+            next if [".",".."].include?(Pathname.new(file).basename().to_s)
 
             # Clean the path.  This is required because of the ::File.join
             file = Chef::Util::PathHelper.cleanpath(file)

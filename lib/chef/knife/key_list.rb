@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/key'
-require 'chef/json_compat'
-require 'chef/exceptions'
+require "chef/key"
+require "chef/json_compat"
+require "chef/exceptions"
 
 class Chef
   class Knife
@@ -64,21 +64,21 @@ EOS
         if @config[:with_details]
           max_length = 0
           keys.each do |key|
-            key['name'] = key['name'] + ":"
-            max_length = key['name'].length if key['name'].length > max_length
+            key["name"] = key["name"] + ":"
+            max_length = key["name"].length if key["name"].length > max_length
           end
           keys.each do |key|
-            next if !key['expired'] && @config[:only_expired]
-            next if key['expired'] && @config[:only_non_expired]
+            next if !key["expired"] && @config[:only_expired]
+            next if key["expired"] && @config[:only_non_expired]
             display = "#{colorize(key['name'].ljust(max_length))} #{key['uri']}"
             display = "#{display} (expired)" if key["expired"]
             display_info(display)
           end
         else
           keys.each do |key|
-            next if !key['expired'] && @config[:only_expired]
-            next if key['expired'] && @config[:only_non_expired]
-            display_info(key['name'])
+            next if !key["expired"] && @config[:only_expired]
+            next if key["expired"] && @config[:only_non_expired]
+            display_info(key["name"])
           end
         end
       end
