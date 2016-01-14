@@ -180,7 +180,6 @@ module ChefConfig
 
     # Location of groups on disk. String or array of strings.
     # Defaults to <chef_repo_path>/groups.
-    # Only applies to Enterprise Chef commands.
     default(:group_path) { derive_path_from_chef_repo_path("groups") }
 
     # Location of nodes on disk. String or array of strings.
@@ -201,7 +200,6 @@ module ChefConfig
 
     # Location of users on disk. String or array of strings.
     # Defaults to <chef_repo_path>/users.
-    # Does not apply to Enterprise Chef commands.
     default(:user_path) { derive_path_from_chef_repo_path("users") }
 
     # Location of policies on disk. String or array of strings.
