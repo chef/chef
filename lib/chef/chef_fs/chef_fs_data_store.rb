@@ -761,7 +761,7 @@ class Chef
         result = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path.join("/"))
         if result.exists?
           result
-        elsif create
+        elsif create || path.size == 1
           get_dir(path[0..-2], create).create_child(result.name, nil)
         else
           raise ChefZero::DataStore::DataNotFoundError.new(path)
