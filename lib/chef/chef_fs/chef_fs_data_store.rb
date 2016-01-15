@@ -524,6 +524,9 @@ class Chef
                              select { |name, version| name == path[1] }.
                              map { |name, version| version }
             end
+            if result.empty?
+              raise ChefZero::DataStore::DataNotFoundError.new(path)
+            end
             result
           else
             # list /cookbooks/name = <single version>
