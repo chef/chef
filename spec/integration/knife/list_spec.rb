@@ -661,6 +661,7 @@ EOM
 /acls
 /clients
 /containers
+/cookbook_artifacts
 /cookbooks
 /data_bags
 /environments
@@ -681,6 +682,7 @@ EOM
 acls
 clients
 containers
+cookbook_artifacts
 cookbooks
 data_bags
 environments
@@ -752,6 +754,8 @@ nodes.json
 policies.json
 roles.json
 sandboxes.json
+
+/cookbook_artifacts:
 
 /cookbooks:
 
@@ -783,6 +787,7 @@ EOM
 acls
 clients
 containers
+cookbook_artifacts
 cookbooks
 data_bags
 environments
@@ -854,6 +859,8 @@ nodes.json
 policies.json
 roles.json
 sandboxes.json
+
+/cookbook_artifacts:
 
 /cookbooks:
 
@@ -886,6 +893,8 @@ EOM
         container "container2", {}
         cookbook "cookbook1", "1.0.0"
         cookbook "cookbook2", "1.0.1", { "recipes" => { "default.rb" => "" } }
+        cookbook_artifact "cookbook_artifact1", "1x1"
+        cookbook_artifact "cookbook_artifact2", "2x2", { "recipes" => { "default.rb" => "" } }
         data_bag "bag1", { "item1" => {}, "item2" => {} }
         data_bag "bag2", { "item1" => {}, "item2" => {} }
         environment "environment1", {}
@@ -970,6 +979,13 @@ EOM
 /containers/policies.json
 /containers/roles.json
 /containers/sandboxes.json
+/cookbook_artifacts/
+/cookbook_artifacts/cookbook_artifact1-1x1/
+/cookbook_artifacts/cookbook_artifact1-1x1/metadata.rb
+/cookbook_artifacts/cookbook_artifact2-2x2/
+/cookbook_artifacts/cookbook_artifact2-2x2/metadata.rb
+/cookbook_artifacts/cookbook_artifact2-2x2/recipes/
+/cookbook_artifacts/cookbook_artifact2-2x2/recipes/default.rb
 /cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/metadata.rb

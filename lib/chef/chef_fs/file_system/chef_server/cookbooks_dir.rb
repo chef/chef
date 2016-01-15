@@ -29,15 +29,13 @@ class Chef
   module ChefFS
     module FileSystem
       module ChefServer
-        # cookbooks/
+        #
+        # /cookbooks
+        #
+        # Example children:
         #   apache2/
         #   mysql/
-        # cookbook_artifacts/
-        #   apache2/
-        #     1.0.0/
-        #     1.0.1/
-        #   mysql/
-        #     2.0.5/
+        #
         class CookbooksDir < RestListDir
 
           include Chef::Mixin::FileClass

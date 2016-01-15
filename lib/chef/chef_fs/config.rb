@@ -33,6 +33,7 @@ class Chef
         "acls" => "acl",
         "clients" => "client",
         "cookbooks" => "cookbook",
+        "cookbook_artifacts" => "cookbook_artifact",
         "containers" => "container",
         "data_bags" => "data_bag",
         "environments" => "environment",
@@ -235,7 +236,7 @@ class Chef
           when "static"
             object_names = %w(cookbooks data_bags environments roles)
           when "hosted_everything"
-            object_names = %w(acls clients cookbooks containers data_bags environments groups nodes roles policies policy_groups)
+            object_names = %w(acls clients cookbooks cookbook_artifacts containers data_bags environments groups nodes roles policies policy_groups)
           else
             object_names = %w(clients cookbooks data_bags environments nodes roles users)
           end

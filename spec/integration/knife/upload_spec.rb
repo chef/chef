@@ -1288,6 +1288,7 @@ EOM
           file "clients/x.json", { "public_key" => ChefZero::PUBLIC_KEY }
           file "containers/x.json", {}
           file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.0")
+          file "cookbook_artifacts/x-1x1/metadata.rb", cb_metadata("x", "1.0.0")
           file "data_bags/x/y.json", {}
           file "environments/x.json", {}
           file "groups/x.json", {}
@@ -1306,6 +1307,7 @@ EOM
 Updated /acls/groups/blah.json
 Created /clients/x.json
 Created /containers/x.json
+Created /cookbook_artifacts/x-1x1
 Created /cookbooks/x
 Created /data_bags/x
 Created /data_bags/x/y.json
@@ -1322,6 +1324,7 @@ Created /roles/x.json
 EOM
           expect(api.get("association_requests").map { |a| a["username"] }).to eq([ "foo" ])
           expect(api.get("users").map { |a| a["user"]["username"] }).to eq([ "bar" ])
+          knife("diff --name-status --diff-filter=AMT /").should_succeed ""
         end
 
         context "When the chef server has an identical copy of each thing" do
@@ -1333,6 +1336,7 @@ EOM
             # acl_for %w(organizations foo groups blah)
             client "x", {}
             cookbook "x", "1.0.0"
+            cookbook_artifact "x", "1x1", "metadata.rb" => cb_metadata("x", "1.0.0")
             container "x", {}
             data_bag "x", { "y" => {} }
             environment "x", {}
@@ -1345,7 +1349,7 @@ EOM
             policy_group "x", {
               "policies" => {
                 "x" => { "revision_id" => "1.0.0" },
-                "blah" => { "revision_id" => "1.0.0" },
+                "blah" => { "revision_id" => "1.0.0" }
               }
             }
             role "x", {}
@@ -1370,12 +1374,25 @@ EOM
           end
         end
 
+        context "When the chef server has a slightly different copy of the cookbook artifact" do
+          before do
+            cookbook_artifact "x", "1x1", { "recipes" => { "default.rb" => "" } }
+          end
+
+          it "should fail because cookbook_artifacts cannot be updated" do
+            knife("upload /cookbook_artifacts/x-1x1").should_fail <<EOM
+ERROR: /cookbook_artifacts/x-1x1 cannot be updated: cookbook artifacts are immutable once uploaded.
+EOM
+          end
+        end
+
         context "When the chef server has a slightly different copy of each thing (except policy revisions)" do
           before do
             # acl_for %w(organizations foo groups blah)
             client "x", { "validator" => true }
             container "x", {}
             cookbook "x", "1.0.0", { "recipes" => { "default.rb" => "" } }
+            cookbook_artifact "x", "1x1", { "metadata.rb" => cb_metadata("x", "1.0.0") }
             data_bag "x", { "y" => { "a" => "b" } }
             environment "x", { "description" => "foo" }
             group "x", { "groups" => [ "admin" ] }
@@ -1386,7 +1403,7 @@ EOM
             policy_group "x", {
               "policies" => {
                 "x" => { "revision_id" => "1.0.1" },
-                "y" => { "revision_id" => "1.0.0" },
+                "y" => { "revision_id" => "1.0.0" }
               }
             }
             role "x", { "run_list" => [ "blah" ] }

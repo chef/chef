@@ -16,21 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/cookbooks_dir"
-require "chef/chef_fs/file_system/chef_server/versioned_cookbook_dir"
+require 'chef/chef_fs/file_system/chef_server/cookbooks_dir'
+require 'chef/chef_fs/file_system/chef_server/cookbook_artifact_dir'
 
 class Chef
   module ChefFS
     module FileSystem
       module ChefServer
         #
-        # /cookbooks or /cookbook_artifacts
-        #
-        # Example children of /cookbooks:
-        #
-        # - apache2-1.0.0
-        # - apache2-1.0.1
-        # - mysql-2.0.5
+        # /cookbook_artifacts
         #
         # Example children of /cookbook_artifacts:
         #
@@ -38,19 +32,19 @@ class Chef
         # - apache2-295387a9823745feff239
         # - mysql-1a2b9e1298734dfe90444
         #
-        class VersionedCookbooksDir < CookbooksDir
+        class CookbookArtifactsDir < CookbooksDir
 
           def make_child_entry(name)
             result = @children.select { |child| child.name == name }.first if @children
-            result || VersionedCookbookDir.new(name, self)
+            result || CookbookArtifactDir.new(name, self)
           end
 
           def children
             @children ||= begin
               result = []
               root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
-                cookbooks["versions"].each do |cookbook_version|
-                  result << VersionedCookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self)
+                cookbooks['versions'].each do |cookbook_version|
+                  result << CookbookArtifactDir.new("#{cookbook_name}-#{cookbook_version['identifier']}", self)
                 end
               end
               result.sort_by(&:name)
@@ -62,7 +56,7 @@ class Chef
           # to make this work. So instead, we make a temporary cookbook
           # symlinking back to real cookbook, and upload the proxy.
           def upload_cookbook(other, options)
-            cookbook_name = Chef::ChefFS::FileSystem::Repository::ChefRepositoryFileSystemCookbookDir.canonical_cookbook_name(other.name)
+            cookbook_name, dash, identifier = other.name.rpartition('-')
 
             Dir.mktmpdir do |temp_cookbooks_path|
               proxy_cookbook_path = "#{temp_cookbooks_path}/#{cookbook_name}"
@@ -75,10 +69,11 @@ class Chef
               proxy_loader.load_cookbooks
 
               cookbook_to_upload = proxy_loader.cookbook_version
+              cookbook_to_upload.identifier = identifier
               cookbook_to_upload.freeze_version if options[:freeze]
 
               # Instantiate a new uploader based on the proxy loader
-              uploader = Chef::CookbookUploader.new(cookbook_to_upload, :force => options[:force], :rest => root.chef_rest)
+              uploader = Chef::CookbookUploader.new(cookbook_to_upload, force: options[:force], rest: root.chef_rest, policy_mode: true)
 
               with_actual_cookbooks_dir(temp_cookbooks_path) do
                 uploader.upload_cookbooks
@@ -98,7 +93,7 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            is_dir && name =~ Chef::ChefFS::FileSystem::ChefServer::VersionedCookbookDir::VALID_VERSIONED_COOKBOOK_NAME
+            is_dir && name.include?('-')
           end
         end
       end
