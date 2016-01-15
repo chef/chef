@@ -29,7 +29,7 @@ group(:development, :test) do
 
   # for testing new chefstyle rules
   # gem 'chefstyle', github: 'chef/chefstyle'
-  gem "chefstyle", "= 0.1.0"
+  gem "chefstyle"
 
   gem "ruby-shadow", :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 
