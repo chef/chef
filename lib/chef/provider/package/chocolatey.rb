@@ -238,7 +238,7 @@ class Chef
         def parse_list_output(*args)
           list = []
           choco_command(*args).stdout.each_line do |line|
-            name, version = line.split('|')
+            name, version = line.split("|")
             list << [ name.downcase, version.chomp ]
           end
           list
