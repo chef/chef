@@ -293,7 +293,7 @@ class Chef
             cookbook_type = path[0]
             result = nil
             begin
-              result = Chef::CookbookManifest.new(entry.chef_object).to_hash
+              result = Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash
             rescue Chef::ChefFS::FileSystem::NotFoundError => e
               raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
             end
@@ -314,6 +314,23 @@ class Chef
                 end
               end
             end
+
+            # Cookbook artifacts act as if certain things aren't set if they are empty
+            # (e.g. "definitions" and "libraries" are not set if they are empty, but
+            # "recipes" is)
+            if cookbook_type == "cookbook_artifacts"
+              result.delete_if do |key,value|
+                (value == [] && key != "recipes")
+              end
+              result['metadata'] = result['metadata'].to_hash
+              result['metadata'].delete_if do |key,value|
+                value == [] ||
+                (value == {} && !%w(dependencies attributes recipes).include?(key)) ||
+                (value == "" && %w(source_url issues_url).include?(key)) ||
+                (value == false && key == "privacy")
+              end
+            end
+
             Chef::JSONCompat.to_json_pretty(result)
           end
 
