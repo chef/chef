@@ -153,9 +153,9 @@ class Chef
         if use_memory_store?(path)
           @memory_store.create_dir(path, name, *options)
         else
-          with_dir(path) do |parent|
+          with_parent_dir(path + [name], *options) do |parent, name|
             begin
-              parent.create_child(chef_fs_filename(path + [name]), nil)
+              parent.create_child(name, nil)
             rescue Chef::ChefFS::FileSystem::AlreadyExistsError => e
               raise ChefZero::DataStore::DataAlreadyExistsError.new(to_zero_path(e.entry), e)
             end
@@ -232,9 +232,9 @@ class Chef
             raise "set only works with strings"
           end
 
-          with_dir(path) do |parent|
+          with_parent_dir(path + [name], *options) do |parent, name|
             begin
-              parent.create_child(chef_fs_filename(path + [name]), data)
+              parent.create_child(name, data)
             rescue Chef::ChefFS::FileSystem::AlreadyExistsError => e
               raise ChefZero::DataStore::DataAlreadyExistsError.new(to_zero_path(e.entry), e)
             end
@@ -349,12 +349,12 @@ class Chef
             end
 
           else
-            with_dir(path[0..-2]) do |parent|
-              child = parent.child(chef_fs_filename(path))
+            with_parent_dir(path, *options) do |parent, name|
+              child = parent.child(name)
               if child.exists?
                 child.write(data)
               else
-                parent.create_child(chef_fs_filename(path), data)
+                parent.create_child(name, data)
               end
             end
           end
@@ -415,6 +415,24 @@ class Chef
       def delete_dir(path, *options)
         if use_memory_store?(path)
           @memory_store.delete_dir(path, *options)
+
+        # DELETE /policies/POLICY
+        elsif path[0] == "policies" && path.length == 2
+          with_entry(path[0..0]) do |policies|
+            # /policies:
+            #   - a-1.0.0.json
+            #   - a-1.0.1.json
+            #   - b-2.0.0.json
+            found_policy = false
+            policies.children.each do |policy|
+              # We want to delete just the ones that == POLICY
+              next unless policy.name.rpartition('-')[0] == path[1]
+              policy.delete(false)
+              found_policy = true
+            end
+            raise ChefZero::DataStore::DataNotFoundError.new(path) if !found_policy
+          end
+
         else
           with_entry(path) do |entry|
             begin
@@ -429,6 +447,28 @@ class Chef
       def list(path)
         if use_memory_store?(path)
           @memory_store.list(path)
+
+        # LIST /policies
+        elsif path == [ "policies" ]
+          with_entry([ path[0] ]) do |policies|
+            policies.children.map { |policy| policy.name[0..-6].rpartition('-')[0] }.uniq
+          end
+
+        # LIST /policies/POLICY/revisions
+        elsif path[0] == "policies" && path[2] == "revisions" && path.length == 3
+          with_entry([ path[0] ]) do |policies|
+            # /policies:
+            #   - a-1.0.0.json
+            #   - a-1.0.1.json
+            #   - b-2.0.0.json
+            revisions = []
+            policies.children.each do |policy|
+              name, dash, revision = policy.name[0..-6].rpartition('-')
+              revisions << revision if name == path[1]
+            end
+            raise ChefZero::DataStore::DataNotFoundError.new(path) if revisions.empty?
+            revisions
+          end
 
         elsif path[0] == "policy_groups" && path.length == 2
           with_entry(path) do |entry|
@@ -514,11 +554,18 @@ class Chef
       def exists_dir?(path)
         if use_memory_store?(path)
           @memory_store.exists_dir?(path)
+
         elsif path[0] == "cookbooks" && path.length == 2
           list([ path[0] ]).include?(path[1])
+
+        # /policies/NAME
+        elsif path[0] == "policies" && path.length == 2
+          list([ path[0] ]).include?(path[1])
+
         # /policy_groups/NAME/policies
         elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 3
           exists_dir?(path[0..1])
+
         else
           Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path)).exists?
         end
@@ -579,6 +626,9 @@ class Chef
       end
 
       def _to_chef_fs_path(path)
+        # /data -> /data_bags
+        # /data/BAG -> /data_bags/BAG
+        # /data/BAG/ITEM -> /data_bags/BAG/ITEM.json
         if path[0] == "data"
           path = path.dup
           path[0] = "data_bags"
@@ -586,15 +636,9 @@ class Chef
             path[2] = "#{path[2]}.json"
           end
 
-        elsif path[0] == "policies"
-          path = path.dup
-          if path[2] == "revisions"
-            # Get rid of "revisions"
-            path.delete_at(2)
-            if path.length >= 3
-              path[2] = "#{path[2]}.json"
-            end
-          end
+        # /policies/POLICY/revisions/REVISION -> /policies/POLICY-REVISION.json
+        elsif path[0] == "policies" && path[2] == "revisions" && path.length >= 4
+          path = [ "policies", "#{path[1]}-#{path[3]}.json" ]
 
         elsif path[0] == "cookbooks"
           if path.length == 2
@@ -659,10 +703,11 @@ class Chef
             end
           end
 
+        # /policies/NAME-REVISION.json -> /policies/NAME/revisions/REVISION
         elsif path[0] == "policies"
-          if path.length >= 3
-            path[2] = path[2][0..-6]
-            path = path[0..1] + [ "revisions" ] + path[2..-1]
+          if path.length >= 2
+            name, dash, revision = path[1][0..-6].rpartition('-')
+            path = [ "policies", name, "revisions", revision ]
           end
 
         elsif path.length == 2 && path[0] != "cookbooks"
@@ -685,6 +730,17 @@ class Chef
           yield Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path))
         rescue Chef::ChefFS::FileSystem::NotFoundError => e
           raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+        end
+      end
+
+      def with_parent_dir(path, *options)
+        path = _to_chef_fs_path(path)
+        begin
+          yield get_dir(path[0..-2], options.include?(:create_dir)), path[-1]
+        rescue Chef::ChefFS::FileSystem::NotFoundError => e
+          err = ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+          err.set_backtrace(e.backtrace)
+          raise err
         end
       end
 

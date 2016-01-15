@@ -29,7 +29,7 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            is_dir && !name.start_with?(".")
+            !is_dir && name.include?("-")
           end
         end
       end
