@@ -66,7 +66,7 @@ class Chef
         # @param names [Array<String>] array of package names to install
         # @param versions [Array<String>] array of versions to install
         def install_package(names, versions)
-          name_versions_to_install = desired_name_versions.select { |n, v| names.include?(n) }
+          name_versions_to_install = desired_name_versions.select { |n, v| lowercase_names(names).include?(n) }
 
           name_nil_versions = name_versions_to_install.select { |n,v| v.nil? }
           name_has_versions = name_versions_to_install.reject { |n,v| v.nil? }
@@ -88,7 +88,7 @@ class Chef
         # @param names [Array<String>] array of package names to install
         # @param versions [Array<String>] array of versions to install
         def upgrade_package(names, versions)
-          name_versions_to_install = desired_name_versions.select { |n, v| names.include?(n) }
+          name_versions_to_install = desired_name_versions.select { |n, v| lowercase_names(names).include?(n) }
 
           name_nil_versions = name_versions_to_install.select { |n,v| v.nil? }
           name_has_versions = name_versions_to_install.reject { |n,v| v.nil? }
@@ -181,7 +181,7 @@ class Chef
         # @return [Hash] Mapping of requested names to versions
         def desired_name_versions
           desired_versions = new_resource.version || new_resource.package_name.map { nil }
-          Hash[*new_resource.package_name.zip(desired_versions).flatten]
+          Hash[*lowercase_names(new_resource.package_name).zip(desired_versions).flatten]
         end
 
         # Helper to construct optional args out of new_resource
@@ -213,8 +213,11 @@ class Chef
             begin
               cmd = [ "list -ar #{package_name_array.join ' '}" ]
               cmd.push( "-source #{new_resource.source}" ) if new_resource.source
-              parse_list_output(*cmd).reject do |name,version|
-                desired_name_versions[name] && desired_name_versions[name] != version
+              parse_list_output(*cmd).each_with_object({}) do |name_version, available|
+                name, version = name_version
+                if desired_name_versions[name].nil? || desired_name_versions[name] == version
+                  available[name] = version
+                end
               end
             end
         end
@@ -224,21 +227,29 @@ class Chef
         #
         # @return [Hash] name-to-version mapping of installed packages
         def installed_packages
-          @installed_packages ||= parse_list_output("list -l -r")
+          @installed_packages ||= Hash[*parse_list_output("list -l -r").flatten]
         end
 
         # Helper to convert choco.exe list output to a Hash
         # (names are downcased for case-insenstive matching)
         #
         # @param cmd [String] command to run
-        # @return [String] list output converted to ruby Hash
+        # @return [Array] list output converted to ruby Hash
         def parse_list_output(*args)
-          hash = {}
+          list = []
           choco_command(*args).stdout.each_line do |line|
-            name, version = line.split("|")
-            hash[name.downcase] = version.chomp
+            name, version = line.split('|')
+            list << [ name.downcase, version.chomp ]
           end
-          hash
+          list
+        end
+
+        # Helper to downcase all names in an array
+        #
+        # @param names [Array] original mixed case names
+        # @return [Array] same names in lower case
+        def lowercase_names(names)
+          names.map { |name| name.downcase }
         end
       end
     end
