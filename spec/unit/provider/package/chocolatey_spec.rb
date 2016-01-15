@@ -76,13 +76,13 @@ munin-node|1.6.1.20130823
 
     it "should set the candidate_version to pinned version if available" do
       allow_remote_list(["git"])
-      new_resource.version('2.6.1')
+      new_resource.version("2.6.1")
       expect(provider.candidate_version).to eql(["2.6.1"])
     end
 
     it "should set the candidate_version to nill if pinning to bogus version" do
       allow_remote_list(["git"])
-      new_resource.version('2.5.0')
+      new_resource.version("2.5.0")
       expect(provider.candidate_version).to eql([nil])
     end    
 
