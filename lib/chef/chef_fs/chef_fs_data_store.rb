@@ -502,7 +502,9 @@ class Chef
         elsif %w(cookbooks cookbook_artifacts).include?(path[0]) && path.length == 1
           with_entry(path) do |entry|
             begin
-              if chef_fs.versioned_cookbooks && path[0] == "cookbooks"
+              if path[0] == "cookbook_artifacts"
+                entry.children.map { |child| child.name.rpartition('-')[0] }.uniq
+              elsif chef_fs.versioned_cookbooks
                 # /cookbooks/name-version -> /cookbooks/name
                 entry.children.map { |child| split_name_version(child.name)[0] }.uniq
               else
