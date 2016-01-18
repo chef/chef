@@ -322,8 +322,8 @@ class Chef
               result.delete_if do |key,value|
                 (value == [] && key != "recipes")
               end
-              result['metadata'] = result['metadata'].to_hash
-              result['metadata'].delete_if do |key,value|
+              result["metadata"] = result["metadata"].to_hash
+              result["metadata"].delete_if do |key,value|
                 value == [] ||
                 (value == {} && !%w(dependencies attributes recipes).include?(key)) ||
                 (value == "" && %w(source_url issues_url).include?(key)) ||
@@ -444,7 +444,7 @@ class Chef
             found_policy = false
             policies.children.each do |policy|
               # We want to delete just the ones that == POLICY
-              next unless policy.name.rpartition('-')[0] == path[1]
+              next unless policy.name.rpartition("-")[0] == path[1]
               policy.delete(false)
               found_policy = true
             end
@@ -469,7 +469,7 @@ class Chef
         # LIST /policies
         elsif path == [ "policies" ]
           with_entry([ path[0] ]) do |policies|
-            policies.children.map { |policy| policy.name[0..-6].rpartition('-')[0] }.uniq
+            policies.children.map { |policy| policy.name[0..-6].rpartition("-")[0] }.uniq
           end
 
         # LIST /policies/POLICY/revisions
@@ -481,7 +481,7 @@ class Chef
             #   - b-2.0.0.json
             revisions = []
             policies.children.each do |policy|
-              name, dash, revision = policy.name[0..-6].rpartition('-')
+              name, dash, revision = policy.name[0..-6].rpartition("-")
               revisions << revision if name == path[1]
             end
             raise ChefZero::DataStore::DataNotFoundError.new(path) if revisions.empty?
@@ -503,7 +503,7 @@ class Chef
           with_entry(path) do |entry|
             begin
               if path[0] == "cookbook_artifacts"
-                entry.children.map { |child| child.name.rpartition('-')[0] }.uniq
+                entry.children.map { |child| child.name.rpartition("-")[0] }.uniq
               elsif chef_fs.versioned_cookbooks
                 # /cookbooks/name-version -> /cookbooks/name
                 entry.children.map { |child| split_name_version(child.name)[0] }.uniq
@@ -725,7 +725,7 @@ class Chef
         # /policies/NAME-REVISION.json -> /policies/NAME/revisions/REVISION
         elsif path[0] == "policies"
           if path.length >= 2
-            name, dash, revision = path[1][0..-6].rpartition('-')
+            name, dash, revision = path[1][0..-6].rpartition("-")
             path = [ "policies", name, "revisions", revision ]
           end
 

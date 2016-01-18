@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/chef_server/cookbooks_dir'
-require 'chef/chef_fs/file_system/chef_server/cookbook_artifact_dir'
+require "chef/chef_fs/file_system/chef_server/cookbooks_dir"
+require "chef/chef_fs/file_system/chef_server/cookbook_artifact_dir"
 
 class Chef
   module ChefFS
@@ -43,7 +43,7 @@ class Chef
             @children ||= begin
               result = []
               root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
-                cookbooks['versions'].each do |cookbook_version|
+                cookbooks["versions"].each do |cookbook_version|
                   result << CookbookArtifactDir.new("#{cookbook_name}-#{cookbook_version['identifier']}", self)
                 end
               end
@@ -56,7 +56,7 @@ class Chef
           # to make this work. So instead, we make a temporary cookbook
           # symlinking back to real cookbook, and upload the proxy.
           def upload_cookbook(other, options)
-            cookbook_name, dash, identifier = other.name.rpartition('-')
+            cookbook_name, dash, identifier = other.name.rpartition("-")
 
             Dir.mktmpdir do |temp_cookbooks_path|
               proxy_cookbook_path = "#{temp_cookbooks_path}/#{cookbook_name}"
@@ -93,7 +93,7 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            is_dir && name.include?('-')
+            is_dir && name.include?("-")
           end
         end
       end
