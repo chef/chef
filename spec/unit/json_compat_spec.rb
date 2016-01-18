@@ -20,9 +20,16 @@ require File.expand_path("../../spec_helper", __FILE__)
 require "chef/json_compat"
 
 describe Chef::JSONCompat do
+  before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
 
   describe "#from_json with JSON containing an existing class" do
     let(:json) { '{"json_class": "Chef::Role"}' }
+
+    it "emits a deprecation warning" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = true
+      expect { Chef::JSONCompat.from_json(json) }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+        /Auto inflation of JSON data is deprecated. Please use Chef::Role#from_hash/
+    end
 
     it "returns an instance of the class instead of a Hash" do
       expect(Chef::JSONCompat.from_json(json).class).to eq Chef::Role

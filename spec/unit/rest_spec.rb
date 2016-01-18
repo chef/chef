@@ -74,6 +74,7 @@ describe Chef::REST do
 
   before(:each) do
     Chef::Log.init(log_stringio)
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
   end
 
   it "should have content length validation middleware after compressor middleware" do
@@ -90,6 +91,12 @@ describe Chef::REST do
     options = {}.freeze
     # should not raise any exception
     Chef::REST.new(base_url, nil, nil, options)
+  end
+
+  it "emits a deprecation warning" do
+    Chef::Config[:treat_deprecation_warnings_as_errors] = true
+    expect { Chef::REST.new(base_url) }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+      /Chef::REST is deprecated. Please use Chef::ServerAPI, or investigate Ridley or ChefAPI./
   end
 
   context "when created with a chef zero URL" do

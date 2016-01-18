@@ -59,7 +59,7 @@ describe Chef::DataBag do
   describe "deserialize" do
     before(:each) do
       @data_bag.name("mars_volta")
-      @deserial = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@data_bag))
+      @deserial = Chef::DataBag.from_hash(Chef::JSONCompat.parse(Chef::JSONCompat.to_json(@data_bag)))
     end
 
     it "should deserialize to a Chef::DataBag object" do
