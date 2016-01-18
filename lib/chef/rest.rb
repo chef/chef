@@ -59,6 +59,8 @@ class Chef
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
 
+      Chef.log_deprecation("Chef::REST is deprecated. Please use Chef::ServerAPI, or investigate Ridley or ChefAPI.")
+
       signing_key_filename = nil if chef_zero_uri?(url)
 
       options = options.dup

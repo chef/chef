@@ -532,6 +532,7 @@ class Chef
 
     # Create a Chef::Node from JSON
     def self.json_create(o)
+      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Node#from_hash")
       from_hash(o)
     end
 
