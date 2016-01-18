@@ -102,7 +102,7 @@ class Chef
 
           def chef_object
             # REST will inflate the Chef object using json_class
-            data_handler.json_class.json_create(read)
+            data_handler.json_class.from_hash(read)
           end
 
           def minimize_value(value)

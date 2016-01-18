@@ -117,7 +117,7 @@ class Chef
         # Turn a JSON hash into a bona fide Chef object (like Chef::Node).
         #
         def chef_object(object)
-          chef_class.json_create(object)
+          chef_class.from_hash(object)
         end
 
         #
