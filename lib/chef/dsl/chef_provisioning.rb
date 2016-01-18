@@ -23,7 +23,7 @@ class Chef
     # require 'chef-provisioning' (which will define the actual method) and then call the
     # method chef-provisioning defined.
     module ChefProvisioning
-      %w(
+      %w{
         add_machine_options
         current_image_options
         current_machine_options
@@ -36,7 +36,7 @@ class Chef
         with_driver
         with_image_options
         with_machine_options
-      ).each do |method_name|
+      }.each do |method_name|
         eval(<<-EOM, binding, __FILE__, __LINE__+1)
           def #{method_name}(*args, &block)
             Chef::DSL::ChefProvisioning.load_chef_provisioning

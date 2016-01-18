@@ -311,7 +311,7 @@ describe Chef::Knife do
       end
 
       it "merges `listen` config to Chef::Config" do
-        Chef::Knife.run(%w[test yourself --no-listen], Chef::Application::Knife.options)
+        Chef::Knife.run(%w{test yourself --no-listen}, Chef::Application::Knife.options)
         expect(Chef::Config[:listen]).to be(false)
       end
 
@@ -396,8 +396,8 @@ describe Chef::Knife do
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
       allow(knife).to receive(:username).and_return("sadpanda")
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action])
-      expect(stderr.string).to match(%r[Response:  y u no administrator])
+      expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
+      expect(stderr.string).to match(%r{Response:  y u no administrator})
     end
 
     it "formats 400s nicely" do
@@ -406,8 +406,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u search wrong"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("400 Bad Request", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: The data in your request was invalid])
-      expect(stderr.string).to match(%r[Response: y u search wrong])
+      expect(stderr.string).to match(%r{ERROR: The data in your request was invalid})
+      expect(stderr.string).to match(%r{Response: y u search wrong})
     end
 
     it "formats 404s nicely" do
@@ -416,8 +416,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "nothing to see here"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("404 Not Found", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: The object you are looking for could not be found])
-      expect(stderr.string).to match(%r[Response: nothing to see here])
+      expect(stderr.string).to match(%r{ERROR: The object you are looking for could not be found})
+      expect(stderr.string).to match(%r{Response: nothing to see here})
     end
 
     it "formats 406s (non-supported API version error) nicely" do
@@ -442,8 +442,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("500 Internal Server Error", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: internal server error])
-      expect(stderr.string).to match(%r[Response: sad trombone])
+      expect(stderr.string).to match(%r{ERROR: internal server error})
+      expect(stderr.string).to match(%r{Response: sad trombone})
     end
 
     it "formats 502s nicely" do
@@ -452,8 +452,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sadder trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("502 Bad Gateway", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: bad gateway])
-      expect(stderr.string).to match(%r[Response: sadder trombone])
+      expect(stderr.string).to match(%r{ERROR: bad gateway})
+      expect(stderr.string).to match(%r{Response: sadder trombone})
     end
 
     it "formats 503s nicely" do
@@ -462,8 +462,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "saddest trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("503 Service Unavailable", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: Service temporarily unavailable])
-      expect(stderr.string).to match(%r[Response: saddest trombone])
+      expect(stderr.string).to match(%r{ERROR: Service temporarily unavailable})
+      expect(stderr.string).to match(%r{Response: saddest trombone})
     end
 
     it "formats other HTTP errors nicely" do
@@ -472,24 +472,24 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "nobugfixtillyoubuy"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("402 Payment Required", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: Payment Required])
-      expect(stderr.string).to match(%r[Response: nobugfixtillyoubuy])
+      expect(stderr.string).to match(%r{ERROR: Payment Required})
+      expect(stderr.string).to match(%r{Response: nobugfixtillyoubuy})
     end
 
     it "formats NameError and NoMethodError nicely" do
       allow(knife).to receive(:run).and_raise(NameError.new("Undefined constant FUUU"))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: knife encountered an unexpected error])
-      expect(stderr.string).to match(%r[This may be a bug in the 'knife' knife command or plugin])
-      expect(stderr.string).to match(%r[Exception: NameError: Undefined constant FUUU])
+      expect(stderr.string).to match(%r{ERROR: knife encountered an unexpected error})
+      expect(stderr.string).to match(%r{This may be a bug in the 'knife' knife command or plugin})
+      expect(stderr.string).to match(%r{Exception: NameError: Undefined constant FUUU})
     end
 
     it "formats missing private key errors nicely" do
       allow(knife).to receive(:run).and_raise(Chef::Exceptions::PrivateKeyMissing.new("key not there"))
       allow(knife).to receive(:api_key).and_return("/home/root/.chef/no-key-here.pem")
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: Your private key could not be loaded from /home/root/.chef/no-key-here.pem])
-      expect(stderr.string).to match(%r[Check your configuration file and ensure that your private key is readable])
+      expect(stderr.string).to match(%r{ERROR: Your private key could not be loaded from /home/root/.chef/no-key-here.pem})
+      expect(stderr.string).to match(%r{Check your configuration file and ensure that your private key is readable})
     end
 
     it "formats connection refused errors nicely" do
@@ -498,8 +498,8 @@ describe Chef::Knife do
       # Errno::ECONNREFUSED message differs by platform
       # *nix = Errno::ECONNREFUSED: Connection refused
       # win32: Errno::ECONNREFUSED: No connection could be made because the target machine actively refused it.
-      expect(stderr.string).to match(%r[ERROR: Network Error: .* - y u no shut up])
-      expect(stderr.string).to match(%r[Check your knife configuration and network settings])
+      expect(stderr.string).to match(%r{ERROR: Network Error: .* - y u no shut up})
+      expect(stderr.string).to match(%r{Check your knife configuration and network settings})
     end
 
     it "formats SSL errors nicely and suggests to use `knife ssl check` and `knife ssl fetch`" do

@@ -417,7 +417,7 @@ describe Chef::Resource do
   describe "is" do
     it "should return the arguments passed with 'is'" do
       zm = Chef::Resource::ZenMaster.new("coffee")
-      expect(zm.is("one", "two", "three")).to eq(%w|one two three|)
+      expect(zm.is("one", "two", "three")).to eq(%w{one two three})
     end
 
     it "should allow arguments preceded by is to methods" do

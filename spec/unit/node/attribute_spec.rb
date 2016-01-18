@@ -518,7 +518,7 @@ describe Chef::Node::Attribute do
 
   describe "dup" do
     it "array can be duped even if some elements can't" do
-      @attributes.default[:foo] = %w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
+      @attributes.default[:foo] = %w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
       @attributes.default[:foo].dup
     end
   end

@@ -283,7 +283,7 @@ class Chef
       end
 
       def git_ls_remote(rev_pattern)
-        command = git(%Q(ls-remote "#{@new_resource.repository}" "#{rev_pattern}"))
+        command = git(%Q{ls-remote "#{@new_resource.repository}" "#{rev_pattern}"})
         shell_out!(command, run_options).stdout
       end
 

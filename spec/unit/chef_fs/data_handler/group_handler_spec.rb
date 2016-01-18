@@ -36,16 +36,16 @@ describe Chef::ChefFS::DataHandler::GroupDataHandler do
 
     let(:group) do
       { "name" => "worker_bees",
-        "clients" => %w(honey sting),
-        "users" => %w(fizz buzz),
-        "actors" => %w(honey),
+        "clients" => %w{honey sting},
+        "users" => %w{fizz buzz},
+        "actors" => %w{honey},
       }
     end
 
     let(:normalized) do
       { "actors" =>
-          { "users" => %w(fizz buzz),
-            "clients"=> %w(honey sting),
+          { "users" => %w{fizz buzz},
+            "clients"=> %w{honey sting},
             "groups"=> [],
           },
         "groupname" => "workers",

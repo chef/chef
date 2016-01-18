@@ -18,7 +18,7 @@ class Chef
   class Provider
     class User
       class Aix < Chef::Provider::User::Useradd
-        provides :user, platform: %w(aix)
+        provides :user, platform: %w{aix}
 
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
 

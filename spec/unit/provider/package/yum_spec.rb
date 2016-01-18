@@ -2179,7 +2179,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
       it "should set package_version if no existing package_name is found and new_package_name is available" do
         @new_resource = Chef::Resource::Package.new(["cups = 1.2.4-11.18.el5_2.3", "emacs = 24.4"])
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        allow(@yum_cache).to receive(:package_available?) { |pkg| %w(cups emacs).include?(pkg) ? true : false }
+        allow(@yum_cache).to receive(:package_available?) { |pkg| %w{cups emacs}.include?(pkg) ? true : false }
         allow(@yum_cache).to receive(:candidate_version) do |pkg|
           if pkg == "cups"
             "1.2.4-11.18.el5_2.3"

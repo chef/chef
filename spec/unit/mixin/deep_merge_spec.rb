@@ -304,25 +304,25 @@ describe Chef::Mixin::DeepMerge do
     end
 
     it "replaces arrays rather than merging them" do
-      merge_ee_hash = {"top_level_a" => {"1_deep_a" => "1-a-merge-ee", "1_deep_b" => %w[A A A]}, "top_level_b" => "top-level-b-merge-ee"}
-      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w[B B B], "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
+      merge_ee_hash = {"top_level_a" => {"1_deep_a" => "1-a-merge-ee", "1_deep_b" => %w{A A A}}, "top_level_b" => "top-level-b-merge-ee"}
+      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w{B B B}, "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
 
       merged_result = @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
 
       expect(merged_result["top_level_b"]).to eq("top-level-b-merged-onto")
       expect(merged_result["top_level_a"]["1_deep_a"]).to eq("1-a-merge-ee")
-      expect(merged_result["top_level_a"]["1_deep_b"]).to eq(%w[B B B])
+      expect(merged_result["top_level_a"]["1_deep_b"]).to eq(%w{B B B})
     end
 
     it "replaces non-hash items with hashes when there's a conflict" do
       merge_ee_hash = {"top_level_a" => "top-level-a-mergee", "top_level_b" => "top-level-b-merge-ee"}
-      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w[B B B], "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
+      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w{B B B}, "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
 
       merged_result = @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
 
       expect(merged_result["top_level_a"]).to be_a(Hash)
       expect(merged_result["top_level_a"]["1_deep_a"]).to be_nil
-      expect(merged_result["top_level_a"]["1_deep_b"]).to eq(%w[B B B])
+      expect(merged_result["top_level_a"]["1_deep_b"]).to eq(%w{B B B})
     end
 
     it "does not mutate deeply-nested original hashes by default" do

@@ -10,7 +10,7 @@ include_recipe "database::mysql"
 include_recipe "php"
 
 creds = Hash.new
-%w(mysql webapp).each do |item_name|
+%w{mysql webapp}.each do |item_name|
   creds[item_name] = data_bag_item("passwords", item_name)
 end
 

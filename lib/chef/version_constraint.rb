@@ -19,8 +19,8 @@ require "chef/version_class"
 class Chef
   class VersionConstraint
     DEFAULT_CONSTRAINT = ">= 0.0.0"
-    STANDARD_OPS = %w(< > <= >=)
-    OPS = %w(< > = <= >= ~>)
+    STANDARD_OPS = %w{< > <= >=}
+    OPS = %w{< > = <= >= ~>}
     PATTERN = /^(#{OPS.join('|')}) *([0-9].*)$/
     VERSION_CLASS = Chef::Version
 

@@ -161,11 +161,11 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     it "adds tags to the node when given" do
       tag_receiver = []
 
-      knife_config[:tags] = %w[foo bar]
+      knife_config[:tags] = %w{foo bar}
       allow(node).to receive(:run_list).with([])
       allow(node).to receive(:tags).and_return(tag_receiver)
       client_builder.run
-      expect(tag_receiver).to eq %w[foo bar]
+      expect(tag_receiver).to eq %w{foo bar}
     end
 
     it "builds a node when the run_list is a string" do

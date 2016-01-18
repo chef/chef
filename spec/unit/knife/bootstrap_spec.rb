@@ -426,7 +426,7 @@ describe Chef::Knife::Bootstrap do
 
     context "when only policy_name is given" do
 
-      let(:bootstrap_cli_options) { %w[ --policy-name my-app-server ] }
+      let(:bootstrap_cli_options) { %w{ --policy-name my-app-server } }
 
       it "returns an error stating that policy_name and policy_group must be given together" do
         expect { knife.validate_options! }.to raise_error(SystemExit)
@@ -437,7 +437,7 @@ describe Chef::Knife::Bootstrap do
 
     context "when only policy_group is given" do
 
-      let(:bootstrap_cli_options) { %w[ --policy-group staging ] }
+      let(:bootstrap_cli_options) { %w{ --policy-group staging } }
 
       it "returns an error stating that policy_name and policy_group must be given together" do
         expect { knife.validate_options! }.to raise_error(SystemExit)
@@ -448,7 +448,7 @@ describe Chef::Knife::Bootstrap do
 
     context "when both policy_name and policy_group are given, but run list is also given" do
 
-      let(:bootstrap_cli_options) { %w[ --policy-name my-app --policy-group staging --run-list cookbook ] }
+      let(:bootstrap_cli_options) { %w{ --policy-name my-app --policy-group staging --run-list cookbook } }
 
       it "returns an error stating that policyfile and run_list are exclusive" do
         expect { knife.validate_options! }.to raise_error(SystemExit)
@@ -459,7 +459,7 @@ describe Chef::Knife::Bootstrap do
 
     context "when policy_name and policy_group are given with no conflicting options" do
 
-      let(:bootstrap_cli_options) { %w[ --policy-name my-app --policy-group staging ] }
+      let(:bootstrap_cli_options) { %w{ --policy-name my-app --policy-group staging } }
 
       it "passes options validation" do
         expect { knife.validate_options! }.to_not raise_error

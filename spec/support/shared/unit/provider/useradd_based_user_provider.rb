@@ -108,7 +108,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should set -m -d /homedir" do
-        expect(provider.universal_options).to eq(%w[-d /wowaweea -m])
+        expect(provider.universal_options).to eq(%w{-d /wowaweea -m})
         expect(provider.useradd_options).to eq([])
       end
     end
@@ -121,7 +121,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should set -m -d /homedir" do
-        expect(provider.universal_options).to eql(%w[-d /wowaweea -m])
+        expect(provider.universal_options).to eql(%w{-d /wowaweea -m})
         expect(provider.useradd_options).to eq([])
       end
     end

@@ -600,7 +600,7 @@ ERROR_MESSAGE
     #
     class ChildRunContext < RunContext
       extend Forwardable
-      def_delegators :parent_run_context, *%w(
+      def_delegators :parent_run_context, *%w{
         cancel_reboot
         config
         cookbook_collection
@@ -627,7 +627,7 @@ ERROR_MESSAGE
         request_reboot
         resolve_attribute
         unreachable_cookbook?
-      )
+      }
 
       def initialize(parent_run_context)
         @parent_run_context = parent_run_context
@@ -638,7 +638,7 @@ ERROR_MESSAGE
         initialize_child_state
       end
 
-      CHILD_STATE = %w(
+      CHILD_STATE = %w{
         audits
         audits=
         create_child
@@ -660,7 +660,7 @@ ERROR_MESSAGE
         parent_run_context
         resource_collection
         resource_collection=
-      ).map { |x| x.to_sym }
+      }.map { |x| x.to_sym }
 
       # Verify that we didn't miss any methods
       missing_methods = superclass.instance_methods(false) - instance_methods(false) - CHILD_STATE

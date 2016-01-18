@@ -24,7 +24,7 @@ class Chef
     class Service
       class Insserv < Chef::Provider::Service::Init
 
-        provides :service, platform_family: %w(debian rhel fedora suse) do |node|
+        provides :service, platform_family: %w{debian rhel fedora suse} do |node|
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
         end
 

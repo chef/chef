@@ -287,7 +287,7 @@ describe Chef::Provider::Package::Rpm do
           provider.process_resource_requirements
         end
 
-        %w(http HTTP https HTTPS ftp FTP file FILE).each do |scheme|
+        %w{http HTTP https HTTPS ftp FTP file FILE}.each do |scheme|
 
           context "when the source URI uses protocol scheme '#{scheme}'" do
 

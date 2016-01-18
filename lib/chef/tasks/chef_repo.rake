@@ -172,23 +172,23 @@ namespace :databag do
 end
 
 def deprecation_notice
-  %Q[*************************************************
+  %Q{*************************************************
 NOTICE: Chef Repository Rake Tasks Are Deprecated
 *************************************************
-]
+}
 
 end
 
 def deprecated_cookbook_upload
-  %Q[
+  %Q{
 The `upload_cookbook` and `upload_cookbooks` rake tasks are not
 recommended. These tasks are replaced by other, better workflow
 tools, such as `knife cookbook upload`, `knife upload`, or `berks`
-]
+}
 end
 
 def deprecated_data_bag_creation
-  %Q[
+  %Q{
 The `data_bags:create` and `data_bags:create_item` tasks are not
 recommended. You should create data bag items as JSON files in the data_bags
 directory, with a sub-directory for each bag, and use `knife upload` to
@@ -197,5 +197,5 @@ upload them. For example, if you have a data bags named `users`, with
 
 ./data_bags/users/finn.json
 ./data-bags/users/jake.json
-]
+}
 end

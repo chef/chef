@@ -234,11 +234,11 @@ class Chef
           result = {}
           case @chef_config[:repo_mode]
           when "static"
-            object_names = %w(cookbooks data_bags environments roles)
+            object_names = %w{cookbooks data_bags environments roles}
           when "hosted_everything"
-            object_names = %w(acls clients cookbooks cookbook_artifacts containers data_bags environments groups nodes roles policies policy_groups)
+            object_names = %w{acls clients cookbooks cookbook_artifacts containers data_bags environments groups nodes roles policies policy_groups}
           else
-            object_names = %w(clients cookbooks data_bags environments nodes roles users)
+            object_names = %w{clients cookbooks data_bags environments nodes roles users}
           end
           object_names.each do |object_name|
             # cookbooks -> cookbook_path

@@ -24,7 +24,7 @@ class Chef
   class Provider
     class User
       class Solaris < Chef::Provider::User::Useradd
-        provides :user, platform: %w(omnios solaris2)
+        provides :user, platform: %w{omnios solaris2}
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
 
         attr_writer :password_file

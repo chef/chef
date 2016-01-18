@@ -45,7 +45,7 @@ describe Chef::ChefFS::Parallelizer do
         expect(parallelize(1.upto(10), :ordered => false) do |i|
           sleep 0.2
           "x"
-        end.to_a).to eq(%w(x x x x x x x x x x))
+        end.to_a).to eq(%w{x x x x x x x x x x})
         expect(elapsed_time).to be < 0.5
       end
 
@@ -117,7 +117,7 @@ describe Chef::ChefFS::Parallelizer do
         expect(parallelize(1.upto(10), :ordered => true) do |i|
           sleep 0.2
           "x"
-        end.to_a).to eq(%w(x x x x x x x x x x))
+        end.to_a).to eq(%w{x x x x x x x x x x})
         expect(elapsed_time).to be < 0.5
       end
 

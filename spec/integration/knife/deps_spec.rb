@@ -33,7 +33,7 @@ describe "knife deps", :workstation do
 
     when_the_repository "has a role with a default run_list" do
       before do
-        file "roles/starring.json", { "run_list" => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
+        file "roles/starring.json", { "run_list" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} }
         file "roles/minor.json", {}
         file "cookbooks/quiche/metadata.rb", 'name "quiche"'
         file "cookbooks/quiche/recipes/default.rb", ""
@@ -52,7 +52,7 @@ EOM
 
     when_the_repository "has a role with an env_run_list" do
       before do
-        file "roles/starring.json", { "env_run_lists" => { "desert" => %w(role[minor] recipe[quiche] recipe[soup::chicken]) } }
+        file "roles/starring.json", { "env_run_lists" => { "desert" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} } }
         file "roles/minor.json", {}
         file "cookbooks/quiche/metadata.rb", 'name "quiche"'
         file "cookbooks/quiche/recipes/default.rb", ""
@@ -91,7 +91,7 @@ EOM
         file "cookbooks/quiche/recipes/default.rb", ""
         file "cookbooks/soup/metadata.rb", 'name "soup"'
         file "cookbooks/soup/recipes/chicken.rb", ""
-        file "nodes/mort.json", { "run_list" => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
+        file "nodes/mort.json", { "run_list" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} }
       end
       it "knife deps reports just the node" do
         knife("deps /nodes/mort.json").should_succeed <<EOM
@@ -136,7 +136,7 @@ depends "kettle"'
     end
     when_the_repository "has a deep dependency tree" do
       before do
-        file "roles/starring.json", { "run_list" => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
+        file "roles/starring.json", { "run_list" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} }
         file "roles/minor.json", {}
         file "cookbooks/quiche/metadata.rb", 'name "quiche"'
         file "cookbooks/quiche/recipes/default.rb", ""
@@ -376,7 +376,7 @@ EOM
 
     when_the_chef_server "has a role with a default run_list" do
       before do
-        role "starring", { "run_list" => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
+        role "starring", { "run_list" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} }
         role "minor", {}
         cookbook "quiche", "1.0.0", { "metadata.rb" => %Q{name "quiche"\nversion "1.0.0"\n}, "recipes" => { "default.rb" => "" } }
         cookbook "soup", "1.0.0", { "metadata.rb" => %Q{name "soup"\nversion "1.0.0"\n}, "recipes" => { "chicken.rb" => "" } }
@@ -393,7 +393,7 @@ EOM
 
     when_the_chef_server "has a role with an env_run_list" do
       before do
-        role "starring", { "env_run_lists" => { "desert" => %w(role[minor] recipe[quiche] recipe[soup::chicken]) } }
+        role "starring", { "env_run_lists" => { "desert" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} } }
         role "minor", {}
         cookbook "quiche", "1.0.0", { "metadata.rb" => %Q{name "quiche"\nversion "1.0.0"\n}, "recipes" => { "default.rb" => "" } }
         cookbook "soup", "1.0.0", { "metadata.rb" =>   %Q{name "soup"\nversion "1.0.0"\n}, "recipes" => { "chicken.rb" => "" } }
@@ -428,7 +428,7 @@ EOM
         role "minor", {}
         cookbook "quiche", "1.0.0", { "metadata.rb" => %Q{name "quiche"\nversion "1.0.0"\n}, "recipes" => { "default.rb" => "" } }
         cookbook "soup", "1.0.0", { "metadata.rb" =>   %Q{name "soup"\nversion "1.0.0"\n}, "recipes" => { "chicken.rb" => "" } }
-        node "mort", { "run_list" => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
+        node "mort", { "run_list" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} }
       end
       it "knife deps reports just the node" do
         knife("deps --remote /nodes/mort.json").should_succeed <<EOM
@@ -471,7 +471,7 @@ depends "kettle"', "recipes" => { "default.rb" => "" } }
     end
     when_the_chef_server "has a deep dependency tree" do
       before do
-        role "starring", { "run_list" => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
+        role "starring", { "run_list" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} }
         role "minor", {}
         cookbook "quiche", "1.0.0", { "metadata.rb" => %Q{name "quiche"\nversion "1.0.0"\n}, "recipes" => { "default.rb" => "" } }
         cookbook "soup", "1.0.0", { "metadata.rb" =>   %Q{name "soup"\nversion "1.0.0"\n}, "recipes" => { "chicken.rb" => "" } }

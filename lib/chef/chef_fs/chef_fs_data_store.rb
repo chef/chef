@@ -288,7 +288,7 @@ class Chef
           end
 
         # GET /cookbooks/NAME/VERSION or /cookbook_artifacts/NAME/IDENTIFIER
-        elsif %w(cookbooks cookbook_artifacts).include?(path[0]) && path.length == 3
+        elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 3
           with_entry(path) do |entry|
             cookbook_type = path[0]
             result = nil
@@ -325,8 +325,8 @@ class Chef
               result['metadata'] = result['metadata'].to_hash
               result['metadata'].delete_if do |key,value|
                 value == [] ||
-                (value == {} && !%w(dependencies attributes recipes).include?(key)) ||
-                (value == "" && %w(source_url issues_url).include?(key)) ||
+                (value == {} && !%w{dependencies attributes recipes}.include?(key)) ||
+                (value == "" && %w{source_url issues_url}.include?(key)) ||
                 (value == false && key == "privacy")
               end
             end
@@ -354,7 +354,7 @@ class Chef
           end
 
           # Write out the files!
-          if %w(cookbooks cookbook_artifacts).include?(path[0]) && path.length == 3
+          if %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 3
             write_cookbook(path, data, *options)
 
           # Handle /policy_groups/some_policy_group/policies/some_policy_name
@@ -418,7 +418,7 @@ class Chef
         else
           with_entry(path) do |entry|
             begin
-              if %w(cookbooks cookbook_artifacts).include?(path[0]) && path.length >= 3
+              if %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length >= 3
                 entry.delete(true)
               else
                 entry.delete(false)
@@ -499,7 +499,7 @@ class Chef
             policies.keys
           end
 
-        elsif %w(cookbooks cookbook_artifacts).include?(path[0]) && path.length == 1
+        elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 1
           with_entry(path) do |entry|
             begin
               if path[0] == "cookbook_artifacts"
@@ -516,7 +516,7 @@ class Chef
             end
           end
 
-        elsif %w(cookbooks cookbook_artifacts).include?(path[0]) && path.length == 2
+        elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 2
           if chef_fs.versioned_cookbooks || path[0] == "cookbook_artifacts"
             result = with_entry([ path[0] ]) do |entry|
               # list /cookbooks/name = filter /cookbooks/name-version down to name
@@ -551,7 +551,7 @@ class Chef
           # Older versions of chef-zero do not understand policies and cookbook_artifacts,
           # don't give that stuff to them
           if path == [] && ChefZero::VERSION.to_f < 4.4
-            result.reject! { |child| %w(policies policy_data cookbook_artifacts).include?(child) }
+            result.reject! { |child| %w{policies policy_data cookbook_artifacts}.include?(child) }
           end
           result
         end
@@ -575,7 +575,7 @@ class Chef
         if use_memory_store?(path)
           @memory_store.exists_dir?(path)
 
-        elsif %w(cookbooks cookbook_artifacts).include?(path[0]) && path.length == 2
+        elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 2
           list([ path[0] ]).include?(path[1])
 
         # /policies/NAME
@@ -661,7 +661,7 @@ class Chef
         elsif path[0] == "policies" && path[2] == "revisions" && path.length >= 4
           path = [ "policies", "#{path[1]}-#{path[3]}.json" ]
 
-        elsif %w(cookbooks cookbook_artifacts).include?(path[0])
+        elsif %w{cookbooks cookbook_artifacts}.include?(path[0])
           if path.length == 2
             raise ChefZero::DataStore::DataNotFoundError.new(path)
           elsif path.length >= 3
@@ -707,7 +707,7 @@ class Chef
             path[2] = path[2][0..-6]
           end
 
-        elsif %w(cookbooks cookbook_artifacts).include?(path[0])
+        elsif %w{cookbooks cookbook_artifacts}.include?(path[0])
           if chef_fs.versioned_cookbooks || path[0] == "cookbook_artifacts"
             # cookbooks/name-version/... -> cookbooks/name/version/...
             if path.length >= 2
@@ -741,7 +741,7 @@ class Chef
       end
 
       def path_always_exists?(path)
-        return path.length == 1 && %w(clients cookbooks data environments nodes roles users).include?(path[0])
+        return path.length == 1 && %w{clients cookbooks data environments nodes roles users}.include?(path[0])
       end
 
       def with_entry(path)

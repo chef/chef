@@ -121,14 +121,14 @@ begin
   end
 
   def prepare_teams(cmp)
-    %w(text paths).each { |k| cmp.delete(k) }
+    %w{text paths}.each { |k| cmp.delete(k) }
     if cmp.key?("team")
       team = cmp.delete("team")
       add_members(team, cmp.delete("lieutenant")) if cmp.key?("lieutenant")
       add_members(team, cmp.delete("maintainers")) if cmp.key?("maintainers")
       set_team_title(team, cmp.delete("title"))
     else
-      %w(maintainers lieutenant title).each { |k| cmp.delete(k) }
+      %w{maintainers lieutenant title}.each { |k| cmp.delete(k) }
     end
     cmp.each { |_k, v| prepare_teams(v) }
   end

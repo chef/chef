@@ -22,7 +22,7 @@ require "chef/node/immutable_collections"
 describe Chef::Node::ImmutableMash do
   before do
     @data_in = {:top => {:second_level => "some value"},
-                "top_level_2" => %w[array of values],
+                "top_level_2" => %w{array of values},
                 :top_level_3 => [{:hash_array => 1, :hash_array_b => 2}],
                 :top_level_4 => {:level2 => {:key => "value"}},
     }
@@ -34,7 +34,7 @@ describe Chef::Node::ImmutableMash do
   end
 
   it "element references like a regular Mash" do
-    expect(@immutable_mash[:top_level_2]).to eq(%w[array of values])
+    expect(@immutable_mash[:top_level_2]).to eq(%w{array of values})
   end
 
   it "converts Hash-like inputs into ImmutableMash's" do
@@ -112,7 +112,7 @@ end
 describe Chef::Node::ImmutableArray do
 
   before do
-    @immutable_array = Chef::Node::ImmutableArray.new(%w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
+    @immutable_array = Chef::Node::ImmutableArray.new(%w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
     immutable_mash = Chef::Node::ImmutableMash.new({:m => "m"})
     @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1",@immutable_array, immutable_mash])
   end

@@ -44,7 +44,7 @@ describe Chef::Version do
   end
 
   describe "when creating valid Versions" do
-    good_versions = %w(1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003)
+    good_versions = %w{1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003}
     good_versions.each do |v|
       it "should accept '#{v}'" do
         Chef::Version.new v

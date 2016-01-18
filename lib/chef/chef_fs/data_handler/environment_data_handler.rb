@@ -26,7 +26,7 @@ class Chef
         end
 
         def to_ruby(object)
-          result = to_ruby_keys(object, %w(name description default_attributes override_attributes))
+          result = to_ruby_keys(object, %w{name description default_attributes override_attributes})
           if object["cookbook_versions"]
             object["cookbook_versions"].each_pair do |name, version|
               result << "cookbook #{name.inspect}, #{version.inspect}"

@@ -68,7 +68,7 @@ describe Chef::Cookbook::FileVendor do
 
   context "when configured to load files from disk" do
 
-    let(:cookbook_path) { %w[/var/chef/cookbooks /var/chef/other_cookbooks] }
+    let(:cookbook_path) { %w{/var/chef/cookbooks /var/chef/other_cookbooks} }
 
     # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
     let(:manifest) { {:cookbook_name => "bob"} }

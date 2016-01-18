@@ -199,7 +199,7 @@ EOS
       end
 
       it "should include the actor value under the key relative to the actor_field_name passed" do
-        expect(json).to include(%Q("#{new_key.actor_field_name}":"original_actor"))
+        expect(json).to include(%Q{"#{new_key.actor_field_name}":"original_actor"})
       end
 
       it "should include the name field when present" do
@@ -213,7 +213,7 @@ EOS
 
       it "should include the public_key field when present" do
         new_key.public_key "this_public_key"
-        expect(new_key.to_json).to include(%q("public_key":"this_public_key"))
+        expect(new_key.to_json).to include(%q{"public_key":"this_public_key"})
       end
 
       it "should not include the public_key if not present" do
@@ -222,7 +222,7 @@ EOS
 
       it "should include the private_key field when present" do
         new_key.private_key "this_public_key"
-        expect(new_key.to_json).to include(%q("private_key":"this_public_key"))
+        expect(new_key.to_json).to include(%q{"private_key":"this_public_key"})
       end
 
       it "should not include the private_key if not present" do
@@ -231,7 +231,7 @@ EOS
 
       it "should include the expiration_date field when present" do
         new_key.expiration_date "2020-12-24T21:00:00Z"
-        expect(new_key.to_json).to include(%Q("expiration_date":"2020-12-24T21:00:00Z"))
+        expect(new_key.to_json).to include(%Q{"expiration_date":"2020-12-24T21:00:00Z"})
       end
 
       it "should not include the expiration_date if not present" do
@@ -240,7 +240,7 @@ EOS
 
       it "should include the create_key field when present" do
         new_key.create_key true
-        expect(new_key.to_json).to include(%q("create_key":true))
+        expect(new_key.to_json).to include(%q{"create_key":true})
       end
 
       it "should not include the create_key if not present" do

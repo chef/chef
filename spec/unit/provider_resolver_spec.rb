@@ -480,7 +480,7 @@ describe Chef::ProviderResolver do
         end
       end
 
-      on_platform %w(freebsd netbsd), platform_version: "3.1.4" do
+      on_platform %w{freebsd netbsd}, platform_version: "3.1.4" do
         it "returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
           stub_service_providers
           stub_service_configs(:usr_local_etc_rcd)
@@ -648,7 +648,7 @@ describe Chef::ProviderResolver do
           "suse" => {
             "12.0" => {
             },
-            %w(11.1 11.2 11.3) => {
+            %w{11.1 11.2 11.3} => {
               group: [ Chef::Resource::Group, Chef::Provider::Group::Suse ]
             },
           },
@@ -681,12 +681,12 @@ describe Chef::ProviderResolver do
           package:  [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
           ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Redhat ],
 
-          %w(amazon xcp xenserver ibm_powerkvm cloudlinux parallels) => {
+          %w{amazon xcp xenserver ibm_powerkvm cloudlinux parallels} => {
             "3.1.4" => {
   #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
             }
           },
-          %w(redhat centos scientific oracle) => {
+          %w{redhat centos scientific oracle} => {
             "7.0" => {
             },
             "6.0" => {
@@ -705,7 +705,7 @@ describe Chef::ProviderResolver do
       },
 
       "darwin" => {
-        %w(mac_os_x mac_os_x_server) => {
+        %w{mac_os_x mac_os_x_server} => {
           group:   [ Chef::Resource::Group, Chef::Provider::Group::Dscl ],
           package: [ Chef::Resource::HomebrewPackage, Chef::Provider::Package::Homebrew ],
           osx_profile: [ Chef::Resource::OsxProfile, Chef::Provider::OsxProfile],
@@ -732,7 +732,7 @@ describe Chef::ProviderResolver do
         windows_service:   [ Chef::Resource::WindowsService, Chef::Provider::Service::Windows ],
 
         "windows" => {
-          %w(mswin mingw32 windows) => {
+          %w{mswin mingw32 windows} => {
             "10.9.2" => {
             }
           }

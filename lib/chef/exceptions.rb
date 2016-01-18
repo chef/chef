@@ -220,7 +220,7 @@ class Chef
     class ImmutableAttributeModification < NoMethodError
       def initialize
         super "Node attributes are read-only when you do not specify which precedence level to set. " +
-          %Q(To set an attribute use code like `node.default["key"] = "value"')
+          %Q{To set an attribute use code like `node.default["key"] = "value"'}
       end
     end
 

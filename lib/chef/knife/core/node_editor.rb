@@ -57,7 +57,7 @@ class Chef
         pristine_copy = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(node))
         updated_copy  = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(@updated_node))
 
-        updated_properties = %w[
+        updated_properties = %w{
           name
           chef_environment
           automatic
@@ -67,7 +67,7 @@ class Chef
           policy_name
           policy_group
           run_list
-        ].reject do |key|
+        }.reject do |key|
           pristine_copy[key] == updated_copy[key]
         end
 

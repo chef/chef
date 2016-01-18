@@ -23,7 +23,7 @@ class Chef
     # require 'cheffish' (which will define the actual method) and then call the
     # method cheffish defined.
     module Cheffish
-      %w(
+      %w{
         chef_acl
         chef_client
         chef_container
@@ -43,7 +43,7 @@ class Chef
         with_chef_server
         with_chef_local_server
         get_private_key
-      ).each do |method_name|
+      }.each do |method_name|
         eval(<<-EOM, binding, __FILE__, __LINE__+1)
           def #{method_name}(*args, &block)
             Chef::DSL::Cheffish.load_cheffish

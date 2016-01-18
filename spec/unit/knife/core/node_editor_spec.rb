@@ -29,7 +29,7 @@ describe Chef::Knife::NodeEditor do
       "override"  => { "alpha" => { "bravo" => "foxtrot", "delta" => "golf" } },
       "policy_name"  => nil,
       "policy_group" => nil,
-      "run_list" => %w(role[comedy] role[drama] recipe[mystery]),
+      "run_list" => %w{role[comedy] role[drama] recipe[mystery]},
     }
   end
 
@@ -45,8 +45,8 @@ describe Chef::Knife::NodeEditor do
     it "returns a Hash with only the name, chef_environment, normal, " +
        "policy_name, policy_group, and run_list properties" do
       expected = node_data.select do |key,|
-        %w[ name chef_environment normal
-            policy_name policy_group run_list ].include?(key)
+        %w{ name chef_environment normal
+            policy_name policy_group run_list }.include?(key)
       end
 
       expect(subject.view).to eq(expected)
@@ -91,7 +91,7 @@ describe Chef::Knife::NodeEditor do
           "normal" => { "alpha" => { "bravo" => "hotel2" }, "tags" => [ "xyz" ] },
           "policy_name" => "mypolicy",
           "policy_group" => "prod",
-          "run_list" => %w(role[drama] recipe[mystery]),
+          "run_list" => %w{role[drama] recipe[mystery]},
         )
       end
 
@@ -123,7 +123,7 @@ describe Chef::Knife::NodeEditor do
           "override"  => { "alpha" => { "bravo" => "foxtrot2", "delta" => "golf2" } },
           "policy_name" => "mypolicy",
           "policy_group" => "prod",
-          "run_list"  => %w(role[drama] recipe[mystery]),
+          "run_list"  => %w{role[drama] recipe[mystery]},
         )
       end
 
@@ -159,7 +159,7 @@ describe Chef::Knife::NodeEditor do
             "override"  => { "alpha" => { "bravo" => "foxtrot2", "delta" => "golf2" } },
             "policy_name"  => "mypolicy",
             "policy_group" => "prod",
-            "run_list"  => %w(role[drama] recipe[mystery]),
+            "run_list"  => %w{role[drama] recipe[mystery]},
           )
         end
 
@@ -173,7 +173,7 @@ describe Chef::Knife::NodeEditor do
           end
 
           it "returns an array of the changed property names" do
-            expect(subject.updated?).to eql %w[ normal policy_name policy_group run_list ]
+            expect(subject.updated?).to eql %w{ normal policy_name policy_group run_list }
           end
         end
 
@@ -190,7 +190,7 @@ describe Chef::Knife::NodeEditor do
 
           it 'returns an array of property names that doesn\'t include ' +
              "the non-editable properties" do
-            expect(subject.updated?).to eql %w[ normal policy_name policy_group run_list ]
+            expect(subject.updated?).to eql %w{ normal policy_name policy_group run_list }
           end
         end
       end

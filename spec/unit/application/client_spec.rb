@@ -51,7 +51,7 @@ describe Chef::Application::Client, "reconfigure" do
     context "when given a named_run_list" do
 
       before do
-        ARGV.replace( %w[ --named-run-list arglebargle-example ] )
+        ARGV.replace( %w{ --named-run-list arglebargle-example } )
         app.reconfigure
       end
 
