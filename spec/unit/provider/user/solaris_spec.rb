@@ -20,12 +20,14 @@
 # limitations under the License.
 #
 
-ShellCmdResult = Struct.new(:stdout, :stderr, :exitstatus)
-
 require "mixlib/shellout"
 require "spec_helper"
 
 describe Chef::Provider::User::Solaris do
+
+  let(:shellcmdresult) {
+    Struct.new(:stdout, :stderr, :exitstatus)
+  }
 
   subject(:provider) do
     p = described_class.new(@new_resource, @run_context)
@@ -96,7 +98,7 @@ describe Chef::Provider::User::Solaris do
         "dave:*LK*L....:::::::",
       ].each do |shadow|
         it "should return true if user is locked with #{shadow}" do
-          shell_return = ShellCmdResult.new(shadow + "\n", "", 0)
+          shell_return = shellcmdresult.new(shadow + "\n", "", 0)
           expect(provider).to receive(:shell_out!).with("getent", "shadow", @new_resource.username).and_return(shell_return)
           expect(provider.check_lock).to eql(true)
         end
@@ -111,7 +113,7 @@ describe Chef::Provider::User::Solaris do
         "dave:L...:::::::",
       ].each do |shadow|
         it "should return false if user is unlocked with #{shadow}" do
-          shell_return = ShellCmdResult.new(shadow + "\n", "", 0)
+          shell_return = shellcmdresult.new(shadow + "\n", "", 0)
           expect(provider).to receive(:shell_out!).with("getent", "shadow", @new_resource.username).and_return(shell_return)
           expect(provider.check_lock).to eql(false)
         end
@@ -120,7 +122,7 @@ describe Chef::Provider::User::Solaris do
 
     describe "when locking the user" do
       it "should run passwd -l with the new resources username" do
-        shell_return = ShellCmdResult.new("", "", 0)
+        shell_return = shellcmdresult.new("", "", 0)
         expect(provider).to receive(:shell_out!).with("passwd", "-l", @new_resource.username).and_return(shell_return)
         provider.lock_user
       end
@@ -128,7 +130,7 @@ describe Chef::Provider::User::Solaris do
 
     describe "when unlocking the user" do
       it "should run passwd -u with the new resources username" do
-        shell_return = ShellCmdResult.new("", "", 0)
+        shell_return = shellcmdresult.new("", "", 0)
         expect(provider).to receive(:shell_out!).with("passwd", "-u", @new_resource.username).and_return(shell_return)
         provider.unlock_user
       end

@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-ShellCmdResult = Struct.new(:stdout, :stderr, :exitstatus)
-
 require "spec_helper"
 require "ostruct"
 require "mixlib/shellout"
@@ -26,6 +24,9 @@ describe Chef::Provider::User::Dscl do
   before do
     allow(ChefConfig).to receive(:windows?) { false }
   end
+  let(:shellcmdresult) { 
+    Struct.new(:stdout, :stderr, :exitstatus)
+  }
   let(:node) {
     node = Chef::Node.new
     allow(node).to receive(:[]).with(:platform_version).and_return(mac_version)
@@ -114,31 +115,31 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
   describe "when shelling out to dscl" do
     it "should run dscl with the supplied cmd /Path args" do
-      shell_return = ShellCmdResult.new("stdout", "err", 0)
+      shell_return = shellcmdresult.new("stdout", "err", 0)
       expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
       expect(provider.run_dscl("cmd /Path args")).to eq("stdout")
     end
 
     it "returns an empty string from delete commands" do
-      shell_return = ShellCmdResult.new("out", "err", 23)
+      shell_return = shellcmdresult.new("out", "err", 23)
       expect(provider).to receive(:shell_out).with("dscl . -delete /Path args").and_return(shell_return)
       expect(provider.run_dscl("delete /Path args")).to eq("")
     end
 
     it "should raise an exception for any other command" do
-      shell_return = ShellCmdResult.new("out", "err", 23)
+      shell_return = shellcmdresult.new("out", "err", 23)
       expect(provider).to receive(:shell_out).with("dscl . -cmd /Path arguments").and_return(shell_return)
       expect { provider.run_dscl("cmd /Path arguments") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'no such key'" do
-      shell_return = ShellCmdResult.new("No such key: ", "err", 23)
+      shell_return = shellcmdresult.new("No such key: ", "err", 23)
       expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
       expect { provider.run_dscl("cmd /Path args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'eDSRecordNotFound'" do
-      shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
+      shell_return = shellcmdresult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
       expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
       expect { provider.run_dscl("cmd /Path args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
@@ -382,9 +383,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       expect(provider).to receive(:shell_out).with("dscacheutil '-flushcache'")
       expect(provider).to receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
         if user_plist_file.nil?
-          ShellCmdResult.new("Can not find the file", "Sorry!!", 1)
+          shellcmdresult.new("Can not find the file", "Sorry!!", 1)
         else
-          ShellCmdResult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/#{user_plist_file}.plist.xml")), "", 0)
+          shellcmdresult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/#{user_plist_file}.plist.xml")), "", 0)
         end
       end
 
@@ -791,7 +792,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       end
 
       it "should raise an exception when the group does not exist" do
-        shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
+        shell_return = shellcmdresult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
         expect(provider).to receive(:shell_out).with("dscl . -read /Groups/newgroup PrimaryGroupID").and_return(shell_return)
         expect { provider.dscl_set_gid }.to raise_error(Chef::Exceptions::GroupIDNotFound)
       end
@@ -849,7 +850,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
     before do
       expect(provider).to receive(:shell_out).with("dscacheutil '-flushcache'")
       expect(provider).to receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
-        ShellCmdResult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/10.9.plist.xml")), "", 0)
+        shellcmdresult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/10.9.plist.xml")), "", 0)
       end
       provider.load_current_resource
     end
