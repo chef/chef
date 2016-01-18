@@ -1349,7 +1349,7 @@ EOM
             policy_group "x", {
               "policies" => {
                 "x" => { "revision_id" => "1.0.0" },
-                "blah" => { "revision_id" => "1.0.0" },
+                "blah" => { "revision_id" => "1.0.0" }
               }
             }
             role "x", {}
@@ -1403,7 +1403,7 @@ EOM
             policy_group "x", {
               "policies" => {
                 "x" => { "revision_id" => "1.0.1" },
-                "y" => { "revision_id" => "1.0.0" },
+                "y" => { "revision_id" => "1.0.0" }
               }
             }
             role "x", { "run_list" => [ "blah" ] }

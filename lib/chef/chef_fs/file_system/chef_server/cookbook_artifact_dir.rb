@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/cookbook_dir"
+require 'chef/chef_fs/file_system/chef_server/cookbook_dir'
 
 class Chef
   module ChefFS
@@ -25,7 +25,7 @@ class Chef
         class CookbookArtifactDir < CookbookDir
           def initialize(name, parent, options = {})
             super(name, parent)
-            @cookbook_name, dash, @version = name.rpartition("-")
+            @cookbook_name, dash, @version = name.rpartition('-')
           end
 
           def copy_from(other, options = {})

@@ -170,7 +170,7 @@ class Chef
               else
                 dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
               end
-            when "cookbook_artifacts"
+            when 'cookbook_artifacts'
               dirs = paths.map { |path| ChefRepositoryFileSystemCookbookArtifactsDir.new(name, self, path) }
             when "policies"
               dirs = paths.map { |path| ChefRepositoryFileSystemPoliciesDir.new(name, self, path) }
