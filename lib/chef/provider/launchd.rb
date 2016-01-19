@@ -72,7 +72,7 @@ class Chef
       def manage_plist(action)
         if @source
           res = cookbook_file_resource
-        elsif
+        else
           res = file_resource
         end
         res.run_action(action)

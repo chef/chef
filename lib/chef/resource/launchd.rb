@@ -230,7 +230,7 @@ class Chef
       def on_demand(arg = nil)
         set_or_return(
           :on_demand, arg,
-          :kind_of => String
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
