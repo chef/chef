@@ -276,8 +276,9 @@ class Chef
       Chef::UserV1.from_hash(Chef::JSONCompat.from_json(json))
     end
 
-    class << self
-      alias_method :json_create, :from_json
+    def self.json_create(json)
+      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::UserV1#from_json or Chef::UserV1#load.")
+      Chef::UserV1.from_json(json)
     end
 
     def self.list(inflate=false)

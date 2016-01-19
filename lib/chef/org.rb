@@ -124,8 +124,9 @@ class Chef
       Chef::Org.from_hash(Chef::JSONCompat.from_json(json))
     end
 
-    class <<self
-      alias_method :json_create, :from_json
+    def self.json_create(json)
+      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Org#from_json or Chef::Org#load.")
+      Chef::Org.from_json(json)
     end
 
     def self.load(org_name)
