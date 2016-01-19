@@ -30,11 +30,33 @@ class Chef
       def load_current_resource
       end
 
+      def action_periodic
+        if !apt_up_to_date?
+          converge_by "update new lists of packages" do
+            shell_out!("apt-get -q update")
+          end
+        end
+      end
+
       def action_update
-        converge_by "retrieve new lists of packages" do
+        converge_by "force update new lists of packages" do
           shell_out!("apt-get -q update")
         end
       end
+
+      private
+      # Determines whether we need to run `apt-get update`
+      #
+      # @return [Boolean]
+      def apt_up_to_date?
+        if ::File.exist?("/var/lib/apt/periodic/update-success-stamp") &&
+            ::File.mtime("/var/lib/apt/periodic/update-success-stamp") > Time.now - new_resource.frequency
+          true
+        else
+          false
+        end
+      end
+
     end
   end
 end

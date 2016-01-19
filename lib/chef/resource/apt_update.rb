@@ -25,8 +25,10 @@ class Chef
       resource_name :apt_update
       provides :apt_update, os: "linux"
 
-      default_action :update
-      allowed_actions :update
+      property :frequency, Integer, default: 86_400
+
+      default_action :periodic
+      allowed_actions :update, :periodic
     end
   end
 end
