@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/node/attribute'
+require "spec_helper"
+require "chef/node/attribute"
 
 describe Chef::Node::Attribute do
   before(:each) do
@@ -188,7 +188,7 @@ describe Chef::Node::Attribute do
                           "os_version"=>"9.7.0",
                           "hostname"=>"latte",
                           "macaddress"=>"00:23:6c:7f:67:6c",
-                          "music" => { "jimmy_eat_world" => "nice", "apophis" => false }
+                          "music" => { "jimmy_eat_world" => "nice", "apophis" => false },
     }
     @default_hash = {
       "domain" => "opscode.com",
@@ -198,8 +198,8 @@ describe Chef::Node::Attribute do
         "mastodon" => "rocks",
         "mars_volta" => "is loud and nutty",
         "deeper" => { "gates_of_ishtar" => nil },
-        "this" => {"apparatus" => {"must" => "be unearthed"}}
-      }
+        "this" => {"apparatus" => {"must" => "be unearthed"}},
+      },
     }
     @override_hash = {
       "macaddress" => "00:00:00:00:00:00",
@@ -207,7 +207,7 @@ describe Chef::Node::Attribute do
       "fire" => "still burn",
       "music" => {
         "mars_volta" => "cicatriz"
-      }
+      },
     }
     @automatic_hash = {"week" => "friday"}
     @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash)
@@ -272,7 +272,7 @@ describe Chef::Node::Attribute do
         ["role_override", "role_override"],
         ["env_override", "env_override"],
         ["force_override", "force_override"],
-        ["automatic", "automatic"]
+        ["automatic", "automatic"],
       ]
       expect(@attributes.debug_value(:foo, :bar)).to eq(expected)
     end
@@ -488,37 +488,37 @@ describe Chef::Node::Attribute do
     end
 
     it "should create a deep copy of the node attribute" do
-      @attributes.default['foo']['bar']['baz'] = 'fizz'
-      hash = @attributes['foo'].to_hash
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      hash = @attributes["foo"].to_hash
       expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
-      hash['bar']['baz'] = 'buzz'
+      hash["bar"]["baz"] = "buzz"
       expect(hash).to eql({"bar"=>{"baz"=>"buzz"}})
-      expect(@attributes.default['foo']).to eql({"bar"=>{"baz"=>"fizz"}})
+      expect(@attributes.default["foo"]).to eql({"bar"=>{"baz"=>"fizz"}})
     end
 
     it "should create a deep copy of arrays in the node attribute" do
-      @attributes.default['foo']['bar'] = ['fizz']
-      hash = @attributes['foo'].to_hash
-      expect(hash).to eql({"bar"=>[ 'fizz' ]})
-      hash['bar'].push('buzz')
-      expect(hash).to eql({"bar"=>[ 'fizz', 'buzz' ]})
-      expect(@attributes.default['foo']).to eql({"bar"=>[ 'fizz' ]})
+      @attributes.default["foo"]["bar"] = ["fizz"]
+      hash = @attributes["foo"].to_hash
+      expect(hash).to eql({"bar"=>[ "fizz" ]})
+      hash["bar"].push("buzz")
+      expect(hash).to eql({"bar"=>[ "fizz", "buzz" ]})
+      expect(@attributes.default["foo"]).to eql({"bar"=>[ "fizz" ]})
     end
 
     it "mutating strings should not mutate the attributes" do
       pending "this is a bug that should be fixed"
-      @attributes.default['foo']['bar']['baz'] = 'fizz'
-      hash = @attributes['foo'].to_hash
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      hash = @attributes["foo"].to_hash
       expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
-      hash['bar']['baz'] << 'buzz'
+      hash["bar"]["baz"] << "buzz"
       expect(hash).to eql({"bar"=>{"baz"=>"fizzbuzz"}})
-      expect(@attributes.default['foo']).to eql({"bar"=>{"baz"=>"fizz"}})
+      expect(@attributes.default["foo"]).to eql({"bar"=>{"baz"=>"fizz"}})
     end
   end
 
   describe "dup" do
     it "array can be duped even if some elements can't" do
-      @attributes.default[:foo] = %w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
+      @attributes.default[:foo] = %w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
       @attributes.default[:foo].dup
     end
   end
@@ -592,17 +592,17 @@ describe Chef::Node::Attribute do
         {
           "one" =>  { "two" => "three" },
           "hut" =>  { "two" => "three" },
-          "place" => { }
+          "place" => { },
         },
         {
           "one" =>  { "four" => "five" },
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" =>  { "six" => "seven" },
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -644,13 +644,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -682,13 +682,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -718,13 +718,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -754,13 +754,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -798,13 +798,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
       @empty = Chef::Node::Attribute.new({}, {}, {}, {})
     end
@@ -832,13 +832,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -852,7 +852,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "hut" => "three",
           "snakes" => "on a plane",
-          "snack" => "cookies"
+          "snack" => "cookies",
         }.each do |k,v|
           expect(@attributes.fetch(k)).to eq(v)
         end
@@ -889,13 +889,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -934,13 +934,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -975,13 +975,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -1011,13 +1011,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
     end
 
@@ -1046,7 +1046,7 @@ describe Chef::Node::Attribute do
           ["hut", "three"],
           ["one", "six"],
           ["snack", "cookies"],
-          ["snakes", "on a plane"]
+          ["snakes", "on a plane"],
         ]
       )
     end
@@ -1061,13 +1061,13 @@ describe Chef::Node::Attribute do
         },
         {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
-        {}
+        {},
       )
 
       @empty = Chef::Node::Attribute.new({},{},{},{})
@@ -1117,11 +1117,11 @@ describe Chef::Node::Attribute do
     it "should output merged attributes" do
       default_hash = {
           "a" => 1,
-          "b" => 2
+          "b" => 2,
       }
       override_hash = {
           "b" => 3,
-          "c" => 4
+          "c" => 4,
       }
       attributes = Chef::Node::Attribute.new(nil, default_hash, override_hash, nil)
       expect(attributes.to_s).to eq('{"a"=>1, "b"=>3, "c"=>4}')

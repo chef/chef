@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
 def user_provider_for_platform
   case ohai[:platform]
@@ -33,7 +33,7 @@ end
 metadata = { :unix_only => true,
   :requires_root => true,
   :not_supported_on_mac_osx => true,
-  :provider => {:user => user_provider_for_platform}
+  :provider => {:user => user_provider_for_platform},
 }
 
 describe Chef::Provider::User::Useradd, metadata do
@@ -50,7 +50,7 @@ describe Chef::Provider::User::Useradd, metadata do
     passwd_file = File.open("/etc/passwd", "rb") {|f| f.read}
     matcher = /^#{Regexp.escape(username)}.+$/
     if passwd_entry = passwd_file.scan(matcher).first
-      PwEntry.new(*passwd_entry.split(':'))
+      PwEntry.new(*passwd_entry.split(":"))
     else
       raise UserNotFound, "no entry matching #{matcher.inspect} found in /etc/passwd"
     end
@@ -65,8 +65,12 @@ describe Chef::Provider::User::Useradd, metadata do
     end
   end
 
-  def supports_quote_in_username?
-    OHAI_SYSTEM["platform_family"] == "debian"
+  def self.quote_in_username_unsupported?
+    if OHAI_SYSTEM["platform_family"] == "debian"
+      false
+    else
+      "Only debian family systems support quotes in username"
+    end
   end
 
   def password_should_be_set
@@ -78,13 +82,13 @@ describe Chef::Provider::User::Useradd, metadata do
   end
 
   def try_cleanup
-    ['/home/cheftestfoo', '/home/cheftestbar'].each do |f|
+    ["/home/cheftestfoo", "/home/cheftestbar"].each do |f|
       FileUtils.rm_rf(f) if File.exists? f
     end
 
-    ['cf-test'].each do |u|
+    ["cf-test"].each do |u|
       r = Chef::Resource::User.new("DELETE USER", run_context)
-      r.username('cf-test')
+      r.username("cf-test")
       r.run_action(:remove)
     end
   end
@@ -108,7 +112,7 @@ describe Chef::Provider::User::Useradd, metadata do
         break if status.exitstatus != 8
 
         sleep 1
-        max_retries = max_retries -1
+        max_retries = max_retries - 1
       rescue UserNotFound
         break
       end
@@ -162,15 +166,10 @@ describe Chef::Provider::User::Useradd, metadata do
     end
   end
 
-  let(:skip) { false }
-
   describe "action :create" do
 
     context "when the user does not exist beforehand" do
       before do
-        if reason = skip
-          pending(reason)
-        end
         user_resource.run_action(:create)
         expect(user_resource).to be_updated_by_last_action
       end
@@ -186,14 +185,7 @@ describe Chef::Provider::User::Useradd, metadata do
       #  tabulation: '\t', etc.). Note that using a slash ('/') may break the
       #  default algorithm for the definition of the user's home directory.
 
-      context "and the username contains a single quote" do
-        let(:skip) do
-          if supports_quote_in_username?
-            false
-          else
-            "Platform #{OHAI_SYSTEM["platform"]} not expected to support username w/ quote"
-          end
-        end
+      context "and the username contains a single quote", skip: quote_in_username_unsupported? do
 
         let(:username) { "t'bilisi" }
 
@@ -342,7 +334,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
       before do
         if reason = skip
-          pending(reason)
+          skip(reason)
         end
         existing_user.run_action(:create)
         expect(existing_user).to be_updated_by_last_action
@@ -530,12 +522,12 @@ describe Chef::Provider::User::Useradd, metadata do
     end
 
     def shadow_password
-      shadow_entry.split(':')[1]
+      shadow_entry.split(":")[1]
     end
 
     def aix_user_lock_status
       lock_info = shell_out!("lsuser -a account_locked #{username}")
-      status = /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)[1]
+      /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)[1]
     end
 
     def user_account_should_be_locked
@@ -652,7 +644,7 @@ describe Chef::Provider::User::Useradd, metadata do
       context "and has no password" do
 
         # TODO: platform_family should be setup in spec_helper w/ tags
-        if %w[suse opensuse].include?(OHAI_SYSTEM["platform_family"])
+        if %w{suse opensuse}.include?(OHAI_SYSTEM["platform_family"])
           # suse gets this right:
           it "errors out trying to unlock the user" do
             expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
@@ -673,10 +665,10 @@ describe Chef::Provider::User::Useradd, metadata do
             # DEBUG: Ran usermod -U chef-functional-test returned 0
             expect(@error).to be_nil
             if ohai[:platform] == "aix"
-              expect(pw_entry.passwd).to eq('*')
+              expect(pw_entry.passwd).to eq("*")
               user_account_should_be_unlocked
             else
-              expect(pw_entry.passwd).to eq('x')
+              expect(pw_entry.passwd).to eq("x")
               expect(shadow_password).to include("!")
             end
           end

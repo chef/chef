@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
 #p License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,20 +17,20 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::CookbookFile do
   before do
-    @cookbook_file = Chef::Resource::CookbookFile.new('sourcecode_tarball.tgz')
+    @cookbook_file = Chef::Resource::CookbookFile.new("sourcecode_tarball.tgz")
   end
 
   it "uses the name parameter for the source parameter" do
-    expect(@cookbook_file.name).to eq('sourcecode_tarball.tgz')
+    expect(@cookbook_file.name).to eq("sourcecode_tarball.tgz")
   end
 
   it "has a source parameter" do
-    @cookbook_file.name('config_file.conf')
-    expect(@cookbook_file.name).to eq('config_file.conf')
+    @cookbook_file.name("config_file.conf")
+    expect(@cookbook_file.name).to eq("config_file.conf")
   end
 
   it "defaults to a nil cookbook parameter (current cookbook will be used)" do
@@ -39,7 +39,7 @@ describe Chef::Resource::CookbookFile do
 
   it "has a cookbook parameter" do
     @cookbook_file.cookbook("munin")
-    expect(@cookbook_file.cookbook).to eq('munin')
+    expect(@cookbook_file.cookbook).to eq("munin")
   end
 
   it "sets the provider to Chef::Provider::CookbookFile" do

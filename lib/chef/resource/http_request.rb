@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/http_request'
+require "chef/resource"
+require "chef/provider/http_request"
 
 class Chef
   class Resource
@@ -26,21 +26,21 @@ class Chef
 
       identity_attr :url
 
+      default_action :get
+      allowed_actions :get, :put, :post, :delete, :head, :options
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :http_request
         @message = name
         @url = nil
-        @action = :get
         @headers = {}
-        @allowed_actions.push(:get, :put, :post, :delete, :head, :options)
       end
 
       def url(args=nil)
         set_or_return(
           :url,
           args,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -49,7 +49,7 @@ class Chef
         set_or_return(
           :message,
           args,
-          :kind_of => Object
+          :kind_of => Object,
         )
       end
 
@@ -57,7 +57,7 @@ class Chef
         set_or_return(
           :headers,
           args,
-          :kind_of => Hash
+          :kind_of => Hash,
         )
       end
 

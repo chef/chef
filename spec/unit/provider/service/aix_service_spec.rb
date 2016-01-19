@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Aix do
   before(:each) do
@@ -51,22 +51,35 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "current resource is running" do
-        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
-        expect(@provider).to receive(:is_resource_group?).with(["chef chef 12345 active"])
+        expect(@provider).to receive(:shell_out!).with("lssrc -s chef").and_return(@status)
+        expect(@provider).to receive(:is_resource_group?).and_return false
 
         @provider.load_current_resource
         expect(@current_resource.running).to be_truthy
       end
     end
 
-    context "when the service is inoprative" do
+    context "when the service is inoperative" do
       before do
         @status = double("Status", :exitstatus => 0, :stdout => "chef chef inoperative\n")
       end
 
       it "current resource is not running" do
-        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
-        expect(@provider).to receive(:is_resource_group?).with(["chef chef inoperative"])
+        expect(@provider).to receive(:shell_out!).with("lssrc -s chef").and_return(@status)
+        expect(@provider).to receive(:is_resource_group?).and_return false
+
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_falsey
+      end
+    end
+
+    context "when there is no such service" do
+      before do
+        @status = double("Status", :exitstatus => 1, :stdout => "0513-085 The chef Subsystem is not on file.\n")
+      end
+      it "current resource is not running" do
+        expect(@provider).to receive(:shell_out!).with("lssrc -s chef").and_return(@status)
+        expect(@provider).to receive(:is_resource_group?).and_return false
 
         @provider.load_current_resource
         expect(@current_resource.running).to be_falsey
@@ -75,13 +88,13 @@ describe Chef::Provider::Service::Aix do
   end
 
   describe "is resource group" do
-    context "when there are mutiple subsystems associated with group" do
+    context "when there are multiple subsystems associated with group" do
       before do
         @status = double("Status", :exitstatus => 0, :stdout => "chef1 chef 12345 active\nchef2 chef 12334 active\nchef3 chef inoperative")
       end
 
       it "service is a group" do
-        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        expect(@provider).to receive(:shell_out).with("lssrc -g chef").and_return(@status)
         @provider.load_current_resource
         expect(@provider.instance_eval("@is_resource_group")).to be_truthy
       end
@@ -93,19 +106,21 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "service is a group" do
-        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        expect(@provider).to receive(:shell_out).with("lssrc -g chef").and_return(@status)
         @provider.load_current_resource
         expect(@provider.instance_eval("@is_resource_group")).to be_truthy
       end
     end
 
-    context "when there service is a subsytem" do
+    context "when the service is a subsystem" do
       before do
-        @status = double("Status", :exitstatus => 0, :stdout => "chef chef123 inoperative\n")
+        @group_status = double("Status", :exitstatus => 1, :stdout => "0513-086 The chef Group is not on file.\n")
+        @service_status = double("Status", :exitstatus => 0, :stdout => "chef chef inoperative\n")
       end
 
       it "service is a subsystem" do
-        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        expect(@provider).to receive(:shell_out).with("lssrc -g chef").and_return(@group_status)
+        expect(@provider).to receive(:shell_out!).with("lssrc -s chef").and_return(@service_status)
         @provider.load_current_resource
         expect(@provider.instance_eval("@is_resource_group")).to be_falsey
       end
@@ -118,7 +133,7 @@ describe Chef::Provider::Service::Aix do
     end
 
     it "should call the start command for groups" do
-      @provider.instance_eval('@is_resource_group = true')
+      @provider.instance_eval("@is_resource_group = true")
       expect(@provider).to receive(:shell_out!).with("startsrc -g #{@new_resource.service_name}")
 
       @provider.start_service
@@ -137,7 +152,7 @@ describe Chef::Provider::Service::Aix do
     end
 
     it "should call the stop command for groups" do
-      @provider.instance_eval('@is_resource_group = true')
+      @provider.instance_eval("@is_resource_group = true")
       expect(@provider).to receive(:shell_out!).with("stopsrc -g #{@new_resource.service_name}")
 
       @provider.stop_service
@@ -156,7 +171,7 @@ describe Chef::Provider::Service::Aix do
     end
 
     it "should call the reload command for groups" do
-      @provider.instance_eval('@is_resource_group = true')
+      @provider.instance_eval("@is_resource_group = true")
       expect(@provider).to receive(:shell_out!).with("refresh -g #{@new_resource.service_name}")
 
       @provider.reload_service

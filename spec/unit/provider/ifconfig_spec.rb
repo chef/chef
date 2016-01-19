@@ -17,8 +17,8 @@
 #
 
 #require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
-require 'spec_helper'
-require 'chef/exceptions'
+require "spec_helper"
+require "chef/exceptions"
 
 describe Chef::Provider::Ifconfig do
   before do
@@ -39,14 +39,14 @@ describe Chef::Provider::Ifconfig do
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
 
- end
+  end
   describe Chef::Provider::Ifconfig, "load_current_resource" do
     before do
       @status = double(:stdout => "", :exitstatus => 1)
       allow(@provider).to receive(:shell_out).and_return(@status)
       @provider.load_current_resource
     end
-    it "should track state of ifconfig failure." do
+    it "should track state of ifconfig failure" do
       expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
     end
     it "should thrown an exception when ifconfig fails" do
@@ -63,6 +63,16 @@ describe Chef::Provider::Ifconfig do
       command = "ifconfig eth0 10.0.0.1 netmask 255.255.254.0 metric 1 mtu 1500"
       expect(@provider).to receive(:run_command).with(:command => command)
       expect(@provider).to receive(:generate_config)
+
+      @provider.run_action(:add)
+      expect(@new_resource).to be_updated
+    end
+
+    it "should set the address to target if specified" do
+      allow(@provider).to receive(:load_current_resource)
+      @new_resource.target "172.16.32.2"
+      command = "ifconfig eth0 172.16.32.2 netmask 255.255.254.0 metric 1 mtu 1500"
+      expect(@provider).to receive(:run_command).with(:command => command)
 
       @provider.run_action(:add)
       expect(@new_resource).to be_updated
@@ -85,12 +95,22 @@ describe Chef::Provider::Ifconfig do
 
   describe Chef::Provider::Ifconfig, "action_enable" do
 
-    it "should enable interface if does not exist" do
+    it "should enable interface if it does not exist" do
       allow(@provider).to receive(:load_current_resource)
       @current_resource.inet_addr nil
       command = "ifconfig eth0 10.0.0.1 netmask 255.255.254.0 metric 1 mtu 1500"
       expect(@provider).to receive(:run_command).with(:command => command)
       expect(@provider).not_to receive(:generate_config)
+
+      @provider.run_action(:enable)
+      expect(@new_resource).to be_updated
+    end
+
+    it "should set the address to target if specified" do
+      allow(@provider).to receive(:load_current_resource)
+      @new_resource.target "172.16.32.2"
+      command = "ifconfig eth0 172.16.32.2 netmask 255.255.254.0 metric 1 mtu 1500"
+      expect(@provider).to receive(:run_command).with(:command => command)
 
       @provider.run_action(:enable)
       expect(@new_resource).to be_updated

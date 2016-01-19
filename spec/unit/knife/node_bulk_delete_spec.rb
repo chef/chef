@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::NodeBulkDelete do
   before(:each) do
@@ -44,7 +44,7 @@ describe Chef::Knife::NodeBulkDelete do
       # I hate not having == defined for anything :(
       actual = @knife.all_nodes
       expect(actual.keys).to match_array(expected.keys)
-      expect(actual.values.map {|n| n.name }).to match_array(%w[adam brent jacob])
+      expect(actual.values.map {|n| n.name }).to match_array(%w{adam brent jacob})
     end
   end
 
@@ -78,10 +78,10 @@ describe Chef::Knife::NodeBulkDelete do
     end
 
     it "should only delete nodes that match the regex" do
-      @knife.name_args = ['adam']
-      expect(@inflatedish_list['adam']).to receive(:destroy)
-      expect(@inflatedish_list['brent']).not_to receive(:destroy)
-      expect(@inflatedish_list['jacob']).not_to receive(:destroy)
+      @knife.name_args = ["adam"]
+      expect(@inflatedish_list["adam"]).to receive(:destroy)
+      expect(@inflatedish_list["brent"]).not_to receive(:destroy)
+      expect(@inflatedish_list["jacob"]).not_to receive(:destroy)
       @knife.run
     end
 

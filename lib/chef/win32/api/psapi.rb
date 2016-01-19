@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -41,7 +41,7 @@ class Chef
             :PeakPagefileUsage, :SIZE_T
         end
 
-        ffi_lib 'psapi'
+        ffi_lib "psapi"
 
         safe_attach_function :GetProcessMemoryInfo, [ :HANDLE, :pointer, :DWORD ], :BOOL
 

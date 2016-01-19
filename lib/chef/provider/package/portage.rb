@@ -16,22 +16,24 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
-require 'chef/util/path_helper'
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
     class Package
       class Portage < Chef::Provider::Package
+
+        provides :package, platform: "gentoo"
+        provides :portage_package
+
         PACKAGE_NAME_PATTERN = %r{(?:([^/]+)/)?([^/]+)}
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-
-          @current_resource.version(nil)
 
           category, pkg = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name)[1,2]
 
@@ -46,7 +48,7 @@ class Chef
 
           if versions.size > 1
             atoms = versions.map {|v| v.first }.sort
-            categories = atoms.map {|v| v.split('/')[0] }.uniq
+            categories = atoms.map {|v| v.split("/")[0] }.uniq
             if !category && categories.size > 1
               raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
             end
@@ -64,7 +66,7 @@ class Chef
 
           txt.each_line do |line|
             if line =~ /\*\s+#{PACKAGE_NAME_PATTERN}/
-              found_package_name = $&.gsub(/\*/, '').strip
+              found_package_name = $&.gsub(/\*/, "").strip
               if package =~ /\// #the category is specified
                 if found_package_name == package
                   availables[found_package_name] = nil

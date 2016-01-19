@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'chef/node/immutable_collections'
-require 'chef/node/attribute_collections'
-require 'chef/mixin/deep_merge'
-require 'chef/log'
+require "chef/node/immutable_collections"
+require "chef/node/attribute_collections"
+require "chef/mixin/deep_merge"
+require "chef/log"
 
 class Chef
   class Node
@@ -48,21 +48,21 @@ class Chef
         :@role_override,
         :@env_override,
         :@force_override,
-        :@automatic
+        :@automatic,
       ].freeze
 
       DEFAULT_COMPONENTS = [
         :@default,
         :@env_default,
         :@role_default,
-        :@force_default
+        :@force_default,
       ]
 
       OVERRIDE_COMPONENTS = [
         :@override,
         :@role_override,
         :@env_override,
-        :@force_override
+        :@force_override,
       ]
 
       [:all?,
@@ -482,7 +482,7 @@ class Chef
        def inspect
          "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map{|iv|
            "#{iv}=#{instance_variable_get(iv).inspect}"
-         }.join(', ') << ">"
+         }.join(", ") << ">"
        end
 
        def set_unless?

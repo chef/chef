@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (steve@opscode.com)
-# Copyright:: Copyright 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/server_api"
 
+# TODO
+# DEPRECATION NOTE
+# This class will be replaced by Chef::UserV1 in Chef 13. It is the code to support the User object
+# corrosponding to the Open Source Chef Server 11 and only still exists to support
+# users still on OSC 11.
+#
+# Chef::UserV1 now supports Chef Server 12 and will be moved to this namespace in Chef 13.
+#
+# New development should occur in Chef::UserV1.
+# This file and corrosponding osc_user knife files
+# should be removed once client support for Open Source Chef Server 11 expires.
 class Chef
   class User
 
@@ -29,11 +41,15 @@ class Chef
     include Chef::Mixin::ParamsValidate
 
     def initialize
-      @name = ''
+      @name = ""
       @public_key = nil
       @private_key = nil
       @password = nil
       @admin = false
+    end
+
+    def chef_rest_v0
+      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
     end
 
     def name(arg=nil)
@@ -65,7 +81,7 @@ class Chef
       result = {
         "name" => @name,
         "public_key" => @public_key,
-        "admin" => @admin
+        "admin" => @admin,
       }
       result["private_key"] = @private_key if @private_key
       result["password"] = @password if @password
@@ -77,13 +93,13 @@ class Chef
     end
 
     def destroy
-      Chef::REST.new(Chef::Config[:chef_server_url]).delete_rest("users/#{@name}")
+      chef_rest_v0.delete("users/#{@name}")
     end
 
     def create
       payload = {:name => self.name, :admin => self.admin, :password => self.password }
       payload[:public_key] = public_key if public_key
-      new_user =Chef::REST.new(Chef::Config[:chef_server_url]).post_rest("users", payload)
+      new_user = chef_rest_v0.post("users", payload)
       Chef::User.from_hash(self.to_hash.merge(new_user))
     end
 
@@ -91,7 +107,7 @@ class Chef
       payload = {:name => name, :admin => admin}
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
-      updated_user = Chef::REST.new(Chef::Config[:chef_server_url]).put_rest("users/#{name}", payload)
+      updated_user = chef_rest_v0.put("users/#{name}", payload)
       Chef::User.from_hash(self.to_hash.merge(updated_user))
     end
 
@@ -108,8 +124,7 @@ class Chef
     end
 
     def reregister
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      reregistered_self = r.put_rest("users/#{name}", { :name => name, :admin => admin, :private_key => true })
+      reregistered_self = chef_rest_v0.put("users/#{name}", { :name => name, :admin => admin, :private_key => true })
       private_key(reregistered_self["private_key"])
       self
     end
@@ -120,18 +135,18 @@ class Chef
 
     def inspect
       "Chef::User name:'#{name}' admin:'#{admin.inspect}'" +
-      "public_key:'#{public_key}' private_key:#{private_key}"
+        "public_key:'#{public_key}' private_key:#{private_key}"
     end
 
     # Class Methods
 
     def self.from_hash(user_hash)
       user = Chef::User.new
-      user.name user_hash['name']
-      user.private_key user_hash['private_key'] if user_hash.key?('private_key')
-      user.password user_hash['password'] if user_hash.key?('password')
-      user.public_key user_hash['public_key']
-      user.admin user_hash['admin']
+      user.name user_hash["name"]
+      user.private_key user_hash["private_key"] if user_hash.key?("private_key")
+      user.password user_hash["password"] if user_hash.key?("password")
+      user.public_key user_hash["public_key"]
+      user.admin user_hash["admin"]
       user
     end
 
@@ -144,12 +159,12 @@ class Chef
     end
 
     def self.list(inflate=false)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('users')
+      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get("users")
       users = if response.is_a?(Array)
-        transform_ohc_list_response(response) # OHC/OPC
-      else
-        response # OSC
-      end
+                transform_ohc_list_response(response) # OHC/OPC
+              else
+                response # OSC
+              end
       if inflate
         users.inject({}) do |user_map, (name, _url)|
           user_map[name] = Chef::User.load(name)
@@ -161,7 +176,7 @@ class Chef
     end
 
     def self.load(name)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("users/#{name}")
+      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get("users/#{name}")
       Chef::User.from_hash(response)
     end
 
@@ -172,7 +187,7 @@ class Chef
     def self.transform_ohc_list_response(response)
       new_response = Hash.new
       response.each do |u|
-        name = u['user']['username']
+        name = u["user"]["username"]
         new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"
       end
       new_response

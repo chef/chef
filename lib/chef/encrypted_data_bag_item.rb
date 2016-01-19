@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item/decryptor'
-require 'chef/encrypted_data_bag_item/encryptor'
-require 'open-uri'
+require "chef/config"
+require "chef/data_bag_item"
+require "chef/encrypted_data_bag_item/decryptor"
+require "chef/encrypted_data_bag_item/encryptor"
+require "open-uri"
 
 # An EncryptedDataBagItem represents a read-only data bag item where
 # all values, except for the value associated with the id key, have
@@ -47,8 +47,8 @@ require 'open-uri'
 # such nodes in the infrastructure.
 #
 class Chef::EncryptedDataBagItem
-  ALGORITHM = 'aes-256-cbc'
-  AEAD_ALGORITHM = 'aes-256-gcm'
+  ALGORITHM = "aes-256-cbc"
+  AEAD_ALGORITHM = "aes-256-gcm"
 
   #
   # === Synopsis

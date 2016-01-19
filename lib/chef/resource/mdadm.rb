@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
@@ -27,11 +27,11 @@ class Chef
 
       state_attrs :devices, :level, :chunk
 
-      provides :mdadm
+      default_action :create
+      allowed_actions :create, :assemble, :stop
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :mdadm
 
         @chunk = 16
         @devices = []
@@ -40,16 +40,13 @@ class Chef
         @metadata = "0.90"
         @bitmap = nil
         @raid_device = name
-
-        @action = :create
-        @allowed_actions.push(:create, :assemble, :stop)
       end
 
       def chunk(arg=nil)
         set_or_return(
           :chunk,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [ Integer ],
         )
       end
 
@@ -57,7 +54,7 @@ class Chef
         set_or_return(
           :devices,
           arg,
-          :kind_of => [ Array ]
+          :kind_of => [ Array ],
         )
       end
 
@@ -65,7 +62,7 @@ class Chef
         set_or_return(
           :exists,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -73,7 +70,7 @@ class Chef
         set_or_return(
           :level,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [ Integer ],
         )
       end
 
@@ -81,7 +78,7 @@ class Chef
         set_or_return(
           :metadata,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -89,7 +86,7 @@ class Chef
         set_or_return(
           :bitmap,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -97,7 +94,7 @@ class Chef
         set_or_return(
           :raid_device,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 

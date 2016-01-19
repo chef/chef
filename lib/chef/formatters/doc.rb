@@ -1,11 +1,11 @@
-require 'chef/formatters/base'
-require 'chef/config'
+require "chef/formatters/base"
+require "chef/config"
 
 class Chef
   module Formatters
-    #--
-    # TODO: not sold on the name, but the output is similar to what rspec calls
-    # "specdoc"
+
+    # Formatter similar to RSpec's documentation formatter. Uses indentation to
+    # show context.
     class Doc < Formatters::Base
 
       attr_reader :start_time, :end_time, :successful_audits, :failed_audits
@@ -22,10 +22,23 @@ class Chef
         @failed_audits = 0
         @start_time = Time.now
         @end_time = @start_time
+        @skipped_resources = 0
       end
 
       def elapsed_time
         end_time - start_time
+      end
+
+      def pretty_elapsed_time
+        time = elapsed_time
+        if time < 60 then
+          message = Time.at(time).utc.strftime("%S seconds")
+        elsif time < 3600 then
+          message = Time.at(time).utc.strftime("%M minutes %S seconds")
+        else
+          message = Time.at(time).utc.strftime("%H hours %M minutes %S seconds")
+        end
+        message
       end
 
       def run_start(version)
@@ -33,7 +46,7 @@ class Chef
       end
 
       def total_resources
-        @up_to_date_resources + @updated_resources
+        @up_to_date_resources + @updated_resources + @skipped_resources
       end
 
       def total_audits
@@ -42,10 +55,30 @@ class Chef
 
       def run_completed(node)
         @end_time = Time.now
+        # Print out deprecations.
+        if !deprecations.empty?
+          puts_line ""
+          puts_line "Deprecated features used!"
+          deprecations.each do |message, locations|
+            if locations.size == 1
+              puts_line "  #{message} at #{locations.size} location:"
+            else
+              puts_line "  #{message} at #{locations.size} locations:"
+            end
+            locations.each do |location|
+              prefix = "    - "
+              Array(location).each do |line|
+                puts_line "#{prefix}#{line}"
+                prefix = "      "
+              end
+            end
+          end
+          puts_line ""
+        end
         if Chef::Config[:why_run]
           puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
           if total_audits > 0
             puts_line "  #{successful_audits}/#{total_audits} controls succeeded"
           end
@@ -57,7 +90,7 @@ class Chef
         if Chef::Config[:why_run]
           puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
-          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
           if total_audits > 0
             puts_line "  #{successful_audits} controls succeeded"
           end
@@ -91,6 +124,10 @@ class Chef
       # Default and override attrs from roles have been computed, but not yet applied.
       # Normal attrs from JSON have been added to the node.
       def node_load_completed(node, expanded_run_list, config)
+      end
+
+      def policyfile_loaded(policy)
+        puts_line "Using policy '#{policy["name"]}' at revision '#{policy["revision_id"]}'"
       end
 
       # Called before the cookbook collection is fetched from the server.
@@ -128,9 +165,9 @@ class Chef
         indent
       end
 
-      # Called when cookbook +cookbook_name+ has been sync'd
-      def synchronized_cookbook(cookbook_name)
-        puts_line "- #{cookbook_name}"
+      # Called when cookbook +cookbook+ has been sync'd
+      def synchronized_cookbook(cookbook_name, cookbook)
+        puts_line "- #{cookbook.name} (#{cookbook.version})"
       end
 
       # Called when an individual file in a cookbook has been updated
@@ -175,17 +212,21 @@ class Chef
         puts_line "Starting audit phase"
       end
 
-      def audit_phase_complete
+      def audit_phase_complete(audit_output)
+        puts_line audit_output
         puts_line "Auditing complete"
       end
 
-      def audit_phase_failed(error)
+      def audit_phase_failed(error, audit_output)
+        puts_line audit_output
         puts_line ""
         puts_line "Audit phase exception:"
         indent
         puts_line "#{error.message}"
-        error.backtrace.each do |l|
-          puts_line l
+        if error.backtrace
+          error.backtrace.each do |l|
+            puts_line l
+          end
         end
       end
 
@@ -228,6 +269,7 @@ class Chef
 
       # Called when a resource action has been skipped b/c of a conditional
       def resource_skipped(resource, action, conditional)
+        @skipped_resources += 1
         # TODO: more info about conditional
         puts " (skipped due to #{conditional.short_description})", :stream => resource
         unindent
@@ -292,7 +334,7 @@ class Chef
 
       # Called before handlers run
       def handlers_start(handler_count)
-        puts ''
+        puts ""
         puts "Running handlers:"
         indent
       end
@@ -326,12 +368,28 @@ class Chef
         end
       end
 
+      def deprecation(message, location=caller(2..2)[0])
+        if Chef::Config[:treat_deprecation_warnings_as_errors]
+          super
+        end
+
+        # Save deprecations to the screen until the end
+        deprecations[message] ||= Set.new
+        deprecations[message] << location
+      end
+
       def indent
         indent_by(2)
       end
 
       def unindent
         indent_by(-2)
+      end
+
+      protected
+
+      def deprecations
+        @deprecations ||= {}
       end
     end
   end

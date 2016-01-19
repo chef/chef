@@ -17,22 +17,21 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
     class Route < Chef::Resource
-
       identity_attr :target
 
       state_attrs :netmask, :gateway
 
+      default_action :add
+      allowed_actions :add, :delete
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :route
         @target = name
-        @action = [:add]
-        @allowed_actions.push(:add, :delete)
         @netmask = nil
         @gateway = nil
         @metric = nil
@@ -49,7 +48,7 @@ class Chef
         set_or_return(
           :networking,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -57,7 +56,7 @@ class Chef
         set_or_return(
           :networking_ipv6,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -65,7 +64,7 @@ class Chef
         set_or_return(
           :hostname,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -73,7 +72,7 @@ class Chef
         set_or_return(
           :domainname,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -81,7 +80,7 @@ class Chef
         set_or_return(
           :domain,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -89,7 +88,7 @@ class Chef
         set_or_return(
           :target,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -97,7 +96,7 @@ class Chef
         set_or_return(
           :netmask,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -105,7 +104,7 @@ class Chef
         set_or_return(
           :gateway,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -113,7 +112,7 @@ class Chef
         set_or_return(
           :metric,
           arg,
-          :kind_of => Integer
+          :kind_of => Integer,
         )
       end
 
@@ -121,7 +120,7 @@ class Chef
         set_or_return(
           :device,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -130,11 +129,9 @@ class Chef
         set_or_return(
           :route_type,
           real_arg,
-          :equal_to => [ :host, :net ]
+          :equal_to => [ :host, :net ],
         )
       end
     end
   end
 end
-
-

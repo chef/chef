@@ -16,18 +16,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::TimestampedDeploy, "initialize" do
 
   static_provider_resolution(
     resource: Chef::Resource::TimestampedDeploy,
     provider: Chef::Provider::Deploy::Timestamped,
-    name: :deploy,
+    name: :timestamped_deploy,
     action: :deploy,
-    os: 'linux',
-    platform_family: 'rhel',
+    os: "linux",
+    platform_family: "rhel",
   )
 
 end
-

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Group, "initialize" do
   before(:each) do
@@ -50,7 +50,7 @@ describe Chef::Resource::Group, "initialize" do
   end
 
   it "should set action to :create" do
-    expect(@resource.action).to eql(:create)
+    expect(@resource.action).to eql([:create])
   end
 
   %w{create remove modify manage}.each do |action|

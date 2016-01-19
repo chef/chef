@@ -17,14 +17,14 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookSiteUnshare < Knife
 
       deps do
-        require 'chef/json_compat'
+        require "chef/json_compat"
       end
 
       banner "knife cookbook site unshare COOKBOOK"
@@ -38,17 +38,17 @@ class Chef
           exit 1
         end
 
-        confirm "Do you really want to unshare the cookbook #{@cookbook_name}"
+        confirm "Do you really want to unshare all versions of the cookbook #{@cookbook_name}"
 
         begin
-          rest.delete_rest "https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}"
+          rest.delete "https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}"
         rescue Net::HTTPServerException => e
           raise e unless e.message =~ /Forbidden/
           ui.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it."
           exit 1
         end
 
-        ui.info "Unshared cookbook #{@cookbook_name}"
+        ui.info "Unshared all versions of the cookbook #{@cookbook_name}"
       end
 
     end

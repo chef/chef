@@ -16,11 +16,12 @@
 # limitations under the License.
 #
 
-require 'ohai'
+require "ohai"
 
 class Chef
   class Provider
     class Ohai < Chef::Provider
+      provides :ohai
 
       def whyrun_supported?
         true

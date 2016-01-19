@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Link do
 
@@ -36,11 +36,11 @@ describe Chef::Resource::Link do
   end
 
   it "should have a default action of 'create'" do
-    expect(@resource.action).to eql(:create)
+    expect(@resource.action).to eql([:create])
   end
 
   { :create => false, :delete => false, :blues => true }.each do |action,bad_value|
-    it "should #{bad_value ? 'not' : ''} accept #{action.to_s}" do
+    it "should #{bad_value ? 'not' : ''} accept #{action}" do
       if bad_value
         expect { @resource.action action }.to raise_error(ArgumentError)
       else

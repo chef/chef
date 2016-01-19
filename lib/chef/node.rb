@@ -1,9 +1,8 @@
-#
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,22 +18,22 @@
 # limitations under the License.
 #
 
-require 'forwardable'
-require 'chef/config'
-require 'chef/nil_argument'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mixin/deep_merge'
-require 'chef/dsl/include_attribute'
-require 'chef/dsl/platform_introspection'
-require 'chef/environment'
-require 'chef/rest'
-require 'chef/run_list'
-require 'chef/node/attribute'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
-require 'chef/whitelist'
+require "forwardable"
+require "chef/config"
+require "chef/nil_argument"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mixin/deep_merge"
+require "chef/dsl/include_attribute"
+require "chef/dsl/platform_introspection"
+require "chef/environment"
+require "chef/server_api"
+require "chef/run_list"
+require "chef/node/attribute"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/whitelist"
 
 class Chef
   class Node
@@ -63,18 +62,32 @@ class Chef
 
     include Chef::Mixin::ParamsValidate
 
+    NULL_ARG = Object.new
+
     # Create a new Chef::Node object.
     def initialize(chef_server_rest: nil)
       @chef_server_rest = chef_server_rest
       @name = nil
 
-      @chef_environment = '_default'
+      @chef_environment = "_default"
       @primary_runlist = Chef::RunList.new
       @override_runlist = Chef::RunList.new
+
+      @policy_name = nil
+      @policy_group = nil
 
       @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
 
       @run_state = {}
+    end
+
+    # after the run_context has been set on the node, go through the cookbook_collection
+    # and setup the node[:cookbooks] attribute so that it is published in the node object
+    def set_cookbook_attribute
+      return unless run_context.cookbook_collection
+      run_context.cookbook_collection.each do |cookbook_name, cookbook|
+        automatic_attrs[:cookbooks][cookbook_name][:version] = cookbook.version
+      end
     end
 
     # Used by DSL
@@ -83,7 +96,15 @@ class Chef
     end
 
     def chef_server_rest
-      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      # for saving node data we use validate_utf8: false which will not
+      # raise an exception on bad utf8 data, but will replace the bad
+      # characters and render valid JSON.
+      @chef_server_rest ||= Chef::ServerAPI.new(
+        Chef::Config[:chef_server_url],
+        client_name: Chef::Config[:node_name],
+        signing_key_filename: Chef::Config[:client_key],
+        validate_utf8: false,
+      )
     end
 
     # Set the name of this Node, or return the current name.
@@ -94,7 +115,7 @@ class Chef
                  {:name => { :kind_of => String,
                      :cannot_be => :blank,
                      :regex => /^[\-[:alnum:]_:.]+$/}
-                 })
+                 },)
         @name = arg
       else
         @name
@@ -114,6 +135,50 @@ class Chef
     end
 
     alias :environment :chef_environment
+
+    # The `policy_name` for this node. Setting this to a non-nil value will
+    # enable policyfile mode when `chef-client` is run. If set in the config
+    # file or in node json, running `chef-client` will update this value.
+    #
+    # @see Chef::PolicyBuilder::Dynamic
+    # @see Chef::PolicyBuilder::Policyfile
+    #
+    # @param arg [String] the new policy_name value
+    # @return [String] the current policy_name, or the one you just set
+    def policy_name(arg=NULL_ARG)
+      return @policy_name if arg.equal?(NULL_ARG)
+      validate({policy_name: arg}, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
+      @policy_name = arg
+    end
+
+    # A "non-DSL-style" setter for `policy_name`
+    #
+    # @see #policy_name
+    def policy_name=(policy_name)
+      policy_name(policy_name)
+    end
+
+    # The `policy_group` for this node. Setting this to a non-nil value will
+    # enable policyfile mode when `chef-client` is run. If set in the config
+    # file or in node json, running `chef-client` will update this value.
+    #
+    # @see Chef::PolicyBuilder::Dynamic
+    # @see Chef::PolicyBuilder::Policyfile
+    #
+    # @param arg [String] the new policy_group value
+    # @return [String] the current policy_group, or the one you just set
+    def policy_group(arg=NULL_ARG)
+      return @policy_group if arg.equal?(NULL_ARG)
+      validate({policy_group: arg}, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
+      @policy_group = arg
+    end
+
+    # A "non-DSL-style" setter for `policy_group`
+    #
+    # @see #policy_group
+    def policy_group=(policy_group)
+      policy_group(policy_group)
+    end
 
     def attributes
       @attributes
@@ -244,6 +309,7 @@ class Chef
     # saved back to the node and be searchable
     def loaded_recipe(cookbook, recipe)
       fully_qualified_recipe = "#{cookbook}::#{recipe}"
+
       automatic_attrs[:recipes] << fully_qualified_recipe unless Array(self[:recipes]).include?(fully_qualified_recipe)
     end
 
@@ -297,6 +363,7 @@ class Chef
     # Consumes the combined run_list and other attributes in +attrs+
     def consume_attributes(attrs)
       normal_attrs_to_merge = consume_run_list(attrs)
+      normal_attrs_to_merge = consume_chef_environment(normal_attrs_to_merge)
       Chef::Log.debug("Applying attributes from json file")
       self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs,normal_attrs_to_merge)
       self.tags # make sure they're defined
@@ -304,16 +371,16 @@ class Chef
 
     # Lazy initializer for tags attribute
     def tags
-      normal[:tags] = [] unless attribute?(:tags)
+      normal[:tags] = Array(normal[:tags])
       normal[:tags]
     end
 
-    def tag(*tags)
-      tags.each do |tag|
-        self.normal[:tags].push(tag.to_s) unless self[:tags].include? tag.to_s
+    def tag(*args)
+      args.each do |tag|
+        tags.push(tag.to_s) unless tags.include? tag.to_s
       end
 
-      self[:tags]
+      tags
     end
 
     # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes
@@ -323,8 +390,26 @@ class Chef
         if attrs.key?("recipes") || attrs.key?("run_list")
           raise Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
         end
-        Chef::Log.info("Setting the run_list to #{new_run_list.to_s} from CLI options")
+        Chef::Log.info("Setting the run_list to #{new_run_list} from CLI options")
         run_list(new_run_list)
+      end
+      attrs
+    end
+
+    # chef_environment when set in -j JSON will take precedence over
+    # -E ENVIRONMENT. Ideally, IMO, the order of precedence should be (lowest to
+    #  highest):
+    #   config_file
+    #   -j JSON
+    #   -E ENVIRONMENT
+    # so that users could reuse their JSON and override the chef_environment
+    # configured within it with -E ENVIRONMENT. Because command line options are
+    # merged with Chef::Config there is currently no way to distinguish between
+    # an environment set via config from an environment set via command line.
+    def consume_chef_environment(attrs)
+      attrs = attrs ? attrs.dup : {}
+      if env = attrs.delete("chef_environment")
+        chef_environment(env)
       end
       attrs
     end
@@ -348,13 +433,14 @@ class Chef
     # run_list is mutated? Or perhaps do something smarter like
     # on-demand generation of default_attrs and override_attrs,
     # invalidated only when run_list is mutated?
-    def expand!(data_source = 'server')
+    def expand!(data_source = "server")
       expansion = run_list.expand(chef_environment, data_source)
       raise Chef::Exceptions::MissingRole, expansion if expansion.errors?
 
       self.tags # make sure they're defined
 
-      automatic_attrs[:recipes] = expansion.recipes
+      automatic_attrs[:recipes] = expansion.recipes.with_duplicate_names
+      automatic_attrs[:expanded_run_list] = expansion.recipes.with_fully_qualified_names_and_version_constraints
       automatic_attrs[:roles] = expansion.roles
 
       apply_expansion_attributes(expansion)
@@ -414,15 +500,23 @@ class Chef
       result = {
         "name" => name,
         "chef_environment" => chef_environment,
-        'json_class' => self.class.name,
+        "json_class" => self.class.name,
         "automatic" => attributes.automatic,
         "normal" => attributes.normal,
         "chef_type" => "node",
         "default" => attributes.combined_default,
         "override" => attributes.combined_override,
         #Render correctly for run_list items so malformed json does not result
-        "run_list" => @primary_runlist.run_list.map { |item| item.to_s }
+        "run_list" => @primary_runlist.run_list.map { |item| item.to_s },
       }
+      # Chef Server rejects node JSON with extra keys; prior to 12.3,
+      # "policy_name" and "policy_group" are unknown; after 12.3 they are
+      # optional, therefore only including them in the JSON if present
+      # maximizes compatibility for most people.
+      unless policy_group.nil? && policy_name.nil?
+        result["policy_name"] = policy_name
+        result["policy_group"] = policy_group
+      end
       result
     end
 
@@ -438,6 +532,11 @@ class Chef
 
     # Create a Chef::Node from JSON
     def self.json_create(o)
+      from_hash(o)
+    end
+
+    def self.from_hash(o)
+      return o if o.kind_of? Chef::Node
       node = new
       node.name(o["name"])
       node.chef_environment(o["chef_environment"])
@@ -451,9 +550,13 @@ class Chef
 
       if o.has_key?("run_list")
         node.run_list.reset!(o["run_list"])
-      else
+      elsif o.has_key?("recipes")
         o["recipes"].each { |r| node.recipes << r }
       end
+
+      node.policy_name = o["policy_name"] if o.has_key?("policy_name")
+      node.policy_group = o["policy_group"] if o.has_key?("policy_group")
+
       node
     end
 
@@ -463,7 +566,7 @@ class Chef
         Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") {|n| response[n.name] = n unless n.nil?}
         response
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{environment}/nodes")
+        Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("environments/#{environment}/nodes")
       end
     end
 
@@ -471,18 +574,19 @@ class Chef
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:node) do |n|
+          n = Chef::Node.from_hash(n)
           response[n.name] = n unless n.nil?
         end
         response
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes")
+        Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("nodes")
       end
     end
 
     def self.find_or_create(node_name)
       load(node_name)
     rescue Net::HTTPServerException => e
-      raise unless e.response.code == '404'
+      raise unless e.response.code == "404"
       node = build(node_name)
       node.create
     end
@@ -496,12 +600,12 @@ class Chef
 
     # Load a node by name
     def self.load(name)
-      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes/#{name}")
+      from_hash(Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("nodes/#{name}"))
     end
 
     # Remove this node via the REST API
     def destroy
-      chef_server_rest.delete_rest("nodes/#{name}")
+      chef_server_rest.delete("nodes/#{name}")
     end
 
     # Save this node via the REST API
@@ -510,25 +614,50 @@ class Chef
       # so then POST to create.
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In whyrun mode, so NOT performing node save.")
+          Chef::Log.warn("In why-run mode, so NOT performing node save.")
         else
-          chef_server_rest.put_rest("nodes/#{name}", data_for_save)
+          chef_server_rest.put("nodes/#{name}", data_for_save)
         end
       rescue Net::HTTPServerException => e
-        raise e unless e.response.code == "404"
-        chef_server_rest.post_rest("nodes", data_for_save)
+        if e.response.code == "404"
+          chef_server_rest.post("nodes", data_for_save)
+        # Chef Server before 12.3 rejects node JSON with 'policy_name' or
+        # 'policy_group' keys, but 'policy_name' will be detected first.
+        # Backcompat can be removed in 13.0
+        elsif e.response.code == "400" && e.response.body.include?("Invalid key policy_name")
+          save_without_policyfile_attrs
+        else
+          raise
+        end
       end
       self
     end
 
     # Create the node via the REST API
     def create
-      chef_server_rest.post_rest("nodes", data_for_save)
+      chef_server_rest.post("nodes", data_for_save)
       self
+    rescue Net::HTTPServerException => e
+      # Chef Server before 12.3 rejects node JSON with 'policy_name' or
+      # 'policy_group' keys, but 'policy_name' will be detected first.
+      # Backcompat can be removed in 13.0
+      if e.response.code == "400" && e.response.body.include?("Invalid key policy_name")
+        chef_server_rest.post("nodes", data_for_save_without_policyfile_attrs)
+      else
+        raise
+      end
     end
 
     def to_s
       "node[#{name}]"
+    end
+
+    def ==(other)
+      if other.kind_of?(self.class)
+         self.name == other.name
+      else
+        false
+      end
     end
 
     def <=>(other_node)
@@ -536,6 +665,22 @@ class Chef
     end
 
     private
+
+    def save_without_policyfile_attrs
+      trimmed_data = data_for_save_without_policyfile_attrs
+
+      chef_server_rest.put("nodes/#{name}", trimmed_data)
+    rescue Net::HTTPServerException => e
+      raise e unless e.response.code == "404"
+      chef_server_rest.post("nodes", trimmed_data)
+    end
+
+    def data_for_save_without_policyfile_attrs
+      data_for_save.tap do |trimmed_data|
+        trimmed_data.delete("policy_name")
+        trimmed_data.delete("policy_group")
+      end
+    end
 
     def data_for_save
       data = for_json

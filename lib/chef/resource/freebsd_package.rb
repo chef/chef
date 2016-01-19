@@ -18,23 +18,19 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/freebsd/port'
-require 'chef/provider/package/freebsd/pkg'
-require 'chef/provider/package/freebsd/pkgng'
-require 'chef/mixin/shell_out'
+require "chef/resource/package"
+require "chef/provider/package/freebsd/port"
+require "chef/provider/package/freebsd/pkg"
+require "chef/provider/package/freebsd/pkgng"
+require "chef/mixin/shell_out"
 
 class Chef
   class Resource
     class FreebsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
+      resource_name :freebsd_package
       provides :package, platform: "freebsd"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :freebsd_package
-      end
 
       def after_created
         assign_provider
@@ -53,7 +49,7 @@ class Chef
       end
 
       def assign_provider
-        @provider = if @source.to_s =~ /^ports$/i
+        @provider = if source.to_s =~ /^ports$/i
                       Chef::Provider::Package::Freebsd::Port
                     elsif supports_pkgng?
                       Chef::Provider::Package::Freebsd::Pkgng

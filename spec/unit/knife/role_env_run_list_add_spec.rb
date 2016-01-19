@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleEnvRunListAdd do
   before(:each) do
@@ -48,7 +48,7 @@ describe Chef::Knife::RoleEnvRunListAdd do
 
     it "should have a QA environment" do
       @knife.run
-      expect(@role.active_run_list_for('QA')).to eq('QA')
+      expect(@role.active_run_list_for("QA")).to eq("QA")
     end
 
     it "should load the role named will" do
@@ -58,7 +58,7 @@ describe Chef::Knife::RoleEnvRunListAdd do
 
     it "should be able to add an environment specific run list" do
       @knife.run
-      expect(@role.run_list_for('QA')[0]).to eq('role[monkey]')
+      expect(@role.run_list_for("QA")[0]).to eq("role[monkey]")
     end
 
     it "should save the role" do

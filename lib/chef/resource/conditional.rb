@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
-require 'chef/guard_interpreter'
+require "chef/mixin/shell_out"
+require "chef/guard_interpreter"
 
 class Chef
   class Resource

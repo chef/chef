@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,18 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/command'
-require 'chef/provider'
+require "chef/mixin/command"
+require "chef/provider"
 
 class Chef
   class Provider
     class Service < Chef::Provider
 
       include Chef::Mixin::Command
+
+      def supports
+        @supports ||= new_resource.supports.dup
+      end
 
       def initialize(new_resource, run_context)
         super
@@ -34,24 +38,33 @@ class Chef
         true
       end
 
-     def load_new_resource_state
-        # If the user didn't specify a change in enabled state,
-        # it will be the same as the old resource
-       if ( @new_resource.enabled.nil? )
-         @new_resource.enabled(@current_resource.enabled)
-       end
-       if ( @new_resource.running.nil? )
-         @new_resource.running(@current_resource.running)
-       end
-     end
+      def load_current_resource
+        supports[:status] = false if supports[:status].nil?
+        supports[:reload] = false if supports[:reload].nil?
+        supports[:restart] = false if supports[:restart].nil?
+      end
+
+      # the new_resource#enabled and #running variables are not user input, but when we
+      # do (e.g.) action_enable we want to set new_resource.enabled so that the comparison
+      # between desired and current state produces the correct change in reporting.
+      # XXX?: the #nil? check below will likely fail if this is a cloned resource or if
+      # we just run multiple actions.
+      def load_new_resource_state
+        if ( @new_resource.enabled.nil? )
+          @new_resource.enabled(@current_resource.enabled)
+        end
+        if ( @new_resource.running.nil? )
+          @new_resource.running(@current_resource.running)
+        end
+      end
 
       def shared_resource_requirements
       end
 
       def define_resource_requirements
        requirements.assert(:reload) do |a|
-         a.assertion { @new_resource.supports[:reload] || @new_resource.reload_command }
-         a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
+         a.assertion { supports[:reload] || @new_resource.reload_command }
+         a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support :reload"
          # if a service is not declared to support reload, that won't
          # typically change during the course of a run - so no whyrun
          # alternative here.
@@ -130,27 +143,27 @@ class Chef
       end
 
       def enable_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :enable"
       end
 
       def disable_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :disable"
       end
 
       def start_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :start"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :start"
       end
 
       def stop_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :stop"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :stop"
       end
 
       def restart_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :restart"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :restart"
       end
 
       def reload_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :reload"
       end
 
       protected
@@ -167,6 +180,32 @@ class Chef
         method_name = "#{action}_command".to_sym
         @new_resource.respond_to?(method_name) &&
           !!@new_resource.send(method_name)
+      end
+
+      module ServicePriorityInit
+
+        #
+        # Platform-specific versions
+        #
+
+        #
+        # Linux
+        #
+
+        require "chef/chef_class"
+        require "chef/provider/service/systemd"
+        require "chef/provider/service/insserv"
+        require "chef/provider/service/redhat"
+        require "chef/provider/service/arch"
+        require "chef/provider/service/gentoo"
+        require "chef/provider/service/upstart"
+        require "chef/provider/service/debian"
+        require "chef/provider/service/invokercd"
+
+        Chef.set_provider_priority_array :service, [ Systemd, Arch ], platform_family: "arch"
+        Chef.set_provider_priority_array :service, [ Systemd, Gentoo ], platform_family: "gentoo"
+        Chef.set_provider_priority_array :service, [ Systemd, Upstart, Insserv, Debian, Invokercd ], platform_family: "debian"
+        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ], platform_family: %w{rhel fedora suse}
       end
     end
   end

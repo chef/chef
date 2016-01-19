@@ -15,16 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/resource/windows_script'
+require "chef/resource/windows_script"
 
 class Chef
   class Resource
     class PowershellScript < Chef::Resource::WindowsScript
-
       provides :powershell_script, os: "windows"
 
       def initialize(name, run_context=nil)
-        super(name, run_context, :powershell_script, "powershell.exe")
+        super(name, run_context, nil, "powershell.exe")
         @convert_boolean_return = false
       end
 
@@ -32,7 +31,7 @@ class Chef
         set_or_return(
           :convert_boolean_return,
           arg,
-          :kind_of => [ FalseClass, TrueClass ]
+          :kind_of => [ FalseClass, TrueClass ],
         )
       end
 

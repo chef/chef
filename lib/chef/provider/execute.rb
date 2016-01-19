@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/provider'
-require 'forwardable'
+require "chef/log"
+require "chef/provider"
+require "forwardable"
 
 class Chef
   class Provider
@@ -41,7 +41,7 @@ class Chef
       def define_resource_requirements
          # @todo: this should change to raise in some appropriate major version bump.
          if creates && creates_relative? && !cwd
-           Chef::Log.warn "Providing a relative path for the creates attribute without the cwd is deprecated and will be changed to fail (CHEF-3819)"
+           Chef::Log.warn "Providing a relative path for the creates attribute without the cwd is deprecated and will be changed to fail in the future (CHEF-3819)"
          end
       end
 
@@ -58,7 +58,16 @@ class Chef
         end
 
         converge_by("execute #{description}") do
-          result = shell_out!(command, opts)
+          begin
+            shell_out!(command, opts)
+          rescue Mixlib::ShellOut::ShellCommandFailed
+            if sensitive?
+              raise Mixlib::ShellOut::ShellCommandFailed,
+                "Command execution failed. STDOUT/STDERR suppressed for sensitive resource"
+            else
+              raise
+            end
+          end
           Chef::Log.info("#{new_resource} ran successfully")
         end
       end
@@ -67,6 +76,14 @@ class Chef
 
       def sensitive?
         !!new_resource.sensitive
+      end
+
+      def live_stream?
+        Chef::Config[:stream_execute_output] || !!new_resource.live_stream
+      end
+
+      def stream_to_stdout?
+        STDOUT.tty? && !Chef::Config[:daemon]
       end
 
       def opts
@@ -80,8 +97,12 @@ class Chef
         opts[:umask]       = umask if umask
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s
-        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !sensitive?
-          opts[:live_stream] = STDOUT
+        if (Chef::Log.info? || live_stream?) && !sensitive?
+          if run_context.events.formatter?
+            opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
+          elsif stream_to_stdout?
+            opts[:live_stream] = STDOUT
+          end
         end
         opts
       end

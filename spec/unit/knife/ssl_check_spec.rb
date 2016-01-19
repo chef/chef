@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-require 'stringio'
+require "stringio"
 
 describe Chef::Knife::SslCheck do
 
@@ -145,7 +145,7 @@ E
     let(:ssl_socket) { double(OpenSSL::SSL::SSLSocket) }
 
     before do
-      expect(TCPSocket).to receive(:new).with("foo.example.com", 8443).and_return(tcp_socket)
+      expect(ssl_check).to receive(:proxified_socket).with("foo.example.com", 8443).and_return(tcp_socket)
       expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_check.verify_peer_ssl_context).and_return(ssl_socket)
     end
 
@@ -163,6 +163,7 @@ E
         expect(ssl_check).to receive(:verify_X509).and_return(true) # X509 valid certs (no warn)
         expect(ssl_socket).to receive(:connect) # no error
         expect(ssl_socket).to receive(:post_connection_check).with("foo.example.com") # no error
+        expect(ssl_socket).to receive(:hostname=).with("foo.example.com") # no error
       end
 
       it "prints a success message" do
@@ -180,14 +181,18 @@ E
       let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
 
       before do
-        trap(:INT, "DEFAULT")
+        @old_signal = trap(:INT, "DEFAULT")
 
-        expect(TCPSocket).to receive(:new).
+        expect(ssl_check).to receive(:proxified_socket).
           with("foo.example.com", 8443).
           and_return(tcp_socket_for_debug)
         expect(OpenSSL::SSL::SSLSocket).to receive(:new).
           with(tcp_socket_for_debug, ssl_check.noverify_peer_ssl_context).
           and_return(ssl_socket_for_debug)
+      end
+
+      after do
+        trap(:INT, @old_signal)
       end
 
       context "when the certificate's CN does not match the hostname" do
@@ -197,6 +202,7 @@ E
           expect(ssl_socket).to receive(:post_connection_check).
             with("foo.example.com").
             and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:hostname=).with("foo.example.com") # no error
           expect(ssl_socket_for_debug).to receive(:connect)
           expect(ssl_socket_for_debug).to receive(:peer_cert).and_return(self_signed_crt)
         end
@@ -215,6 +221,8 @@ E
           expect(ssl_check).to receive(:verify_X509).and_return(true) # X509 valid certs
           expect(ssl_socket).to receive(:connect).
             and_raise(OpenSSL::SSL::SSLError)
+          expect(ssl_socket).to receive(:hostname=).
+            with("foo.example.com") # no error
           expect(ssl_socket_for_debug).to receive(:connect)
           expect(ssl_socket_for_debug).to receive(:peer_cert).and_return(self_signed_crt)
         end

@@ -17,18 +17,29 @@
 # limitations under the License.
 #
 
-require 'tmpdir'
-require 'fileutils'
-require 'chef/config'
-require 'chef/json_compat'
-require 'chef/server_api'
-require 'chef_zero/rspec'
-require 'support/shared/integration/knife_support'
-require 'support/shared/integration/app_server_support'
-require 'spec_helper'
+require "tmpdir"
+require "fileutils"
+require "chef/config"
+require "chef/json_compat"
+require "chef/server_api"
+require "support/shared/integration/knife_support"
+require "support/shared/integration/app_server_support"
+require "cheffish/rspec/chef_run_support"
+require "spec_helper"
+
+module Cheffish
+  class BasicChefClient
+    def_delegators :@run_context, :before_notifications
+  end
+end
 
 module IntegrationSupport
   include ChefZero::RSpec
+
+  def self.included(includer_class)
+    includer_class.extend(Cheffish::RSpec::ChefRunSupport)
+    includer_class.extend(ClassMethods)
+  end
 
   module ClassMethods
     include ChefZero::RSpec
@@ -49,10 +60,6 @@ module IntegrationSupport
     end
   end
 
-  def self.included(includer_class)
-    includer_class.extend(ClassMethods)
-  end
-
   def api
     Chef::ServerAPI.new
   end
@@ -68,8 +75,8 @@ module IntegrationSupport
   def file(relative_path, contents)
     filename = path_to(relative_path)
     dir = File.dirname(filename)
-    FileUtils.mkdir_p(dir) unless dir == '.'
-    File.open(filename, 'w') do |file|
+    FileUtils.mkdir_p(dir) unless dir == "."
+    File.open(filename, "w") do |file|
       raw = case contents
             when Hash, Array
               Chef::JSONCompat.to_json_pretty(contents)
@@ -83,7 +90,7 @@ module IntegrationSupport
   def symlink(relative_path, relative_dest)
     filename = path_to(relative_path)
     dir = File.dirname(filename)
-    FileUtils.mkdir_p(dir) unless dir == '.'
+    FileUtils.mkdir_p(dir) unless dir == "."
     dest_filename = path_to(relative_dest)
     File.symlink(dest_filename, filename)
   end
@@ -104,9 +111,9 @@ module IntegrationSupport
   RSpec.shared_context "with a chef repo" do
     before :each do
       raise "Can only create one directory per test" if @repository_dir
-      @repository_dir = Dir.mktmpdir('chef_repo')
+      @repository_dir = Dir.mktmpdir("chef_repo")
       Chef::Config.chef_repo_path = @repository_dir
-      %w(client cookbook data_bag environment node role user).each do |object_name|
+      %w{client cookbook data_bag environment node role user}.each do |object_name|
         Chef::Config.delete("#{object_name}_path".to_sym)
       end
     end
@@ -114,7 +121,7 @@ module IntegrationSupport
     after :each do
       if @repository_dir
         begin
-          %w(client cookbook data_bag environment node role user).each do |object_name|
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)
@@ -133,7 +140,7 @@ module IntegrationSupport
 
   # Versioned cookbooks
 
-  RSpec.shared_context 'with versioned cookbooks', :versioned_cookbooks => true do
+  RSpec.shared_context "with versioned cookbooks", :versioned_cookbooks => true do
     before(:each) { Chef::Config[:versioned_cookbooks] = true }
     after(:each)  { Chef::Config.delete(:versioned_cookbooks) }
   end

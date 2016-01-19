@@ -1,5 +1,5 @@
-# Chef 
-[![Code Climate](https://codeclimate.com/github/opscode/chef.png)](https://codeclimate.com/github/opscode/chef)
+# Chef
+[![Code Climate](https://codeclimate.com/github/chef/chef.svg)](https://codeclimate.com/github/chef/chef)
 [![Build Status Master](https://travis-ci.org/chef/chef.svg?branch=master)](https://travis-ci.org/chef/chef)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
 
@@ -9,7 +9,9 @@ Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 * Source: [http://github.com/chef/chef/tree/master](http://github.com/chef/chef/tree/master)
 * Tickets/Issues: [https://github.com/chef/chef/issues](https://github.com/chef/chef/issues)
 * IRC: `#chef` and `#chef-hacking` on Freenode
-* Mailing list: [http://lists.opscode.com](http://lists.opscode.com)
+  - Join via browser: [#chef](https://webchat.freenode.net/?channels=chef), [#chef-hacking](https://webchat.freenode.net/?channels=chef-hacking)
+  - View logs: [#chef](https://botbot.me/freenode/chef/), [#chef-hacking](https://botbot.me/freenode/chef-hacking/)
+* Mailing list: [https://discourse.chef.io](https://discourse.chef.io)
 
 Chef is a configuration management tool designed to bring automation to your
 entire infrastructure.
@@ -18,7 +20,7 @@ This README focuses on developers who want to modify Chef source code.
 If you just want to use Chef, check out these resources:
 
 * [learnchef](https://learn.chef.io): Getting started guide
-* [http://docs.chef.io](http://docs.chef.io): Comprehensive User Docs
+* [docs.chef.io](http://docs.chef.io): Comprehensive User Docs
 * [Installer Downloads](https://www.chef.io/download-chef-client/): Install Chef as a complete package
 
 ## Installing From Git
@@ -30,8 +32,8 @@ to get a prebuilt package.
 
 ### Prerequisites
 
-Install these via your platform's preferred method (apt, yum, ports,
-emerge, etc.):
+Install these via your platform's preferred method (`apt`, `yum`, `ports`,
+`emerge`, etc.):
 
 * git
 * C compiler, header files, etc. On Ubuntu/Debian, use the
@@ -44,21 +46,22 @@ emerge, etc.):
 
 Then get the source and install it:
 
-    # Clone this repo
-    git clone https://github.com/chef/chef.git
-    
-    # cd into the source tree
-    cd chef
+```bash
+# Clone this repo
+git clone https://github.com/chef/chef.git
 
-    # Install dependencies with bundler
-    bundle install
+# cd into the source tree
+cd chef
 
-    # Build a gem
-    rake gem
+# Install dependencies with bundler
+bundle install
 
-    # Install the gem you just built
-    gem install pkg/chef-VERSION.gem
+# Build a gem
+bundle exec rake gem
 
+# Install the gem you just built
+gem install pkg/chef-VERSION.gem
+```
 
 ## Contributing/Development
 
@@ -68,11 +71,11 @@ read the
 
 The general development process is:
 
-1. Fork this repo and clone it to your workstation
-2. Create a feature branch for your change
-3. Write code and tests
+1. Fork this repo and clone it to your workstation.
+2. Create a feature branch for your change.
+3. Write code and tests.
 4. Push your feature branch to github and open a pull request against
-   master
+   master.
 
 Once your repository is set up, you can start working on the code. We do use
 TDD with RSpec, so you'll need to get a development environment running.
@@ -81,7 +84,7 @@ copy of the source running.
 
 ## Reporting Issues
 
-Issues can be reported by using [GitHub issues](https://github.com/chef/chef/issues).
+Issues can be reported by using [GitHub Issues](https://github.com/chef/chef/issues).
 
 Full details on how to report issues can be found in the [CONTRIBUTING](https://github.com/chef/chef/blob/master/CONTRIBUTING.md#-chef-issue-tracking) doc.
 
@@ -97,14 +100,16 @@ against the repository you think best fits and it will be directed to the approp
 We use RSpec for unit/spec tests. It is not necessary to start the development
 environment to run the specs--they are completely standalone.
 
-    # Run All the Tests
-    bundle exec rake spec
+```bash
+# Run All the Tests
+bundle exec rake spec
 
-    # Run a Single Test File
-    bundle exec rspec spec/PATH/TO/FILE_spec.rb
+# Run a Single Test File
+bundle exec rspec spec/PATH/TO/FILE_spec.rb
 
-    # Run a Subset of Tests
-    bundle exec rspec spec/PATH/TO/DIR
+# Run a Subset of Tests
+bundle exec rspec spec/PATH/TO/DIR
+```
 
 When you submit a pull request, we will automatically run the functional and unit
 tests in spec/functional/ and spec/unit/ respectively. These will be run on Ubuntu

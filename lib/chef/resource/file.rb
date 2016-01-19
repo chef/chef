@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2008, 2011-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,15 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/platform/query_helpers'
-require 'chef/mixin/securable'
-require 'chef/resource/file/verification'
+require "chef/resource"
+require "chef/platform/query_helpers"
+require "chef/mixin/securable"
+require "chef/resource/file/verification"
 
 class Chef
   class Resource
     class File < Chef::Resource
       include Chef::Mixin::Securable
-
-      identity_attr :path
 
       if Platform.windows?
         # Use Windows rights instead of standard *nix permissions
@@ -38,85 +36,27 @@ class Chef
 
       attr_writer :checksum
 
-      provides :file
+      #
+      # The checksum of the rendered file.  This has to be saved on the
+      # new_resource for the 'after' state for reporting but we cannot
+      # mutate the new_resource.checksum which would change the
+      # user intent in the new_resource if the resource is reused.
+      #
+      # @returns [String] Checksum of the file we actually rendered
+      attr_accessor :final_checksum
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :file
-        @path = name
-        @backup = 5
-        @action = "create"
-        @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
-        @atomic_update = Chef::Config[:file_atomic_update]
-        @force_unlink = false
-        @manage_symlink_source = nil
-        @diff = nil
-        @verifications = []
-      end
+      default_action :create
+      allowed_actions :create, :delete, :touch, :create_if_missing
 
-      def content(arg=nil)
-        set_or_return(
-          :content,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def backup(arg=nil)
-        set_or_return(
-          :backup,
-          arg,
-          :kind_of => [ Integer, FalseClass ]
-        )
-      end
-
-      def checksum(arg=nil)
-        set_or_return(
-          :checksum,
-          arg,
-          :regex => /^[a-zA-Z0-9]{64}$/
-        )
-      end
-
-      def path(arg=nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def diff(arg=nil)
-        set_or_return(
-          :diff,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def atomic_update(arg=nil)
-        set_or_return(
-          :atomic_update,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def force_unlink(arg=nil)
-        set_or_return(
-          :force_unlink,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def manage_symlink_source(arg=nil)
-        set_or_return(
-          :manage_symlink_source,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :path, String, name_property: true, identity: true
+      property :atomic_update, [ true, false ], desired_state: false, default: Chef::Config[:file_atomic_update]
+      property :backup, [ Integer, false ], desired_state: false, default: 5
+      property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ]
+      property :content, [ String, nil ], desired_state: false
+      property :diff, [ String, nil ], desired_state: false
+      property :force_unlink, [ true, false ], desired_state: false, default: false
+      property :manage_symlink_source, [ true, false ], desired_state: false
+      property :verifications, Array, default: lazy { [] }
 
       def verify(command=nil, opts={}, &block)
         if ! (command.nil? || [String, Symbol].include?(command.class))
@@ -124,10 +64,19 @@ class Chef
         end
 
         if command || block_given?
-          @verifications << Verification.new(self, command, opts, &block)
+          verifications << Verification.new(self, command, opts, &block)
         else
-          @verifications
+          verifications
         end
+      end
+
+      def state_for_resource_reporter
+        state_attrs = super()
+        # fix up checksum state with final_checksum saved by the provider
+        if checksum.nil? && final_checksum
+          state_attrs[:checksum] = final_checksum
+        end
+        state_attrs
       end
     end
   end

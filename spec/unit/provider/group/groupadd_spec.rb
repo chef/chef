@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Group::Groupadd, "set_options" do
   before do
@@ -42,7 +42,7 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
   }
 
   field_list.each do |attribute, option|
-    it "should check for differences in #{attribute.to_s} between the current and new resources" do
+    it "should check for differences in #{attribute} between the current and new resources" do
         expect(@new_resource).to receive(attribute)
         expect(@current_resource).to receive(attribute)
         @provider.set_options
@@ -145,7 +145,7 @@ describe Chef::Provider::Group::Groupadd do
 
   [:add_member, :remove_member, :set_members].each do |m|
     it "should raise an error when calling #{m}" do
-      expect { @provider.send(m, [ ]) }.to raise_error(Chef::Exceptions::Group, "you must override #{m} in #{@provider.to_s}")
+      expect { @provider.send(m, [ ]) }.to raise_error(Chef::Exceptions::Group, "you must override #{m} in #{@provider}")
     end
   end
 

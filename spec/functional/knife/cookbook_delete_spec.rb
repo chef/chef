@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
+require "spec_helper"
+require "tiny_server"
 
 describe Chef::Knife::CookbookDelete do
   before(:all) do
@@ -32,7 +32,7 @@ describe Chef::Knife::CookbookDelete do
 
     Chef::Config[:node_name] = nil
     Chef::Config[:client_key] = nil
-    Chef::Config[:chef_server_url] = 'http://localhost:9000'
+    Chef::Config[:chef_server_url] = "http://localhost:9000"
   end
 
   after(:all) do
@@ -40,20 +40,30 @@ describe Chef::Knife::CookbookDelete do
   end
 
   context "when the cookbook doesn't exist" do
+    let(:log_output) { StringIO.new }
+
     before do
-      @log_output = StringIO.new
-
-      Chef::Log.logger = Logger.new(@log_output)
-      Chef::Log.level = :debug
-
       @knife.name_args = %w{no-such-cookbook}
-      @api.get("/cookbooks/no-such-cookbook", 404, Chef::JSONCompat.to_json({'error'=>'dear Tim, no. -Sent from my iPad'}))
+      @api.get("/cookbooks/no-such-cookbook", 404, Chef::JSONCompat.to_json({"error"=>"dear Tim, no. -Sent from my iPad"}))
+    end
+
+    around do |ex|
+      old_logger = Chef::Log.logger
+      old_level = Chef::Log.level
+      begin
+        Chef::Log.logger = Logger.new(log_output)
+        Chef::Log.level = :debug
+        ex.run
+      ensure
+        Chef::Log.logger = old_logger
+        Chef::Log.level = old_level
+      end
     end
 
     it "logs an error and exits" do
-      allow(@knife.ui).to receive(:stderr).and_return(@log_output)
+      allow(@knife.ui).to receive(:stderr).and_return(log_output)
       expect {@knife.run}.to raise_error(SystemExit)
-      expect(@log_output.string).to match(/Cannot find a cookbook named no-such-cookbook to delete/)
+      expect(log_output.string).to match(/Cannot find a cookbook named no-such-cookbook to delete/)
     end
 
   end
@@ -61,7 +71,7 @@ describe Chef::Knife::CookbookDelete do
   context "when there is only one version of a cookbook" do
     before do
       @knife.name_args = %w{obsolete-cookbook}
-      @cookbook_list = {'obsolete-cookbook' => { 'versions' => ['version' => '1.0.0']} }
+      @cookbook_list = {"obsolete-cookbook" => { "versions" => ["version" => "1.0.0"]} }
       @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 
@@ -102,9 +112,9 @@ describe Chef::Knife::CookbookDelete do
   context "when there are several versions of a cookbook" do
     before do
       @knife.name_args = %w{obsolete-cookbook}
-      versions = ['1.0.0', '1.1.0', '1.2.0']
-      with_version = lambda { |version| { 'version' => version } }
-      @cookbook_list = {'obsolete-cookbook' => { 'versions' => versions.map(&with_version) } }
+      versions = ["1.0.0", "1.1.0", "1.2.0"]
+      with_version = lambda { |version| { "version" => version } }
+      @cookbook_list = {"obsolete-cookbook" => { "versions" => versions.map(&with_version) } }
       @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 

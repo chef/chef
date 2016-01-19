@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,14 +26,16 @@ describe Chef::Knife::CookbookSiteInstall do
   let(:repo) { double(:sanity_check => true, :reset_to_default_state => true,
                       :prepare_to_import => true, :finalize_updates_to => true,
                       :merge_updates_from => true) }
-  let(:install_path) { if Chef::Platform.windows?
-                        'C:/tmp/chef'
-                      else
-                        '/var/tmp/chef'
-                      end }
+  let(:install_path) {
+    if Chef::Platform.windows?
+      "C:/tmp/chef"
+    else
+      "/var/tmp/chef"
+    end
+  }
 
   before(:each) do
-    require 'chef/knife/core/cookbook_scm_repo'
+    require "chef/knife/core/cookbook_scm_repo"
 
     allow(knife.ui).to receive(:stdout).and_return(stdout)
     knife.config = {}

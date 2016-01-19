@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/dsl/data_query'
+require "spec_helper"
+require "chef/dsl/data_query"
 
 class DataQueryDSLTester
   include Chef::DSL::DataQuery
@@ -37,7 +37,7 @@ describe Chef::DSL::DataQuery do
       allow(Chef::DataBag).to receive(:load)
       .with("bag_name")
       .and_return("item_1" => "http://url_for/item_1", "item_2" => "http://url_for/item_2")
-      expect( language.data_bag("bag_name").sort ).to eql %w(item_1 item_2)
+      expect( language.data_bag("bag_name").sort ).to eql %w{item_1 item_2}
     end
   end
 
@@ -65,8 +65,8 @@ describe Chef::DSL::DataQuery do
       "greeting" => "hello",
       "nested" => {
         "a1" => [1, 2, 3],
-        "a2" => { "b1" => true }
-      }
+        "a2" => { "b1" => true },
+      },
     }}
 
     let(:item) do

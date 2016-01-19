@@ -15,16 +15,14 @@
 # limitations under the License.
 #
 
-require 'chef/resource/script'
-require 'chef/provider/script'
+require "chef/resource/script"
+require "chef/provider/script"
 
 class Chef
   class Resource
     class Python < Chef::Resource::Script
-
       def initialize(name, run_context=nil)
         super
-        @resource_name = :python
         @interpreter = "python"
       end
 

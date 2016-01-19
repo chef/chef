@@ -17,20 +17,22 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/log'
-require 'chef/resource/file'
-require 'chef/mixin/checksum'
-require 'chef/provider'
-require 'etc'
-require 'fileutils'
-require 'chef/scan_access_control'
-require 'chef/win32/registry'
+require "chef/config"
+require "chef/log"
+require "chef/resource/file"
+require "chef/mixin/checksum"
+require "chef/provider"
+require "etc"
+require "fileutils"
+require "chef/scan_access_control"
+require "chef/win32/registry"
 
 class Chef
 
   class Provider
     class RegistryKey < Chef::Provider
+      provides :registry_key
+
       include Chef::Mixin::Checksum
 
       def whyrun_supported?
@@ -62,7 +64,7 @@ class Chef
 
       def values_to_hash(values)
         if values
-          @name_hash = Hash[values.map { |val| [val[:name], val] }]
+          @name_hash = Hash[values.map { |val| [val[:name].downcase, val] }]
         else
           @name_hash = {}
         end
@@ -98,8 +100,8 @@ class Chef
           end
         end
         @new_resource.unscrubbed_values.each do |value|
-          if @name_hash.has_key?(value[:name])
-            current_value = @name_hash[value[:name]]
+          if @name_hash.has_key?(value[:name].downcase)
+            current_value = @name_hash[value[:name].downcase]
             unless current_value[:type] == value[:type] && current_value[:data] == value[:data]
               converge_by("set value #{value}") do
                 registry.set_value(@new_resource.key, value)
@@ -120,7 +122,7 @@ class Chef
           end
         end
         @new_resource.unscrubbed_values.each do |value|
-          unless @name_hash.has_key?(value[:name])
+          unless @name_hash.has_key?(value[:name].downcase)
             converge_by("create value #{value}") do
               registry.set_value(@new_resource.key, value)
             end
@@ -131,7 +133,7 @@ class Chef
       def action_delete
         if registry.key_exists?(@new_resource.key)
           @new_resource.unscrubbed_values.each do |value|
-            if @name_hash.has_key?(value[:name])
+            if @name_hash.has_key?(value[:name].downcase)
               converge_by("delete value #{value}") do
                 registry.delete_value(@new_resource.key, value)
               end

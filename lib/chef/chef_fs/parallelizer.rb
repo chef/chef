@@ -1,5 +1,5 @@
-require 'thread'
-require 'chef/chef_fs/parallelizer/parallel_enumerable'
+require "thread"
+require "chef/chef_fs/parallelizer/parallel_enumerable"
 
 class Chef
   module ChefFS

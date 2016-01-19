@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::NodeEnvironmentSet do
   before(:each) do
@@ -39,7 +39,7 @@ describe Chef::Knife::NodeEnvironmentSet do
 
     it "should update the environment" do
       @knife.run
-      expect(@node.chef_environment).to eq('bar')
+      expect(@node.chef_environment).to eq("bar")
     end
 
     it "should save the node" do

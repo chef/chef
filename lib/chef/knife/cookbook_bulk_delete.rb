@@ -17,18 +17,18 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookBulkDelete < Knife
 
       deps do
-        require 'chef/knife/cookbook_delete'
-        require 'chef/cookbook_version'
+        require "chef/knife/cookbook_delete"
+        require "chef/cookbook_version"
       end
 
-      option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
+      option :purge, :short => "-p", :long => "--purge", :boolean => true, :description => "Permanently remove files from backing data store"
 
       banner "knife cookbook bulk delete REGEX (options)"
 
@@ -60,9 +60,9 @@ class Chef
 
 
         cookbooks_names.each do |cookbook_name|
-          versions = rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map {|v| v["version"]}.flatten
+          versions = rest.get("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map {|v| v["version"]}.flatten
           versions.each do |version|
-            object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? "?purge=true" : ""}")
+            object = rest.delete("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? "?purge=true" : ""}")
             ui.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")
           end
         end

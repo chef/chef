@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 shared_examples_for "a script resource" do
 
@@ -49,18 +49,18 @@ shared_examples_for "a script resource" do
   end
 
   it "should raise an exception if users set command on the resource", :chef_gte_13_only do
-    expect { script_resource.command('foo') }.to raise_error(Chef::Exceptions::Script)
+    expect { script_resource.command("foo") }.to raise_error(Chef::Exceptions::Script)
   end
 
   it "should not raise an exception if users set command on the resource", :chef_lt_13_only do
-    expect { script_resource.command('foo') }.not_to raise_error
+    expect { script_resource.command("foo") }.not_to raise_error
   end
 
   describe "when executing guards" do
     let(:resource) {
       resource = script_resource
       resource.run_context = run_context
-      resource.code 'echo hi'
+      resource.code "echo hi"
       resource
     }
     let(:node) {
@@ -83,7 +83,7 @@ shared_examples_for "a script resource" do
       expect_any_instance_of(Chef::Resource::Conditional).not_to receive(:evaluate_block)
       expect_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).not_to receive(:evaluate_action)
       expect_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:evaluate).and_return(true)
-      resource.only_if 'echo hi'
+      resource.only_if "echo hi"
       expect(resource.should_skip?(:run)).to eq(nil)
     end
 
@@ -91,7 +91,7 @@ shared_examples_for "a script resource" do
       expect_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).not_to receive(:evaluate)
       expect_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:evaluate_action).and_return(true)
       resource.guard_interpreter :script
-      resource.only_if 'echo hi'
+      resource.only_if "echo hi"
       expect(resource.should_skip?(:run)).to eq(nil)
     end
   end

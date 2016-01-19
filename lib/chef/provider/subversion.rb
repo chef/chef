@@ -18,10 +18,10 @@
 
 #TODO subversion and git should both extend from a base SCM provider.
 
-require 'chef/log'
-require 'chef/provider'
-require 'chef/mixin/command'
-require 'fileutils'
+require "chef/log"
+require "chef/provider"
+require "chef/mixin/command"
+require "fileutils"
 
 class Chef
   class Provider
@@ -130,8 +130,8 @@ class Chef
             @new_resource.revision
           else
             command = scm(:info, @new_resource.repository, @new_resource.svn_info_args, authentication, "-r#{@new_resource.revision}")
-            status, svn_info, error_message = output_of_command(command, run_options)
-            handle_command_failures(status, "STDOUT: #{svn_info}\nSTDERR: #{error_message}")
+            svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0,1])).stdout
+
             extract_revision_info(svn_info)
           end
         end
@@ -142,11 +142,8 @@ class Chef
       def find_current_revision
         return nil unless ::File.exist?(::File.join(@new_resource.destination, ".svn"))
         command = scm(:info)
-        status, svn_info, error_message = output_of_command(command, run_options(:cwd => cwd))
+        svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0,1])).stdout
 
-        unless [0,1].include?(status.exitstatus)
-          handle_command_failures(status, "STDOUT: #{svn_info}\nSTDERR: #{error_message}")
-        end
         extract_revision_info(svn_info)
       end
 
@@ -179,7 +176,8 @@ class Chef
           end
           attrs
         end
-        rev = (repo_attrs['Last Changed Rev'] || repo_attrs['Revision'])
+        rev = (repo_attrs["Last Changed Rev"] || repo_attrs["Revision"])
+        rev.strip! if rev
         raise "Could not parse `svn info` data: #{svn_info}" if repo_attrs.empty?
         Chef::Log.debug "#{@new_resource} resolved revision #{@new_resource.revision} to #{rev}"
         rev
@@ -197,12 +195,20 @@ class Chef
       end
 
       def scm(*args)
-        ['svn', *args].compact.join(" ")
+        binary = svn_binary
+        binary = "\"#{binary}\"" if binary =~ /\s/
+        [binary, *args].compact.join(" ")
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']
+        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == [".",".."]
       end
+
+      def svn_binary
+        @new_resource.svn_binary ||
+          (Chef::Platform.windows? ? "svn.exe" : "svn")
+      end
+
       def assert_target_directory_valid!
         target_parent_directory = ::File.dirname(@new_resource.destination)
         unless ::File.directory?(target_parent_directory)

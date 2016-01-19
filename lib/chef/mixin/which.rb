@@ -21,14 +21,14 @@ class Chef
       def which(cmd, opts = {})
         extra_path =
           if opts[:extra_path].nil?
-            [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
+            [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
           else
             [ opts[:extra_path] ].flatten
           end
-        paths = ENV['PATH'].split(File::PATH_SEPARATOR) + extra_path
+        paths = ENV["PATH"].split(File::PATH_SEPARATOR) + extra_path
         paths.each do |path|
           filename = File.join(path, cmd)
-          return filename if File.executable?(filename)
+          return filename if File.executable?(Chef.path_to(filename))
         end
         false
       end

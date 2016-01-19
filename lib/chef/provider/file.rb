@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2008-2013 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,20 +17,22 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/log'
-require 'chef/resource/file'
-require 'chef/provider'
-require 'etc'
-require 'fileutils'
-require 'chef/scan_access_control'
-require 'chef/mixin/checksum'
-require 'chef/mixin/file_class'
-require 'chef/util/backup'
-require 'chef/util/diff'
-require 'chef/deprecation/provider/file'
-require 'chef/deprecation/warnings'
-require 'chef/file_content_management/deploy'
+require "chef/config"
+require "chef/log"
+require "chef/resource/file"
+require "chef/provider"
+require "etc"
+require "fileutils"
+require "chef/scan_access_control"
+require "chef/mixin/checksum"
+require "chef/mixin/file_class"
+require "chef/mixin/enforce_ownership_and_permissions"
+require "chef/util/backup"
+require "chef/util/diff"
+require "chef/util/selinux"
+require "chef/deprecation/provider/file"
+require "chef/deprecation/warnings"
+require "chef/file_content_management/deploy"
 
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
@@ -244,7 +246,7 @@ class Chef
         else
           [ Chef::Exceptions::FileTypeMismatch,
             "File #{path} exists, but is a #{file_type_string(@new_resource.path)}, set force_unlink to true to remove",
-            "Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource"
+            "Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource",
           ]
         end
       end
@@ -265,7 +267,7 @@ class Chef
           [ Chef::Exceptions::FileTypeMismatch,
             "File #{path} exists, but is a symlink to #{real_path} which is a #{file_type_string(real_path)}. " +
             "Disable manage_symlink_source and set force_unlink to remove it.",
-            "Assuming symlink #{path} or source file #{real_path} would have been fixed by a previous resource"
+            "Assuming symlink #{path} or source file #{real_path} would have been fixed by a previous resource",
           ]
         end
       rescue Errno::ELOOP
@@ -386,10 +388,11 @@ class Chef
 
       def update_file_contents
         do_backup unless needs_creating?
-        deployment_strategy.deploy(tempfile.path, ::File.realpath(@new_resource.path))
-        Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
+        deployment_strategy.deploy(tempfile.path, ::File.realpath(new_resource.path))
+        Chef::Log.info("#{new_resource} updated file contents #{new_resource.path}")
         if managing_content?
-          @new_resource.checksum(checksum(@new_resource.path)) # for reporting
+          # save final checksum for reporting.
+          new_resource.final_checksum = checksum(new_resource.path)
         end
       end
 

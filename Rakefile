@@ -17,62 +17,54 @@
 # limitations under the License.
 #
 
-require File.dirname(__FILE__) + '/lib/chef/version'
+VERSION = IO.read(File.expand_path("../VERSION", __FILE__)).strip
 
-require 'rubygems'
-require 'rubygems/package_task'
-require 'rdoc/task'
-require './tasks/rspec.rb'
+require "rubygems"
+require "chef-config/package_task"
+require "rdoc/task"
+require_relative "tasks/rspec"
+require_relative "tasks/external_tests"
+require_relative "tasks/maintainers"
 
-GEM_NAME = "chef"
-
-Dir[File.expand_path("../*gemspec", __FILE__)].reverse.each do |gemspec_path|
-  gemspec = eval(IO.read(gemspec_path))
-  Gem::PackageTask.new(gemspec).define
+ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef") do |package|
+  package.component_paths = ["chef-config"]
+  package.generate_version_class = true
 end
 
-task :install => :package do
-  sh %{gem install pkg/#{GEM_NAME}-#{Chef::VERSION}.gem --no-rdoc --no-ri}
-end
-
-task :uninstall do
-  sh %{gem uninstall #{GEM_NAME} -x -v #{Chef::VERSION} }
-end
-
-desc "Build it, tag it and ship it"
-task :ship => :gem do
-  sh("git tag #{Chef::VERSION}")
-  sh("git push opscode --tags")
-  Dir[File.expand_path("../pkg/*.gem", __FILE__)].reverse.each do |built_gem|
-    sh("gem push #{built_gem}")
-  end
-end
-
-task :pedant do
-  require File.expand_path('spec/support/pedant/run_pedant')
-end
+task :pedant, :chef_zero_spec
 
 task :build_eventlog do
-  Dir.chdir 'ext/win32-eventlog/' do
-    system 'rake build'
+  Dir.chdir "ext/win32-eventlog/" do
+    system "rake build"
   end
 end
 
 task :register_eventlog do
-  Dir.chdir 'ext/win32-eventlog/' do
-    system 'rake register'
+  Dir.chdir "ext/win32-eventlog/" do
+    system "rake register"
   end
 end
 
+
 begin
-  require 'yard'
+  require "chefstyle"
+  require "rubocop/rake_task"
+  RuboCop::RakeTask.new(:style) do |task|
+    task.options += ["--display-cop-names", "--no-color"]
+  end
+rescue LoadError
+  puts "chefstyle/rubocop is not available.  gem install chefstyle to do style checking."
+end
+
+begin
+  require "yard"
   DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]
   namespace :yard do
     desc "Create YARD documentation"
 
     YARD::Rake::YardocTask.new(:html) do |t|
       t.files = DOC_FILES
-      t.options = ['--format', 'html']
+      t.options = ["--format", "html"]
     end
   end
 

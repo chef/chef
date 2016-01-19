@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/search/query'
-require 'chef/data_bag'
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item'
-require 'chef/encrypted_data_bag_item/check_encrypted'
+require "chef/search/query"
+require "chef/data_bag"
+require "chef/data_bag_item"
+require "chef/encrypted_data_bag_item"
+require "chef/encrypted_data_bag_item/check_encrypted"
 
 class Chef
   module DSL
@@ -86,4 +86,4 @@ end
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
-require 'chef/mixin/language'
+require "chef/mixin/language"

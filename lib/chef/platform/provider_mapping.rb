@@ -16,16 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/exceptions'
-require 'chef/mixin/params_validate'
-require 'chef/version_constraint/platform'
-
-# This file depends on nearly every provider in chef, but requiring them
-# directly causes circular requires resulting in uninitialized constant errors.
-# Therefore, we do the includes inline rather than up top.
-require 'chef/provider'
-
+require "chef/log"
+require "chef/exceptions"
+require "chef/mixin/params_validate"
+require "chef/version_constraint/platform"
+require "chef/provider"
 
 class Chef
   class Platform
@@ -34,267 +29,7 @@ class Chef
       attr_writer :platforms
 
       def platforms
-        @platforms ||= begin
-          require 'chef/providers'
-
-          {
-            :freebsd => {
-              :default => {
-                :group   => Chef::Provider::Group::Pw,
-                :user    => Chef::Provider::User::Pw,
-              }
-            },
-            :ubuntu   => {
-              :default => {
-                :package => Chef::Provider::Package::Apt,
-                :service => Chef::Provider::Service::Debian,
-              },
-              ">= 11.10" => {
-                :ifconfig => Chef::Provider::Ifconfig::Debian
-              }
-              # Chef::Provider::Service::Upstart is a candidate to be used in
-              # ubuntu versions >= 13.10 but it currently requires all the
-              # services to have an entry under /etc/init. We need to update it
-              # to use the service ctl apis in order to migrate to using it on
-              # ubuntu >= 13.10.
-            },
-            :gcel   => {
-              :default => {
-                :package => Chef::Provider::Package::Apt,
-                :service => Chef::Provider::Service::Debian,
-              }
-            },
-            :linaro   => {
-              :default => {
-                :package => Chef::Provider::Package::Apt,
-                :service => Chef::Provider::Service::Debian,
-              }
-            },
-            :raspbian   => {
-              :default => {
-                :package => Chef::Provider::Package::Apt,
-                :service => Chef::Provider::Service::Debian,
-              }
-            },
-            :linuxmint   => {
-              :default => {
-                :package => Chef::Provider::Package::Apt,
-                :service => Chef::Provider::Service::Upstart,
-              }
-            },
-            :debian => {
-              :default => {
-                :package => Chef::Provider::Package::Apt,
-                :service => Chef::Provider::Service::Debian,
-              },
-              ">= 6.0" => {
-                :service => Chef::Provider::Service::Insserv
-              },
-              ">= 7.0" => {
-                :ifconfig => Chef::Provider::Ifconfig::Debian
-              }
-            },
-            :xenserver   => {
-              :default => {
-                :service => Chef::Provider::Service::Redhat,
-                :package => Chef::Provider::Package::Yum,
-              }
-            },
-            :xcp   => {
-              :default => {
-                :service => Chef::Provider::Service::Redhat,
-                :package => Chef::Provider::Package::Yum,
-              }
-            },
-            :centos   => {
-              :default => {
-                :service => Chef::Provider::Service::Systemd,
-                :package => Chef::Provider::Package::Yum,
-                :ifconfig => Chef::Provider::Ifconfig::Redhat
-              },
-              "< 7" => {
-                :service => Chef::Provider::Service::Redhat
-              }
-            },
-            :amazon   => {
-              :default => {
-                :service => Chef::Provider::Service::Redhat,
-                :package => Chef::Provider::Package::Yum,
-              }
-            },
-            :scientific => {
-              :default => {
-                :service => Chef::Provider::Service::Systemd,
-                :package => Chef::Provider::Package::Yum,
-              },
-              "< 7" => {
-                :service => Chef::Provider::Service::Redhat
-              }
-            },
-            :fedora   => {
-              :default => {
-                :service => Chef::Provider::Service::Systemd,
-                :package => Chef::Provider::Package::Yum,
-                :ifconfig => Chef::Provider::Ifconfig::Redhat
-              },
-              "< 15" => {
-                :service => Chef::Provider::Service::Redhat
-              }
-            },
-            :opensuse     => {
-              :default => {
-                :service => Chef::Provider::Service::Redhat,
-                :package => Chef::Provider::Package::Zypper,
-                :group => Chef::Provider::Group::Suse
-              },
-              # Only OpenSuSE 12.3+ should use the Usermod group provider:
-              ">= 12.3" => {
-                :group => Chef::Provider::Group::Usermod
-              }
-            },
-            :suse     => {
-              :default => {
-                :service => Chef::Provider::Service::Systemd,
-                :package => Chef::Provider::Package::Zypper,
-                :group => Chef::Provider::Group::Gpasswd
-              },
-              "< 12.0" => {
-                :group => Chef::Provider::Group::Suse,
-                :service => Chef::Provider::Service::Redhat
-              }
-            },
-            :oracle  => {
-              :default => {
-                :service => Chef::Provider::Service::Systemd,
-                :package => Chef::Provider::Package::Yum,
-              },
-              "< 7" => {
-                :service => Chef::Provider::Service::Redhat
-              }
-            },
-            :redhat   => {
-              :default => {
-                :service => Chef::Provider::Service::Systemd,
-                :package => Chef::Provider::Package::Yum,
-                :ifconfig => Chef::Provider::Ifconfig::Redhat
-              },
-              "< 7" => {
-                :service => Chef::Provider::Service::Redhat
-              }
-            },
-            :ibm_powerkvm   => {
-              :default => {
-                :service => Chef::Provider::Service::Redhat,
-                :package => Chef::Provider::Package::Yum,
-                :ifconfig => Chef::Provider::Ifconfig::Redhat
-              }
-            },
-            :cloudlinux   => {
-              :default => {
-                :service => Chef::Provider::Service::Redhat,
-                :package => Chef::Provider::Package::Yum,
-                :ifconfig => Chef::Provider::Ifconfig::Redhat
-              }
-            },
-            :parallels   => {
-                :default => {
-                    :service => Chef::Provider::Service::Redhat,
-                    :package => Chef::Provider::Package::Yum,
-                    :ifconfig => Chef::Provider::Ifconfig::Redhat
-                }
-            },
-            :gentoo   => {
-              :default => {
-                :package => Chef::Provider::Package::Portage,
-                :service => Chef::Provider::Service::Gentoo,
-              }
-            },
-            :arch   => {
-              :default => {
-                :package => Chef::Provider::Package::Pacman,
-                :service => Chef::Provider::Service::Systemd,
-              }
-            },
-            :solaris  => {},
-            :openindiana => {
-              :default => {
-                :mount => Chef::Provider::Mount::Solaris,
-                :package => Chef::Provider::Package::Ips,
-                :group => Chef::Provider::Group::Usermod
-              }
-            },
-            :opensolaris => {
-              :default => {
-                :mount => Chef::Provider::Mount::Solaris,
-                :package => Chef::Provider::Package::Ips,
-                :group => Chef::Provider::Group::Usermod
-              }
-            },
-            :nexentacore => {
-              :default => {
-                :mount => Chef::Provider::Mount::Solaris,
-                :package => Chef::Provider::Package::Solaris,
-                :group => Chef::Provider::Group::Usermod
-              }
-            },
-            :omnios => {
-              :default => {
-                :mount => Chef::Provider::Mount::Solaris,
-                :package => Chef::Provider::Package::Ips,
-                :group => Chef::Provider::Group::Usermod,
-                :user => Chef::Provider::User::Solaris,
-              }
-            },
-            :solaris2 => {
-              :default => {
-                :mount => Chef::Provider::Mount::Solaris,
-                :package => Chef::Provider::Package::Ips,
-                :group => Chef::Provider::Group::Usermod,
-                :user => Chef::Provider::User::Solaris,
-              },
-              "< 5.11" => {
-                :mount => Chef::Provider::Mount::Solaris,
-                :package => Chef::Provider::Package::Solaris,
-                :group => Chef::Provider::Group::Usermod,
-                :user => Chef::Provider::User::Solaris,
-              }
-            },
-            :smartos => {
-              :default => {
-                :mount => Chef::Provider::Mount::Solaris,
-                :package => Chef::Provider::Package::SmartOS,
-                :group => Chef::Provider::Group::Usermod
-              }
-            },
-            :hpux => {
-              :default => {
-                :group => Chef::Provider::Group::Usermod
-              }
-            },
-            :aix => {
-              :default => {
-                :group => Chef::Provider::Group::Aix,
-                :mount => Chef::Provider::Mount::Aix,
-                :ifconfig => Chef::Provider::Ifconfig::Aix,
-                :package => Chef::Provider::Package::Aix,
-                :user => Chef::Provider::User::Aix,
-                :service => Chef::Provider::Service::Aix
-              }
-            },
-            :exherbo => {
-              :default => {
-                :package => Chef::Provider::Package::Paludis,
-                :service => Chef::Provider::Service::Systemd,
-              }
-            },
-            :default => {
-              :mount => Chef::Provider::Mount::Mount,
-              :user => Chef::Provider::User::Useradd,
-              :group => Chef::Provider::Group::Gpasswd,
-              :ifconfig => Chef::Provider::Ifconfig,
-            }
-          }
-        end
+        @platforms ||= { default: {} }
       end
 
       include Chef::Mixin::ParamsValidate
@@ -304,7 +39,7 @@ class Chef
 
         name_sym = name
         if name.kind_of?(String)
-          name.downcase!
+          name = name.downcase
           name.gsub!(/\s/, "_")
           name_sym = name.to_sym
         end
@@ -318,15 +53,13 @@ class Chef
             begin
               version_constraint = Chef::VersionConstraint::Platform.new(platform_version)
               if version_constraint.include?(version)
-                Chef::Log.debug("Platform #{name.to_s} version #{version} found")
+                Chef::Log.debug("Platform #{name} version #{version} found")
                 provider_map.merge!(provider)
               end
             rescue Chef::Exceptions::InvalidPlatformVersion
               Chef::Log.debug("Chef::Version::Comparable does not know how to parse the platform version: #{version}")
             end
           end
-        else
-          Chef::Log.debug("Platform #{name} not found, using all defaults. (Unsupported platform?)")
         end
         provider_map
       end
@@ -386,12 +119,12 @@ class Chef
               :required => false,
             },
             :resource => {
-              :kind_of => Symbol,
+              :kind_of => Symbol
             },
             :provider => {
-              :kind_of => [ String, Symbol, Class ],
-            }
-          }
+              :kind_of => [ String, Symbol, Class ]
+            },
+          },
         )
         if args.has_key?(:platform)
           if args.has_key?(:version)
@@ -443,7 +176,7 @@ class Chef
                          platform_provider(platform, version, resource_type) ||
                          resource_matching_provider(platform, version, resource_type)
 
-        raise ArgumentError, "Cannot find a provider for #{resource_type} on #{platform} version #{version}" if provider_klass.nil?
+        raise Chef::Exceptions::ProviderNotFound, "Cannot find a provider for #{resource_type} on #{platform} version #{version}" if provider_klass.nil?
 
         provider_klass
       end
@@ -460,16 +193,20 @@ class Chef
           pmap.has_key?(rtkey) ? pmap[rtkey] : nil
         end
 
+        include Chef::Mixin::ConvertToClassName
+
         def resource_matching_provider(platform, version, resource_type)
           if resource_type.kind_of?(Chef::Resource)
-            begin
-              Chef::Provider.const_get(resource_type.class.to_s.split('::').last)
-            rescue NameError
-              nil
+            class_name = resource_type.class.name ? resource_type.class.name.split("::").last :
+              convert_to_class_name(resource_type.resource_name.to_s)
+
+            if Chef::Provider.const_defined?(class_name)
+              Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{convert_to_snake_case(class_name).to_sym.inspect}'.")
+              Chef::Log.warn("This will no longer work in Chef 13: you must use 'provides' to use the resource's DSL.")
+              return Chef::Provider.const_get(class_name)
             end
-          else
-            nil
           end
+          nil
         end
 
     end

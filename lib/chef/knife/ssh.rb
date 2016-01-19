@@ -16,23 +16,23 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/mixin/shell_out"
+require "chef/knife"
 
 class Chef
   class Knife
     class Ssh < Knife
 
       deps do
-        require 'net/ssh'
-        require 'net/ssh/multi'
-        require 'chef/monkey_patches/net-ssh-multi'
-        require 'readline'
-        require 'chef/exceptions'
-        require 'chef/search/query'
-        require 'chef/mixin/shell_out'
-        require 'chef/mixin/command'
-        require 'chef/util/path_helper'
-        require 'mixlib/shellout'
+        require "net/ssh"
+        require "net/ssh/multi"
+        require "chef/monkey_patches/net-ssh-multi"
+        require "readline"
+        require "chef/exceptions"
+        require "chef/search/query"
+        require "chef/mixin/command"
+        require "chef/util/path_helper"
+        require "mixlib/shellout"
       end
 
       include Chef::Mixin::ShellOut
@@ -72,7 +72,7 @@ class Chef
         :description => "The ssh password - will prompt if flag is specified but no password is given",
         # default to a value that can not be a password (boolean)
         # so we can effectively test if this parameter was specified
-        # without a vlaue
+        # without a value
         :default => false
 
       option :ssh_port,
@@ -94,8 +94,12 @@ class Chef
         :boolean => true
 
       option :identity_file,
-        :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication. [DEPRECATED] Use --ssh-identity-file instead."
+
+      option :ssh_identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--ssh-identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
       option :host_key_verify,
@@ -105,11 +109,17 @@ class Chef
         :default => true
 
       option :on_error,
-        :short => '-e',
-        :long => '--exit-on-error',
+        :short => "-e",
+        :long => "--exit-on-error",
         :description => "Immediately exit if an error is encountered",
         :boolean => true,
         :proc => Proc.new { :raise }
+
+      option :tmux_split,
+        :long => "--tmux-split",
+        :description => "Split tmux window.",
+        :boolean => true,
+        :default => false
 
       def session
         config[:on_error] ||= :skip
@@ -130,17 +140,21 @@ class Chef
       def configure_gateway
         config[:ssh_gateway] ||= Chef::Config[:knife][:ssh_gateway]
         if config[:ssh_gateway]
-          gw_host, gw_user = config[:ssh_gateway].split('@').reverse
-          gw_host, gw_port = gw_host.split(':')
-          gw_opts = gw_port ? { :port => gw_port } : {}
+          gw_host, gw_user = config[:ssh_gateway].split("@").reverse
+          gw_host, gw_port = gw_host.split(":")
+          gw_opts = session_options(gw_host, gw_port, gw_user)
+          user = gw_opts.delete(:user)
 
-          session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
+          begin
+            # Try to connect with a key.
+            session.via(gw_host, user, gw_opts)
+          rescue Net::SSH::AuthenticationFailed
+            prompt = "Enter the password for #{user}@#{gw_host}: "
+            gw_opts[:password] = prompt_for_password(prompt)
+            # Try again with a password.
+            session.via(gw_host, user, gw_opts)
+          end
         end
-      rescue Net::SSH::AuthenticationFailed
-        user = gw_user || config[:ssh_user]
-        prompt = "Enter the password for #{user}@#{gw_host}: "
-        gw_opts.merge!(:password => prompt_for_password(prompt))
-        session.via(gw_host, user, gw_opts)
       end
 
       def configure_session
@@ -160,6 +174,31 @@ class Chef
         session_from_list(list)
       end
 
+      def get_ssh_attribute(node)
+        # Order of precedence for ssh target
+        # 1) command line attribute
+        # 2) configuration file
+        # 3) cloud attribute
+        # 4) fqdn
+        if config[:attribute]
+          Chef::Log.debug("Using node attribute '#{config[:attribute]}' as the ssh target")
+          attribute = config[:attribute]
+        elsif Chef::Config[:knife][:ssh_attribute]
+          Chef::Log.debug("Using node attribute #{Chef::Config[:knife][:ssh_attribute]}")
+          attribute = Chef::Config[:knife][:ssh_attribute]
+        elsif node[:cloud] &&
+              node[:cloud][:public_hostname] &&
+              !node[:cloud][:public_hostname].empty?
+          Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target")
+          attribute = "cloud.public_hostname"
+        else
+          # falling back to default of fqdn
+          Chef::Log.debug("Using node attribute 'fqdn' as the ssh target")
+          attribute = "fqdn"
+        end
+        attribute
+      end
+
       def search_nodes
         list = Array.new
         query = Chef::Search::Query.new
@@ -168,23 +207,9 @@ class Chef
           # we should skip the loop to next iteration if the item
           # returned by the search is nil
           next if item.nil?
-          # if a command line attribute was not passed, and we have a
-          # cloud public_hostname, use that.  see #configure_attribute
-          # for the source of config[:attribute] and
-          # config[:attribute_from_cli]
-          if config[:attribute_from_cli]
-            Chef::Log.debug("Using node attribute '#{config[:attribute_from_cli]}' from the command line as the ssh target")
-            host = extract_nested_value(item, config[:attribute_from_cli])
-          elsif item[:cloud] && item[:cloud][:public_hostname]
-            Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target")
-            host = item[:cloud][:public_hostname]
-          else
-            # ssh attribute from a configuration file or the default will land here
-            Chef::Log.debug("Using node attribute '#{config[:attribute]}' as the ssh target")
-            host = extract_nested_value(item, config[:attribute])
-          end
           # next if we couldn't find the specified attribute in the
           # returned node object
+          host = extract_nested_value(item,get_ssh_attribute(item))
           next if host.nil?
           ssh_port = item[:cloud].nil? ? nil : item[:cloud][:public_ssh_port]
           srv = [host, ssh_port]
@@ -193,32 +218,50 @@ class Chef
         list
       end
 
+      # Net::SSH session options hash for global options. These should be
+      # options that will apply to the gateway connection in addition to the
+      # main one.
+      #
+      # @since 12.5.0
+      # @param host [String] Hostname for this session.
+      # @param port [String] SSH port for this session.
+      # @param user [String] Optional username for this session.
+      # @return [Hash<Symbol, Object>]
+      def session_options(host, port, user=nil)
+        ssh_config = Net::SSH.configuration_for(host)
+        {}.tap do |opts|
+          # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
+          opts[:user] = user || config[:ssh_user] || ssh_config[:user]
+          if config[:ssh_identity_file]
+            opts[:keys] = File.expand_path(config[:ssh_identity_file])
+            opts[:keys_only] = true
+          elsif config[:ssh_password]
+            opts[:password] = config[:ssh_password]
+          end
+          # Don't set the keys to nil if we don't have them.
+          forward_agent = config[:forward_agent] || ssh_config[:forward_agent]
+          opts[:forward_agent] = forward_agent unless forward_agent.nil?
+          port ||= ssh_config[:port]
+          opts[:port] = port unless port.nil?
+          opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
+          if !config[:host_key_verify]
+            opts[:paranoid] = false
+            opts[:user_known_hosts_file] = "/dev/null"
+          end
+        end
+      end
+
       def session_from_list(list)
         list.each do |item|
           host, ssh_port = item
           Chef::Log.debug("Adding #{host}")
-          session_opts = {}
-
-          ssh_config = Net::SSH.configuration_for(host)
-
-          # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
-          user = config[:ssh_user] || ssh_config[:user]
-          hostspec = user ? "#{user}@#{host}" : host
-          session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
-          session_opts[:keys_only] = true if config[:identity_file]
-          session_opts[:password] = config[:ssh_password] if config[:ssh_password]
-          session_opts[:forward_agent] = config[:forward_agent]
-          session_opts[:port] = config[:ssh_port] ||
-                                ssh_port || # Use cloud port if available
-                                Chef::Config[:knife][:ssh_port] ||
-                                ssh_config[:port]
-          session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
-
-          if !config[:host_key_verify]
-            session_opts[:paranoid] = false
-            session_opts[:user_known_hosts_file] = "/dev/null"
-          end
-
+          session_opts = session_options(host, ssh_port)
+          # Handle port overrides for the main connection.
+          session_opts[:port] = Chef::Config[:knife][:ssh_port] if Chef::Config[:knife][:ssh_port]
+          session_opts[:port] = config[:ssh_port] if config[:ssh_port]
+          # Create the hostspec.
+          hostspec = session_opts[:user] ? "#{session_opts.delete(:user)}@#{host}" : host
+          # Connect a new session on the multi.
           session.use(hostspec, session_opts)
 
           @longest = host.length if host.length > @longest
@@ -258,7 +301,7 @@ class Chef
         exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
-        command.force_encoding('binary') if command.respond_to?(:force_encoding)
+        command.force_encoding("binary") if command.respond_to?(:force_encoding)
         subsession.open_channel do |ch|
           ch.request_pty
           ch.exec command do |ch, success|
@@ -324,8 +367,8 @@ class Chef
         loop do
           command = read_line
           case command
-          when 'quit!'
-            puts 'Bye!'
+          when "quit!"
+            puts "Bye!"
             break
           when /^on (.+?); (.+)$/
             raw_list = $1.split(" ")
@@ -343,7 +386,7 @@ class Chef
 
       def screen
         tf = Tempfile.new("knife-ssh-screen")
-        Chef::Util::PathHelper.home('.screenrc') do |screenrc_path|
+        Chef::Util::PathHelper.home(".screenrc") do |screenrc_path|
           if File.exist? screenrc_path
             tf.puts("source #{screenrc_path}")
           end
@@ -353,7 +396,7 @@ class Chef
         window = 0
         session.servers_for.each do |server|
           tf.print("screen -t \"#{server.host}\" #{window} ssh ")
-          tf.print("-i #{config[:identity_file]} ") if config[:identity_file]
+          tf.print("-i #{config[:ssh_identity_file]} ") if config[:ssh_identity_file]
           server.user ? tf.puts("#{server.user}@#{server.host}") : tf.puts(server.host)
           window += 1
         end
@@ -363,7 +406,7 @@ class Chef
 
       def tmux
         ssh_dest = lambda do |server|
-          identity = "-i #{config[:identity_file]} " if config[:identity_file]
+          identity = "-i #{config[:ssh_identity_file]} " if config[:ssh_identity_file]
           prefix = server.user ? "#{server.user}@" : ""
           "'ssh #{identity}#{prefix}#{server.host}'"
         end
@@ -371,7 +414,11 @@ class Chef
         new_window_cmds = lambda do
           if session.servers_for.size > 1
             [""] + session.servers_for[1..-1].map do |server|
-              "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+              if config[:tmux_split]
+                "split-window #{ssh_dest.call(server)}; tmux select-layout tiled"
+              else
+                "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+              end
             end
           else
             []
@@ -392,15 +439,15 @@ class Chef
 
       def macterm
         begin
-          require 'appscript'
+          require "appscript"
         rescue LoadError
-          STDERR.puts "you need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install"
+          STDERR.puts "You need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install"
           raise
         end
 
         Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate
         Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
-        term = Appscript.app('Terminal')
+        term = Appscript.app("Terminal")
         window = term.windows.first.get
 
         (session.servers_for.size - 1).times do |i|
@@ -410,23 +457,13 @@ class Chef
 
         session.servers_for.each_with_index do |server, tab_number|
           cmd = "unset PROMPT_COMMAND; echo -e \"\\033]0;#{server.host}\\007\"; ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}"
-          Appscript.app('Terminal').do_script(cmd, :in => window.tabs[tab_number + 1].get)
+          Appscript.app("Terminal").do_script(cmd, :in => window.tabs[tab_number + 1].get)
         end
-      end
-
-      def configure_attribute
-        # Setting 'knife[:ssh_attribute] = "foo"' in knife.rb => Chef::Config[:knife][:ssh_attribute] == 'foo'
-        # Running 'knife ssh -a foo' => both Chef::Config[:knife][:ssh_attribute] && config[:attribute] == foo
-        # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
-        # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
-        # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:attribute_from_cli] = config[:attribute]
-        config[:attribute] = (config[:attribute_from_cli] || Chef::Config[:knife][:ssh_attribute] || "fqdn").strip
       end
 
       def cssh
         cssh_cmd = nil
-        %w[csshX cssh].each do |cmd|
+        %w{csshX cssh}.each do |cmd|
           begin
             # Unix and Mac only
             cssh_cmd = shell_out!("which #{cmd}").stdout.strip
@@ -436,15 +473,15 @@ class Chef
         end
         raise Chef::Exceptions::Exec, "no command found for cssh" unless cssh_cmd
 
-        # pass in the consolidated itentity file option to cssh(X)
-        if config[:identity_file]
-          cssh_cmd << " --ssh_args '-i #{File.expand_path(config[:identity_file])}'"
+        # pass in the consolidated identity file option to cssh(X)
+        if config[:ssh_identity_file]
+          cssh_cmd << " --ssh_args '-i #{File.expand_path(config[:ssh_identity_file])}'"
         end
 
         session.servers_for.each do |server|
           cssh_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
         end
-        Chef::Log.debug("starting cssh session with command: #{cssh_cmd}")
+        Chef::Log.debug("Starting cssh session with command: #{cssh_cmd}")
         exec(cssh_cmd)
       end
 
@@ -483,9 +520,9 @@ class Chef
         end
       end
 
-      def configure_identity_file
-        config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] ||
-                             Chef::Config[:knife][:ssh_identity_file])
+      def configure_ssh_identity_file
+        # config[:identity_file] is DEPRECATED in favor of :ssh_identity_file
+        config[:ssh_identity_file] = get_stripped_unfrozen_value(config[:ssh_identity_file] || config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
       end
 
       def extract_nested_value(data_structure, path_spec)
@@ -497,10 +534,9 @@ class Chef
 
         @longest = 0
 
-        configure_attribute
         configure_user
         configure_password
-        configure_identity_file
+        configure_ssh_identity_file
         configure_gateway
         configure_session
 

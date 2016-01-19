@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 EtcPwnamIsh = Struct.new(:name, :passwd, :uid, :gid, :gecos, :dir, :shell, :change, :uclass, :expire)
 EtcGrnamIsh = Struct.new(:name, :passwd, :gid, :mem)
@@ -83,7 +83,7 @@ describe Chef::Provider::User do
 
     it "should create a current resource with the same name as the new resource" do
       @provider.load_current_resource
-      expect(@provider.current_resource.name).to eq('adam')
+      expect(@provider.current_resource.name).to eq("adam")
     end
 
     it "should set the username of the current resource to the username of the new resource" do
@@ -92,7 +92,7 @@ describe Chef::Provider::User do
     end
 
     it "should change the encoding of gecos to the encoding of the new resource" do
-      @pw_user.gecos.force_encoding('ASCII-8BIT')
+      @pw_user.gecos.force_encoding("ASCII-8BIT")
       @provider.load_current_resource
       expect(@provider.current_resource.comment.encoding).to eq(@new_resource.comment.encoding)
     end
@@ -114,7 +114,7 @@ describe Chef::Provider::User do
       :gid => :gid,
       :comment => :gecos,
       :home => :dir,
-      :shell => :shell
+      :shell => :shell,
     }
     user_attrib_map.each do |user_attrib, getpwnam_attrib|
       it "should set the current resources #{user_attrib} based on getpwnam #{getpwnam_attrib}" do
@@ -141,10 +141,10 @@ describe Chef::Provider::User do
     describe "and running assertions" do
       def self.shadow_lib_unavail?
         begin
-          require 'rubygems'
-          require 'shadow'
-        rescue LoadError => e
-          pending "ruby-shadow gem not installed for dynamic load test"
+          require "rubygems"
+          require "shadow"
+        rescue LoadError
+          skip "ruby-shadow gem not installed for dynamic load test"
           true
         else
           false
@@ -161,11 +161,11 @@ describe Chef::Provider::User do
 
       unless shadow_lib_unavail?
         context "and we have the ruby-shadow gem" do
-          pending "and we are not root (rerun this again as root)", :requires_unprivileged_user => true
+          skip "and we are not root (rerun this again as root)", :requires_unprivileged_user => true
 
           context "and we are root", :requires_root => true do
             it "should pass assertions when ruby-shadow can be loaded" do
-              @provider.action = 'create'
+              @provider.action = "create"
               original_method = @provider.method(:require)
               expect(@provider).to receive(:require) { |*args| original_method.call(*args) }
               passwd_info = Struct::PasswdEntry.new(:sp_namp => "adm ", :sp_pwdp => "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", :sp_lstchg => 14861, :sp_min => 0, :sp_max => 99999,
@@ -192,13 +192,13 @@ describe Chef::Provider::User do
   describe "compare_user" do
     let(:mapping) {
       {
-        'username' => ["adam", "Adam"],
-        'comment' => ["Adam Jacob", "adam jacob"],
-        'uid' => [1000, 1001],
-        'gid' => [1000, 1001],
-        'home' => ["/home/adam", "/Users/adam"],
-        'shell'=> ["/usr/bin/zsh", "/bin/bash"],
-        'password'=> ["abcd","12345"]
+        "username" => ["adam", "Adam"],
+        "comment" => ["Adam Jacob", "adam jacob"],
+        "uid" => [1000, 1001],
+        "gid" => [1000, 1001],
+        "home" => ["/home/adam", "/Users/adam"],
+        "shell"=> ["/usr/bin/zsh", "/bin/bash"],
+        "password"=> ["abcd","12345"],
       }
     }
 
@@ -441,8 +441,8 @@ describe Chef::Provider::User do
 
   describe "convert_group_name" do
     before do
-      @new_resource.gid('999')
-      @group = EtcGrnamIsh.new('wheel', '*', 999, [])
+      @new_resource.gid("999")
+      @group = EtcGrnamIsh.new("wheel", "*", 999, [])
     end
 
     it "should lookup the group name locally" do
@@ -452,9 +452,18 @@ describe Chef::Provider::User do
 
     it "should raise an error if we can't translate the group name during resource assertions" do
       expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
+      @provider.action = :create
       @provider.define_resource_requirements
       @provider.convert_group_name
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::User)
+    end
+
+    it "does not raise an error if we can't translate the group name during resource assertions if we are removing the user" do
+      expect(Etc).to receive(:getgrnam).and_raise(ArgumentError)
+      @provider.action = :remove
+      @provider.define_resource_requirements
+      @provider.convert_group_name
+      expect { @provider.process_resource_requirements }.not_to raise_error
     end
 
     it "should set the new resources gid to the integerized version if available" do

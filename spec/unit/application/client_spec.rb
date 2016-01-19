@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Application::Client, "reconfigure" do
   let(:app) do
@@ -42,10 +42,23 @@ describe Chef::Application::Client, "reconfigure" do
     ARGV.replace(@original_argv)
   end
 
-  describe 'parse cli_arguments' do
-    it 'should call set_specific_recipes' do
+  describe "parse cli_arguments" do
+    it "should call set_specific_recipes" do
       expect(app).to receive(:set_specific_recipes).and_return(true)
       app.reconfigure
+    end
+
+    context "when given a named_run_list" do
+
+      before do
+        ARGV.replace( %w{ --named-run-list arglebargle-example } )
+        app.reconfigure
+      end
+
+      it "sets named_run_list in Chef::Config" do
+        expect(Chef::Config[:named_run_list]).to eq("arglebargle-example")
+      end
+
     end
   end
 
@@ -60,7 +73,7 @@ describe Chef::Application::Client, "reconfigure" do
     context "when interval is given" do
       before do
         Chef::Config[:interval] = 600
-        allow(Chef::Platform).to receive(:windows?).and_return(false)
+        allow(ChefConfig).to receive(:windows?).and_return(false)
       end
 
       it "should terminate with message" do
@@ -77,7 +90,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     context "when interval is given on windows" do
       before do
         Chef::Config[:interval] = 600
-        allow(Chef::Platform).to receive(:windows?).and_return(true)
+        allow(ChefConfig).to receive(:windows?).and_return(true)
       end
 
       it "should not terminate" do
@@ -131,6 +144,16 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
   end
 
+  describe "when --no-listen is set" do
+
+    it "configures listen = false" do
+      app.config[:listen] = false
+      app.reconfigure
+      expect(Chef::Config[:listen]).to eq(false)
+    end
+
+  end
+
   describe "when the json_attribs configuration option is specified" do
 
     let(:json_attribs) { {"a" => "b"} }
@@ -154,11 +177,6 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     shared_examples "experimental feature" do
       before do
         allow(Chef::Log).to receive(:warn)
-      end
-
-      it "emits a warning that audit mode is an experimental feature" do
-        expect(Chef::Log).to receive(:warn).with(/Audit mode is an experimental feature/)
-        app.reconfigure
       end
     end
 
@@ -232,7 +250,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
 
     it "should throw an exception" do
-      expect { @app.reconfigure }.to raise_error
+      expect { app.reconfigure }.to raise_error(Chef::Exceptions::PIDFileLockfileMatch)
     end
   end
 end
@@ -270,9 +288,9 @@ describe Chef::Application::Client, "configure_chef" do
     ARGV.replace(@original_argv)
   end
 
-  it "should set the colored output to false by default on windows and true otherwise" do
+  it "should set the colored output to true by default on windows and true on all other platforms as well" do
     if windows?
-      expect(Chef::Config[:color]).to be_falsey
+      expect(Chef::Config[:color]).to be_truthy
     else
       expect(Chef::Config[:color]).to be_truthy
     end
@@ -292,9 +310,9 @@ describe Chef::Application::Client, "run_application", :unix_only do
     @client = Chef::Client.new
     allow(Chef::Client).to receive(:new).and_return(@client)
     allow(@client).to receive(:run) do
-      @pipe[1].puts 'started'
+      @pipe[1].puts "started"
       sleep 1
-      @pipe[1].puts 'finished'
+      @pipe[1].puts "finished"
     end
   end
 

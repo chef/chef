@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/directory'
-require 'chef/mixin/securable'
+require "chef/resource"
+require "chef/provider/directory"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
@@ -32,22 +32,20 @@ class Chef
 
       include Chef::Mixin::Securable
 
-      provides :directory
+      default_action :create
+      allowed_actions :create, :delete
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :directory
         @path = name
-        @action = :create
         @recursive = false
-        @allowed_actions.push(:create, :delete)
       end
 
       def recursive(arg=nil)
         set_or_return(
           :recursive,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -55,7 +53,7 @@ class Chef
         set_or_return(
           :path,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 

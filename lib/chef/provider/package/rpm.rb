@@ -15,11 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/mixin/shell_out'
-require 'chef/resource/package'
-require 'chef/mixin/get_source_from_package'
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
+require "chef/mixin/get_source_from_package"
 
 class Chef
   class Provider
@@ -51,7 +50,6 @@ class Chef
 
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-          @new_resource.version(nil)
 
           if @new_resource.source
             unless uri_scheme?(@new_resource.source) || ::File.exists?(@new_resource.source)
@@ -60,9 +58,9 @@ class Chef
             end
 
             Chef::Log.debug("#{@new_resource} checking rpm status")
-            shell_out!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}").stdout.each_line do |line|
+            shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}").stdout.each_line do |line|
               case line
-              when /^([\w\d+_.-]+)\s([\w\d_.-]+)$/
+              when /^(\S+)\s(\S+)$/
                 @current_resource.package_name($1)
                 @new_resource.version($2)
                 @candidate_version = $2
@@ -76,10 +74,10 @@ class Chef
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          @rpm_status = shell_out("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}")
+          @rpm_status = shell_out_with_timeout("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}")
           @rpm_status.stdout.each_line do |line|
             case line
-            when /^([\w\d+_.-]+)\s([\w\d_.-]+)$/
+            when /^(\S+)\s(\S+)$/
               Chef::Log.debug("#{@new_resource} current version is #{$2}")
               @current_resource.version($2)
             end
@@ -90,12 +88,12 @@ class Chef
 
         def install_package(name, version)
           unless @current_resource.version
-            shell_out!( "rpm #{@new_resource.options} -i #{@new_resource.source}" )
+            shell_out_with_timeout!( "rpm #{@new_resource.options} -i #{@new_resource.source}" )
           else
             if allow_downgrade
-              shell_out!( "rpm #{@new_resource.options} -U --oldpackage #{@new_resource.source}" )
+              shell_out_with_timeout!( "rpm #{@new_resource.options} -U --oldpackage #{@new_resource.source}" )
             else
-              shell_out!( "rpm #{@new_resource.options} -U #{@new_resource.source}" )
+              shell_out_with_timeout!( "rpm #{@new_resource.options} -U #{@new_resource.source}" )
             end
           end
         end
@@ -104,9 +102,9 @@ class Chef
 
         def remove_package(name, version)
           if version
-            shell_out!( "rpm #{@new_resource.options} -e #{name}-#{version}" )
+            shell_out_with_timeout!( "rpm #{@new_resource.options} -e #{name}-#{version}" )
           else
-            shell_out!( "rpm #{@new_resource.options} -e #{name}" )
+            shell_out_with_timeout!( "rpm #{@new_resource.options} -e #{name}" )
           end
         end
 
@@ -115,7 +113,7 @@ class Chef
         def uri_scheme?(str)
           scheme = URI.split(str).first
           return false unless scheme
-          %w(http https ftp file).include?(scheme.downcase)
+          %w{http https ftp file}.include?(scheme.downcase)
         rescue URI::InvalidURIError
           return false
         end

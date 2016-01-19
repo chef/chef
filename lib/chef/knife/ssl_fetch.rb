@@ -16,18 +16,20 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/config'
+require "chef/knife"
+require "chef/config"
 
 class Chef
   class Knife
     class SslFetch < Chef::Knife
 
       deps do
-        require 'pp'
-        require 'socket'
-        require 'uri'
-        require 'openssl'
+        require "pp"
+        require "socket"
+        require "uri"
+        require "openssl"
+        require "chef/mixin/proxified_socket"
+        include Chef::Mixin::ProxifiedSocket
       end
 
       banner "knife ssl fetch [URL] (options)"
@@ -71,7 +73,7 @@ class Chef
       end
 
       def remote_cert_chain
-        tcp_connection = TCPSocket.new(host, port)
+        tcp_connection = proxified_socket(host, port)
         shady_ssl_connection = OpenSSL::SSL::SSLSocket.new(tcp_connection, noverify_peer_ssl_context)
         shady_ssl_connection.connect
         shady_ssl_connection.peer_cert_chain
@@ -102,7 +104,7 @@ class Chef
       # practice.
       # https://tools.ietf.org/html/rfc6125#section-6.4.2
       def normalize_cn(cn)
-        cn.gsub("*", "wildcard").gsub(/[^[:alnum:]\-]/, '_')
+        cn.gsub("*", "wildcard").gsub(/[^[:alnum:]\-]/, "_")
       end
 
       def configuration
@@ -145,7 +147,7 @@ TRUST_TRUST
         ui.error("The service at the given URI (#{uri}) does not accept SSL connections")
 
         if uri.scheme == "http"
-          https_uri = uri.to_s.sub(/^http/, 'https')
+          https_uri = uri.to_s.sub(/^http/, "https")
           ui.error("Perhaps you meant to connect to '#{https_uri}'?")
         end
         exit 1
@@ -155,4 +157,3 @@ TRUST_TRUST
     end
   end
 end
-

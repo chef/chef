@@ -1,6 +1,6 @@
-require 'fcntl'
-require 'chef/mixin/shell_out'
-
+require "fcntl"
+require "chef/mixin/shell_out"
+require "ohai/mixin/gce_metadata"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
@@ -11,11 +11,11 @@ def ruby_lt_20?
 end
 
 def chef_gte_13?
-  Chef::VERSION.split('.').first.to_i >= 13
+  Chef::VERSION.split(".").first.to_i >= 13
 end
 
 def chef_lt_13?
-  Chef::VERSION.split('.').first.to_i < 13
+  Chef::VERSION.split(".").first.to_i < 13
 end
 
 def ruby_gte_19?
@@ -24,6 +24,14 @@ end
 
 def ruby_20?
   !!(RUBY_VERSION =~ /^2.0/)
+end
+
+def ruby_64bit?
+  !!(RbConfig::CONFIG["host_cpu"] =~ /x86_64/)
+end
+
+def ruby_32bit?
+  !!(RbConfig::CONFIG["host_cpu"] =~ /i686/)
 end
 
 def windows?
@@ -35,29 +43,29 @@ def ohai
   OHAI_SYSTEM
 end
 
-require 'wmi-lite/wmi' if windows?
+require "wmi-lite/wmi" if windows?
 
 def windows_domain_joined?
   return false unless windows?
   wmi = WmiLite::Wmi.new
-  computer_system = wmi.first_of('Win32_ComputerSystem')
-  computer_system['partofdomain']
+  computer_system = wmi.first_of("Win32_ComputerSystem")
+  computer_system["partofdomain"]
 end
 
 def windows_win2k3?
   return false unless windows?
   wmi = WmiLite::Wmi.new
-  host = wmi.first_of('Win32_OperatingSystem')
-  (host['version'] && host['version'].start_with?("5.2"))
+  host = wmi.first_of("Win32_OperatingSystem")
+  (host["version"] && host["version"].start_with?("5.2"))
 end
 
 def windows_2008r2_or_later?
   return false unless windows?
   wmi = WmiLite::Wmi.new
-  host = wmi.first_of('Win32_OperatingSystem')
-  version = host['version']
+  host = wmi.first_of("Win32_OperatingSystem")
+  version = host["version"]
   return false unless version
-  components = version.split('.').map do | component |
+  components = version.split(".").map do | component |
     component.to_i
   end
   components.length >=2 && components[0] >= 6 && components[1] >= 1
@@ -67,12 +75,17 @@ def windows_powershell_dsc?
   return false unless windows?
   supports_dsc = false
   begin
-    wmi = WmiLite::Wmi.new('root/microsoft/windows/desiredstateconfiguration')
+    wmi = WmiLite::Wmi.new("root/microsoft/windows/desiredstateconfiguration")
     lcm = wmi.query("SELECT * FROM meta_class WHERE __this ISA 'MSFT_DSCLocalConfigurationManager'")
     supports_dsc = !! lcm
   rescue WmiLite::WmiException
   end
   supports_dsc
+end
+
+def windows_nano_server?
+  require "chef/platform/query_helpers"
+  Chef::Platform.windows_nano_server?
 end
 
 def mac_osx_106?
@@ -104,7 +117,7 @@ end
 
 # detects if the hardware is 64-bit (evaluates to true in "WOW64" mode in a 32-bit app on a 64-bit system)
 def windows64?
-  windows? && ( ENV['PROCESSOR_ARCHITECTURE'] == 'AMD64' || ENV['PROCESSOR_ARCHITEW6432'] == 'AMD64' )
+  windows? && ( ENV["PROCESSOR_ARCHITECTURE"] == "AMD64" || ENV["PROCESSOR_ARCHITEW6432"] == "AMD64" )
 end
 
 # detects if the hardware is 32-bit
@@ -130,15 +143,23 @@ def freebsd?
   !!(RUBY_PLATFORM =~ /freebsd/)
 end
 
+def debian_family?
+  !!(ohai[:platform_family] == "debian")
+end
+
 def aix?
   !!(RUBY_PLATFORM =~ /aix/)
 end
 
-def supports_cloexec?
-  Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
+def wpar?
+  !((ohai[:virtualization] || {})[:wpar_no].nil?)
 end
 
-DEV_NULL = windows? ? 'NUL' : '/dev/null'
+def supports_cloexec?
+  Fcntl.const_defined?("F_SETFD") && Fcntl.const_defined?("FD_CLOEXEC")
+end
+
+DEV_NULL = windows? ? "NUL" : "/dev/null"
 
 def selinux_enabled?
   # This code is currently copied from lib/chef/util/selinux to make
@@ -181,4 +202,14 @@ end
 
 def aes_256_gcm?
   OpenSSL::Cipher.ciphers.include?("aes-256-gcm")
+end
+
+class GCEDetector
+  extend Ohai::Mixin::GCEMetadata
+end
+
+def gce?
+  GCEDetector.can_metadata_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR,80)
+rescue SocketError
+  false
 end

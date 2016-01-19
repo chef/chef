@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Macosx do
   describe ".gather_plist_dirs" do
     context "when HOME directory is set" do
       before do
-        allow(Chef::Util::PathHelper).to receive(:home).with('Library', 'LaunchAgents').and_yield('/Users/someuser/Library/LaunchAgents')
+        allow(Chef::Util::PathHelper).to receive(:home).with("Library", "LaunchAgents").and_yield("/Users/someuser/Library/LaunchAgents")
       end
 
       it "includes users's LaunchAgents folder" do
@@ -32,7 +32,7 @@ describe Chef::Provider::Service::Macosx do
 
     context "when HOME directory is not set" do
       before do
-        allow(Chef::Util::PathHelper).to receive(:home).with('Library', 'LaunchAgents').and_return(nil)
+        allow(Chef::Util::PathHelper).to receive(:home).with("Library", "LaunchAgents").and_return(nil)
       end
 
       it "doesn't include user's LaunchAgents folder" do
@@ -58,248 +58,275 @@ describe Chef::Provider::Service::Macosx do
 </plist>
 XML
 
-    ["redis-server", "io.redis.redis-server"].each do |service_name|
-      before do
-        allow(Dir).to receive(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
-        allow(provider).to receive(:shell_out!).
-                 with("launchctl list", {:group => 1001, :user => 101}).
-                 and_return(double("Status", :stdout => launchctl_stdout))
-        allow(provider).to receive(:shell_out).
-                 with(/launchctl list /,
-                      {:group => nil, :user => nil}).
-                 and_return(double("Status",
-                                 :stdout => launchctl_stdout, :exitstatus => 0))
-        allow(provider).to receive(:shell_out!).
-                 with(/plutil -convert xml1 -o/).
-                 and_return(double("Status", :stdout => plutil_stdout))
-
-        allow(File).to receive(:stat).and_return(double("stat", :gid => 1001, :uid => 101))
-      end
-
-      context "#{service_name}" do
-        let(:new_resource) { Chef::Resource::Service.new(service_name) }
-        let!(:current_resource) { Chef::Resource::Service.new(service_name) }
-
-        describe "#load_current_resource" do
-
-          # CHEF-5223 "you can't glob for a file that hasn't been converged
-          # onto the node yet."
-          context "when the plist doesn't exist" do
-
-            def run_resource_setup_for_action(action)
-              new_resource.action(action)
-              provider.action = action
-              provider.load_current_resource
-              provider.define_resource_requirements
-              provider.process_resource_requirements
-            end
-
-            before do
-              allow(Dir).to receive(:glob).and_return([])
-              allow(provider).to receive(:shell_out!).
-                       with(/plutil -convert xml1 -o/).
-                       and_raise(Mixlib::ShellOut::ShellCommandFailed)
-            end
-
-            it "works for action :nothing" do
-              expect { run_resource_setup_for_action(:nothing) }.not_to raise_error
-            end
-
-            it "works for action :start" do
-              expect { run_resource_setup_for_action(:start) }.not_to raise_error
-            end
-
-            it "errors if action is :enable" do
-              expect { run_resource_setup_for_action(:enable) }.to raise_error(Chef::Exceptions::Service)
-            end
-
-            it "errors if action is :disable" do
-              expect { run_resource_setup_for_action(:disable) }.to raise_error(Chef::Exceptions::Service)
+    ["Daemon", "Agent"].each do |service_type|
+      ["redis-server", "io.redis.redis-server"].each do |service_name|
+        ["10.9", "10.10", "10.11"].each do |platform_version|
+          let(:plist) {"/Library/LaunchDaemons/io.redis.redis-server.plist"}
+          let(:session) { StringIO.new }
+          if service_type == "Agent"
+            let(:plist) {"/Library/LaunchAgents/io.redis.redis-server.plist"}
+            let(:session) {"-S Aqua "}
+            let(:su_cmd) {"su -l igor -c"}
+            if platform_version == "10.9"
+              let(:su_cmd) {"su igor -c"}
             end
           end
-
-          context "when launchctl returns pid in service list" do
-            let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-  12761 - 0x100114220.old.machinit.thing
-  7777  - io.redis.redis-server
-  - - com.lol.stopped-thing
-  SVC_LIST
-
-            before do
-              provider.load_current_resource
-            end
-
-            it "sets resource running state to true" do
-              expect(provider.current_resource.running).to be_truthy
-            end
-
-            it "sets resouce enabled state to true" do
-              expect(provider.current_resource.enabled).to be_truthy
-            end
+          let(:service_label) {"io.redis.redis-server"}
+          before do
+            allow(Dir).to receive(:glob).and_return([plist], [])
+            allow(Etc).to receive(:getlogin).and_return("igor")
+            allow(node).to receive(:[]).with("platform_version").and_return(platform_version)
+            cmd = "launchctl list #{service_label}"
+            allow(provider).to receive(:shell_out_with_systems_locale).
+                    with(/(#{su_cmd} '#{cmd}'|#{cmd})/).
+                    and_return(double("Status",
+                                    :stdout => launchctl_stdout, :exitstatus => 0))
+            allow(File).to receive(:exists?).and_return([true], [])
+            allow(provider).to receive(:shell_out_with_systems_locale!).
+                    with(/plutil -convert xml1 -o/).
+                    and_return(double("Status", :stdout => plutil_stdout))
           end
 
-          describe "running unsupported actions" do
-            let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-12761 - 0x100114220.old.machinit.thing
-7777  - io.redis.redis-server
-- - com.lol.stopped-thing
+          context "#{service_name} that is a #{service_type} running Osx #{platform_version}" do
+            let(:new_resource) { Chef::Resource::MacosxService.new(service_name) }
+            let!(:current_resource) { Chef::Resource::MacosxService.new(service_name) }
+
+            describe "#load_current_resource" do
+
+              # CHEF-5223 "you can't glob for a file that hasn't been converged
+              # onto the node yet."
+              context "when the plist doesn't exist" do
+
+                def run_resource_setup_for_action(action)
+                  new_resource.action(action)
+                  provider.action = action
+                  provider.load_current_resource
+                  provider.define_resource_requirements
+                  provider.process_resource_requirements
+                end
+
+                before do
+                  allow(Dir).to receive(:glob).and_return([])
+                  allow(File).to receive(:exists?).and_return([true], [])
+                  allow(provider).to receive(:shell_out!).
+                          with(/plutil -convert xml1 -o/).
+                          and_raise(Mixlib::ShellOut::ShellCommandFailed)
+                end
+
+                it "works for action :nothing" do
+                  expect { run_resource_setup_for_action(:nothing) }.not_to raise_error
+                end
+
+                it "works for action :start" do
+                  expect { run_resource_setup_for_action(:start) }.not_to raise_error
+                end
+
+                it "errors if action is :enable" do
+                  expect { run_resource_setup_for_action(:enable) }.to raise_error(Chef::Exceptions::Service)
+                end
+
+                it "errors if action is :disable" do
+                  expect { run_resource_setup_for_action(:disable) }.to raise_error(Chef::Exceptions::Service)
+                end
+              end
+
+              context "when launchctl returns pid in service list" do
+                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
+{
+  "LimitLoadToSessionType" = "System";
+  "Label" = "io.redis.redis-server";
+  "TimeOut" = 30;
+  "OnDemand" = false;
+  "LastExitStatus" = 0;
+  "PID" = 62803;
+  "Program" = "do_some.sh";
+  "ProgramArguments" = (
+    "path/to/do_something.sh";
+    "-f";
+  );
+};
 SVC_LIST
 
-            before do
-              allow(Dir).to receive(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
-            end
-            it "should throw an exception when reload action is attempted" do
-              expect {provider.run_action(:reload)}.to raise_error(Chef::Exceptions::UnsupportedAction)
-            end
-          end
-          context "when launchctl returns empty service pid" do
-            let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-  12761 - 0x100114220.old.machinit.thing
-  - - io.redis.redis-server
-  - - com.lol.stopped-thing
-  SVC_LIST
+                before do
+                  provider.load_current_resource
+                end
 
-            before do
-              provider.load_current_resource
+                it "sets resource running state to true" do
+                  expect(provider.current_resource.running).to be_truthy
+                end
+
+                it "sets resouce enabled state to true" do
+                  expect(provider.current_resource.enabled).to be_truthy
+                end
+              end
+
+              describe "running unsupported actions" do
+                before do
+                  allow(Dir).to receive(:glob).and_return(["#{plist}"], [])
+                  allow(File).to receive(:exists?).and_return([true], [])
+                end
+                it "should throw an exception when reload action is attempted" do
+                  expect {provider.run_action(:reload)}.to raise_error(Chef::Exceptions::UnsupportedAction)
+                end
+              end
+              context "when launchctl returns empty service pid" do
+                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
+{
+  "LimitLoadToSessionType" = "System";
+  "Label" = "io.redis.redis-server";
+  "TimeOut" = 30;
+  "OnDemand" = false;
+  "LastExitStatus" = 0;
+  "Program" = "do_some.sh";
+  "ProgramArguments" = (
+    "path/to/do_something.sh";
+    "-f";
+  );
+};
+SVC_LIST
+
+                before do
+                  provider.load_current_resource
+                end
+
+                it "sets resource running state to false" do
+                  expect(provider.current_resource.running).to be_falsey
+                end
+
+                it "sets resouce enabled state to true" do
+                  expect(provider.current_resource.enabled).to be_truthy
+                end
+              end
+
+              context "when launchctl doesn't return service entry at all" do
+                let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
+Could not find service "io.redis.redis-server" in domain for system
+SVC_LIST
+
+                it "sets service running state to false" do
+                  provider.load_current_resource
+                  expect(provider.current_resource.running).to be_falsey
+                end
+
+                context "and plist for service is not available" do
+                  before do
+                    allow(Dir).to receive(:glob).and_return([])
+                    provider.load_current_resource
+                  end
+
+                  it "sets resouce enabled state to false" do
+                    expect(provider.current_resource.enabled).to be_falsey
+                  end
+                end
+
+                context "and plist for service is available" do
+                  before do
+                    allow(Dir).to receive(:glob).and_return(["#{plist}"], [])
+                    provider.load_current_resource
+                  end
+
+                  it "sets resouce enabled state to true" do
+                    expect(provider.current_resource.enabled).to be_truthy
+                  end
+                end
+
+                describe "and several plists match service name" do
+                  it "throws exception" do
+                    allow(Dir).to receive(:glob).and_return(["#{plist}",
+                                                "/Users/wtf/something.plist"])
+                    provider.load_current_resource
+                    provider.define_resource_requirements
+                    expect { provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
+                  end
+                end
+              end
             end
-
-            it "sets resource running state to false" do
-              expect(provider.current_resource.running).to be_falsey
-            end
-
-            it "sets resouce enabled state to true" do
-              expect(provider.current_resource.enabled).to be_truthy
-            end
-          end
-
-          context "when launchctl doesn't return service entry at all" do
-            let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
-  12761 - 0x100114220.old.machinit.thing
-  - - com.lol.stopped-thing
-  SVC_LIST
-
-            it "sets service running state to false" do
-              provider.load_current_resource
-              expect(provider.current_resource.running).to be_falsey
-            end
-
-            context "and plist for service is not available" do
+            describe "#start_service" do
               before do
-                allow(Dir).to receive(:glob).and_return([])
+                allow(Chef::Resource::MacosxService).to receive(:new).and_return(current_resource)
                 provider.load_current_resource
+                allow(current_resource).to receive(:running).and_return(false)
               end
 
-              it "sets resouce enabled state to false" do
-                expect(provider.current_resource.enabled).to be_falsey
+              it "calls the start command if one is specified and service is not running" do
+                allow(new_resource).to receive(:start_command).and_return("cowsay dirty")
+
+                expect(provider).to receive(:shell_out_with_systems_locale!).with("cowsay dirty")
+                provider.start_service
+              end
+
+              it "shows warning message if service is already running" do
+                allow(current_resource).to receive(:running).and_return(true)
+                expect(Chef::Log).to receive(:debug).with("macosx_service[#{service_name}] already running, not starting")
+
+                provider.start_service
+              end
+
+              it "starts service via launchctl if service found" do
+                cmd = "launchctl load -w " + session + plist
+                expect(provider).to receive(:shell_out_with_systems_locale).
+                        with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
+                        and_return(0)
+
+                provider.start_service
               end
             end
 
-            context "and plist for service is available" do
+            describe "#stop_service" do
               before do
-                allow(Dir).to receive(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
+                allow(Chef::Resource::MacosxService).to receive(:new).and_return(current_resource)
+
                 provider.load_current_resource
+                allow(current_resource).to receive(:running).and_return(true)
               end
 
-              it "sets resouce enabled state to true" do
-                expect(provider.current_resource.enabled).to be_truthy
+              it "calls the stop command if one is specified and service is running" do
+                allow(new_resource).to receive(:stop_command).and_return("kill -9 123")
+
+                expect(provider).to receive(:shell_out_with_systems_locale!).with("kill -9 123")
+                provider.stop_service
+              end
+
+              it "shows warning message if service is not running" do
+                allow(current_resource).to receive(:running).and_return(false)
+                expect(Chef::Log).to receive(:debug).with("macosx_service[#{service_name}] not running, not stopping")
+
+                provider.stop_service
+              end
+
+              it "stops the service via launchctl if service found" do
+                cmd = "launchctl unload -w "+ plist
+                expect(provider).to receive(:shell_out_with_systems_locale).
+                        with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
+                        and_return(0)
+
+                provider.stop_service
               end
             end
 
-            describe "and several plists match service name" do
-              it "throws exception" do
-                allow(Dir).to receive(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist",
-                                             "/Users/wtf/something.plist"])
+            describe "#restart_service" do
+              before do
+                allow(Chef::Resource::Service).to receive(:new).and_return(current_resource)
+
                 provider.load_current_resource
-                provider.define_resource_requirements
-                expect { provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
+                allow(current_resource).to receive(:running).and_return(true)
+                allow(provider).to receive(:sleep)
+              end
+
+              it "issues a command if given" do
+                allow(new_resource).to receive(:restart_command).and_return("reload that thing")
+
+                expect(provider).to receive(:shell_out_with_systems_locale!).with("reload that thing")
+                provider.restart_service
+              end
+
+              it "stops and then starts service" do
+                expect(provider).to receive(:unload_service)
+                expect(provider).to receive(:load_service);
+
+                provider.restart_service
               end
             end
-          end
-        end
-        describe "#start_service" do
-          before do
-            allow(Chef::Resource::Service).to receive(:new).and_return(current_resource)
-            provider.load_current_resource
-            allow(current_resource).to receive(:running).and_return(false)
-          end
-
-          it "calls the start command if one is specified and service is not running" do
-            allow(new_resource).to receive(:start_command).and_return("cowsay dirty")
-
-            expect(provider).to receive(:shell_out_with_systems_locale!).with("cowsay dirty")
-            provider.start_service
-          end
-
-          it "shows warning message if service is already running" do
-            allow(current_resource).to receive(:running).and_return(true)
-            expect(Chef::Log).to receive(:debug).with("service[#{service_name}] already running, not starting")
-
-            provider.start_service
-          end
-
-          it "starts service via launchctl if service found" do
-            expect(provider).to receive(:shell_out_with_systems_locale!).
-                     with("launchctl load -w '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
-                           :group => 1001, :user => 101).
-                     and_return(0)
-
-            provider.start_service
-          end
-        end
-
-        describe "#stop_service" do
-          before do
-            allow(Chef::Resource::Service).to receive(:new).and_return(current_resource)
-
-            provider.load_current_resource
-            allow(current_resource).to receive(:running).and_return(true)
-          end
-
-          it "calls the stop command if one is specified and service is running" do
-            allow(new_resource).to receive(:stop_command).and_return("kill -9 123")
-
-            expect(provider).to receive(:shell_out_with_systems_locale!).with("kill -9 123")
-            provider.stop_service
-          end
-
-          it "shows warning message if service is not running" do
-            allow(current_resource).to receive(:running).and_return(false)
-            expect(Chef::Log).to receive(:debug).with("service[#{service_name}] not running, not stopping")
-
-            provider.stop_service
-          end
-
-          it "stops the service via launchctl if service found" do
-            expect(provider).to receive(:shell_out_with_systems_locale!).
-                     with("launchctl unload '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
-                          :group => 1001, :user => 101).
-                     and_return(0)
-
-            provider.stop_service
-          end
-        end
-
-        describe "#restart_service" do
-          before do
-            allow(Chef::Resource::Service).to receive(:new).and_return(current_resource)
-
-            provider.load_current_resource
-            allow(current_resource).to receive(:running).and_return(true)
-            allow(provider).to receive(:sleep)
-          end
-
-          it "issues a command if given" do
-            allow(new_resource).to receive(:restart_command).and_return("reload that thing")
-
-            expect(provider).to receive(:shell_out_with_systems_locale!).with("reload that thing")
-            provider.restart_service
-          end
-
-          it "stops and then starts service" do
-            expect(provider).to receive(:stop_service)
-            expect(provider).to receive(:start_service);
-
-            provider.restart_service
           end
         end
       end

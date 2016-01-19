@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/execute'
+require "chef/resource"
+require "chef/provider/execute"
 
 class Chef
   class Resource
@@ -32,12 +32,12 @@ class Chef
       # Only execute resources (and subclasses) can be guard interpreters.
       attr_accessor :is_guard_interpreter
 
+      default_action :run
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :execute
         @command = name
         @backup = 5
-        @action = "run"
         @creates = nil
         @cwd = nil
         @environment = nil
@@ -46,17 +46,17 @@ class Chef
         @returns = 0
         @timeout = nil
         @user = nil
-        @allowed_actions.push(:run)
         @umask = nil
         @default_guard_interpreter = :execute
         @is_guard_interpreter = false
+        @live_stream = false
       end
 
       def umask(arg=nil)
         set_or_return(
           :umask,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer ],
         )
       end
 
@@ -64,7 +64,7 @@ class Chef
         set_or_return(
           :command,
           arg,
-          :kind_of => [ String, Array ]
+          :kind_of => [ String, Array ],
         )
       end
 
@@ -72,7 +72,7 @@ class Chef
         set_or_return(
           :creates,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -80,7 +80,7 @@ class Chef
         set_or_return(
           :cwd,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -88,7 +88,7 @@ class Chef
         set_or_return(
           :environment,
           arg,
-          :kind_of => [ Hash ]
+          :kind_of => [ Hash ],
         )
       end
 
@@ -98,17 +98,24 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer ],
         )
       end
 
+      def live_stream(arg=nil)
+        set_or_return(
+          :live_stream,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ])
+      end
+
       def path(arg=nil)
-        Chef::Log.warn "'path' attribute of 'execute' is not used by any provider in Chef 11 and Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
+        Chef::Log.warn "The 'path' attribute of 'execute' is not used by any provider in Chef 11 or Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
 
         set_or_return(
           :path,
           arg,
-          :kind_of => [ Array ]
+          :kind_of => [ Array ],
         )
       end
 
@@ -116,7 +123,7 @@ class Chef
         set_or_return(
           :returns,
           arg,
-          :kind_of => [ Integer, Array ]
+          :kind_of => [ Integer, Array ],
         )
       end
 
@@ -124,7 +131,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ Integer, Float ]
+          :kind_of => [ Integer, Float ],
         )
       end
 
@@ -132,7 +139,7 @@ class Chef
         set_or_return(
           :user,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer ],
         )
       end
 
@@ -157,7 +164,7 @@ class Chef
         :environment,
         :group,
         :user,
-        :umask
+        :umask,
       )
 
     end

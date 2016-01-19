@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 # Deploy relies heavily on symlinks, so it doesn't work on windows.
 describe Chef::Resource::DeployRevision, :unix_only => true do
@@ -193,7 +193,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
       it "restarts the application" do
         expect(File).to exist(rel_path("current/restart.txt"))
-        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev])
+        expect(actual_operations_order).to eq(%w{deploy_to_latest_rev})
       end
 
       it "is marked as updated" do
@@ -214,7 +214,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the application after rolling back" do
-        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev deploy_to_previous_rev deploy_to_latest_rev_again])
+        expect(actual_operations_order).to eq(%w{deploy_to_latest_rev deploy_to_previous_rev deploy_to_latest_rev_again})
       end
 
       it "is marked updated" do
@@ -248,7 +248,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
       it "restarts the application" do
         expect(File).to exist(rel_path("current/restart.txt"))
-        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev])
+        expect(actual_operations_order).to eq(%w{deploy_to_latest_rev})
       end
 
       it "is marked as updated" do
@@ -265,7 +265,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "does not restart the app" do
-        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev])
+        expect(actual_operations_order).to eq(%w{deploy_to_latest_rev})
       end
 
       it "is not marked updated" do
@@ -283,7 +283,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the app" do
-        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev deploy_to_latest_rev_again])
+        expect(actual_operations_order).to eq(%w{deploy_to_latest_rev deploy_to_latest_rev_again})
       end
 
       it "is marked updated" do
@@ -301,7 +301,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the application after the new deploy" do
-        expect(actual_operations_order).to eq(%w[deploy_to_previous_rev deploy_to_latest_rev])
+        expect(actual_operations_order).to eq(%w{deploy_to_previous_rev deploy_to_latest_rev})
       end
 
       it "is marked updated" do
@@ -324,7 +324,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the application after rolling back" do
-        expect(actual_operations_order).to eq(%w[deploy_to_latest_rev deploy_to_previous_rev deploy_to_latest_rev_again])
+        expect(actual_operations_order).to eq(%w{deploy_to_latest_rev deploy_to_previous_rev deploy_to_latest_rev_again})
       end
 
       it "is marked updated" do
@@ -349,7 +349,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:previous_rev)
 
       it "restarts the application after rolling back" do
-        expect(actual_operations_order).to eq(%w[deploy_to_previous_rev deploy_to_latest_rev deploy_to_latest_rev_again])
+        expect(actual_operations_order).to eq(%w{deploy_to_previous_rev deploy_to_latest_rev deploy_to_latest_rev_again})
       end
 
       it "is marked updated" do
@@ -392,7 +392,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:previous_rev)
 
       it "restarts the application after rolling back" do
-        expect(actual_operations_order).to eq(%w[deploy_to_previous_rev deploy_to_latest_rev deploy_to_previous_rev_again])
+        expect(actual_operations_order).to eq(%w{deploy_to_previous_rev deploy_to_latest_rev deploy_to_previous_rev_again})
       end
 
       it "is marked updated" do
@@ -437,7 +437,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:second_rev)
 
       it "restarts the application after rolling back" do
-        expect(actual_operations_order).to eq(%w[deploy_to_second_rev deploy_to_previous_rev deploy_to_previous_rev_again deploy_to_latest_rev deploy_to_latest_rev_again])
+        expect(actual_operations_order).to eq(%w{deploy_to_second_rev deploy_to_previous_rev deploy_to_previous_rev_again deploy_to_latest_rev deploy_to_latest_rev_again})
       end
 
       it "is marked updated" do
@@ -474,7 +474,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       the_app_is_deployed_at_revision(:second_rev)
 
       it "restarts the application after rolling back" do
-        expect(actual_operations_order).to eq(%w[deploy_to_second_rev deploy_to_previous_rev deploy_to_second_rev_again deploy_to_latest_rev deploy_to_second_rev_again_again])
+        expect(actual_operations_order).to eq(%w{deploy_to_second_rev deploy_to_previous_rev deploy_to_second_rev_again deploy_to_latest_rev deploy_to_second_rev_again_again})
       end
 
       it "is marked updated" do
@@ -689,7 +689,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     end
 
     it "runs migrations in between the before_migrate and before_symlink steps" do
-      expect(actual_operations_order).to eq(%w[before_migrate migration before_symlink before_restart after_restart])
+      expect(actual_operations_order).to eq(%w{before_migrate migration before_symlink before_restart after_restart})
     end
   end
 
@@ -819,7 +819,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       end
 
       before do
-        expect { deploy_that_fails.run_action(:deploy) }.to raise_error(Chef::Exceptions::Exec)
+        expect { deploy_that_fails.run_action(:deploy) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
         deploy_to_latest_with_callback_tracking.run_action(:deploy)
       end
 

@@ -25,7 +25,7 @@ end
 
 require "irb"
 require "irb/completion"
-require 'irb/ext/save-history'
+require "irb/ext/save-history"
 
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
 

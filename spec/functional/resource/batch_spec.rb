@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::WindowsScript::Batch, :windows_only do
   include_context Chef::Resource::WindowsScript
 
-  let(:output_command) { ' > ' }
+  let(:output_command) { " > " }
 
-  let (:architecture_command) { '@echo %PROCESSOR_ARCHITECTURE%' }
+  let (:architecture_command) { "@echo %PROCESSOR_ARCHITECTURE%" }
 
   it_behaves_like "a Windows script running on Windows"
 

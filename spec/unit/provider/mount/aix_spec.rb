@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Provider::Mount::Aix do
 
@@ -114,7 +114,7 @@ ENABLED
     expect(@provider.current_resource.mounted).to be_truthy
     expect(@provider.current_resource.mount_point).to eql(@new_resource.mount_point)
     expect(@provider.current_resource.fstype).to eql("jfs2")
-    expect(@provider.current_resource.options).to eql(['rw'])
+    expect(@provider.current_resource.options).to eql(["rw"])
   end
 
   describe "mount_fs" do
@@ -126,9 +126,10 @@ ENABLED
       @provider.run_action(:mount)
     end
 
-    it "should not mount resource if it is already mounted" do
+    it "should not mount resource if it is already mounted and the options have not changed" do
       stub_mounted_enabled(@provider, @mounted_output, "")
 
+      allow(@provider).to receive(:mount_options_unchanged?).and_return(true)
       expect(@provider).not_to receive(:mount_fs)
 
       @provider.run_action(:mount)

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::CookbookVersion, "file specificity" do
   before(:each) do
@@ -30,31 +30,31 @@ describe Chef::CookbookVersion, "file specificity" do
          :name => "afile.rb",
          :path => "files/host-examplehost.example.org/afile.rb",
          :checksum => "csum-host",
-         :specificity => "host-examplehost.example.org"
+         :specificity => "host-examplehost.example.org",
        },
        {
          :name => "afile.rb",
          :path => "files/ubuntu-9.10/afile.rb",
          :checksum => "csum-platver-full",
-         :specificity => "ubuntu-9.10"
+         :specificity => "ubuntu-9.10",
        },
        {
          :name => "afile.rb",
          :path => "files/newubuntu-9/afile.rb",
          :checksum => "csum-platver-partial",
-         :specificity => "newubuntu-9"
+         :specificity => "newubuntu-9",
        },
        {
          :name => "afile.rb",
          :path => "files/ubuntu/afile.rb",
          :checksum => "csum-plat",
-         :specificity => "ubuntu"
+         :specificity => "ubuntu",
        },
        {
          :name => "afile.rb",
          :path => "files/default/afile.rb",
          :checksum => "csum-default",
-         :specificity => "default"
+         :specificity => "default",
        },
 
        # for different/odd platform_versions
@@ -62,25 +62,25 @@ describe Chef::CookbookVersion, "file specificity" do
          :name => "bfile.rb",
          :path => "files/fakeos-2.0.rc.1/bfile.rb",
          :checksum => "csum2-platver-full",
-         :specificity => "fakeos-2.0.rc.1"
+         :specificity => "fakeos-2.0.rc.1",
        },
        {
          :name => "bfile.rb",
          :path => "files/newfakeos-2.0.rc/bfile.rb",
          :checksum => "csum2-platver-partial",
-         :specificity => "newfakeos-2.0.rc"
+         :specificity => "newfakeos-2.0.rc",
        },
        {
          :name => "bfile.rb",
          :path => "files/fakeos-maple tree/bfile.rb",
          :checksum => "csum3-platver-full",
-         :specificity => "maple tree"
+         :specificity => "maple tree",
        },
        {
          :name => "bfile.rb",
          :path => "files/fakeos-1/bfile.rb",
          :checksum => "csum4-platver-full",
-         :specificity => "fakeos-1"
+         :specificity => "fakeos-1",
        },
 
        # directory adirectory
@@ -88,114 +88,114 @@ describe Chef::CookbookVersion, "file specificity" do
          :name => "anotherfile1.rb",
          :path => "files/host-examplehost.example.org/adirectory/anotherfile1.rb.host",
          :checksum => "csum-host-1",
-         :specificity => "host-examplehost.example.org"
+         :specificity => "host-examplehost.example.org",
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/host-examplehost.example.org/adirectory/anotherfile2.rb.host",
          :checksum => "csum-host-2",
-         :specificity => "host-examplehost.example.org"
+         :specificity => "host-examplehost.example.org",
        },
 
        {
          :name => "anotherfile1.rb",
          :path => "files/ubuntu-9.10/adirectory/anotherfile1.rb.platform-full-version",
          :checksum => "csum-platver-full-1",
-         :specificity => "ubuntu-9.10"
+         :specificity => "ubuntu-9.10",
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/ubuntu-9.10/adirectory/anotherfile2.rb.platform-full-version",
          :checksum => "csum-platver-full-2",
-         :specificity => "ubuntu-9.10"
+         :specificity => "ubuntu-9.10",
        },
 
        {
          :name => "anotherfile1.rb",
          :path => "files/newubuntu-9/adirectory/anotherfile1.rb.platform-partial-version",
          :checksum => "csum-platver-partial-1",
-         :specificity => "newubuntu-9"
+         :specificity => "newubuntu-9",
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/newubuntu-9/adirectory/anotherfile2.rb.platform-partial-version",
          :checksum => "csum-platver-partial-2",
-         :specificity => "nweubuntu-9"
+         :specificity => "nweubuntu-9",
        },
 
        {
          :name => "anotherfile1.rb",
          :path => "files/ubuntu/adirectory/anotherfile1.rb.platform",
          :checksum => "csum-plat-1",
-         :specificity => "ubuntu"
+         :specificity => "ubuntu",
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/ubuntu/adirectory/anotherfile2.rb.platform",
          :checksum => "csum-plat-2",
-         :specificity => "ubuntu"
+         :specificity => "ubuntu",
        },
 
        {
          :name => "anotherfile1.rb",
          :path => "files/default/adirectory/anotherfile1.rb.default",
          :checksum => "csum-default-1",
-         :specificity => "default"
+         :specificity => "default",
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/default/adirectory/anotherfile2.rb.default",
          :checksum => "csum-default-2",
-         :specificity => "default"
+         :specificity => "default",
        },
        # for different/odd platform_versions
        {
          :name => "anotherfile1.rb",
          :path => "files/fakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-full-version",
          :checksum => "csum2-platver-full-1",
-         :specificity => "fakeos-2.0.rc.1"
+         :specificity => "fakeos-2.0.rc.1",
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/fakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-full-version",
          :checksum => "csum2-platver-full-2",
-         :specificity => "fakeos-2.0.rc.1"
+         :specificity => "fakeos-2.0.rc.1",
        },
        {
          :name => "anotherfile1.rb",
          :path => "files/newfakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-partial-version",
          :checksum => "csum2-platver-partial-1",
-         :specificity => "newfakeos-2.0.rc"
+         :specificity => "newfakeos-2.0.rc",
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/newfakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-partial-version",
          :checksum => "csum2-platver-partial-2",
-         :specificity => "newfakeos-2.0.rc"
+         :specificity => "newfakeos-2.0.rc",
        },
        {
          :name => "anotherfile1.rb",
          :path => "files/fakeos-maple tree/adirectory/anotherfile1.rb.platform-full-version",
          :checksum => "csum3-platver-full-1",
-         :specificity => "fakeos-maple tree"
+         :specificity => "fakeos-maple tree",
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/fakeos-maple tree/adirectory/anotherfile2.rb.platform-full-version",
          :checksum => "csum3-platver-full-2",
-         :specificity => "fakeos-maple tree"
+         :specificity => "fakeos-maple tree",
        },
        {
          :name => "anotherfile1.rb",
          :path => "files/fakeos-1/adirectory/anotherfile1.rb.platform-full-version",
          :checksum => "csum4-platver-full-1",
-         :specificity => "fakeos-1"
+         :specificity => "fakeos-1",
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/fakeos-1/adirectory/anotherfile2.rb.platform-full-version",
          :checksum => "csum4-platver-full-2",
-         :specificity => "fakeos-1"
+         :specificity => "fakeos-1",
        },
       ]
     }
@@ -444,7 +444,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.host', 'anotherfile2.rb.host'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.host", "anotherfile2.rb.host"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version" do
@@ -457,7 +457,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-full-version", "anotherfile2.rb.platform-full-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & partial version" do
@@ -470,7 +470,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-partial-version", "anotherfile2.rb.platform-partial-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform only" do
@@ -483,7 +483,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform', 'anotherfile2.rb.platform'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform", "anotherfile2.rb.platform"])
     end
 
     it "should return a list of relative paths based on priority preference: default" do
@@ -496,7 +496,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.default', 'anotherfile2.rb.default'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.default", "anotherfile2.rb.default"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 1" do
@@ -509,7 +509,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-full-version", "anotherfile2.rb.platform-full-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & partial version - platform_version variant 1" do
@@ -522,7 +522,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-partial-version", "anotherfile2.rb.platform-partial-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 2" do
@@ -535,7 +535,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-full-version", "anotherfile2.rb.platform-full-version"])
     end
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 3" do
@@ -548,7 +548,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(filenames).not_to be_nil
       expect(filenames.size).to eq(2)
 
-      expect(filenames.sort).to eq(['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version'])
+      expect(filenames.sort).to eq(["anotherfile1.rb.platform-full-version", "anotherfile2.rb.platform-full-version"])
     end
   end
 end

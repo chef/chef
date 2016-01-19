@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Copyright:: Copyright 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +17,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "chef-config/exceptions"
+
 class Chef
   # == Chef::Exceptions
   # Chef's custom exceptions are all contained within the Chef::Exceptions
   # namespace.
   class Exceptions
 
+    ConfigurationError = ChefConfig::ConfigurationError
+
     # Backcompat with Chef::ShellOut code:
-    require 'mixlib/shellout/exceptions'
+    require "mixlib/shellout/exceptions"
 
     def self.const_missing(const_name)
       if const_name == :ShellCommandFailed
@@ -68,11 +72,22 @@ class Chef
     class DuplicateRole < RuntimeError; end
     class ValidationFailed < ArgumentError; end
     class InvalidPrivateKey < ArgumentError; end
-    class ConfigurationError < ArgumentError; end
+    class MissingKeyAttribute < ArgumentError; end
+    class KeyCommandInputError < ArgumentError; end
+    class BootstrapCommandInputError < ArgumentError
+      def initialize
+        super "You cannot pass both --json-attributes and --json-attribute-file. Please pass one or none."
+      end
+    end
+    class InvalidKeyArgument < ArgumentError; end
+    class InvalidKeyAttribute < ArgumentError; end
+    class InvalidUserAttribute < ArgumentError; end
+    class InvalidClientAttribute < ArgumentError; end
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookFrozen < ArgumentError; end
     class CookbookNotFound < RuntimeError; end
+    class OnlyApiVersion0SupportedForAction < RuntimeError; end
     # Cookbook loader used to raise an argument error when cookbook not found.
     # for back compat, need to raise an error that inherits from ArgumentError
     class CookbookNotFoundInRepo < ArgumentError; end
@@ -90,7 +105,14 @@ class Chef
     class ConflictingMembersInGroup < ArgumentError; end
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
+    class ProviderNotFound < RuntimeError; end
+    NoProviderAvailable = ProviderNotFound
     class VerificationNotFound < RuntimeError; end
+    class InvalidEventType < ArgumentError; end
+    class MultipleIdentityError < RuntimeError; end
+    # Used in Resource::ActionClass#load_current_resource to denote that
+    # the resource doesn't actually exist (for example, the file does not exist)
+    class CurrentValueDoesNotExist < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
     class NoSuchResourceType < NameError
@@ -98,6 +120,8 @@ class Chef
         super "Cannot find a resource for #{short_name} on #{node[:platform]} version #{node[:platform_version]}"
       end
     end
+
+    class InvalidPolicybuilderCall < ArgumentError; end
 
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
@@ -112,6 +136,23 @@ class Chef
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
     # Errors originating from calls to the Win32 API
     class Win32APIError < RuntimeError; end
+
+    class Win32NetAPIError < Win32APIError
+      attr_reader :msg, :error_code
+      def initialize(msg, error_code)
+        @msg = msg
+        @error_code = error_code
+
+        formatted_message = ""
+        formatted_message << "---- Begin Win32 API output ----\n"
+        formatted_message << "Net Api Error Code: #{error_code}\n"
+        formatted_message << "Net Api Error Message: #{msg}\n"
+        formatted_message << "---- End Win32 API output ----\n"
+
+        super(formatted_message)
+      end
+    end
+
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.
     class Win32APIFunctionNotImplemented < NotImplementedError; end
@@ -128,6 +169,8 @@ class Chef
     class LCMParser < RuntimeError; end
 
     class CannotDetermineHomebrewOwner < Package; end
+    class CannotDetermineWindowsInstallerType < Package; end
+    class NoWindowsPackageSource < Package; end
 
     # Can not create staging file during file deployment
     class FileContentStagingError < RuntimeError
@@ -177,7 +220,7 @@ class Chef
     class ImmutableAttributeModification < NoMethodError
       def initialize
         super "Node attributes are read-only when you do not specify which precedence level to set. " +
-          %Q(To set an attribute use code like `node.default["key"] = "value"')
+          %Q{To set an attribute use code like `node.default["key"] = "value"'}
       end
     end
 
@@ -211,8 +254,6 @@ class Chef
 
     class ChildConvergeError < RuntimeError; end
 
-    class NoProviderAvailable < RuntimeError; end
-
     class DeprecatedFeatureError < RuntimeError;
       def initalize(message)
         super("#{message} (raising error due to treat_deprecation_warnings_as_errors being set)")
@@ -233,7 +274,7 @@ class Chef
           super
         when RunList::RunListExpansion
           @expansion = message_or_expansion
-          missing_roles = @expansion.errors.join(', ')
+          missing_roles = @expansion.errors.join(", ")
           super("The expanded run list includes nonexistent roles: #{missing_roles}")
         end
       end
@@ -303,7 +344,7 @@ class Chef
           result = {
             "message" => message,
             "non_existent_cookbooks" => non_existent_cookbooks,
-            "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions
+            "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions,
           }
           Chef::JSONCompat.to_json(result, *a)
         end
@@ -338,7 +379,7 @@ class Chef
             "message" => message,
             "unsatisfiable_run_list_item" => run_list_item,
             "non_existent_cookbooks" => non_existent_cookbooks,
-            "most_constrained_cookbooks" => most_constrained_cookbooks
+            "most_constrained_cookbooks" => most_constrained_cookbooks,
           }
           Chef::JSONCompat.to_json(result, *a)
         end
@@ -356,7 +397,10 @@ class Chef
     # length declared in the http response.
     class ContentLengthMismatch < RuntimeError
       def initialize(response_length, content_length)
-        super "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}."
+        super <<-EOF
+Response body length #{response_length} does not match HTTP Content-Length header #{content_length}.
+This error is most often caused by network issues (proxies, etc) outside of chef-client.
+        EOF
       end
     end
 
@@ -431,7 +475,7 @@ class Chef
         wrapped_errors.each_with_index do |e,i|
           backtrace << "#{i+1}) #{e.class} -  #{e.message}"
           backtrace += e.backtrace if e.backtrace
-          backtrace << ""
+          backtrace << "" unless i == wrapped_errors.length - 1
         end
         set_backtrace(backtrace)
       end
@@ -443,12 +487,26 @@ class Chef
       end
     end
 
+    class CookbookChefVersionMismatch < RuntimeError
+      def initialize(chef_version, cookbook_name, cookbook_version, *constraints)
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(", ")
+        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on chef version #{constraint_str}, but the running chef version is #{chef_version}"
+      end
+    end
+
+    class CookbookOhaiVersionMismatch < RuntimeError
+      def initialize(ohai_version, cookbook_name, cookbook_version, *constraints)
+        constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(", ")
+        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on ohai version #{constraint_str}, but the running ohai version is #{ohai_version}"
+      end
+    end
+
     class MultipleDscResourcesFound < RuntimeError
       attr_reader :resources_found
       def initialize(resources_found)
         @resources_found = resources_found
         matches_info = @resources_found.each do |r|
-          if r['Module'].nil?
+          if r["Module"].nil?
             "Resource #{r['Name']} was found in #{r['Module']['Name']}"
           else
             "Resource #{r['Name']} is a binary resource"

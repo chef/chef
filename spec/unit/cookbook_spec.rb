@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::CookbookVersion do
 #  COOKBOOK_PATH = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks", "openldap"))
@@ -57,15 +57,6 @@ describe Chef::CookbookVersion do
     expect(@cookbook.fully_qualified_recipe_names.include?("openldap::one")).to eq(true)
     expect(@cookbook.fully_qualified_recipe_names.include?("openldap::two")).to eq(true)
     expect(@cookbook.fully_qualified_recipe_names.include?("openldap::three")).to eq(true)
-  end
-
-  it "should find a preferred file" do
-    skip
-  end
-
-  it "should not return an unchanged preferred file" do
-    pending
-    expect(@cookbook.preferred_filename(@node, :files, 'a-filename', 'the-checksum')).to be_nil
   end
 
   it "should raise an ArgumentException if you try to load a bad recipe name" do

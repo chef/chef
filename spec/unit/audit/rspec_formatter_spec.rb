@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/audit/rspec_formatter'
+require "spec_helper"
+require "chef/audit/rspec_formatter"
 
 describe Chef::Audit::RspecFormatter do
   let(:formatter) { Chef::Audit::RspecFormatter.new(nil) }

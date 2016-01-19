@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/provider'
+require "chef/log"
+require "chef/provider"
 
 class Chef
   class Provider
     class Reboot < Chef::Provider
+      provides :reboot
 
       def whyrun_supported?
         true
@@ -39,7 +40,7 @@ class Chef
           :delay_mins => @new_resource.delay_mins,
           :reason => @new_resource.reason,
           :timestamp => Time.now,
-          :requested_by => @new_resource.name
+          :requested_by => @new_resource.name,
           )
       end
 

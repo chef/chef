@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2008, 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,32 +17,25 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
-require 'chef/mixin/get_source_from_package'
+require "uri"
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
+require "chef/mixin/get_source_from_package"
 
 # Class methods on Gem are defined in rubygems
-require 'rubygems'
+require "rubygems"
 # Ruby 1.9's gem_prelude can interact poorly with loading the full rubygems
 # explicitly like this. Make sure rubygems/specification is always last in this
 # list
-require 'rubygems/version'
-require 'rubygems/dependency'
-require 'rubygems/spec_fetcher'
-require 'rubygems/platform'
-
-# Compatibility note: Rubygems 2.0 removes rubygems/format in favor of
-# rubygems/package.
-begin
-  require 'rubygems/format'
-rescue LoadError
-  require 'rubygems/package'
-end
-require 'rubygems/dependency_installer'
-require 'rubygems/uninstaller'
-require 'rubygems/specification'
+require "rubygems/version"
+require "rubygems/dependency"
+require "rubygems/spec_fetcher"
+require "rubygems/platform"
+require "rubygems/package"
+require "rubygems/dependency_installer"
+require "rubygems/uninstaller"
+require "rubygems/specification"
 
 class Chef
   class Provider
@@ -93,7 +86,7 @@ class Chef
           # === Returns
           # [Gem::Specification]  an array of Gem::Specification objects
           def installed_versions(gem_dep)
-            if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
+            if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("1.8.0")
               gem_specification.find_all_by_name(gem_dep.name, gem_dep.requirement)
             else
               gem_source_index.search(gem_dep)
@@ -144,7 +137,7 @@ class Chef
               spec.version
             else
               # This is probably going to end badly...
-              logger.warn { "#{@new_resource} gem package #{source} does not satisfy the requirements #{gem_dependency.to_s}" }
+              logger.warn { "#{@new_resource} gem package #{source} does not satisfy the requirements #{gem_dependency}" }
               nil
             end
           end
@@ -168,17 +161,17 @@ class Chef
           def find_newest_remote_version(gem_dependency, *sources)
             available_gems = dependency_installer.find_gems_with_sources(gem_dependency)
             spec, source = if available_gems.respond_to?(:last)
-              # DependencyInstaller sorts the results such that the last one is
-              # always the one it considers best.
-              spec_with_source = available_gems.last
-              spec_with_source && spec_with_source
-            else
-              # Rubygems 2.0 returns a Gem::Available set, which is a
-              # collection of AvailableSet::Tuple structs
-              available_gems.pick_best!
-              best_gem = available_gems.set.first
-              best_gem && [best_gem.spec, best_gem.source]
-            end
+                             # DependencyInstaller sorts the results such that the last one is
+                             # always the one it considers best.
+                             spec_with_source = available_gems.last
+                             spec_with_source && spec_with_source
+                           else
+                             # Rubygems 2.0 returns a Gem::Available set, which is a
+                             # collection of AvailableSet::Tuple structs
+                             available_gems.pick_best!
+                             best_gem = available_gems.set.first
+                             best_gem && [best_gem.spec, best_gem.source]
+                           end
 
             version = spec && spec.version
             if version
@@ -295,7 +288,7 @@ class Chef
           end
 
           def gem_source_index
-            @source_index ||= Gem::SourceIndex.from_gems_in(*gem_paths.map { |p| p + '/specifications' })
+            @source_index ||= Gem::SourceIndex.from_gems_in(*gem_paths.map { |p| p + "/specifications" })
           end
 
           def gem_specification
@@ -327,7 +320,7 @@ class Chef
             else
               gem_environment = shell_out!("#{@gem_binary_location} env").stdout
               if jruby = gem_environment[JRUBY_PLATFORM]
-                self.class.platform_cache[@gem_binary_location] = ['ruby', Gem::Platform.new(jruby)]
+                self.class.platform_cache[@gem_binary_location] = ["ruby", Gem::Platform.new(jruby)]
               else
                 self.class.platform_cache[@gem_binary_location] = Gem.platforms
               end
@@ -401,11 +394,11 @@ class Chef
         end
 
         def is_omnibus?
-          if RbConfig::CONFIG['bindir'] =~ %r!/opt/(opscode|chef)/embedded/bin!
+          if RbConfig::CONFIG["bindir"] =~ %r{/(opscode|chef|chefdk)/embedded/bin}
             Chef::Log.debug("#{@new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true
-          elsif RbConfig::CONFIG['bindir'].sub(/^[\w]:/, '')  == "/opscode/chef/embedded/bin"
+          elsif RbConfig::CONFIG["bindir"].sub(/^[\w]:/, "")  == "/opscode/chef/embedded/bin"
             Chef::Log.debug("#{@new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
             # windows, with the drive letter removed
             true
@@ -417,7 +410,7 @@ class Chef
         def find_gem_by_path
           Chef::Log.debug("#{@new_resource} searching for 'gem' binary in path: #{ENV['PATH']}")
           separator = ::File::ALT_SEPARATOR ? ::File::ALT_SEPARATOR : ::File::SEPARATOR
-          path_to_first_gem = ENV['PATH'].split(::File::PATH_SEPARATOR).select { |path| ::File.exists?(path + separator + "gem") }.first
+          path_to_first_gem = ENV["PATH"].split(::File::PATH_SEPARATOR).select { |path| ::File.exists?(path + separator + "gem") }.first
           raise Chef::Exceptions::FileNotFound, "Unable to find 'gem' binary in path: #{ENV['PATH']}" if path_to_first_gem.nil?
           path_to_first_gem + separator + "gem"
         end
@@ -445,14 +438,14 @@ class Chef
             gemspec = matching_installed_versions.last
             logger.debug { "#{@new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}"}
             gemspec
-          # If no version matching the requirements exists, the latest installed
-          # version is the current version.
+            # If no version matching the requirements exists, the latest installed
+            # version is the current version.
           elsif !all_installed_versions.empty?
             gemspec = all_installed_versions.last
             logger.debug { "#{@new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
             gemspec
           else
-            logger.debug { "#{@new_resource} no installed version found for #{gem_dependency.to_s}"}
+            logger.debug { "#{@new_resource} no installed version found for #{gem_dependency}"}
             nil
           end
         end
@@ -463,8 +456,8 @@ class Chef
 
         def all_installed_versions
           @all_installed_versions ||= begin
-            @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name, '>= 0'))
-          end
+                                        @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name, ">= 0"))
+                                      end
         end
 
         def gem_sources
@@ -489,14 +482,14 @@ class Chef
 
         def candidate_version
           @candidate_version ||= begin
-            if target_version_already_installed?(@current_resource.version, @new_resource.version)
-              nil
-            elsif source_is_remote?
-              @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
-            else
-              @gem_env.candidate_version_from_file(gem_dependency, @new_resource.source).to_s
-            end
-          end
+                                   if target_version_already_installed?(@current_resource.version, @new_resource.version)
+                                     nil
+                                   elsif source_is_remote?
+                                     @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
+                                   else
+                                     @gem_env.candidate_version_from_file(gem_dependency, @new_resource.source).to_s
+                                   end
+                                 end
         end
 
         def target_version_already_installed?(current_version, new_version)
@@ -532,22 +525,22 @@ class Chef
         end
 
         def gem_binary_path
-          @new_resource.gem_binary || 'gem'
+          @new_resource.gem_binary || "gem"
         end
 
         def install_via_gem_command(name, version)
           if @new_resource.source =~ /\.gem$/i
             name = @new_resource.source
           elsif @new_resource.clear_sources
-            src = ' --clear-sources'
-            src << (@new_resource.source && " --source=#{@new_resource.source}" || '')
+            src = " --clear-sources"
+            src << (@new_resource.source && " --source=#{@new_resource.source}" || "")
           else
             src = @new_resource.source && " --source=#{@new_resource.source} --source=https://rubygems.org"
           end
           if !version.nil? && version.length > 0
-            shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
           else
-            shell_out!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)
           end
         end
 
@@ -571,9 +564,9 @@ class Chef
 
         def uninstall_via_gem_command(name, version)
           if version
-            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", :env=>nil)
           else
-            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", :env=>nil)
           end
         end
 

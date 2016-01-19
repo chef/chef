@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Mount do
   before(:each) do
@@ -38,7 +38,7 @@ describe Chef::Resource::Mount do
   end
 
   it "should have a default action of mount" do
-    expect(@resource.action).to eql(:mount)
+    expect(@resource.action).to eql([:mount])
   end
 
   it "should accept mount, umount and remount as actions" do
@@ -54,7 +54,7 @@ describe Chef::Resource::Mount do
   end
 
   it "should set fsck_device to '-' by default" do
-    expect(@resource.fsck_device).to eql('-')
+    expect(@resource.fsck_device).to eql("-")
   end
 
   it "should allow you to set the fsck_device attribute" do

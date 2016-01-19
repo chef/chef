@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::CookbookLoader do
   before do
-    allow(Chef::Platform).to receive(:windows?) {false}
+    allow(ChefConfig).to receive(:windows?) {false}
   end
   let(:repo_paths) do
     [
       File.expand_path(File.join(CHEF_SPEC_DATA, "kitchen")),
-      File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+      File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")),
     ]
   end
 
@@ -86,7 +86,7 @@ describe Chef::CookbookLoader do
         seen = Array.new
         cookbook_loader.each do |cookbook_name, cookbook|
           seen << cookbook_name
-          end
+        end
         expect(seen[0]).to eq("angrybash")
         expect(seen[1]).to eq("apache2")
         expect(seen[2]).to eq("borken")
@@ -179,7 +179,7 @@ describe Chef::CookbookLoader do
       [
         File.join(CHEF_SPEC_DATA, "kitchen"),
         File.join(CHEF_SPEC_DATA, "cookbooks"),
-        File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo")
+        File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo"),
       ]
     end
 
@@ -223,7 +223,7 @@ describe Chef::CookbookLoader do
     end
 
     it "should not load the cookbook again when accessed" do
-      expect(cookbook_loader).not_to receive('load_cookbook')
+      expect(cookbook_loader).not_to receive("load_cookbook")
       cookbook_loader["openldap"]
     end
 
@@ -245,7 +245,7 @@ describe Chef::CookbookLoader do
         [
           File.join(CHEF_SPEC_DATA, "kitchen"),
           File.join(CHEF_SPEC_DATA, "cookbooks"),
-          File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo")
+          File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo"),
         ]
       end
 

@@ -20,25 +20,26 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/http'
+require "tempfile"
+require "chef/http"
 class Chef
   class HTTP; end
   class REST < HTTP; end
 end
 
-require 'chef/http/authenticator'
-require 'chef/http/decompressor'
-require 'chef/http/json_input'
-require 'chef/http/json_to_model_output'
-require 'chef/http/cookie_manager'
-require 'chef/http/validate_content_length'
-require 'chef/config'
-require 'chef/exceptions'
-require 'chef/platform/query_helpers'
-require 'chef/http/remote_request_id'
+require "chef/http/authenticator"
+require "chef/http/decompressor"
+require "chef/http/json_input"
+require "chef/http/json_to_model_output"
+require "chef/http/cookie_manager"
+require "chef/http/validate_content_length"
+require "chef/config"
+require "chef/exceptions"
+require "chef/platform/query_helpers"
+require "chef/http/remote_request_id"
 
 class Chef
+
   # == Chef::REST
   # Chef's custom REST client with built-in JSON support and RSA signed header
   # authentication.
@@ -57,9 +58,13 @@ class Chef
     # http://localhost:4000, a call to +get_rest+ with 'nodes' will make an
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
+
+      signing_key_filename = nil if chef_zero_uri?(url)
+
       options = options.dup
       options[:client_name] = client_name
       options[:signing_key_filename] = signing_key_filename
+
       super(url, options)
 
       @decompressor = Decompressor.new(options)
@@ -161,7 +166,7 @@ class Chef
     def retriable_http_request(method, url, req_body, headers)
       rest_request = Chef::HTTP::HTTPRequest.new(method, url, req_body, headers)
 
-      Chef::Log.debug("Sending HTTP Request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
+      Chef::Log.debug("Sending HTTP request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
 
       retrying_http_errors(url) do
         yield rest_request
@@ -187,11 +192,6 @@ class Chef
     end
 
     public :create_url
-
-    def http_client(base_url=nil)
-      base_url ||= url
-      BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
-    end
 
     ############################################################################
     # DEPRECATED

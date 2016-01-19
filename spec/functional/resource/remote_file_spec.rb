@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
-require 'support/shared/functional/http'
+require "spec_helper"
+require "tiny_server"
+require "support/shared/functional/http"
 
 describe Chef::Resource::RemoteFile do
   include ChefHTTPShared
@@ -64,10 +64,10 @@ describe Chef::Resource::RemoteFile do
     end
 
     describe "when redownload isn't necessary" do
-      let(:source) { 'http://localhost:9000/seattle_capo.png' }
+      let(:source) { "http://localhost:9000/seattle_capo.png" }
 
       before do
-        @api.get("/seattle_capo.png", 304, "", { 'Etag' => 'abcdef' } )
+        @api.get("/seattle_capo.png", 304, "", { "Etag" => "abcdef" } )
       end
 
       it "does not fetch the file" do
@@ -76,7 +76,7 @@ describe Chef::Resource::RemoteFile do
     end
 
     context "when using normal encoding" do
-      let(:source) { 'http://localhost:9000/nyan_cat.png' }
+      let(:source) { "http://localhost:9000/nyan_cat.png" }
       let(:expected_content) { binread(nyan_uncompressed_filename) }
 
       it_behaves_like "a file resource"
@@ -85,7 +85,7 @@ describe Chef::Resource::RemoteFile do
     end
 
     context "when using gzip encoding" do
-      let(:source) { 'http://localhost:9000/nyan_cat.png.gz' }
+      let(:source) { "http://localhost:9000/nyan_cat.png.gz" }
       let(:expected_content) { binread(nyan_compressed_filename) }
 
       it_behaves_like "a file resource"
@@ -115,7 +115,7 @@ describe Chef::Resource::RemoteFile do
       stop_tiny_server
     end
 
-    let(:source) { 'https://localhost:9000/nyan_cat.png' }
+    let(:source) { "https://localhost:9000/nyan_cat.png" }
 
     let(:expected_content) { binread(nyan_uncompressed_filename) }
 
@@ -134,7 +134,7 @@ describe Chef::Resource::RemoteFile do
 
     context "when downloading compressed data" do
       let(:expected_content) { binread(nyan_uncompressed_filename) }
-      let(:source) { 'http://localhost:9000/nyan_cat_content_length_compressed.png' }
+      let(:source) { "http://localhost:9000/nyan_cat_content_length_compressed.png" }
 
       before do
         expect(File).not_to exist(path)
@@ -156,7 +156,7 @@ describe Chef::Resource::RemoteFile do
 
     context "when downloding uncompressed data" do
       let(:expected_content) { binread(nyan_uncompressed_filename) }
-      let(:source) { 'http://localhost:9000/nyan_cat_content_length.png' }
+      let(:source) { "http://localhost:9000/nyan_cat_content_length.png" }
 
       before do
         expect(File).not_to exist(path)
@@ -177,7 +177,7 @@ describe Chef::Resource::RemoteFile do
     end
 
     context "when downloading truncated compressed data" do
-      let(:source) { 'http://localhost:9000/nyan_cat_truncated_compressed.png' }
+      let(:source) { "http://localhost:9000/nyan_cat_truncated_compressed.png" }
 
       before do
         expect(File).not_to exist(path)
@@ -190,7 +190,7 @@ describe Chef::Resource::RemoteFile do
     end
 
     context "when downloding truncated uncompressed data" do
-      let(:source) { 'http://localhost:9000/nyan_cat_truncated.png' }
+      let(:source) { "http://localhost:9000/nyan_cat_truncated.png" }
 
       before do
         expect(File).not_to exist(path)
@@ -204,7 +204,7 @@ describe Chef::Resource::RemoteFile do
 
     context "when downloding data with transfer-encoding set" do
       let(:expected_content) { binread(nyan_uncompressed_filename) }
-      let(:source) { 'http://localhost:9000/nyan_cat_transfer_encoding.png' }
+      let(:source) { "http://localhost:9000/nyan_cat_transfer_encoding.png" }
 
       before do
         expect(File).not_to exist(path)
@@ -225,7 +225,7 @@ describe Chef::Resource::RemoteFile do
     end
 
     describe "when the download of the source raises an exception" do
-      let(:source) { 'http://localhost:0000/seattle_capo.png' }
+      let(:source) { "http://localhost:0000/seattle_capo.png" }
 
       before do
         expect(File).not_to exist(path)

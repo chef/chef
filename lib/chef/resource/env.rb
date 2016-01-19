@@ -27,21 +27,21 @@ class Chef
 
       provides :env, os: "windows"
 
+      default_action :create
+      allowed_actions :create, :delete, :modify
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :env
         @key_name = name
         @value = nil
-        @action = :create
         @delim = nil
-        @allowed_actions.push(:create, :delete, :modify)
       end
 
       def key_name(arg=nil)
         set_or_return(
           :key_name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -49,7 +49,7 @@ class Chef
         set_or_return(
           :value,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -57,7 +57,7 @@ class Chef
         set_or_return(
           :delim,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
     end

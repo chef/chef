@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/version_class'
+require "chef/version_class"
 
 class Chef
   class Version
@@ -34,7 +34,7 @@ class Chef
           when /^(\d+).(\d+)-[a-z]+\d?(-p(\d+))?$/i   # Match FreeBSD
             [ $1.to_i, $2.to_i, ($4 ? $4.to_i : 0)]
           else
-            msg = "'#{str.to_s}' does not match 'x.y.z', 'x.y' or 'x'"
+            msg = "'#{str}' does not match 'x.y.z', 'x.y' or 'x'"
             raise Chef::Exceptions::InvalidPlatformVersion.new( msg )
           end
       end

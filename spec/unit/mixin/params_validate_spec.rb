@@ -16,10 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class TinyClass
   include Chef::Mixin::ParamsValidate
+
+  attr_reader :name
 
   def music(is_good=true)
     is_good
@@ -61,7 +63,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :kind_of => String
           }
-        }
+        },
       )
     }.not_to raise_error
 
@@ -72,7 +74,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :kind_of => Array
           }
-        }
+        },
       )
     }.to raise_error(ArgumentError)
   end
@@ -85,7 +87,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :required => true
           }
-        }
+        },
       )
     }.not_to raise_error
 
@@ -96,7 +98,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :required => true
           }
-        }
+        },
       )
     }.to raise_error(ArgumentError)
 
@@ -107,7 +109,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :required => false
           }
-        }
+        },
       )
     }.not_to raise_error
   end
@@ -120,7 +122,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :respond_to => "validate"
           }
-        }
+        },
       )
     }.not_to raise_error
 
@@ -131,7 +133,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :respond_to => "monkey"
           }
-        }
+        },
       )
     }.to raise_error(ArgumentError)
   end
@@ -144,7 +146,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :respond_to => ["validate", "music"]
           }
-        }
+        },
       )
     }.not_to raise_error
 
@@ -155,7 +157,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :respond_to => ["monkey", "validate"]
           }
-        }
+        },
       )
     }.to raise_error(ArgumentError)
   end
@@ -166,7 +168,7 @@ describe Chef::Mixin::ParamsValidate do
       :one => {
         :default => "is the loneliest number"
       }
-    })
+    },)
     expect(arguments[:one]).to eq("is the loneliest number")
   end
 
@@ -178,7 +180,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :regex => /^is good$/
           }
-        }
+        },
       )
     }.not_to raise_error
 
@@ -189,7 +191,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :regex => /^is bad$/
           }
-        }
+        },
       )
     }.to raise_error(ArgumentError)
   end
@@ -203,10 +205,10 @@ describe Chef::Mixin::ParamsValidate do
             :callbacks => {
               "should be equal to is good" => lambda { |a|
                 a == "is good"
-              },
+              }
             }
           }
-        }
+        },
       )
     }.not_to raise_error
 
@@ -218,10 +220,10 @@ describe Chef::Mixin::ParamsValidate do
             :callbacks => {
               "should be equal to 'is good'" => lambda { |a|
                 a == "is good"
-              },
+              }
             }
           }
-        }
+        },
       )
     }.to raise_error(ArgumentError)
   end
@@ -241,14 +243,14 @@ describe Chef::Mixin::ParamsValidate do
                 a == "is good"
               }
             },
-            :required => true
+            :required => true,
           },
           :two => {
             :kind_of => String,
-            :required => false
+            :required => false,
           },
-          :three => { :default => "neato mosquito" }
-        }
+          :three => { :default => "neato mosquito" },
+        },
       )
     }.not_to raise_error
     expect(args[:three]).to eq("neato mosquito")
@@ -265,14 +267,14 @@ describe Chef::Mixin::ParamsValidate do
                 a == "is good"
               }
             },
-            :required => true
+            :required => true,
           },
           :two => {
             :kind_of => Hash,
-            :required => false
+            :required => false,
           },
-          :three => { :default => "neato mosquito" }
-        }
+          :three => { :default => "neato mosquito" },
+        },
       )
     }.to raise_error(ArgumentError)
   end
@@ -284,7 +286,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :busted => "check"
           }
-        }
+        },
       )
     }.to raise_error(ArgumentError)
   end
@@ -303,7 +305,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :kind_of => [ String, Array ]
           }
-        }
+        },
       )
     }.not_to raise_error
     expect {
@@ -313,7 +315,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :kind_of => [ String, Array ]
           }
-        }
+        },
       )
     }.not_to raise_error
     expect {
@@ -323,7 +325,7 @@ describe Chef::Mixin::ParamsValidate do
           :one => {
             :kind_of => [ String, Array ]
           }
-        }
+        },
       )
     }.to raise_error(ArgumentError)
   end
@@ -331,11 +333,11 @@ describe Chef::Mixin::ParamsValidate do
   it "asserts that a value returns false from a predicate method" do
     expect do
       @vo.validate({:not_blank => "should pass"},
-                   {:not_blank => {:cannot_be => :nil, :cannot_be => :empty}})
+                   {:not_blank => {:cannot_be => [ :nil, :empty ]}})
     end.not_to raise_error
     expect do
       @vo.validate({:not_blank => ""},
-                   {:not_blank => {:cannot_be => :nil, :cannot_be => :empty}})
+                   {:not_blank => {:cannot_be => [ :nil, :empty ]}})
     end.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
@@ -370,12 +372,12 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should allow DelayedEvaluator instance to be set for value regardless of restriction" do
-    value = Chef::DelayedEvaluator.new{ 'test' }
+    value = Chef::DelayedEvaluator.new{ "test" }
     @vo.set_or_return(:test, value, {:kind_of => Numeric})
   end
 
   it "should raise an error when delayed evaluated attribute is not valid" do
-    value = Chef::DelayedEvaluator.new{ 'test' }
+    value = Chef::DelayedEvaluator.new{ "test" }
     @vo.set_or_return(:test, value, {:kind_of => Numeric})
     expect do
       @vo.set_or_return(:test, nil, {:kind_of => Numeric})
@@ -383,22 +385,22 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should create DelayedEvaluator instance when #lazy is used" do
-    @vo.set_or_return(:delayed, @vo.lazy{ 'test' }, {})
+    @vo.set_or_return(:delayed, @vo.lazy{ "test" }, {})
     expect(@vo.instance_variable_get(:@delayed)).to be_a(Chef::DelayedEvaluator)
   end
 
   it "should execute block on each call when DelayedEvaluator" do
-    value = 'fubar'
+    value = "fubar"
     @vo.set_or_return(:test, @vo.lazy{ value }, {})
-    expect(@vo.set_or_return(:test, nil, {})).to eq('fubar')
-    value = 'foobar'
-    expect(@vo.set_or_return(:test, nil, {})).to eq('foobar')
-    value = 'fauxbar'
-    expect(@vo.set_or_return(:test, nil, {})).to eq('fauxbar')
+    expect(@vo.set_or_return(:test, nil, {})).to eq("fubar")
+    value = "foobar"
+    expect(@vo.set_or_return(:test, nil, {})).to eq("foobar")
+    value = "fauxbar"
+    expect(@vo.set_or_return(:test, nil, {})).to eq("fauxbar")
   end
 
   it "should not evaluate non DelayedEvaluator instances" do
-    value = lambda{ 'test' }
+    value = lambda{ "test" }
     @vo.set_or_return(:test, value, {})
     expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
     expect(@vo.set_or_return(:test, nil, {})).to be_a(Proc)

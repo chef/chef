@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::HttpRequest do
   before(:each) do
@@ -24,7 +24,7 @@ describe Chef::Provider::HttpRequest do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::HttpRequest.new('adam')
+    @new_resource = Chef::Resource::HttpRequest.new("adam")
     @new_resource.name "adam"
     @new_resource.url "http://www.opscode.com/"
     @new_resource.message "is cool"
@@ -34,7 +34,7 @@ describe Chef::Provider::HttpRequest do
 
   describe "load_current_resource" do
 
-    it "should set up a Chef::REST client, with no authentication" do
+    it "should set up a Chef::ServerAPI client, with no authentication" do
       expect(Chef::HTTP::Simple).to receive(:new).with(@new_resource.url)
       @provider.load_current_resource
     end
@@ -45,7 +45,7 @@ describe Chef::Provider::HttpRequest do
       # run_action(x) forces load_current_resource to run;
       # that would overwrite our supplied mock Chef::Rest # object
       allow(@provider).to receive(:load_current_resource).and_return(true)
-      @http = double("Chef::REST")
+      @http = double("Chef::ServerAPI")
       @provider.http = @http
     end
 

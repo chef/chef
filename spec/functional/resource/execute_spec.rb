@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'timeout'
+require "spec_helper"
+require "functional/resource/base"
+require "timeout"
 
 describe Chef::Resource::Execute do
   let(:resource) {
@@ -62,7 +62,7 @@ describe Chef::Resource::Execute do
   end
 
   describe "when parent resource sets :cwd" do
-    let(:guard) { %{ruby -e 'exit 1 unless File.exists?("./big_json_plus_one.json")'} }
+    let(:guard) { %{ruby -e 'exit 1 unless File.exists?("./nested.json")'} }
 
     it "guard inherits :cwd from resource and runs" do
       resource.cwd CHEF_SPEC_DATA
@@ -89,7 +89,7 @@ describe Chef::Resource::Execute do
       resource.environment({
         "SAWS_SECRET"  => "supersecret",
         "SAWS_KEY"     => "qwerty",
-      })
+      },)
     end
 
     it "guard inherits :environment value from resource and runs" do
@@ -106,7 +106,7 @@ describe Chef::Resource::Execute do
 
     it "guard adds additional values in its :environment and runs" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SGCE_SECRET"] != "regularsecret"'}, {
-        :environment => { 'SGCE_SECRET' => "regularsecret" }
+        :environment => { "SGCE_SECRET" => "regularsecret" }
       }
       resource.run_action(:run)
       expect(resource).to be_updated_by_last_action
@@ -114,7 +114,7 @@ describe Chef::Resource::Execute do
 
     it "guard adds additional values in its :environment and does not run" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SGCE_SECRET"] == "regularsecret"'}, {
-        :environment => { 'SGCE_SECRET' => "regularsecret" }
+        :environment => { "SGCE_SECRET" => "regularsecret" }
       }
       resource.run_action(:run)
       expect(resource).not_to be_updated_by_last_action
@@ -122,7 +122,7 @@ describe Chef::Resource::Execute do
 
     it "guard overwrites value with its :environment and runs" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SAWS_SECRET"] != "regularsecret"'}, {
-        :environment => { 'SAWS_SECRET' => "regularsecret" }
+        :environment => { "SAWS_SECRET" => "regularsecret" }
       }
       resource.run_action(:run)
       expect(resource).to be_updated_by_last_action
@@ -130,16 +130,23 @@ describe Chef::Resource::Execute do
 
     it "guard overwrites value with its :environment and does not runs" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SAWS_SECRET"] == "regularsecret"'}, {
-        :environment => { 'SAWS_SECRET' => "regularsecret" }
+        :environment => { "SAWS_SECRET" => "regularsecret" }
       }
       resource.run_action(:run)
       expect(resource).not_to be_updated_by_last_action
     end
   end
 
+  # Ensure that CommandTimeout is raised, and is caused by resource.timeout really expiring.
+  # https://github.com/chef/chef/issues/2985
+  #
+  # resource.timeout should be short, this is what we're testing
+  # resource.command ruby sleep timer should be longer than resource.timeout to give us something to timeout
+  # Timeout::timeout should be longer than resource.timeout, but less than the resource.command ruby sleep timer,
+  #   so we fail if we finish on resource.command instead of resource.timeout, but raise CommandTimeout anyway (#2175).
   it "times out when a timeout is set on the resource" do
-    Timeout::timeout(5) do
-      resource.command %{ruby -e 'sleep 600'}
+    Timeout::timeout(30) do
+      resource.command %{ruby -e 'sleep 300'}
       resource.timeout 0.1
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::CommandTimeout)
     end

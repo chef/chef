@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::RpmPackage, "initialize" do
 
@@ -27,7 +27,7 @@ describe Chef::Resource::RpmPackage, "initialize" do
       provider: Chef::Provider::Package::Rpm,
       name: :rpm_package,
       action: :install,
-      os: os
+      os: os,
     )
   end
 

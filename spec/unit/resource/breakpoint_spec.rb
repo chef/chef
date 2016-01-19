@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::Breakpoint do
 
@@ -37,7 +37,7 @@ describe Chef::Resource::Breakpoint do
   end
 
   it "defaults to the break action" do
-    expect(@breakpoint.action).to eq("break")
+    expect(@breakpoint.action).to eq([:break])
   end
 
   it "names itself after the line number of the file where it's created" do

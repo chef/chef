@@ -25,8 +25,8 @@ class Chef
           instance_vars[iv] = self.instance_variable_get(iv)
         end
         {
-            'json_class' => self.class.name,
-            'instance_vars' => instance_vars
+            "json_class" => self.class.name,
+            "instance_vars" => instance_vars,
         }
       end
 

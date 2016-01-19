@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/core/node_presenter'
+require "chef/knife"
+require "chef/knife/core/node_presenter"
 
 class Chef
   class Knife
@@ -26,10 +26,10 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require 'chef/node'
-        require 'chef/environment'
-        require 'chef/api_client'
-        require 'chef/search/query'
+        require "chef/node"
+        require "chef/environment"
+        require "chef/api_client"
+        require "chef/search/query"
       end
 
       include Knife::Core::NodeFormattingOptions
@@ -80,7 +80,7 @@ class Chef
         read_cli_args
         fuzzify_query
 
-        if @type == 'node'
+        if @type == "node"
           ui.use_presenter Knife::Core::NodePresenter
         end
 
@@ -136,7 +136,7 @@ class Chef
       def read_cli_args
         if config[:query]
           if @name_args[1]
-            ui.error "please specify query as an argument or an option via -q, not both"
+            ui.error "Please specify query as an argument or an option via -q, not both"
             ui.msg opt_parser
             exit 1
           end
@@ -145,7 +145,7 @@ class Chef
         else
           case name_args.size
           when 0
-            ui.error "no query specified"
+            ui.error "No query specified"
             ui.msg opt_parser
             exit 1
           when 1
@@ -160,7 +160,7 @@ class Chef
 
       def fuzzify_query
         if @query !~ /:/
-          @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}*"
+          @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}* OR policy_name:*#{@query}* OR policy_group:*#{@query}*"
         end
       end
 

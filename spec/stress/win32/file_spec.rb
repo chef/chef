@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/win32/file' if windows?
+require "spec_helper"
+require "chef/win32/file" if windows?
 
-describe 'Chef::ReservedNames::Win32::File', :windows_only do
+describe "Chef::ReservedNames::Win32::File", :windows_only do
   before(:each) do
     @path = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "old_home_dir", "my-dot-emacs"))
   end

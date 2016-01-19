@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/erl_call'
+require "chef/resource"
+require "chef/provider/erl_call"
 
 class Chef
   class Resource
@@ -28,25 +28,23 @@ class Chef
 
       identity_attr :code
 
+      default_action :run
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :erl_call
 
         @code = "q()." # your erlang code goes here
         @cookie = nil # cookie of the erlang node
         @distributed = false # if you want to have a distributed erlang node
         @name_type = "sname" # type of erlang hostname name or sname
         @node_name = "chef@localhost" # the erlang node hostname
-
-        @action = "run"
-        @allowed_actions.push(:run)
       end
 
       def code(arg=nil)
         set_or_return(
           :code,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -54,7 +52,7 @@ class Chef
         set_or_return(
           :cookie,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -62,7 +60,7 @@ class Chef
         set_or_return(
           :distributed,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -70,7 +68,7 @@ class Chef
         set_or_return(
           :name_type,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -78,7 +76,7 @@ class Chef
         set_or_return(
           :node_name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 

@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::CookbookFile do
   include_context Chef::Resource::File
 
-  let(:file_base) { 'cookbook_file_spec' }
-  let(:source) { 'java.response' }
-  let(:cookbook_name) { 'java' }
+  let(:file_base) { "cookbook_file_spec" }
+  let(:source) { "java.response" }
+  let(:cookbook_name) { "java" }
   let(:expected_content) do
-    content = File.open(File.join(CHEF_SPEC_DATA, 'cookbooks', 'java', 'files', 'default', 'java.response'), "rb") do |f|
+    content = File.open(File.join(CHEF_SPEC_DATA, "cookbooks", "java", "files", "default", "java.response"), "rb") do |f|
       f.read
     end
     content.force_encoding(Encoding::BINARY) if content.respond_to?(:force_encoding)
@@ -39,7 +39,7 @@ describe Chef::Resource::CookbookFile do
   def create_resource
     # set up cookbook collection for this run to use, based on our
     # spec data.
-    cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, 'cookbooks'))
+    cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
     Chef::Cookbook::FileVendor.fetch_from_disk(cookbook_repo)
     loader = Chef::CookbookLoader.new(cookbook_repo)
     loader.load_cookbooks
@@ -66,7 +66,7 @@ describe Chef::Resource::CookbookFile do
   # implementation
   # stages files in temp.
   context "targets a file outside of the system temp directory" do
-    let(:windows_non_temp_dir) { File.join(ENV['systemdrive'], make_tmpname(file_base, "non-temp")) }
+    let(:windows_non_temp_dir) { File.join(ENV["systemdrive"], make_tmpname(file_base, "non-temp")) }
     let(:path) { File.join(windows_non_temp_dir, make_tmpname(file_base)) }
 
     before do

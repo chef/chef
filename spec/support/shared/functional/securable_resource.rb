@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'etc'
-require 'functional/resource/base'
+require "etc"
+require "functional/resource/base"
 
 shared_context "setup correct permissions" do
   if windows?
@@ -38,9 +38,9 @@ shared_context "setup correct permissions" do
   # Root only context.
   before :each, :unix_only, :requires_root do
     if ohai[:platform] == "aix"
-      File.chown(Etc.getpwnam('guest').uid, 1337, path)
+      File.chown(Etc.getpwnam("guest").uid, 1337, path)
     else
-      File.chown(Etc.getpwnam('nobody').uid, 1337, path)
+      File.chown(Etc.getpwnam("nobody").uid, 1337, path)
     end
   end
 
@@ -111,28 +111,28 @@ shared_context "use Windows permissions", :windows_only do
   let(:expected_read_execute_perms) do
     {
       :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE,
     }
   end
 
   let(:expected_write_perms) do
     {
       :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE,
     }
   end
 
   let(:expected_modify_perms) do
     {
       :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
     }
   end
 
   let(:expected_full_control_perms) do
     {
       :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_ALL,
-      :specific => Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS,
     }
   end
 
@@ -155,16 +155,13 @@ shared_examples_for "a securable resource with existing target" do
 
   context "on Unix", :unix_only do
     if ohai[:platform] == "aix"
-      let(:expected_user_name) { 'guest' }
+      let(:expected_user_name) { "guest" }
     else
-      let(:expected_user_name) { 'nobody' }
+      let(:expected_user_name) { "nobody" }
     end
     let(:expected_uid) { Etc.getpwnam(expected_user_name).uid }
     let(:desired_gid) { 1337 }
     let(:expected_gid) { 1337 }
-
-    skip "should set an owner (Rerun specs under root)", :requires_unprivileged_user => true
-    skip "should set a group (Rerun specs under root)",  :requires_unprivileged_user => true
 
     describe "when setting the owner", :requires_root do
       before do
@@ -200,14 +197,9 @@ shared_examples_for "a securable resource with existing target" do
 
     describe "when setting the permissions from octal given as a String" do
       before do
-        @mode_string = '776'
+        @mode_string = "776"
         resource.mode @mode_string
         resource.run_action(:create)
-      end
-
-      it "should set permissions as specified" do
-        pending("Linux does not support lchmod")
-        expect{ File.lstat(path).mode & 007777 }.to eq(@mode_string.oct & 007777)
       end
 
       it "is marked as updated only if changes are made" do
@@ -222,13 +214,26 @@ shared_examples_for "a securable resource with existing target" do
         resource.run_action(:create)
       end
 
-      it "should set permissions in numeric form as a ruby-interpreted octal" do
-        pending('Linux does not support lchmod')
-        expect{ File.lstat(path).mode & 007777 }.to eq(@mode_integer & 007777)
-      end
-
       it "is marked as updated only if changes are made" do
         expect(resource.updated_by_last_action?).to eq(expect_updated?)
+      end
+    end
+
+    describe "when setting the suid bit", :requires_root do
+      before do
+        @suid_mode = 04776
+        resource.mode @suid_mode
+        resource.run_action(:create)
+      end
+
+      it "should set the suid bit" do
+        expect(File.lstat(path).mode & 007777).to eq(@suid_mode & 007777)
+      end
+
+      it "should retain the suid bit when updating the user" do
+        resource.user 1338
+        resource.run_action(:create)
+        expect(File.lstat(path).mode & 007777).to eq(@suid_mode & 007777)
       end
     end
   end
@@ -253,7 +258,7 @@ shared_examples_for "a securable resource with existing target" do
 
     describe "when setting group" do
       before do
-        resource.group('Administrators')
+        resource.group("Administrators")
         resource.run_action(:create)
       end
 
@@ -268,8 +273,8 @@ shared_examples_for "a securable resource with existing target" do
 
     describe "when setting rights and deny_rights" do
       before do
-        resource.deny_rights(:modify, 'Guest')
-        resource.rights(:read, 'Guest')
+        resource.deny_rights(:modify, "Guest")
+        resource.rights(:read, "Guest")
         resource.run_action(:create)
       end
 
@@ -288,21 +293,17 @@ shared_examples_for "a securable resource without existing target" do
 
   include_context "diff disabled"
 
-  context "on Unix", :unix_only do
-    skip "if we need any securable resource tests on Unix without existing target resource."
-  end
-
   context "on Windows", :windows_only do
     include_context "use Windows permissions"
 
-    it "sets owner to Administrators on create if owner is not specified" do
+    it "leaves owner as system default on create if owner is not specified" do
       expect(File.exist?(path)).to eq(false)
       resource.run_action(:create)
-      expect(descriptor.owner).to eq(SID.Administrators)
+      expect(descriptor.owner).to eq(SID.default_security_object_owner)
     end
 
     it "sets owner when owner is specified" do
-      resource.owner 'Guest'
+      resource.owner "Guest"
       resource.run_action(:create)
       expect(descriptor.owner).to eq(SID.Guest)
     end
@@ -318,26 +319,28 @@ shared_examples_for "a securable resource without existing target" do
     end
 
     it "leaves owner alone if owner is not specified and resource already exists" do
-      # Set owner to Guest so it's not the same as the current user (which is the default on create)
-      resource.owner 'Guest'
+      arbitrary_non_default_owner = SID.Guest
+      expect(arbitrary_non_default_owner).not_to eq(SID.default_security_object_owner)
+
+      resource.owner "Guest" # Change to arbitrary_non_default_owner once issue #1508 is fixed
       resource.run_action(:create)
-      expect(descriptor.owner).to eq(SID.Guest)
+      expect(descriptor.owner).to eq(arbitrary_non_default_owner)
 
       new_resource = create_resource
       expect(new_resource.owner).to eq(nil)
       new_resource.run_action(:create)
-      expect(descriptor.owner).to eq(SID.Guest)
+      expect(descriptor.owner).to eq(arbitrary_non_default_owner)
     end
 
-    it "sets group to None on create if group is not specified" do
+    it "leaves group as system default on create if group is not specified" do
       expect(resource.group).to eq(nil)
       expect(File.exist?(path)).to eq(false)
       resource.run_action(:create)
-      expect(descriptor.group).to eq(SID.None)
+      expect(descriptor.group).to eq(SID.default_security_object_group)
     end
 
     it "sets group when group is specified" do
-      resource.group 'Everyone'
+      resource.group "Everyone"
       resource.run_action(:create)
       expect(descriptor.group).to eq(SID.Everyone)
     end
@@ -346,67 +349,62 @@ shared_examples_for "a securable resource without existing target" do
       expect { resource.group 'Lance "The Nose" Glindenberry III' }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
-    it "sets group when group is specified with a \\" do
-      pending("Need to find a group containing a backslash that is on most peoples' machines")
-      resource.group "#{ENV['COMPUTERNAME']}\\Administrators"
-      resource.run_action(:create)
-      expect{ descriptor.group }.to eq(SID.Everyone)
-    end
-
     it "leaves group alone if group is not specified and resource already exists" do
-      # Set group to Everyone so it's not the default (None)
-      resource.group 'Everyone'
+      arbitrary_non_default_group = SID.Everyone
+      expect(arbitrary_non_default_group).not_to eq(SID.default_security_object_group)
+
+      resource.group "Everyone" # Change to arbitrary_non_default_group once issue #1508 is fixed
       resource.run_action(:create)
-      expect(descriptor.group).to eq(SID.Everyone)
+      expect(descriptor.group).to eq(arbitrary_non_default_group)
 
       new_resource = create_resource
       expect(new_resource.group).to eq(nil)
       new_resource.run_action(:create)
-      expect(descriptor.group).to eq(SID.Everyone)
+      expect(descriptor.group).to eq(arbitrary_non_default_group)
     end
 
     describe "with rights and deny_rights attributes" do
 
       it "correctly sets :read rights" do
-        resource.rights(:read, 'Guest')
+        resource.rights(:read, "Guest")
         resource.run_action(:create)
         expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_read_perms))
       end
 
       it "correctly sets :read_execute rights" do
-        resource.rights(:read_execute, 'Guest')
+        resource.rights(:read_execute, "Guest")
         resource.run_action(:create)
         expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_read_execute_perms))
       end
 
       it "correctly sets :write rights" do
-        resource.rights(:write, 'Guest')
+        resource.rights(:write, "Guest")
         resource.run_action(:create)
         expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_write_perms))
       end
 
       it "correctly sets :modify rights" do
-        resource.rights(:modify, 'Guest')
+        resource.rights(:modify, "Guest")
         resource.run_action(:create)
         expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_modify_perms))
       end
 
       it "correctly sets :full_control rights" do
-        resource.rights(:full_control, 'Guest')
+        resource.rights(:full_control, "Guest")
         resource.run_action(:create)
         expect(explicit_aces).to eq(allowed_acl(SID.Guest, expected_full_control_perms))
       end
 
       it "correctly sets deny_rights" do
         # deny is an ACE with full rights, but is a deny type ace, not an allow type
-        resource.deny_rights(:full_control, 'Guest')
+        resource.deny_rights(:full_control, "Guest")
         resource.run_action(:create)
         expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_full_control_perms))
       end
 
       it "Sets multiple rights" do
-        resource.rights(:read, 'Everyone')
-        resource.rights(:modify, 'Guest')
+        resource.rights(:read, "Everyone")
+        resource.rights(:modify, "Guest")
         resource.run_action(:create)
 
         expect(explicit_aces).to eq(
@@ -416,8 +414,8 @@ shared_examples_for "a securable resource without existing target" do
       end
 
       it "Sets deny_rights ahead of rights" do
-        resource.rights(:read, 'Everyone')
-        resource.deny_rights(:modify, 'Guest')
+        resource.rights(:read, "Everyone")
+        resource.deny_rights(:modify, "Guest")
         resource.run_action(:create)
 
         expect(explicit_aces).to eq(
@@ -427,8 +425,8 @@ shared_examples_for "a securable resource without existing target" do
       end
 
       it "Sets deny_rights ahead of rights when specified in reverse order" do
-        resource.deny_rights(:modify, 'Guest')
-        resource.rights(:read, 'Everyone')
+        resource.deny_rights(:modify, "Guest")
+        resource.rights(:read, "Everyone")
         resource.run_action(:create)
 
         expect(explicit_aces).to eq(
@@ -447,9 +445,9 @@ shared_examples_for "a securable resource without existing target" do
       it "respects mode in string form as an octal number" do
         #on windows, mode cannot modify owner and/or group permissons
         #unless the owner and/or group as appropriate is specified
-        resource.mode '400'
-        resource.owner 'Guest'
-        resource.group 'Everyone'
+        resource.mode "400"
+        resource.owner "Guest"
+        resource.group "Everyone"
         resource.run_action(:create)
 
         expect(explicit_aces).to eq([ ACE.access_allowed(SID.Guest, Security::FILE_GENERIC_READ) ])
@@ -457,7 +455,7 @@ shared_examples_for "a securable resource without existing target" do
 
       it "respects mode in numeric form as a ruby-interpreted octal" do
         resource.mode 0700
-        resource.owner 'Guest'
+        resource.owner "Guest"
         resource.run_action(:create)
 
         expect(explicit_aces).to eq([ ACE.access_allowed(SID.Guest, Security::FILE_GENERIC_READ | Security::FILE_GENERIC_WRITE | Security::FILE_GENERIC_EXECUTE | Security::DELETE) ])
@@ -465,31 +463,31 @@ shared_examples_for "a securable resource without existing target" do
 
       it "respects the owner, group and everyone bits of mode" do
         resource.mode 0754
-        resource.owner 'Guest'
-        resource.group 'Administrators'
+        resource.owner "Guest"
+        resource.group "Administrators"
         resource.run_action(:create)
 
         expect(explicit_aces).to eq([
           ACE.access_allowed(SID.Guest, Security::FILE_GENERIC_READ | Security::FILE_GENERIC_WRITE | Security::FILE_GENERIC_EXECUTE | Security::DELETE),
           ACE.access_allowed(SID.Administrators, Security::FILE_GENERIC_READ | Security::FILE_GENERIC_EXECUTE),
-          ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_READ)
+          ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_READ),
         ])
       end
 
       it "respects the individual read, write and execute bits of mode" do
         resource.mode 0421
-        resource.owner 'Guest'
-        resource.group 'Administrators'
+        resource.owner "Guest"
+        resource.group "Administrators"
         resource.run_action(:create)
 
         expect(explicit_aces).to eq([
           ACE.access_allowed(SID.Guest, Security::FILE_GENERIC_READ),
           ACE.access_allowed(SID.Administrators, Security::FILE_GENERIC_WRITE | Security::DELETE),
-          ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_EXECUTE)
+          ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_EXECUTE),
         ])
       end
 
-      it 'warns when mode tries to set owner bits but owner is not specified' do
+      it "warns when mode tries to set owner bits but owner is not specified" do
         @warn = []
         allow(Chef::Log).to receive(:warn) { |msg| @warn << msg }
 
@@ -499,7 +497,7 @@ shared_examples_for "a securable resource without existing target" do
         expect(@warn.include?("Mode 400 includes bits for the owner, but owner is not specified")).to be_truthy
       end
 
-      it 'warns when mode tries to set group bits but group is not specified' do
+      it "warns when mode tries to set group bits but group is not specified" do
         @warn = []
         allow(Chef::Log).to receive(:warn) { |msg| @warn << msg }
 
@@ -513,7 +511,7 @@ shared_examples_for "a securable resource without existing target" do
     it "does not inherit aces if inherits is set to false" do
       # We need at least one ACE if we're creating a securable without
       # inheritance
-      resource.rights(:full_control, 'Administrators')
+      resource.rights(:full_control, "Administrators")
       resource.inherits(false)
       resource.run_action(:create)
 

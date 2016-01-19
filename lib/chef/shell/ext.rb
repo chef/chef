@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/recipe'
-require 'fileutils'
-require 'chef/dsl/platform_introspection'
-require 'chef/version'
-require 'chef/shell/shell_session'
-require 'chef/shell/model_wrapper'
-require 'chef/shell/shell_rest'
-require 'chef/json_compat'
+require "tempfile"
+require "chef/recipe"
+require "fileutils"
+require "chef/dsl/platform_introspection"
+require "chef/version"
+require "chef/shell/shell_session"
+require "chef/shell/model_wrapper"
+require "chef/server_api"
+require "chef/json_compat"
 
 module Shell
   module Extensions
@@ -47,10 +47,10 @@ module Shell
         unless jobs.respond_to?(:session_select)
           def jobs.select_shell_session(target_context)
             session = if target_context.kind_of?(Class)
-              select_session_by_context { |main| main.kind_of?(target_context) }
-            else
-              select_session_by_context { |main| main.equal?(target_context) }
-            end
+                        select_session_by_context { |main| main.kind_of?(target_context) }
+                      else
+                        select_session_by_context { |main| main.equal?(target_context) }
+                      end
             Array(session.first)[1]
           end
         end
@@ -196,7 +196,7 @@ module Shell
   chef-shell commands. When called with an argument COMMAND, +help+
   prints a detailed explanation of the command if available, or the
   description if no explanation is available.
-E
+      E
       def help(commmand=nil)
         if commmand
           explain_command(commmand)
@@ -210,9 +210,9 @@ E
       desc "prints information about chef"
       def version
         puts  "This is the chef-shell.\n" +
-              " Chef Version: #{::Chef::VERSION}\n" +
-              " http://www.chef.io/\n" +
-              " http://docs.chef.io/"
+          " Chef Version: #{::Chef::VERSION}\n" +
+          " http://www.chef.io/\n" +
+          " http://docs.chef.io/"
         :ucanhaz_automation
       end
       alias :shell :version
@@ -240,9 +240,9 @@ E
 
       desc "returns an object to control a paused chef run"
       subcommands :resume       => "resume the chef run",
-                  :step         => "run only the next resource",
-                  :skip_back    => "move back in the run list",
-                  :skip_forward => "move forward in the run list"
+        :step         => "run only the next resource",
+        :skip_back    => "move back in the run list",
+        :skip_forward => "move forward in the run list"
       def chef_run
         Shell.session.resource_collection.iterator
       end
@@ -314,7 +314,7 @@ E
   1. Looks for an EDITOR set by Shell.editor = "EDITOR"
   2. Looks for an EDITOR configured in your chef-shell config file
   3. Uses the value of the EDITOR environment variable
-E
+      E
       def edit(object)
         unless Shell.editor
           puts "Please set your editor with Shell.editor = \"vim|emacs|mate|ed\""
@@ -331,7 +331,7 @@ E
         edited_data = Tempfile.open([filename, ".js"]) do |tempfile|
           tempfile.sync = true
           tempfile.puts Chef::JSONCompat.to_json(object)
-          system("#{Shell.editor.to_s} #{tempfile.path}")
+          system("#{Shell.editor} #{tempfile.path}")
           tempfile.rewind
           tempfile.read
         end
@@ -392,19 +392,19 @@ E
       end
 
   This will strip the admin privileges from any client named after borat.
-E
+      E
       subcommands :all        => "list all api clients",
-                  :show       => "load an api client by name",
-                  :search     => "search for API clients",
-                  :transform  => "edit all api clients via a code block and save them"
+        :show       => "load an api client by name",
+        :search     => "search for API clients",
+        :transform  => "edit all api clients via a code block and save them"
       def clients
         @clients ||= Shell::ModelWrapper.new(Chef::ApiClient, :client)
       end
 
       desc "Find and edit cookbooks"
       subcommands :all        => "list all cookbooks",
-                  :show       => "load a cookbook by name",
-                  :transform  => "edit all cookbooks via a code block and save them"
+        :show       => "load a cookbook by name",
+        :transform  => "edit all cookbooks via a code block and save them"
       def cookbooks
         @cookbooks ||= Shell::ModelWrapper.new(Chef::CookbookVersion)
       end
@@ -454,11 +454,11 @@ E
       end
 
   This will assign the attribute to every node with a FQDN matching the regex.
-E
+      E
       subcommands :all        => "list all nodes",
-                  :show       => "load a node by name",
-                  :search     => "search for nodes",
-                  :transform  => "edit all nodes via a code block and save them"
+        :show       => "load a node by name",
+        :search     => "search for nodes",
+        :transform  => "edit all nodes via a code block and save them"
       def nodes
         @nodes ||= Shell::ModelWrapper.new(Chef::Node)
       end
@@ -476,11 +476,11 @@ E
 
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
-E
+      E
       subcommands :all        => "list all roles",
-                  :show       => "load a role by name",
-                  :search     => "search for roles",
-                  :transform  => "edit all roles via a code block and save them"
+        :show       => "load a role by name",
+        :search     => "search for roles",
+        :transform  => "edit all roles via a code block and save them"
       def roles
         @roles ||= Shell::ModelWrapper.new(Chef::Role)
       end
@@ -502,11 +502,11 @@ E
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
 
-E
+      E
       subcommands :all        => "list all items in the data bag",
-                  :show       => "load a data bag item by id",
-                  :search     => "search for items in the data bag",
-                  :transform  => "edit all items via a code block and save them"
+        :show       => "load a data bag item by id",
+        :search     => "search for items in the data bag",
+        :transform  => "edit all items via a code block and save them"
       def databags(databag_name)
         @named_databags_wrappers ||= {}
         @named_databags_wrappers[databag_name] ||= Shell::NamedDataBagWrapper.new(databag_name)
@@ -525,18 +525,18 @@ E
 
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
-E
+      E
       subcommands :all        => "list all environments",
-                  :show       => "load an environment by name",
-                  :search     => "search for environments",
-                  :transform  => "edit all environments via a code block and save them"
+        :show       => "load an environment by name",
+        :search     => "search for environments",
+        :transform  => "edit all environments via a code block and save them"
       def environments
         @environments ||= Shell::ModelWrapper.new(Chef::Environment)
       end
 
       desc "A REST Client configured to authenticate with the API"
       def api
-        @rest = Shell::ShellREST.new(Chef::Config[:chef_server_url])
+        @rest = Chef::ServerAPI.new(Chef::Config[:chef_server_url])
       end
 
     end

@@ -17,10 +17,10 @@
 
 # Wrapper class for interacting with JSON.
 
-require 'ffi_yajl'
-require 'chef/exceptions'
+require "ffi_yajl"
+require "chef/exceptions"
 # We're requiring this to prevent breaking consumers using Hash.to_json
-require 'json'
+require "json"
 
 class Chef
   class JSONCompat
@@ -41,6 +41,7 @@ class Chef
     CHEF_RESOURCECOLLECTION = "Chef::ResourceCollection".freeze
     CHEF_RESOURCESET        = "Chef::ResourceCollection::ResourceSet".freeze
     CHEF_RESOURCELIST       = "Chef::ResourceCollection::ResourceList".freeze
+    CHEF_RUNLISTEXPANSION   = "Chef::RunListExpansion".freeze
 
     class <<self
 

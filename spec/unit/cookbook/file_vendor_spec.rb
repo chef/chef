@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Cookbook::FileVendor do
 
@@ -23,7 +23,7 @@ describe Chef::Cookbook::FileVendor do
 
   context "when configured to fetch files over http" do
 
-    let(:http) { double("Chef::REST") }
+    let(:http) { double("Chef::ServerAPI") }
 
     before do
       file_vendor_class.fetch_from_remote(http)
@@ -68,7 +68,7 @@ describe Chef::Cookbook::FileVendor do
 
   context "when configured to load files from disk" do
 
-    let(:cookbook_path) { %w[/var/chef/cookbooks /var/chef/other_cookbooks] }
+    let(:cookbook_path) { %w{/var/chef/cookbooks /var/chef/other_cookbooks} }
 
     # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
     let(:manifest) { {:cookbook_name => "bob"} }

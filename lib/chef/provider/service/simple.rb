@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
-require 'chef/resource/service'
-require 'chef/mixin/command'
+require "chef/provider/service"
+require "chef/resource/service"
+require "chef/mixin/command"
 
 class Chef
   class Provider
@@ -58,25 +58,25 @@ class Chef
           shared_resource_requirements
           requirements.assert(:start) do |a|
             a.assertion { @new_resource.start_command }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that start_command be set"
+            a.failure_message Chef::Exceptions::Service, "#{self} requires that start_command be set"
           end
           requirements.assert(:stop) do |a|
             a.assertion { @new_resource.stop_command }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that stop_command be set"
+            a.failure_message Chef::Exceptions::Service, "#{self} requires that stop_command be set"
           end
 
           requirements.assert(:restart) do |a|
             a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command ) }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
+            a.failure_message Chef::Exceptions::Service, "#{self} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
           end
 
           requirements.assert(:reload) do |a|
             a.assertion { @new_resource.reload_command }
-            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires a reload_command be set in order to perform a reload"
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} requires a reload_command be set in order to perform a reload"
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @new_resource.status_command or @new_resource.supports[:status] or
+            a.assertion { @new_resource.status_command or supports[:status] or
               (!ps_cmd.nil? and !ps_cmd.empty?) }
             a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this node's 'command.ps' attribute"
           end
@@ -127,7 +127,7 @@ class Chef
               nil
             end
 
-          elsif @new_resource.supports[:status]
+          elsif supports[:status]
             Chef::Log.debug("#{@new_resource} supports status, running")
             begin
               if shell_out("#{default_init_command} status").exitstatus == 0

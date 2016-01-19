@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/mixin/command'
-require 'chef/mixin/shell_out'
-require 'chef/provider'
-require 'chef/resource/file'
-require 'chef/exceptions'
-require 'erb'
+require "chef/log"
+require "chef/mixin/command"
+require "chef/mixin/shell_out"
+require "chef/provider"
+require "chef/resource/file"
+require "chef/exceptions"
+require "erb"
 
 #  Recipe example:
 #
@@ -39,6 +39,8 @@ require 'erb'
 class Chef
   class Provider
     class Ifconfig < Chef::Provider
+      provides :ifconfig
+
       include Chef::Mixin::ShellOut
       include Chef::Mixin::Command
 
@@ -107,7 +109,7 @@ class Chef
             command = add_command
             converge_by ("run #{command} to add #{@new_resource}") do
               run_command(
-                :command => command
+                :command => command,
               )
               Chef::Log.info("#{@new_resource} added")
             end
@@ -125,7 +127,7 @@ class Chef
             command = enable_command
             converge_by ("run #{command} to enable #{@new_resource}") do
               run_command(
-                :command => command
+                :command => command,
               )
               Chef::Log.info("#{@new_resource} enabled")
             end
@@ -139,7 +141,7 @@ class Chef
           command = delete_command
           converge_by ("run #{command} to delete #{@new_resource}") do
             run_command(
-              :command => command
+              :command => command,
             )
             Chef::Log.info("#{@new_resource} deleted")
           end
@@ -156,7 +158,7 @@ class Chef
           command = disable_command
           converge_by ("run #{command} to disable #{@new_resource}") do
             run_command(
-              :command => command
+              :command => command,
             )
             Chef::Log.info("#{@new_resource} disabled")
           end
@@ -192,7 +194,7 @@ class Chef
 
       private
       def add_command
-        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command = "ifconfig #{@new_resource.device} #{@new_resource.target}"
         command << " netmask #{@new_resource.mask}" if @new_resource.mask
         command << " metric #{@new_resource.metric}" if @new_resource.metric
         command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
@@ -200,7 +202,7 @@ class Chef
       end
 
       def enable_command
-        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command = "ifconfig #{@new_resource.device} #{@new_resource.target}"
         command << " netmask #{@new_resource.mask}" if @new_resource.mask
         command << " metric #{@new_resource.metric}" if @new_resource.metric
         command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
@@ -216,7 +218,7 @@ class Chef
       end
 
       def loopback_device
-        'lo'
+        "lo"
       end
     end
   end

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/guard_interpreter'
+require "chef/guard_interpreter"
 
 class Chef
   class GuardInterpreter
@@ -68,7 +68,10 @@ class Chef
         run_action = action || @resource.action
 
         begin
-          @resource.run_action(run_action)
+          # Coerce to an array to be safe. This could happen with a legacy
+          # resource or something overriding the default_action code in a
+          # subclass.
+          Array(run_action).each {|action_to_run| @resource.run_action(action_to_run) }
           resource_updated = @resource.updated
         rescue Mixlib::ShellOut::ShellCommandFailed
           resource_updated = nil
@@ -85,16 +88,19 @@ class Chef
         resource_class = Chef::Resource.resource_for_node(parent_resource.guard_interpreter, parent_resource.node)
 
         if resource_class.nil?
-          raise ArgumentError, "Specified guard_interpreter resource #{parent_resource.guard_interpreter.to_s} unknown for this platform"
+          raise ArgumentError, "Specified guard_interpreter resource #{parent_resource.guard_interpreter} unknown for this platform"
         end
 
         if ! resource_class.ancestors.include?(Chef::Resource::Execute)
           raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Execute resource"
         end
 
+        # Duplicate the node below because the new RunContext
+        # overwrites the state of Node instances passed to it.
+        # See https://github.com/chef/chef/issues/3485.
         empty_events = Chef::EventDispatch::Dispatcher.new
-        anonymous_run_context = Chef::RunContext.new(parent_resource.node, {}, empty_events)
-        interpreter_resource = resource_class.new('Guard resource', anonymous_run_context)
+        anonymous_run_context = Chef::RunContext.new(parent_resource.node.dup, {}, empty_events)
+        interpreter_resource = resource_class.new("Guard resource", anonymous_run_context)
         interpreter_resource.is_guard_interpreter = true
 
         interpreter_resource

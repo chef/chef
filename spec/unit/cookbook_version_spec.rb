@@ -15,16 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::CookbookVersion do
   describe "when first created" do
     before do
-      @cookbook_version = Chef::CookbookVersion.new("tatft", '/tmp/blah')
+      @cookbook_version = Chef::CookbookVersion.new("tatft", "/tmp/blah")
     end
 
     it "has a name" do
-      expect(@cookbook_version.name).to eq('tatft')
+      expect(@cookbook_version.name).to eq("tatft")
     end
 
     it "has no attribute files" do
@@ -80,26 +80,26 @@ describe Chef::CookbookVersion do
     before do
       @cookbook = Hash.new { |hash, key| hash[key] = [] }
 
-      @cookbook_root = File.join(CHEF_SPEC_DATA, 'cb_version_cookbooks', 'tatft')
+      @cookbook_root = File.join(CHEF_SPEC_DATA, "cb_version_cookbooks", "tatft")
 
       # Dunno if the paths here are representitive of what is set by CookbookLoader...
-      @cookbook[:attribute_filenames]   = Dir[File.join(@cookbook_root, 'attributes', '**', '*.rb')]
-      @cookbook[:definition_filenames]  = Dir[File.join(@cookbook_root, 'definitions', '**', '*.rb')]
-      @cookbook[:file_filenames]        = Dir[File.join(@cookbook_root, 'files', '**', '*.tgz')]
-      @cookbook[:recipe_filenames]      = Dir[File.join(@cookbook_root, 'recipes', '**', '*.rb')]
-      @cookbook[:template_filenames]    = Dir[File.join(@cookbook_root, 'templates', '**', '*.erb')]
-      @cookbook[:library_filenames]     = Dir[File.join(@cookbook_root, 'libraries', '**', '*.rb')]
-      @cookbook[:resource_filenames]    = Dir[File.join(@cookbook_root, 'resources', '**', '*.rb')]
-      @cookbook[:provider_filenames]    = Dir[File.join(@cookbook_root, 'providers', '**', '*.rb')]
-      @cookbook[:root_filenames]        = Array(File.join(@cookbook_root, 'README.rdoc'))
-      @cookbook[:metadata_filenames]    = Array(File.join(@cookbook_root, 'metadata.json'))
+      @cookbook[:attribute_filenames]   = Dir[File.join(@cookbook_root, "attributes", "**", "*.rb")]
+      @cookbook[:definition_filenames]  = Dir[File.join(@cookbook_root, "definitions", "**", "*.rb")]
+      @cookbook[:file_filenames]        = Dir[File.join(@cookbook_root, "files", "**", "*.tgz")]
+      @cookbook[:recipe_filenames]      = Dir[File.join(@cookbook_root, "recipes", "**", "*.rb")]
+      @cookbook[:template_filenames]    = Dir[File.join(@cookbook_root, "templates", "**", "*.erb")]
+      @cookbook[:library_filenames]     = Dir[File.join(@cookbook_root, "libraries", "**", "*.rb")]
+      @cookbook[:resource_filenames]    = Dir[File.join(@cookbook_root, "resources", "**", "*.rb")]
+      @cookbook[:provider_filenames]    = Dir[File.join(@cookbook_root, "providers", "**", "*.rb")]
+      @cookbook[:root_filenames]        = Array(File.join(@cookbook_root, "README.rdoc"))
+      @cookbook[:metadata_filenames]    = Array(File.join(@cookbook_root, "metadata.json"))
     end
 
     describe "and a cookbook with the same name" do
       before do
         # Currently the cookbook loader finds all the files then tells CookbookVersion
         # where they are.
-        @cookbook_version = Chef::CookbookVersion.new('tatft', @cookbook_root)
+        @cookbook_version = Chef::CookbookVersion.new("tatft", @cookbook_root)
 
         @cookbook_version.attribute_filenames  = @cookbook[:attribute_filenames]
         @cookbook_version.definition_filenames = @cookbook[:definition_filenames]
@@ -154,25 +154,25 @@ describe Chef::CookbookVersion do
 
   end
 
-  describe 'with a cookbook directory named cookbook2 that has unscoped files' do
+  describe "with a cookbook directory named cookbook2 that has unscoped files" do
     before do
       @cookbook = Hash.new { |hash, key| hash[key] = [] }
 
-      @cookbook_root = File.join(CHEF_SPEC_DATA, 'cb_version_cookbooks', 'cookbook2')
+      @cookbook_root = File.join(CHEF_SPEC_DATA, "cb_version_cookbooks", "cookbook2")
 
       # Dunno if the paths here are representitive of what is set by CookbookLoader...
-      @cookbook[:attribute_filenames]   = Dir[File.join(@cookbook_root, 'attributes', '**', '*.rb')]
-      @cookbook[:definition_filenames]  = Dir[File.join(@cookbook_root, 'definitions', '**', '*.rb')]
-      @cookbook[:file_filenames]        = Dir[File.join(@cookbook_root, 'files', '**', '*.*')]
-      @cookbook[:recipe_filenames]      = Dir[File.join(@cookbook_root, 'recipes', '**', '*.rb')]
-      @cookbook[:template_filenames]    = Dir[File.join(@cookbook_root, 'templates', '**', '*.*')]
-      @cookbook[:library_filenames]     = Dir[File.join(@cookbook_root, 'libraries', '**', '*.rb')]
-      @cookbook[:resource_filenames]    = Dir[File.join(@cookbook_root, 'resources', '**', '*.rb')]
-      @cookbook[:provider_filenames]    = Dir[File.join(@cookbook_root, 'providers', '**', '*.rb')]
-      @cookbook[:root_filenames]        = Array(File.join(@cookbook_root, 'README.rdoc'))
-      @cookbook[:metadata_filenames]    = Array(File.join(@cookbook_root, 'metadata.json'))
+      @cookbook[:attribute_filenames]   = Dir[File.join(@cookbook_root, "attributes", "**", "*.rb")]
+      @cookbook[:definition_filenames]  = Dir[File.join(@cookbook_root, "definitions", "**", "*.rb")]
+      @cookbook[:file_filenames]        = Dir[File.join(@cookbook_root, "files", "**", "*.*")]
+      @cookbook[:recipe_filenames]      = Dir[File.join(@cookbook_root, "recipes", "**", "*.rb")]
+      @cookbook[:template_filenames]    = Dir[File.join(@cookbook_root, "templates", "**", "*.*")]
+      @cookbook[:library_filenames]     = Dir[File.join(@cookbook_root, "libraries", "**", "*.rb")]
+      @cookbook[:resource_filenames]    = Dir[File.join(@cookbook_root, "resources", "**", "*.rb")]
+      @cookbook[:provider_filenames]    = Dir[File.join(@cookbook_root, "providers", "**", "*.rb")]
+      @cookbook[:root_filenames]        = Array(File.join(@cookbook_root, "README.rdoc"))
+      @cookbook[:metadata_filenames]    = Array(File.join(@cookbook_root, "metadata.json"))
 
-      @cookbook_version = Chef::CookbookVersion.new('cookbook2', @cookbook_root)
+      @cookbook_version = Chef::CookbookVersion.new("cookbook2", @cookbook_root)
       @cookbook_version.attribute_filenames  = @cookbook[:attribute_filenames]
       @cookbook_version.definition_filenames = @cookbook[:definition_filenames]
       @cookbook_version.recipe_filenames     = @cookbook[:recipe_filenames]
@@ -249,11 +249,11 @@ describe Chef::CookbookVersion do
                   ["1.2", "1.3.0"],
                   ["1.2", "1.3"],
                   ["1.2", "2.1.1"],
-                  ["1.2", "2.1"]
+                  ["1.2", "2.1"],
                  ]
       examples.each do |smaller, larger|
-        sm = Chef::CookbookVersion.new("foo", '/tmp/blah')
-        lg = Chef::CookbookVersion.new("foo", '/tmp/blah')
+        sm = Chef::CookbookVersion.new("foo", "/tmp/blah")
+        lg = Chef::CookbookVersion.new("foo", "/tmp/blah")
         sm.version = smaller
         lg.version = larger
         expect(sm).to be < lg
@@ -263,8 +263,8 @@ describe Chef::CookbookVersion do
     end
 
     it "should equate versions 1.2 and 1.2.0" do
-      a = Chef::CookbookVersion.new("foo", '/tmp/blah')
-      b = Chef::CookbookVersion.new("foo", '/tmp/blah')
+      a = Chef::CookbookVersion.new("foo", "/tmp/blah")
+      b = Chef::CookbookVersion.new("foo", "/tmp/blah")
       a.version = "1.2"
       b.version = "1.2.0"
       expect(a).to eq(b)
@@ -272,9 +272,9 @@ describe Chef::CookbookVersion do
 
 
     it "should not allow you to sort cookbooks with different names" do
-      apt = Chef::CookbookVersion.new "apt", '/tmp/blah'
+      apt = Chef::CookbookVersion.new "apt", "/tmp/blah"
       apt.version = "1.0"
-      god = Chef::CookbookVersion.new "god", '/tmp/blah'
+      god = Chef::CookbookVersion.new "god", "/tmp/blah"
       god.version = "2.0"
       expect {apt <=> god}.to raise_error(Chef::Exceptions::CookbookVersionNameMismatch)
     end
@@ -282,10 +282,10 @@ describe Chef::CookbookVersion do
 
   describe "when you set a version" do
     before do
-      @cbv = Chef::CookbookVersion.new("version validation", '/tmp/blah')
+      @cbv = Chef::CookbookVersion.new("version validation", "/tmp/blah")
     end
     it "should accept valid cookbook versions" do
-      good_versions = %w(1.2 1.2.3 1000.80.50000 0.300.25)
+      good_versions = %w{1.2 1.2.3 1000.80.50000 0.300.25}
       good_versions.each do |v|
         @cbv.version = v
       end
@@ -304,27 +304,7 @@ describe Chef::CookbookVersion do
 
   describe "when deprecation warnings are errors" do
 
-    subject(:cbv) { Chef::CookbookVersion.new("version validation", '/tmp/blah') }
-
-    describe "HTTP Resource behaviors", pending: "will be deprected when CookbookManifest API is stablized" do
-
-      it "errors on #save_url" do
-        expect { cbv.save_url }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-      end
-
-      it "errors on #force_save_url" do
-        expect { cbv.force_save_url }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-      end
-
-      it "errors on #to_hash" do
-        expect { cbv.to_hash }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-      end
-
-      it "errors on #to_json" do
-        expect { cbv.to_json }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-      end
-
-    end
+    subject(:cbv) { Chef::CookbookVersion.new("version validation", "/tmp/blah") }
 
     it "errors on #status and #status=" do
       expect { cbv.status = :wat }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
@@ -335,7 +315,7 @@ describe Chef::CookbookVersion do
 
   describe "deprecated features" do
 
-    subject(:cbv) { Chef::CookbookVersion.new("tatft", '/tmp/blah').tap { |c| c.version = "1.2.3" } }
+    subject(:cbv) { Chef::CookbookVersion.new("tatft", "/tmp/blah").tap { |c| c.version = "1.2.3" } }
 
     before do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
@@ -356,8 +336,8 @@ describe Chef::CookbookVersion do
     end
 
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-      let(:jsonable) { Chef::CookbookVersion.new("tatft", '/tmp/blah') }
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
+      let(:jsonable) { Chef::CookbookVersion.new("tatft", "/tmp/blah") }
     end
 
   end

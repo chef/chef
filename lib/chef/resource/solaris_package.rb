@@ -17,27 +17,15 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/solaris'
+require "chef/resource/package"
+require "chef/provider/package/solaris"
 
 class Chef
   class Resource
     class SolarisPackage < Chef::Resource::Package
-
-      provides :solaris_package
+      resource_name :solaris_package
       provides :package, os: "solaris2", platform_family: "nexentacore"
-      provides :package, os: "solaris2", platform_family: "solaris2" do |node|
-        # on >= Solaris 11 we default to IPS packages instead
-        node[:platform_version].to_f <= 5.10
-      end
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :solaris_package
-      end
-
+      provides :package, os: "solaris2", platform_family: "solaris2", platform_version: "<= 5.10"
     end
   end
 end
-
-

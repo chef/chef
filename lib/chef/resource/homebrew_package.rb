@@ -18,29 +18,16 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/resource/package'
+require "chef/provider/package"
+require "chef/resource/package"
 
 class Chef
   class Resource
     class HomebrewPackage < Chef::Resource::Package
-
-      provides :homebrew_package
+      resource_name :homebrew_package
       provides :package, os: "darwin"
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :homebrew_package
-        @homebrew_user = nil
-      end
-
-      def homebrew_user(arg=nil)
-        set_or_return(
-            :homebrew_user,
-            arg,
-            :kind_of => [ String, Integer ]
-        )
-      end
+      property :homebrew_user, [ String, Integer ]
 
     end
   end

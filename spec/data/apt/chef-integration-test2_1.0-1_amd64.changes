@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Thu, 30 Sep 2010 09:53:45 -0600
+Source: chef-integration-test2
+Binary: chef-integration-test2
+Architecture: source amd64
+Version: 1.0-1
+Distribution: unstable
+Urgency: low
+Maintainer: Joshua Timberman <Joshua Timberman <joshua@opscode.com>>
+Changed-By: Joshua Timberman <joshua@opscode.com>
+Description: 
+ chef-integration-test2 - Chef integration tests for APT in Cucumber
+Changes: 
+ chef-integration-test2 (1.0-1) unstable; urgency=low
+ .
+   * Initial release (Closes: #CHEF-1718)
+Checksums-Sha1: 
+ 7e065fdf71f4d798312b318a29cec43b7bc1c8e1 885 chef-integration-test2_1.0-1.dsc
+ 755c304197c6559128aed206ea70643fec2bb90d 248 chef-integration-test2_1.0.orig.tar.gz
+ 8b7df49a9e2c57b4460c2738852db1156a21a089 1369 chef-integration-test2_1.0-1.debian.tar.gz
+ f3f89c051bce36d40ef1be12d231c44b2d5be05b 1694 chef-integration-test2_1.0-1_amd64.deb
+Checksums-Sha256: 
+ 80d314349e1d978f242d05482ca81c9361739047daa4adcecc9e5e622fdc6fb4 885 chef-integration-test2_1.0-1.dsc
+ 8b206a7b3d422290bc8d82bd700cb89f1c6e3962b96be6a3955c7a0159f9031c 248 chef-integration-test2_1.0.orig.tar.gz
+ 77a7956e222c35afcddc4a5a8d338ca6e36dc1fbd720af255ce2412885f82702 1369 chef-integration-test2_1.0-1.debian.tar.gz
+ 19a767db0a947a350fb1c8492699e8a808fbe1838d4a582001106cfbe520ad8f 1694 chef-integration-test2_1.0-1_amd64.deb
+Files: 
+ 9f927b32d95b5406c696b5b0b23177e8 885 ruby extra chef-integration-test2_1.0-1.dsc
+ f1f7d7bbe63ad631d25d707f564a8d33 248 ruby extra chef-integration-test2_1.0.orig.tar.gz
+ 4fab5c1cd9a7b47c4f319af776f48a1d 1369 ruby extra chef-integration-test2_1.0-1.debian.tar.gz
+ 9914e6152e278b6828bcade3b3f5580c 1694 ruby extra chef-integration-test2_1.0-1_amd64.deb

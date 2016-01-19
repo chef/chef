@@ -16,20 +16,18 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
+require "chef/provider/service/init"
 
 class Chef
   class Provider
     class Service
       class Debian < Chef::Provider::Service::Init
+        provides :service, platform_family: "debian" do |node|
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)
+        end
+
         UPDATE_RC_D_ENABLED_MATCHES = /\/rc[\dS].d\/S|not installed/i
         UPDATE_RC_D_PRIORITIES = /\/rc([\dS]).d\/([SK])(\d\d)/i
-
-        provides :service, platform_family: "debian"
-
-        def self.provides?(node, resource)
-          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)
-        end
 
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
@@ -111,7 +109,7 @@ class Chef
           priority.each { |runlevel, arguments|
             Chef::Log.debug("#{new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
-            if %w[ 1 2 3 4 5 S ].include?(runlevel) && arguments[0] == :start
+            if %w{ 1 2 3 4 5 S }.include?(runlevel) && arguments[0] == :start
               enabled = true
             end
           }

@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Env::Windows, :windows_only do
   let(:node) { Chef::Node.new }
   let(:events) {Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
-  context 'when environment variable is not PATH' do
+  context "when environment variable is not PATH" do
     let(:new_resource) {
       new_resource = Chef::Resource::Env.new("CHEF_WINDOWS_ENV_TEST")
       new_resource.value("foo")
@@ -31,71 +31,71 @@ describe Chef::Provider::Env::Windows, :windows_only do
     }
     let(:provider) { 
       provider = Chef::Provider::Env::Windows.new(new_resource, run_context) 
-      allow(provider).to receive(:env_obj).and_return(double('null object').as_null_object)
+      allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
       provider
     }
 
     describe "action_create" do
       before do
-        ENV.delete('CHEF_WINDOWS_ENV_TEST')
+        ENV.delete("CHEF_WINDOWS_ENV_TEST")
         provider.key_exists = false
       end
 
       it "should update the ruby ENV object when it creates the key" do
         provider.action_create
-        expect(ENV['CHEF_WINDOWS_ENV_TEST']).to eql('foo')
+        expect(ENV["CHEF_WINDOWS_ENV_TEST"]).to eql("foo")
       end
     end
 
     describe "action_modify" do
       before do
-        ENV['CHEF_WINDOWS_ENV_TEST'] = 'foo'
+        ENV["CHEF_WINDOWS_ENV_TEST"] = "foo"
       end
 
       it "should update the ruby ENV object when it updates the value" do
         expect(provider).to receive(:requires_modify_or_create?).and_return(true)
         new_resource.value("foobar")
         provider.action_modify
-        expect(ENV['CHEF_WINDOWS_ENV_TEST']).to eql('foobar')
+        expect(ENV["CHEF_WINDOWS_ENV_TEST"]).to eql("foobar")
       end
 
       describe "action_delete" do
         before do
-          ENV['CHEF_WINDOWS_ENV_TEST'] = 'foo'
+          ENV["CHEF_WINDOWS_ENV_TEST"] = "foo"
         end
 
         it "should update the ruby ENV object when it deletes the key" do
           provider.action_delete
-          expect(ENV['CHEF_WINDOWS_ENV_TEST']).to eql(nil)
+          expect(ENV["CHEF_WINDOWS_ENV_TEST"]).to eql(nil)
         end
       end
     end
   end
 
-  context 'when environment is PATH' do
+  context "when environment is PATH" do
     describe "for PATH" do
-      let(:system_root) {'%SystemRoot%'}
+      let(:system_root) {"%SystemRoot%"}
       let(:system_root_value) { 'D:\Windows' }
       let(:new_resource) {
-        new_resource = Chef::Resource::Env.new('PATH')
+        new_resource = Chef::Resource::Env.new("PATH")
         new_resource.value(system_root)
         new_resource
       }
       let(:provider) { 
         provider = Chef::Provider::Env::Windows.new(new_resource, run_context) 
-        allow(provider).to receive(:env_obj).and_return(double('null object').as_null_object)
+        allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
         provider
       }
 
       before do
-        stub_const('ENV', {'PATH' => ''})
+        stub_const("ENV", {"PATH" => ""})
       end
 
       it "replaces Windows system variables" do
         expect(provider).to receive(:requires_modify_or_create?).and_return(true)
         expect(provider).to receive(:expand_path).with(system_root).and_return(system_root_value)
         provider.action_modify
-        expect(ENV['PATH']).to eql(system_root_value)
+        expect(ENV["PATH"]).to eql(system_root_value)
       end
     end
 

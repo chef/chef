@@ -21,8 +21,8 @@
 module KnifeSpecs
 end
 
-require 'spec_helper'
-require 'uri'
+require "spec_helper"
+require "uri"
 
 describe Chef::Knife do
 
@@ -30,10 +30,22 @@ describe Chef::Knife do
 
   let(:knife) { Chef::Knife.new }
 
+  let(:config_location) { File.expand_path("~/.chef/config.rb") }
+
+  let(:config_loader) do
+    instance_double("WorkstationConfigLoader",
+                    load: nil, no_config_found?: false,
+                    config_location: config_location,
+                    :chef_config_dir => "/etc/chef")
+  end
+
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
+
+    allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
+    allow(config_loader).to receive(:explicit_config_file=)
 
     # Prevent gratuitous code reloading:
     allow(Chef::Knife).to receive(:load_commands)
@@ -51,6 +63,12 @@ describe Chef::Knife do
     Chef::Knife.reset_config_loader!
   end
 
+  it "does not reset Chef::Config[:verbosity to nil if config[:verbosity] is nil" do
+    Chef::Config[:verbosity] = 2
+    Chef::Knife.new
+    expect(Chef::Config[:verbosity]).to eq(2)
+  end
+
   describe "after loading a subcommand" do
     before do
       Chef::Knife.reset_subcommands!
@@ -63,28 +81,28 @@ describe Chef::Knife do
         KnifeSpecs.send(:remove_const, :TestExplicitCategory)
       end
 
-      Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_name_mapping.rb'))
-      Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_explicit_category.rb'))
+      Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_name_mapping.rb"))
+      Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_explicit_category.rb"))
     end
 
     it "has a category based on its name" do
-      expect(KnifeSpecs::TestNameMapping.subcommand_category).to eq('test')
+      expect(KnifeSpecs::TestNameMapping.subcommand_category).to eq("test")
     end
 
     it "has an explicitly defined category if set" do
-      expect(KnifeSpecs::TestExplicitCategory.subcommand_category).to eq('cookbook site')
+      expect(KnifeSpecs::TestExplicitCategory.subcommand_category).to eq("cookbook site")
     end
 
     it "can reference the subcommand by its snake cased name" do
-      expect(Chef::Knife.subcommands['test_name_mapping']).to equal(KnifeSpecs::TestNameMapping)
+      expect(Chef::Knife.subcommands["test_name_mapping"]).to equal(KnifeSpecs::TestNameMapping)
     end
 
     it "lists subcommands by category" do
-      expect(Chef::Knife.subcommands_by_category['test']).to include('test_name_mapping')
+      expect(Chef::Knife.subcommands_by_category["test"]).to include("test_name_mapping")
     end
 
     it "lists subcommands by category when the subcommands have explicit categories" do
-      expect(Chef::Knife.subcommands_by_category['cookbook site']).to include('test_explicit_category')
+      expect(Chef::Knife.subcommands_by_category["cookbook site"]).to include("test_explicit_category")
     end
 
     it "has empty dependency_loader list by default" do
@@ -108,12 +126,20 @@ describe Chef::Knife do
       expect(Chef::Knife.subcommands["super_awesome_command"]).to eq(SuperAwesomeCommand)
     end
 
+    it "records the location of ChefFS-based commands correctly" do
+      class AwesomeCheffsCommand < Chef::ChefFS::Knife
+      end
+
+      Chef::Knife.load_commands
+      expect(Chef::Knife.subcommand_files["awesome_cheffs_command"]).to eq([__FILE__])
+    end
+
     it "guesses a category from a given ARGV" do
       Chef::Knife.subcommands_by_category["cookbook"] << :cookbook
       Chef::Knife.subcommands_by_category["cookbook site"] << :cookbook_site
-      expect(Chef::Knife.guess_category(%w{cookbook foo bar baz})).to eq('cookbook')
-      expect(Chef::Knife.guess_category(%w{cookbook site foo bar baz})).to eq('cookbook site')
-      expect(Chef::Knife.guess_category(%w{cookbook site --help})).to eq('cookbook site')
+      expect(Chef::Knife.guess_category(%w{cookbook foo bar baz})).to eq("cookbook")
+      expect(Chef::Knife.guess_category(%w{cookbook site foo bar baz})).to eq("cookbook site")
+      expect(Chef::Knife.guess_category(%w{cookbook site --help})).to eq("cookbook site")
     end
 
     it "finds a subcommand class based on ARGV" do
@@ -128,9 +154,10 @@ describe Chef::Knife do
 
     let(:headers) {{"Accept"=>"application/json",
                     "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
-                    'X-Chef-Version' => Chef::VERSION,
+                    "X-Chef-Version" => Chef::VERSION,
                     "Host"=>"api.opscode.piab",
-                    "X-REMOTE-REQUEST-ID"=>request_id}}
+                    "X-REMOTE-REQUEST-ID"=>request_id,
+    }}
 
     let(:request_id) {"1234"}
 
@@ -168,13 +195,13 @@ describe Chef::Knife do
       if KnifeSpecs.const_defined?(:TestYourself)
         KnifeSpecs.send :remove_const, :TestYourself
       end
-      Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_yourself.rb'))
+      Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
       Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
     end
 
     it "confirms that the headers include X-Remote-Request-Id" do
       expect(Net::HTTP::Get).to receive(:new).with("/monkey", headers).and_return(request_mock)
-      rest.get_rest("monkey")
+      rest.get("monkey")
     end
   end
 
@@ -183,7 +210,7 @@ describe Chef::Knife do
       if KnifeSpecs.const_defined?(:TestYourself)
         KnifeSpecs.send :remove_const, :TestYourself
       end
-      Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_yourself.rb'))
+      Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
       Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
     end
 
@@ -251,6 +278,18 @@ describe Chef::Knife do
                                         :default => "default-value")
       end
 
+      it "sets the default log_location to STDERR for Chef::Log warnings" do
+        knife_command = KnifeSpecs::TestYourself.new([])
+        knife_command.configure_chef
+        expect(Chef::Config[:log_location]).to eq(STDERR)
+      end
+
+      it "sets the default log_level to warn so we can issue Chef::Log.warn" do
+        knife_command = KnifeSpecs::TestYourself.new([])
+        knife_command.configure_chef
+        expect(Chef::Config[:log_level]).to eql(:warn)
+      end
+
       it "prefers the default value if no config or command line value is present" do
         knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
         knife_command.configure_chef
@@ -271,7 +310,12 @@ describe Chef::Knife do
         expect(knife_command.config[:opt_with_default]).to eq("from-cli")
       end
 
-      context "verbosity is greater than zero" do
+      it "merges `listen` config to Chef::Config" do
+        Chef::Knife.run(%w{test yourself --no-listen}, Chef::Application::Knife.options)
+        expect(Chef::Config[:listen]).to be(false)
+      end
+
+      context "verbosity is one" do
         let(:fake_config) { "/does/not/exist/knife.rb" }
 
         before do
@@ -289,6 +333,13 @@ describe Chef::Knife do
           knife.configure_chef
         end
       end
+
+      it "does not humanize the exception if Chef::Config[:verbosity] is two" do
+        Chef::Config[:verbosity] = 2
+        allow(knife).to receive(:run).and_raise(Exception)
+        expect(knife).not_to receive(:humanize_exception)
+        expect { knife.run_with_pretty_exceptions }.to raise_error(Exception)
+      end
     end
   end
 
@@ -298,12 +349,12 @@ describe Chef::Knife do
 
     before do
       unless KnifeSpecs.const_defined?(:TestYourself)
-        Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_yourself.rb'))
+        Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
       end
     end
 
     it "it parses the options passed to it" do
-      expect(knife.config[:scro]).to eq('scrogramming')
+      expect(knife.config[:scro]).to eq("scrogramming")
     end
 
     it "extracts its command specific args from the full arg list" do
@@ -345,8 +396,8 @@ describe Chef::Knife do
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
       allow(knife).to receive(:username).and_return("sadpanda")
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action])
-      expect(stderr.string).to match(%r[Response:  y u no administrator])
+      expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
+      expect(stderr.string).to match(%r{Response:  y u no administrator})
     end
 
     it "formats 400s nicely" do
@@ -355,8 +406,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u search wrong"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("400 Bad Request", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: The data in your request was invalid])
-      expect(stderr.string).to match(%r[Response: y u search wrong])
+      expect(stderr.string).to match(%r{ERROR: The data in your request was invalid})
+      expect(stderr.string).to match(%r{Response: y u search wrong})
     end
 
     it "formats 404s nicely" do
@@ -365,8 +416,24 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "nothing to see here"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("404 Not Found", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: The object you are looking for could not be found])
-      expect(stderr.string).to match(%r[Response: nothing to see here])
+      expect(stderr.string).to match(%r{ERROR: The object you are looking for could not be found})
+      expect(stderr.string).to match(%r{Response: nothing to see here})
+    end
+
+    it "formats 406s (non-supported API version error) nicely" do
+      response = Net::HTTPNotAcceptable.new("1.1", "406", "Not Acceptable")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+
+      # set the header
+      response["x-ops-server-api-version"] = Chef::JSONCompat.to_json(:min_version => "0", :max_version => "1", :request_version => "10000000")
+
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
+
+      knife.run_with_pretty_exceptions
+      expect(stderr.string).to include("The request that Knife sent was using API version 10000000")
+      expect(stderr.string).to include("The Chef server you sent the request to supports a min API verson of 0 and a max API version of 1")
+      expect(stderr.string).to include("Please either update your Chef client or server to be a compatible set")
     end
 
     it "formats 500s nicely" do
@@ -375,8 +442,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("500 Internal Server Error", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: internal server error])
-      expect(stderr.string).to match(%r[Response: sad trombone])
+      expect(stderr.string).to match(%r{ERROR: internal server error})
+      expect(stderr.string).to match(%r{Response: sad trombone})
     end
 
     it "formats 502s nicely" do
@@ -385,8 +452,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sadder trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("502 Bad Gateway", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: bad gateway])
-      expect(stderr.string).to match(%r[Response: sadder trombone])
+      expect(stderr.string).to match(%r{ERROR: bad gateway})
+      expect(stderr.string).to match(%r{Response: sadder trombone})
     end
 
     it "formats 503s nicely" do
@@ -395,8 +462,8 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "saddest trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("503 Service Unavailable", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: Service temporarily unavailable])
-      expect(stderr.string).to match(%r[Response: saddest trombone])
+      expect(stderr.string).to match(%r{ERROR: Service temporarily unavailable})
+      expect(stderr.string).to match(%r{Response: saddest trombone})
     end
 
     it "formats other HTTP errors nicely" do
@@ -405,34 +472,34 @@ describe Chef::Knife do
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "nobugfixtillyoubuy"))
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("402 Payment Required", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: Payment Required])
-      expect(stderr.string).to match(%r[Response: nobugfixtillyoubuy])
+      expect(stderr.string).to match(%r{ERROR: Payment Required})
+      expect(stderr.string).to match(%r{Response: nobugfixtillyoubuy})
     end
 
     it "formats NameError and NoMethodError nicely" do
       allow(knife).to receive(:run).and_raise(NameError.new("Undefined constant FUUU"))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: knife encountered an unexpected error])
-      expect(stderr.string).to match(%r[This may be a bug in the 'knife' knife command or plugin])
-      expect(stderr.string).to match(%r[Exception: NameError: Undefined constant FUUU])
+      expect(stderr.string).to match(%r{ERROR: knife encountered an unexpected error})
+      expect(stderr.string).to match(%r{This may be a bug in the 'knife' knife command or plugin})
+      expect(stderr.string).to match(%r{Exception: NameError: Undefined constant FUUU})
     end
 
     it "formats missing private key errors nicely" do
-      allow(knife).to receive(:run).and_raise(Chef::Exceptions::PrivateKeyMissing.new('key not there'))
+      allow(knife).to receive(:run).and_raise(Chef::Exceptions::PrivateKeyMissing.new("key not there"))
       allow(knife).to receive(:api_key).and_return("/home/root/.chef/no-key-here.pem")
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r[ERROR: Your private key could not be loaded from /home/root/.chef/no-key-here.pem])
-      expect(stderr.string).to match(%r[Check your configuration file and ensure that your private key is readable])
+      expect(stderr.string).to match(%r{ERROR: Your private key could not be loaded from /home/root/.chef/no-key-here.pem})
+      expect(stderr.string).to match(%r{Check your configuration file and ensure that your private key is readable})
     end
 
     it "formats connection refused errors nicely" do
-      allow(knife).to receive(:run).and_raise(Errno::ECONNREFUSED.new('y u no shut up'))
+      allow(knife).to receive(:run).and_raise(Errno::ECONNREFUSED.new("y u no shut up"))
       knife.run_with_pretty_exceptions
       # Errno::ECONNREFUSED message differs by platform
       # *nix = Errno::ECONNREFUSED: Connection refused
       # win32: Errno::ECONNREFUSED: No connection could be made because the target machine actively refused it.
-      expect(stderr.string).to match(%r[ERROR: Network Error: .* - y u no shut up])
-      expect(stderr.string).to match(%r[Check your knife configuration and network settings])
+      expect(stderr.string).to match(%r{ERROR: Network Error: .* - y u no shut up})
+      expect(stderr.string).to match(%r{Check your knife configuration and network settings})
     end
 
     it "formats SSL errors nicely and suggests to use `knife ssl check` and `knife ssl fetch`" do

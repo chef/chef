@@ -16,38 +16,36 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/resource/package'
+require "chef/provider/package"
+require "chef/resource/package"
 
 class Chef
   class Provider
     class Package
       class Paludis < Chef::Provider::Package
 
+        provides :package, platform: "exherbo"
         provides :paludis_package, os: "linux"
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.package_name)
           @current_resource.package_name(@new_resource.package_name)
 
-          @current_resource.version(nil)
-
           Chef::Log.debug("Checking package status for #{@new_resource.package_name}")
           installed = false
-          re = Regexp.new('(.*)[[:blank:]](.*)[[:blank:]](.*)$')
+          re = Regexp.new("(.*)[[:blank:]](.*)[[:blank:]](.*)$")
 
           shell_out!("cave -L warning print-ids -M none -m \"#{@new_resource.package_name}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             res = re.match(line)
             unless res.nil?
               case res[3]
-              when 'accounts', 'installed-accounts'
+              when "accounts", "installed-accounts"
                 next
-              when 'installed'
+              when "installed"
                 installed = true
                 @current_resource.version(res[2])
               else
                 @candidate_version = res[2]
-                @current_resource.version(nil)
               end
             end
           end

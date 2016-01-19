@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleShow do
-  let(:role) { 'base' }
+  let(:role) { "base" }
 
   let(:knife) do
     knife = Chef::Knife::RoleShow.new
@@ -27,21 +27,21 @@ describe Chef::Knife::RoleShow do
     knife
   end
 
-  let(:role_mock) { double('role_mock') }
+  let(:role_mock) { double("role_mock") }
 
-  describe 'run' do
-    it 'should list the role' do
-      expect(Chef::Role).to receive(:load).with('base').and_return(role_mock)
+  describe "run" do
+    it "should list the role" do
+      expect(Chef::Role).to receive(:load).with("base").and_return(role_mock)
       expect(knife).to receive(:format_for_display).with(role_mock)
       knife.run
     end
 
-    it 'should pretty print json' do
-      knife.config[:format] = 'json'
+    it "should pretty print json" do
+      knife.config[:format] = "json"
       stdout = StringIO.new
       allow(knife.ui).to receive(:stdout).and_return(stdout)
       fake_role_contents = {"foo"=>"bar", "baz"=>"qux"}
-      expect(Chef::Role).to receive(:load).with('base').and_return(fake_role_contents)
+      expect(Chef::Role).to receive(:load).with("base").and_return(fake_role_contents)
       knife.run
       expect(stdout.string).to eql("{\n  \"foo\": \"bar\",\n  \"baz\": \"qux\"\n}\n")
     end
@@ -49,7 +49,7 @@ describe Chef::Knife::RoleShow do
     context "without a role name" do
       let(:role) { }
 
-      it 'should print usage and exit when a role name is not provided' do
+      it "should print usage and exit when a role name is not provided" do
         expect(knife).to receive(:show_usage)
         expect(knife.ui).to receive(:fatal)
         expect { knife.run }.to raise_error(SystemExit)

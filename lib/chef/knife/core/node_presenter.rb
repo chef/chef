@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife/core/text_formatter'
-require 'chef/knife/core/generic_presenter'
+require "chef/knife/core/text_formatter"
+require "chef/knife/core/generic_presenter"
 
 class Chef
   class Knife
@@ -32,18 +32,18 @@ class Chef
         def self.included(includer)
           includer.class_eval do
             option :medium_output,
-              :short   => '-m',
-              :long    => '--medium',
+              :short   => "-m",
+              :long    => "--medium",
               :boolean => true,
               :default => false,
-              :description => 'Include normal attributes in the output'
+              :description => "Include normal attributes in the output"
 
             option :long_output,
-              :short   => '-l',
-              :long    => '--long',
+              :short   => "-l",
+              :long    => "--long",
               :boolean => true,
               :default => false,
-              :description => 'Include all attributes in the output'
+              :description => "Include all attributes in the output"
           end
         end
       end
@@ -67,7 +67,12 @@ class Chef
             result = {}
 
             result["name"] = node.name
-            result["chef_environment"] = node.chef_environment
+            if node.policy_name.nil? && node.policy_group.nil?
+              result["chef_environment"] = node.chef_environment
+            else
+              result["policy_name"] = node.policy_name
+              result["policy_group"] = node.policy_group
+            end
             result["run_list"] = node.run_list
             result["normal"] = node.normal_attrs
 
@@ -95,14 +100,32 @@ class Chef
 
             summarized=<<-SUMMARY
 #{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
+SUMMARY
+            show_policy = !(node.policy_name.nil? && node.policy_group.nil?)
+            if show_policy
+              summarized << <<-POLICY
+#{key('Policy Name:')}  #{node.policy_name}
+#{key('Policy Group:')} #{node.policy_group}
+POLICY
+            else
+              summarized << <<-ENV
 #{key('Environment:')} #{node.chef_environment}
+ENV
+            end
+            summarized << <<-SUMMARY
 #{key('FQDN:')}        #{node[:fqdn]}
 #{key('IP:')}          #{ip}
 #{key('Run List:')}    #{node.run_list}
+SUMMARY
+            unless show_policy
+              summarized << <<-ROLES
 #{key('Roles:')}       #{Array(node[:roles]).join(', ')}
+ROLES
+            end
+            summarized << <<-SUMMARY
 #{key('Recipes:')}     #{Array(node[:recipes]).join(', ')}
 #{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
-#{key('Tags:')}        #{Array(node[:tags]).join(', ')}
+#{key('Tags:')}        #{node.tags.join(', ')}
 SUMMARY
             if config[:medium_output] || config[:long_output]
               summarized +=<<-MORE

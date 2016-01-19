@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'support/shared/integration/integration_helper'
-require 'chef/mixin/shell_out'
+require "support/shared/integration/integration_helper"
+require "chef/mixin/shell_out"
 
 describe "chef-client" do
   include IntegrationSupport
@@ -76,7 +76,7 @@ END_CLIENT_RB
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
 
-  let(:chef_client_cmd) { %Q[ruby '#{chef_dir}/chef-client' --minimal-ohai -c "#{path_to('config/client.rb')}" -lwarn] }
+  let(:chef_client_cmd) { %Q{ruby '#{chef_dir}/chef-client' --minimal-ohai -c "#{path_to('config/client.rb')}" -lwarn} }
 
   after do
     FileUtils.rm_rf(cache_path)
@@ -84,13 +84,13 @@ END_CLIENT_RB
 
   # Some Solaris test platforms are too old for IPv6. These tests should not
   # otherwise be platform dependent, so exclude solaris
-  when_the_chef_server "is running on IPv6", :not_supported_on_solaris do
+  when_the_chef_server "is running on IPv6", :not_supported_on_solaris, :not_supported_on_gce do
 
     when_the_repository "has a cookbook with a no-op recipe" do
       before do
-        cookbook 'noop', '1.0.0', { }, "recipes" => {"default.rb" => "#raise 'foo'"}
-        file 'config/client.rb', client_rb_content
-        file 'config/validator.pem', validation_pem
+        cookbook "noop", "1.0.0", { }, "recipes" => {"default.rb" => "#raise 'foo'"}
+        file "config/client.rb", client_rb_content
+        file "config/validator.pem", validation_pem
       end
 
       it "should complete with success" do
@@ -115,14 +115,14 @@ END_CLIENT_RB
 
         END_RECIPE
 
-        data_bag('expect_bag', { 'expect_item' => {"expect_key" => "expect_value"} })
+        data_bag("expect_bag", { "expect_item" => {"expect_key" => "expect_value"} })
 
-        cookbook 'api-smoke-test', '1.0.0', { }, "recipes" => {"default.rb" => recipe}
+        cookbook "api-smoke-test", "1.0.0", { }, "recipes" => {"default.rb" => recipe}
       end
 
       before do
-        file 'config/client.rb', client_rb_content
-        file 'config/validator.pem', validation_pem
+        file "config/client.rb", client_rb_content
+        file "config/validator.pem", validation_pem
       end
 
       it "should complete with success" do

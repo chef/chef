@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Handler::JsonFile do
   before(:each) do
-    @handler = Chef::Handler::JsonFile.new(:the_sun => "will rise", :path => '/tmp/foobarbazqux')
+    @handler = Chef::Handler::JsonFile.new(:the_sun => "will rise", :path => "/tmp/foobarbazqux")
   end
 
   it "accepts arbitrary config options" do
@@ -28,8 +28,8 @@ describe Chef::Handler::JsonFile do
   end
 
   it "creates the directory where the reports will be saved" do
-    expect(FileUtils).to receive(:mkdir_p).with('/tmp/foobarbazqux')
-    expect(File).to receive(:chmod).with(00700, '/tmp/foobarbazqux')
+    expect(FileUtils).to receive(:mkdir_p).with("/tmp/foobarbazqux")
+    expect(File).to receive(:chmod).with(00700, "/tmp/foobarbazqux")
     @handler.build_report_dir
   end
 
@@ -54,10 +54,10 @@ describe Chef::Handler::JsonFile do
       expect(@handler).to receive(:build_report_dir)
       @handler.run_report_unsafe(@run_status)
       reported_data = Chef::JSONCompat.from_json(@file_mock.string)
-      expect(reported_data['exception']).to eq("Exception: Boy howdy!")
-      expect(reported_data['start_time']).to eq(@expected_time.to_s)
-      expect(reported_data['end_time']).to eq((@expected_time + 5).to_s)
-      expect(reported_data['elapsed_time']).to eq(5)
+      expect(reported_data["exception"]).to eq("Exception: Boy howdy!")
+      expect(reported_data["start_time"]).to eq(@expected_time.to_s)
+      expect(reported_data["end_time"]).to eq((@expected_time + 5).to_s)
+      expect(reported_data["elapsed_time"]).to eq(5)
     end
 
   end

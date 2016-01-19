@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::DpkgPackage, "initialize" do
 
@@ -26,7 +26,7 @@ describe Chef::Resource::DpkgPackage, "initialize" do
     provider: Chef::Provider::Package::Dpkg,
     name: :dpkg_package,
     action: :install,
-    os: 'linux',
+    os: "linux",
   )
 
 end

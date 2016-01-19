@@ -17,7 +17,7 @@
 #
 
 # rename to cookbook not coookbook
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::CookbookShow do
   before(:each) do
@@ -25,7 +25,7 @@ describe Chef::Knife::CookbookShow do
     @knife = Chef::Knife::CookbookShow.new
     @knife.config = { }
     @knife.name_args = [ "cookbook_name" ]
-    @rest = double(Chef::REST)
+    @rest = double(Chef::ServerAPI)
     allow(@knife).to receive(:rest).and_return(@rest)
     allow(@knife).to receive(:pretty_print).and_return(true)
     allow(@knife).to receive(:output).and_return(true)
@@ -33,7 +33,7 @@ describe Chef::Knife::CookbookShow do
 
   describe "run" do
     describe "with 0 arguments: help" do
-      it 'should should print usage and exit when given no arguments' do
+      it "should should print usage and exit when given no arguments" do
         @knife.name_args = []
         expect(@knife).to receive(:show_usage)
         expect(@knife.ui).to receive(:fatal)
@@ -49,21 +49,21 @@ describe Chef::Knife::CookbookShow do
             "versions" => [
               { "version" => "0.10.0", "url" => "http://url/cookbooks/cookbook_name/0.10.0" },
               { "version" => "0.9.0", "url" => "http://url/cookbookx/cookbook_name/0.9.0" },
-              { "version" => "0.8.0", "url" => "http://url/cookbooks/cookbook_name/0.8.0" }
-            ]
+              { "version" => "0.8.0", "url" => "http://url/cookbooks/cookbook_name/0.8.0" },
+            ],
           }
         }
       end
 
       it "should show the raw cookbook data" do
-        expect(@rest).to receive(:get_rest).with("cookbooks/cookbook_name").and_return(@response)
+        expect(@rest).to receive(:get).with("cookbooks/cookbook_name").and_return(@response)
         expect(@knife).to receive(:format_cookbook_list_for_display).with(@response)
         @knife.run
       end
 
       it "should respect the user-supplied environment" do
         @knife.config[:environment] = "foo"
-        expect(@rest).to receive(:get_rest).with("environments/foo/cookbooks/cookbook_name").and_return(@response)
+        expect(@rest).to receive(:get).with("environments/foo/cookbooks/cookbook_name").and_return(@response)
         expect(@knife).to receive(:format_cookbook_list_for_display).with(@response)
         @knife.run
       end
@@ -76,7 +76,7 @@ describe Chef::Knife::CookbookShow do
       end
 
       it "should show the specific part of a cookbook" do
-        expect(@rest).to receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@response)
+        expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@response)
         expect(@knife).to receive(:output).with(@response)
         @knife.run
       end
@@ -92,8 +92,8 @@ describe Chef::Knife::CookbookShow do
               :name => "default.rb",
               :path => "recipes/default.rb",
               :checksum => "1234",
-              :url => "http://example.org/files/default.rb"
-            }
+              :url => "http://example.org/files/default.rb",
+            },
           ]
         }
         @cookbook_response.manifest = @manifest
@@ -101,7 +101,7 @@ describe Chef::Knife::CookbookShow do
       end
 
       it "should print the json of the part" do
-        expect(@rest).to receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+        expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
         expect(@knife).to receive(:output).with(@cookbook_response.manifest["recipes"])
         @knife.run
       end
@@ -117,16 +117,16 @@ describe Chef::Knife::CookbookShow do
               :name => "default.rb",
               :path => "recipes/default.rb",
               :checksum => "1234",
-              :url => "http://example.org/files/default.rb"
-            }
+              :url => "http://example.org/files/default.rb",
+            },
           ]
         }
         @response = "Example recipe text"
       end
 
       it "should print the raw result of the request (likely a file!)" do
-        expect(@rest).to receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-        expect(@rest).to receive(:get_rest).with("http://example.org/files/default.rb", true).and_return(StringIO.new(@response))
+        expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+        expect(@rest).to receive(:get).with("http://example.org/files/default.rb", true).and_return(StringIO.new(@response))
         expect(@knife).to receive(:pretty_print).with(@response)
         @knife.run
       end
@@ -143,28 +143,28 @@ describe Chef::Knife::CookbookShow do
               :path => "files/host-examplehost.example.org/afile.rb",
               :checksum => "1111",
               :specificity => "host-examplehost.example.org",
-              :url => "http://example.org/files/1111"
+              :url => "http://example.org/files/1111",
             },
             {
               :name => "afile.rb",
               :path => "files/ubuntu-9.10/afile.rb",
               :checksum => "2222",
               :specificity => "ubuntu-9.10",
-              :url => "http://example.org/files/2222"
+              :url => "http://example.org/files/2222",
             },
             {
               :name => "afile.rb",
               :path => "files/ubuntu/afile.rb",
               :checksum => "3333",
               :specificity => "ubuntu",
-              :url => "http://example.org/files/3333"
+              :url => "http://example.org/files/3333",
             },
             {
               :name => "afile.rb",
               :path => "files/default/afile.rb",
               :checksum => "4444",
               :specificity => "default",
-              :url => "http://example.org/files/4444"
+              :url => "http://example.org/files/4444",
             },
           ]
         }
@@ -177,8 +177,8 @@ describe Chef::Knife::CookbookShow do
           @knife.config[:platform] = "example_platform"
           @knife.config[:platform_version] = "1.0"
           @knife.config[:fqdn] = "examplehost.example.org"
-          expect(@rest).to receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          expect(@rest).to receive(:get_rest).with("http://example.org/files/1111", true).and_return(StringIO.new(@response))
+          expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+          expect(@rest).to receive(:get).with("http://example.org/files/1111", true).and_return(StringIO.new(@response))
           expect(@knife).to receive(:pretty_print).with(@response)
           @knife.run
         end
@@ -189,8 +189,8 @@ describe Chef::Knife::CookbookShow do
           @knife.config[:platform] = "ubuntu"
           @knife.config[:platform_version] = "1.0"
           @knife.config[:fqdn] = "differenthost.example.org"
-          expect(@rest).to receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          expect(@rest).to receive(:get_rest).with("http://example.org/files/3333", true).and_return(StringIO.new(@response))
+          expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+          expect(@rest).to receive(:get).with("http://example.org/files/3333", true).and_return(StringIO.new(@response))
           expect(@knife).to receive(:pretty_print).with(@response)
           @knife.run
         end
@@ -201,8 +201,8 @@ describe Chef::Knife::CookbookShow do
           @knife.config[:platform] = "ubuntu"
           @knife.config[:platform_version] = "9.10"
           @knife.config[:fqdn] = "differenthost.example.org"
-          expect(@rest).to receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          expect(@rest).to receive(:get_rest).with("http://example.org/files/2222", true).and_return(StringIO.new(@response))
+          expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+          expect(@rest).to receive(:get).with("http://example.org/files/2222", true).and_return(StringIO.new(@response))
           expect(@knife).to receive(:pretty_print).with(@response)
           @knife.run
         end
@@ -210,8 +210,8 @@ describe Chef::Knife::CookbookShow do
 
       describe "with none of the arguments, it should use the default" do
         it "should pass them all" do
-          expect(@rest).to receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          expect(@rest).to receive(:get_rest).with("http://example.org/files/4444", true).and_return(StringIO.new(@response))
+          expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+          expect(@rest).to receive(:get).with("http://example.org/files/4444", true).and_return(StringIO.new(@response))
           expect(@knife).to receive(:pretty_print).with(@response)
           @knife.run
         end

@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Mixin::Command, :volatile do
 
   if windows?
 
-    pending("TODO MOVE: this is a platform specific integration test.")
+    skip("TODO MOVE: this is a platform specific integration test.")
 
   else
 
@@ -53,7 +53,7 @@ describe Chef::Mixin::Command, :volatile do
             popen4("ruby -e 'while gets; end'", :waitlast => true) do |pid, stdin, stdout, stderr|
               (1..5).each { |i| stdin.puts "#{i}" }
             end
-          end
+        end
         }.not_to raise_error
       end
 
@@ -61,7 +61,6 @@ describe Chef::Mixin::Command, :volatile do
 
         it "returns immediately after the first child process exits" do
           expect {Timeout.timeout(10) do
-            pid, stdin,stdout,stderr = nil,nil,nil,nil
             evil_forker="exit if fork; 10.times { sleep 1}"
             popen4("ruby -e '#{evil_forker}'") do |pid,stdin,stdout,stderr|
             end

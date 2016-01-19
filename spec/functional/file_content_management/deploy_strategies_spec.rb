@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 shared_examples_for "a content deploy strategy" do
 
@@ -126,7 +126,7 @@ shared_examples_for "a content deploy strategy" do
       security_descriptor_invariants.inject({}) do |prop_map, property|
         prop_map[property] = descriptor.send(property)
         prop_map
-       end
+      end
     end
 
     before do
@@ -180,7 +180,7 @@ describe Chef::FileContentManagement::Deploy::Cp do
       :uid,
       :gid,
       :mode,
-      :ino
+      :ino,
     ]
   end
 
@@ -188,7 +188,7 @@ describe Chef::FileContentManagement::Deploy::Cp do
     [
       :owner,
       :group,
-      :dacl
+      :dacl,
     ]
   end
 
@@ -202,7 +202,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix, :unix_only do
     [
       :uid,
       :gid,
-      :mode
+      :mode,
     ]
   end
 
@@ -220,7 +220,7 @@ describe Chef::FileContentManagement::Deploy::MvWindows, :windows_only do
       [
        :owner,
        :group,
-       :dacl
+       :dacl,
       ]
     end
 

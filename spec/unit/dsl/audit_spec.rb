@@ -1,6 +1,6 @@
 
-require 'spec_helper'
-require 'chef/dsl/audit'
+require "spec_helper"
+require "chef/dsl/audit"
 
 class AuditDSLTester < Chef::Recipe
   include Chef::DSL::Audit

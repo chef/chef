@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/provider/group/groupadd'
+require "chef/provider/group/groupadd"
 
 class Chef
   class Provider
     class Group
       class Gpasswd < Chef::Provider::Group::Groupadd
+        provides :group
 
         def load_current_resource
           super

@@ -16,18 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
-require 'chef/util/path_helper'
+require "chef/provider/service/init"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
     class Service
       class Insserv < Chef::Provider::Service::Init
 
-        provides :service, os: "linux"
-
-        def self.provides?(node, resource)
-          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
+        provides :service, platform_family: %w{debian rhel fedora suse} do |node|
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
         end
 
         def self.supports?(resource, action)

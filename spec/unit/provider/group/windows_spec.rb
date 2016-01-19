@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class Chef
   class Util
@@ -94,7 +94,7 @@ describe Chef::Provider::Group::Windows, "NetGroup" do
     @new_resource = Chef::Resource::Group.new("Creating a new group")
     @new_resource.group_name "Remote Desktop Users"
   end
-  it 'sets group_name correctly' do
+  it "sets group_name correctly" do
     expect(Chef::Util::Windows::NetGroup).to receive(:new).with("Remote Desktop Users")
     Chef::Provider::Group::Windows.new(@new_resource, @run_context)
   end

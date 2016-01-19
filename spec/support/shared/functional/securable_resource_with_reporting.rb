@@ -1,5 +1,5 @@
 
-require 'functional/resource/base'
+require "functional/resource/base"
 
 ALL_EXPANDED_PERMISSIONS = ["generic read",
                             "generic write",
@@ -76,9 +76,9 @@ shared_examples_for "a securable resource with reporting" do
         # TODO/bug: duplicated from the "securable resource" tests
 
         if ohai[:platform] == "aix"
-          let(:expected_user_name) { 'guest' }
+          let(:expected_user_name) { "guest" }
         else
-          let(:expected_user_name) { 'nobody' }
+          let(:expected_user_name) { "nobody" }
         end
 
         before do
@@ -96,9 +96,9 @@ shared_examples_for "a securable resource with reporting" do
 
         # TODO: duplicated from "securable resource"
         if ohai[:platform] == "aix"
-          let(:expected_user_name) { 'guest' }
+          let(:expected_user_name) { "guest" }
         else
-          let(:expected_user_name) { 'nobody' }
+          let(:expected_user_name) { "nobody" }
         end
         let(:expected_uid) { Etc.getpwnam(expected_user_name).uid }
         let(:desired_gid) { 1337 }
@@ -279,14 +279,14 @@ shared_examples_for "a securable resource with reporting" do
       end
 
       it "has empty values for file metadata in 'current_resource'" do
-        pending "windows reporting not yet fully supported"
+        skip "windows reporting not yet fully supported"
         expect(current_resource.owner).to be_nil
         expect(current_resource.expanded_rights).to be_nil
       end
 
       context "and no security metadata is specified in new_resource" do
         before do
-          pending "windows reporting not yet fully supported"
+          skip "windows reporting not yet fully supported"
         end
 
         it "sets the metadata values on the new_resource as strings after creating" do
@@ -303,7 +303,7 @@ shared_examples_for "a securable resource with reporting" do
       context "and owner is specified with a string (username) in new_resource"  do
 
         # TODO/bug: duplicated from the "securable resource" tests
-        let(:expected_user_name) { 'Guest' }
+        let(:expected_user_name) { "Guest" }
 
         before do
           resource.owner(expected_user_name)
@@ -322,7 +322,7 @@ shared_examples_for "a securable resource with reporting" do
         let(:expected_user_name) { 'domain\user' }
 
         before do
-          pending "windows reporting not yet fully supported"
+          skip "windows reporting not yet fully supported"
           resource.owner(expected_user_name)
           resource.run_action(:create)
         end
@@ -336,7 +336,7 @@ shared_examples_for "a securable resource with reporting" do
 
     context "when the target file exists" do
       before do
-        pending "windows reporting not yet fully supported"
+        skip "windows reporting not yet fully supported"
         FileUtils.touch(resource.path)
         resource.action(:create)
       end

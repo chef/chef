@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'ffi'
-require 'chef/reserved_names'
-require 'chef/exceptions'
+require "ffi"
+require "chef/reserved_names"
+require "chef/exceptions"
 
 class Chef
   module ReservedNames::Win32
@@ -67,7 +67,7 @@ class Chef
         # BaseTsd.h: #ifdef (_WIN64) host.typedef int HALF_PTR; #else host.typedef short HALF_PTR;
         host.typedef :ulong,   :HACCEL # (L) Handle to an accelerator table. WinDef.h: #host.typedef HANDLE HACCEL;
         # See http://msdn.microsoft.com/en-us/library/ms645526%28VS.85%29.aspx
-        host.typedef :ulong,   :HANDLE # (L) Handle to an object. WinNT.h: #host.typedef PVOID HANDLE;
+        host.typedef :size_t,   :HANDLE # (L) Handle to an object. WinNT.h: #host.typedef PVOID HANDLE;
         # todo: Platform-dependent! Need to change to :uint64 for Win64
         host.typedef :ulong,   :HBITMAP # (L) Handle to a bitmap: http://msdn.microsoft.com/en-us/library/dd183377%28VS.85%29.aspx
         host.typedef :ulong,   :HBRUSH # (L) Handle to a brush. http://msdn.microsoft.com/en-us/library/dd183394%28VS.85%29.aspx
@@ -117,6 +117,7 @@ class Chef
         host.typedef :uint32,  :LCID # Locale identifier. For more information, see Locales.
         host.typedef :uint32,  :LCTYPE # Locale information type. For a list, see Locale Information Constants.
         host.typedef :uint32,  :LGRPID # Language group identifier. For a list, see EnumLanguageGroupLocales.
+        host.typedef :pointer, :LMSTR # Pointer to null termiated string of unicode characters
         host.typedef :long,    :LONG # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int32,   :LONG32 # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int64,   :LONG64 # 64-bit signed integer. The range is –9,223,372,036,854,775,808 through +...807
@@ -146,6 +147,8 @@ class Chef
         host.typedef :long,    :LRESULT # Signed result of message processing. WinDef.h: host.typedef LONG_PTR LRESULT;
         host.typedef :pointer, :LPWIN32_FIND_DATA # Pointer to WIN32_FIND_DATA struct
         host.typedef :pointer, :LPBY_HANDLE_FILE_INFORMATION # Point to a BY_HANDLE_FILE_INFORMATION struct
+        host.typedef :pointer, :LSA_HANDLE # A handle to a Policy object
+        host.typedef :ulong,   :NTSTATUS # An NTSTATUS code returned by an LSA function call.
         host.typedef :pointer, :PBOOL # Pointer to a BOOL.
         host.typedef :pointer, :PBOOLEAN # Pointer to a BOOL.
         host.typedef :pointer, :PBYTE # Pointer to a BYTE.
@@ -173,12 +176,16 @@ class Chef
         host.typedef :pointer, :PLONG_PTR # Pointer to a LONG_PTR.
         host.typedef :pointer, :PLONG32 # Pointer to a LONG32.
         host.typedef :pointer, :PLONG64 # Pointer to a LONG64.
+        host.typedef :pointer, :PLSA_HANDLE # Pointer to an LSA_HANDLE
+        host.typedef :pointer, :PLSA_OBJECT_ATTRIBUTES # Pointer to an LSA_OBJECT_ATTRIBUTES
+        host.typedef :pointer, :PLSA_UNICODE_STRING # Pointer to LSA_UNICODE_STRING
         host.typedef :pointer, :PLUID # Pointer to a LUID.
         host.typedef :pointer, :POINTER_32 # 32-bit pointer. On a 32-bit system, this is a native pointer. On a 64-bit system, this is a truncated 64-bit pointer.
         host.typedef :pointer, :POINTER_64 # 64-bit pointer. On a 64-bit system, this is a native pointer. On a 32-bit system, this is a sign-extended 32-bit pointer.
         host.typedef :pointer, :POINTER_SIGNED # A signed pointer.
         host.typedef :pointer, :POINTER_UNSIGNED # An unsigned pointer.
         host.typedef :pointer, :PSHORT # Pointer to a SHORT.
+        host.typedef :pointer, :PSID # Pointer to an account SID
         host.typedef :pointer, :PSIZE_T # Pointer to a SIZE_T.
         host.typedef :pointer, :PSSIZE_T # Pointer to a SSIZE_T.
         host.typedef :pointer, :PSTR # Pointer to a null-terminated string of 8-bit Windows (ANSI) characters. For more information, see Character Sets Used By Fonts.

@@ -16,18 +16,20 @@
 # limitations under the License.
 #
 
-require 'chef/provider/script'
-require 'chef/mixin/windows_architecture_helper'
+require "chef/provider/script"
+require "chef/mixin/windows_architecture_helper"
 
 class Chef
   class Provider
     class WindowsScript < Chef::Provider::Script
 
+      attr_reader :is_forced_32bit
+
       protected
 
       include Chef::Mixin::WindowsArchitectureHelper
 
-      def initialize( new_resource, run_context, script_extension='')
+      def initialize( new_resource, run_context, script_extension="")
         super( new_resource, run_context )
         @script_extension = script_extension
 
@@ -36,11 +38,7 @@ class Chef
 
         @is_wow64 = wow64_architecture_override_required?(run_context.node, target_architecture)
 
-        # if the user wants to run the script 32 bit && we are on a 64bit windows system && we are running a 64bit ruby ==> fail
-        if ( target_architecture == :i386 ) && node_windows_architecture(run_context.node) == :x86_64 && !is_i386_process_on_x86_64_windows?
-          raise Chef::Exceptions::Win32ArchitectureIncorrect,
-          "Support for the i386 architecture from a 64-bit Ruby runtime is not yet implemented"
-        end
+        @is_forced_32bit = forced_32bit_override_required?(run_context.node, target_architecture)
       end
 
       public

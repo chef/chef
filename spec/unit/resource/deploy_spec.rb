@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::Deploy do
 
@@ -31,7 +31,7 @@ describe Chef::Resource::Deploy do
 
   class << self
     def resource_has_a_string_attribute(attr_name)
-      it "has a String attribute for #{attr_name.to_s}" do
+      it "has a String attribute for #{attr_name}" do
         @resource.send(attr_name, "this is a string")
         expect(@resource.send(attr_name)).to eql("this is a string")
         expect {@resource.send(attr_name, 8675309)}.to raise_error(ArgumentError)
@@ -39,7 +39,7 @@ describe Chef::Resource::Deploy do
     end
 
     def resource_has_a_boolean_attribute(attr_name, opts={:defaults_to=>false})
-      it "has a Boolean attribute for #{attr_name.to_s}" do
+      it "has a Boolean attribute for #{attr_name}" do
         expect(@resource.send(attr_name)).to eql(opts[:defaults_to])
         @resource.send(attr_name, !opts[:defaults_to])
         expect(@resource.send(attr_name)).to eql( !opts[:defaults_to] )
@@ -148,10 +148,16 @@ describe Chef::Resource::Deploy do
     expect(@resource.current_path).to eql("/my/deploy/dir/current")
   end
 
+  it "allows depth to be set via integer" do
+    expect(@resource.depth).to be_nil
+    @resource.depth 1
+    expect(@resource.depth).to eql(1)
+  end
+
   it "gives #depth as 5 if shallow clone is true, nil otherwise" do
     expect(@resource.depth).to be_nil
     @resource.shallow_clone true
-    expect(@resource.depth).to eql("5")
+    expect(@resource.depth).to eql(5)
   end
 
   it "aliases repo as repository" do

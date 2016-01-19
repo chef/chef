@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'rspec/core'
+require "rspec/core"
 
 class Chef
   class Audit

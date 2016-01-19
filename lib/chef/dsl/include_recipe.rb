@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/log'
+require "chef/log"
 
 class Chef
   module DSL
@@ -41,4 +41,4 @@ end
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/language_include_recipe. Load the file to activate the deprecation code.
-require 'chef/mixin/language_include_recipe'
+require "chef/mixin/language_include_recipe"

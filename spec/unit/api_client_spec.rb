@@ -16,11 +16,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/api_client'
-require 'tempfile'
+require "chef/api_client"
+require "tempfile"
 
+# DEPRECATION NOTE
+#
+# This code will be removed in Chef 13 in favor of the code in Chef::ApiClientV1,
+# which will be moved to this namespace. New development should occur in
+# Chef::ApiClientV1 until the time before Chef 13.
 describe Chef::ApiClient do
   before(:each) do
     @client = Chef::ApiClient.new
@@ -123,10 +128,6 @@ describe Chef::ApiClient do
     it "does not include the private key if not present" do
       expect(@json).not_to include("private_key")
     end
-
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-      let(:jsonable) { @client }
-    end
   end
 
   describe "when deserializing from JSON (string) using ApiClient#from_json" do
@@ -175,7 +176,7 @@ describe Chef::ApiClient do
         "private_key" => "monkeypants",
         "admin" => true,
         "validator" => true,
-        "json_class" => "Chef::ApiClient"
+        "json_class" => "Chef::ApiClient",
       }
     end
 
@@ -220,12 +221,12 @@ describe Chef::ApiClient do
       "private_key" => "monkeypants",
       "admin" => true,
       "validator" => true,
-      "json_class" => "Chef::ApiClient"
+      "json_class" => "Chef::ApiClient",
       }
-      @http_client = double("Chef::REST mock")
-      allow(Chef::REST).to receive(:new).and_return(@http_client)
+      @http_client = double("Chef::ServerAPI mock")
+      allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
       expect(@http_client).to receive(:get).with("clients/black").and_return(client)
-      @client = Chef::ApiClient.load(client['name'])
+      @client = Chef::ApiClient.load(client["name"])
     end
 
     it "should deserialize to a Chef::ApiClient object" do
@@ -257,7 +258,7 @@ describe Chef::ApiClient do
   describe "with correctly configured API credentials" do
     before do
       Chef::Config[:node_name] = "silent-bob"
-      Chef::Config[:client_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
+      Chef::Config[:client_key] = File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)
     end
 
     after do
@@ -269,18 +270,13 @@ describe Chef::ApiClient do
       File.open(Chef::Config[:client_key], "r") {|f| f.read.chomp }
     end
 
-    it "has an HTTP client configured with default credentials" do
-      expect(@client.http_api).to be_a_kind_of(Chef::REST)
-      expect(@client.http_api.client_name).to eq("silent-bob")
-      expect(@client.http_api.signing_key.to_s).to eq(private_key_data)
-    end
   end
 
 
   describe "when requesting a new key" do
     before do
-      @http_client = double("Chef::REST mock")
-      allow(Chef::REST).to receive(:new).and_return(@http_client)
+      @http_client = double("Chef::ServerAPI mock")
+      allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
     end
 
     context "and the client does not exist on the server" do

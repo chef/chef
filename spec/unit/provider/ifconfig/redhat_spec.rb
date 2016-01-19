@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/exceptions'
+require "spec_helper"
+require "chef/exceptions"
 
 describe Chef::Provider::Ifconfig::Redhat do
   before do

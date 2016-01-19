@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,19 +17,20 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
     class Service < Chef::Resource
-
       identity_attr :service_name
 
       state_attrs :enabled, :running
 
+      default_action :nothing
+      allowed_actions :enable, :disable, :start, :stop, :restart, :reload
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :service
         @service_name = name
         @enabled = nil
         @running = nil
@@ -43,16 +44,15 @@ class Chef
         @init_command = nil
         @priority = nil
         @timeout = nil
-        @action = "nothing"
-        @supports = { :restart => false, :reload => false, :status => false }
-        @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
+        @run_levels = nil
+        @supports = { :restart => nil, :reload => nil, :status => nil }
       end
 
       def service_name(arg=nil)
         set_or_return(
           :service_name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -61,7 +61,7 @@ class Chef
         set_or_return(
           :pattern,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -70,7 +70,7 @@ class Chef
         set_or_return(
           :start_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -79,7 +79,7 @@ class Chef
         set_or_return(
           :stop_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -88,7 +88,7 @@ class Chef
         set_or_return(
           :status_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -97,7 +97,7 @@ class Chef
         set_or_return(
           :restart_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -105,7 +105,7 @@ class Chef
         set_or_return(
           :reload_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -118,7 +118,7 @@ class Chef
         set_or_return(
           :init_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -127,7 +127,7 @@ class Chef
         set_or_return(
           :enabled,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -136,7 +136,7 @@ class Chef
         set_or_return(
           :running,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -154,7 +154,7 @@ class Chef
         set_or_return(
           :priority,
           arg,
-          :kind_of => [ Integer, String, Hash ]
+          :kind_of => [ Integer, String, Hash ],
         )
       end
 
@@ -163,7 +163,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => Integer
+          :kind_of => Integer,
         )
       end
 
@@ -171,8 +171,15 @@ class Chef
         set_or_return(
           :parameters,
           arg,
-          :kind_of => [ Hash ]
+          :kind_of => [ Hash ],
         )
+      end
+
+      def run_levels(arg=nil)
+        set_or_return(
+          :run_levels,
+          arg,
+          :kind_of => [ Array ] )
       end
 
       def supports(args={})

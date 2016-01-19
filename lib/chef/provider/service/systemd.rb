@@ -16,21 +16,19 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
-require 'chef/provider/service/simple'
-require 'chef/mixin/which'
+require "chef/resource/service"
+require "chef/provider/service/simple"
+require "chef/mixin/which"
 
 class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   include Chef::Mixin::Which
 
-  provides :service, os: "linux"
+  provides :service, os: "linux" do |node|
+    Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
+  end
 
   attr_accessor :status_check_success
-
-  def self.provides?(node, resource)
-    super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
-  end
 
   def self.supports?(resource, action)
     Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:systemd)

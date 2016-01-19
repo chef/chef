@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/file'
-require 'chef/deprecation/provider/cookbook_file'
-require 'chef/deprecation/warnings'
+require "chef/provider/file"
+require "chef/deprecation/provider/cookbook_file"
+require "chef/deprecation/warnings"
 
 class Chef
   class Provider

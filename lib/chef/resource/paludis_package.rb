@@ -16,21 +16,18 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/paludis'
+require "chef/resource/package"
+require "chef/provider/package/paludis"
 
 class Chef
   class Resource
     class PaludisPackage < Chef::Resource::Package
-
+      resource_name :paludis_package
       provides :paludis_package, os: "linux"
 
-      def initialize(name, run_context=nil)
-        super(name, run_context)
-        @resource_name = :paludis_package
-        @allowed_actions.push(:install, :remove, :upgrade)
-        @timeout = 3600
-      end
+      allowed_actions :install, :remove, :upgrade
+
+      property :timeout, default: 3600
     end
   end
 end

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
-require 'chef/mixin/command'
-require 'chef/resource/env'
+require "chef/provider"
+require "chef/mixin/command"
+require "chef/resource/env"
 
 class Chef
   class Provider
@@ -48,7 +48,7 @@ class Chef
       end
 
       def env_value(key_name)
-        raise Chef::Exceptions::Env, "#{self.to_s} provider does not implement env_value!"
+        raise Chef::Exceptions::Env, "#{self} provider does not implement env_value!"
       end
 
       def env_key_exists(key_name)
@@ -108,15 +108,15 @@ class Chef
               not new_values.include?(item)
             end.join(@new_resource.delim)
 
-          if new_value.empty?
-            return false #nothing left here, delete the key
-          else
-            old_value = @new_resource.value(new_value)
-            create_env
-            Chef::Log.debug("#{@new_resource} deleted #{old_value} element")
-            @new_resource.updated_by_last_action(true)
-            return true #we removed the element and updated; do not delete the key
-          end
+            if new_value.empty?
+              return false #nothing left here, delete the key
+            else
+              old_value = @new_resource.value(new_value)
+              create_env
+              Chef::Log.debug("#{@new_resource} deleted #{old_value} element")
+              @new_resource.updated_by_last_action(true)
+              return true #we removed the element and updated; do not delete the key
+            end
         end
       end
 
@@ -141,11 +141,11 @@ class Chef
       end
 
       def create_env
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :#{@new_resource.action}"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :#{@new_resource.action}"
       end
 
       def delete_env
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :delete"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :delete"
       end
 
       def modify_env
@@ -164,6 +164,6 @@ class Chef
       def new_values
         @new_values ||= @new_resource.value.split(@new_resource.delim)
       end
-     end
+    end
   end
 end

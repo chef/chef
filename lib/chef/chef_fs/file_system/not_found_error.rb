@@ -16,15 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/file_system_error'
+require "chef/chef_fs/file_system/file_system_error"
 
 class Chef
   module ChefFS
     module FileSystem
       class NotFoundError < FileSystemError
-        def initialize(entry, cause = nil)
-          super(entry, cause)
-        end
       end
     end
   end

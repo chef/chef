@@ -18,15 +18,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookTest < Knife
 
       deps do
-        require 'chef/cookbook_loader'
-        require 'chef/cookbook/syntax_check'
+        require "chef/cookbook_loader"
+        require "chef/cookbook/syntax_check"
       end
 
       banner "knife cookbook test [COOKBOOKS...] (options)"

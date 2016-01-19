@@ -17,19 +17,17 @@
 #
 
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
+      default_action :break
 
       def initialize(action="break", *args)
-        @name = caller.first
-        super(@name, *args)
-        @action = "break"
-        @allowed_actions << :break
-        @resource_name = :breakpoint
+        super(caller.first, *args)
       end
+
     end
   end
 end

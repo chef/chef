@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'pathname'
-require 'stringio'
-require 'erubis'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/checksum'
-require 'chef/util/path_helper'
+require "pathname"
+require "stringio"
+require "erubis"
+require "chef/mixin/shell_out"
+require "chef/mixin/checksum"
+require "chef/util/path_helper"
 
 class Chef
   class Cookbook
@@ -115,7 +115,7 @@ class Chef
 
       def ruby_files
         path  = Chef::Util::PathHelper.escape_glob(cookbook_path)
-        files = Dir[File.join(path, '**', '*.rb')]
+        files = Dir[File.join(path, "**", "*.rb")]
         files = remove_ignored_files(files)
         files = remove_uninteresting_ruby_files(files)
         files
@@ -133,7 +133,7 @@ class Chef
       end
 
       def template_files
-        remove_ignored_files Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), '**/templates/**', '*.erb')]
+        remove_ignored_files Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), "**/templates/**", "*.erb")]
       end
 
       def untested_template_files

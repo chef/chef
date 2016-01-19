@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Deploy do
 
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
     @release_time = Time.utc( 2004, 8, 15, 16, 23, 42)
     allow(Time).to receive(:now).and_return(@release_time)
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
@@ -163,9 +163,9 @@ describe Chef::Provider::Deploy do
   end
 
   it "dont care by default if error happens on deploy" do
-    allow(@provider).to receive(:all_releases).and_return(['previous_release'])
+    allow(@provider).to receive(:all_releases).and_return(["previous_release"])
     allow(@provider).to receive(:deploy){ raise "Unexpected error" }
-    allow(@provider).to receive(:previous_release_path).and_return('previous_release')
+    allow(@provider).to receive(:previous_release_path).and_return("previous_release")
     expect(@provider).not_to receive(:rollback)
     expect {
       @provider.run_action(:deploy)
@@ -174,9 +174,9 @@ describe Chef::Provider::Deploy do
 
   it "rollbacks to previous release if error happens on deploy" do
     @resource.rollback_on_error true
-    allow(@provider).to receive(:all_releases).and_return(['previous_release'])
+    allow(@provider).to receive(:all_releases).and_return(["previous_release"])
     allow(@provider).to receive(:deploy){ raise "Unexpected error" }
-    allow(@provider).to receive(:previous_release_path).and_return('previous_release')
+    allow(@provider).to receive(:previous_release_path).and_return("previous_release")
     expect(@provider).to receive(:rollback)
     expect {
       @provider.run_action(:deploy)
@@ -356,13 +356,13 @@ describe Chef::Provider::Deploy do
   it "chowns the whole release dir to user and group specified in the resource" do
     @resource.user "foo"
     @resource.group "bar"
-    expect(FileUtils).to receive(:chown_R).with("foo", "bar", "/my/deploy/dir")
+    expect(FileUtils).to receive(:chown_R).with("foo", "bar", "/my/deploy/dir", { :force => true })
     @provider.enforce_ownership
   end
 
   it "skips the migration when resource.migrate => false but runs symlinks before migration" do
     @resource.migrate false
-    expect(@provider).not_to receive :run_command
+    expect(@provider).not_to receive :shell_out!
     expect(@provider).to receive :run_symlinks_before_migrate
     @provider.migrate
   end
@@ -378,7 +378,7 @@ describe Chef::Provider::Deploy do
 
     allow(STDOUT).to receive(:tty?).and_return(true)
     allow(Chef::Log).to receive(:info?).and_return(true)
-    expect(@provider).to receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
+    expect(@provider).to receive(:shell_out!).with("migration_foo",:cwd => @expected_release_dir,
                                                 :user => "deployNinja", :group => "deployNinjas",
                                                 :log_level => :info, :live_stream => STDOUT,
                                                 :log_tag => "deploy[/my/deploy/dir]",
@@ -445,13 +445,13 @@ describe Chef::Provider::Deploy do
   end
 
   it "does nothing for restart if restart_command is empty" do
-    expect(@provider).not_to receive(:run_command)
+    expect(@provider).not_to receive(:shell_out!)
     @provider.restart
   end
 
   it "runs the restart command in the current application dir when the resource has a restart_command" do
     @resource.restart_command "restartcmd"
-    expect(@provider).to receive(:run_command).with(:command => "restartcmd", :cwd => "/my/deploy/dir/current", :log_tag => "deploy[/my/deploy/dir]", :log_level => :debug)
+    expect(@provider).to receive(:shell_out!).with("restartcmd", :cwd => "/my/deploy/dir/current", :log_tag => "deploy[/my/deploy/dir]", :log_level => :debug)
     @provider.restart
   end
 
@@ -509,7 +509,7 @@ describe Chef::Provider::Deploy do
   it "shouldn't give a no method error on migrate if the environment is nil" do
     allow(@provider).to receive(:enforce_ownership)
     allow(@provider).to receive(:run_symlinks_before_migrate)
-    allow(@provider).to receive(:run_command)
+    allow(@provider).to receive(:shell_out!)
     @provider.migrate
 
   end
@@ -552,7 +552,7 @@ describe Chef::Provider::Deploy do
       expect(@provider).to receive(:execute).with("iGoToHell4this").and_return(mock_execution)
       @resource.user("notCoolMan")
       @resource.group("Ggroup")
-      @resource.environment("APP_ENV" => 'staging')
+      @resource.environment("APP_ENV" => "staging")
       @resource.deploy_to("/my/app")
       expect(mock_execution).to receive(:user).with("notCoolMan")
       expect(mock_execution).to receive(:group).with("Ggroup")
@@ -622,7 +622,7 @@ describe Chef::Provider::Deploy do
 
       gems = @provider.send(:gem_packages)
 
-      expect(gems.map { |g| g.action }).to eq([[:install]])
+      expect(gems.map { |g| g.action }).to eq([%i{install}])
       expect(gems.map { |g| g.name }).to eq(%w{eventmachine})
       expect(gems.map { |g| g.version }).to eq(%w{0.12.9})
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,24 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
-require 'chef/mixin/command'
-require 'chef/log'
-require 'chef/file_cache'
-require 'chef/platform'
+require "chef/mixin/shell_out"
+require "chef/mixin/command"
+require "chef/mixin/subclass_directive"
+require "chef/log"
+require "chef/file_cache"
+require "chef/platform"
 
 class Chef
   class Provider
     class Package < Chef::Provider
       include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
+      extend Chef::Mixin::SubclassDirective
+
+      # subclasses declare this if they want all their arguments as arrays of packages and names
+      subclass_directive :use_multipackage_api
+      # subclasses declare this if they want sources (filenames) pulled from their package names
+      subclass_directive :use_package_name_for_source
 
       #
       # Hook that subclasses use to populate the candidate_version(s)
@@ -41,6 +48,14 @@ class Chef
 
       def whyrun_supported?
         true
+      end
+
+      def check_resource_semantics!
+        # FIXME: this is not universally true and subclasses are needing to override this and no-ops it.  It should be turned into
+        # another "subclass_directive" and the apt and yum providers should declare that they need this behavior.
+        if new_resource.package_name.is_a?(Array) && new_resource.source != nil
+          raise Chef::Exceptions::InvalidResourceSpecification, "You may not specify both multipackage and source"
+        end
       end
 
       def load_current_resource
@@ -80,11 +95,10 @@ class Chef
           end
         end
 
-        # XXX: mutating the new resource is generally bad
-        @new_resource.version(versions_for_new_resource)
-
         converge_by(install_description) do
-          install_package(package_names_for_targets, versions_for_targets)
+          multipackage_api_adapter(package_names_for_targets, versions_for_targets) do |name, version|
+            install_package(name, version)
+          end
           Chef::Log.info("#{@new_resource} installed #{package_names_for_targets} at #{versions_for_targets}")
         end
       end
@@ -107,18 +121,17 @@ class Chef
           return
         end
 
-        # XXX: mutating the new resource is generally bad
-        @new_resource.version(versions_for_new_resource)
-
         converge_by(upgrade_description) do
-          upgrade_package(package_names_for_targets, versions_for_targets)
-          log_allow_downgrade = allow_downgrade ? '(allow_downgrade)' : ''
+          multipackage_api_adapter(package_names_for_targets, versions_for_targets) do |name, version|
+            upgrade_package(name, version)
+          end
+          log_allow_downgrade = allow_downgrade ? "(allow_downgrade)" : ""
           Chef::Log.info("#{@new_resource} upgraded#{log_allow_downgrade} #{package_names_for_targets} to #{versions_for_targets}")
         end
       end
 
       def upgrade_description
-        log_allow_downgrade = allow_downgrade ? '(allow_downgrade)' : ''
+        log_allow_downgrade = allow_downgrade ? "(allow_downgrade)" : ""
         description = []
         target_version_array.each_with_index do |target_version, i|
           next if target_version.nil?
@@ -132,12 +145,13 @@ class Chef
 
       private :upgrade_description
 
-      # @todo: ability to remove an array of packages
       def action_remove
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of " :  ""
-          converge_by("remove #{description} package #{@current_resource.package_name}") do
-            remove_package(@current_resource.package_name, @new_resource.version)
+          converge_by("remove #{description}package #{@current_resource.package_name}") do
+            multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
+              remove_package(name, version)
+            end
             Chef::Log.info("#{@new_resource} removed")
           end
         else
@@ -166,18 +180,18 @@ class Chef
         end
       end
 
-      # @todo: ability to purge an array of packages
       def action_purge
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of" : ""
           converge_by("purge #{description} package #{@current_resource.package_name}") do
-            purge_package(@current_resource.package_name, @new_resource.version)
+            multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
+              purge_package(name, version)
+            end
             Chef::Log.info("#{@new_resource} purged")
           end
         end
       end
 
-      # @todo: ability to reconfigure an array of packages
       def action_reconfig
         if @current_resource.version == nil then
           Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
@@ -192,7 +206,10 @@ class Chef
         if preseed_file = get_preseed_file(@new_resource.package_name, @current_resource.version)
           converge_by("reconfigure package #{@new_resource.package_name}") do
             preseed_package(preseed_file)
-            reconfig_package(@new_resource.package_name, @current_resource.version)
+            multipackage_api_adapter(@new_resource.package_name, @current_resource.version) do |name, version|
+              reconfig_package(name, version)
+
+            end
             Chef::Log.info("#{@new_resource} reconfigured")
           end
         else
@@ -201,31 +218,40 @@ class Chef
       end
 
       # @todo use composition rather than inheritance
+
+      def multipackage_api_adapter(name, version)
+        if use_multipackage_api?
+          yield [name].flatten, [version].flatten
+        else
+          yield name, version
+        end
+      end
+
       def install_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :install"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :install"
       end
 
       def upgrade_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :upgrade"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :upgrade"
       end
 
       def remove_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remove"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :remove"
       end
 
       def purge_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :purge"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :purge"
       end
 
       def preseed_package(file)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support pre-seeding package install/upgrade instructions"
       end
 
       def reconfig_package(name, version)
-        raise( Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reconfig" )
+        raise( Chef::Exceptions::UnsupportedAction, "#{self} does not support :reconfig" )
       end
 
-      # this is heavily used by subclasses
+      # used by subclasses.  deprecated.  use #a_to_s instead.
       def expand_options(options)
         options ? " #{options}" : ""
       end
@@ -314,18 +340,6 @@ class Chef
           versions_for_targets.push(target_version)
         end
         multipackage? ? versions_for_targets : versions_for_targets[0]
-      end
-
-      # We need to mutate @new_resource.version() for some reason and this is a helper so that we inject the right
-      # class (String or Array) into that attribute based on if we're handling an array of package names or not.
-      #
-      # @return [String, Array<String>] target_versions coerced into the correct type for back-compat
-      def versions_for_new_resource
-        if multipackage?
-          target_version_array
-        else
-          target_version_array[0]
-        end
       end
 
       # Return an array indexed the same as *_version_array which contains either the target version to install/upgrade to
@@ -464,10 +478,38 @@ class Chef
 
       # @return [Array] new_version(s) as an array
       def new_version_array
-        @new_version_array ||=
-            [ new_resource.version ].flatten.map do |v|
-              ( v.nil? || v.empty? ) ? nil : v
+        [ new_resource.version ].flatten.map { |v| v.to_s.empty? ? nil : v }
+      end
+
+      # TIP: less error prone to simply always call resolved_source_array, even if you
+      # don't think that you need to.
+      #
+      # @return [Array] new_resource.source as an array
+      def source_array
+        if new_resource.source.nil?
+          package_name_array.map { nil }
+        else
+          [ new_resource.source ].flatten
+        end
+      end
+
+      # Helper to handle use_package_name_for_source to convert names into local packages to install.
+      #
+      # @return [Array] Array of sources with package_names converted to sources
+      def resolved_source_array
+        @resolved_source_array ||=
+          begin
+            source_array.each_with_index.map do |source, i|
+              package_name = package_name_array[i]
+              # we require at least one '/' in the package_name to avoid [XXX_]package 'foo' breaking due to a random 'foo' file in cwd
+              if use_package_name_for_source? && source.nil? && package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(package_name)
+                Chef::Log.debug("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
+                package_name
+              else
+                source
+              end
             end
+          end
       end
 
       # @todo: extract apt/dpkg specific preseeding to a helper class
@@ -486,6 +528,37 @@ class Chef
         else
           false
         end
+      end
+
+      def shell_out_with_timeout(*command_args)
+        shell_out(*add_timeout_option(command_args))
+      end
+
+      def shell_out_with_timeout!(*command_args)
+        shell_out!(*add_timeout_option(command_args))
+      end
+
+      def add_timeout_option(command_args)
+        args = command_args.dup
+        if args.last.is_a?(Hash)
+          options = args.pop.dup
+          options[:timeout] = new_resource.timeout if new_resource.timeout
+          options[:timeout] = 900 unless options.has_key?(:timeout)
+          args << options
+        else
+          args << { :timeout => new_resource.timeout ? new_resource.timeout : 900 }
+        end
+        args
+      end
+
+      # Helper for sublcasses to convert an array of string args into a string.  It
+      # will compact nil or empty strings in the array and will join the array elements
+      # with spaces, without introducing any double spaces for nil/empty elements.
+      #
+      # @param args [String] variable number of string arguments
+      # @return [String] nicely concatenated string or empty string
+      def a_to_s(*args)
+        args.reject {|i| i.nil? || i == "" }.join(" ")
       end
     end
   end

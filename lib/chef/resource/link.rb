@@ -17,36 +17,34 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/mixin/securable'
+require "chef/resource"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
     class Link < Chef::Resource
       include Chef::Mixin::Securable
 
-      provides :link
-
       identity_attr :target_file
 
       state_attrs :to, :owner, :group
 
+      default_action :create
+      allowed_actions :create, :delete
+
       def initialize(name, run_context=nil)
         verify_links_supported!
         super
-        @resource_name = :link
         @to = nil
-        @action = :create
         @link_type = :symbolic
         @target_file = name
-        @allowed_actions.push(:create, :delete)
       end
 
       def to(arg=nil)
         set_or_return(
           :to,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -54,7 +52,7 @@ class Chef
         set_or_return(
           :target_file,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -63,7 +61,7 @@ class Chef
         set_or_return(
           :link_type,
           real_arg,
-          :equal_to => [ :symbolic, :hard ]
+          :equal_to => [ :symbolic, :hard ],
         )
       end
 
@@ -71,7 +69,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :regex => Chef::Config[:group_valid_regex]
+          :regex => Chef::Config[:group_valid_regex],
         )
       end
 
@@ -79,7 +77,7 @@ class Chef
         set_or_return(
           :owner,
           arg,
-          :regex => Chef::Config[:user_valid_regex]
+          :regex => Chef::Config[:user_valid_regex],
         )
       end
 
@@ -94,7 +92,7 @@ class Chef
         # sure we are not on such a platform.
 
         if Chef::Platform.windows?
-          require 'chef/win32/file'
+          require "chef/win32/file"
           begin
             Chef::ReservedNames::Win32::File.verify_links_supported!
           rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e

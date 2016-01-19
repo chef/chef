@@ -14,10 +14,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require 'chef/config'
+require "chef/config"
+if Chef::Platform.windows?
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1")
+    require "chef/monkey_patches/webrick-utils"
+  end
+end
 
 class Chef
   module LocalMode
+
     # Create a chef local server (if the configuration requires one) for the
     # duration of the given block.
     #
@@ -48,23 +54,32 @@ class Chef
       if Chef::Config.chef_zero.enabled
         destroy_server_connectivity
 
-        require 'chef_zero/server'
-        require 'chef/chef_fs/chef_fs_data_store'
-        require 'chef/chef_fs/config'
+        require "chef_zero/server"
+        require "chef/chef_fs/chef_fs_data_store"
+        require "chef/chef_fs/config"
 
         @chef_fs = Chef::ChefFS::Config.new.local_fs
         @chef_fs.write_pretty_json = true
         data_store = Chef::ChefFS::ChefFSDataStore.new(@chef_fs)
-        data_store = ChefZero::DataStore::V1ToV2Adapter.new(data_store, 'chef')
+        data_store = ChefZero::DataStore::V1ToV2Adapter.new(data_store, "chef")
         server_options = {}
         server_options[:data_store] = data_store
         server_options[:log_level] = Chef::Log.level
+
         server_options[:host] = Chef::Config.chef_zero.host
         server_options[:port] = parse_port(Chef::Config.chef_zero.port)
         @chef_zero_server = ChefZero::Server.new(server_options)
-        @chef_zero_server.start_background
-        Chef::Log.info("Started chef-zero at #{@chef_zero_server.url} with #{@chef_fs.fs_description}")
-        Chef::Config.chef_server_url = @chef_zero_server.url
+
+        if Chef::Config[:listen]
+          @chef_zero_server.start_background
+        else
+          @chef_zero_server.start_socketless
+        end
+
+        local_mode_url = @chef_zero_server.local_mode_url
+
+        Chef::Log.info("Started chef-zero at #{local_mode_url} with #{@chef_fs.fs_description}")
+        Chef::Config.chef_server_url = local_mode_url
       end
     end
 
@@ -88,9 +103,9 @@ class Chef
 
     def self.parse_port(port)
       if port.is_a?(String)
-        parts = port.split(',')
+        parts = port.split(",")
         if parts.size == 1
-          a,b = parts[0].split('-',2)
+          a,b = parts[0].split("-",2)
           if b
             a.to_i.upto(b.to_i)
           else

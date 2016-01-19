@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/guard_interpreter'
-require 'chef/mixin/descendants_tracker'
+require "chef/exceptions"
+require "chef/guard_interpreter"
+require "chef/mixin/descendants_tracker"
 
 class Chef
   class Resource
@@ -28,7 +28,7 @@ class Chef
       # See RFC 027 for a full specification
       #
       # File verifications allow user-supplied commands a means of
-      # preventing file reosurce content deploys.  Their intended use
+      # preventing file resource content deploys.  Their intended use
       # is to verify the contents of a temporary file before it is
       # deployed onto the system.
       #
@@ -106,7 +106,13 @@ class Chef
         # We reuse Chef::GuardInterpreter in order to support
         # the same set of options that the not_if/only_if blocks do
         def verify_command(path, opts)
-          command = @command % {:file => path}
+          # First implementation interpolated `file`; docs & RFC claim `path`
+          # is interpolated. Until `file` can be deprecated, interpolate both.
+          Chef.log_deprecation(
+            "%{file} is deprecated in verify command and will not be "\
+            "supported in Chef 13. Please use %{path} instead."
+          ) if @command.include?("%{file}")
+          command = @command % {:file => path, :path => path}
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           interpreter.evaluate
         end

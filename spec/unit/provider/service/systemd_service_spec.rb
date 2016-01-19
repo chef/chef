@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Systemd do
 
@@ -33,11 +33,11 @@ describe Chef::Provider::Service::Systemd do
   let(:provider) { Chef::Provider::Service::Systemd.new(new_resource, run_context) }
 
   let(:shell_out_success) do
-    double('shell_out_with_systems_locale', :exitstatus => 0, :error? => false)
+    double("shell_out_with_systems_locale", :exitstatus => 0, :error? => false)
   end
 
   let(:shell_out_failure) do
-    double('shell_out_with_systems_locale', :exitstatus => 1, :error? => true)
+    double("shell_out_with_systems_locale", :exitstatus => 1, :error? => true)
   end
 
   let(:current_resource) { Chef::Resource::Service.new(service_name) }

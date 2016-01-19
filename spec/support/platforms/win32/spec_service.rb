@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'win32/daemon'
+require "win32/daemon"
 
 class SpecService < ::Win32::Daemon
   def service_init
@@ -26,7 +26,7 @@ class SpecService < ::Win32::Daemon
   def service_main(*startup_parameters)
     while running? do
       if !File.exists?(@test_service_file)
-        File.open(@test_service_file, 'wb') do |f|
+        File.open(@test_service_file, "wb") do |f|
           f.write("This file is created by SpecService")
         end
       end

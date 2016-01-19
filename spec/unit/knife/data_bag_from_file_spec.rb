@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item'
-require 'tempfile'
+require "chef/data_bag_item"
+require "chef/encrypted_data_bag_item"
+require "tempfile"
 
 Chef::Knife::DataBagFromFile.load_deps
 
 describe Chef::Knife::DataBagFromFile do
   before :each do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
     Chef::Config[:node_name] = "webmonkey.example.com"
     FileUtils.mkdir_p([db_folder, db_folder2])
     db_file.write(Chef::JSONCompat.to_json(plain_data))
@@ -75,11 +75,11 @@ describe Chef::Knife::DataBagFromFile do
   let(:plain_data) { {
       "id" => "item_name",
       "greeting" => "hello",
-      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }}
+      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }},
   } }
   let(:enc_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(plain_data, secret) }
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'zlib'
-require 'chef/http/http_request'
+require "zlib"
+require "chef/http/http_request"
 
 class Chef
   class HTTP
@@ -79,10 +79,10 @@ class Chef
         else
           case response[CONTENT_ENCODING]
           when GZIP
-            Chef::Log.debug "decompressing gzip response"
+            Chef::Log.debug "Decompressing gzip response"
             Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
           when DEFLATE
-            Chef::Log.debug "decompressing deflate response"
+            Chef::Log.debug "Decompressing deflate response"
             Zlib::Inflate.inflate(response.body)
           else
             response.body
@@ -132,7 +132,7 @@ class Chef
       def handle_options(opts)
         opts.each do |name, value|
           case name.to_s
-          when 'disable_gzip'
+          when "disable_gzip"
             @disable_gzip = value
           end
         end

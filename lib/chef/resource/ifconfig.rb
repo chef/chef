@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
@@ -27,12 +27,12 @@ class Chef
 
       state_attrs :inet_addr, :mask
 
+      default_action :add
+      allowed_actions :add, :delete, :enable, :disable
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ifconfig
         @target = name
-        @action = :add
-        @allowed_actions.push(:add, :delete, :enable, :disable)
         @hwaddr = nil
         @mask = nil
         @inet_addr = nil
@@ -50,7 +50,7 @@ class Chef
         set_or_return(
           :target,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -58,7 +58,7 @@ class Chef
         set_or_return(
           :device,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -66,7 +66,7 @@ class Chef
         set_or_return(
           :hwaddr,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -74,7 +74,7 @@ class Chef
         set_or_return(
           :inet_addr,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -82,7 +82,7 @@ class Chef
         set_or_return(
           :bcast,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -90,7 +90,7 @@ class Chef
         set_or_return(
           :mask,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -98,7 +98,7 @@ class Chef
         set_or_return(
           :mtu,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -106,7 +106,7 @@ class Chef
         set_or_return(
           :metric,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -114,7 +114,7 @@ class Chef
         set_or_return(
           :onboot,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -122,7 +122,7 @@ class Chef
         set_or_return(
           :network,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -130,7 +130,7 @@ class Chef
         set_or_return(
           :bootproto,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -138,12 +138,10 @@ class Chef
         set_or_return(
           :onparent,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
     end
 
   end
 end
-
-

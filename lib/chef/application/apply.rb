@@ -17,19 +17,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef'
-require 'chef/application'
-require 'chef/client'
-require 'chef/config'
-require 'chef/log'
-require 'fileutils'
-require 'tempfile'
-require 'chef/providers'
-require 'chef/resources'
+require "chef"
+require "chef/application"
+require "chef/client"
+require "chef/config"
+require "chef/log"
+require "fileutils"
+require "tempfile"
+require "chef/providers"
+require "chef/resources"
 
 class Chef::Application::Apply < Chef::Application
 
-  banner "Usage: chef-apply [RECIPE_FILE] [-e RECIPE_TEXT] [-s]"
+  banner "Usage: chef-apply [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
 
   option :execute,
     :short        => "-e RECIPE_TEXT",
@@ -48,6 +48,24 @@ class Chef::Application::Apply < Chef::Application
     :long => "--json-attributes JSON_ATTRIBS",
     :description => "Load attributes from a JSON file or URL",
     :proc => nil
+
+  option :force_logger,
+    :long         => "--force-logger",
+    :description  => "Use logger output instead of formatter output",
+    :boolean      => true,
+    :default      => false
+
+  option :force_formatter,
+    :long         => "--force-formatter",
+    :description  => "Use formatter output instead of logger output",
+    :boolean      => true,
+    :default      => false
+
+  option :formatter,
+    :short        => "-F FORMATTER",
+    :long         => "--format FORMATTER",
+    :description  => "output format to use",
+    :proc         => lambda { |format| Chef::Config.add_formatter(format) }
 
   option :log_level,
     :short        => "-l LEVEL",
@@ -74,15 +92,21 @@ class Chef::Application::Apply < Chef::Application
     :exit         => 0
 
   option :why_run,
-    :short        => '-W',
-    :long         => '--why-run',
-    :description  => 'Enable whyrun mode',
+    :short        => "-W",
+    :long         => "--why-run",
+    :description  => "Enable whyrun mode",
     :boolean      => true
 
-  option :color,
-    :long         => '--[no-]color',
+  option :profile_ruby,
+    :long         => "--[no-]profile-ruby",
+    :description  => "Dump complete Ruby call graph stack of entire Chef run (expert only)",
     :boolean      => true,
-    :default      => !Chef::Platform.windows?,
+    :default      => false
+
+  option :color,
+    :long         => "--[no-]color",
+    :boolean      => true,
+    :default      => true,
     :description  => "Use colored output, defaults to enabled"
 
   option :minimal_ohai,
@@ -100,7 +124,7 @@ class Chef::Application::Apply < Chef::Application
     parse_options
     Chef::Config.merge!(config)
     configure_logging
-    configure_proxy_environment_variables
+    Chef::Config.export_proxies
     parse_json
   end
 
@@ -143,7 +167,7 @@ class Chef::Application::Apply < Chef::Application
   # write recipe to temp file, so in case of error,
   # user gets error w/ context
   def temp_recipe_file
-    @recipe_fh = Tempfile.open('recipe-temporary-file')
+    @recipe_fh = Tempfile.open("recipe-temporary-file")
     @recipe_fh.write(@recipe_text)
     @recipe_fh.rewind
     @recipe_filename = @recipe_fh.path
@@ -172,6 +196,7 @@ class Chef::Application::Apply < Chef::Application
     ensure
       @recipe_fh.close
     end
+    Chef::Platform::Rebooter.reboot_if_needed!(runner)
   end
 
   def run_application

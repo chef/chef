@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class ClientList < Knife
 
       deps do
-        require 'chef/api_client'
-        require 'chef/json_compat'
+        require "chef/api_client_v1"
+        require "chef/json_compat"
       end
 
       banner "knife client list (options)"
@@ -35,7 +35,7 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        output(format_list_for_display(Chef::ApiClient.list))
+        output(format_list_for_display(Chef::ApiClientV1.list))
       end
     end
   end

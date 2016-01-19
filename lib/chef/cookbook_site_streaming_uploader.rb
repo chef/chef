@@ -2,7 +2,7 @@
 # Author:: Stanislav Vitvitskiy
 # Author:: Nuo Yan (nuo@opscode.com)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2009, 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +18,20 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'net/http'
-require 'mixlib/authentication/signedheaderauth'
-require 'openssl'
+require "uri"
+require "net/http"
+require "mixlib/authentication/signedheaderauth"
+require "openssl"
 
 class Chef
   # == Chef::CookbookSiteStreamingUploader
   # A streaming multipart HTTP upload implementation. Used to upload cookbooks
-  # (in tarball form) to http://cookbooks.opscode.com
+  # (in tarball form) to https://supermarket.chef.io
   #
   # inspired by http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
   class CookbookSiteStreamingUploader
 
-    DefaultHeaders = { 'accept' => 'application/json', 'x-chef-version' => ::Chef::VERSION }
+    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION }
 
     class << self
 
@@ -73,7 +73,7 @@ class Chef
       end
 
       def make_request(http_verb, to_url, user_id, secret_key_filename, params = {}, headers = {})
-        boundary = '----RubyMultipartClient' + rand(1000000).to_s + 'ZZZZZ'
+        boundary = "----RubyMultipartClient" + rand(1000000).to_s + "ZZZZZ"
         parts = []
         content_file = nil
 
@@ -106,7 +106,7 @@ class Chef
 
         url = URI.parse(to_url)
 
-        Chef::Log.logger.debug("Signing: method: #{http_verb}, path: #{url.path}, file: #{content_file}, User-id: #{user_id}, Timestamp: #{timestamp}")
+        Chef::Log.logger.debug("Signing: method: #{http_verb}, url: #{url}, file: #{content_file}, User-id: #{user_id}, Timestamp: #{timestamp}")
 
         # We use the body for signing the request if the file parameter
         # wasn't a valid file or wasn't included. Extract the body (with
@@ -138,16 +138,11 @@ class Chef
                 Net::HTTP::Post.new(url.path, headers)
               end
         req.content_length = body_stream.size
-        req.content_type = 'multipart/form-data; boundary=' + boundary unless parts.empty?
+        req.content_type = "multipart/form-data; boundary=" + boundary unless parts.empty?
         req.body_stream = body_stream
 
-        http = Net::HTTP.new(url.host, url.port)
-        if url.scheme == "https"
-          http.use_ssl = true
-          http.verify_mode = verify_mode
-        end
+        http = Chef::HTTP::BasicClient.new(url).http_client
         res = http.request(req)
-        #res = http.start {|http_proc| http_proc.request(req) }
 
         # alias status to code and to_s to body for test purposes
         # TODO: stop the following madness!
@@ -164,17 +159,6 @@ class Chef
           end
         end
         res
-      end
-
-      private
-
-      def verify_mode
-        verify_mode = Chef::Config[:ssl_verify_mode]
-        if verify_mode == :verify_none
-          OpenSSL::SSL::VERIFY_NONE
-        elsif verify_mode == :verify_peer
-          OpenSSL::SSL::VERIFY_PEER
-        end
       end
 
     end
@@ -222,7 +206,7 @@ class Chef
 
       def read(how_much, dst_buf = nil)
         if @part_no >= @parts.size
-          dst_buf.replace('') if dst_buf
+          dst_buf.replace("") if dst_buf
           return dst_buf
         end
 
@@ -245,14 +229,14 @@ class Chef
           next_part = read(how_much_next_part)
           result = current_part + if next_part
                                     next_part
-          else
-            ''
-          end
+                                  else
+                                    ""
+                                  end
         else
           @part_offset += how_much_current_part
           result = current_part
         end
-        dst_buf ? dst_buf.replace(result || '') : result
+        dst_buf ? dst_buf.replace(result || "") : result
       end
     end
 

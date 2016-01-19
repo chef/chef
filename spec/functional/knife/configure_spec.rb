@@ -16,23 +16,23 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/knife/configure'
-require 'ohai'
+require "chef/knife/configure"
+require "ohai"
 
 describe "knife configure" do
   let (:ohai) do
     o = Ohai::System.new
     o.load_plugins
-    o.require_plugin 'os'
-    o.require_plugin 'hostname'
+    o.require_plugin "os"
+    o.require_plugin "hostname"
     o
   end
 
   it "loads the fqdn from Ohai" do
     knife_configure = Chef::Knife::Configure.new
-    hostname_guess = ohai[:fqdn] || ohai[:machinename] || ohai[:hostname] || 'localhost'
+    hostname_guess = ohai[:fqdn] || ohai[:machinename] || ohai[:hostname] || "localhost"
     expect(knife_configure.guess_servername).to eql(hostname_guess)
   end
 end

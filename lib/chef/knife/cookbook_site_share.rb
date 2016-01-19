@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/mixin/shell_out'
+require "chef/knife"
+require "chef/mixin/shell_out"
 
 class Chef
   class Knife
@@ -26,10 +26,10 @@ class Chef
       include Chef::Mixin::ShellOut
 
       deps do
-        require 'chef/cookbook_loader'
-        require 'chef/cookbook_uploader'
-        require 'chef/cookbook_site_streaming_uploader'
-        require 'mixlib/shellout'
+        require "chef/cookbook_loader"
+        require "chef/cookbook_uploader"
+        require "chef/cookbook_site_streaming_uploader"
+        require "mixlib/shellout"
       end
 
       include Chef::Mixin::ShellOut
@@ -44,11 +44,11 @@ class Chef
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
       option :dry_run,
-        :long => '--dry-run',
-        :short => '-n',
+        :long => "--dry-run",
+        :short => "-n",
         :boolean => true,
         :default => false,
-        :description => "Don't take action, only print what files will be upload to SuperMarket."
+        :description => "Don't take action, only print what files will be uploaded to Supermarket."
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -94,7 +94,7 @@ class Chef
             Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
             FileUtils.rm_rf tmp_cookbook_dir
           rescue => e
-            ui.error("Error uploading cookbook #{cookbook_name} to the Opscode Cookbook Site: #{e.message}. Increase log verbosity (-VV) for more information.")
+            ui.error("Error uploading cookbook #{cookbook_name} to Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
             exit(1)
           end
@@ -108,15 +108,15 @@ class Chef
 
       def get_category(cookbook_name)
         begin
-          data = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
+          data = noauth_rest.get("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
           if !data["category"] && data["error_code"]
-            ui.fatal("Received an error from the Opscode Cookbook site: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
+            ui.fatal("Received an error from Supermarket: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
             exit(1)
           else
-            data['category']
+            data["category"]
           end
         rescue => e
-          ui.fatal("Unable to reach Opscode Cookbook Site: #{e.message}. Increase log verbosity (-VV) for more information.")
+          ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
           Chef::Log.debug("\n#{e.backtrace.join("\n")}")
           exit(1)
         end
@@ -125,18 +125,18 @@ class Chef
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
         uri = "https://supermarket.chef.io/api/v1/cookbooks"
 
-        category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
+        category_string = Chef::JSONCompat.to_json({ "category"=>cookbook_category })
 
         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
           :tarball => File.open(cookbook_filename),
-          :cookbook => category_string
+          :cookbook => category_string,
         })
 
         res = Chef::JSONCompat.from_json(http_resp.body)
         if http_resp.code.to_i != 201
-          if res['error_messages']
-            if res['error_messages'][0] =~ /Version already exists/
-              ui.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
+          if res["error_messages"]
+            if res["error_messages"][0] =~ /Version already exists/
+              ui.error "The same version of this cookbook already exists on Supermarket."
               exit(1)
             else
               ui.error "#{res['error_messages'][0]}"

@@ -1,7 +1,7 @@
 #
 # Author:: Dan DeLeo ( <dan@opscode.com> )
 # Author:: Marc Paradise ( <marc@opscode.com> )
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -322,7 +322,7 @@ class Chef
             a.run(action, events, @resource)
             if a.assertion_failed? and a.block_action?
               @blocked_actions << action
-              return
+              break
             end
           end
         end

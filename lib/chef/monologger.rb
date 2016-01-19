@@ -1,5 +1,5 @@
-require 'logger'
-require 'pp'
+require "logger"
+require "pp"
 
 #== MonoLogger
 # A subclass of Ruby's stdlib Logger with all the mutex and logrotation stuff

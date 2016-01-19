@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
+require "chef/resource/service"
 
 class Chef
   class Resource
@@ -25,8 +25,10 @@ class Chef
       # Until #1773 is resolved, you need to manually specify the windows_service resource
       # to use action :configure_startup and attribute startup_type
 
-      provides :service, os: "windows"
       provides :windows_service, os: "windows"
+      provides :service, os: "windows"
+
+      allowed_actions :configure_startup
 
       identity_attr :service_name
 
@@ -34,8 +36,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :windows_service
-        @allowed_actions.push(:configure_startup)
         @startup_type = :automatic
         @run_as_user = ""
         @run_as_password = ""
@@ -47,7 +47,7 @@ class Chef
         set_or_return(
           :startup_type,
           arg,
-          :equal_to => [ :automatic, :manual, :disabled ]
+          :equal_to => [ :automatic, :manual, :disabled ],
         )
       end
 
@@ -55,7 +55,7 @@ class Chef
         set_or_return(
           :run_as_user,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -63,7 +63,7 @@ class Chef
         set_or_return(
           :run_as_password,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
     end

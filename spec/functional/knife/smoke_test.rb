@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe "knife smoke tests" do
 
@@ -30,5 +30,13 @@ describe "knife smoke tests" do
     knife_cmd.run_command
     knife_cmd.error!
     expect(knife_cmd.stdout).to include(Chef::VERSION)
+  end
+  
+  it "can run and show help" do
+    knife_path = File.expand_path("../../bin/knife", CHEF_SPEC_DATA)
+    knife_cmd = Mixlib::ShellOut.new("#{knife_path} --help")
+    knife_cmd.run_command
+    knife_cmd.error!
+    expect(knife_cmd.stdout).to include("Usage")
   end
 end

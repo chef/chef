@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,49 +16,31 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/yum'
+require "chef/resource/package"
+require "chef/provider/package/yum"
 
 class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
-
-      provides :yum_package
+      resource_name :yum_package
       provides :package, os: "linux", platform_family: [ "rhel", "fedora" ]
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :yum_package
-        @flush_cache = { :before => false, :after => false }
-        @allow_downgrade = false
-      end
-
       # Install a specific arch
-      def arch(arg=nil)
-        set_or_return(
-          :arch,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def flush_cache(args={})
-        if args.is_a? Array
-          args.each { |arg| @flush_cache[arg] = true }
-        elsif args.any?
-          @flush_cache = args
+      property :arch, [ String, Array ]
+      property :flush_cache, Hash, default: { before: false, after: false }, coerce: proc { |v|
+        # TODO these append rather than set. This is probably wrong behavior, but we're preserving it until we know
+        if v.is_a?(Array)
+          v.each { |arg| flush_cache[arg] = true }
+          flush_cache
+        elsif v.any?
+          v
         else
-          @flush_cache
+          # TODO calling flush_cache({}) does a get instead of a set. This is probably wrong behavior, but we're preserving it until we know
+          flush_cache
         end
-      end
-
-      def allow_downgrade(arg=nil)
-        set_or_return(
-          :allow_downgrade,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      }
+      property :allow_downgrade, [ true, false ], default: false
+      property :yum_binary, String
 
     end
   end

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::User::Pw do
   before(:each) do
@@ -48,11 +48,11 @@ describe Chef::Provider::User::Pw do
 
   describe "setting options to the pw command" do
     field_list = {
-      'comment' => "-c",
-      'home' => "-d",
-      'gid' => "-g",
-      'uid' => "-u",
-      'shell' => "-s"
+      "comment" => "-c",
+      "home" => "-d",
+      "gid" => "-g",
+      "uid" => "-u",
+      "shell" => "-s",
     }
     field_list.each do |attribute, option|
       it "should check for differences in #{attribute} between the new and current resources" do

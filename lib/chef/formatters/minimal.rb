@@ -1,4 +1,4 @@
-require 'chef/formatters/base'
+require "chef/formatters/base"
 
 class Chef
 
@@ -109,8 +109,8 @@ class Chef
         puts "Synchronizing cookbooks"
       end
 
-      # Called when cookbook +cookbook_name+ has been sync'd
-      def synchronized_cookbook(cookbook_name)
+      # Called when cookbook +cookbook+ has been sync'd
+      def synchronized_cookbook(cookbook_name, cookbook)
         print "."
       end
 
@@ -130,7 +130,7 @@ class Chef
 
       # Called after a file in a cookbook is loaded.
       def file_loaded(path)
-        print '.'
+        print "."
       end
 
       def file_load_failed(path, exception)
@@ -157,7 +157,7 @@ class Chef
           puts "\n"
           puts "resources updated this run:"
           updated_resources.each do |resource|
-            puts "* #{resource.to_s}"
+            puts "* #{resource}"
             updates_by_resource[resource.name].flatten.each do |update|
               puts "  - #{update}"
             end

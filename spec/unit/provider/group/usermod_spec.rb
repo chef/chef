@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Group::Usermod do
   before do
@@ -52,7 +52,7 @@ describe Chef::Provider::Group::Usermod do
         "suse" => "-a -G",
         "opensuse" => "-a -G",
         "smartos" => "-G",
-        "omnios" => "-G"
+        "omnios" => "-G",
       }
 
       before do
@@ -65,7 +65,7 @@ describe Chef::Provider::Group::Usermod do
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
         @provider.action = :modify
-        expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}, must set append true in group")
+        expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider}, must set append true in group")
       end
 
       it "should raise an error when excluded_members are set" do
@@ -75,7 +75,7 @@ describe Chef::Provider::Group::Usermod do
         @provider.action = :modify
         allow(@new_resource).to receive(:append).and_return(true)
         allow(@new_resource).to receive(:excluded_members).and_return(["someone"])
-        expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "excluded_members is not supported by #{@provider.to_s}")
+        expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "excluded_members is not supported by #{@provider}")
       end
 
       platforms.each do |platform, flags|

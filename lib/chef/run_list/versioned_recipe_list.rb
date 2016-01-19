@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require 'chef/version_class'
-require 'chef/version_constraint'
+require "chef/version_class"
+require "chef/version_constraint"
 
 # Why does this class exist?
 # Why did we not just modify RunList/RunListItem?
@@ -62,6 +62,40 @@ class Chef
             recipe_name
           end
         end
+      end
+
+      # Get an array of strings of the fully-qualified recipe names (with ::default appended) and
+      # with the versions in "NAME@VERSION" format.
+      #
+      # @return [Array] Array of strings with fully-qualified recipe names
+      def with_fully_qualified_names_and_version_constraints
+        self.map do |recipe_name|
+          qualified_recipe = if recipe_name.include?("::")
+                               recipe_name
+                             else
+                               "#{recipe_name}::default"
+                             end
+
+          version = @versions[recipe_name]
+          qualified_recipe = "#{qualified_recipe}@#{version}" if version
+
+          qualified_recipe
+        end
+      end
+
+      # Get an array of strings of both fully-qualified and unexpanded recipe names
+      # in response to chef/chef#3767
+      # Chef-13 will revert to the behaviour of just including the fully-qualified name
+      #
+      # @return [Array] Array of strings with fully-qualified and unexpanded recipe names
+      def with_duplicate_names
+        self.map do |recipe_name|
+          if recipe_name.include?("::")
+            recipe_name
+          else
+            [recipe_name, "#{recipe_name}::default"]
+          end
+        end.flatten
       end
     end
   end

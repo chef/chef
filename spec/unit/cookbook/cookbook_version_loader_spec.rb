@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Cookbook::CookbookVersionLoader do
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
   end
 
   describe "loading a cookbook" do
@@ -58,8 +58,8 @@ describe Chef::Cookbook::CookbookVersionLoader do
     end
 
     it "loads libraries" do
-      expect(loaded_cookbook.library_filenames).to include(full_path('/libraries/openldap.rb'))
-      expect(loaded_cookbook.library_filenames).to include(full_path('/libraries/openldap/version.rb'))
+      expect(loaded_cookbook.library_filenames).to include(full_path("/libraries/openldap.rb"))
+      expect(loaded_cookbook.library_filenames).to include(full_path("/libraries/openldap/version.rb"))
     end
 
     it "loads static files in the files/ dir" do

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
@@ -27,13 +27,11 @@ class Chef
 
       state_attrs :minute, :hour, :day, :month, :weekday, :user
 
-      provides :cron
+      default_action :create
+      allowed_actions :create, :delete
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :cron
-        @action = :create
-        @allowed_actions.push(:create, :delete)
         @minute = "*"
         @hour = "*"
         @day = "*"
@@ -62,7 +60,7 @@ class Chef
         set_or_return(
           :minute,
           converted_arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -79,7 +77,7 @@ class Chef
         set_or_return(
           :hour,
           converted_arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -96,7 +94,7 @@ class Chef
         set_or_return(
           :day,
           converted_arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -113,7 +111,7 @@ class Chef
         set_or_return(
           :month,
           converted_arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -125,7 +123,7 @@ class Chef
         end
         begin
           error_message = "You provided '#{arg}' as a weekday, acceptable values are "
-          error_message << Provider::Cron::WEEKDAY_SYMBOLS.map {|sym| ":#{sym.to_s}"}.join(', ')
+          error_message << Provider::Cron::WEEKDAY_SYMBOLS.map {|sym| ":#{sym}"}.join(", ")
           error_message << " and a string in crontab format"
           if (arg.is_a?(Symbol) && !Provider::Cron::WEEKDAY_SYMBOLS.include?(arg)) ||
             (!arg.is_a?(Symbol) && integerize(arg) > 7) ||
@@ -137,7 +135,7 @@ class Chef
         set_or_return(
           :weekday,
           converted_arg,
-          :kind_of => [String, Symbol]
+          :kind_of => [String, Symbol],
         )
       end
 
@@ -145,7 +143,7 @@ class Chef
         set_or_return(
           :time,
           arg,
-          :equal_to => Chef::Provider::Cron::SPECIAL_TIME_VALUES
+          :equal_to => Chef::Provider::Cron::SPECIAL_TIME_VALUES,
         )
       end
 
@@ -153,7 +151,7 @@ class Chef
         set_or_return(
           :mailto,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -161,7 +159,7 @@ class Chef
         set_or_return(
           :path,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -169,7 +167,7 @@ class Chef
         set_or_return(
           :home,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -177,7 +175,7 @@ class Chef
         set_or_return(
           :shell,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -185,7 +183,7 @@ class Chef
         set_or_return(
           :command,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -193,7 +191,7 @@ class Chef
         set_or_return(
           :user,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -201,7 +199,7 @@ class Chef
         set_or_return(
           :environment,
           arg,
-          :kind_of => Hash
+          :kind_of => Hash,
         )
       end
 

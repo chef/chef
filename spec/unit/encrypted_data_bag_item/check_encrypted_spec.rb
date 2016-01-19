@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/encrypted_data_bag_item/check_encrypted'
+require "spec_helper"
+require "chef/encrypted_data_bag_item/check_encrypted"
 
 class CheckEncryptedTester
   include Chef::EncryptedDataBagItem::CheckEncrypted
@@ -44,8 +44,8 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
         "greeting" => "hello",
         "nested" => {
             "a1" => [1, 2, 3],
-            "a2" => { "b1" => true }
-        }
+            "a2" => { "b1" => true },
+        },
     }}
 
     let(:version) { 1 }

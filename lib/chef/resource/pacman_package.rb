@@ -16,19 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
+require "chef/resource/package"
 
 class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
-
+      resource_name :pacman_package
       provides :pacman_package, os: "linux"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :pacman_package
-      end
-
     end
   end
 end

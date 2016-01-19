@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/chef_fs/file_system/operation_failed_error'
+require "spec_helper"
+require "chef/chef_fs/file_system/operation_failed_error"
 
 describe Chef::ChefFS::FileSystem::OperationFailedError do
-  context 'message' do
+  context "message" do
     let(:error_message) { 'HTTP error writing: 400 "Bad Request"' }
 
-    context 'has a cause attribute and HTTP result code is 400' do
-      it 'include error cause' do
+    context "has a cause attribute and HTTP result code is 400" do
+      it "include error cause" do
         allow_message_expectations_on_nil
         response_body = '{"error":["Invalid key test in request body"]}'
         allow(@response).to receive(:code).and_return("400")
@@ -36,8 +36,8 @@ describe Chef::ChefFS::FileSystem::OperationFailedError do
       end
     end
 
-    context 'does not have a cause attribute' do
-      it 'does not include error cause' do
+    context "does not have a cause attribute" do
+      it "does not include error cause" do
         expect {
           raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self), error_message
         }.to raise_error(Chef::ChefFS::FileSystem::OperationFailedError, error_message)

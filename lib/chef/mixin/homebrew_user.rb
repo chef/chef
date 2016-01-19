@@ -22,8 +22,8 @@
 # This lives here in Chef::Mixin because Chef's namespacing makes it
 # awkward to use modules elsewhere (e.g., chef/provider/package/homebrew/owner)
 
-require 'chef/mixin/shell_out'
-require 'etc'
+require "chef/mixin/shell_out"
+require "etc"
 
 class Chef
   module Mixin
@@ -48,7 +48,7 @@ class Chef
       private
 
       def calculate_owner
-        default_brew_path = '/usr/local/bin/brew'
+        default_brew_path = "/usr/local/bin/brew"
         if ::File.exist?(default_brew_path)
           # By default, this follows symlinks which is what we want
           owner = ::File.stat(default_brew_path).uid

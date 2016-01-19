@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,29 +19,24 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
+require "chef/platform/resource_priority_map"
 
 describe Chef::Recipe do
 
-  let(:cookbook_repo) { File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks")) }
-
-  let(:cookbook_loader) do
-    loader = Chef::CookbookLoader.new(cookbook_repo)
-    loader.load_cookbooks
-    loader
+  let(:cookbook_collection) do
+    cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+    cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
+    cookbook_loader.load_cookbooks
+    Chef::CookbookCollection.new(cookbook_loader)
   end
-
-  let(:cookbook_collection) { Chef::CookbookCollection.new(cookbook_loader) }
 
   let(:node) do
-    Chef::Node.new.tap {|n| n.normal[:tags] = [] }
-  end
-
-  let(:events) do
-    Chef::EventDispatch::Dispatcher.new
+    Chef::Node.new
   end
 
   let(:run_context) do
+    events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, cookbook_collection, events)
   end
 
@@ -82,7 +77,7 @@ describe Chef::Recipe do
       it "should require a name argument" do
         expect {
           recipe.cat
-        }.to raise_error(ArgumentError, "You must supply a name when declaring a cat resource")
+        }.to raise_error(ArgumentError)
       end
 
       it "should allow regular errors (not NameErrors) to pass unchanged" do
@@ -120,7 +115,8 @@ describe Chef::Recipe do
 
         it "locate resource for particular platform" do
           ShaunTheSheep = Class.new(Chef::Resource)
-          ShaunTheSheep.provides :laughter, :on_platforms => ["television"]
+          ShaunTheSheep.resource_name :shaun_the_sheep
+          ShaunTheSheep.provides :laughter, :platform => ["television"]
           node.automatic[:platform] = "television"
           node.automatic[:platform_version] = "123"
           res = recipe.laughter "timmy"
@@ -130,10 +126,44 @@ describe Chef::Recipe do
 
         it "locate a resource for all platforms" do
           YourMom = Class.new(Chef::Resource)
+          YourMom.resource_name :your_mom
           YourMom.provides :love_and_caring
           res = recipe.love_and_caring "mommy"
           expect(res.name).to eql("mommy")
           res.kind_of?(YourMom)
+        end
+
+        describe "when there is more than one resource that resolves on a node" do
+          before do
+            node.automatic[:platform] = "nbc_sports"
+            Sounders = Class.new(Chef::Resource)
+            Sounders.resource_name :sounders
+            TottenhamHotspur = Class.new(Chef::Resource)
+            TottenhamHotspur.resource_name :tottenham_hotspur
+          end
+
+          after do
+            Object.send(:remove_const, :Sounders)
+            Object.send(:remove_const, :TottenhamHotspur)
+          end
+
+          it "selects the first one alphabetically" do
+            Sounders.provides :football, platform: "nbc_sports"
+            TottenhamHotspur.provides :football, platform: "nbc_sports"
+
+            res1 = recipe.football "club world cup"
+            expect(res1.name).to eql("club world cup")
+            expect(res1).to be_a_kind_of(Sounders)
+          end
+
+          it "selects the first one alphabetically even if the declaration order is reversed" do
+            TottenhamHotspur.provides :football2, platform: "nbc_sports"
+            Sounders.provides :football2, platform: "nbc_sports"
+
+            res1 = recipe.football2 "club world cup"
+            expect(res1.name).to eql("club world cup")
+            expect(res1).to be_a_kind_of(Sounders)
+          end
         end
 
       end
@@ -269,6 +299,34 @@ describe Chef::Recipe do
         zm_resource # force let binding evaluation
         expect(run_context.resource_collection.resources(:zen_master => "klopp")).to eq(zm_resource)
       end
+
+      it "will insert another resource if create_if_missing is not set (cloned resource as of Chef-12)" do
+        zm_resource
+        recipe.declare_resource(:zen_master, "klopp")
+        expect(run_context.resource_collection.count).to eql(2)
+      end
+
+      it "does not insert two resources if create_if_missing is used" do
+        zm_resource
+        recipe.declare_resource(:zen_master, "klopp", create_if_missing: true)
+        expect(run_context.resource_collection.count).to eql(1)
+      end
+
+      context "injecting a different run_context" do
+        let(:run_context2) do
+          events = Chef::EventDispatch::Dispatcher.new
+          Chef::RunContext.new(node, cookbook_collection, events)
+        end
+
+        it "should insert resources into the correct run_context" do
+          zm_resource
+          recipe.declare_resource(:zen_master, "klopp2", run_context: run_context2)
+          run_context2.resource_collection.lookup("zen_master[klopp2]")
+          expect {run_context2.resource_collection.lookup("zen_master[klopp]")}.to raise_error(Chef::Exceptions::ResourceNotFound)
+          expect {run_context.resource_collection.lookup("zen_master[klopp2]")}.to raise_error(Chef::Exceptions::ResourceNotFound)
+          run_context.resource_collection.lookup("zen_master[klopp]")
+        end
+      end
     end
 
     describe "creating a resource with short name" do
@@ -309,7 +367,7 @@ describe Chef::Recipe do
       it "gives a sane error message when using method_missing" do
         expect do
           recipe.no_such_resource("foo")
-        end.to raise_error(NoMethodError, %q[No resource or method named `no_such_resource' for `Chef::Recipe "test"'])
+        end.to raise_error(NoMethodError, %q{No resource or method named `no_such_resource' for `Chef::Recipe "test"'})
       end
 
       it "gives a sane error message when using method_missing 'bare'" do
@@ -318,7 +376,7 @@ describe Chef::Recipe do
             # Giving an argument will change this from NameError to NoMethodError
             no_such_resource
           end
-        end.to raise_error(NameError, %q[No resource, method, or local variable named `no_such_resource' for `Chef::Recipe "test"'])
+        end.to raise_error(NameError, %q{No resource, method, or local variable named `no_such_resource' for `Chef::Recipe "test"'})
       end
 
       it "gives a sane error message when using build_resource" do
@@ -370,7 +428,7 @@ describe Chef::Recipe do
 
       it "does not copy the action from the first resource" do
         expect(original_resource.action).to eq([:score])
-        expect(duplicated_resource.action).to eq(:nothing)
+        expect(duplicated_resource.action).to eq([:nothing])
       end
 
       it "does not copy the source location of the first resource" do
@@ -538,6 +596,36 @@ describe Chef::Recipe do
       expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
       openldap_recipe.include_recipe "::default"
     end
+
+    it "will not load a recipe twice when called first from an LWRP provider" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "::default"
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+    end
+
+    it "will not load a recipe twice when called last from an LWRP provider" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "::default"
+    end
+
+    it "will not load a recipe twice when called both times from an LWRP provider" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.openldap_includer("do it").run_action(:run)
+    end
   end
 
   describe "tags" do
@@ -549,21 +637,25 @@ describe Chef::Recipe do
       end
     end
 
+    it "should initialize tags to an empty Array" do
+      expect(node.tags).to eql([])
+    end
+
     it "should set tags via tag" do
       recipe.tag "foo"
-      expect(node[:tags]).to include("foo")
+      expect(node.tags).to include("foo")
     end
 
     it "should set multiple tags via tag" do
       recipe.tag "foo", "bar"
-      expect(node[:tags]).to include("foo")
-      expect(node[:tags]).to include("bar")
+      expect(node.tags).to include("foo")
+      expect(node.tags).to include("bar")
     end
 
     it "should not set the same tag twice via tag" do
       recipe.tag "foo"
       recipe.tag "foo"
-      expect(node[:tags]).to eql([ "foo" ])
+      expect(node.tags).to eql([ "foo" ])
     end
 
     it "should return the current list of tags from tag with no arguments" do
@@ -587,13 +679,13 @@ describe Chef::Recipe do
     it "should remove a tag from the tag list via untag" do
       recipe.tag "foo"
       recipe.untag "foo"
-      expect(node[:tags]).to eql([])
+      expect(node.tags).to eql([])
     end
 
     it "should remove multiple tags from the tag list via untag" do
       recipe.tag "foo", "bar"
       recipe.untag "bar", "foo"
-      expect(node[:tags]).to eql([])
+      expect(node.tags).to eql([])
     end
   end
 

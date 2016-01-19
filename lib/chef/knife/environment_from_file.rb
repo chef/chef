@@ -21,8 +21,8 @@ class Chef
     class EnvironmentFromFile < Knife
 
       deps do
-        require 'chef/environment'
-        require 'chef/knife/core/object_loader'
+        require "chef/environment"
+        require "chef/knife/core/object_loader"
       end
 
       banner "knife environment from file FILE [FILE..] (options)"

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'logger'
-require 'spec_helper'
+require "tempfile"
+require "logger"
+require "spec_helper"
 
 describe Chef::Log do
 end

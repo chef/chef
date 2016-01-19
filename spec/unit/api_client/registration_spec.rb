@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tempfile'
+require "spec_helper"
+require "tempfile"
 
-require 'chef/api_client/registration'
+require "chef/api_client/registration"
 
 describe Chef::ApiClient::Registration do
 
@@ -35,7 +35,7 @@ describe Chef::ApiClient::Registration do
     File.open(Chef::Config[:validation_key], "r") {|f| f.read.chomp }
   end
 
-  let(:http_mock) { double("Chef::REST mock") }
+  let(:http_mock) { double("Chef::ServerAPI mock") }
 
   let(:expected_post_data) do
     { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
@@ -46,8 +46,10 @@ describe Chef::ApiClient::Registration do
   end
 
   let(:server_v10_response) do
-    {"uri" => "https://chef.local/clients/#{client_name}",
-     "private_key" => "--begin rsa key etc--"}
+    {
+      "uri" => "https://chef.local/clients/#{client_name}",
+      "private_key" => "--begin rsa key etc--",
+    }
   end
 
   # Server v11 includes `json_class` on all replies
@@ -61,7 +63,7 @@ describe Chef::ApiClient::Registration do
   let(:response_409) { Net::HTTPConflict.new("1.1", "409", "Conflict") }
   let(:exception_409) { Net::HTTPServerException.new("409 conflict", response_409) }
 
-  let(:generated_private_key_pem) { IO.read(File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)) }
+  let(:generated_private_key_pem) { IO.read(File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)) }
   let(:generated_private_key) { OpenSSL::PKey::RSA.new(generated_private_key_pem) }
   let(:generated_public_key) { generated_private_key.public_key }
 
@@ -69,7 +71,9 @@ describe Chef::ApiClient::Registration do
   let(:create_with_pkey_response) do
     {
       "uri" => "",
-      "public_key" => generated_public_key.to_pem
+      "chef_key" => {
+        "public_key" => generated_public_key.to_pem
+      },
     }
   end
 
@@ -84,7 +88,7 @@ describe Chef::ApiClient::Registration do
 
   before do
     Chef::Config[:validation_client_name] = "test-validator"
-    Chef::Config[:validation_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
+    Chef::Config[:validation_key] = File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)
     allow(OpenSSL::PKey::RSA).to receive(:generate).with(2048).and_return(generated_private_key)
   end
 
@@ -93,9 +97,10 @@ describe Chef::ApiClient::Registration do
   end
 
   it "has an HTTP client configured with validator credentials" do
-    expect(registration.http_api).to be_a_kind_of(Chef::REST)
-    expect(registration.http_api.client_name).to eq("test-validator")
-    expect(registration.http_api.signing_key).to eq(private_key_data)
+    expect(registration.http_api).to be_a_kind_of(Chef::ServerAPI)
+    expect(registration.http_api.options[:client_name]).to eq("test-validator")
+    auth = registration.http_api.middlewares.select { |klass| klass.kind_of? Chef::HTTP::Authenticator }.first
+    expect(auth.client_name).to eq("test-validator")
   end
 
   describe "when creating/updating the client on the server" do
@@ -107,7 +112,7 @@ describe Chef::ApiClient::Registration do
       expect(http_mock).to receive(:post).
         with("clients", expected_post_data).
         and_return(create_with_pkey_response)
-      expect(registration.create_or_update).to eq(create_with_pkey_response)
+      expect(registration.run.public_key).to eq(create_with_pkey_response["chef_key"]["public_key"])
       expect(registration.private_key).to eq(generated_private_key_pem)
     end
 
@@ -118,7 +123,7 @@ describe Chef::ApiClient::Registration do
       expect(http_mock).to receive(:put).
         with("clients/#{client_name}", expected_put_data).
         and_return(update_with_pkey_response)
-      expect(registration.create_or_update).to eq(update_with_pkey_response)
+      expect(registration.run.public_key).to eq(update_with_pkey_response["public_key"].to_pem)
       expect(registration.private_key).to eq(generated_private_key_pem)
     end
 
@@ -136,7 +141,7 @@ describe Chef::ApiClient::Registration do
         expect(http_mock).to receive(:put).
           with("clients/#{client_name}", expected_put_data).
           and_return(update_with_pkey_response)
-        expect(registration.create_or_update).to eq(update_with_pkey_response)
+        expect(registration.run.public_key).to eq(update_with_pkey_response["public_key"].to_pem)
         expect(registration.private_key).to eq(generated_private_key_pem)
       end
     end
@@ -160,7 +165,7 @@ describe Chef::ApiClient::Registration do
         expect(http_mock).to receive(:post).
           with("clients", expected_post_data).
           and_return(server_v10_response)
-        expect(registration.create_or_update).to eq(server_v10_response)
+        expect(registration.run.private_key).to eq(server_v10_response["private_key"])
         expect(registration.private_key).to eq("--begin rsa key etc--")
       end
 
@@ -170,7 +175,7 @@ describe Chef::ApiClient::Registration do
           expect(http_mock).to receive(:put).
             with("clients/#{client_name}", expected_put_data).
             and_return(server_v11_response)
-          expect(registration.create_or_update).to eq(server_v11_response)
+          expect(registration.run).to eq(server_v11_response)
           expect(registration.private_key).to eq("--begin rsa key etc--")
         end
       end
@@ -182,7 +187,7 @@ describe Chef::ApiClient::Registration do
           expect(http_mock).to receive(:put).
             with("clients/#{client_name}", expected_put_data).
             and_return(server_v10_response)
-          expect(registration.create_or_update).to eq(server_v10_response)
+          expect(registration.run.private_key).to eq(server_v10_response["private_key"])
           expect(registration.private_key).to eq("--begin rsa key etc--")
         end
       end
@@ -191,7 +196,7 @@ describe Chef::ApiClient::Registration do
 
   describe "when writing the private key to disk" do
     before do
-      allow(registration).to receive(:private_key).and_return('--begin rsa key etc--')
+      allow(registration).to receive(:private_key).and_return("--begin rsa key etc--")
     end
 
     # Permission read via File.stat is busted on windows, though creating the
@@ -210,8 +215,8 @@ describe Chef::ApiClient::Registration do
       expect(IO.read(key_location)).to eq("--begin rsa key etc--")
     end
 
-    context 'when the client key location is a symlink' do
-      it 'does not follow the symlink', :unix_only do
+    context "when the client key location is a symlink" do
+      it "does not follow the symlink", :unix_only do
         expected_flags = (File::CREAT|File::TRUNC|File::RDWR)
 
         if defined?(File::NOFOLLOW)
@@ -221,12 +226,12 @@ describe Chef::ApiClient::Registration do
         expect(registration.file_flags).to eq(expected_flags)
       end
 
-      context 'with follow_client_key_symlink set to true' do
+      context "with follow_client_key_symlink set to true" do
         before do
           Chef::Config[:follow_client_key_symlink] = true
         end
 
-        it 'follows the symlink', :unix_only do
+        it "follows the symlink", :unix_only do
           expect(registration.file_flags).to eq(File::CREAT|File::TRUNC|File::RDWR)
         end
       end

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
-require 'chef/win32/api/system'
-require 'wmi-lite/wmi'
+require "chef/win32/api"
+require "chef/win32/api/system"
+require "wmi-lite/wmi"
 
 class Chef
   module ReservedNames::Win32
@@ -62,7 +62,7 @@ class Chef
         "Windows Home Server" => {:major => 5, :minor => 2, :callable => lambda{ |product_type, suite_mask| (suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER }},
         "Windows Server 2003" => {:major => 5, :minor => 2, :callable => lambda{ |product_type, suite_mask| get_system_metrics(SM_SERVERR2) == 0 }},
         "Windows XP" => {:major => 5, :minor => 1},
-        "Windows 2000" => {:major => 5, :minor => 0}
+        "Windows 2000" => {:major => 5, :minor => 0},
       }
 
       def initialize
@@ -122,18 +122,14 @@ class Chef
         # WMI always returns the truth. See article at
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724439(v=vs.85).aspx
 
-        # CHEF-4888: Work around ruby #2618, expected to be fixed in Ruby 2.1.0
-        # https://github.com/ruby/ruby/commit/588504b20f5cc880ad51827b93e571e32446e5db
-        # https://github.com/ruby/ruby/commit/27ed294c7134c0de582007af3c915a635a6506cd
-
         wmi = WmiLite::Wmi.new
-        os_info = wmi.first_of('Win32_OperatingSystem')
-        os_version = os_info['version']
+        os_info = wmi.first_of("Win32_OperatingSystem")
+        os_version = os_info["version"]
 
         # The operating system version is a string in the following form
         # that can be split into components based on the '.' delimiter:
         # MajorVersionNumber.MinorVersionNumber.BuildNumber
-        os_version.split('.').collect { | version_string | version_string.to_i }
+        os_version.split(".").collect { | version_string | version_string.to_i }
       end
 
       def get_version_ex

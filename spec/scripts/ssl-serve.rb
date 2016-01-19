@@ -5,10 +5,10 @@
 # You can use it to test various HTTP behaviors in chef, like chef-client's
 # `-j` and `-c` options and remote_file with https connections.
 #
-require 'pp'
-require 'openssl'
-require 'webrick'
-require 'webrick/https'
+require "pp"
+require "openssl"
+require "webrick"
+require "webrick/https"
 
 
 $ssl = true
@@ -32,9 +32,9 @@ end
 # 5 == debug, 3 == warning
 LOGGER = WEBrick::Log.new(STDOUT, 5)
 DEFAULT_OPTIONS = {
-  :server => 'webrick',
+  :server => "webrick",
   :Port => 9000,
-  :Host => 'localhost',
+  :Host => "localhost",
   :environment => :none,
   :Logger => LOGGER,
   :DocumentRoot => File.expand_path("/tmp/chef-118-sampledata")
@@ -45,7 +45,7 @@ webrick_opts = DEFAULT_OPTIONS.merge(server_opts)
 pp :webrick_opts => webrick_opts
 
 server = WEBrick::HTTPServer.new(webrick_opts)
-trap 'INT' do server.shutdown end
+trap "INT" do server.shutdown end
 
 server.start
 

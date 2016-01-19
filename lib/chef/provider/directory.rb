@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/log'
-require 'chef/resource/directory'
-require 'chef/provider'
-require 'chef/provider/file'
-require 'fileutils'
+require "chef/config"
+require "chef/log"
+require "chef/resource/directory"
+require "chef/provider"
+require "chef/provider/file"
+require "fileutils"
 
 class Chef
   class Provider
@@ -43,6 +43,9 @@ class Chef
       end
 
       def define_resource_requirements
+        # deep inside FAC we have to assert requirements, so call FACs hook to set that up
+        access_controls.define_resource_requirements
+
         requirements.assert(:create) do |a|
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
@@ -61,7 +64,13 @@ class Chef
               is_parent_writable = lambda do |base_dir|
                 base_dir = ::File.dirname(base_dir)
                 if ::File.exists?(base_dir)
-                  Chef::FileAccessControl.writable?(base_dir)
+                  if Chef::FileAccessControl.writable?(base_dir)
+                    true
+                  elsif Chef::Util::PathHelper.is_sip_path?(base_dir, node)
+                    Chef::Util::PathHelper.writable_sip_path?(base_dir)
+                  else
+                    false
+                  end
                 else
                   is_parent_writable.call(base_dir)
                 end
@@ -71,7 +80,13 @@ class Chef
               # in why run mode & parent directory does not exist no permissions check is required
               # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
               if !whyrun_mode? || ::File.exists?(parent_directory)
-                Chef::FileAccessControl.writable?(parent_directory)
+                if Chef::FileAccessControl.writable?(parent_directory)
+                  true
+                elsif Chef::Util::PathHelper.is_sip_path?(parent_directory, node)
+                  Chef::Util::PathHelper.writable_sip_path?(@new_resource.path)
+                else
+                  false
+                end
               else
                 true
               end

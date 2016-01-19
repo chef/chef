@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/provider/user'
+require "chef/provider/user"
 
 class Chef
   class Provider
     class User
       class Pw < Chef::Provider::User
+        provides :user, platform: %w{freebsd}
 
         def load_current_resource
           super
@@ -70,11 +71,11 @@ class Chef
           opts = " #{@new_resource.username}"
 
           field_list = {
-            'comment' => "-c",
-            'home' => "-d",
-            'gid' => "-g",
-            'uid' => "-u",
-            'shell' => "-s"
+            "comment" => "-c",
+            "home" => "-d",
+            "gid" => "-g",
+            "uid" => "-u",
+            "shell" => "-s",
           }
           field_list.sort{ |a,b| a[0] <=> b[0] }.each do |field, option|
             field_symbol = field.to_sym

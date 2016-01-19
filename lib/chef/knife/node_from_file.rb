@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class NodeFromFile < Knife
 
       deps do
-        require 'chef/node'
-        require 'chef/json_compat'
-        require 'chef/knife/core/object_loader'
+        require "chef/node"
+        require "chef/json_compat"
+        require "chef/knife/core/object_loader"
       end
 
       banner "knife node from file FILE (options)"
@@ -36,7 +36,7 @@ class Chef
 
       def run
         @name_args.each do |arg|
-          updated = loader.load_from('nodes', arg)
+          updated = loader.load_from("nodes", arg)
   
           updated.save
   

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Cron do
   describe "when with special time string" do
@@ -56,7 +56,7 @@ CRONTAB
       it "should pull the details out of the cron line" do
         cron = @provider.load_current_resource
         expect(cron.time).to eq(:reboot)
-        expect(cron.command).to eq('/bin/true param1 param2')
+        expect(cron.command).to eq("/bin/true param1 param2")
       end
 
       it "should pull env vars out" do
@@ -75,12 +75,12 @@ HOME=/home/foo
 # Another comment
 CRONTAB
         cron = @provider.load_current_resource
-        expect(cron.mailto).to eq('foo@example.com')
-        expect(cron.shell).to eq('/bin/foosh')
-        expect(cron.path).to eq('/bin:/foo')
-        expect(cron.home).to eq('/home/foo')
+        expect(cron.mailto).to eq("foo@example.com")
+        expect(cron.shell).to eq("/bin/foosh")
+        expect(cron.path).to eq("/bin:/foo")
+        expect(cron.home).to eq("/home/foo")
         expect(cron.time).to eq(:reboot)
-        expect(cron.command).to eq('/bin/true param1 param2')
+        expect(cron.command).to eq("/bin/true param1 param2")
       end
 
       it "should parse and load generic and standard environment variables from cron entry" do
@@ -227,13 +227,13 @@ CRONTAB
 
       it "should pull the details out of the cron line" do
         cron = @provider.load_current_resource
-        expect(cron.minute).to eq('*')
-        expect(cron.hour).to eq('5')
-        expect(cron.day).to eq('*')
-        expect(cron.month).to eq('1')
-        expect(cron.weekday).to eq('*')
+        expect(cron.minute).to eq("*")
+        expect(cron.hour).to eq("5")
+        expect(cron.day).to eq("*")
+        expect(cron.month).to eq("1")
+        expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
-        expect(cron.command).to eq('/bin/true param1 param2')
+        expect(cron.command).to eq("/bin/true param1 param2")
       end
 
       it "should pull env vars out" do
@@ -252,17 +252,17 @@ HOME=/home/foo
 # Another comment
 CRONTAB
         cron = @provider.load_current_resource
-        expect(cron.mailto).to eq('foo@example.com')
-        expect(cron.shell).to eq('/bin/foosh')
-        expect(cron.path).to eq('/bin:/foo')
-        expect(cron.home).to eq('/home/foo')
-        expect(cron.minute).to eq('*')
-        expect(cron.hour).to eq('5')
-        expect(cron.day).to eq('*')
-        expect(cron.month).to eq('1')
-        expect(cron.weekday).to eq('*')
+        expect(cron.mailto).to eq("foo@example.com")
+        expect(cron.shell).to eq("/bin/foosh")
+        expect(cron.path).to eq("/bin:/foo")
+        expect(cron.home).to eq("/home/foo")
+        expect(cron.minute).to eq("*")
+        expect(cron.hour).to eq("5")
+        expect(cron.day).to eq("*")
+        expect(cron.month).to eq("1")
+        expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
-        expect(cron.command).to eq('/bin/true param1 param2')
+        expect(cron.command).to eq("/bin/true param1 param2")
       end
 
       it "should parse and load generic and standard environment variables from cron entry" do
@@ -290,8 +290,8 @@ ENVIRONMENT=production
 CRONTAB
         cron = @provider.load_current_resource
 
-        expect(cron.minute).to eq('*')
-        expect(cron.hour).to eq('5')
+        expect(cron.minute).to eq("*")
+        expect(cron.hour).to eq("5")
         expect(cron.environment).to eq({"MINUTE" => "40", "HOUR" => "midnight", "TEST" => "lol", "ENVIRONMENT" => "production"})
       end
 
@@ -323,12 +323,12 @@ CRONTAB
 
       it "should pull the details out of the cron line" do
         cron = @provider.load_current_resource
-        expect(cron.minute).to eq('*')
-        expect(cron.hour).to eq('5')
-        expect(cron.day).to eq('*')
-        expect(cron.month).to eq('Jan')
-        expect(cron.weekday).to eq('Mon')
-        expect(cron.command).to eq('/bin/true param1 param2')
+        expect(cron.minute).to eq("*")
+        expect(cron.hour).to eq("5")
+        expect(cron.day).to eq("*")
+        expect(cron.month).to eq("Jan")
+        expect(cron.weekday).to eq("Mon")
+        expect(cron.command).to eq("/bin/true param1 param2")
       end
 
       it "should report the match" do
@@ -346,11 +346,11 @@ CRONTAB
 CRONTAB
         cron = @provider.load_current_resource
         expect(@provider.cron_exists).to eq(true)
-        expect(cron.minute).to eq('*')
-        expect(cron.hour).to eq('*')
-        expect(cron.day).to eq('*')
-        expect(cron.month).to eq('*')
-        expect(cron.weekday).to eq('*')
+        expect(cron.minute).to eq("*")
+        expect(cron.hour).to eq("*")
+        expect(cron.day).to eq("*")
+        expect(cron.month).to eq("*")
+        expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
         expect(cron.command).to eq(nil)
       end
@@ -364,11 +364,11 @@ CRONTAB
 CRONTAB
         cron = @provider.load_current_resource
         expect(@provider.cron_exists).to eq(true)
-        expect(cron.minute).to eq('*')
-        expect(cron.hour).to eq('*')
-        expect(cron.day).to eq('*')
-        expect(cron.month).to eq('*')
-        expect(cron.weekday).to eq('*')
+        expect(cron.minute).to eq("*")
+        expect(cron.hour).to eq("*")
+        expect(cron.day).to eq("*")
+        expect(cron.month).to eq("*")
+        expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
         expect(cron.command).to eq(nil)
       end
@@ -386,11 +386,11 @@ CRONTAB
 CRONTAB
         cron = @provider.load_current_resource
         expect(@provider.cron_exists).to eq(true)
-        expect(cron.minute).to eq('*')
-        expect(cron.hour).to eq('*')
-        expect(cron.day).to eq('*')
-        expect(cron.month).to eq('*')
-        expect(cron.weekday).to eq('*')
+        expect(cron.minute).to eq("*")
+        expect(cron.hour).to eq("*")
+        expect(cron.day).to eq("*")
+        expect(cron.month).to eq("*")
+        expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
         expect(cron.command).to eq(nil)
       end
@@ -455,10 +455,10 @@ CRONTAB
       end
 
       it "should include env variables that are set" do
-        @new_resource.mailto 'foo@example.com'
-        @new_resource.path '/usr/bin:/my/custom/path'
-        @new_resource.shell '/bin/foosh'
-        @new_resource.home '/home/foo'
+        @new_resource.mailto "foo@example.com"
+        @new_resource.path "/usr/bin:/my/custom/path"
+        @new_resource.shell "/bin/foosh"
+        @new_resource.home "/home/foo"
         @new_resource.environment "TEST" => "LOL"
         expect(@provider).to receive(:write_crontab).with(<<-ENDCRON)
 # Chef Name: cronhole some stuff
@@ -511,10 +511,10 @@ TEST=LOL
       end
 
       it "should include env variables that are set" do
-        @new_resource.mailto 'foo@example.com'
-        @new_resource.path '/usr/bin:/my/custom/path'
-        @new_resource.shell '/bin/foosh'
-        @new_resource.home '/home/foo'
+        @new_resource.mailto "foo@example.com"
+        @new_resource.path "/usr/bin:/my/custom/path"
+        @new_resource.shell "/bin/foosh"
+        @new_resource.home "/home/foo"
         @new_resource.environment "TEST" => "LOL"
         expect(@provider).to receive(:write_crontab).with(<<-ENDCRON)
 0 2 * * * /some/other/command
@@ -576,10 +576,10 @@ TEST=LOL
       end
 
       it "should include env variables that are set" do
-        @new_resource.mailto 'foo@example.com'
-        @new_resource.path '/usr/bin:/my/custom/path'
-        @new_resource.shell '/bin/foosh'
-        @new_resource.home '/home/foo'
+        @new_resource.mailto "foo@example.com"
+        @new_resource.path "/usr/bin:/my/custom/path"
+        @new_resource.shell "/bin/foosh"
+        @new_resource.home "/home/foo"
         @new_resource.environment "TEST" => "LOL"
         expect(@provider).to receive(:write_crontab).with(<<-ENDCRON)
 0 2 * * * /some/other/command
@@ -671,10 +671,10 @@ HOME=/home/foo
 
 # Another comment
         CRONTAB
-        @new_resource.mailto 'foo@example.com'
-        @new_resource.path '/usr/bin:/my/custom/path'
-        @new_resource.shell '/bin/foosh'
-        @new_resource.home '/home/foo'
+        @new_resource.mailto "foo@example.com"
+        @new_resource.path "/usr/bin:/my/custom/path"
+        @new_resource.shell "/bin/foosh"
+        @new_resource.home "/home/foo"
         expect(@provider).to receive(:write_crontab).with(<<-ENDCRON)
 0 2 * * * /some/other/command
 

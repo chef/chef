@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2009-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,15 @@
 # limitations under the License.
 #
 
-require 'forwardable'
+require "forwardable"
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/data_bag'
-require 'chef/mash'
-require 'chef/json_compat'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/data_bag"
+require "chef/mash"
+require "chef/server_api"
+require "chef/json_compat"
 
 class Chef
   class DataBagItem
@@ -58,11 +59,11 @@ class Chef
     end
 
     def chef_server_rest
-      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def raw_data
@@ -85,7 +86,7 @@ class Chef
       set_or_return(
         :data_bag,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        :regex => /^[\-[:alnum:]_]+$/,
       )
     end
 
@@ -94,10 +95,10 @@ class Chef
     end
 
     def object_name
-      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.has_key?('id')
+      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.has_key?("id")
       raise Exceptions::ValidationFailed, "You must have declared what bag this item belongs to!" unless data_bag
 
-      id = raw_data['id']
+      id = raw_data["id"]
       "data_bag_item_#{data_bag}_#{id}"
     end
 
@@ -119,28 +120,29 @@ class Chef
         "json_class" => self.class.name,
         "chef_type"  => "data_bag_item",
         "data_bag"   => data_bag,
-        "raw_data"   => raw_data
+        "raw_data"   => raw_data,
       }
       Chef::JSONCompat.to_json(result, *a)
     end
 
     def self.from_hash(h)
+      h.delete("chef_type")
+      h.delete("json_class")
+      h.delete("name")
+
       item = new
-      item.raw_data = h
+      item.data_bag(h.delete("data_bag")) if h.key?("data_bag")
+      if h.key?("raw_data")
+        item.raw_data = Mash.new(h["raw_data"])
+      else
+        item.raw_data = h
+      end
       item
     end
 
     # Create a Chef::DataBagItem from JSON
     def self.json_create(o)
-      bag_item = new
-      bag_item.data_bag(o["data_bag"])
-      o.delete("data_bag")
-      o.delete("chef_type")
-      o.delete("json_class")
-      o.delete("name")
-
-      bag_item.raw_data = Mash.new(o["raw_data"])
-      bag_item
+      from_hash(o)
     end
 
     # Load a Data Bag Item by name via either the RESTful API or local data_bag_path if run in solo mode
@@ -149,7 +151,7 @@ class Chef
         bag = Chef::DataBag.load(data_bag)
         item = bag[name]
       else
-        item = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{data_bag}/#{name}")
+        item = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{data_bag}/#{name}")
       end
 
       if item.kind_of?(DataBagItem)
@@ -161,29 +163,29 @@ class Chef
       end
     end
 
-    def destroy(data_bag=data_bag(), databag_item=name)
-      chef_server_rest.delete_rest("data/#{data_bag}/#{databag_item}")
+    def destroy(data_bag=self.data_bag(), databag_item=name)
+      chef_server_rest.delete("data/#{data_bag}/#{databag_item}")
     end
 
     # Save this Data Bag Item via RESTful API
-    def save(item_id=@raw_data['id'])
+    def save(item_id=@raw_data["id"])
       r = chef_server_rest
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In whyrun mode, so NOT performing data bag item save.")
+          Chef::Log.warn("In why-run mode, so NOT performing data bag item save.")
         else
-          r.put_rest("data/#{data_bag}/#{item_id}", self)
+          r.put("data/#{data_bag}/#{item_id}", self)
         end
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
-        r.post_rest("data/#{data_bag}", self)
+        r.post("data/#{data_bag}", self)
       end
       self
     end
 
     # Create this Data Bag Item via RESTful API
     def create
-      chef_server_rest.post_rest("data/#{data_bag}", self)
+      chef_server_rest.post("data/#{data_bag}", self)
       self
     end
 
@@ -208,7 +210,7 @@ class Chef
     end
 
     def id
-      @raw_data['id']
+      @raw_data["id"]
     end
 
   end

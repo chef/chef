@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
+require "chef/mixin/shell_out"
 
 class Chef
   class Knife
@@ -34,7 +34,7 @@ class Chef
       def initialize(repo_path, ui, opts={})
         @repo_path = repo_path
         @ui = ui
-        @default_branch = 'master'
+        @default_branch = "master"
         @use_current_branch = false
         apply_opts(opts)
       end
@@ -57,7 +57,7 @@ class Chef
           ui.info "If this is a new git repo, make sure you have at least one commit before installing cookbooks"
           exit 1
         end
-        cmd = git('status --porcelain')
+        cmd = git("status --porcelain")
         if cmd.stdout =~ DIRTY_REPO
           ui.error "You have uncommitted changes to your cookbook repo (#{repo_path}):"
           ui.msg cmd.stdout
@@ -124,13 +124,13 @@ class Chef
 
       def get_current_branch()
         ref = git("symbolic-ref HEAD").stdout
-        ref.chomp.split('/')[2]
+        ref.chomp.split("/")[2]
       end
 
       private
 
       def git_repo?(directory)
-        if File.directory?(File.join(directory, '.git'))
+        if File.directory?(File.join(directory, ".git"))
           return true
         elsif File.dirname(directory) == directory
           return false
@@ -142,9 +142,9 @@ class Chef
       def apply_opts(opts)
         opts.each do |option, value|
           case option.to_s
-          when 'default_branch'
+          when "default_branch"
             @default_branch = value
-          when 'use_current_branch'
+          when "use_current_branch"
             @use_current_branch = value
           end
         end

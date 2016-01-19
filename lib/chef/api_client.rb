@@ -17,13 +17,19 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/server_api"
 
+# DEPRECATION NOTE
+#
+# This code will be removed in Chef 13 in favor of the code in Chef::ApiClientV1,
+# which will be moved to this namespace. New development should occur in
+# Chef::ApiClientV1 until the time before Chef 13.
 class Chef
   class ApiClient
 
@@ -32,7 +38,7 @@ class Chef
 
     # Create a new Chef::ApiClient object.
     def initialize
-      @name = ''
+      @name = ""
       @public_key = nil
       @private_key = nil
       @admin = false
@@ -47,7 +53,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_\.]+$/
+        :regex => /^[\-[:alnum:]_\.]+$/,
       )
     end
 
@@ -59,7 +65,7 @@ class Chef
       set_or_return(
         :admin,
         arg,
-        :kind_of => [ TrueClass, FalseClass ]
+        :kind_of => [ TrueClass, FalseClass ],
       )
     end
 
@@ -71,7 +77,7 @@ class Chef
       set_or_return(
         :public_key,
         arg,
-        :kind_of => String
+        :kind_of => String,
       )
     end
 
@@ -84,7 +90,7 @@ class Chef
       set_or_return(
         :validator,
         arg,
-        :kind_of => [TrueClass, FalseClass]
+        :kind_of => [TrueClass, FalseClass],
       )
     end
 
@@ -96,7 +102,7 @@ class Chef
       set_or_return(
         :private_key,
         arg,
-        :kind_of => [String, FalseClass]
+        :kind_of => [String, FalseClass],
       )
     end
 
@@ -110,8 +116,8 @@ class Chef
         "public_key" => @public_key,
         "validator" => @validator,
         "admin" => @admin,
-        'json_class' => self.class.name,
-        "chef_type" => "client"
+        "json_class" => self.class.name,
+        "chef_type" => "client",
       }
       result["private_key"] = @private_key if @private_key
       result
@@ -143,7 +149,7 @@ class Chef
     end
 
     def self.http_api
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
     end
 
     def self.reregister(name)
@@ -219,7 +225,7 @@ class Chef
     end
 
     def http_api
-      @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
     end
 
   end

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 require "ostruct"
 
 
@@ -49,8 +49,8 @@ end
 
 describe Shell::ClientSession do
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
-    @chef_rest = double("Chef::REST")
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
+    @chef_rest = double("Chef::ServerAPI")
     @session = Shell::ClientSession.instance
     @node = Chef::Node.build("foo")
     @session.node = @node
@@ -67,7 +67,7 @@ describe Shell::ClientSession do
     @expansion = Chef::RunList::RunListExpansion.new(@node.chef_environment, [])
 
     expect(@node.run_list).to receive(:expand).with(@node.chef_environment).and_return(@expansion)
-    expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(@chef_rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(@chef_rest)
     @session.rebuild_context
   end
 
@@ -80,7 +80,7 @@ end
 
 describe Shell::StandAloneSession do
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
     @session = Shell::StandAloneSession.instance
     @node = @session.node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -131,7 +131,7 @@ end
 
 describe Shell::SoloSession do
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
     Chef::Config[:shell_solo] = true
     @session = Shell::SoloSession.instance
     @node = Chef::Node.new

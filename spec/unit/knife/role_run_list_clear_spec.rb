@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleRunListClear do
   before(:each) do
@@ -78,7 +78,7 @@ describe Chef::Knife::RoleRunListClear do
        it "should remove the items from the run list" do
          @setup.name_args = [ "will", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
          @setup.run
-         @knife.name_args = [ 'will' ]
+         @knife.name_args = [ "will" ]
          @knife.run
          expect(@role.run_list[0]).to be_nil
        end

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
-require 'chef/resource/service'
-require 'chef/mixin/command'
+require "chef/provider/service"
+require "chef/resource/service"
+require "chef/mixin/command"
 
 class Chef
   class Provider
@@ -30,35 +30,39 @@ class Chef
 
         def initialize(new_resource, run_context=nil)
           super
-          @init_command = "/usr/sbin/svcadm"
-          @status_command = "/bin/svcs -l"
+          @init_command   = "/usr/sbin/svcadm"
+          @status_command = "/bin/svcs"
           @maintenace     = false
         end
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
-          unless ::File.exists? "/bin/svcs"
-            raise Chef::Exceptions::Service, "/bin/svcs does not exist!"
+
+          [@init_command, @status_command].each do |cmd|
+            unless ::File.executable? cmd then
+              raise Chef::Exceptions::Service, "#{cmd} not executable!"
+            end
           end
           @status = service_status.enabled
+
           @current_resource
         end
 
         def enable_service
-          shell_out!("#{default_init_command} clear #{@new_resource.service_name}") if @maintenance
-          shell_out!("#{default_init_command} enable -s #{@new_resource.service_name}")
+          shell_out!(default_init_command, "clear", @new_resource.service_name) if @maintenance
+          shell_out!(default_init_command, "enable", "-s", @new_resource.service_name)
         end
 
         def disable_service
-          shell_out!("#{default_init_command} disable -s #{@new_resource.service_name}")
+          shell_out!(default_init_command, "disable", "-s", @new_resource.service_name)
         end
 
         alias_method :stop_service, :disable_service
         alias_method :start_service, :enable_service
 
         def reload_service
-          shell_out_with_systems_locale!("#{default_init_command} refresh #{@new_resource.service_name}")
+          shell_out!(default_init_command, "refresh", @new_resource.service_name)
         end
 
         def restart_service
@@ -68,16 +72,38 @@ class Chef
         end
 
         def service_status
-          status = shell_out!("#{@status_command} #{@current_resource.service_name}", :returns => [0, 1])
-          status.stdout.each_line do |line|
-            case line
-            when /state\s+online/
-              @current_resource.enabled(true)
-              @current_resource.running(true)
-            when /state\s+maintenance/
-              @maintenance = true
-            end
+          cmd = shell_out!(@status_command, "-l", @current_resource.service_name, :returns => [0, 1])
+          # Example output
+          # $ svcs -l rsyslog
+          # fmri         svc:/application/rsyslog:default
+          # name         rsyslog logging utility
+          # enabled      true
+          # state        online
+          # next_state   none
+          # state_time   April  2, 2015 04:25:19 PM EDT
+          # logfile      /var/svc/log/application-rsyslog:default.log
+          # restarter    svc:/system/svc/restarter:default
+          # contract_id  1115271
+          # dependency   require_all/error svc:/milestone/multi-user:default (online)
+          # $
+
+          # load output into hash
+          status = {}
+          cmd.stdout.each_line do |line|
+            key, value = line.strip.split(/\s+/, 2)
+            status[key] = value
           end
+
+          # check service state
+          @maintenance = false
+          case status["state"]
+          when "online"
+            @current_resource.enabled(true)
+            @current_resource.running(true)
+          when "maintenance"
+            @maintenance = true
+          end
+
           unless @current_resource.enabled
             @current_resource.enabled(false)
             @current_resource.running(false)

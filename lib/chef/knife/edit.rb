@@ -1,4 +1,4 @@
-require 'chef/chef_fs/knife'
+require "chef/chef_fs/knife"
 
 class Chef
   class Knife
@@ -8,12 +8,12 @@ class Chef
       category "path-based"
 
       deps do
-        require 'chef/chef_fs/file_system'
-        require 'chef/chef_fs/file_system/not_found_error'
+        require "chef/chef_fs/file_system"
+        require "chef/chef_fs/file_system/not_found_error"
       end
 
       option :local,
-        :long => '--local',
+        :long => "--local",
         :boolean => true,
         :description => "Show local files instead of remote"
 
@@ -51,7 +51,7 @@ class Chef
 
       def edit_text(text, extension)
         if (!config[:disable_editing])
-          Tempfile.open([ 'knife-edit-', extension ]) do |file|
+          Tempfile.open([ "knife-edit-", extension ]) do |file|
             # Write the text to a temporary file
             file.write(text)
             file.close

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
@@ -27,24 +27,22 @@ class Chef
 
       state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
 
-      provides :mount
+      default_action :mount
+      allowed_actions :mount, :umount, :remount, :enable, :disable
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :mount
         @mount_point = name
         @device = nil
         @device_type = :device
-        @fsck_device = '-'
+        @fsck_device = "-"
         @fstype = "auto"
         @options = ["defaults"]
         @dump = 0
         @pass = 2
         @mounted = false
         @enabled = false
-        @action = :mount
         @supports = { :remount => false }
-        @allowed_actions.push(:mount, :umount, :remount, :enable, :disable)
         @username = nil
         @password = nil
         @domain = nil
@@ -54,7 +52,7 @@ class Chef
         set_or_return(
           :mount_point,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -62,7 +60,7 @@ class Chef
         set_or_return(
           :device,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -76,7 +74,7 @@ class Chef
         set_or_return(
           :device_type,
           real_arg,
-          :equal_to => valid_devices
+          :equal_to => valid_devices,
         )
       end
 
@@ -84,7 +82,7 @@ class Chef
         set_or_return(
           :fsck_device,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -92,7 +90,7 @@ class Chef
         set_or_return(
           :fstype,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -100,11 +98,11 @@ class Chef
         ret = set_or_return(
                             :options,
                             arg,
-                            :kind_of => [ Array, String ]
+                            :kind_of => [ Array, String ],
                             )
 
         if ret.is_a? String
-          ret.gsub(/,/, ' ').split(/ /)
+          ret.gsub(/,/, " ").split(/ /)
         else
           ret
         end
@@ -114,7 +112,7 @@ class Chef
         set_or_return(
           :dump,
           arg,
-          :kind_of => [ Integer, FalseClass ]
+          :kind_of => [ Integer, FalseClass ],
         )
       end
 
@@ -122,7 +120,7 @@ class Chef
         set_or_return(
           :pass,
           arg,
-          :kind_of => [ Integer, FalseClass ]
+          :kind_of => [ Integer, FalseClass ],
         )
       end
 
@@ -130,7 +128,7 @@ class Chef
         set_or_return(
           :mounted,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -138,7 +136,7 @@ class Chef
         set_or_return(
           :enabled,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -156,7 +154,7 @@ class Chef
         set_or_return(
           :username,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -164,7 +162,7 @@ class Chef
         set_or_return(
           :password,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -172,8 +170,16 @@ class Chef
         set_or_return(
           :domain,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
+      end
+
+      private
+
+      # Used by the AIX provider to set fstype to nil.
+      # TODO use property to make nil a valid value for fstype
+      def clear_fstype
+        @fstype = nil
       end
 
     end

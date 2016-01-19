@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/policy_builder'
+require "spec_helper"
+require "chef/policy_builder"
 
 describe Chef::PolicyBuilder::ExpandNodeObject do
 
@@ -34,8 +34,16 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:node)
     end
 
-    it "implements a load_node method" do
+    it "implements a load_node method for backwards compatibility until Chef 13" do
       expect(policy_builder).to respond_to(:load_node)
+    end
+
+    it "has removed the deprecated #load_node method", :chef_gte_13_only do
+      expect(policy_builder).to_not respond_to(:load_node)
+    end
+
+    it "implements a finish_load_node method" do
+      expect(policy_builder).to respond_to(:finish_load_node)
     end
 
     it "implements  a build_node method" do
@@ -63,39 +71,13 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:temporary_policy?)
     end
 
-    describe "loading the node" do
+    describe "finishing loading the node" do
 
-      context "on chef-solo" do
+      let(:node) { Chef::Node.new.tap { |n| n.name(node_name) } }
 
-        before do
-          Chef::Config[:solo] = true
-        end
-
-        it "creates a new in-memory node object with the given name" do
-          policy_builder.load_node
-          expect(policy_builder.node.name).to eq(node_name)
-        end
-
-      end
-
-      context "on chef-client" do
-
-        let(:node) { Chef::Node.new.tap { |n| n.name(node_name) } }
-
-        it "loads or creates a node on the server" do
-          expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-          policy_builder.load_node
-          expect(policy_builder.node).to eq(node)
-        end
-
-      end
-    end
-
-    describe "building the node" do
-
-      # XXX: Chef::Client just needs to be able to call this, it doesn't depend on the return value.
-      it "builds the node and returns the updated node object" do
-        skip
+      it "stores the node" do
+        policy_builder.finish_load_node(node)
+        expect(policy_builder.node).to eq(node)
       end
 
     end
@@ -124,6 +106,27 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
   end
 
+  context "deprecated #load_node method" do
+
+    let(:node) do
+      node = Chef::Node.new
+      node.name(node_name)
+      node.run_list(["recipe[a::default]", "recipe[b::server]"])
+      node
+    end
+
+    before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
+      policy_builder.load_node
+    end
+
+    it "loads the node" do
+      expect(policy_builder.node).to eq(node)
+    end
+
+  end
+
   context "once the node has been loaded" do
     let(:node) do
       node = Chef::Node.new
@@ -133,8 +136,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     end
 
     before do
-      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-      policy_builder.load_node
+      policy_builder.finish_load_node(node)
     end
 
     it "expands the run_list" do
@@ -167,8 +169,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
     before do
       Chef::Config[:environment] = configured_environment
-      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-      policy_builder.load_node
+      policy_builder.finish_load_node(node)
       policy_builder.build_node
     end
 
@@ -289,7 +290,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       node
     end
 
-    let(:chef_http) { double("Chef::REST") }
+    let(:chef_http) { double("Chef::ServerAPI") }
 
     let(:cookbook_resolve_url) { "environments/#{node.chef_environment}/cookbook_versions" }
     let(:cookbook_resolve_post_data) { {:run_list=>["first::default", "second::default"]} }
@@ -297,22 +298,22 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     # cookbook_hash is just a hash, but since we're passing it between mock
     # objects, we get a little better test strictness by using a double (which
     # will have object equality rather than semantic equality #== semantics).
-    let(:cookbook_hash) { double("cookbook hash", :each => nil) }
+    let(:cookbook_hash) { double("cookbook hash") }
+    let(:expanded_cookbook_hash) { double("expanded cookbook hash", :each => nil) }
 
     let(:cookbook_synchronizer) { double("CookbookSynchronizer") }
 
     before do
-      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-
       allow(policy_builder).to receive(:api_service).and_return(chef_http)
 
-      policy_builder.load_node
+      policy_builder.finish_load_node(node)
       policy_builder.build_node
 
       run_list_expansion = policy_builder.run_list_expansion
 
+      expect(cookbook_hash).to receive(:inject).and_return(expanded_cookbook_hash)
       expect(chef_http).to receive(:post).with(cookbook_resolve_url, cookbook_resolve_post_data).and_return(cookbook_hash)
-      expect(Chef::CookbookSynchronizer).to receive(:new).with(cookbook_hash, events).and_return(cookbook_synchronizer)
+      expect(Chef::CookbookSynchronizer).to receive(:new).with(expanded_cookbook_hash, events).and_return(cookbook_synchronizer)
       expect(cookbook_synchronizer).to receive(:sync_cookbooks)
 
       expect_any_instance_of(Chef::RunContext).to receive(:load).with(run_list_expansion)

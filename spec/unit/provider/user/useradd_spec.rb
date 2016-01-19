@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/provider/user/useradd'
+require "spec_helper"
+require "chef/provider/user/useradd"
 
 describe Chef::Provider::User::Useradd do
 
@@ -30,11 +30,11 @@ describe Chef::Provider::User::Useradd do
   end
 
   supported_useradd_options = {
-    'comment' => "-c",
-    'gid' => "-g",
-    'uid' => "-u",
-    'shell' => "-s",
-    'password' => "-p"
+    "comment" => "-c",
+    "gid" => "-g",
+    "uid" => "-u",
+    "shell" => "-s",
+    "password" => "-p",
   }
 
   include_examples "a useradd-based user provider", supported_useradd_options

@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/provider/user'
-require 'chef/exceptions'
+require "chef/provider/user"
+require "chef/exceptions"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'chef/util/windows/net_user'
+  require "chef/util/windows/net_user"
 end
 
 class Chef
@@ -35,6 +35,10 @@ class Chef
         end
 
         def load_current_resource
+          if @new_resource.gid
+            Chef::Log.warn("The 'gid' attribute is not implemented by the Windows platform. Please use the 'group' resource to assign a user to a group.")
+          end          
+
           @current_resource = Chef::Resource::User.new(@new_resource.name)
           @current_resource.username(@new_resource.username)
           user_info = nil
@@ -42,7 +46,6 @@ class Chef
             user_info = @net_user.get_info
 
             @current_resource.uid(user_info[:user_id])
-            @current_resource.gid(user_info[:primary_group_id])
             @current_resource.comment(user_info[:full_name])
             @current_resource.home(user_info[:home_dir])
             @current_resource.shell(user_info[:script_path])
@@ -65,7 +68,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} password has changed")
             return true
           end
-          [ :uid, :gid, :comment, :home, :shell ].any? do |user_attrib|
+          [ :uid, :comment, :home, :shell ].any? do |user_attrib|
             !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
           end
         end
@@ -98,12 +101,11 @@ class Chef
           opts = {:name => @new_resource.username}
 
           field_list = {
-            'comment' => 'full_name',
-            'home' => 'home_dir',
-            'gid' => 'primary_group_id',
-            'uid' => 'user_id',
-            'shell' => 'script_path',
-            'password' => 'password'
+            "comment" => "full_name",
+            "home" => "home_dir",
+            "uid" => "user_id",
+            "shell" => "script_path",
+            "password" => "password",
           }
 
           field_list.sort{ |a,b| a[0] <=> b[0] }.each do |field, option|

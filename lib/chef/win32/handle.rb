@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/process'
-require 'chef/win32/api/psapi'
-require 'chef/win32/api/system'
-require 'chef/win32/error'
+require "chef/win32/api/process"
+require "chef/win32/api/psapi"
+require "chef/win32/api/system"
+require "chef/win32/error"
 
 class Chef
   module ReservedNames::Win32

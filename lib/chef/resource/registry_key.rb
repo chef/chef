@@ -15,16 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/provider/registry_key'
-require 'chef/resource'
-require 'chef/digester'
+require "chef/provider/registry_key"
+require "chef/resource"
+require "chef/digester"
 
 class Chef
   class Resource
     class RegistryKey < Chef::Resource
-
       identity_attr :key
       state_attrs :values
+
+      default_action :create
+      allowed_actions :create, :create_if_missing, :delete, :delete_key
 
       # Some registry key data types may not be safely reported as json.
       # Example (CHEF-5323):
@@ -59,20 +61,17 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :registry_key
-        @action = :create
         @architecture = :machine
         @recursive = false
         @key = name
         @values, @unscrubbed_values = [], []
-        @allowed_actions.push(:create, :create_if_missing, :delete, :delete_key)
       end
 
       def key(arg=nil)
         set_or_return(
           :key,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -94,7 +93,7 @@ class Chef
               raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name,:type,:data].include?(key)
             end
             raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
-            raise Argument Error "Type of type => #{v[:name]} should be symbol" unless v[:type].is_a?(Symbol)
+            raise ArgumentError, "Type of type => #{v[:type]} should be symbol" unless v[:type].is_a?(Symbol)
           end
           @unscrubbed_values = @values
         elsif self.instance_variable_defined?(:@values)
@@ -106,7 +105,7 @@ class Chef
         set_or_return(
           :recursive,
           arg,
-          :kind_of => [TrueClass, FalseClass]
+          :kind_of => [TrueClass, FalseClass],
         )
       end
 
@@ -114,7 +113,7 @@ class Chef
         set_or_return(
           :architecture,
           arg,
-          :kind_of => Symbol
+          :kind_of => Symbol,
         )
       end
 
@@ -126,7 +125,7 @@ class Chef
           scrubbed_value = value.dup
           if needs_checksum?(scrubbed_value)
             data_io = StringIO.new(scrubbed_value[:data].to_s)
-            scrubbed_value[:data] = Chef::Digester.instance.generate_md5_checksum(data_io)
+            scrubbed_value[:data] = Chef::Digester.instance.generate_checksum(data_io)
           end
           scrubbed << scrubbed_value
         end

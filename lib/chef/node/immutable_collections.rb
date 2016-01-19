@@ -63,7 +63,7 @@ class Chef
         :sort!,
         :sort_by!,
         :uniq!,
-        :unshift
+        :unshift,
       ]
 
       def initialize(array_data)
@@ -143,7 +143,7 @@ class Chef
         :reject!,
         :replace,
         :select!,
-        :shift
+        :shift,
       ]
 
       def initialize(mash_data)

@@ -25,26 +25,24 @@ class Chef
 
       state_attrs :members
 
-      provides :group
+      allowed_actions :create, :remove, :modify, :manage
+      default_action :create
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :group
         @group_name = name
         @gid = nil
         @members = []
         @excluded_members = []
-        @action = :create
         @append = false
         @non_unique = false
-        @allowed_actions.push(:create, :remove, :modify, :manage)
       end
 
       def group_name(arg=nil)
         set_or_return(
           :group_name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -52,7 +50,7 @@ class Chef
         set_or_return(
           :gid,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer ],
         )
       end
 
@@ -61,7 +59,7 @@ class Chef
         set_or_return(
           :members,
           converted_members,
-          :kind_of => [ Array ]
+          :kind_of => [ Array ],
         )
       end
 
@@ -72,7 +70,7 @@ class Chef
         set_or_return(
           :excluded_members,
           converted_members,
-          :kind_of => [ Array ]
+          :kind_of => [ Array ],
         )
       end
 
@@ -81,7 +79,7 @@ class Chef
         set_or_return(
           :append,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -89,7 +87,7 @@ class Chef
         set_or_return(
           :system,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -97,7 +95,7 @@ class Chef
         set_or_return(
           :non_unique,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
     end

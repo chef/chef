@@ -60,7 +60,7 @@ class Chef
       def build_control_from(example)
         described_class = example.metadata[:described_class]
         if described_class
-          resource_type = described_class.class.name.split(':')[-1]
+          resource_type = described_class.class.name.split(":")[-1]
           resource_name = described_class.name
         end
 
@@ -84,7 +84,7 @@ class Chef
             :resource_type => resource_type,
             :resource_name => resource_name,
             :context => describe_groups,
-            :line_number => example.metadata[:line_number]
+            :line_number => example.metadata[:line_number],
         }
       end
 

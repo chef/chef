@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Subversion do
 
@@ -27,6 +27,7 @@ describe Chef::Provider::Subversion do
     @resource.revision "12345"
     @resource.svn_arguments(false)
     @resource.svn_info_args(false)
+    @resource.svn_binary "svn"
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
@@ -35,7 +36,7 @@ describe Chef::Provider::Subversion do
 
   it "converts resource attributes to options for run_command and popen4" do
     expect(@provider.run_options).to eq({})
-    @resource.user 'deployninja'
+    @resource.user "deployninja"
     expect(@provider.run_options).to eq({:user => "deployninja"})
   end
 
@@ -63,28 +64,18 @@ describe Chef::Provider::Subversion do
                           "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
       expect(::File).to receive(:exist?).at_least(1).times.with("/my/deploy/dir/.svn").and_return(true)
-      expect(::File).to receive(:directory?).with("/my/deploy/dir").and_return(true)
-      expect(::Dir).to receive(:chdir).with("/my/deploy/dir").and_yield
-      allow(@stdout).to receive(:string).and_return(example_svn_info)
-      allow(@stderr).to receive(:string).and_return("")
-      allow(@exitstatus).to receive(:exitstatus).and_return(0)
-      expected_command = ["svn info", {:cwd=>"/my/deploy/dir"}]
-      expect(@provider).to receive(:popen4).with(*expected_command).
-                                        and_yield("no-pid", "no-stdin", @stdout,@stderr).
-                                        and_return(@exitstatus)
+      expected_command = ["svn info", {:cwd => "/my/deploy/dir", :returns => [0,1]}]
+      expect(@provider).to receive(:shell_out!).with(*expected_command).
+                             and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
       expect(@provider.find_current_revision).to eql("11410")
     end
 
     it "gives nil as the current revision if the deploy dir isn't a SVN working copy" do
       example_svn_info = "svn: '/tmp/deploydir' is not a working copy\n"
       expect(::File).to receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
-      expect(::File).to receive(:directory?).with("/my/deploy/dir").and_return(true)
-      expect(::Dir).to receive(:chdir).with("/my/deploy/dir").and_yield
-      allow(@stdout).to receive(:string).and_return(example_svn_info)
-      allow(@stderr).to receive(:string).and_return("")
-      allow(@exitstatus).to receive(:exitstatus).and_return(1)
-      expect(@provider).to receive(:popen4).and_yield("no-pid", "no-stdin", @stdout,@stderr).
-                                        and_return(@exitstatus)
+      expected_command = ["svn info", {:cwd => "/my/deploy/dir", :returns => [0,1]}]
+      expect(@provider).to receive(:shell_out!).with(*expected_command).
+                             and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
       expect(@provider.find_current_revision).to be_nil
     end
 
@@ -127,28 +118,20 @@ describe Chef::Provider::Subversion do
                           "Last Changed Author: codeninja\n" +
                           "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
-      exitstatus = double("exitstatus")
-      allow(exitstatus).to receive(:exitstatus).and_return(0)
       @resource.revision "HEAD"
-      allow(@stdout).to receive(:string).and_return(example_svn_info)
-      allow(@stderr).to receive(:string).and_return("")
-      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd=>Dir.tmpdir}]
-      expect(@provider).to receive(:popen4).with(*expected_command).
-                                        and_yield("no-pid","no-stdin",@stdout,@stderr).
-                                        and_return(exitstatus)
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd => "/my/deploy/dir", :returns => [0,1]}]
+      expect(@provider).to receive(:shell_out!).with(*expected_command).
+                                        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
       expect(@provider.revision_int).to eql("11410")
     end
 
     it "returns a helpful message if data from `svn info` can't be parsed" do
       example_svn_info =  "some random text from an error message\n"
-      exitstatus = double("exitstatus")
-      allow(exitstatus).to receive(:exitstatus).and_return(0)
       @resource.revision "HEAD"
-      allow(@stdout).to receive(:string).and_return(example_svn_info)
-      allow(@stderr).to receive(:string).and_return("")
-      expect(@provider).to receive(:popen4).and_yield("no-pid","no-stdin",@stdout,@stderr).
-                                        and_return(exitstatus)
-      expect {@provider.revision_int}.to raise_error(RuntimeError, "Could not parse `svn info` data: some random text from an error message")
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd => "/my/deploy/dir", :returns => [0,1]}]
+      expect(@provider).to receive(:shell_out!).with(*expected_command).
+                             and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+      expect {@provider.revision_int}.to raise_error(RuntimeError, "Could not parse `svn info` data: some random text from an error message\n")
 
     end
 
@@ -219,7 +202,7 @@ describe Chef::Provider::Subversion do
     allow(::File).to receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
     allow(::File).to receive(:exist?).with("/my/deploy/dir").and_return(true)
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
-    allow(::Dir).to receive(:entries).with("/my/deploy/dir").and_return(['.','..','foo','bar'])
+    allow(::Dir).to receive(:entries).with("/my/deploy/dir").and_return([".","..","foo","bar"])
     expect(@provider).not_to receive(:checkout_command)
     @provider.run_action(:checkout)
     expect(@resource).not_to be_updated
@@ -263,7 +246,7 @@ describe Chef::Provider::Subversion do
   it "does not fetch any updates if the remote revision matches the current revision" do
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
     expect(::File).to receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
-    allow(@provider).to receive(:find_current_revision).and_return('12345')
+    allow(@provider).to receive(:find_current_revision).and_return("12345")
     allow(@provider).to receive(:current_revision_matches_target_revision?).and_return(true)
     @provider.run_action(:sync)
     expect(@resource).not_to be_updated
@@ -275,6 +258,42 @@ describe Chef::Provider::Subversion do
     expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:export)
     expect(@resource).to be_updated
+  end
+
+  context "selects the correct svn binary" do
+    before do
+    end
+
+    it "selects 'svn' as the binary by default" do
+      @resource.svn_binary nil
+      allow(ChefConfig).to receive(:windows?) { false }
+      expect(@provider).to receive(:svn_binary).and_return("svn")
+      expect(@provider.export_command).to eql(
+        "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+    end
+
+    it "selects an svn binary with an exe extension on windows" do
+      @resource.svn_binary nil
+      allow(ChefConfig).to receive(:windows?) { true }
+      expect(@provider).to receive(:svn_binary).and_return("svn.exe")
+      expect(@provider.export_command).to eql(
+        "svn.exe export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+    end
+
+    it "uses a custom svn binary as part of the svn command" do
+      @resource.svn_binary "teapot"
+      expect(@provider).to receive(:svn_binary).and_return("teapot")
+      expect(@provider.export_command).to eql(
+        "teapot export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+    end
+
+    it "wraps custom svn binary with quotes if it contains whitespace" do
+      @resource.svn_binary "c:/program files (x86)/subversion/svn.exe"
+      expect(@provider).to receive(:svn_binary).and_return("c:/program files (x86)/subversion/svn.exe")
+      expect(@provider.export_command).to eql(
+        '"c:/program files (x86)/subversion/svn.exe" export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir')
+    end
+
   end
 
 end

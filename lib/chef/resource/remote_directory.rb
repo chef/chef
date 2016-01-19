@@ -17,28 +17,27 @@
 # limitations under the License.
 #
 
-require 'chef/resource/directory'
-require 'chef/provider/remote_directory'
-require 'chef/mixin/securable'
+require "chef/resource/directory"
+require "chef/provider/remote_directory"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
     class RemoteDirectory < Chef::Resource::Directory
       include Chef::Mixin::Securable
 
-      provides :remote_directory
-
       identity_attr :path
 
       state_attrs :files_owner, :files_group, :files_mode
 
+      default_action :create
+      allowed_actions :create, :create_if_missing, :delete
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :remote_directory
         @path = name
         @source = ::File.basename(name)
         @delete = false
-        @action = :create
         @recursive = true
         @purge = false
         @files_backup = 5
@@ -46,7 +45,6 @@ class Chef
         @files_group = nil
         @files_mode = 0644 unless Chef::Platform.windows?
         @overwrite = true
-        @allowed_actions.push(:create, :create_if_missing, :delete)
         @cookbook = nil
       end
 
@@ -60,7 +58,7 @@ class Chef
         set_or_return(
           :source,
           args,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -68,7 +66,7 @@ class Chef
         set_or_return(
           :files_backup,
           arg,
-          :kind_of => [ Integer, FalseClass ]
+          :kind_of => [ Integer, FalseClass ],
         )
       end
 
@@ -76,7 +74,7 @@ class Chef
         set_or_return(
           :purge,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -84,7 +82,7 @@ class Chef
         set_or_return(
           :files_group,
           arg,
-          :regex => Chef::Config[:group_valid_regex]
+          :regex => Chef::Config[:group_valid_regex],
         )
       end
 
@@ -92,7 +90,7 @@ class Chef
         set_or_return(
           :files_mode,
           arg,
-          :regex => /^\d{3,4}$/
+          :regex => /^\d{3,4}$/,
         )
       end
 
@@ -100,7 +98,7 @@ class Chef
         set_or_return(
           :files_owner,
           arg,
-          :regex => Chef::Config[:user_valid_regex]
+          :regex => Chef::Config[:user_valid_regex],
         )
       end
 
@@ -108,7 +106,7 @@ class Chef
         set_or_return(
           :overwrite,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -116,7 +114,7 @@ class Chef
         set_or_return(
           :cookbook,
           args,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 

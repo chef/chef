@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/json_compat'
-require 'chef/log'
+require "chef/json_compat"
+require "chef/log"
 
 class Chef
   class HTTP
@@ -38,7 +38,7 @@ class Chef
         # Ideally this should always set Accept to application/json, but
         # Chef::REST is sometimes used to make non-JSON requests, so it sets
         # Accept to the desired value before middlewares get called.
-        headers['Accept'] ||= 'application/json'
+        headers["Accept"] ||= "application/json"
         [method, url, headers, data]
       end
 
@@ -46,7 +46,7 @@ class Chef
         # temporary hack, skip processing if return_value is false
         # needed to keep conditional get stuff working correctly.
         return [http_response, rest_request, return_value] if return_value == false
-        if http_response['content-type'] =~ /json/
+        if http_response["content-type"] =~ /json/
           if http_response.body.nil?
             return_value = nil
           elsif raw_output

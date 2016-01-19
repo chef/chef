@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/from_file'
-require 'chef/mixin/params_validate'
+require "chef/mixin/from_file"
+require "chef/mixin/params_validate"
 
 class Chef
   class ResourceDefinition
@@ -50,6 +50,7 @@ class Chef
       else
         raise ArgumentError, "You must pass a block to a definition."
       end
+      Chef::DSL::Definitions.add_definition(name)
       true
     end
 
@@ -61,7 +62,7 @@ class Chef
     end
 
     def to_s
-      "#{name.to_s}"
+      "#{name}"
     end
   end
 end

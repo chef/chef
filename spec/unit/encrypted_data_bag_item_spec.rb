@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/encrypted_data_bag_item'
+require "spec_helper"
+require "chef/encrypted_data_bag_item"
 
 module Version0Encryptor
   def self.encrypt_value(plaintext_data, key)
@@ -67,7 +67,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       expect(final_data["encrypted_data"]).to eq encryptor.encrypted_data
       expect(final_data["iv"]).to eq Base64.encode64(encryptor.iv)
       expect(final_data["version"]).to eq 1
-      expect(final_data["cipher"]).to eq"aes-256-cbc"
+      expect(final_data["cipher"]).to eq "aes-256-cbc"
     end
   end
 
@@ -323,7 +323,7 @@ describe Chef::EncryptedDataBagItem do
   let(:plaintext_data) {{
       "id" => "item_name",
       "greeting" => "hello",
-      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }}
+      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }},
   }}
   let(:secret) { "abc123SECRET" }
   let(:encoded_data) { subject.encrypt_data_bag_item(plaintext_data, secret) }

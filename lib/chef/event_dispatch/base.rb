@@ -47,14 +47,19 @@ class Chef
       def ohai_completed(node)
       end
 
-      # Already have a client key, assuming this node has registered.
+      # Announce that we're not going to register the client. Generally because
+      # we already have the private key, or because we're deliberately not using
+      # a key.
       def skipping_registration(node_name, config)
       end
 
-      # About to attempt to register as +node_name+
+      # About to attempt to create a private key registered to the server with
+      # client +node_name+.
       def registration_start(node_name, config)
       end
 
+      # Successfully created the private key and registered this client with the
+      # server.
       def registration_completed
       end
 
@@ -80,6 +85,11 @@ class Chef
       # Default and override attrs from roles have been computed, but not yet applied.
       # Normal attrs from JSON have been added to the node.
       def node_load_completed(node, expanded_run_list, config)
+      end
+
+      # Called after the Policyfile was loaded. This event only occurs when
+      # chef is in policyfile mode.
+      def policyfile_loaded(policy)
       end
 
       # Called before the cookbook collection is fetched from the server.
@@ -113,8 +123,8 @@ class Chef
       def cookbook_sync_start(cookbook_count)
       end
 
-      # Called when cookbook +cookbook_name+ has been sync'd
-      def synchronized_cookbook(cookbook_name)
+      # Called when cookbook +cookbook+ has been sync'd
+      def synchronized_cookbook(cookbook_name, cookbook)
       end
 
       # Called when an individual file in a cookbook has been updated
@@ -239,13 +249,13 @@ class Chef
       end
 
       # Called when audit phase successfully finishes
-      def audit_phase_complete
+      def audit_phase_complete(audit_output)
       end
 
       # Called if there is an uncaught exception during the audit phase.  The audit runner should
       # be catching and handling errors from the examples, so this is only uncaught errors (like
       # bugs in our handling code)
-      def audit_phase_failed(exception)
+      def audit_phase_failed(exception, audit_output)
       end
 
       # Signifies the start of a `control_group` block with a defined name
@@ -264,24 +274,35 @@ class Chef
       # def notifications_resolved
       # end
 
+      #
+      # Resource events and ordering:
+      #
+      # 1. Start the action
+      #    - resource_action_start
+      # 2. Check the guard
+      #    - resource_skipped: (goto 7) if only_if/not_if say to skip
+      # 3. Load the current resource
+      #    - resource_current_state_loaded
+      #    - resource_current_state_load_bypassed (if not why-run safe)
+      # 4. Check if why-run safe
+      #    - resource_bypassed: (goto 7) if not why-run safe
+      # 5. During processing:
+      #    - resource_update_applied: For each actual change (many per action)
+      # 6. Processing complete status:
+      #    - resource_failed if the resource threw an exception while running
+      #    - resource_failed_retriable: (goto 3) if resource failed and will be retried
+      #    - resource_updated if the resource was updated (resource_update_applied will have been called)
+      #    - resource_up_to_date if the resource was up to date (no resource_update_applied)
+      # 7. Processing complete:
+      #    - resource_completed
+      #
+
       # Called before action is executed on a resource.
       def resource_action_start(resource, action, notification_type=nil, notifier=nil)
       end
 
-      # Called when a resource fails, but will retry.
-      def resource_failed_retriable(resource, action, retry_count, exception)
-      end
-
-      # Called when a resource fails and will not be retried.
-      def resource_failed(resource, action, exception)
-      end
-
       # Called when a resource action has been skipped b/c of a conditional
       def resource_skipped(resource, action, conditional)
-      end
-
-      # Called when a resource action has been completed
-      def resource_completed(resource)
       end
 
       # Called after #load_current_resource has run.
@@ -297,19 +318,31 @@ class Chef
       def resource_bypassed(resource, action, current_resource)
       end
 
-      # Called when a resource has no converge actions, e.g., it was already correct.
-      def resource_up_to_date(resource, action)
-      end
-
       # Called when a change has been made to a resource. May be called multiple
       # times per resource, e.g., a file may have its content updated, and then
       # its permissions updated.
       def resource_update_applied(resource, action, update)
       end
 
+      # Called when a resource fails, but will retry.
+      def resource_failed_retriable(resource, action, retry_count, exception)
+      end
+
+      # Called when a resource fails and will not be retried.
+      def resource_failed(resource, action, exception)
+      end
+
       # Called after a resource has been completely converged, but only if
       # modifications were made.
       def resource_updated(resource, action)
+      end
+
+      # Called when a resource has no converge actions, e.g., it was already correct.
+      def resource_up_to_date(resource, action)
+      end
+
+      # Called when a resource action has been completed
+      def resource_completed(resource)
       end
 
       # A stream has opened.
@@ -347,8 +380,12 @@ class Chef
       def whyrun_assumption(action, resource, message)
       end
 
-      ## TODO: deprecation warning. this way we can queue them up and present
-      #  them all at once.
+      # Emit a message about something being deprecated.
+      def deprecation(message, location=caller(2..2)[0])
+      end
+
+      def run_list_expanded(run_list_expansion)
+      end
 
       # An uncategorized message. This supports the case that a user needs to
       # pass output that doesn't fit into one of the callbacks above. Note that

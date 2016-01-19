@@ -17,14 +17,16 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/log'
+require "chef/resource"
+require "chef/provider/log"
 
 class Chef
   class Resource
     class Log < Chef::Resource
 
       identity_attr :message
+
+      default_action :write
 
       # Sends a string from a recipe to a log provider
       #
@@ -48,10 +50,7 @@ class Chef
       # node<Chef::Node>:: Node where resource will be used
       def initialize(name, run_context=nil)
         super
-        @resource_name = :log
         @level = :info
-        @action = :write
-        @allowed_actions.push(:write)
         @message = name
       end
 
@@ -59,7 +58,7 @@ class Chef
         set_or_return(
           :message,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -68,12 +67,10 @@ class Chef
         set_or_return(
           :level,
           arg,
-          :equal_to => [ :debug, :info, :warn, :error, :fatal ]
+          :equal_to => [ :debug, :info, :warn, :error, :fatal ],
         )
       end
 
     end
   end
 end
-
-

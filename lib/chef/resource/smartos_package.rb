@@ -16,22 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/smartos'
+require "chef/resource/package"
+require "chef/provider/package/smartos"
 
 class Chef
   class Resource
     class SmartosPackage < Chef::Resource::Package
-
-      provides :smartos_package
+      resource_name :smartos_package
       provides :package, os: "solaris2", platform_family: "smartos"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :smartos_package
-      end
-
     end
   end
 end
-

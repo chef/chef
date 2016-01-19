@@ -138,4 +138,4 @@ to other users via the process list using tools such as ps(1).
 
 
 ## CHEF
-   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+   Knife is distributed with Chef. <http://docs.chef.io>

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::NodeRunListSet do
   before(:each) do
@@ -38,7 +38,7 @@ describe Chef::Knife::NodeRunListSet do
 
     it "should set the run list" do
       @knife.run
-      expect(@node.run_list[0]).to eq('role[monkey]')
+      expect(@node.run_list[0]).to eq("role[monkey]")
     end
 
     it "should save the node" do

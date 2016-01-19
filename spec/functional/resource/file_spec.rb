@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 describe Chef::Resource::File do
   include_context Chef::Resource::File
@@ -31,11 +31,11 @@ describe Chef::Resource::File do
     run_context = Chef::RunContext.new(node, {}, events)
 
     use_path = if opts[:use_relative_path]
-      Dir.chdir(Dir.tmpdir)
-      File.basename(path)
-    else
-      path
-    end
+                 Dir.chdir(Dir.tmpdir)
+                 File.basename(path)
+               else
+                 path
+               end
 
     Chef::Resource::File.new(use_path, run_context)
   end
@@ -84,6 +84,31 @@ describe Chef::Resource::File do
         expect(resource_without_content).to be_updated_by_last_action
       end
     end
+  end
+
+
+  describe "when using backup" do
+    before do
+      Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
+      resource_without_content.backup(1)
+      resource_without_content.run_action(:create)
+    end
+
+    let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, test_file_dir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
+
+    let(:path) do
+      # Use native system path
+      ChefConfig::PathHelper.canonical_path(File.join(test_file_dir, make_tmpname(file_base)), false)
+    end
+
+    it "only stores the number of requested backups" do
+      resource_without_content.content("foo")
+      resource_without_content.run_action(:create)
+      resource_without_content.content("bar")
+      resource_without_content.run_action(:create)
+      expect(Dir.glob(backup_glob).length).to eq(1)
+    end
+
   end
 
   # github issue 1842.

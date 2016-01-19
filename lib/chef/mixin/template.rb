@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'erubis'
+require "tempfile"
+require "erubis"
 
 class Chef
   module Mixin
@@ -44,6 +44,52 @@ class Chef
 
         attr_reader :_extension_modules
 
+        #
+        # Helpers for adding context of which resource is rendering the template (CHEF-5012)
+        #
+
+        # name of the cookbook containing the template resource, e.g.:
+        #   test
+        #
+        # @return [String] cookbook name
+        attr_reader :cookbook_name
+
+        # name of the recipe containing the template resource, e.g.:
+        #   default
+        #
+        # @return [String] recipe name
+        attr_reader :recipe_name
+
+        # string representation of the line in the recipe containing the template resource, e.g.:
+        #   /Users/lamont/solo/cookbooks/test/recipes/default.rb:2:in `from_file'
+        #
+        # @return [String] recipe line
+        attr_reader :recipe_line_string
+
+        # path to the recipe containing the template resource, e.g.:
+        #   /Users/lamont/solo/cookbooks/test/recipes/default.rb
+        #
+        # @return [String] recipe path
+        attr_reader :recipe_path
+
+        # line in the recipe containing the template reosurce, e.g.:
+        #   2
+        #
+        # @return [String] recipe line
+        attr_reader :recipe_line
+
+        # name of the template source itself, e.g.:
+        #   foo.erb
+        #
+        # @return [String] template name
+        attr_reader :template_name
+
+        # path to the template source itself, e.g.:
+        #   /Users/lamont/solo/cookbooks/test/templates/default/foo.erb
+        #
+        # @return [String] template path
+        attr_reader :template_path
+
         def initialize(variables)
           super
           @_extension_modules = []
@@ -61,6 +107,7 @@ class Chef
           raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
                 "include a node variable if you plan to use it."
         end
+
 
         #
         # Takes the name of the partial, plus a hash of options. Returns a
@@ -89,6 +136,7 @@ class Chef
           raise "You cannot render partials in this context" unless @template_finder
 
           partial_variables = options.delete(:variables) || _public_instance_variables
+          partial_variables[:template_finder] = @template_finder
           partial_context = self.class.new(partial_variables)
           partial_context._extend_modules(@_extension_modules)
 

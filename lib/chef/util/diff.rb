@@ -40,8 +40,8 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OF OTHER DEALINGS IN THE
 # SOFTWARE.
 
-require 'diff/lcs'
-require 'diff/lcs/hunk'
+require "diff/lcs"
+require "diff/lcs/hunk"
 
 class Chef
   class Util
@@ -64,7 +64,7 @@ class Chef
       def use_tempfile_if_missing(file)
         tempfile = nil
         unless File.exists?(file)
-          Chef::Log.debug("file #{file} does not exist to diff against, using empty tempfile")
+          Chef::Log.debug("File #{file} does not exist to diff against, using empty tempfile")
           tempfile = Tempfile.new("chef-diff")
           file = tempfile.path
         end
@@ -97,9 +97,9 @@ class Chef
         return "No differences encountered\n" if diff_data.empty?
 
         # write diff header (standard unified format)
-        ft = File.stat(old_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
+        ft = File.stat(old_file).mtime.localtime.strftime("%Y-%m-%d %H:%M:%S.%N %z")
         diff_str << "--- #{old_file}\t#{ft}\n"
-        ft = File.stat(new_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
+        ft = File.stat(new_file).mtime.localtime.strftime("%Y-%m-%d %H:%M:%S.%N %z")
         diff_str << "+++ #{new_file}\t#{ft}\n"
 
         # loop over diff hunks. if a hunk overlaps with the last hunk,
@@ -139,7 +139,7 @@ class Chef
         return "(new content is binary, diff output suppressed)" if is_binary?(new_file)
 
         begin
-          Chef::Log.debug("running: diff -u #{old_file} #{new_file}")
+          Chef::Log.debug("Running: diff -u #{old_file} #{new_file}")
           diff_str = udiff(old_file, new_file)
 
         rescue Exception => e
@@ -176,7 +176,7 @@ class Chef
       end
 
       def encode_diff_for_json(diff_str)
-        diff_str.encode!('UTF-8', :invalid => :replace, :undef => :replace, :replace => '?')
+        diff_str.encode!("UTF-8", :invalid => :replace, :undef => :replace, :replace => "?")
       end
 
     end

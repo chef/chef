@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::Bootstrap.load_deps
-require 'net/ssh'
+require "net/ssh"
 
 describe Chef::Knife::Bootstrap do
   before do
-    allow(Chef::Platform).to receive(:windows?) { false }
+    allow(ChefConfig).to receive(:windows?) { false }
   end
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)
@@ -102,7 +102,7 @@ describe Chef::Knife::Bootstrap do
     context "when :bootstrap_template config is set to a template name" do
       let(:bootstrap_template) { "example" }
 
-      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), '../../../lib/chef/knife/bootstrap/templates', "example.erb"))}
+      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), "../../../lib/chef/knife/bootstrap/templates", "example.erb"))}
 
       let(:chef_config_dir_template_path) { "/knife/chef/config/bootstrap/example.erb" }
 
@@ -235,12 +235,39 @@ describe Chef::Knife::Bootstrap do
       expect(knife.render_template).to eq('{"run_list":["role[base]","recipe[cupcakes]"]}')
     end
 
-    it "should have foo => {bar => baz} in the first_boot" do
-      knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
-      knife.merge_configs
-      expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
-      actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
-      expect(actual_hash).to eq(expected_hash)
+    context "with bootstrap_attribute options" do
+      let(:jsonfile) {
+        file = Tempfile.new (["node", ".json"])
+        File.open(file.path, "w") {|f| f.puts '{"foo":{"bar":"baz"}}' }
+        file
+      }
+
+      it "should have foo => {bar => baz} in the first_boot from cli" do
+        knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
+        knife.merge_configs
+        expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
+        actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
+        expect(actual_hash).to eq(expected_hash)
+      end
+
+      it "should have foo => {bar => baz} in the first_boot from file" do
+        knife.parse_options(["--json-attribute-file", jsonfile.path])
+        knife.merge_configs
+        expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
+        actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
+        expect(actual_hash).to eq(expected_hash)
+        jsonfile.close
+      end
+
+      context "when --json-attributes and --json-attribute-file were both passed" do
+        it "raises a Chef::Exceptions::BootstrapCommandInputError with the proper error message" do
+          knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
+          knife.parse_options(["--json-attribute-file", jsonfile.path])
+          knife.merge_configs
+          expect{ knife.run }.to raise_error(Chef::Exceptions::BootstrapCommandInputError)
+          jsonfile.close
+        end
+      end
     end
   end
 
@@ -250,14 +277,14 @@ describe Chef::Knife::Bootstrap do
     it "should create a hint file when told to" do
       knife.parse_options(["--hint", "openstack"])
       knife.merge_configs
-      expect(knife.render_template).to match /\/etc\/chef\/ohai\/hints\/openstack.json/
+      expect(knife.render_template).to match(/\/etc\/chef\/ohai\/hints\/openstack.json/)
     end
 
     it "should populate a hint file with JSON when given a file to read" do
       allow(::File).to receive(:read).and_return('{ "foo" : "bar" }')
       knife.parse_options(["--hint", "openstack=hints/openstack.json"])
       knife.merge_configs
-      expect(knife.render_template).to match /\{\"foo\":\"bar\"\}/
+      expect(knife.render_template).to match(/\{\"foo\":\"bar\"\}/)
     end
   end
 
@@ -358,7 +385,7 @@ describe Chef::Knife::Bootstrap do
   end
 
   describe "when transferring trusted certificates" do
-    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), '../../data/trusted_certs')) }
+    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), "../../data/trusted_certs")) }
 
     let(:rendered_template) do
       knife.merge_configs
@@ -395,6 +422,73 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  describe "handling policyfile options" do
+
+    context "when only policy_name is given" do
+
+      let(:bootstrap_cli_options) { %w{ --policy-name my-app-server } }
+
+      it "returns an error stating that policy_name and policy_group must be given together" do
+        expect { knife.validate_options! }.to raise_error(SystemExit)
+        expect(stderr.string).to include("ERROR: --policy-name and --policy-group must be specified together")
+      end
+
+    end
+
+    context "when only policy_group is given" do
+
+      let(:bootstrap_cli_options) { %w{ --policy-group staging } }
+
+      it "returns an error stating that policy_name and policy_group must be given together" do
+        expect { knife.validate_options! }.to raise_error(SystemExit)
+        expect(stderr.string).to include("ERROR: --policy-name and --policy-group must be specified together")
+      end
+
+    end
+
+    context "when both policy_name and policy_group are given, but run list is also given" do
+
+      let(:bootstrap_cli_options) { %w{ --policy-name my-app --policy-group staging --run-list cookbook } }
+
+      it "returns an error stating that policyfile and run_list are exclusive" do
+        expect { knife.validate_options! }.to raise_error(SystemExit)
+        expect(stderr.string).to include("ERROR: Policyfile options and --run-list are exclusive")
+      end
+
+    end
+
+    context "when policy_name and policy_group are given with no conflicting options" do
+
+      let(:bootstrap_cli_options) { %w{ --policy-name my-app --policy-group staging } }
+
+      it "passes options validation" do
+        expect { knife.validate_options! }.to_not raise_error
+      end
+
+      it "passes them into the bootstrap context" do
+        expect(knife.bootstrap_context.first_boot).to have_key(:policy_name)
+        expect(knife.bootstrap_context.first_boot).to have_key(:policy_group)
+      end
+
+    end
+
+    # https://github.com/chef/chef/issues/4131
+    # Arguably a bug in the plugin: it shouldn't be setting this to nil, but it
+    # worked before, so make it work now.
+    context "when a plugin sets the run list option to nil" do
+
+      before do
+        knife.config[:run_list] = nil
+      end
+
+      it "passes options validation" do
+        expect { knife.validate_options! }.to_not raise_error
+      end
+
+    end
+
+  end
+
   describe "when configuring the underlying knife ssh command" do
     context "from the command line" do
       let(:knife_ssh) do
@@ -405,7 +499,7 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:knife][:ssh_user] = nil
         Chef::Config[:knife][:ssh_port] = nil
         knife.config[:forward_agent] = true
-        knife.config[:identity_file] = "~/.ssh/me.rsa"
+        knife.config[:ssh_identity_file] = "~/.ssh/me.rsa"
         allow(knife).to receive(:render_template).and_return("")
         knife.knife_ssh
       end
@@ -415,15 +509,15 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh user" do
-        expect(knife_ssh.config[:ssh_user]).to eq('rooty')
+        expect(knife_ssh.config[:ssh_user]).to eq("rooty")
       end
 
       it "configures the ssh password" do
-        expect(knife_ssh.config[:ssh_password]).to eq('open_sesame')
+        expect(knife_ssh.config[:ssh_password]).to eq("open_sesame")
       end
 
       it "configures the ssh port" do
-        expect(knife_ssh.config[:ssh_port]).to eq('4001')
+        expect(knife_ssh.config[:ssh_port]).to eq("4001")
       end
 
       it "configures the ssh agent forwarding" do
@@ -431,7 +525,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh identity file" do
-        expect(knife_ssh.config[:identity_file]).to eq('~/.ssh/me.rsa')
+        expect(knife_ssh.config[:ssh_identity_file]).to eq("~/.ssh/me.rsa")
       end
     end
 
@@ -443,8 +537,8 @@ describe Chef::Knife::Bootstrap do
 
       it "use_sudo_password contains description and long params for help" do
         expect(knife.options).to have_key(:use_sudo_password) \
-          and expect(knife.options[:use_sudo_password][:description].to_s).not_to eq('')\
-          and expect(knife.options[:use_sudo_password][:long].to_s).not_to eq('')
+          and expect(knife.options[:use_sudo_password][:description].to_s).not_to eq("")\
+          and expect(knife.options[:use_sudo_password][:long].to_s).not_to eq("")
       end
 
       it "uses the password from --ssh-password for sudo when --use-sudo-password is set" do
@@ -466,7 +560,7 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:knife][:ssh_user] = "curiosity"
         Chef::Config[:knife][:ssh_port] = "2430"
         Chef::Config[:knife][:forward_agent] = true
-        Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
+        Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/you.rsa"
         Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
         Chef::Config[:knife][:host_key_verify] = true
         allow(knife).to receive(:render_template).and_return("")
@@ -476,11 +570,11 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh user" do
-        expect(knife_ssh.config[:ssh_user]).to eq('curiosity')
+        expect(knife_ssh.config[:ssh_user]).to eq("curiosity")
       end
 
       it "configures the ssh port" do
-        expect(knife_ssh.config[:ssh_port]).to eq('2430')
+        expect(knife_ssh.config[:ssh_port]).to eq("2430")
       end
 
       it "configures the ssh agent forwarding" do
@@ -488,11 +582,11 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh identity file" do
-        expect(knife_ssh.config[:identity_file]).to eq('~/.ssh/you.rsa')
+        expect(knife_ssh.config[:ssh_identity_file]).to eq("~/.ssh/you.rsa")
       end
 
       it "configures the ssh gateway" do
-        expect(knife_ssh.config[:ssh_gateway]).to eq('towel.blinkenlights.nl')
+        expect(knife_ssh.config[:ssh_gateway]).to eq("towel.blinkenlights.nl")
       end
 
       it "configures the host key verify mode" do
@@ -504,20 +598,20 @@ describe Chef::Knife::Bootstrap do
       let(:knife_ssh_with_password_auth) do
         knife.name_args = ["foo.example.com"]
         knife.config[:ssh_user]      = "rooty"
-        knife.config[:identity_file] = "~/.ssh/me.rsa"
+        knife.config[:ssh_identity_file] = "~/.ssh/me.rsa"
         allow(knife).to receive(:render_template).and_return("")
         k = knife.knife_ssh
-        allow(k).to receive(:get_password).and_return('typed_in_password')
+        allow(k).to receive(:get_password).and_return("typed_in_password")
         allow(knife).to receive(:knife_ssh).and_return(k)
         knife.knife_ssh_with_password_auth
       end
 
       it "prompts the user for a password " do
-        expect(knife_ssh_with_password_auth.config[:ssh_password]).to eq('typed_in_password')
+        expect(knife_ssh_with_password_auth.config[:ssh_password]).to eq("typed_in_password")
       end
 
       it "configures knife not to use the identity file that didn't work previously" do
-        expect(knife_ssh_with_password_auth.config[:identity_file]).to be_nil
+        expect(knife_ssh_with_password_auth.config[:ssh_identity_file]).to be_nil
       end
     end
   end
@@ -525,19 +619,21 @@ describe Chef::Knife::Bootstrap do
   it "verifies that a server to bootstrap was given as a command line arg" do
     knife.name_args = nil
     expect { knife.run }.to raise_error(SystemExit)
-    expect(stderr.string).to match /ERROR:.+FQDN or ip/
+    expect(stderr.string).to match(/ERROR:.+FQDN or ip/)
   end
 
   describe "when running the bootstrap" do
     let(:knife_ssh) do
       knife.name_args = ["foo.example.com"]
+      knife.config[:chef_node_name] = "foo.example.com"
       knife.config[:ssh_user]      = "rooty"
-      knife.config[:identity_file] = "~/.ssh/me.rsa"
+      knife.config[:ssh_identity_file] = "~/.ssh/me.rsa"
       allow(knife).to receive(:render_template).and_return("")
       knife_ssh = knife.knife_ssh
       allow(knife).to receive(:knife_ssh).and_return(knife_ssh)
       knife_ssh
     end
+    let(:client) { Chef::ApiClient.new }
 
     context "when running with a configured and present validation key" do
       before do
@@ -571,7 +667,8 @@ describe Chef::Knife::Bootstrap do
         knife.config[:bootstrap_vault_file] = "/not/our/responsibility/to/check/if/this/exists"
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).to receive(:run)
-        expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
+        expect(knife.client_builder).to receive(:client).and_return(client)
+        expect(knife.chef_vault_handler).to receive(:run).with(client)
         knife.run
       end
 
@@ -579,7 +676,8 @@ describe Chef::Knife::Bootstrap do
         knife.config[:bootstrap_vault_json] = '{ "vault" => "item" }'
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).to receive(:run)
-        expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
+        expect(knife.client_builder).to receive(:client).and_return(client)
+        expect(knife.chef_vault_handler).to receive(:run).with(client)
         knife.run
       end
 
@@ -587,8 +685,14 @@ describe Chef::Knife::Bootstrap do
         expect(File).to receive(:exist?).with(File.expand_path(Chef::Config[:validation_key])).and_return(true)
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).not_to receive(:run)
-        expect(knife.chef_vault_handler).not_to receive(:run).with(node_name: knife.config[:chef_node_name])
+        expect(knife.chef_vault_handler).not_to receive(:run)
         knife.run
+      end
+
+      it "raises an exception if the config[:chef_node_name] is not present" do
+        knife.config[:chef_node_name] = nil
+
+        expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
@@ -601,8 +705,15 @@ describe Chef::Knife::Bootstrap do
       it "creates the client (and possibly adds chef-vault items)" do
         expect(knife_ssh).to receive(:run)
         expect(knife.client_builder).to receive(:run)
-        expect(knife.chef_vault_handler).to receive(:run).with(node_name: knife.config[:chef_node_name])
+        expect(knife.client_builder).to receive(:client).and_return(client)
+        expect(knife.chef_vault_handler).to receive(:run).with(client)
         knife.run
+      end
+
+      it "raises an exception if the config[:chef_node_name] is not present" do
+        knife.config[:chef_node_name] = nil
+
+        expect { knife.run }.to raise_error(SystemExit)
       end
     end
 

@@ -17,15 +17,20 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/file'
-require 'chef/win32/api/security'
-require 'chef/win32/error'
+require "chef/mixin/wide_string"
+require "chef/win32/api/file"
+require "chef/win32/api/security"
+require "chef/win32/error"
+require "chef/win32/unicode"
 
 class Chef
   module ReservedNames::Win32
     class File
       include Chef::ReservedNames::Win32::API::File
       extend Chef::ReservedNames::Win32::API::File
+
+      include Chef::Mixin::WideString
+      extend Chef::Mixin::WideString
 
       # Creates a symbolic link called +new_name+ for the file or directory
       # +old_name+.
@@ -145,6 +150,10 @@ class Chef
         Info.new(file_name)
       end
 
+      def self.version_info(file_name)
+        VersionInfo.new(file_name)
+      end
+
       def self.verify_links_supported!
         begin
           CreateSymbolicLinkW(nil)
@@ -157,9 +166,9 @@ class Chef
 
       def self.file_access_check(path, desired_access)
         security_descriptor = Chef::ReservedNames::Win32::Security.get_file_security(path)
-        token_rights = Chef::ReservedNames::Win32::Security::TOKEN_IMPERSONATE | 
+        token_rights = Chef::ReservedNames::Win32::Security::TOKEN_IMPERSONATE |
                        Chef::ReservedNames::Win32::Security::TOKEN_QUERY |
-                       Chef::ReservedNames::Win32::Security::TOKEN_DUPLICATE | 
+                       Chef::ReservedNames::Win32::Security::TOKEN_DUPLICATE |
                        Chef::ReservedNames::Win32::Security::STANDARD_RIGHTS_READ
         token = Chef::ReservedNames::Win32::Security.open_process_token(
           Chef::ReservedNames::Win32::Process.get_current_process,
@@ -172,8 +181,28 @@ class Chef
         mapping[:GenericExecute] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_EXECUTE
         mapping[:GenericAll] = Chef::ReservedNames::Win32::Security::FILE_ALL_ACCESS
 
-        Chef::ReservedNames::Win32::Security.access_check(security_descriptor, duplicate_token, 
+        Chef::ReservedNames::Win32::Security.access_check(security_descriptor, duplicate_token,
                                                           desired_access, mapping)
+      end
+
+      def self.delete_volume_mount_point(mount_point)
+        unless DeleteVolumeMountPointW(wstring(mount_point))
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+      end
+
+      def self.set_volume_mount_point(mount_point, name)
+        unless SetVolumeMountPointW(wstring(mount_point), wstring(name))
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+      end
+
+      def self.get_volume_name_for_volume_mount_point(mount_point)
+        buffer = FFI::MemoryPointer.new(2, 128)
+        unless GetVolumeNameForVolumeMountPointW(wstring(mount_point), buffer, buffer.size/buffer.type_size)
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+        buffer.read_wstring
       end
 
       # ::File compat
@@ -185,4 +214,5 @@ class Chef
   end
 end
 
-require 'chef/win32/file/info'
+require "chef/win32/file/info"
+require "chef/win32/file/version_info"

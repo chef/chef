@@ -18,32 +18,25 @@
 #
 
 
-require 'chef/dsl/recipe'
-require 'chef/dsl/data_query'
-require 'chef/dsl/platform_introspection'
-require 'chef/dsl/include_recipe'
-require 'chef/dsl/registry_helper'
-require 'chef/dsl/reboot_pending'
-require 'chef/dsl/audit'
-require 'chef/dsl/powershell'
+require "chef/dsl/recipe"
+require "chef/dsl/data_query"
+require "chef/dsl/platform_introspection"
+require "chef/dsl/include_recipe"
+require "chef/dsl/registry_helper"
+require "chef/dsl/reboot_pending"
+require "chef/dsl/audit"
+require "chef/dsl/powershell"
 
-require 'chef/mixin/from_file'
+require "chef/mixin/from_file"
 
-require 'chef/mixin/deprecation'
+require "chef/mixin/deprecation"
 
 class Chef
   # == Chef::Recipe
   # A Recipe object is the context in which Chef recipes are evaluated.
   class Recipe
 
-    include Chef::DSL::DataQuery
-    include Chef::DSL::PlatformIntrospection
-    include Chef::DSL::IncludeRecipe
-    include Chef::DSL::Recipe
-    include Chef::DSL::RegistryHelper
-    include Chef::DSL::RebootPending
-    include Chef::DSL::Audit
-    include Chef::DSL::Powershell
+    include Chef::DSL::Recipe::FullDSL
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::Deprecation
@@ -104,10 +97,8 @@ class Chef
     # true<TrueClass>:: If all the parameters are present
     # false<FalseClass>:: If any of the parameters are missing
     def tagged?(*tags)
-      return false if run_context.node[:tags].nil?
-
       tags.each do |tag|
-        return false unless run_context.node[:tags].include?(tag)
+        return false unless run_context.node.tags.include?(tag)
       end
       true
     end
@@ -118,10 +109,10 @@ class Chef
     # tags<Array>:: A list of tags
     #
     # === Returns
-    # tags<Array>:: The current list of run_context.node[:tags]
+    # tags<Array>:: The current list of run_context.node.tags
     def untag(*tags)
       tags.each do |tag|
-        run_context.node.normal[:tags].delete(tag)
+        run_context.node.tags.delete(tag)
       end
     end
 

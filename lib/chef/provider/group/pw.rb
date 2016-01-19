@@ -20,6 +20,7 @@ class Chef
   class Provider
     class Group
       class Pw < Chef::Provider::Group
+        provides :group, platform: "freebsd"
 
         def load_current_resource
           super
@@ -108,7 +109,7 @@ class Chef
           else
             # Append is not set so we're resetting the membership of
             # the group to the given members.
-            members_to_be_added = @new_resource.members
+            members_to_be_added = @new_resource.members.dup
             @current_resource.members.each do |member|
               # No need to re-add a member if it's present in the new
               # list of members

@@ -1,4 +1,4 @@
-require 'mixlib/shellout'
+require "mixlib/shellout"
 
 class Chef
   class ShellOut < Mixlib::ShellOut

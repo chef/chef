@@ -46,10 +46,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'chef/log'
+require "chef/log"
 
 begin
-  require 'fast_xs'
+  require "fast_xs"
 rescue LoadError
   Chef::Log.info "The fast_xs gem is not installed, slower pure ruby XML escaping will be used."
 end
@@ -93,9 +93,9 @@ class Chef
 
         # http://www.w3.org/TR/REC-xml/#dt-chardata
         PREDEFINED = {
-          38 => '&amp;', # ampersand
-          60 => '&lt;',  # left angle bracket
-          62 => '&gt;'  # right angle bracket
+          38 => "&amp;", # ampersand
+          60 => "&lt;",  # left angle bracket
+          62 => "&gt;"  # right angle bracket
         }
 
         # http://www.w3.org/TR/REC-xml/#charsets

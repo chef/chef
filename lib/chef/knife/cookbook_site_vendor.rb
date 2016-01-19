@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/cookbook_site_install'
+require "chef/knife"
+require "chef/knife/cookbook_site_install"
 
 class Chef::Knife::CookbookSiteVendor < Chef::Knife::CookbookSiteInstall
 
@@ -41,6 +41,6 @@ DEPRECATED: please use knife cookbook site install
 #{superclass.banner}
 B
 
-  category 'deprecated'
+  category "deprecated"
 
 end

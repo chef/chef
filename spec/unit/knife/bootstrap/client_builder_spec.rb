@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 
 describe Chef::Knife::Bootstrap::ClientBuilder do
@@ -32,7 +32,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
 
   let(:node_name) { "bevell.wat" }
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
 
   let(:client_builder) {
     client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(knife_config: knife_config, chef_config: chef_config, ui: ui)
@@ -42,7 +42,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
   }
 
   context "#sanity_check!" do
-    let(:response_404) { OpenStruct.new(:code => '404') }
+    let(:response_404) { OpenStruct.new(:code => "404") }
     let(:exception_404) { Net::HTTPServerException.new("404 not found", response_404) }
 
     context "in cases where the prompting fails" do
@@ -53,15 +53,15 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       end
 
       it "exits when the node exists and the user does not want to delete" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}")
-        expect(ui.stdin).to receive(:readline).and_return('n')
+        expect(rest).to receive(:get).with("nodes/#{node_name}")
+        expect(ui.stdin).to receive(:readline).and_return("n")
         expect { client_builder.run }.to raise_error(SystemExit)
       end
 
       it "exits when the client exists and the user does not want to delete" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}").and_raise(exception_404)
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}")
-        expect(ui.stdin).to receive(:readline).and_return('n')
+        expect(rest).to receive(:get).with("nodes/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("clients/#{node_name}")
+        expect(ui.stdin).to receive(:readline).and_return("n")
         expect { client_builder.run }.to raise_error(SystemExit)
       end
     end
@@ -74,31 +74,31 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       end
 
       it "when both the client and node do not exist it succeeds" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}").and_raise(exception_404)
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("nodes/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("clients/#{node_name}").and_raise(exception_404)
         expect { client_builder.run }.not_to raise_error
       end
 
       it "when we are allowed to delete an old node" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}")
-        expect(ui.stdin).to receive(:readline).and_return('y')
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("nodes/#{node_name}")
+        expect(ui.stdin).to receive(:readline).and_return("y")
+        expect(rest).to receive(:get).with("clients/#{node_name}").and_raise(exception_404)
         expect(rest).to receive(:delete).with("nodes/#{node_name}")
         expect { client_builder.run }.not_to raise_error
       end
 
       it "when we are allowed to delete an old client" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}").and_raise(exception_404)
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}")
-        expect(ui.stdin).to receive(:readline).and_return('y')
+        expect(rest).to receive(:get).with("nodes/#{node_name}").and_raise(exception_404)
+        expect(rest).to receive(:get).with("clients/#{node_name}")
+        expect(ui.stdin).to receive(:readline).and_return("y")
         expect(rest).to receive(:delete).with("clients/#{node_name}")
         expect { client_builder.run }.not_to raise_error
       end
 
       it "when we are are allowed to delete both an old client and node" do
-        expect(rest).to receive(:get_rest).with("nodes/#{node_name}")
-        expect(rest).to receive(:get_rest).with("clients/#{node_name}")
-        expect(ui.stdin).to receive(:readline).twice.and_return('y')
+        expect(rest).to receive(:get).with("nodes/#{node_name}")
+        expect(rest).to receive(:get).with("clients/#{node_name}")
+        expect(ui.stdin).to receive(:readline).twice.and_return("y")
         expect(rest).to receive(:delete).with("nodes/#{node_name}")
         expect(rest).to receive(:delete).with("clients/#{node_name}")
         expect { client_builder.run }.not_to raise_error
@@ -107,17 +107,20 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
   end
 
   context "#create_client!" do
+    let(:client) { Chef::ApiClient.new }
+
     before do
       # mock out the rest of #run
       expect(client_builder).to receive(:sanity_check)
       expect(client_builder).to receive(:create_node!)
     end
 
-    it "delegates everything to Chef::ApiClient::Registration" do
+    it "delegates everything to Chef::ApiClient::Registration and sets client" do
       reg_double = double("Chef::ApiClient::Registration")
       expect(Chef::ApiClient::Registration).to receive(:new).with(node_name, client_builder.client_path, http_api: rest).and_return(reg_double)
-      expect(reg_double).to receive(:run)
+      expect(reg_double).to receive(:run).and_return(client)
       client_builder.run
+      expect(client_builder.client).to eq(client)
     end
 
   end
@@ -128,7 +131,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     end
   end
 
-  context "#create_node!" do
+  context "#create_node!" do    
     before do
       # mock out the rest of #run
       expect(client_builder).to receive(:sanity_check)
@@ -140,13 +143,29 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       expect(node).to receive(:save)
     end
 
-    let(:client_rest) { double("Chef::REST (client)") }
+    let(:client_rest) { double("Chef::ServerAPI (client)") }
 
     let(:node) { double("Chef::Node") }
 
     it "builds a node with a default run_list of []" do
       expect(node).to receive(:run_list).with([])
       client_builder.run
+    end
+
+    it "does not add tags by default" do
+      allow(node).to receive(:run_list).with([])
+      expect(node).to_not receive(:tags)
+      client_builder.run
+    end
+
+    it "adds tags to the node when given" do
+      tag_receiver = []
+
+      knife_config[:tags] = %w{foo bar}
+      allow(node).to receive(:run_list).with([])
+      allow(node).to receive(:tags).and_return(tag_receiver)
+      client_builder.run
+      expect(tag_receiver).to eq %w{foo bar}
     end
 
     it "builds a node when the run_list is a string" do
@@ -172,6 +191,17 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
       knife_config[:environment] = "production"
       expect(node).to receive(:environment).with("production")
       expect(node).to receive(:run_list).with([])
+      client_builder.run
+    end
+
+    it "builds a node with policy_name and policy_group when given" do
+      knife_config[:policy_name] = "my-app"
+      knife_config[:policy_group] = "staging"
+
+      expect(node).to receive(:run_list).with([])
+      expect(node).to receive(:policy_name=).with("my-app")
+      expect(node).to receive(:policy_group=).with("staging")
+
       client_builder.run
     end
   end

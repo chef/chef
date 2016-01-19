@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/search/query'
+require "spec_helper"
+require "chef/search/query"
 
 describe Chef::Search::Query do
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:query) { Chef::Search::Query.new }
 
   shared_context "filtered search" do
@@ -29,8 +29,8 @@ describe Chef::Search::Query do
     let(:args) { { filter_key => filter_hash } }
     let(:filter_hash) {
       {
-        'env' => [ 'chef_environment' ],
-        'ruby_plat' => [ 'languages', 'ruby', 'platform' ]
+        "env" => [ "chef_environment" ],
+        "ruby_plat" => [ "languages", "ruby", "platform" ],
       }
     }
     let(:response) {
@@ -39,30 +39,30 @@ describe Chef::Search::Query do
           { "url" => "#{server_url}/my-name-is-node",
             "data" => {
               "env" => "elysium",
-              "ruby_plat" => "nudibranch"
-            }
+              "ruby_plat" => "nudibranch",
+            },
           },
           { "url" => "#{server_url}/my-name-is-jonas",
             "data" => {
               "env" => "hades",
-              "ruby_plat" => "i386-mingw32"
-            }
+              "ruby_plat" => "i386-mingw32",
+            },
           },
           { "url" => "#{server_url}/my-name-is-flipper",
             "data" => {
               "env" => "elysium",
-              "ruby_plat" => "centos"
-            }
+              "ruby_plat" => "centos",
+            },
           },
           { "url" => "#{server_url}/my-name-is-butters",
             "data" => {
               "env" => "moon",
               "ruby_plat" => "solaris2",
-            }
-          }
+            },
+          },
         ],
         "start" => 0,
-        "total" => 4
+        "total" => 4,
       }
     }
     let(:response_rows) {
@@ -70,75 +70,105 @@ describe Chef::Search::Query do
         { "env" => "elysium", "ruby_plat" => "nudibranch" },
         { "env" => "hades", "ruby_plat" => "i386-mingw32"},
         { "env" => "elysium", "ruby_plat" => "centos"},
-        { "env" => "moon", "ruby_plat" => "solaris2"}
+        { "env" => "moon", "ruby_plat" => "solaris2"},
       ]
     }
   end
 
   before(:each) do
-    allow(Chef::REST).to receive(:new).and_return(rest)
-    allow(rest).to receive(:get_rest).and_return(response)
+    allow(Chef::ServerAPI).to receive(:new).and_return(rest)
+    allow(rest).to receive(:get).and_return(response)
   end
 
   describe "search" do
+    let(:query_string) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0" }
+    let(:query_string_continue) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=4" }
+    let(:query_string_with_rows) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=4" }
+    let(:query_string_continue_with_rows) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=4&rows=4" }
+
     let(:response) { {
       "rows" => [
         { "name" => "my-name-is-node",
           "chef_environment" => "elysium",
           "platform" => "rhel",
+          "run_list" => [],
           "automatic" => {
             "languages" => {
               "ruby" => {
                 "platform" => "nudibranch",
                 "version" => "1.9.3",
-                "target" => "ming-the-merciless"
+                "target" => "ming-the-merciless",
               }
             }
-          }
+          },
         },
         { "name" => "my-name-is-jonas",
           "chef_environment" => "hades",
           "platform" => "rhel",
+          "run_list" => [],
           "automatic" => {
             "languages" => {
               "ruby" => {
                 "platform" => "i386-mingw32",
                 "version" => "1.9.3",
-                "target" => "bilbo"
+                "target" => "bilbo",
               }
             }
-          }
+          },
         },
         { "name" => "my-name-is-flipper",
           "chef_environment" => "elysium",
           "platform" => "rhel",
+          "run_list" => [],
           "automatic" => {
             "languages" => {
               "ruby" => {
                 "platform" => "centos",
                 "version" => "2.0.0",
-                "target" => "uno"
+                "target" => "uno",
               }
             }
-          }
+          },
         },
         { "name" => "my-name-is-butters",
           "chef_environment" => "moon",
           "platform" => "rhel",
+          "run_list" => [],
           "automatic" => {
             "languages" => {
               "ruby" => {
                 "platform" => "solaris2",
                 "version" => "2.1.2",
-                "target" => "random"
+                "target" => "random",
               }
             }
-          }
+          },
         },
       ],
       "start" => 0,
-      "total" => 4
+      "total" => 4,
     } }
+
+    let(:big_response) {
+      r = response.dup
+      r["total"] = 8
+      r
+    }
+
+    let(:big_response_empty) {
+      {
+        "start" => 0,
+        "total" => 8,
+        "rows" => [],
+      }
+    }
+
+    let(:big_response_end) {
+      r = response.dup
+      r["start"] = 4
+      r["total"] = 8
+      r
+    }
 
     it "accepts a type as the first argument" do
       expect { query.search("node") }.not_to raise_error
@@ -147,27 +177,27 @@ describe Chef::Search::Query do
     end
 
     it "queries for every object of a type by default" do
-      expect(rest).to receive(:get_rest).with("search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0").and_return(response)
+      expect(rest).to receive(:get).with("search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0").and_return(response)
       query.search(:node)
     end
 
     it "allows a custom query" do
-      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0").and_return(response)
+      expect(rest).to receive(:get).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0").and_return(response)
       query.search(:node, "platform:rhel")
     end
 
     it "lets you set a sort order" do
-      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=id%20desc&start=0").and_return(response)
+      expect(rest).to receive(:get).with("search/node?q=platform:rhel&sort=id%20desc&start=0").and_return(response)
       query.search(:node, "platform:rhel", sort: "id desc")
     end
 
     it "lets you set a starting object" do
-      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=2").and_return(response)
+      expect(rest).to receive(:get).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=2").and_return(response)
       query.search(:node, "platform:rhel", start: 2)
     end
 
     it "lets you set how many rows to return" do
-      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=40").and_return(response)
+      expect(rest).to receive(:get).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=40").and_return(response)
       query.search(:node, "platform:rhel", rows: 40)
     end
 
@@ -185,14 +215,30 @@ describe Chef::Search::Query do
 
     it "calls a block for each object in the response" do
       @call_me = double("blocky")
-      response["rows"].each { |r| expect(@call_me).to receive(:do).with(r) }
+      response["rows"].each { |r| expect(@call_me).to receive(:do).with(Chef::Node.from_hash(r)) }
       query.search(:node) { |r| @call_me.do(r) }
     end
 
     it "pages through the responses" do
       @call_me = double("blocky")
-      response["rows"].each { |r| expect(@call_me).to receive(:do).with(r) }
-      query.search(:node, "*:*", sort: nil, start: 0, rows: 1) { |r| @call_me.do(r) }
+      response["rows"].each { |r| expect(@call_me).to receive(:do).with(Chef::Node.from_hash(r)) }
+      query.search(:node, "*:*", sort: nil, start: 0, rows: 4) { |r| @call_me.do(r) }
+    end
+
+    it "sends multiple API requests when the server indicates there is more data" do
+      expect(rest).to receive(:get).with(query_string).and_return(big_response)
+      expect(rest).to receive(:get).with(query_string_continue).and_return(big_response_end)
+      query.search(:node, "platform:rhel") do |r|
+        nil
+      end
+    end
+
+    it "paginates correctly in the face of filtered nodes" do
+      expect(rest).to receive(:get).with(query_string_with_rows).and_return(big_response_empty)
+      expect(rest).to receive(:get).with(query_string_continue_with_rows).and_return(big_response_end)
+      query.search(:node, "platform:rhel", rows: 4) do |r|
+        nil
+      end
     end
 
     context "when :filter_result is provided as a result" do
@@ -200,17 +246,17 @@ describe Chef::Search::Query do
         let(:filter_key) { :filter_result }
 
         before(:each) do
-          expect(rest).to receive(:post_rest).with(query_string, args[filter_key]).and_return(response)
+          expect(rest).to receive(:post).with(query_string, args[filter_key]).and_return(response)
         end
 
         it "returns start" do
           start = query.search(:node, "platform:rhel", args)[1]
-          expect(start).to eq(response['start'])
+          expect(start).to eq(response["start"])
         end
 
         it "returns total" do
           total = query.search(:node, "platform:rhel", args)[2]
-          expect(total).to eq(response['total'])
+          expect(total).to eq(response["total"])
         end
 
         it "returns rows with the filter applied" do
@@ -234,7 +280,7 @@ describe Chef::Search::Query do
       end
 
       it "returns an array of filtered hashes" do
-        expect(rest).to receive(:post_rest).with(query_string, args[filter_key]).and_return(response)
+        expect(rest).to receive(:post).with(query_string, args[filter_key]).and_return(response)
         results = query.partial_search(:node, "platform:rhel", args)
         expect(results[0]).to match_array(response_rows)
       end

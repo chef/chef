@@ -19,9 +19,9 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'securerandom'
-require 'chef/event_dispatch/base'
+require "uri"
+require "securerandom"
+require "chef/event_dispatch/base"
 
 class Chef
   class ResourceReporter < EventDispatch::Base
@@ -59,11 +59,11 @@ class Chef
       # attrs.
       def for_json
         as_hash = {}
-        as_hash["type"]   = new_resource.class.dsl_name
+        as_hash["type"]   = new_resource.resource_name.to_sym
         as_hash["name"]   = new_resource.name.to_s
         as_hash["id"]     = new_resource.identity.to_s
-        as_hash["after"]  = state(new_resource)
-        as_hash["before"] = current_resource ? state(current_resource) : {}
+        as_hash["after"]  = new_resource.state_for_resource_reporter
+        as_hash["before"] = current_resource ? current_resource.state_for_resource_reporter : {}
         as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
         as_hash["delta"]  = new_resource.diff if new_resource.respond_to?("diff")
         as_hash["delta"]  = "" if as_hash["delta"].nil?
@@ -89,13 +89,6 @@ class Chef
       def success?
         !self.exception
       end
-
-      def state(r)
-        r.class.state_attrs.inject({}) do |state_attrs, attr_name|
-          state_attrs[attr_name] = r.send(attr_name)
-          state_attrs
-        end
-      end
     end # End class ResouceReport
 
     attr_reader :updated_resources
@@ -104,7 +97,7 @@ class Chef
     attr_reader :run_id
     attr_reader :error_descriptions
 
-    PROTOCOL_VERSION = '0.1.0'
+    PROTOCOL_VERSION = "0.1.0"
 
     def initialize(rest_client)
       if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
@@ -119,6 +112,7 @@ class Chef
       @exception = nil
       @rest_client = rest_client
       @error_descriptions = {}
+      @expanded_run_list = {}
     end
 
     def run_started(run_status)
@@ -127,7 +121,7 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{node_name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :start, :run_id => run_id,
+          server_response = @rest_client.post(resource_history_url, {:action => :start, :run_id => run_id,
                                                                           :start_time => start_time.to_s}, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           handle_error_starting_run(e, resource_history_url)
@@ -220,8 +214,12 @@ class Chef
       # If we failed before we received the run_started callback, there's not much we can do
       # in terms of reporting
       if @run_status
-          post_reporting_data
+        post_reporting_data
       end
+    end
+
+    def run_list_expanded(run_list_expansion)
+      @expanded_run_list = run_list_expansion
     end
 
     def post_reporting_data
@@ -232,10 +230,9 @@ class Chef
         Chef::Log.debug run_data.inspect
         compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
         Chef::Log.debug("Sending compressed run data...")
-        # Since we're posting compressed data we can not directly call post_rest which expects JSON
-        reporting_url = @rest_client.create_url(resource_history_url)
+        # Since we're posting compressed data we can not directly call post which expects JSON
         begin
-          @rest_client.raw_http_request(:POST, reporting_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
+          @rest_client.raw_request(:POST, resource_history_url, headers({"Content-Encoding" => "gzip"}), compressed_data)
         rescue StandardError => e
           if e.respond_to? :response
             Chef::FileCache.store("failed-reporting-data.json", Chef::JSONCompat.to_json_pretty(run_data), 0640)
@@ -250,7 +247,7 @@ class Chef
     end
 
     def headers(additional_headers = {})
-      options = {'X-Ops-Reporting-Protocol-Version' => PROTOCOL_VERSION}
+      options = {"X-Ops-Reporting-Protocol-Version" => PROTOCOL_VERSION}
       options.merge(additional_headers)
     end
 
@@ -278,6 +275,7 @@ class Chef
       run_data["data"] = {}
       run_data["start_time"] = start_time.to_s
       run_data["end_time"] = end_time.to_s
+      run_data["expanded_run_list"] = Chef::JSONCompat.to_json(@expanded_run_list)
 
       if exception
         exception_data = {}

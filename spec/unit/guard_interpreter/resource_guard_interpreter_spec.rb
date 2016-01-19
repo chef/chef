@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::GuardInterpreter::ResourceGuardInterpreter do
   let(:node) do
@@ -24,6 +24,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
+    node.automatic[:os] = "windows"
     node
   end
 
@@ -51,7 +52,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
     it "raises an exception if guard_interpreter is set to a resource not derived from Chef::Resource::Script" do
       parent_resource.guard_interpreter(:file)
-      expect { guard_interpreter }.to raise_error(ArgumentError, 'Specified guard interpreter class Chef::Resource::File must be a kind of Chef::Resource::Execute resource')
+      expect { guard_interpreter }.to raise_error(ArgumentError, "Specified guard interpreter class Chef::Resource::File must be a kind of Chef::Resource::Execute resource")
     end
 
     context "when the resource cannot be found for the platform" do
@@ -61,7 +62,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
       it "raises an exception" do
         parent_resource.guard_interpreter(:foobar)
-        expect { guard_interpreter }.to raise_error(ArgumentError, 'Specified guard_interpreter resource foobar unknown for this platform')
+        expect { guard_interpreter }.to raise_error(ArgumentError, "Specified guard_interpreter resource foobar unknown for this platform")
       end
     end
 
@@ -81,6 +82,14 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
     it "successfully evaluates the resource" do
       expect(guard_interpreter.evaluate).to eq(true)
+    end
+
+    it "does not corrupt the run_context of the node" do
+      node_run_context_before_guard_execution = parent_resource.run_context
+      expect(node_run_context_before_guard_execution.object_id).to eq(parent_resource.node.run_context.object_id)
+      guard_interpreter.evaluate
+      node_run_context_after_guard_execution = parent_resource.run_context
+      expect(node_run_context_after_guard_execution.object_id).to eq(parent_resource.node.run_context.object_id)
     end
 
     describe "script command opts switch" do
@@ -144,4 +153,3 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
     end
   end
 end
-

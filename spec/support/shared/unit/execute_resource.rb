@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 shared_examples_for "an execute resource" do
 
@@ -109,6 +109,11 @@ shared_examples_for "an execute resource" do
   it "should accept a string for creates" do
     @resource.creates "something"
     expect(@resource.creates).to eql("something")
+  end
+
+  it "should accept a boolean for live streaming" do
+    @resource.live_stream true
+    expect(@resource.live_stream).to be true
   end
 
   describe "when it has cwd, environment, group, path, return value, and a user" do

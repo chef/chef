@@ -201,7 +201,7 @@ class Chef
 
           converge_by("execute migration command #{@new_resource.migration_command}") do
             Chef::Log.info "#{@new_resource} migrating #{@new_resource.user} with environment #{env_info}"
-            run_command(run_options(:command => @new_resource.migration_command, :cwd=>release_path, :log_level => :info))
+            shell_out!(@new_resource.migration_command,run_options(:cwd=>release_path, :log_level => :info))
           end
         end
       end
@@ -221,7 +221,7 @@ class Chef
           else
             converge_by("restart app using command #{@new_resource.restart_command}") do
               Chef::Log.info("#{@new_resource} restarting app")
-              run_command(run_options(:command => @new_resource.restart_command, :cwd => @new_resource.current_path))
+              shell_out!(@new_resource.restart_command,run_options(:cwd=>@new_resource.current_path))
             end
           end
         end
@@ -276,7 +276,7 @@ class Chef
 
       def enforce_ownership
         converge_by("force ownership of #{@new_resource.deploy_to} to #{@new_resource.group}:#{@new_resource.user}") do
-          FileUtils.chown_R(@new_resource.user, @new_resource.group, @new_resource.deploy_to)
+          FileUtils.chown_R(@new_resource.user, @new_resource.group, @new_resource.deploy_to, :force => true)
           Chef::Log.info("#{@new_resource} set user to #{@new_resource.user}") if @new_resource.user
           Chef::Log.info("#{@new_resource} set group to #{@new_resource.group}") if @new_resource.group
         end
@@ -365,7 +365,7 @@ class Chef
       end
 
       def release_slug
-        raise Chef::Exceptions::Override, "You must override release_slug in #{self.to_s}"
+        raise Chef::Exceptions::Override, "You must override release_slug in #{self}"
       end
 
       def install_gems
@@ -373,11 +373,9 @@ class Chef
       end
 
       def gem_resource_collection_runner
-        gems_collection = Chef::ResourceCollection.new
-        gem_packages.each { |rbgem| gems_collection.insert(rbgem) }
-        gems_run_context = run_context.dup
-        gems_run_context.resource_collection = gems_collection
-        Chef::Runner.new(gems_run_context)
+        child_context = run_context.create_child
+        gem_packages.each { |rbgem| child_context.resource_collection.insert(rbgem) }
+        Chef::Runner.new(child_context)
       end
 
       def gem_packages

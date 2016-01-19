@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Invokercd, "load_current_resource" do
   before(:each) do
@@ -48,7 +48,7 @@ PS
 
   it "should set the current resources service name to the new resources service name" do
     @provider.load_current_resource
-    expect(@current_resource.service_name).to eq('chef')
+    expect(@current_resource.service_name).to eq("chef")
   end
 
   describe "when the service supports status" do

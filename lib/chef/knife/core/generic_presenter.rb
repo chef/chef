@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife/core/text_formatter'
+require "chef/knife/core/text_formatter"
 
 class Chef
   class Knife
@@ -80,10 +80,10 @@ class Chef
           when :json
             Chef::JSONCompat.to_json_pretty(data)
           when :yaml
-            require 'yaml'
+            require "yaml"
             YAML::dump(data)
           when :pp
-            require 'stringio'
+            require "stringio"
             # If you were looking for some attribute and there is only one match
             # just dump the attribute value
             if config[:attribute] and data.length == 1
@@ -150,18 +150,18 @@ class Chef
 
         def format_data_subset_for_display(data)
           subset = if config[:attribute]
-            result = {}
-            Array(config[:attribute]).each do |nested_value_spec|
-              nested_value = extract_nested_value(data, nested_value_spec)
-              result[nested_value_spec] = nested_value
-            end
-            result
-          elsif config[:run_list]
-            run_list = data.run_list.run_list
-            { "run_list" => run_list }
-          else
-            raise ArgumentError, "format_data_subset_for_display requires attribute, run_list, or id_only config option to be set"
-          end
+                     result = {}
+                     Array(config[:attribute]).each do |nested_value_spec|
+                       nested_value = extract_nested_value(data, nested_value_spec)
+                       result[nested_value_spec] = nested_value
+                     end
+                     result
+                   elsif config[:run_list]
+                     run_list = data.run_list.run_list
+                     { "run_list" => run_list }
+                   else
+                     raise ArgumentError, "format_data_subset_for_display requires attribute, run_list, or id_only config option to be set"
+                   end
           {name_or_id_for(data) => subset }
         end
 
@@ -178,19 +178,19 @@ class Chef
           nested_value_spec.split(".").each do |attr|
             if data.nil?
               nil # don't get no method error on nil
-            # Must check :[] before attr because spec can include
-            #   `keys` - want the key named `keys`, not a list of
-            #   available keys.
-            elsif data.respond_to?(:[])
+              # Must check :[] before attr because spec can include
+              #   `keys` - want the key named `keys`, not a list of
+              #   available keys.
+            elsif data.respond_to?(:[])  && data.has_key?(attr)
               data = data[attr]
             elsif data.respond_to?(attr.to_sym)
               data = data.send(attr.to_sym)
             else
               data = begin
-                data.send(attr.to_sym)
-              rescue NoMethodError
-                nil
-              end
+                       data.send(attr.to_sym)
+                     rescue NoMethodError
+                       nil
+                     end
             end
           end
           ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
@@ -200,14 +200,14 @@ class Chef
           if config[:with_uri]
             item.inject({}) do |collected, (cookbook, versions)|
               collected[cookbook] = Hash.new
-              versions['versions'].each do |ver|
-                collected[cookbook][ver['version']] = ver['url']
+              versions["versions"].each do |ver|
+                collected[cookbook][ver["version"]] = ver["url"]
               end
               collected
             end
           else
             versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
-              collected[cookbook] = versions["versions"].map {|v| v['version']}
+              collected[cookbook] = versions["versions"].map {|v| v["version"]}
               collected
             end
             key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map {|name| name.size }.max + 2

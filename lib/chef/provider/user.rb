@@ -16,14 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
-require 'chef/mixin/command'
-require 'etc'
+require "chef/provider"
+require "chef/mixin/command"
+require "etc"
 
 class Chef
   class Provider
     class User < Chef::Provider
-
       include Chef::Mixin::Command
 
       attr_accessor :user_exists, :locked
@@ -72,9 +71,9 @@ class Chef
           end
           @current_resource.comment(user_info.gecos)
 
-          if @new_resource.password && @current_resource.password == 'x'
+          if @new_resource.password && @current_resource.password == "x"
             begin
-              require 'shadow'
+              require "shadow"
             rescue LoadError
               @shadow_lib_ok = false
             else
@@ -90,7 +89,7 @@ class Chef
       end
 
       def define_resource_requirements
-        requirements.assert(:all_actions) do |a|
+        requirements.assert(:create, :modify, :manage, :lock, :unlock) do |a|
           a.assertion { @group_name_resolved }
           a.failure_message Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
           a.whyrun "group name #{@new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
@@ -208,7 +207,6 @@ class Chef
       def unlock_user
         raise NotImplementedError
       end
-
     end
   end
 end

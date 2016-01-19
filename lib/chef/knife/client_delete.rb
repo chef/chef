@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class ClientDelete < Knife
 
       deps do
-        require 'chef/api_client'
-        require 'chef/json_compat'
+        require "chef/api_client_v1"
+        require "chef/json_compat"
       end
 
       option :delete_validators,
@@ -43,8 +43,8 @@ class Chef
           exit 1
         end
 
-        delete_object(Chef::ApiClient, @client_name, 'client') {
-          object = Chef::ApiClient.load(@client_name)
+        delete_object(Chef::ApiClientV1, @client_name, "client") {
+          object = Chef::ApiClientV1.load(@client_name)
           if object.validator
             unless config[:delete_validators]
               ui.fatal("You must specify --delete-validators to delete the validator client #{@client_name}")

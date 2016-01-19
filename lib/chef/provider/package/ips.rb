@@ -17,16 +17,17 @@
 # limitations under the License.
 #
 
-require 'open3'
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
+require "open3"
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
 
 class Chef
   class Provider
     class Package
       class Ips < Chef::Provider::Package
 
+        provides :package, platform: %w{openindiana opensolaris omnios solaris2}
         provides :ips_package, os: "solaris2"
 
         attr_accessor :virtual
@@ -42,14 +43,14 @@ class Chef
         end
 
         def get_current_version
-          shell_out("pkg info #{@new_resource.package_name}").stdout.each_line do |line|
+          shell_out_with_timeout("pkg info #{@new_resource.package_name}").stdout.each_line do |line|
             return $1.split[0] if line =~ /^\s+Version: (.*)/
           end
           return nil
         end
 
         def get_candidate_version
-          shell_out!("pkg info -r #{new_resource.package_name}").stdout.each_line do |line|
+          shell_out_with_timeout!("pkg info -r #{new_resource.package_name}").stdout.each_line do |line|
             return $1.split[0] if line =~ /Version: (.*)/
           end
           return nil
@@ -69,11 +70,11 @@ class Chef
           normal_command = "pkg#{expand_options(@new_resource.options)} install -q #{package_name}"
           command =
             if @new_resource.respond_to?(:accept_license) and @new_resource.accept_license
-              normal_command.gsub('-q', '-q --accept')
+              normal_command.gsub("-q", "-q --accept")
             else
               normal_command
             end
-          shell_out(command)
+          shell_out_with_timeout(command)
         end
 
         def upgrade_package(name, version)
@@ -82,7 +83,7 @@ class Chef
 
         def remove_package(name, version)
           package_name = "#{name}@#{version}"
-          shell_out!( "pkg#{expand_options(@new_resource.options)} uninstall -q #{package_name}" )
+          shell_out_with_timeout!( "pkg#{expand_options(@new_resource.options)} uninstall -q #{package_name}" )
         end
       end
     end

@@ -4,7 +4,7 @@
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright 2008-2011 Opscode, Inc.
+# Copyright:: Copyright 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +19,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/log'
-require 'chef/cookbook/file_vendor'
-require 'chef/cookbook/metadata'
-require 'chef/version_class'
-require 'chef/digester'
-require 'chef/cookbook_manifest'
+require "chef/log"
+require "chef/cookbook/file_vendor"
+require "chef/cookbook/metadata"
+require "chef/version_class"
+require "chef/digester"
+require "chef/cookbook_manifest"
+require "chef/server_api"
 
 class Chef
 
@@ -51,12 +52,12 @@ class Chef
     attr_accessor :metadata_filenames
 
     def status=(new_status)
-      Chef::Log.deprecation("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
+      Chef.log_deprecation("Deprecated method `status' called. This method will be removed.")
       @status = new_status
     end
 
     def status
-      Chef::Log.deprecation("Deprecated method `status' called from #{caller(1).first}. This method will be removed")
+      Chef.log_deprecation("Deprecated method `status' called. This method will be removed.")
       @status
     end
 
@@ -299,15 +300,15 @@ class Chef
         if segment == :files || segment == :templates
           error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
           error_locations = if filename.is_a?(Array)
-            filename.map{|name| "  #{File.join(segment.to_s, name)}"}
-          else
-            [
-              "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
-              "  #{segment}/#{node[:platform]}/#{filename}",
-              "  #{segment}/default/#{filename}",
-              "  #{segment}/#{filename}",
-            ]
-          end
+                              filename.map{|name| "  #{File.join(segment.to_s, name)}"}
+                            else
+                              [
+                                "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
+                                "  #{segment}/#{node[:platform]}/#{filename}",
+                                "  #{segment}/default/#{filename}",
+                                "  #{segment}/#{filename}",
+                              ]
+                            end
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
           # Strip the root_dir prefix off all files for readability
@@ -326,10 +327,10 @@ class Chef
 
     def preferred_filename_on_disk_location(node, segment, filename, current_filepath=nil)
       manifest_record = preferred_manifest_record(node, segment, filename)
-      if current_filepath && (manifest_record['checksum'] == self.class.checksum_cookbook_file(current_filepath))
+      if current_filepath && (manifest_record["checksum"] == self.class.checksum_cookbook_file(current_filepath))
         nil
       else
-        file_vendor.get_filename(manifest_record['path'])
+        file_vendor.get_filename(manifest_record["path"])
       end
     end
 
@@ -353,7 +354,7 @@ class Chef
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
         if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
-          specificity_dirname = $1
+            specificity_dirname = $1
           non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)}\/(.+)$/, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
@@ -384,11 +385,11 @@ class Chef
 
         # extract the preference part from the path.
         if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
-          # Note the specificy_dirname includes the segment and
-          # dirname argument as above, which is what
-          # preferences_for_path returns. It could be
-          # "files/ubuntu-9.10/dirname", for example.
-          specificity_dirname = $1
+            # Note the specificy_dirname includes the segment and
+            # dirname argument as above, which is what
+            # preferences_for_path returns. It could be
+            # "files/ubuntu-9.10/dirname", for example.
+            specificity_dirname = $1
 
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
@@ -412,54 +413,60 @@ class Chef
       # only files and templates can be platform-specific
       if segment.to_sym == :files || segment.to_sym == :templates
         relative_search_path = if path.is_a?(Array)
-          path
-        else
-          begin
-            platform, version = Chef::Platform.find_platform_and_version(node)
-          rescue ArgumentError => e
-            # Skip platform/version if they were not found by find_platform_and_version
-            if e.message =~ /Cannot find a (?:platform|version)/
-              platform = "/unknown_platform/"
-              version = "/unknown_platform_version/"
-            else
-              raise
-            end
-          end
+                                 path
+                               else
+                                 begin
+                                   platform, version = Chef::Platform.find_platform_and_version(node)
+                                 rescue ArgumentError => e
+                                   # Skip platform/version if they were not found by find_platform_and_version
+                                   if e.message =~ /Cannot find a (?:platform|version)/
+                                     platform = "/unknown_platform/"
+                                     version = "/unknown_platform_version/"
+                                   else
+                                     raise
+                                   end
+                                 end
 
-          fqdn = node[:fqdn]
+                                 fqdn = node[:fqdn]
 
-          # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
-          search_versions = []
-          parts = version.to_s.split('.')
+                                 # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
+                                 search_versions = []
+                                 parts = version.to_s.split(".")
 
-          parts.size.times do
-            search_versions << parts.join('.')
-            parts.pop
-          end
+                                 parts.size.times do
+                                   search_versions << parts.join(".")
+                                   parts.pop
+                                 end
 
-          # Most specific to least specific places to find the path
-          search_path = [ File.join("host-#{fqdn}", path) ]
-          search_versions.each do |v|
-            search_path << File.join("#{platform}-#{v}", path)
-          end
-          search_path << File.join(platform.to_s, path)
-          search_path << File.join("default", path)
-          search_path << path
+                                 # Most specific to least specific places to find the path
+                                 search_path = [ File.join("host-#{fqdn}", path) ]
+                                 search_versions.each do |v|
+                                   search_path << File.join("#{platform}-#{v}", path)
+                                 end
+                                 search_path << File.join(platform.to_s, path)
+                                 search_path << File.join("default", path)
+                                 search_path << path
 
-          search_path
-        end
+                                 search_path
+                               end
         relative_search_path.map {|relative_path| File.join(segment.to_s, relative_path)}
       else
-        [File.join(segment, path)]
+        if segment.to_sym == :root_files
+          [path]
+        else
+          [File.join(segment, path)]
+        end
       end
     end
     private :preferences_for_path
 
-    def self.json_create(o)
-      cookbook_version = new(o["cookbook_name"])
+    def self.from_hash(o)
+      cookbook_version = new(o["cookbook_name"] || o["name"])
+
       # We want the Chef::Cookbook::Metadata object to always be inflated
       cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
       cookbook_version.manifest = o
+      cookbook_version.identifier = o["identifier"] if o.key?("identifier")
 
       # We don't need the following step when we decide to stop supporting deprecated operators in the metadata (e.g. <<, >>)
       cookbook_version.manifest["metadata"] = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(cookbook_version.metadata))
@@ -468,19 +475,18 @@ class Chef
       cookbook_version
     end
 
+    def self.json_create(o)
+      from_hash(o)
+    end
+
     def self.from_cb_artifact_data(o)
-      cookbook_version = new(o["name"])
-      # We want the Chef::Cookbook::Metadata object to always be inflated
-      cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
-      cookbook_version.manifest = o
-      cookbook_version.identifier = o["identifier"]
-      cookbook_version
+      from_hash(o)
     end
 
     # @deprecated This method was used by the Ruby Chef Server and is no longer
     #   needed. There is no replacement.
     def generate_manifest_with_urls(&url_generator)
-      Chef::Log.deprecation("Deprecated method #generate_manifest_with_urls called from #{caller(1).first}")
+      Chef.log_deprecation("Deprecated method #generate_manifest_with_urls.")
 
       rendered_manifest = manifest.dup
       COOKBOOK_SEGMENTS.each do |segment|
@@ -539,22 +545,22 @@ class Chef
     end
 
     def self.chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def destroy
-      chef_server_rest.delete_rest("cookbooks/#{name}/#{version}")
+      chef_server_rest.delete("cookbooks/#{name}/#{version}")
       self
     end
 
     def self.load(name, version="_latest")
       version = "_latest" if version == "latest"
-      chef_server_rest.get_rest("cookbooks/#{name}/#{version}")
+      from_hash(chef_server_rest.get("cookbooks/#{name}/#{version}"))
     end
 
     # The API returns only a single version of each cookbook in the result from the cookbooks method
     def self.list
-      chef_server_rest.get_rest('cookbooks')
+      chef_server_rest.get("cookbooks")
     end
 
     # Alias latest_cookbooks as list
@@ -563,7 +569,7 @@ class Chef
     end
 
     def self.list_all_versions
-      chef_server_rest.get_rest('cookbooks?num_versions=all')
+      chef_server_rest.get("cookbooks?num_versions=all")
     end
 
     ##
@@ -573,7 +579,7 @@ class Chef
     # [String]::  Array of cookbook versions, which are strings like 'x.y.z'
     # nil::       if the cookbook doesn't exist. an error will also be logged.
     def self.available_versions(cookbook_name)
-      chef_server_rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map do |cb|
+      chef_server_rest.get("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map do |cb|
         cb["version"]
       end
     rescue Net::HTTPServerException => e
@@ -609,7 +615,7 @@ class Chef
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(filenames)
-      filenames.select{|filename| filename =~ /\.rb$/}.inject({}){|memo, filename| memo[File.basename(filename, '.rb')] = filename ; memo }
+      filenames.select{|filename| filename =~ /\.rb$/}.inject({}){|memo, filename| memo[File.basename(filename, ".rb")] = filename ; memo }
     end
 
     def file_vendor

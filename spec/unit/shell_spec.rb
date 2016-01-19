@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 require "ostruct"
 
 ObjectTestHarness = Proc.new do
@@ -43,6 +43,8 @@ describe Shell do
   before do
     Shell.irb_conf = {}
     allow(Shell::ShellSession.instance).to receive(:reset!)
+    allow(ChefConfig).to receive(:windows?).and_return(false)
+    allow(Chef::Util::PathHelper).to receive(:home).and_return("/home/foo")
   end
 
   describe "reporting its status" do
@@ -56,7 +58,7 @@ describe Shell do
   describe "configuring IRB" do
     it "configures irb history" do
       Shell.configure_irb
-      expect(Shell.irb_conf[:HISTORY_FILE]).to eq("#{ENV['HOME']}/.chef/chef_shell_history")
+      expect(Shell.irb_conf[:HISTORY_FILE]).to eq(Chef::Util::PathHelper.home(".chef", "chef_shell_history"))
       expect(Shell.irb_conf[:SAVE_HISTORY]).to eq(1000)
     end
 
@@ -69,7 +71,7 @@ describe Shell do
       Shell.irb_conf[:IRB_RC].call(conf)
       expect(conf.prompt_c).to      eq("chef > ")
       expect(conf.return_format).to eq(" => %s \n")
-      expect(conf.prompt_i).to      eq("chef > ")
+      expect(conf.prompt_i).to      eq("chef (#{Chef::VERSION})> ")
       expect(conf.prompt_n).to      eq("chef ?> ")
       expect(conf.prompt_s).to      eq("chef%l> ")
       expect(conf.use_tracer).to    eq(false)
@@ -83,7 +85,7 @@ describe Shell do
       conf.main = Chef::Recipe.new(nil,nil,Chef::RunContext.new(Chef::Node.new, {}, events))
       Shell.irb_conf[:IRB_RC].call(conf)
       expect(conf.prompt_c).to      eq("chef:recipe > ")
-      expect(conf.prompt_i).to      eq("chef:recipe > ")
+      expect(conf.prompt_i).to      eq("chef:recipe (#{Chef::VERSION})> ")
       expect(conf.prompt_n).to      eq("chef:recipe ?> ")
       expect(conf.prompt_s).to      eq("chef:recipe%l> ")
     end
@@ -95,7 +97,7 @@ describe Shell do
       conf.main = Chef::Node.new
       Shell.irb_conf[:IRB_RC].call(conf)
       expect(conf.prompt_c).to      eq("chef:attributes > ")
-      expect(conf.prompt_i).to      eq("chef:attributes > ")
+      expect(conf.prompt_i).to      eq("chef:attributes (#{Chef::VERSION})> ")
       expect(conf.prompt_n).to      eq("chef:attributes ?> ")
       expect(conf.prompt_s).to      eq("chef:attributes%l> ")
     end

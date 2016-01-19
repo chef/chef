@@ -19,11 +19,11 @@
 # limitations under the License.
 #
 
-require 'stringio'
-require 'chef/file_cache'
-require 'chef/json_compat'
-require 'chef/digester'
-require 'chef/exceptions'
+require "stringio"
+require "chef/file_cache"
+require "chef/json_compat"
+require "chef/digester"
+require "chef/exceptions"
 
 class Chef
   class Provider
@@ -145,18 +145,51 @@ class Chef
         end
 
         def load_json_data
-          Chef::FileCache.load("remote_file/#{sanitized_cache_file_basename}")
+          path = sanitized_cache_file_path(sanitized_cache_file_basename)
+          if Chef::FileCache.has_key?(path)
+            Chef::FileCache.load(path)
+          else
+            old_path = sanitized_cache_file_path(sanitized_cache_file_basename_md5)
+            if Chef::FileCache.has_key?(old_path)
+              # We found an old cache control data file. We started using sha256 instead of md5
+              # to name these. Upgrade the file to the new name.
+              Chef::Log.debug("Found old cache control data file at #{old_path}. Moving to #{path}.")
+              Chef::FileCache.load(old_path).tap do |data|
+                Chef::FileCache.store(path, data)
+                Chef::FileCache.delete(old_path)
+              end
+            else
+              raise Chef::Exceptions::FileNotFound
+            end
+          end
         end
 
-        def sanitized_cache_file_basename
+        def sanitized_cache_file_path(basename)
+          "remote_file/#{basename}"
+        end
+
+        def scrubbed_uri
           # Scrub and truncate in accordance with the goals of keeping the name
           # human-readable but within the bounds of local file system
           # path length limits
-          scrubbed_uri = uri.gsub(/\W/, '_')[0..63]
-          uri_md5 = Chef::Digester.instance.generate_md5_checksum(StringIO.new(uri))
-          "#{scrubbed_uri}-#{uri_md5}.json"
+          uri.gsub(/\W/, "_")[0..63]
         end
 
+        def sanitized_cache_file_basename
+          uri_sha2 = Chef::Digester.instance.generate_checksum(StringIO.new(uri))
+          cache_file_basename(uri_sha2[0,32])
+        end
+
+
+        def sanitized_cache_file_basename_md5
+          # Old way of creating the file basename
+          uri_md5 = Chef::Digester.instance.generate_md5_checksum(StringIO.new(uri))
+          cache_file_basename(uri_md5)
+        end
+
+        def cache_file_basename(checksum)
+          "#{scrubbed_uri}-#{checksum}.json"
+        end
       end
     end
   end

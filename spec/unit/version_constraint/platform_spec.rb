@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
-require 'chef/version_constraint/platform'
+require "spec_helper"
+require "chef/version_constraint/platform"
 
 describe Chef::VersionConstraint::Platform do
 

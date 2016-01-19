@@ -17,8 +17,8 @@
 #
 
 
-require 'spec_helper'
-require 'chef/mixin/windows_architecture_helper'
+require "spec_helper"
+require "chef/mixin/windows_architecture_helper"
 
 
 
@@ -60,23 +60,28 @@ describe Chef::Mixin::WindowsArchitectureHelper do
     end
   end
 
-  it "returns true for each supported desired architecture for all nodes with each valid architecture passed to node_supports_windows_architecture" do
-    enumerate_architecture_node_combinations(true)
+  it "returns true only for supported desired architecture passed to node_supports_windows_architecture" do
+    with_node_architecture_combinations do | node, desired_arch |
+        expect(node_supports_windows_architecture?(node, desired_arch)).to be true if (node_windows_architecture(node) == :x86_64 || desired_arch == :i386 )
+        expect(node_supports_windows_architecture?(node, desired_arch)).to be false if (node_windows_architecture(node)  == :i386 && desired_arch == :x86_64 )
+    end
   end
 
-  it "returns false for each unsupported desired architecture for all nodes with each valid architecture passed to node_supports_windows_architecture?" do
-    enumerate_architecture_node_combinations(true)
+  it "returns true only when forced_32bit_override_required? has 64-bit node architecture and 32-bit desired architecture" do
+    with_node_architecture_combinations do | node, desired_arch |
+      expect(forced_32bit_override_required?(node, desired_arch)).to be true if ((node_windows_architecture(node) == :x86_64) && (desired_arch == :i386) && !is_i386_process_on_x86_64_windows?)
+      expect(forced_32bit_override_required?(node, desired_arch)).to be false if ! ((node_windows_architecture(node) == :x86_64) && (desired_arch == :i386))
+    end
   end
 
-  def enumerate_architecture_node_combinations(only_valid_combinations)
+  def with_node_architecture_combinations
     @valid_architectures.each do | node_architecture |
       new_node = Chef::Node.new
       new_node.default["kernel"] = Hash.new
       new_node.default["kernel"][:machine] = node_architecture.to_s
 
-      @valid_architectures.each do | supported_architecture |
-        expect(node_supports_windows_architecture?(new_node, supported_architecture)).to eq(true) if only_valid_combinations && (supported_architecture != :x86_64 && node_architecture != :i386 )
-        expect(node_supports_windows_architecture?(new_node, supported_architecture)).to eq(false) if ! only_valid_combinations && (supported_architecture == :x86_64 && node_architecture == :i386 )
+      @valid_architectures.each do | architecture |
+        yield new_node, architecture if block_given?
       end
     end
   end

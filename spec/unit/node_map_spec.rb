@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/node_map'
+require "spec_helper"
+require "chef/node_map"
 
 describe Chef::NodeMap do
 
@@ -27,7 +27,7 @@ describe Chef::NodeMap do
 
   describe "with a bad filter name" do
     it "should raise an error" do
-      expect{ node_map.set(node, :thing, on_platform_family: 'rhel') }.to raise_error
+      expect{ node_map.set(node, :thing, on_platform_family: "rhel") }.to raise_error
     end
   end
 
@@ -131,16 +131,32 @@ describe Chef::NodeMap do
       allow(node).to receive(:[]).with(:platform_version).and_return("6.0")
       expect(node_map.get(node, :thing)).to eql(nil)
     end
+
+    context "when there is a less specific definition" do
+      before do
+        node_map.set(:thing, :bar, platform_family: "rhel")
+      end
+
+      it "returns the value when the node matches" do
+        allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
+        allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
+        expect(node_map.get(node, :thing)).to eql(:foo)
+      end
+    end
   end
 
   describe "resource back-compat testing" do
+    before :each do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
     it "should handle :on_platforms => :all" do
       node_map.set(:chef_gem, :foo, :on_platforms => :all)
       allow(node).to receive(:[]).with(:platform).and_return("windows")
       expect(node_map.get(node, :chef_gem)).to eql(:foo)
     end
     it "should handle :on_platforms => [ 'windows' ]" do
-      node_map.set(:dsc_script, :foo, :on_platforms => [ 'windows' ])
+      node_map.set(:dsc_script, :foo, :on_platforms => [ "windows" ])
       allow(node).to receive(:[]).with(:platform).and_return("windows")
       expect(node_map.get(node, :dsc_script)).to eql(:foo)
     end
@@ -152,4 +168,3 @@ describe Chef::NodeMap do
   end
 
 end
-

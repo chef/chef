@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::Raw do
   let(:rest) do
-    r = double('Chef::Knife::Raw::RawInputServerAPI')
+    r = double("Chef::Knife::Raw::RawInputServerAPI")
     allow(Chef::Knife::Raw::RawInputServerAPI).to receive(:new).and_return(r)
     r
   end
@@ -35,8 +35,8 @@ describe Chef::Knife::Raw do
     it "should set the x-ops-request-source header when --proxy-auth is set" do
       knife.config[:proxy_auth] = true
       expect(rest).to receive(:request).with(:GET, "/nodes",
-                                              { 'Content-Type' => 'application/json',
-                                                'x-ops-request-source' => 'web'}, false)
+                                              { "Content-Type" => "application/json",
+                                                "x-ops-request-source" => "web"}, false)
       knife.run
     end
   end

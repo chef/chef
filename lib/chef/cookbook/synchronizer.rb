@@ -1,6 +1,7 @@
-require 'chef/client'
-require 'chef/util/threaded_job_queue'
-require 'singleton'
+require "chef/client"
+require "chef/util/threaded_job_queue"
+require "chef/server_api"
+require "singleton"
 
 class Chef
 
@@ -131,7 +132,7 @@ class Chef
       files_remaining_by_cookbook[file.cookbook] -= 1
 
       if files_remaining_by_cookbook[file.cookbook] == 0
-        @events.synchronized_cookbook(file.cookbook.name)
+        @events.synchronized_cookbook(file.cookbook.name, file.cookbook)
       end
     end
 
@@ -244,14 +245,14 @@ class Chef
     # === Returns
     # Full path to the cached file as a String
     def sync_file(file)
-      cache_filename = File.join("cookbooks", file.cookbook.name, file.manifest_record['path'])
+      cache_filename = File.join("cookbooks", file.cookbook.name, file.manifest_record["path"])
       mark_cached_file_valid(cache_filename)
 
       # If the checksums are different between on-disk (current) and on-server
       # (remote, per manifest), do the update. This will also execute if there
       # is no current checksum.
-      if !cached_copy_up_to_date?(cache_filename, file.manifest_record['checksum'])
-        download_file(file.manifest_record['url'], cache_filename)
+      if !cached_copy_up_to_date?(cache_filename, file.manifest_record["checksum"])
+        download_file(file.manifest_record["url"], cache_filename)
         @events.updated_cookbook_file(file.cookbook.name, cache_filename)
       else
         Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
@@ -274,7 +275,7 @@ class Chef
     # downloaded to the path +destination+ which is relative to the Chef file
     # cache root.
     def download_file(url, destination)
-      raw_file = server_api.get_rest(url, true)
+      raw_file = server_api.streaming_request(url)
 
       Chef::Log.info("Storing updated #{destination} in the cache.")
       cache.move_to(raw_file.path, destination)
@@ -286,7 +287,7 @@ class Chef
     end
 
     def server_api
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
   end

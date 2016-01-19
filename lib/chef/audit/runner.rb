@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require "chef/audit/logger"
+
 class Chef
   class Audit
     class Runner
@@ -76,16 +78,16 @@ class Chef
       # prevents Specinfra and Serverspec from modifying the RSpec configuration
       # used by our spec tests.
       def require_deps
-        require 'rspec'
-        require 'rspec/its'
-        require 'specinfra'
-        require 'specinfra/helper'
-        require 'specinfra/helper/set'
-        require 'serverspec/helper'
-        require 'serverspec/matcher'
-        require 'serverspec/subject'
-        require 'chef/audit/audit_event_proxy'
-        require 'chef/audit/rspec_formatter'
+        require "rspec"
+        require "rspec/its"
+        require "specinfra"
+        require "specinfra/helper"
+        require "specinfra/helper/set"
+        require "serverspec/helper"
+        require "serverspec/matcher"
+        require "serverspec/subject"
+        require "chef/audit/audit_event_proxy"
+        require "chef/audit/rspec_formatter"
 
         Specinfra::Backend::Cmd.send(:include, Specinfra::Helper::Set)
       end
@@ -104,6 +106,7 @@ class Chef
         RSpec.configure do |c|
           c.color = Chef::Config[:color]
           c.expose_dsl_globally = false
+          c.project_source_dirs = Array(Chef::Config[:cookbook_path])
           c.backtrace_exclusion_patterns << exclusion_pattern
         end
       end
@@ -115,8 +118,8 @@ class Chef
       # the output stream to be changed for a formatter once the formatter has
       # been added.
       def set_streams
-        RSpec.configuration.output_stream = Chef::Config[:log_location]
-        RSpec.configuration.error_stream = Chef::Config[:log_location]
+        RSpec.configuration.output_stream = Chef::Audit::Logger
+        RSpec.configuration.error_stream = Chef::Audit::Logger
       end
 
       # Add formatters which we use to
@@ -144,6 +147,7 @@ class Chef
       def configure_specinfra
         if Chef::Platform.windows?
           Specinfra.configuration.backend = :cmd
+          Specinfra.configuration.os = { :family => "windows" }
         else
           Specinfra.configuration.backend = :exec
         end

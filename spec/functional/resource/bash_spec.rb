@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
+require "spec_helper"
+require "functional/resource/base"
 
 describe Chef::Resource::Bash, :unix_only do
   let(:code) { "echo hello" }
@@ -28,7 +28,7 @@ describe Chef::Resource::Bash, :unix_only do
   }
 
   describe "when setting the command attribute" do
-    let (:command) { 'wizard racket' }
+    let (:command) { "wizard racket" }
 
     # in Chef-12 the `command` attribute is largely useless, but does set the identity attribute
     # so that notifications need to target the value of the command.  it will not run the `command`
@@ -81,7 +81,7 @@ describe Chef::Resource::Bash, :unix_only do
   end
 
   it "times out when a timeout is set on the resource" do
-    resource.code 'sleep 600'
+    resource.code "sleep 600"
     resource.timeout 0.1
     expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::CommandTimeout)
   end

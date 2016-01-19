@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
-describe Chef::Resource::HomebrewPackage, 'initialize' do
+describe Chef::Resource::HomebrewPackage, "initialize" do
 
   static_provider_resolution(
     resource: Chef::Resource::HomebrewPackage,
@@ -28,22 +28,22 @@ describe Chef::Resource::HomebrewPackage, 'initialize' do
     os: "mac_os_x",
   )
 
-  let(:resource) { Chef::Resource::HomebrewPackage.new('emacs') }
+  let(:resource) { Chef::Resource::HomebrewPackage.new("emacs") }
 
-  shared_examples 'home_brew user set and returned' do
-    it 'returns the configured homebrew_user' do
+  shared_examples "home_brew user set and returned" do
+    it "returns the configured homebrew_user" do
       resource.homebrew_user user
       expect(resource.homebrew_user).to eql(user)
     end
   end
 
-  context 'homebrew_user is set' do
-    let(:user) { 'Captain Picard' }
-    include_examples 'home_brew user set and returned'
+  context "homebrew_user is set" do
+    let(:user) { "Captain Picard" }
+    include_examples "home_brew user set and returned"
 
-    context 'as an integer' do
+    context "as an integer" do
       let(:user) { 1001 }
-      include_examples 'home_brew user set and returned'
+      include_examples "home_brew user set and returned"
     end
   end
 

@@ -17,7 +17,7 @@
 #
 
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::RunStatus do
   before do
@@ -82,7 +82,7 @@ describe Chef::RunStatus do
 
     describe "with resources in the resource_collection" do
       before do
-        @all_resources = [Chef::Resource::Cat.new("whiskers"), Chef::Resource::ZenMaster.new('dtz')]
+        @all_resources = [Chef::Resource::Cat.new("whiskers"), Chef::Resource::ZenMaster.new("dtz")]
         @run_context.resource_collection.all_resources.replace(@all_resources)
       end
 

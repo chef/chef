@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/win32/api'
-require 'chef/win32/error'
-require 'pathname'
+require "chef/exceptions"
+require "chef/win32/api"
+require "chef/win32/error"
+require "pathname"
 
 class Chef
   module ReservedNames::Win32
@@ -37,7 +37,7 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'msi'
+        ffi_lib "msi"
 
 =begin
 UINT MsiOpenPackage(
@@ -158,7 +158,7 @@ UINT MsiCloseHandle(
             raise Chef::Exceptions::Package, msg
           end
 
-          version
+          version.chomp(0.chr)
         end
       end
     end

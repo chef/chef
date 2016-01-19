@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/util/path_helper'
+require "chef/util/path_helper"
 
 class Chef
   module Deprecation
@@ -25,7 +25,7 @@ class Chef
       # == Deprecation::Provider::File
       # This module contains the deprecated functions of
       # Chef::Provider::File. These functions are refactored to different
-      # components. They are frozen and will be removed in Chef 12.
+      # components. They are frozen and will be removed in Chef 13.
       #
       module File
 
@@ -59,7 +59,7 @@ class Chef
                           @current_resource.path
                         else
                           suppress_resource_reporting = true  # suppress big diffs going to resource reporting service
-                          tempfile = Tempfile.new('chef-tempfile')
+                          tempfile = Tempfile.new("chef-tempfile")
                           tempfile.path
                         end
 

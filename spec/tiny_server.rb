@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'rubygems'
-require 'webrick'
-require 'webrick/https'
-require 'rack'
+require "rubygems"
+require "webrick"
+require "webrick/https"
+require "rack"
 #require 'thin'
-require 'singleton'
-require 'open-uri'
-require 'chef/config'
+require "singleton"
+require "open-uri"
+require "chef/config"
 
 module TinyServer
 
@@ -48,9 +48,9 @@ module TinyServer
     # 5 == debug, 3 == warning
     LOGGER = WEBrick::Log.new(STDOUT, 3)
     DEFAULT_OPTIONS = {
-      :server => 'webrick',
+      :server => "webrick",
       :Port => 9000,
-      :Host => 'localhost',
+      :Host => "localhost",
       :environment => :none,
       :Logger => LOGGER,
       :AccessLog => [] # Remove this option to enable the access log when debugging.
@@ -66,9 +66,11 @@ module TinyServer
         @server = Server.setup(@options) do
           run API.instance
         end
+        @old_handler = trap(:INT, "EXIT")
         @server.start
       end
       block_until_started
+      trap(:INT, @old_handler)
     end
 
     def url
@@ -92,9 +94,11 @@ module TinyServer
       true
     rescue Errno::ECONNREFUSED, EOFError, Errno::ECONNRESET => e
       sleep 0.1
+      true
       # If the host has ":::1 localhost" in its hosts file and if IPv6
       # is not enabled we can get NetworkUnreachable exception...
-    rescue Errno::ENETUNREACH => e
+    rescue Errno::ENETUNREACH, Net::ReadTimeout, IO::EAGAINWaitReadable,
+        Errno::EHOSTUNREACH => e
       sleep 0.1
       false
     end
@@ -151,7 +155,7 @@ module TinyServer
                       :available_routes => @routes, :request => env}
         # Uncomment me for glorious debugging
         # pp :not_found => debug_info
-        [404, {'Content-Type' => 'application/json'}, [ Chef::JSONCompat.to_json(debug_info) ]]
+        [404, {"Content-Type" => "application/json"}, [ Chef::JSONCompat.to_json(debug_info) ]]
       end
     end
 
@@ -181,7 +185,7 @@ module TinyServer
   end
 
   class Response
-    HEADERS = {'Content-Type' => 'application/json'}
+    HEADERS = {"Content-Type" => "application/json"}
 
     def initialize(response_code=200, data=nil, headers=nil, &block)
       @response_code, @data = response_code, data

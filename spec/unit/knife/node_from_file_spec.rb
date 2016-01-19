@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::NodeFromFile.load_deps
 
@@ -39,7 +39,7 @@ describe Chef::Knife::NodeFromFile do
 
   describe "run" do
     it "should load from a file" do
-      expect(@knife.loader).to receive(:load_from).with('nodes', 'adam.rb').and_return(@node)
+      expect(@knife.loader).to receive(:load_from).with("nodes", "adam.rb").and_return(@node)
       @knife.run
     end
 

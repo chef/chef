@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/knife'
-require 'chef/application'
-require 'mixlib/log'
-require 'ohai/config'
-require 'chef/monkey_patches/net_http.rb'
+require "chef/knife"
+require "chef/application"
+require "mixlib/log"
+require "ohai/config"
+require "chef/monkey_patches/net_http.rb"
 
 class Chef::Application::Knife < Chef::Application
 
@@ -35,17 +35,17 @@ class Chef::Application::Knife < Chef::Application
 
   verbosity_level = 0
   option :verbosity,
-    :short => '-V',
-    :long  => '--verbose',
+    :short => "-V",
+    :long  => "--verbose",
     :description => "More verbose output. Use twice for max verbosity",
     :proc  => Proc.new { verbosity_level += 1},
     :default => 0
 
   option :color,
-    :long         => '--[no-]color',
+    :long         => "--[no-]color",
     :boolean      => true,
-    :default      => !Chef::Platform.windows?,
-    :description  => "Use colored output, defaults to false on Windows, true otherwise"
+    :default      => true,
+    :description  => "Use colored output, defaults to enabled"
 
   option :environment,
     :short        => "-E ENVIRONMENT",
@@ -56,7 +56,7 @@ class Chef::Application::Knife < Chef::Application
     :short        => "-e EDITOR",
     :long         => "--editor EDITOR",
     :description  => "Set the editor to use for interactive commands",
-    :default      => ENV['EDITOR']
+    :default      => ENV["EDITOR"]
 
   option :disable_editing,
     :short        => "-d",
@@ -121,6 +121,11 @@ class Chef::Application::Knife < Chef::Application
     :long         => "--chef-zero-port PORT",
     :description  => "Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
+  option :listen,
+    :long           => "--[no-]listen",
+    :description    => "Whether a local mode (-z) server binds to a port",
+    :boolean        => true
+
   option :version,
     :short        => "-v",
     :long         => "--version",
@@ -128,7 +133,6 @@ class Chef::Application::Knife < Chef::Application
     :boolean      => true,
     :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
     :exit         => 0
-
 
   # Run knife
   def run
@@ -158,7 +162,7 @@ class Chef::Application::Knife < Chef::Application
       print_help_and_exit(1, NO_COMMAND_GIVEN)
     elsif no_subcommand_given?
       if (want_help? || want_version?)
-        print_help_and_exit
+        print_help_and_exit(0)
       else
         print_help_and_exit(2, NO_COMMAND_GIVEN)
       end

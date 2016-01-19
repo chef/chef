@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleList do
   before(:each) do
@@ -25,7 +25,7 @@ describe Chef::Knife::RoleList do
     allow(@knife).to receive(:output).and_return(true)
     @list = {
       "foo" => "http://example.com/foo",
-      "bar" => "http://example.com/foo"
+      "bar" => "http://example.com/foo",
     }
     allow(Chef::Role).to receive(:list).and_return(@list)
   end

@@ -16,18 +16,18 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/exceptions'
-require 'shellwords'
+require "chef/knife"
+require "chef/exceptions"
+require "shellwords"
 
 class Chef
   class Knife
     class CookbookSiteInstall < Knife
 
       deps do
-        require 'chef/mixin/shell_out'
-        require 'chef/knife/core/cookbook_scm_repo'
-        require 'chef/cookbook/metadata'
+        require "chef/mixin/shell_out"
+        require "chef/knife/core/cookbook_scm_repo"
+        require "chef/cookbook/metadata"
       end
 
       banner "knife cookbook site install COOKBOOK [VERSION] (options)"
@@ -93,7 +93,7 @@ class Chef
 
         # TODO: it'd be better to store these outside the cookbook repo and
         # keep them around, e.g., in ~/Library/Caches on OS X.
-        ui.info("removing downloaded tarball")
+        ui.info("Removing downloaded tarball")
         File.unlink(upstream_file)
 
         if @repo.finalize_updates_to(@cookbook_name, downloader.version)
@@ -142,7 +142,11 @@ class Chef
       def extract_cookbook(upstream_file, version)
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
         # FIXME: Detect if we have the bad tar from git on Windows: https://github.com/opscode/chef/issues/1753
-        shell_out!("tar zxvf #{convert_path upstream_file}", :cwd => @install_path)
+        extract_command="tar zxvf \"#{convert_path upstream_file}\"" 
+        if Chef::Platform.windows?
+          extract_command << " --force-local"
+        end
+        shell_out!(extract_command, :cwd => @install_path)
       end
 
       def clear_existing_files(cookbook_path)
@@ -152,7 +156,7 @@ class Chef
 
       def convert_path(upstream_file)
         # converts a Windows path (C:\foo) to a mingw path (/c/foo)
-        if ENV['MSYSTEM'] == 'MINGW32'
+        if ENV["MSYSTEM"] == "MINGW32"
           return upstream_file.sub(/^([[:alpha:]]):/, '/\1')
         else
           return Shellwords.escape upstream_file

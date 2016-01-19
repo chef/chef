@@ -43,8 +43,8 @@ end
 describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
 
   # parent and key must be single keys, not paths
-  let(:parent) { 'Opscode' }
-  let(:child) { 'Whatever' }
+  let(:parent) { "Opscode" }
+  let(:child) { "Whatever" }
   let(:key_parent) { "SOFTWARE\\" + parent }
   let(:key_child) { "SOFTWARE\\" + parent + "\\" + child }
   # must be under HKLM\SOFTWARE for WOW64 redirection to work
@@ -111,7 +111,7 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
   before do
     @node.name("windowsbox")
 
-    @rest_client = double("Chef::REST (mock)")
+    @rest_client = double("Chef::ServerAPI (mock)")
     allow(@rest_client).to receive(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}");
     allow(@rest_client).to receive(:raw_http_request).and_return({"result"=>"ok"});
     allow(@rest_client).to receive(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/#{@run_id}"});

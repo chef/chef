@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/provider/mount'
+require "chef/provider/mount"
 
 class Chef
   class Provider
     class Mount
       class Aix < Chef::Provider::Mount::Mount
+        provides :mount, platform: %w{aix}
 
         # Override for aix specific handling
         def initialize(new_resource, run_context)
@@ -31,7 +32,7 @@ class Chef
             @new_resource.options.clear
           end
           if @new_resource.fstype == "auto"
-            @new_resource.fstype = nil
+            @new_resource.send(:clear_fstype)
           end
         end
 
@@ -98,13 +99,13 @@ class Chef
             end
 
             command << case @new_resource.device_type
-            when :device
-              " #{device_real}"
-            when :label
-              " -L #{@new_resource.device}"
-            when :uuid
-              " -U #{@new_resource.device}"
-            end
+                       when :device
+                         " #{device_real}"
+                       when :label
+                         " -L #{@new_resource.device}"
+                       when :uuid
+                         " -U #{@new_resource.device}"
+                       end
             command << " #{@new_resource.mount_point}"
             shell_out!(command)
             Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
@@ -173,7 +174,7 @@ class Chef
           end
         end
 
+      end
     end
-   end
   end
 end

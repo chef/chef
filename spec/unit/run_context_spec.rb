@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/lib/library_load_order'
+require "spec_helper"
+require "support/lib/library_load_order"
 
 describe Chef::RunContext do
   let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")) }
@@ -53,6 +53,44 @@ describe Chef::RunContext do
     expect(run_context.node).to eq(node)
   end
 
+  it "loads up node[:cookbooks]" do
+    expect(run_context.node[:cookbooks]).to eql(
+      {
+        "circular-dep1" => {
+          "version" => "0.0.0"
+        },
+        "circular-dep2" => {
+          "version" => "0.0.0"
+        },
+        "dependency1" => {
+          "version" => "0.0.0"
+        },
+        "dependency2" => {
+          "version" => "0.0.0"
+        },
+        "include" => {
+          "version" => "0.0.0"
+        },
+        "no-default-attr" => {
+          "version" => "0.0.0"
+        },
+        "test" => {
+          "version" => "0.0.0"
+        },
+        "test-with-circular-deps" => {
+          "version" => "0.0.0"
+        },
+        "test-with-deps" => {
+          "version" => "0.0.0"
+        },
+      },
+    )
+  end
+
+  it "has a nil parent_run_context" do
+    expect(run_context.parent_run_context).to be_nil
+  end
+
   describe "loading cookbooks for a run list" do
     before do
 
@@ -66,7 +104,7 @@ describe Chef::RunContext do
       expect(node).to receive(:loaded_recipe).with(:test, "default")
       expect(node).to receive(:loaded_recipe).with(:test, "one")
       expect(node).to receive(:loaded_recipe).with(:test, "two")
-      run_context.load(node.run_list.expand('_default'))
+      run_context.load(node.run_list.expand("_default"))
     end
 
     it "should load all the definitions in the cookbooks for this node" do
@@ -157,6 +195,47 @@ describe Chef::RunContext do
       run_context.cancel_reboot
       expect(run_context.reboot_info).to eq({})
       expect(run_context.reboot_requested?).to be_falsey
+    end
+  end
+
+  describe "notifications" do
+    let(:notification) { Chef::Resource::Notification.new(nil, nil, notifying_resource) }
+
+    shared_context "notifying resource is a Chef::Resource" do
+      let(:notifying_resource)  { Chef::Resource.new("gerbil") }
+
+      it "should be keyed off the resource name" do
+        run_context.send(setter, notification)
+        expect(run_context.send(getter, notifying_resource)).to eq([notification])
+      end
+    end
+
+    shared_context "notifying resource is a subclass of Chef::Resource" do
+      let(:declared_type) { :alpaca }
+      let(:notifying_resource)  {
+        r = Class.new(Chef::Resource).new("guinea pig")
+        r.declared_type = declared_type
+        r
+      }
+
+      it "should be keyed off the resource declared key" do
+        run_context.send(setter, notification)
+        expect(run_context.send(getter, notifying_resource)).to eq([notification])
+      end
+    end
+
+    describe "of the immediate kind" do
+      let(:setter) { :notifies_immediately }
+      let(:getter) { :immediate_notifications }
+      include_context "notifying resource is a Chef::Resource"
+      include_context "notifying resource is a subclass of Chef::Resource"
+    end
+
+    describe "of the delayed kind" do
+      let(:setter) { :notifies_delayed }
+      let(:getter) { :delayed_notifications }
+      include_context "notifying resource is a Chef::Resource"
+      include_context "notifying resource is a subclass of Chef::Resource"
     end
   end
 end

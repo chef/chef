@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright (c) 2015-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,6 +46,9 @@ class Chef
       raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
 
       @resource = resource_class.new(name, run_context)
+      if resource.resource_name.nil?
+        raise Chef::Exceptions::InvalidResourceSpecification, "#{resource}.resource_name is `nil`!  Did you forget to put `provides :blah` or `resource_name :blah` in your resource class?"
+      end
       resource.source_line = created_at
       resource.declared_type = type
 
@@ -67,7 +70,14 @@ class Chef
       resource.params = params
 
       # Evaluate resource attribute DSL
-      resource.instance_eval(&block) if block_given?
+      if block_given?
+        resource.resource_initializing = true
+        begin
+          resource.instance_eval(&block)
+        ensure
+          resource.resource_initializing = false
+        end
+      end
 
       # emit a cloned resource warning if it is warranted
       if prior_resource
@@ -127,7 +137,7 @@ class Chef
       @prior_resource ||=
         begin
           key = "#{type}[#{name}]"
-          prior_resource = run_context.resource_collection.lookup(key)
+          run_context.resource_collection.lookup(key)
         rescue Chef::Exceptions::ResourceNotFound
           nil
         end
@@ -135,3 +145,7 @@ class Chef
 
   end
 end
+
+require "chef/exceptions"
+require "chef/resource"
+require "chef/log"

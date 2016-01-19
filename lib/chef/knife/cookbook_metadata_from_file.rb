@@ -19,14 +19,14 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookMetadataFromFile < Knife
 
       deps do
-        require 'chef/cookbook/metadata'
+        require "chef/cookbook/metadata"
       end
 
       banner "knife cookbook metadata from FILE (options)"

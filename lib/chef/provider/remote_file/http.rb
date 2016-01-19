@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'chef/http/simple'
-require 'chef/digester'
-require 'chef/provider/remote_file'
-require 'chef/provider/remote_file/cache_control_data'
+require "chef/http/simple"
+require "chef/digester"
+require "chef/provider/remote_file"
+require "chef/provider/remote_file/cache_control_data"
 
 class Chef
   class Provider
@@ -87,11 +87,11 @@ class Chef
         end
 
         def last_modified_time_from(response)
-          response['last_modified'] || response['date']
+          response["last_modified"] || response["date"]
         end
 
         def etag_from(response)
-          response['etag']
+          response["etag"]
         end
 
         def http_client_opts
@@ -105,7 +105,7 @@ class Chef
           # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
           # which is not what you wanted.
           if uri.to_s =~ /gz$/
-            Chef::Log.debug("turning gzip compression off due to filename ending in gz")
+            Chef::Log.debug("Turning gzip compression off due to filename ending in gz")
             opts[:disable_gzip] = true
           end
           opts

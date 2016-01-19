@@ -16,21 +16,20 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
     class User < Chef::Resource
-
       identity_attr :username
 
       state_attrs :uid, :gid, :home
 
-      provides :user
+      default_action :create
+      allowed_actions :create, :remove, :modify, :manage, :lock, :unlock
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :user
         @username = name
         @comment = nil
         @uid = nil
@@ -42,21 +41,19 @@ class Chef
         @manage_home = false
         @force = false
         @non_unique = false
-        @action = :create
         @supports = {
           :manage_home => false,
-          :non_unique => false
+          :non_unique => false,
         }
         @iterations = 27855
         @salt = nil
-        @allowed_actions.push(:create, :remove, :modify, :manage, :lock, :unlock)
       end
 
       def username(arg=nil)
         set_or_return(
           :username,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -64,7 +61,7 @@ class Chef
         set_or_return(
           :comment,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -72,7 +69,7 @@ class Chef
         set_or_return(
           :uid,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer ],
         )
       end
 
@@ -80,7 +77,7 @@ class Chef
         set_or_return(
           :gid,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer ],
         )
       end
 
@@ -90,7 +87,7 @@ class Chef
         set_or_return(
           :home,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -98,7 +95,7 @@ class Chef
         set_or_return(
           :shell,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -106,7 +103,7 @@ class Chef
         set_or_return(
           :password,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -114,7 +111,7 @@ class Chef
         set_or_return(
           :salt,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -122,7 +119,7 @@ class Chef
         set_or_return(
           :iterations,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [ Integer ],
         )
       end
 
@@ -130,7 +127,7 @@ class Chef
         set_or_return(
           :system,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -138,7 +135,7 @@ class Chef
         set_or_return(
           :manage_home,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -146,7 +143,7 @@ class Chef
         set_or_return(
           :force,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -154,7 +151,7 @@ class Chef
         set_or_return(
           :non_unique,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 

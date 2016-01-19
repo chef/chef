@@ -22,26 +22,26 @@
 # available under the MIT license from
 # http://trac.misuse.org/science/wiki/DeepMerge
 
-require 'spec_helper'
+require "spec_helper"
 
 # Test coverage from the original author converted to rspec
 describe Chef::Mixin::DeepMerge, "deep_merge!" do
   before do
     @dm = Chef::Mixin::DeepMerge
-    @field_ko_prefix = '!merge'
+    @field_ko_prefix = "!merge"
   end
 
   # deep_merge core tests - moving from basic to more complex
 
   it "tests merging an hash w/array into blank hash" do
-    hash_src = {'id' => '2'}
+    hash_src = {"id" => "2"}
     hash_dst = {}
     @dm.deep_merge!(hash_src.dup, hash_dst)
     expect(hash_dst).to eq(hash_src)
   end
 
   it "tests merging an hash w/array into blank hash" do
-    hash_src = {'region' => {'id' => ['227', '2']}}
+    hash_src = {"region" => {"id" => ["227", "2"]}}
     hash_dst = {}
     @dm.deep_merge!(hash_src, hash_dst)
     expect(hash_dst).to eq(hash_src)
@@ -181,10 +181,10 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   end
 
   it "tests merging of hash with blank hash, and make sure that source array split does not function when turned off" do
-    hash_src = {'property' => {'bedroom_count' => ["1","2,3"]}}
+    hash_src = {"property" => {"bedroom_count" => ["1","2,3"]}}
     hash_dst = {}
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({'property' => {'bedroom_count' => ["1","2,3"]}})
+    expect(hash_dst).to eq({"property" => {"bedroom_count" => ["1","2,3"]}})
   end
 
   it "tests merging into a blank hash" do
@@ -247,13 +247,13 @@ describe Chef::Mixin::DeepMerge do
   describe "merge" do
     it "should merge a hash into an empty hash" do
       hash_dst = {}
-      hash_src = {'id' => '2'}
+      hash_src = {"id" => "2"}
       expect(@dm.merge(hash_dst, hash_src)).to eq(hash_src)
     end
 
     it "should merge a nested hash into an empty hash" do
       hash_dst = {}
-      hash_src = {'region' => {'id' => ['227', '2']}}
+      hash_src = {"region" => {"id" => ["227", "2"]}}
       expect(@dm.merge(hash_dst, hash_src)).to eq(hash_src)
     end
 
@@ -304,25 +304,25 @@ describe Chef::Mixin::DeepMerge do
     end
 
     it "replaces arrays rather than merging them" do
-      merge_ee_hash = {"top_level_a" => {"1_deep_a" => "1-a-merge-ee", "1_deep_b" => %w[A A A]}, "top_level_b" => "top-level-b-merge-ee"}
-      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w[B B B], "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
+      merge_ee_hash = {"top_level_a" => {"1_deep_a" => "1-a-merge-ee", "1_deep_b" => %w{A A A}}, "top_level_b" => "top-level-b-merge-ee"}
+      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w{B B B}, "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
 
       merged_result = @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
 
       expect(merged_result["top_level_b"]).to eq("top-level-b-merged-onto")
       expect(merged_result["top_level_a"]["1_deep_a"]).to eq("1-a-merge-ee")
-      expect(merged_result["top_level_a"]["1_deep_b"]).to eq(%w[B B B])
+      expect(merged_result["top_level_a"]["1_deep_b"]).to eq(%w{B B B})
     end
 
     it "replaces non-hash items with hashes when there's a conflict" do
       merge_ee_hash = {"top_level_a" => "top-level-a-mergee", "top_level_b" => "top-level-b-merge-ee"}
-      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w[B B B], "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
+      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w{B B B}, "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
 
       merged_result = @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
 
       expect(merged_result["top_level_a"]).to be_a(Hash)
       expect(merged_result["top_level_a"]["1_deep_a"]).to be_nil
-      expect(merged_result["top_level_a"]["1_deep_b"]).to eq(%w[B B B])
+      expect(merged_result["top_level_a"]["1_deep_b"]).to eq(%w{B B B})
     end
 
     it "does not mutate deeply-nested original hashes by default" do

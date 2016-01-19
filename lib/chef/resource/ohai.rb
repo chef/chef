@@ -25,12 +25,11 @@ class Chef
 
       state_attrs :plugin
 
+      default_action :reload
+
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ohai
         @name = name
-        @allowed_actions.push(:reload)
-        @action = :reload
         @plugin = nil
       end
 
@@ -38,7 +37,7 @@ class Chef
         set_or_return(
           :plugin,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -46,7 +45,7 @@ class Chef
         set_or_return(
           :name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
     end

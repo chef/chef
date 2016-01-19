@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/policy_builder/expand_node_object'
-require 'chef/policy_builder/policyfile'
+require "chef/policy_builder/expand_node_object"
+require "chef/policy_builder/policyfile"
+require "chef/policy_builder/dynamic"
 
 class Chef
 
@@ -36,14 +37,6 @@ class Chef
   # * cookbooks sync'd to disk
   # * cookbook_hash is stored in run_context
   module PolicyBuilder
-
-    def self.strategy
-      if Chef::Config[:use_policyfile]
-        Policyfile
-      else
-        ExpandNodeObject
-      end
-    end
 
   end
 end

@@ -23,7 +23,7 @@ class Chef
       def enforce_path_sanity(env=ENV)
         if Chef::Config[:enforce_path_sanity]
           env["PATH"] = "" if env["PATH"].nil?
-          path_separator = Chef::Platform.windows? ? ';' : ':'
+          path_separator = Chef::Platform.windows? ? ";" : ":"
           existing_paths = env["PATH"].split(path_separator)
           # ensure the Ruby and Gem bindirs are included
           # mainly for 'full-stack' Chef installs
@@ -48,15 +48,15 @@ class Chef
       def sane_paths
         @sane_paths ||= begin
           if Chef::Platform.windows?
-            %w[]
+            %w{}
           else
-            %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
+            %w{/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin}
           end
         end
       end
 
       def ruby_bindir
-        RbConfig::CONFIG['bindir']
+        RbConfig::CONFIG["bindir"]
       end
 
       def gem_bindir

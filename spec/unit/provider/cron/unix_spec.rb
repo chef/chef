@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Cron::Unix do
 
@@ -37,9 +37,9 @@ describe Chef::Provider::Cron::Unix do
     end
   end
 
-  let(:status) { double('Process::Status', :exitstatus => exitstatus) }
+  let(:status) { double("Process::Status", :exitstatus => exitstatus) }
   let(:exitstatus) { 0 }
-  let(:shell_out) { double('Mixlib::ShellOut', :status => status, :stdout => stdout, :stderr => stderr) }
+  let(:shell_out) { double("Mixlib::ShellOut", :status => status, :stdout => stdout, :stderr => stderr) }
 
   it "is a Chef::Provider:Cron" do
     expect(provider).to be_a(Chef::Provider::Cron)
@@ -61,12 +61,12 @@ describe Chef::Provider::Cron::Unix do
     before do
       allow(Chef::Log).to receive(:debug)
       allow(shell_out).to receive(:format_for_exception).and_return("formatted command output")
-      allow(provider).to receive(:shell_out).with('/usr/bin/crontab -l', :user => username).and_return(shell_out)
+      allow(provider).to receive(:shell_out).with("/usr/bin/crontab -l", :user => username).and_return(shell_out)
     end
 
     it "should call crontab -l with the user" do
       provider.send(:read_crontab)
-      expect(provider).to have_received(:shell_out).with('/usr/bin/crontab -l', :user => username)
+      expect(provider).to have_received(:shell_out).with("/usr/bin/crontab -l", :user => username)
     end
 
     it "should return the contents of the crontab" do

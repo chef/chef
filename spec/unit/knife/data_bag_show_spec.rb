@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item'
-require 'chef/json_compat'
-require 'tempfile'
+require "chef/data_bag_item"
+require "chef/encrypted_data_bag_item"
+require "chef/json_compat"
+require "tempfile"
 
 describe Chef::Knife::DataBagShow do
 
@@ -39,7 +39,7 @@ describe Chef::Knife::DataBagShow do
     k
   end
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
@@ -70,9 +70,9 @@ describe Chef::Knife::DataBagShow do
       expect(knife.ui).to receive(:info).with("Encrypted data bag detected, decrypting with provided secret.")
       expect(Chef::EncryptedDataBagItem).to receive(:load).with(bag_name, item_name, secret).and_return(enc_data_bag)
 
-      expected = %q|baz: http://localhost:4000/data/bag_o_data/baz
+      expected = %q{baz: http://localhost:4000/data/bag_o_data/baz
 id:  id
-qux: http://localhost:4000/data/bag_o_data/qux|
+qux: http://localhost:4000/data/bag_o_data/qux}
       knife.run
       expect(stdout.string.strip).to eq(expected)
     end
@@ -97,9 +97,9 @@ qux: http://localhost:4000/data/bag_o_data/qux|
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag)
       expect(knife.ui).to receive(:info).with("Unencrypted data bag detected, ignoring any provided secret options.")
 
-      expected = %q|baz: http://localhost:4000/data/bag_o_data/baz
+      expected = %q{baz: http://localhost:4000/data/bag_o_data/baz
 id:  id
-qux: http://localhost:4000/data/bag_o_data/qux|
+qux: http://localhost:4000/data/bag_o_data/qux}
       knife.run
       expect(stdout.string.strip).to eq(expected)
     end

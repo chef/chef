@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/crypto' if Chef::Platform.windows?
+require "chef/win32/crypto" if Chef::Platform.windows?
 
 class Chef::Util::Powershell
   class PSCredential
@@ -28,6 +28,9 @@ class Chef::Util::Powershell
     def to_psobject
       "New-Object System.Management.Automation.PSCredential('#{@username}',('#{encrypt(@password)}' | ConvertTo-SecureString))"
     end
+
+    alias to_s to_psobject
+    alias to_text to_psobject
 
     private
 

@@ -5,7 +5,7 @@
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010, 2013 Opscode, Inc.
+# Copyright:: Copyright (c) 2009, 2010, 2013-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,14 +21,14 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'net/https'
-require 'uri'
-require 'chef/http/basic_client'
-require 'chef/monkey_patches/net_http'
-require 'chef/config'
-require 'chef/platform/query_helpers'
-require 'chef/exceptions'
+require "tempfile"
+require "net/https"
+require "uri"
+require "chef/http/basic_client"
+require "chef/monkey_patches/net_http"
+require "chef/config"
+require "chef/platform/query_helpers"
+require "chef/exceptions"
 
 class Chef
 
@@ -74,6 +74,7 @@ class Chef
     attr_reader :sign_on_redirect
     attr_reader :redirect_limit
 
+    attr_reader :options
     attr_reader :middlewares
 
     # Create a HTTP client object. The supplied +url+ is used as the base for
@@ -86,6 +87,7 @@ class Chef
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
+      @options = options
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
@@ -196,14 +198,26 @@ class Chef
 
     def http_client(base_url=nil)
       base_url ||= url
-      BasicClient.new(base_url)
+      if chef_zero_uri?(base_url)
+        # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
+        # via chef-zero and that hits DNS (at *require* time) which may timeout,
+        # when for most knife/chef-client work we never need/want this loaded.
+        Thread.exclusive {
+          unless defined?(SocketlessChefZeroClient)
+            require "chef/http/socketless_chef_zero_client"
+          end
+        }
+        SocketlessChefZeroClient.new(base_url)
+      else
+        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+      end
     end
 
     protected
 
     def create_url(path)
       return path if path.is_a?(URI)
-      if path =~ /^(http|https):\/\//i
+      if path =~ /^(http|https|chefzero):\/\//i
         URI.parse(path)
       elsif path.nil? or path.empty?
         URI.parse(@url)
@@ -211,7 +225,7 @@ class Chef
         # The regular expressions used here are to make sure '@url' does not have
         # any trailing slashes and 'path' does not have any leading slashes. This
         # way they are always joined correctly using just one slash.
-        URI.parse(@url.gsub(%r{/+$}, '') + '/' + path.gsub(%r{^/+}, ''))
+        URI.parse(@url.gsub(%r{/+$}, "") + "/" + path.gsub(%r{^/+}, ""))
       end
     end
 
@@ -292,7 +306,7 @@ class Chef
           http_attempts += 1
           response, request, return_value = yield
           # handle HTTP 50X Error
-          if response.kind_of?(Net::HTTPServerError)
+          if response.kind_of?(Net::HTTPServerError) && !Chef::Config.local_mode
             if http_retry_count - http_attempts + 1 > 0
               sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
               Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
@@ -302,7 +316,7 @@ class Chef
           end
           return [response, request, return_value]
         end
-      rescue SocketError, Errno::ETIMEDOUT => e
+      rescue SocketError, Errno::ETIMEDOUT, Errno::ECONNRESET => e
         if http_retry_count - http_attempts + 1 > 0
           Chef::Log.error("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
@@ -324,6 +338,13 @@ class Chef
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url}, giving up"
+      rescue OpenSSL::SSL::SSLError => e
+        if (http_retry_count - http_attempts + 1 > 0) && !e.message.include?("certificate verify failed")
+          Chef::Log.error("SSL Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          sleep(http_retry_delay)
+          retry
+        end
+        raise OpenSSL::SSL::SSLError, "SSL Error connecting to #{url} - #{e.message}"
       end
     end
 
@@ -351,16 +372,21 @@ class Chef
 
     private
 
+    def chef_zero_uri?(uri)
+      uri = URI.parse(uri) unless uri.respond_to?(:scheme)
+      uri.scheme == "chefzero"
+    end
+
     def redirected_to(response)
       return nil  unless response.kind_of?(Net::HTTPRedirection)
       # Net::HTTPNotModified is undesired subclass of Net::HTTPRedirection so test for this
       return nil  if response.kind_of?(Net::HTTPNotModified)
-      response['location']
+      response["location"]
     end
 
     def build_headers(method, url, headers={}, json_body=false)
       headers                 = @default_headers.merge(headers)
-      headers['Content-Length'] = json_body.bytesize.to_s if json_body
+      headers["Content-Length"] = json_body.bytesize.to_s if json_body
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers
     end
@@ -370,7 +396,7 @@ class Chef
       if Chef::Platform.windows?
         tf.binmode # required for binary files on Windows platforms
       end
-      Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
+      Chef::Log.debug("Streaming download from #{url} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
 

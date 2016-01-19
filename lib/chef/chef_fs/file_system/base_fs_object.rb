@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/path_utils'
-require 'chef/chef_fs/file_system/operation_not_allowed_error'
+require "chef/chef_fs/path_utils"
+require "chef/chef_fs/file_system/operation_not_allowed_error"
 
 class Chef
   module ChefFS
@@ -29,10 +29,10 @@ class Chef
           if parent
             @path = Chef::ChefFS::PathUtils::join(parent.path, name)
           else
-            if name != ''
+            if name != ""
               raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
             end
-            @path = '/'
+            @path = "/"
           end
         end
 
@@ -95,7 +95,10 @@ class Chef
         # directly perform a network request to retrieve the y.json data bag.  No
         # network request was necessary to retrieve
         def child(name)
-          NonexistentFSObject.new(name, self)
+          if can_have_child?(name, true) || can_have_child?(name, false)
+            result = make_child_entry(name)
+          end
+          result || NonexistentFSObject.new(name, self)
         end
 
         # Override children to report your *actual* list of children as an array.
@@ -143,7 +146,7 @@ class Chef
         def path_for_printing
           if parent
             parent_path = parent.path_for_printing
-            if parent_path == '.'
+            if parent_path == "."
               name
             else
               Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
@@ -171,10 +174,10 @@ class Chef
 
         # Important directory attributes: name, parent, path, root
         # Overridable attributes: dir?, child(name), path_for_printing
-        # Abstract: read, write, delete, children, can_have_child?, create_child, compare_to
+        # Abstract: read, write, delete, children, can_have_child?, create_child, compare_to, make_child_entry
       end # class BaseFsObject
     end
   end
 end
 
-require 'chef/chef_fs/file_system/nonexistent_fs_object'
+require "chef/chef_fs/file_system/nonexistent_fs_object"

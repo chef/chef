@@ -18,14 +18,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 Chef::Knife::CookbookTest.load_deps
 
 describe Chef::Knife::CookbookTest do
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::CookbookTest.new
-    @knife.config[:cookbook_path] = File.join(CHEF_SPEC_DATA,'cookbooks')
+    @knife.config[:cookbook_path] = File.join(CHEF_SPEC_DATA,"cookbooks")
     allow(@knife.cookbook_loader).to receive(:cookbook_exists?).and_return(true)
     @cookbooks = []
     %w{tats central_market jimmy_johns pho}.each do |cookbook_name|

@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-require 'chef/event_dispatch/base'
-require 'chef/formatters/error_inspectors'
-require 'chef/formatters/error_descriptor'
-require 'chef/formatters/error_mapper'
-require 'chef/formatters/indentable_output_stream'
+require "chef/event_dispatch/base"
+require "chef/formatters/error_inspectors"
+require "chef/formatters/error_descriptor"
+require "chef/formatters/error_mapper"
+require "chef/formatters/indentable_output_stream"
 
 class Chef
 
@@ -212,6 +212,13 @@ class Chef
         file_load_failed(path, exception)
       end
 
+      def deprecation(message, location=caller(2..2)[0])
+        Chef::Log.deprecation("#{message} at #{location}")
+      end
+
+      def is_formatter?
+        true
+      end
     end
 
 
@@ -222,6 +229,9 @@ class Chef
 
       cli_name(:null)
 
+      def is_formatter?
+        false
+      end
     end
 
   end

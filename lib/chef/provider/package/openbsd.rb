@@ -20,11 +20,10 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/get_source_from_package'
-require 'chef/exceptions'
+require "chef/resource/package"
+require "chef/provider/package"
+require "chef/mixin/get_source_from_package"
+require "chef/exceptions"
 
 class Chef
   class Provider
@@ -32,6 +31,7 @@ class Chef
       class Openbsd < Chef::Provider::Package
 
         provides :package, os: "openbsd"
+        provides :openbsd_package
 
         include Chef::Mixin::ShellOut
         include Chef::Mixin::GetSourceFromPackage
@@ -53,7 +53,7 @@ class Chef
           # Below are incomplete/missing features for this package provider
           requirements.assert(:all_actions) do |a|
             a.assertion { !new_resource.source }
-            a.failure_message(Chef::Exceptions::Package, 'The openbsd package provider does not support the source attribute')
+            a.failure_message(Chef::Exceptions::Package, "The openbsd package provider does not support the source attribute")
           end
           requirements.assert(:all_actions) do |a|
             a.assertion do
@@ -63,7 +63,7 @@ class Chef
                 true
               end
             end
-            a.failure_message(Chef::Exceptions::Package, 'The openbsd package provider does not support providing a version and flavor')
+            a.failure_message(Chef::Exceptions::Package, "The openbsd package provider does not support providing a version and flavor")
           end
         end
 
@@ -72,18 +72,16 @@ class Chef
             if parts = name.match(/^(.+?)--(.+)/) # use double-dash for stems with flavors, see man page for pkg_add
               name = parts[1]
             end
-            shell_out!("pkg_add -r #{name}#{version_string}", :env => {"PKG_PATH" => pkg_path}).status
+            shell_out_with_timeout!("pkg_add -r #{name}#{version_string(version)}", :env => {"PKG_PATH" => pkg_path}).status
             Chef::Log.debug("#{new_resource.package_name} installed")
           end
         end
 
         def remove_package(name, version)
-          version_string  = ''
-          version_string += "-#{version}" if version
           if parts = name.match(/^(.+?)--(.+)/)
             name = parts[1]
           end
-          shell_out!("pkg_delete #{name}#{version_string}", :env => nil).status
+          shell_out_with_timeout!("pkg_delete #{name}#{version_string(version)}", :env => nil).status
         end
 
         private
@@ -94,7 +92,7 @@ class Chef
           else
             name = new_resource.package_name
           end
-          pkg_info = shell_out!("pkg_info -e \"#{name}->0\"", :env => nil, :returns => [0,1])
+          pkg_info = shell_out_with_timeout!("pkg_info -e \"#{name}->0\"", :env => nil, :returns => [0,1])
           result = pkg_info.stdout[/^inst:#{Regexp.escape(name)}-(.+?)\s/, 1]
           Chef::Log.debug("installed_version of '#{new_resource.package_name}' is '#{result}'")
           result
@@ -103,7 +101,7 @@ class Chef
         def candidate_version
           @candidate_version ||= begin
             results = []
-            shell_out!("pkg_info -I \"#{new_resource.package_name}#{version_string}\"", :env => nil, :returns => [0,1]).stdout.each_line do |line|
+            shell_out_with_timeout!("pkg_info -I \"#{new_resource.package_name}#{version_string(new_resource.version)}\"", :env => nil, :returns => [0,1]).stdout.each_line do |line|
               if parts = new_resource.package_name.match(/^(.+?)--(.+)/)
                 results << line[/^#{Regexp.escape(parts[1])}-(.+?)\s/, 1]
               else
@@ -111,7 +109,7 @@ class Chef
               end
             end
             results = results.reject(&:nil?)
-            Chef::Log.debug("candidate versions of '#{new_resource.package_name}' are '#{results}'")
+            Chef::Log.debug("Candidate versions of '#{new_resource.package_name}' are '#{results}'")
             case results.length
             when 0
               []
@@ -123,13 +121,13 @@ class Chef
           end
         end
 
-        def version_string
-          ver  = ''
-          ver += "-#{new_resource.version}" if new_resource.version
+        def version_string(version)
+          ver  = ""
+          ver += "-#{version}" if version
         end
 
         def pkg_path
-          ENV['PKG_PATH'] || "http://ftp.OpenBSD.org/pub/#{node.kernel.name}/#{node.kernel.release}/packages/#{node.kernel.machine}/"
+          ENV["PKG_PATH"] || "http://ftp.OpenBSD.org/pub/#{node.kernel.name}/#{node.kernel.release}/packages/#{node.kernel.machine}/"
         end
 
       end

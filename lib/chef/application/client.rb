@@ -2,7 +2,7 @@
 # Author:: AJ Christensen (<aj@opscode.com)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Mark Mzyk (mmzyk@opscode.com)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +17,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/application'
-require 'chef/client'
-require 'chef/config'
-require 'chef/daemon'
-require 'chef/log'
-require 'chef/config_fetcher'
-require 'chef/handler/error_report'
-require 'chef/workstation_config_loader'
+require "chef/application"
+require "chef/client"
+require "chef/config"
+require "chef/daemon"
+require "chef/log"
+require "chef/config_fetcher"
+require "chef/handler/error_report"
+require "chef/workstation_config_loader"
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
@@ -55,11 +55,17 @@ class Chef::Application::Client < Chef::Application
     :boolean      => true,
     :default      => false
 
-  option :color,
-    :long         => '--[no-]color',
+  option :profile_ruby,
+    :long         => "--[no-]profile-ruby",
+    :description  => "Dump complete Ruby call graph stack of entire Chef run (expert only)",
     :boolean      => true,
-    :default      => !Chef::Platform.windows?,
-    :description  => "Use colored output, defaults to false on Windows, true otherwise"
+    :default      => false
+
+  option :color,
+    :long         => "--[no-]color",
+    :boolean      => true,
+    :default      => true,
+    :description  => "Use colored output, defaults to enabled"
 
   option :log_level,
     :short        => "-l LEVEL",
@@ -160,10 +166,15 @@ class Chef::Application::Client < Chef::Application
     :description  => "Set the client key file location",
     :proc         => nil
 
+  option :named_run_list,
+    :short        => "-n NAMED_RUN_LIST",
+    :long         => "--named-run-list NAMED_RUN_LIST",
+    :description  => "Use a policyfile's named run list instead of the default run list"
+
   option :environment,
-    :short        => '-E ENVIRONMENT',
-    :long         => '--environment ENVIRONMENT',
-    :description  => 'Set the Chef Environment on the node'
+    :short        => "-E ENVIRONMENT",
+    :long         => "--environment ENVIRONMENT",
+    :description  => "Set the Chef Environment on the node"
 
   option :version,
     :short        => "-v",
@@ -178,7 +189,7 @@ class Chef::Application::Client < Chef::Application
     :long         => "--override-runlist RunlistItem,RunlistItem...",
     :description  => "Replace current run list with specified items for a single run",
     :proc         => lambda{|items|
-      items = items.split(',')
+      items = items.split(",")
       items.compact.map{|item|
         Chef::RunList::RunListItem.new(item)
       }
@@ -189,15 +200,15 @@ class Chef::Application::Client < Chef::Application
     :long         => "--runlist RunlistItem,RunlistItem...",
     :description  => "Permanently replace current run list with specified items",
     :proc         => lambda{|items|
-      items = items.split(',')
+      items = items.split(",")
       items.compact.map{|item|
         Chef::RunList::RunListItem.new(item)
       }
     }
   option :why_run,
-    :short        => '-W',
-    :long         => '--why-run',
-    :description  => 'Enable whyrun mode',
+    :short        => "-W",
+    :long         => "--why-run",
+    :description  => "Enable whyrun mode",
     :boolean      => true
 
   option :client_fork,
@@ -258,6 +269,11 @@ class Chef::Application::Client < Chef::Application
     :description    => "Only run the bare minimum ohai plugins chef needs to function",
     :boolean        => true
 
+  option :listen,
+    :long           => "--[no-]listen",
+    :description    => "Whether a local mode (-z) server binds to a port",
+    :boolean        => true
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
   attr_reader :chef_client_json
@@ -267,13 +283,19 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
-    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
+    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || "" ), (Chef::Config[:lockfile] || "")
 
     set_specific_recipes
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 
     Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+
+    if Chef::Config.has_key?(:chef_repo_path) && Chef::Config.chef_repo_path.nil?
+      Chef::Config.delete(:chef_repo_path)
+      Chef::Log.warn "chef_repo_path was set in a config file but was empty. Assuming #{Chef::Config.chef_repo_path}"
+    end
+
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
@@ -283,7 +305,7 @@ class Chef::Application::Client < Chef::Application
     elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
       Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
       FileUtils.mkdir_p(Chef::Config.chef_repo_path)
-      tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
+      tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
       result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
       Chef::Log.debug "#{result.stdout}"
@@ -314,12 +336,6 @@ class Chef::Application::Client < Chef::Application
       expected_modes = [:enabled, :disabled, :audit_only]
       unless expected_modes.include?(mode)
         Chef::Application.fatal!(unrecognized_audit_mode(mode))
-      end
-
-      unless mode == :disabled
-        # This should be removed when audit-mode is enabled by default/no longer
-        # an experimental feature.
-        Chef::Log.warn(audit_mode_experimental_message)
       end
     end
   end
@@ -443,31 +459,20 @@ class Chef::Application::Client < Chef::Application
     "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 
-  def audit_mode_settings_explaination
-    "\n* To enable audit mode after converge, use command line option `--audit-mode enabled` or set `:audit_mode = :enabled` in your config file." +
-    "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `:audit_mode = :disabled` in your config file." +
-    "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `:audit_mode = :audit_only` in your config file." +
+  def audit_mode_settings_explanation
+    "\n* To enable audit mode after converge, use command line option `--audit-mode enabled` or set `audit_mode :enabled` in your config file." +
+    "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `audit_mode :disabled` in your config file." +
+    "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `audit_mode :audit_only` in your config file." +
     "\nAudit mode is disabled by default."
   end
 
   def unrecognized_audit_mode(mode)
-    "Unrecognized setting #{mode} for audit mode." + audit_mode_settings_explaination
-  end
-
-  def audit_mode_experimental_message
-    msg = if Chef::Config[:audit_mode] == :audit_only
-      "Chef-client has been configured to skip converge and only audit."
-    else
-      "Chef-client has been configured to audit after it converges."
-    end
-    msg += " Audit mode is an experimental feature currently under development. API changes may occur. Use at your own risk."
-    msg += audit_mode_settings_explaination
-    return msg
+    "Unrecognized setting #{mode} for audit mode." + audit_mode_settings_explanation
   end
 
   def fetch_recipe_tarball(url, path)
     Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
-    File.open(path, 'wb') do |f|
+    File.open(path, "wb") do |f|
       open(url) do |r|
         f.write(r.read)
       end

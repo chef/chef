@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/data_bag_item'
+require "spec_helper"
+require "chef/data_bag_item"
 
 describe Chef::DataBagItem do
   let(:data_bag_item) { Chef::DataBagItem.new }
@@ -169,7 +169,7 @@ describe Chef::DataBagItem do
   describe "when deserializing from JSON" do
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
-      data_bag_item.data_bag('mars_volta')
+      data_bag_item.data_bag("mars_volta")
       data_bag_item.raw_data = { "id" => "octahedron", "snooze" => { "finally" => :world_will } }
       data_bag_item
     }
@@ -193,15 +193,15 @@ describe Chef::DataBagItem do
       expect(deserial["snooze"]).to eq({ "finally" => "world_will" })
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { data_bag_item }
     end
   end
 
   describe "when converting to a string" do
     it "converts to a string in the form data_bag_item[ID]" do
-      data_bag_item['id'] = "heart of darkness"
-      expect(data_bag_item.to_s).to eq('data_bag_item[heart of darkness]')
+      data_bag_item["id"] = "heart of darkness"
+      expect(data_bag_item.to_s).to eq("data_bag_item[heart of darkness]")
     end
 
     it "inspects as data_bag_item[BAG, ID, RAW_DATA]" do
@@ -214,29 +214,29 @@ describe Chef::DataBagItem do
   end
 
   describe "save" do
-    let(:server) { instance_double(Chef::REST) }
+    let(:server) { instance_double(Chef::ServerAPI) }
 
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
-      data_bag_item['id'] = "heart of darkness"
+      data_bag_item["id"] = "heart of darkness"
       data_bag_item.raw_data = {"id" => "heart_of_darkness", "author" => "Conrad"}
       data_bag_item.data_bag("books")
       data_bag_item
     }
 
     before do
-      expect(Chef::REST).to receive(:new).and_return(server)
+      expect(Chef::ServerAPI).to receive(:new).and_return(server)
     end
 
     it "should update the item when it already exists" do
-      expect(server).to receive(:put_rest).with("data/books/heart_of_darkness", data_bag_item)
+      expect(server).to receive(:put).with("data/books/heart_of_darkness", data_bag_item)
       data_bag_item.save
     end
 
     it "should create if the item is not found" do
       exception = double("404 error", :code => "404")
-      expect(server).to receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
-      expect(server).to receive(:post_rest).with("data/books", data_bag_item)
+      expect(server).to receive(:put).and_raise(Net::HTTPServerException.new("foo", exception))
+      expect(server).to receive(:post).with("data/books", data_bag_item)
       data_bag_item.save
     end
 
@@ -249,8 +249,8 @@ describe Chef::DataBagItem do
       end
 
       it "should not save" do
-        expect(server).not_to receive(:put_rest)
-        expect(server).not_to receive(:post_rest)
+        expect(server).not_to receive(:put)
+        expect(server).not_to receive(:post)
         data_bag_item.data_bag("books")
         data_bag_item.save
       end
@@ -259,18 +259,18 @@ describe Chef::DataBagItem do
   end
 
   describe "destroy" do
-    let(:server) { instance_double(Chef::REST) }
+    let(:server) { instance_double(Chef::ServerAPI) }
 
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
-      data_bag_item.data_bag('a_baggy_bag')
+      data_bag_item.data_bag("a_baggy_bag")
       data_bag_item.raw_data = { "id" => "some_id" }
       data_bag_item
     }
 
     it "should set default parameters" do
-      expect(Chef::REST).to receive(:new).and_return(server)
-      expect(server).to receive(:delete_rest).with("data/a_baggy_bag/data_bag_item_a_baggy_bag_some_id")
+      expect(Chef::ServerAPI).to receive(:new).and_return(server)
+      expect(server).to receive(:delete).with("data/a_baggy_bag/data_bag_item_a_baggy_bag_some_id")
 
       data_bag_item.destroy
     end
@@ -283,21 +283,21 @@ describe Chef::DataBagItem do
     end
 
     describe "from an API call" do
-      let(:http_client) { double("Chef::REST") }
+      let(:http_client) { double("Chef::ServerAPI") }
 
       before do
-        allow(Chef::REST).to receive(:new).and_return(http_client)
+        allow(Chef::ServerAPI).to receive(:new).and_return(http_client)
       end
 
       it "converts raw data to a data bag item" do
-        expect(http_client).to receive(:get_rest).with("data/users/charlie").and_return(data_bag_item.to_hash)
+        expect(http_client).to receive(:get).with("data/users/charlie").and_return(data_bag_item.to_hash)
         item = Chef::DataBagItem.load(:users, "charlie")
         expect(item).to be_a_kind_of(Chef::DataBagItem)
         expect(item).to eq(data_bag_item)
       end
 
       it "does not convert when a DataBagItem is returned from the API call" do
-        expect(http_client).to receive(:get_rest).with("data/users/charlie").and_return(data_bag_item)
+        expect(http_client).to receive(:get).with("data/users/charlie").and_return(data_bag_item)
         item = Chef::DataBagItem.load(:users, "charlie")
         expect(item).to be_a_kind_of(Chef::DataBagItem)
         expect(item).to equal(data_bag_item)
@@ -314,8 +314,8 @@ describe Chef::DataBagItem do
       end
 
       it "converts the raw data to a data bag item" do
-        expect(Chef::DataBag).to receive(:load).with('users').and_return({'charlie' => data_bag_item.to_hash})
-        item = Chef::DataBagItem.load('users', 'charlie')
+        expect(Chef::DataBag).to receive(:load).with("users").and_return({"charlie" => data_bag_item.to_hash})
+        item = Chef::DataBagItem.load("users", "charlie")
         expect(item).to be_a_kind_of(Chef::DataBagItem)
         expect(item).to eq(data_bag_item)
       end

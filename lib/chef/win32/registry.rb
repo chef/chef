@@ -16,16 +16,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/reserved_names'
+require "chef/reserved_names"
+require "chef/win32/api"
+require "chef/mixin/wide_string"
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'win32/registry'
-  require 'win32/api'
+  require "chef/monkey_patches/win32/registry"
+  require "chef/win32/api/registry"
+  require "win32/registry"
+  require "win32/api"
 end
 
 class Chef
   class Win32
     class Registry
+
+      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+        include Chef::ReservedNames::Win32::API::Registry
+        extend Chef::ReservedNames::Win32::API::Registry
+      end
+
+      include Chef::Mixin::WideString
+      extend Chef::Mixin::WideString
 
       attr_accessor :run_context
       attr_accessor :architecture
@@ -115,36 +127,21 @@ class Chef
           Chef::Log.debug("Registry key #{key_path}, does not exist, not deleting")
           return true
         end
-        #key_path is in the form "HKLM\Software\Opscode" for example, extracting
-        #hive = HKLM,
-        #hive_namespace = ::Win32::Registry::HKEY_LOCAL_MACHINE
-        hive = key_path.split("\\").shift
-        hive_namespace, key_including_parent = get_hive_and_key(key_path)
-        if has_subkeys?(key_path)
-          if recursive == true
-            subkeys = get_subkeys(key_path)
-            subkeys.each do |key|
-              keypath_to_check = hive+"\\"+key_including_parent+"\\"+key
-              Chef::Log.debug("Deleting registry key #{key_path} recursively")
-              delete_key(keypath_to_check, true)
-            end
-            delete_key_ex(hive_namespace, key_including_parent)
-          else
-            raise Chef::Exceptions::Win32RegNoRecursive, "Registry key #{key_path} has subkeys, and recursive not specified"
-          end
-        else
-          delete_key_ex(hive_namespace, key_including_parent)
-          return true
+        if has_subkeys?(key_path) && !recursive
+          raise Chef::Exceptions::Win32RegNoRecursive, "Registry key #{key_path} has subkeys, and recursive not specified"
         end
+        hive, key_including_parent = get_hive_and_key(key_path)
+        # key_including_parent: Software\\Root\\Branch\\Fruit
+        # key => Fruit
+        # key_parent => Software\\Root\\Branch
+        key_parts = key_including_parent.split("\\")
+        key = key_parts.pop
+        key_parent = key_parts.join("\\")
+        hive.open(key_parent, ::Win32::Registry::KEY_WRITE | registry_system_architecture) do |reg|
+          reg.delete_key(key, recursive)
+        end
+        Chef::Log.debug("Registry key #{key_path} deleted")
         true
-      end
-
-      #Using the 'RegDeleteKeyEx' Windows API that correctly supports WOW64 systems (Win2003)
-      #instead of the 'RegDeleteKey'
-      def delete_key_ex(hive, key)
-        regDeleteKeyEx = ::Win32::API.new('RegDeleteKeyEx', 'LPLL', 'L', 'advapi32')
-        hive_num = hive.hkey - (1 << 32)
-        regDeleteKeyEx.call(hive_num, key, ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0)
       end
 
       def key_exists?(key_path)
@@ -203,7 +200,7 @@ class Chef
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          return true if reg.any? {|val| val == value[:name] }
+          return true if reg.any? {|val| safely_downcase(val) == safely_downcase(value[:name]) }
         end
         return false
       end
@@ -213,7 +210,7 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
-            if val_name == value[:name] &&
+            if safely_downcase(val_name) == safely_downcase(value[:name]) &&
               val_type == get_type_from_name(value[:type]) &&
               val_data == value[:data]
               return true
@@ -259,19 +256,6 @@ class Chef
         end
       end
 
-      def get_type_from_name(val_type)
-        value = {
-          :binary => ::Win32::Registry::REG_BINARY,
-          :string => ::Win32::Registry::REG_SZ,
-          :multi_string => ::Win32::Registry::REG_MULTI_SZ,
-          :expand_string => ::Win32::Registry::REG_EXPAND_SZ,
-          :dword => ::Win32::Registry::REG_DWORD,
-          :dword_big_endian => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          :qword => ::Win32::Registry::REG_QWORD
-        }[val_type]
-        return value
-      end
-
       def keys_missing?(key_path)
         missing_key_arr = key_path.split("\\")
         missing_key_arr.pop
@@ -288,6 +272,14 @@ class Chef
       end
 
       private
+
+
+      def safely_downcase(val)
+        if val.is_a? String
+          return val.downcase
+        end
+        return val
+      end
 
       def node
         run_context && run_context.node
@@ -334,7 +326,7 @@ class Chef
           :expand_string => ::Win32::Registry::REG_EXPAND_SZ,
           :dword => ::Win32::Registry::REG_DWORD,
           :dword_big_endian => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          :qword => ::Win32::Registry::REG_QWORD
+          :qword => ::Win32::Registry::REG_QWORD,
         }
       end
 
@@ -350,7 +342,7 @@ class Chef
           2 => ::Win32::Registry::REG_EXPAND_SZ,
           4 => ::Win32::Registry::REG_DWORD,
           5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          11 => ::Win32::Registry::REG_QWORD
+          11 => ::Win32::Registry::REG_QWORD,
         }[val_type]
         return value
       end

@@ -16,19 +16,20 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
+require "chef/exceptions"
+require "chef/dsl/powershell"
 
 class Chef
   class Resource
     class DscScript < Chef::Resource
+      include Chef::DSL::Powershell
 
-      provides :dsc_script, platform: "windows"
+      provides :dsc_script, os: "windows"
+
+      default_action :run
 
       def initialize(name, run_context=nil)
         super
-        @allowed_actions.push(:run)
-        @action = :run
-        @resource_name = :dsc_script
         @imports = {}
       end
 
@@ -42,7 +43,7 @@ class Chef
         set_or_return(
           :code,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -53,7 +54,7 @@ class Chef
         set_or_return(
           :configuration_name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -64,7 +65,7 @@ class Chef
         set_or_return(
           :command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -75,7 +76,7 @@ class Chef
         set_or_return(
           :configuration_data,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -86,7 +87,7 @@ class Chef
         set_or_return(
           :configuration_data_script,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -94,7 +95,7 @@ class Chef
         if module_name
           @imports[module_name] ||= []
           if args.length == 0
-            @imports[module_name] << '*'
+            @imports[module_name] << "*"
           else
             @imports[module_name].push(*args)
           end
@@ -107,7 +108,7 @@ class Chef
         set_or_return(
           :flags,
           arg,
-          :kind_of => [ Hash ]
+          :kind_of => [ Hash ],
         )
       end
 
@@ -115,7 +116,7 @@ class Chef
         set_or_return(
           :cwd,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 
@@ -123,7 +124,7 @@ class Chef
         set_or_return(
           :environment,
           arg,
-          :kind_of => [ Hash ]
+          :kind_of => [ Hash ],
         )
       end
 
@@ -131,7 +132,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [ Integer ],
         )
       end
     end

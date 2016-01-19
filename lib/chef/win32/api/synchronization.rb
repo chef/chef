@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -24,7 +24,7 @@ class Chef
       module Synchronization
         extend Chef::ReservedNames::Win32::API
 
-        ffi_lib 'kernel32'
+        ffi_lib "kernel32"
 
         # Constant synchronization functions use to indicate wait
         # forever.

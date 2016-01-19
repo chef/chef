@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::IndexRebuild do
 
   let(:knife){Chef::Knife::IndexRebuild.new}
-  let(:rest_client){double(Chef::REST)}
+  let(:rest_client){double(Chef::ServerAPI)}
 
   let(:stub_rest!) do
     expect(knife).to receive(:rest).and_return(rest_client)
@@ -45,7 +45,7 @@ describe Chef::Knife::IndexRebuild do
 
     before(:each) do
       stub_rest!
-      allow(rest_client).to receive(:get_rest).and_raise(http_server_exception)
+      allow(rest_client).to receive(:get).and_raise(http_server_exception)
     end
 
     context "against a Chef 11 server" do
@@ -93,7 +93,7 @@ describe Chef::Knife::IndexRebuild do
       let(:api_info) do
         {"flavor" => "osc",
           "version" => "11.0.0",
-          "erchef" => "1.2.3"
+          "erchef" => "1.2.3",
         }
       end
       let(:server_specific_stubs!) do
@@ -110,7 +110,7 @@ describe Chef::Knife::IndexRebuild do
       let(:api_info){ {} }
       let(:server_specific_stubs!) do
         stub_rest!
-        expect(rest_client).to receive(:post_rest).with("/search/reindex", {}).and_return("representative output")
+        expect(rest_client).to receive(:post).with("/search/reindex", {}).and_return("representative output")
         expect(knife).not_to receive(:unsupported_server_message)
         expect(knife).to receive(:deprecated_server_message)
         expect(knife).to receive(:nag)

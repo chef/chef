@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
-require 'chef/provider/service/init'
-require 'chef/mixin/command'
+require "chef/resource/service"
+require "chef/provider/service/init"
+require "chef/mixin/command"
 
 class Chef
   class Provider
@@ -99,7 +99,7 @@ class Chef
         def restart_service
           if new_resource.restart_command
             super
-          elsif new_resource.supports[:restart]
+          elsif supports[:restart]
             shell_out_with_systems_locale!("#{init_command} fastrestart")
           else
             stop_service
@@ -119,11 +119,11 @@ class Chef
         private
 
         def read_rc_conf
-          ::File.open("/etc/rc.conf", 'r') { |file| file.readlines }
+          ::File.open("/etc/rc.conf", "r") { |file| file.readlines }
         end
 
         def write_rc_conf(lines)
-          ::File.open("/etc/rc.conf", 'w') do |file|
+          ::File.open("/etc/rc.conf", "w") do |file|
             lines.each { |line| file.puts(line) }
           end
         end
@@ -147,7 +147,7 @@ class Chef
                 # some scripts support multiple instances through symlinks such as openvpn.
                 # We should get the service name from rcvar.
                 Chef::Log.debug("name=\"service\" not found at #{init_command}. falling back to rcvar")
-                sn = shell_out!("#{init_command} rcvar").stdout[/(\w+_enable)=/, 1]
+                shell_out!("#{init_command} rcvar").stdout[/(\w+_enable)=/, 1]
               else
                 # for why-run mode when the rcd_script is not there yet
                 new_resource.service_name

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/json_compat'
-require 'chef/mixin/params_validate'
-require 'chef/rest'
+require "chef/json_compat"
+require "chef/mixin/params_validate"
+require "chef/server_api"
 
 class Chef
   class Org
@@ -27,7 +27,7 @@ class Chef
 
     def initialize(name)
       @name = name
-      @full_name = ''
+      @full_name = ""
       # The Chef API returns the private key of the validator
       # client on create
       @private_key = nil
@@ -35,7 +35,7 @@ class Chef
     end
 
     def chef_rest
-      @chef_rest ||= Chef::REST.new(Chef::Config[:chef_server_root])
+      @chef_rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root])
     end
 
     def name(arg=nil)
@@ -61,7 +61,7 @@ class Chef
     def to_hash
       result = {
         "name" => @name,
-        "full_name" => @full_name
+        "full_name" => @full_name,
       }
       result["private_key"] = @private_key if @private_key
       result["guid"] = @guid if @guid
@@ -74,18 +74,18 @@ class Chef
 
     def create
       payload = {:name => self.name, :full_name => self.full_name}
-      new_org = chef_rest.post_rest("organizations", payload)
+      new_org = chef_rest.post("organizations", payload)
       Chef::Org.from_hash(self.to_hash.merge(new_org))
     end
 
     def update
       payload = {:name => self.name, :full_name => self.full_name}
-      new_org = chef_rest.put_rest("organizations/#{name}", payload)
+      new_org = chef_rest.put("organizations/#{name}", payload)
       Chef::Org.from_hash(self.to_hash.merge(new_org))
     end
 
     def destroy
-      chef_rest.delete_rest("organizations/#{@name}")
+      chef_rest.delete("organizations/#{@name}")
     end
 
     def save
@@ -102,21 +102,21 @@ class Chef
 
     def associate_user(username)
       request_body = {:user => username}
-      response = chef_rest.post_rest "organizations/#{@name}/association_requests", request_body
+      response = chef_rest.post "organizations/#{@name}/association_requests", request_body
       association_id = response["uri"].split("/").last
-      chef_rest.put_rest "users/#{username}/association_requests/#{association_id}", { :response => 'accept' }
+      chef_rest.put "users/#{username}/association_requests/#{association_id}", { :response => "accept" }
     end
 
     def dissociate_user(username)
-      chef_rest.delete_rest "organizations/#{name}/users/#{username}"
+      chef_rest.delete "organizations/#{name}/users/#{username}"
     end
 
     # Class methods
     def self.from_hash(org_hash)
-      org = Chef::Org.new(org_hash['name'])
-      org.full_name org_hash['full_name']
-      org.private_key org_hash['private_key'] if org_hash.key?('private_key')
-      org.guid org_hash['guid'] if org_hash.key?('guid')
+      org = Chef::Org.new(org_hash["name"])
+      org.full_name org_hash["full_name"]
+      org.private_key org_hash["private_key"] if org_hash.key?("private_key")
+      org.guid org_hash["guid"] if org_hash.key?("guid")
       org
     end
 
@@ -129,12 +129,12 @@ class Chef
     end
 
     def self.load(org_name)
-      response =  Chef::REST.new(Chef::Config[:chef_server_root]).get_rest("organizations/#{org_name}")
+      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("organizations/#{org_name}")
       Chef::Org.from_hash(response)
     end
 
     def self.list(inflate=false)
-      orgs = Chef::REST.new(Chef::Config[:chef_server_root]).get_rest('organizations')
+      orgs = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("organizations")
       if inflate
         orgs.inject({}) do |org_map, (name, _url)|
           org_map[name] = Chef::Org.load(name)

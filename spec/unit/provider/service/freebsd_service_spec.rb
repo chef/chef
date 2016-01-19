@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class Chef::Provider::Service::Freebsd
   public :service_enable_variable_name
@@ -187,18 +187,6 @@ PS_SAMPLE
         provider.determine_current_status!
         expect(current_resource.running).to be_nil
         expect(provider.status_load_success).to be_nil
-      end
-
-      context "when ps command is nil" do
-        before do
-          node.automatic_attrs[:command] = {:ps => nil}
-        end
-
-        it "should set running to nil" do
-          pending "superclass raises no conversion of nil to string which seems broken"
-          provider.determine_current_status!
-          expect(current_resource.running).to be_nil
-        end
       end
 
       context "when ps is empty string" do

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::ErlCall do
 
@@ -35,7 +35,7 @@ describe Chef::Resource::ErlCall do
   end
 
   it "should have a default action of run" do
-    expect(@resource.action).to eql("run")
+    expect(@resource.action).to eql([:run])
   end
 
   it "should accept run as an action" do

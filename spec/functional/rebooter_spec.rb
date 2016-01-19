@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Platform::Rebooter do
 
@@ -24,7 +24,7 @@ describe Chef::Platform::Rebooter do
     {
       :delay_mins => 5,
       :requested_by => "reboot resource functional test",
-      :reason => "rebooter spec test"
+      :reason => "rebooter spec test",
     }
   end
 
@@ -43,8 +43,8 @@ describe Chef::Platform::Rebooter do
 
   let(:expected) do
     {
-      :windows => 'shutdown /r /t 5 /c "rebooter spec test"',
-      :linux => 'shutdown -r +5 "rebooter spec test"'
+      :windows => 'shutdown /r /t 300 /c "rebooter spec test"',
+      :linux => 'shutdown -r +5 "rebooter spec test"',
     }
   end
 
@@ -68,9 +68,9 @@ describe Chef::Platform::Rebooter do
         run_context.cancel_reboot
       end
 
-      shared_context 'test a reboot method' do
+      shared_context "test a reboot method" do
         def test_rebooter_method(method_sym, is_windows, expected_reboot_str)
-          allow(Chef::Platform).to receive(:windows?).and_return(is_windows)
+          allow(ChefConfig).to receive(:windows?).and_return(is_windows)
           expect(rebooter).to receive(:shell_out!).once.with(expected_reboot_str)
           expect(rebooter).to receive(method_sym).once.and_call_original
           rebooter.send(method_sym, run_context.node)
@@ -78,25 +78,25 @@ describe Chef::Platform::Rebooter do
       end
 
       describe 'when using #reboot_if_needed!' do
-        include_context 'test a reboot method'
+        include_context "test a reboot method"
 
-        it 'should produce the correct string on Windows' do
+        it "should produce the correct string on Windows" do
           test_rebooter_method(:reboot_if_needed!, true, expected[:windows])
         end
 
-        it 'should produce the correct (Linux-specific) string on non-Windows' do
+        it "should produce the correct (Linux-specific) string on non-Windows" do
           test_rebooter_method(:reboot_if_needed!, false, expected[:linux])
         end
       end
 
       describe 'when using #reboot!' do
-        include_context 'test a reboot method'
+        include_context "test a reboot method"
 
-        it 'should produce the correct string on Windows' do
+        it "should produce the correct string on Windows" do
           test_rebooter_method(:reboot!, true, expected[:windows])
         end
 
-        it 'should produce the correct (Linux-specific) string on non-Windows' do
+        it "should produce the correct (Linux-specific) string on non-Windows" do
           test_rebooter_method(:reboot!, false, expected[:linux])
         end
       end

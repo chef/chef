@@ -50,7 +50,7 @@ class Chef
 
         def value_for_node(node)
           platform, version = node[:platform].to_s, node[:platform_version].to_s
-          # Check if we match a version constraint via Chef::VersionConstraint and Chef::Version::Platform
+          # Check if we match a version constraint via Chef::VersionConstraint::Platform and Chef::Version::Platform
           matched_value = match_versions(node)
           if @values.key?(platform) && @values[platform].key?(version)
             @values[platform][version]
@@ -76,11 +76,11 @@ class Chef
             keys = @values[platform].keys
             keys.each do |k|
               begin
-                if Chef::VersionConstraint.new(k).include?(node_version)
+                if Chef::VersionConstraint::Platform.new(k).include?(node_version)
                   key_matches << k
                 end
               rescue Chef::Exceptions::InvalidVersionConstraint => e
-                Chef::Log.debug "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint."
+                Chef::Log.debug "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint::Platform."
                 Chef::Log.debug(e)
               end
             end
@@ -106,7 +106,7 @@ class Chef
         end
 
         def set(platforms, value)
-          if platforms.to_s == 'default'
+          if platforms.to_s == "default"
             @values["default"] = value
           else
             assert_valid_platform_values!(platforms, value)
@@ -212,7 +212,7 @@ class Chef
         private
 
         def set(platform_family, value)
-          if platform_family.to_s == 'default'
+          if platform_family.to_s == "default"
             @values["default"] = value
           else
             Array(platform_family).each { |family| @values[family.to_s] = value }
@@ -256,5 +256,5 @@ end
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
-require 'chef/mixin/language'
+require "chef/mixin/language"
 

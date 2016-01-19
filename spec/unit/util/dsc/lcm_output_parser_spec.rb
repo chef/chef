@@ -16,24 +16,24 @@
 # limitations under the License.
 #
 
-require 'chef/util/dsc/lcm_output_parser'
+require "chef/util/dsc/lcm_output_parser"
 
 describe Chef::Util::DSC::LocalConfigurationManager::Parser do
-  context 'empty input parameter' do
-    it 'raises an exception when there are no valid lines' do
+  context "empty input parameter" do
+    it "raises an exception when there are no valid lines" do
       str = <<-EOF
                 
       EOF
       expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)}.to raise_error(Chef::Exceptions::LCMParser)
     end
 
-    it 'raises an exception for a nil input' do
+    it "raises an exception for a nil input" do
       expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(nil)}.to raise_error(Chef::Exceptions::LCMParser)
     end
   end
 
-  context 'correctly formatted output from lcm' do
-    it 'returns a single resource when only 1 logged with the correct name' do
+  context "correctly formatted output from lcm" do
+    it "returns a single resource when only 1 logged with the correct name" do
       str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
@@ -42,10 +42,10 @@ logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
       expect(resources.length).to eq(1)
-      expect(resources[0].name).to eq('[name]')
+      expect(resources[0].name).to eq("[name]")
     end
 
-    it 'identifies when a resource changes the state of the system' do
+    it "identifies when a resource changes the state of the system" do
       str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
@@ -58,7 +58,7 @@ EOF
       expect(resources[0].changes_state?).to be_truthy
     end
 
-    it 'preserves the log provided for how the system changed the state' do
+    it "preserves the log provided for how the system changed the state" do
       str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
@@ -72,7 +72,7 @@ EOF
       expect(resources[0].change_log).to match_array(["[name]","[message]","[name]"])
     end
 
-    it 'should return false for changes_state?' do
+    it "should return false for changes_state?" do
       str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
@@ -84,7 +84,7 @@ EOF
       expect(resources[0].changes_state?).to be_falsey
     end
 
-    it 'should return an empty array for change_log if changes_state? is false' do
+    it "should return an empty array for change_log if changes_state? is false" do
       str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
@@ -97,8 +97,8 @@ EOF
     end
   end
 
-  context 'Incorrectly formatted output from LCM' do
-    it 'should allow missing a [End Resource] when its the last one and still find all the resource' do
+  context "Incorrectly formatted output from LCM" do
+    it "should allow missing a [End Resource] when its the last one and still find all the resource" do
       str = <<-EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ]  [name]
@@ -119,7 +119,7 @@ EOF
       expect(resources[1].changes_state?).to be_truthy
     end
 
-    it 'should allow missing a [End Resource] when its the first one and still find all the resource' do
+    it "should allow missing a [End Resource] when its the first one and still find all the resource" do
       str = <<-EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ]  [name]
@@ -140,7 +140,7 @@ EOF
       expect(resources[1].changes_state?).to be_truthy
     end
 
-    it 'should allow missing set and end resource and assume an unconverged resource in this case' do
+    it "should allow missing set and end resource and assume an unconverged resource in this case" do
       str = <<-EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ]  [name]
@@ -156,9 +156,9 @@ logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
       expect(resources[0].changes_state?).to be_truthy
-      expect(resources[0].name).to eql('[name]')
+      expect(resources[0].name).to eql("[name]")
       expect(resources[1].changes_state?).to be_truthy
-      expect(resources[1].name).to eql('[name2]')
+      expect(resources[1].name).to eql("[name2]")
     end
   end
 end

@@ -17,20 +17,19 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/ruby_block'
+require "chef/resource"
+require "chef/provider/ruby_block"
 
 class Chef
   class Resource
     class RubyBlock < Chef::Resource
+      default_action :run
+      allowed_actions :create, :run
 
       identity_attr :block_name
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :ruby_block
-        @action = "run"
-        @allowed_actions << :create << :run
         @block_name = name
       end
 
@@ -46,7 +45,7 @@ class Chef
         set_or_return(
           :block_name,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
     end

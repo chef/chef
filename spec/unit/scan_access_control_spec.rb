@@ -16,7 +16,7 @@
 #
 
 require File.expand_path("../../spec_helper", __FILE__)
-require 'chef/scan_access_control'
+require "chef/scan_access_control"
 
 describe Chef::ScanAccessControl do
 
@@ -33,7 +33,7 @@ describe Chef::ScanAccessControl do
       @new_resource.tap do |f|
         f.owner("root")
         f.group("root")
-        f.mode('0755')
+        f.mode("0755")
       end
       @scanner.set_all!
     end

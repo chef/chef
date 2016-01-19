@@ -16,21 +16,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Package::EasyInstall do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::EasyInstallPackage.new('boto')
-    @new_resource.version('1.8d')
-
-    @current_resource = Chef::Resource::EasyInstallPackage.new('boto')
-    @current_resource.version('1.8d')
+    @new_resource = Chef::Resource::EasyInstallPackage.new("boto")
+    @new_resource.version("1.8d")
 
     @provider = Chef::Provider::Package::EasyInstall.new(@new_resource, @run_context)
-    allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
 
     @stdin = StringIO.new
     @stdout = StringIO.new
@@ -48,8 +44,8 @@ describe Chef::Provider::Package::EasyInstall do
 
     it "should set the current resources package name to the new resources package name" do
       allow($stdout).to receive(:write)
-      expect(@current_resource).to receive(:package_name).with(@new_resource.package_name)
       @provider.load_current_resource
+      expect(@provider.current_resource.package_name).to eq(@new_resource.package_name)
     end
 
     it "should return a relative path to easy_install if no easy_install_binary is given" do
@@ -67,14 +63,14 @@ describe Chef::Provider::Package::EasyInstall do
     it "should run easy_install with the package name and version" do
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install \"boto==1.8d\""
-      })
+      },)
       @provider.install_package("boto", "1.8d")
     end
 
     it "should run easy_install with the package name and version and specified options" do
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install --always-unzip \"boto==1.8d\""
-      })
+      },)
       allow(@new_resource).to receive(:options).and_return("--always-unzip")
       @provider.install_package("boto", "1.8d")
     end
@@ -82,21 +78,21 @@ describe Chef::Provider::Package::EasyInstall do
     it "should run easy_install with the package name and version" do
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install \"boto==1.8d\""
-      })
+      },)
       @provider.upgrade_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version" do
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install -m boto"
-      })
+      },)
       @provider.remove_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version and specified options" do
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install -x -m boto"
-      })
+      },)
       allow(@new_resource).to receive(:options).and_return("-x")
       @provider.remove_package("boto", "1.8d")
     end
@@ -104,7 +100,7 @@ describe Chef::Provider::Package::EasyInstall do
     it "should run easy_install -m with the package name and version" do
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install -m boto"
-      })
+      },)
       @provider.purge_package("boto", "1.8d")
     end
 

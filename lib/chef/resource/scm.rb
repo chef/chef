@@ -17,28 +17,27 @@
 #
 
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
     class Scm < Chef::Resource
-
       identity_attr :destination
 
       state_attrs :revision
 
+      default_action :sync
+      allowed_actions :checkout, :export, :sync, :diff, :log
+
       def initialize(name, run_context=nil)
         super
         @destination = name
-        @resource_name = :scm
         @enable_submodules = false
         @enable_checkout = true
         @revision = "HEAD"
         @remote = "origin"
         @ssh_wrapper = nil
         @depth = nil
-        @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
-        @action = [:sync]
         @checkout_branch = "deploy"
         @environment = nil
       end
@@ -47,7 +46,7 @@ class Chef
         set_or_return(
           :destination,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -55,7 +54,7 @@ class Chef
         set_or_return(
           :repository,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -63,7 +62,7 @@ class Chef
         set_or_return(
           :revision,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -71,7 +70,7 @@ class Chef
         set_or_return(
           :user,
           arg,
-          :kind_of => [String, Integer]
+          :kind_of => [String, Integer],
         )
       end
 
@@ -79,7 +78,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :kind_of => [String, Integer]
+          :kind_of => [String, Integer],
         )
       end
 
@@ -87,7 +86,7 @@ class Chef
         set_or_return(
           :svn_username,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -95,7 +94,7 @@ class Chef
         set_or_return(
           :svn_password,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -104,7 +103,7 @@ class Chef
         set_or_return(
           :svn_arguments,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -121,7 +120,7 @@ class Chef
         set_or_return(
           :depth,
           arg,
-          :kind_of => Integer
+          :kind_of => Integer,
         )
       end
 
@@ -129,7 +128,7 @@ class Chef
         set_or_return(
           :enable_submodules,
           arg,
-          :kind_of => [TrueClass, FalseClass]
+          :kind_of => [TrueClass, FalseClass],
         )
       end
 
@@ -137,7 +136,7 @@ class Chef
         set_or_return(
           :enable_checkout,
           arg,
-          :kind_of => [TrueClass, FalseClass]
+          :kind_of => [TrueClass, FalseClass],
         )
       end
 
@@ -145,7 +144,7 @@ class Chef
         set_or_return(
           :remote,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -153,7 +152,7 @@ class Chef
         set_or_return(
           :ssh_wrapper,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -161,7 +160,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => Integer
+          :kind_of => Integer,
         )
       end
 
@@ -169,7 +168,7 @@ class Chef
         set_or_return(
           :checkout_branch,
           arg,
-          :kind_of => String
+          :kind_of => String,
         )
       end
 
@@ -177,7 +176,7 @@ class Chef
         set_or_return(
           :environment,
           arg,
-          :kind_of => [ Hash ]
+          :kind_of => [ Hash ],
         )
       end
 

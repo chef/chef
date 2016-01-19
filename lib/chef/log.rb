@@ -17,10 +17,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'logger'
-require 'chef/monologger'
-require 'chef/exceptions'
-require 'mixlib/log'
+require "logger"
+require "chef/monologger"
+require "chef/exceptions"
+require "mixlib/log"
+require "chef/log/syslog" unless (RUBY_PLATFORM =~ /mswin|mingw|windows/)
+require "chef/log/winevt"
 
 class Chef
   class Log
@@ -35,7 +37,25 @@ class Chef
       end
     end
 
-    def self.deprecation(msg=nil, &block)
+    #
+    # Get the location of the caller (from the recipe). Grabs the first caller
+    # that is *not* in the chef gem proper (allowing us to weed out internal
+    # calls and give the user a more useful perspective).
+    #
+    # @return [String] The location of the caller (file:line#) from caller(0..20), or nil if no non-chef caller is found.
+    #
+    def self.caller_location
+      # Pick the first caller that is *not* part of the Chef gem, that's the
+      # thing the user wrote.
+      chef_gem_path = File.expand_path("../..", __FILE__)
+      caller(0..20).select { |c| !c.start_with?(chef_gem_path) }.first
+    end
+
+    def self.deprecation(msg=nil, location=caller(2..2)[0], &block)
+      if msg
+        msg << " at #{Array(location).join("\n")}"
+        msg = msg.join("") if msg.respond_to?(:join)
+      end
       if Chef::Config[:treat_deprecation_warnings_as_errors]
         error(msg, &block)
         raise Chef::Exceptions::DeprecatedFeatureError.new(msg)

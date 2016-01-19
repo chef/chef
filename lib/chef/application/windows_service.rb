@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Maier (<maier@lambda.local>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2011-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,19 @@
 # limitations under the License.
 #
 
-require 'chef'
-require 'chef/monologger'
-require 'chef/application'
-require 'chef/client'
-require 'chef/config'
-require 'chef/handler/error_report'
-require 'chef/log'
-require 'chef/rest'
-require 'mixlib/cli'
-require 'socket'
-require 'uri'
-require 'win32/daemon'
-require 'chef/mixin/shell_out'
+require "chef"
+require "chef/monologger"
+require "chef/application"
+require "chef/client"
+require "chef/config"
+require "chef/handler/error_report"
+require "chef/log"
+require "chef/http"
+require "mixlib/cli"
+require "socket"
+require "uri"
+require "win32/daemon"
+require "chef/mixin/shell_out"
 
 class Chef
   class Application
@@ -45,8 +45,7 @@ class Chef
       option :log_location,
         :short        => "-L LOGLOCATION",
         :long         => "--logfile LOGLOCATION",
-        :description  => "Set the log file location",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.log"
+        :description  => "Set the log file location"
 
       option :splay,
         :short        => "-s SECONDS",
@@ -59,6 +58,8 @@ class Chef
         :long         => "--interval SECONDS",
         :description  => "Set the number of seconds to wait between chef-client runs",
         :proc         => lambda { |s| s.to_i }
+
+      DEFAULT_LOG_LOCATION ||= "#{ENV['SYSTEMDRIVE']}/chef/client.log"
 
       def service_init
         @service_action_mutex = Mutex.new
@@ -187,9 +188,18 @@ class Chef
           # Pass config params to the new process
           config_params = " --no-fork"
           config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
-          config_params += " -L #{Chef::Config[:log_location]}" unless Chef::Config[:log_location] == STDOUT
+          # log_location might be an event logger and if so we cannot pass as a command argument
+          # but shed no tears! If the logger is an event logger, it must have been configured
+          # as such in the config file and chef-client will use that when no arg is passed here
+          config_params += " -L #{resolve_log_location}" if resolve_log_location.is_a?(String)
+          
           # Starts a new process and waits till the process exits
-          result = shell_out("chef-client #{config_params}", :timeout => Chef::Config[:windows_service][:watchdog_timeout])
+
+          result = shell_out(
+            "chef-client.bat #{config_params}",
+            :timeout => Chef::Config[:windows_service][:watchdog_timeout],
+            :logger => Chef::Log,
+          )
           Chef::Log.debug "#{result.stdout}"
           Chef::Log.debug "#{result.stderr}"
         rescue Mixlib::ShellOut::CommandTimeout => e
@@ -231,7 +241,7 @@ class Chef
       # See application.rb for related comments.
 
       def configure_logging
-        Chef::Log.init(MonoLogger.new(Chef::Config[:log_location]))
+        Chef::Log.init(MonoLogger.new(resolve_log_location))
         if want_additional_logger?
           configure_stdout_logger
         end
@@ -258,6 +268,11 @@ class Chef
 
       def auto_log_level?
         Chef::Config[:log_level] == :auto
+      end
+
+      def resolve_log_location
+        # STDOUT is the default log location, but makes no sense for a windows service
+        Chef::Config[:log_location] == STDOUT ? DEFAULT_LOG_LOCATION : Chef::Config[:log_location]
       end
 
       # if log_level is `:auto`, convert it to :warn (when using output formatter)
@@ -293,7 +308,7 @@ class Chef
         begin
           case config[:config_file]
           when /^(http|https):\/\//
-            Chef::REST.new("", nil, nil).fetch(config[:config_file]) { |f| apply_config(f.path) }
+            Chef::HTTP.new("").streaming_request(config[:config_file]) { |f| apply_config(f.path) }
           else
             ::File::open(config[:config_file]) { |f| apply_config(f.path) }
           end

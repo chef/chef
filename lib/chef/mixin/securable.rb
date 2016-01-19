@@ -24,7 +24,7 @@ class Chef
         set_or_return(
           :owner,
           arg,
-          :regex => Chef::Config[:user_valid_regex]
+          :regex => Chef::Config[:user_valid_regex],
         )
       end
 
@@ -34,7 +34,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :regex => Chef::Config[:group_valid_regex]
+          :regex => Chef::Config[:group_valid_regex],
         )
       end
 
@@ -54,8 +54,8 @@ class Chef
               else
                 Integer(m)<=07777 && Integer(m)>=0
               end
-            },
-          }
+            }
+          },
         )
       end
 
@@ -112,11 +112,11 @@ class Chef
           # equivalent to something like:
           # def rights(permissions=nil, principals=nil, args_hash=nil)
           define_method(name) do |permissions=nil, principals=nil, args_hash=nil|
-            rights = self.instance_variable_get("@#{name.to_s}".to_sym)
+            rights = self.instance_variable_get("@#{name}".to_sym)
             unless permissions.nil?
               input = {
                 :permissions => permissions,
-                :principals => principals
+                :principals => principals,
               }
               input.merge!(args_hash) unless args_hash.nil?
 
@@ -124,7 +124,7 @@ class Chef
                              :principals => { :required => true, :kind_of => [String, Array] },
                              :applies_to_children => { :equal_to => [ true, false, :containers_only, :objects_only ]},
                              :applies_to_self => { :kind_of => [ TrueClass, FalseClass ] },
-                             :one_level_deep => { :kind_of => [ TrueClass, FalseClass ] }
+                             :one_level_deep => { :kind_of => [ TrueClass, FalseClass ] },
                             }
               validate(input, validations)
 
@@ -158,7 +158,7 @@ class Chef
             set_or_return(
               name,
               rights,
-              {}
+              {},
             )
           end
         end
@@ -174,7 +174,7 @@ class Chef
           set_or_return(
             :inherits,
             arg,
-            :kind_of => [ TrueClass, FalseClass ]
+            :kind_of => [ TrueClass, FalseClass ],
           )
         end
       end

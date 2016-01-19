@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require File.expand_path('../../spec_helper', __FILE__)
-require 'chef/json_compat'
+require File.expand_path("../../spec_helper", __FILE__)
+require "chef/json_compat"
 
 describe Chef::JSONCompat do
 
@@ -46,7 +46,7 @@ describe Chef::JSONCompat do
   end
 
   describe 'with JSON containing "Chef::Sandbox" as a json_class value' do
-    require 'chef/sandbox' # Only needed for this test
+    require "chef/sandbox" # Only needed for this test
 
     let(:json) { '{"json_class": "Chef::Sandbox", "arbitrary": "data"}' }
 
@@ -58,7 +58,7 @@ describe Chef::JSONCompat do
   describe "when pretty printing an object that defines #to_json" do
     class Foo
       def to_json(*a)
-        Chef::JSONCompat.to_json({'foo' => 1234, 'bar' => {'baz' => 5678}}, *a)
+        Chef::JSONCompat.to_json({"foo" => 1234, "bar" => {"baz" => 5678}}, *a)
       end
     end
 
@@ -67,37 +67,25 @@ describe Chef::JSONCompat do
       expect(Chef::JSONCompat.to_json_pretty(f)).to eql("{\n  \"foo\": 1234,\n  \"bar\": {\n    \"baz\": 5678\n  }\n}\n")
     end
 
-    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { Foo.new }
     end
   end
 
-  describe "with a file with 300 or less nested entries" do
-    let(:json) { IO.read(File.join(CHEF_SPEC_DATA, 'big_json.json')) }
+  describe "with the file with 252 or less nested entries" do
+    let(:json) { IO.read(File.join(CHEF_SPEC_DATA, "nested.json")) }
     let(:hash) { Chef::JSONCompat.from_json(json) }
 
-    describe "when a big json file is loaded" do
+    describe "when the 252 json file is loaded" do
       it "should create a Hash from the file" do
         expect(hash).to be_kind_of(Hash)
       end
 
-      it "should has 'test' as a 300th nested value" do
-        expect(hash['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']).to eq('test')
-      end
-    end
-  end
-
-  describe "with a file with more than 300 nested entries" do
-    let(:json) { IO.read(File.join(CHEF_SPEC_DATA, 'big_json_plus_one.json')) }
-    let(:hash) { Chef::JSONCompat.from_json(json, {:max_nesting => 301}) }
-
-    describe "when a big json file is loaded" do
-      it "should create a Hash from the file" do
-        expect(hash).to be_kind_of(Hash)
-      end
-
-      it "should has 'test' as a 301st nested value" do
-        expect(hash['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']['key']).to eq('test')
+      it "should has 'test' as a 252 nested value" do
+        v = 252.times.inject(hash) do |memo, _|
+          memo["key"]
+        end
+        expect(v).to eq("test")
       end
     end
   end

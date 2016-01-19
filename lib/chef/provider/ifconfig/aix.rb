@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/provider/ifconfig'
+require "chef/provider/ifconfig"
 
 class Chef
   class Provider
     class Ifconfig
       class Aix < Chef::Provider::Ifconfig
+        provides :ifconfig, platform: %w{aix}
 
         def load_current_resource
           @current_resource = Chef::Resource::Ifconfig.new(@new_resource.name)

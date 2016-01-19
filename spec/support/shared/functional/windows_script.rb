@@ -19,14 +19,15 @@
 # Shared context used by both Powershell and Batch script provider
 # tests.
 
+require "chef/platform/query_helpers"
+
 shared_context Chef::Resource::WindowsScript do
   before(:all) do
-
-    ohai_reader = Ohai::System.new
-    ohai_reader.all_plugins("platform")
+    @ohai_reader = Ohai::System.new
+    @ohai_reader.all_plugins(["platform", "kernel"])
 
     new_node = Chef::Node.new
-    new_node.consume_external_attrs(ohai_reader.data,{})
+    new_node.consume_external_attrs(@ohai_reader.data,{})
 
     events = Chef::EventDispatch::Dispatcher.new
 
@@ -51,16 +52,15 @@ shared_context Chef::Resource::WindowsScript do
 
   shared_examples_for "a script resource with architecture attribute" do
     context "with the given architecture attribute value" do
-      let(:resource_architecture) { architecture }
       let(:expected_architecture) do
-        if architecture
-          expected_architecture = architecture
+        if resource_architecture
+          expected_architecture = resource_architecture
         else
-          expected_architecture = :i386
+          expected_architecture = @ohai_reader.data["kernel"]["machine"].to_sym
         end
       end
       let(:expected_architecture_output) do
-        expected_architecture == :i386 ? 'X86' : 'AMD64'
+        expected_architecture == :i386 ? "X86" : "AMD64"
       end
       let(:guard_script_suffix) do
         "guard"
@@ -77,16 +77,16 @@ shared_context Chef::Resource::WindowsScript do
 
       before(:each) do
         resource.code resource_command
-        (resource.architecture architecture) if architecture
+        (resource.architecture resource_architecture) if resource_architecture
         resource.returns(0)
       end
 
-      it "should create a process with the expected architecture" do
+      it "creates a process with the expected architecture" do
         resource.run_action(:run)
         expect(get_process_architecture).to eq(expected_architecture_output.downcase)
       end
 
-      it "should execute guards with the same architecture as the resource" do
+      it "executes guards with the same architecture as the resource" do
         resource.only_if resource_guard_command
         resource.run_action(:run)
         expect(get_process_architecture).to eq(expected_architecture_output.downcase)
@@ -94,18 +94,32 @@ shared_context Chef::Resource::WindowsScript do
         expect(get_guard_process_architecture).to eq(get_process_architecture)
       end
 
-      let (:architecture) { :x86_64 }
-      it "should execute a 64-bit guard if the guard's architecture is specified as 64-bit", :windows64_only do
-        resource.only_if resource_guard_command, :architecture => :x86_64
-        resource.run_action(:run)
-        expect(get_guard_process_architecture).to eq('amd64')
+      context "when the guard's architecture is specified as 64-bit" do
+        let (:guard_architecture) { :x86_64 }
+        it "executes a 64-bit guard", :windows64_only do
+          resource.only_if resource_guard_command, :architecture => guard_architecture
+          resource.run_action(:run)
+          expect(get_guard_process_architecture).to eq("amd64")
+        end
       end
 
-      let (:architecture) { :i386 }
-      it "should execute a 32-bit guard if the guard's architecture is specified as 32-bit" do
-        resource.only_if resource_guard_command, :architecture => :i386
-        resource.run_action(:run)
-        expect(get_guard_process_architecture).to eq('x86')
+      context "when the guard's architecture is specified as 32-bit", :not_supported_on_nano do
+        let (:guard_architecture) { :i386 }
+        it "executes a 32-bit guard" do
+          resource.only_if resource_guard_command, :architecture => guard_architecture
+          resource.run_action(:run)
+          expect(get_guard_process_architecture).to eq("x86")
+        end
+      end
+
+      context "when the guard's architecture is specified as 32-bit", :windows_nano_only do
+        let (:guard_architecture) { :i386 }
+        it "raises an error" do
+          resource.only_if resource_guard_command, :architecture => guard_architecture
+          expect{ resource.run_action(:run) }.to raise_error(
+            Chef::Exceptions::Win32ArchitectureIncorrect,
+            /cannot execute script with requested architecture 'i386' on Windows Nano Server/)
+        end
       end
     end
   end
@@ -114,7 +128,28 @@ shared_context Chef::Resource::WindowsScript do
 
     describe "when the run action is invoked on Windows" do
       it "executes the script code" do
-        resource.code("@whoami > #{script_output_path}")
+        resource.code("whoami > \"#{script_output_path}\"")
+        resource.returns(0)
+        resource.run_action(:run)
+      end
+    end
+
+    context "when $env:TMP has a space" do
+      before(:each) do
+        @dir = Dir.mktmpdir("Jerry Smith")
+        @original_env = ENV.to_hash.dup
+        ENV.delete("TMP")
+        ENV["TMP"] = @dir
+      end
+
+      after(:each) do
+        FileUtils.remove_entry_secure(@dir)
+        ENV.clear
+        ENV.update(@original_env)
+      end
+
+      it "executes the script code" do
+        resource.code("whoami > \"#{script_output_path}\"")
         resource.returns(0)
         resource.run_action(:run)
       end
@@ -122,6 +157,8 @@ shared_context Chef::Resource::WindowsScript do
 
     context "when evaluating guards" do
       it "has a guard_interpreter attribute set to the short name of the resource" do
+        pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
+
         expect(resource.guard_interpreter).to eq(resource.resource_name)
         resource.not_if "findstr.exe /thiscommandhasnonzeroexitstatus"
         expect(Chef::Resource).to receive(:resource_for_node).and_call_original
@@ -131,22 +168,22 @@ shared_context Chef::Resource::WindowsScript do
     end
 
     context "when the architecture attribute is not set" do
-      let(:architecture) { nil }
+      let(:resource_architecture) { nil }
       it_behaves_like "a script resource with architecture attribute"
     end
 
-    context "when the architecture attribute is :i386" do
-      let(:architecture) { :i386 }
+    context "when the architecture attribute is :i386", :not_supported_on_nano do
+      let(:resource_architecture) { :i386 }
       it_behaves_like "a script resource with architecture attribute"
     end
 
     context "when the architecture attribute is :x86_64" do
-      let(:architecture) { :x86_64 }
+      let(:resource_architecture) { :x86_64 }
       it_behaves_like "a script resource with architecture attribute"
     end
   end
 
-  def get_windows_script_output(suffix = '')
+  def get_windows_script_output(suffix = "")
     File.read("#{script_output_path}#{suffix}")
   end
 
@@ -158,7 +195,7 @@ shared_context Chef::Resource::WindowsScript do
     get_process_architecture(guard_script_suffix)
   end
 
-  def get_process_architecture(suffix = '')
+  def get_process_architecture(suffix = "")
     get_windows_script_output(suffix).strip.downcase
   end
 

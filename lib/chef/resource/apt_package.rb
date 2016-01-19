@@ -16,29 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/apt'
+require "chef/resource/package"
+require "chef/provider/package/apt"
 
 class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
-
-      provides :apt_package
+      resource_name :apt_package
       provides :package, os: "linux", platform_family: [ "debian" ]
 
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :apt_package
-        @default_release = nil
-      end
-
-      def default_release(arg=nil)
-        set_or_return(
-          :default_release,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :default_release, String, desired_state: false
 
     end
   end

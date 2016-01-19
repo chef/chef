@@ -16,25 +16,24 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/mixin/command'
-require 'chef/resource/package'
+require "chef/provider/package"
+require "chef/mixin/command"
+require "chef/resource/package"
 
 class Chef
   class Provider
     class Package
       class Pacman < Chef::Provider::Package
 
+        provides :package, platform: "arch"
         provides :pacman_package, os: "linux"
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
-          @current_resource.version(nil)
-
           Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
-          status = shell_out("pacman -Qi #{@new_resource.package_name}")
+          status = shell_out_with_timeout("pacman -Qi #{@new_resource.package_name}")
           status.stdout.each_line do |line|
             case line
             when /^Version(\s?)*: (.+)$/
@@ -60,9 +59,9 @@ class Chef
             repos = pacman.scan(/\[(.+)\]/).flatten
           end
 
-          package_repos = repos.map {|r| Regexp.escape(r) }.join('|')
+          package_repos = repos.map {|r| Regexp.escape(r) }.join("|")
 
-          status = shell_out("pacman -Sl")
+          status = shell_out_with_timeout("pacman -Sl")
           status.stdout.each_line do |line|
             case line
               when /^(#{package_repos}) #{Regexp.escape(@new_resource.package_name)} (.+)$/
@@ -85,7 +84,7 @@ class Chef
         end
 
         def install_package(name, version)
-          shell_out!( "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
+          shell_out_with_timeout!( "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 
         def upgrade_package(name, version)
@@ -93,7 +92,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          shell_out!( "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
+          shell_out_with_timeout!( "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 
         def purge_package(name, version)

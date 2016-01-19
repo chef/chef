@@ -16,22 +16,21 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
-require 'chef/provider/service/simple'
-require 'chef/mixin/command'
-require 'chef/util/file_edit'
+require "chef/resource/service"
+require "chef/provider/service/simple"
+require "chef/mixin/command"
+require "chef/util/file_edit"
 
 class Chef
   class Provider
     class Service
       class Upstart < Chef::Provider::Service::Simple
-        UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
 
-        provides :service, os: "linux"
-
-        def self.provides?(node, resource)
-          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
+        provides :service, platform_family: "debian", override: true do |node|
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
         end
+
+        UPSTART_STATE_FORMAT = /\S+ \(?(start|stop)?\)? ?[\/ ](\w+)/
 
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
@@ -107,7 +106,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
             begin
-              if shell_out!(@new_resource.status_command) == 0
+              if shell_out!(@new_resource.status_command).exitstatus == 0
                 @current_resource.running true
               end
             rescue
@@ -131,7 +130,7 @@ class Chef
           # Get enabled/disabled state by reading job configuration file
           if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}",'r') do |file|
+            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}","r") do |file|
               while line = file.gets
                 case line
                 when /^start on/
@@ -225,10 +224,10 @@ class Chef
           command = "/sbin/status #{@job}"
           status = popen4(command) do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
-              # rsyslog stop/waiting
               # service goal/state
               # OR
-              # rsyslog (stop) waiting
+              # service (instance) goal/state
+              # OR
               # service (goal) state
               line =~ UPSTART_STATE_FORMAT
               data = Regexp.last_match

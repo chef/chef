@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Audit::AuditReporter do
 
@@ -57,7 +57,6 @@ describe Chef::Audit::AuditReporter do
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
       allow(reporter).to receive(:run_status).and_return(run_status)
-      allow(rest).to receive(:create_url).and_return(true)
       allow(rest).to receive(:post).and_return(true)
       allow(reporter).to receive(:audit_data).and_return(audit_data)
       allow(reporter).to receive(:run_status).and_return(run_status)
@@ -75,17 +74,36 @@ describe Chef::Audit::AuditReporter do
       end
 
       it "posts audit data to server endpoint" do
-        endpoint = "api.opscode.us/orgname/controls"
         headers = {
-          'X-Ops-Audit-Report-Protocol-Version' => Chef::Audit::AuditReporter::PROTOCOL_VERSION
+          "X-Ops-Audit-Report-Protocol-Version" => Chef::Audit::AuditReporter::PROTOCOL_VERSION
         }
 
-        expect(rest).to receive(:create_url).
-          with("controls").
-          and_return(endpoint)
         expect(rest).to receive(:post).
-          with(endpoint, run_data, headers)
+          with("controls", run_data, headers)
         reporter.run_completed(node)
+      end
+
+      context "when audit phase failed" do
+
+        let(:audit_error) { double("AuditError", :class => "Chef::Exceptions::AuditError",
+          :message => "Audit phase failed with error message: derpderpderp",
+          :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) }
+
+          before do
+            reporter.instance_variable_set(:@audit_phase_error, audit_error)
+          end
+
+        it "reports an error" do
+          reporter.run_completed(node)
+          expect(run_data).to have_key(:error)
+          expect(run_data).to have_key(:error)
+          expect(run_data[:error]).to eq <<-EOM.strip!
+Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+/path/recipe.rb:57
+/path/library.rb:106
+EOM
+        end
+
       end
 
       context "when unable to post to server" do
@@ -215,9 +233,13 @@ describe Chef::Audit::AuditReporter do
     let(:audit_data) { Chef::Audit::AuditData.new(node.name, run_id) }
     let(:run_data) { audit_data.to_hash }
 
-    let(:error) { double("AuditError", :class => "Chef::Exception::AuditError",
-      :message => "Well that certainly didn't work",
-      :backtrace => ["line 0", "line 1", "line 2"]) }
+    let(:audit_error) { double("AuditError", :class => "Chef::Exceptions::AuditError",
+      :message => "Audit phase failed with error message: derpderpderp",
+      :backtrace => ["/path/recipe.rb:57", "/path/library.rb:106"]) }
+
+    let(:run_error) { double("RunError", :class => "Chef::Exceptions::RunError",
+      :message => "This error shouldn't be reported.",
+      :backtrace => ["fix it", "fix it", "fix it"]) }
 
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
@@ -226,15 +248,30 @@ describe Chef::Audit::AuditReporter do
       allow(audit_data).to receive(:to_hash).and_return(run_data)
     end
 
-    it "adds the error information to the reported data" do
-      expect(rest).to receive(:create_url)
-      expect(rest).to receive(:post)
-      reporter.run_failed(error)
-      expect(run_data).to have_key(:error)
-      expect(run_data[:error]).to eq "Chef::Exception::AuditError: Well that certainly didn't work\n" +
-        "line 0\nline 1\nline 2"
+    context "when no prior exception is stored" do
+      it "reports no error" do
+        expect(rest).to receive(:post)
+        reporter.run_failed(run_error)
+        expect(run_data).to_not have_key(:error)
+      end
     end
 
+    context "when some prior exception is stored" do
+      before do
+        reporter.instance_variable_set(:@audit_phase_error, audit_error)
+      end
+
+      it "reports the prior error" do
+        expect(rest).to receive(:post)
+        reporter.run_failed(run_error)
+        expect(run_data).to have_key(:error)
+        expect(run_data[:error]).to eq <<-EOM.strip!
+Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
+/path/recipe.rb:57
+/path/library.rb:106
+EOM
+      end
+    end
   end
 
   shared_context "audit data" do
@@ -247,7 +284,7 @@ describe Chef::Audit::AuditReporter do
     let(:ordered_control_groups) {
       {
         "foo" => control_group_foo,
-        "bar" => control_group_bar
+        "bar" => control_group_bar,
       }
     }
 
@@ -270,14 +307,14 @@ describe Chef::Audit::AuditReporter do
 
     it "notifies audit phase finished to debug log" do
       expect(Chef::Log).to receive(:debug).with(/Audit Reporter completed/)
-      reporter.audit_phase_complete
+      reporter.audit_phase_complete("Output from audit mode")
     end
 
     it "collects audit data" do
       ordered_control_groups.each do |_name, group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
-      reporter.audit_phase_complete
+      reporter.audit_phase_complete("Output from audit mode")
     end
   end
 
@@ -288,14 +325,14 @@ describe Chef::Audit::AuditReporter do
 
     it "notifies audit phase failed to debug log" do
       expect(Chef::Log).to receive(:debug).with(/Audit Reporter failed/)
-      reporter.audit_phase_failed(error)
+      reporter.audit_phase_failed(error, "Output from audit mode")
     end
 
     it "collects audit data" do
       ordered_control_groups.each do |_name, group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
-      reporter.audit_phase_failed(error)
+      reporter.audit_phase_failed(error, "Output from audit mode")
     end
   end
 

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 describe Chef::Knife::CookbookCreate do
   before(:each) do
@@ -56,7 +56,7 @@ describe Chef::Knife::CookbookCreate do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc"
+        :cookbook_copyright => "Opscode, Inc",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
@@ -71,7 +71,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.config = {
         :cookbook_path => @dir,
         :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com"
+        :cookbook_email => "nuo@opscode.com",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
@@ -87,7 +87,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_path => @dir,
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "apachev2"
+        :cookbook_license => "apachev2",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "apachev2")
@@ -103,7 +103,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_path => @dir,
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => false
+        :cookbook_license => false,
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
@@ -119,7 +119,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_path => @dir,
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "false"
+        :cookbook_license => "false",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
@@ -135,7 +135,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_path => @dir,
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "gplv2"
+        :cookbook_license => "gplv2",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv2")
@@ -151,7 +151,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_path => @dir,
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "gplv3"
+        :cookbook_license => "gplv3",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv3")
@@ -167,7 +167,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_path => @dir,
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit"
+        :cookbook_license => "mit",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
@@ -184,7 +184,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => "mit",
-        :readme_format => "rdoc"
+        :readme_format => "rdoc",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
@@ -201,7 +201,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => "mit",
-        :readme_format => "mkd"
+        :readme_format => "mkd",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
@@ -218,7 +218,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => "mit",
-        :readme_format => "txt"
+        :readme_format => "txt",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
@@ -235,7 +235,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => "mit",
-        :readme_format => "foo"
+        :readme_format => "foo",
       }
       @knife.name_args=["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")

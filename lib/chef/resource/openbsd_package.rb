@@ -19,33 +19,17 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/openbsd'
-require 'chef/mixin/shell_out'
+require "chef/resource/package"
+require "chef/provider/package/openbsd"
+require "chef/mixin/shell_out"
 
 class Chef
   class Resource
     class OpenbsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
+      resource_name :openbsd_package
       provides :package, os: "openbsd"
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :openbsd_package
-      end
-
-      def after_created
-        assign_provider
-      end
-
-      private
-
-      def assign_provider
-        @provider = Chef::Provider::Package::Openbsd
-      end
-
     end
   end
 end
-

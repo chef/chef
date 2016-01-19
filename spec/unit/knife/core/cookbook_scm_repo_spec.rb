@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/core/cookbook_scm_repo'
+require "spec_helper"
+require "chef/knife/core/cookbook_scm_repo"
 
 describe Chef::Knife::CookbookSCMRepo do
   before do
-    @repo_path = File.join(CHEF_SPEC_DATA, 'cookbooks')
+    @repo_path = File.join(CHEF_SPEC_DATA, "cookbooks")
     @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
     @ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
-    @cookbook_repo = Chef::Knife::CookbookSCMRepo.new(@repo_path, @ui, :default_branch => 'master')
+    @cookbook_repo = Chef::Knife::CookbookSCMRepo.new(@repo_path, @ui, :default_branch => "master")
 
     @branch_list = Mixlib::ShellOut.new
     @branch_list.stdout.replace(<<-BRANCHES)
@@ -43,7 +43,7 @@ BRANCHES
   end
 
   it "has a default branch" do
-    expect(@cookbook_repo.default_branch).to eq('master')
+    expect(@cookbook_repo.default_branch).to eq("master")
   end
 
   describe "when sanity checking the repo" do
@@ -64,12 +64,12 @@ BRANCHES
 
       describe "and the repo is a git repo" do
         before do
-          allow(::File).to receive(:directory?).with(File.join(@repo_path, '.git')).and_return(true)
+          allow(::File).to receive(:directory?).with(File.join(@repo_path, ".git")).and_return(true)
         end
 
         it "exits when the default branch doesn't exist" do
           @nobranches = Mixlib::ShellOut.new.tap {|s|s.stdout.replace "\n"}
-          expect(@cookbook_repo).to receive(:shell_out!).with('git branch --no-color', :cwd => @repo_path).and_return(@nobranches)
+          expect(@cookbook_repo).to receive(:shell_out!).with("git branch --no-color", :cwd => @repo_path).and_return(@nobranches)
           expect {@cookbook_repo.sanity_check}.to raise_error(SystemExit)
         end
 
@@ -85,14 +85,14 @@ BRANCHES
             @dirty_status.stdout.replace(<<-DIRTY)
  M chef/lib/chef/knife/cookbook_site_vendor.rb
 DIRTY
-            expect(@cookbook_repo).to receive(:shell_out!).with('git status --porcelain', :cwd => @repo_path).and_return(@dirty_status)
+            expect(@cookbook_repo).to receive(:shell_out!).with("git status --porcelain", :cwd => @repo_path).and_return(@dirty_status)
             expect {@cookbook_repo.sanity_check}.to raise_error(SystemExit)
           end
 
           describe "and the repo is clean" do
             before do
               @clean_status = Mixlib::ShellOut.new.tap {|s| s.stdout.replace("\n")}
-              allow(@cookbook_repo).to receive(:shell_out!).with('git status --porcelain', :cwd => @repo_path).and_return(@clean_status)
+              allow(@cookbook_repo).to receive(:shell_out!).with("git status --porcelain", :cwd => @repo_path).and_return(@clean_status)
             end
 
             it "passes the sanity check" do
@@ -106,35 +106,35 @@ DIRTY
   end
 
   it "resets to default state by checking out the default branch" do
-    expect(@cookbook_repo).to receive(:shell_out!).with('git checkout master', :cwd => @repo_path)
+    expect(@cookbook_repo).to receive(:shell_out!).with("git checkout master", :cwd => @repo_path)
     @cookbook_repo.reset_to_default_state
   end
 
   it "determines if a the pristine copy branch exists" do
-    expect(@cookbook_repo).to receive(:shell_out!).with('git branch --no-color', :cwd => @repo_path).and_return(@branch_list)
+    expect(@cookbook_repo).to receive(:shell_out!).with("git branch --no-color", :cwd => @repo_path).and_return(@branch_list)
     expect(@cookbook_repo.branch_exists?("chef-vendor-apache2")).to be_truthy
-    expect(@cookbook_repo).to receive(:shell_out!).with('git branch --no-color', :cwd => @repo_path).and_return(@branch_list)
+    expect(@cookbook_repo).to receive(:shell_out!).with("git branch --no-color", :cwd => @repo_path).and_return(@branch_list)
     expect(@cookbook_repo.branch_exists?("chef-vendor-nginx")).to be_falsey
   end
 
   it "determines if a the branch not exists correctly without substring search" do
-    expect(@cookbook_repo).to receive(:shell_out!).twice.with('git branch --no-color', :cwd => @repo_path).and_return(@branch_list)
+    expect(@cookbook_repo).to receive(:shell_out!).twice.with("git branch --no-color", :cwd => @repo_path).and_return(@branch_list)
     expect(@cookbook_repo).not_to be_branch_exists("chef-vendor-absent")
     expect(@cookbook_repo).to be_branch_exists("chef-vendor-absent-new")
   end
 
   describe "when the pristine copy branch does not exist" do
     it "prepares for import by creating the pristine copy branch" do
-      expect(@cookbook_repo).to receive(:shell_out!).with('git branch --no-color', :cwd => @repo_path).and_return(@branch_list)
-      expect(@cookbook_repo).to receive(:shell_out!).with('git checkout -b chef-vendor-nginx', :cwd => @repo_path)
+      expect(@cookbook_repo).to receive(:shell_out!).with("git branch --no-color", :cwd => @repo_path).and_return(@branch_list)
+      expect(@cookbook_repo).to receive(:shell_out!).with("git checkout -b chef-vendor-nginx", :cwd => @repo_path)
       @cookbook_repo.prepare_to_import("nginx")
     end
   end
 
   describe "when the pristine copy branch does exist" do
     it "prepares for import by checking out the pristine copy branch" do
-      expect(@cookbook_repo).to receive(:shell_out!).with('git branch --no-color', :cwd => @repo_path).and_return(@branch_list)
-      expect(@cookbook_repo).to receive(:shell_out!).with('git checkout chef-vendor-apache2', :cwd => @repo_path)
+      expect(@cookbook_repo).to receive(:shell_out!).with("git branch --no-color", :cwd => @repo_path).and_return(@branch_list)
+      expect(@cookbook_repo).to receive(:shell_out!).with("git checkout chef-vendor-apache2", :cwd => @repo_path)
       @cookbook_repo.prepare_to_import("apache2")
     end
   end
@@ -143,15 +143,15 @@ DIRTY
     before do
       @updates = Mixlib::ShellOut.new
       @updates.stdout.replace("\n")
-      allow(@cookbook_repo).to receive(:shell_out!).with('git status --porcelain -- apache2', :cwd => @repo_path).and_return(@updates)
+      allow(@cookbook_repo).to receive(:shell_out!).with("git status --porcelain -- apache2", :cwd => @repo_path).and_return(@updates)
     end
 
     it "shows no changes in the pristine copy" do
-      expect(@cookbook_repo.updated?('apache2')).to be_falsey
+      expect(@cookbook_repo.updated?("apache2")).to be_falsey
     end
 
     it "does nothing to finalize the updates" do
-      expect(@cookbook_repo.finalize_updates_to('apache2', '1.2.3')).to be_falsey
+      expect(@cookbook_repo.finalize_updates_to("apache2", "1.2.3")).to be_falsey
     end
   end
 
@@ -159,11 +159,11 @@ DIRTY
     before do
       @updates = Mixlib::ShellOut.new
       @updates.stdout.replace(" M cookbooks/apache2/recipes/default.rb\n")
-      allow(@cookbook_repo).to receive(:shell_out!).with('git status --porcelain -- apache2', :cwd => @repo_path).and_return(@updates)
+      allow(@cookbook_repo).to receive(:shell_out!).with("git status --porcelain -- apache2", :cwd => @repo_path).and_return(@updates)
     end
 
     it "shows changes in the pristine copy" do
-      expect(@cookbook_repo.updated?('apache2')).to be_truthy
+      expect(@cookbook_repo.updated?("apache2")).to be_truthy
     end
 
     it "commits the changes to the repo and tags the commit" do
@@ -176,11 +176,11 @@ DIRTY
 
   describe "when a custom default branch is specified" do
     before do
-      @cookbook_repo = Chef::Knife::CookbookSCMRepo.new(@repo_path, @ui, :default_branch => 'develop')
+      @cookbook_repo = Chef::Knife::CookbookSCMRepo.new(@repo_path, @ui, :default_branch => "develop")
     end
 
     it "resets to default state by checking out the default branch" do
-      expect(@cookbook_repo).to receive(:shell_out!).with('git checkout develop', :cwd => @repo_path)
+      expect(@cookbook_repo).to receive(:shell_out!).with("git checkout develop", :cwd => @repo_path)
       @cookbook_repo.reset_to_default_state
     end
   end

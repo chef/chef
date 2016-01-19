@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/exceptions'
-require 'lib/chef/chef_fs/config.rb'
+require "spec_helper"
+require "chef/exceptions"
+require "lib/chef/chef_fs/config.rb"
 
 describe Chef::ChefFS::Config do
   describe "initialize" do
     it "warns when hosted setups use 'everything'" do
       base_config = Hash.new()
-      base_config[:repo_mode] = 'everything'
-      base_config[:chef_server_url] = 'http://foo.com/organizations/fake_org/'
+      base_config[:repo_mode] = "everything"
+      base_config[:chef_server_url] = "http://foo.com/organizations/fake_org/"
 
       ui = double("ui")
       expect(ui).to receive(:warn)
@@ -35,8 +35,8 @@ describe Chef::ChefFS::Config do
 
     it "doesn't warn when hosted setups use 'hosted_everything'" do
       base_config = Hash.new()
-      base_config[:repo_mode] = 'hosted_everything'
-      base_config[:chef_server_url] = 'http://foo.com/organizations/fake_org/'
+      base_config[:repo_mode] = "hosted_everything"
+      base_config[:chef_server_url] = "http://foo.com/organizations/fake_org/"
 
       ui = double("ui")
       expect(ui).to receive(:warn).exactly(0).times
@@ -46,8 +46,8 @@ describe Chef::ChefFS::Config do
 
     it "doesn't warn when non-hosted setups use 'everything'" do
       base_config = Hash.new()
-      base_config[:repo_mode] = 'everything'
-      base_config[:chef_server_url] = 'http://foo.com/'
+      base_config[:repo_mode] = "everything"
+      base_config[:chef_server_url] = "http://foo.com/"
 
       ui = double("ui")
       expect(ui).to receive(:warn).exactly(0).times
@@ -67,8 +67,8 @@ describe Chef::ChefFS::Config do
         node_path: "/base_path/nodes",
         role_path: "/base_path/roles",
         user_path: "/base_path/users",
-        policy_path: "/base_path/policies"
-      })
+        policy_path: "/base_path/policies",
+      },)
     end
 
     let(:chef_fs_config)  { Chef::ChefFS::Config.new(chef_config, Dir.pwd) }
@@ -101,10 +101,6 @@ describe Chef::ChefFS::Config do
 
     it "sets the correct user path on the local FS object" do
       expect(local_fs.child_paths["users"]).to eq([platform_path("/base_path/users")])
-    end
-
-    it "sets the correct policy path on the local FS object" do
-      expect(local_fs.child_paths["policies"]).to eq([platform_path("/base_path/policies")])
     end
   end
 end

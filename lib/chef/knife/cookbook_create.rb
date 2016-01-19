@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookCreate < Knife
 
       deps do
-        require 'chef/json_compat'
-        require 'uri'
-        require 'fileutils'
+        require "chef/json_compat"
+        require "uri"
+        require "fileutils"
       end
 
       banner "knife cookbook create COOKBOOK (options)"
@@ -48,7 +48,7 @@ class Chef
       option :cookbook_copyright,
         :short => "-C COPYRIGHT",
         :long => "--copyright COPYRIGHT",
-        :description => "Name of Copyright holder"
+        :description => "Name of copyright holder"
 
       option :cookbook_email,
         :short => "-m EMAIL",
@@ -182,8 +182,8 @@ EOH
 
       def create_changelog(dir, cookbook_name)
         msg("** Creating CHANGELOG for cookbook: #{cookbook_name}")
-        unless File.exists?(File.join(dir,cookbook_name,'CHANGELOG.md'))
-          open(File.join(dir, cookbook_name, 'CHANGELOG.md'),'w') do |file|
+        unless File.exists?(File.join(dir,cookbook_name,"CHANGELOG.md"))
+          open(File.join(dir, cookbook_name, "CHANGELOG.md"),"w") do |file|
             file.puts <<-EOH
 #{cookbook_name} CHANGELOG
 #{'='*"#{cookbook_name} CHANGELOG".length}

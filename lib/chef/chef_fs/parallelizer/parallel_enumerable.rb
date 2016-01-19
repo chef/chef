@@ -1,4 +1,4 @@
-require 'chef/chef_fs/parallelizer/flatten_enumerable'
+require "chef/chef_fs/parallelizer/flatten_enumerable"
 
 class Chef
   module ChefFS
@@ -266,7 +266,7 @@ class Chef
           begin
             output = @block.call(input)
             @unconsumed_output.push([ output, index, input, :result ])
-          rescue
+          rescue StandardError, ScriptError
             if @options[:stop_on_exception]
               @unconsumed_input.clear
             end
