@@ -250,6 +250,11 @@ class Chef
           Chef::Config[:knife][:bootstrap_vault_item]
         }
 
+      option :openssl_fips,
+        :long => "--openssl-fips",
+        :description => "Set openssl to run in fips mode",
+        :boolean => true
+
       def initialize(argv=[])
         super
         @client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(
