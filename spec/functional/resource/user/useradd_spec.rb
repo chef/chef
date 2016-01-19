@@ -644,7 +644,7 @@ describe Chef::Provider::User::Useradd, metadata do
       context "and has no password" do
 
         # TODO: platform_family should be setup in spec_helper w/ tags
-        if %w[suse opensuse].include?(OHAI_SYSTEM["platform_family"])
+        if %w{suse opensuse}.include?(OHAI_SYSTEM["platform_family"])
           # suse gets this right:
           it "errors out trying to unlock the user" do
             expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)

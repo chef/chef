@@ -211,7 +211,7 @@ describe Chef::Provider::Route do
   end
 
   describe Chef::Provider::Route, "generate_config method" do
-    %w[ centos redhat fedora ].each do |platform|
+    %w{ centos redhat fedora }.each do |platform|
       it "should write a route file on #{platform} platform" do
         @node.automatic_attrs[:platform] = platform
 

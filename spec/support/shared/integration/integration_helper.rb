@@ -113,7 +113,7 @@ module IntegrationSupport
       raise "Can only create one directory per test" if @repository_dir
       @repository_dir = Dir.mktmpdir("chef_repo")
       Chef::Config.chef_repo_path = @repository_dir
-      %w(client cookbook data_bag environment node role user).each do |object_name|
+      %w{client cookbook data_bag environment node role user}.each do |object_name|
         Chef::Config.delete("#{object_name}_path".to_sym)
       end
     end
@@ -121,7 +121,7 @@ module IntegrationSupport
     after :each do
       if @repository_dir
         begin
-          %w(client cookbook data_bag environment node role user).each do |object_name|
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)

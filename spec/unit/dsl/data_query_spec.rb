@@ -37,7 +37,7 @@ describe Chef::DSL::DataQuery do
       allow(Chef::DataBag).to receive(:load)
       .with("bag_name")
       .and_return("item_1" => "http://url_for/item_1", "item_2" => "http://url_for/item_2")
-      expect( language.data_bag("bag_name").sort ).to eql %w(item_1 item_2)
+      expect( language.data_bag("bag_name").sort ).to eql %w{item_1 item_2}
     end
   end
 

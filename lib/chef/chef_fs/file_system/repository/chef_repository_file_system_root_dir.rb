@@ -73,7 +73,7 @@ class Chef
           attr_reader :child_paths
           attr_reader :versioned_cookbooks
 
-          CHILDREN = %w(org.json invitations.json members.json)
+          CHILDREN = %w{org.json invitations.json members.json}
 
           def children
             @children ||= begin

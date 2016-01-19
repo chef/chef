@@ -230,7 +230,7 @@ class Chef
 
     private
 
-    OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
+    OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack terremark bluebox}
 
     def self.path_from_caller(caller_line)
       caller_line.split(/:\d+/).first

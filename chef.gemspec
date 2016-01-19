@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.add_dependency "plist", "~> 3.1.0"
 
   # Audit mode requires these, so they are non-developmental dependencies now
-  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_dependency gem, "~> 3.4" }
+  %w{rspec-core rspec-expectations rspec-mocks}.each { |gem| s.add_dependency gem, "~> 3.4" }
   s.add_dependency "rspec_junit_formatter", "~> 0.2.0"
   s.add_dependency "serverspec", "~> 2.7"
   s.add_dependency "specinfra", "~> 2.10"
@@ -52,8 +52,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake", "~> 10.1"
 
   s.bindir       = "bin"
-  s.executables  = %w( chef-client chef-solo knife chef-shell chef-apply )
+  s.executables  = %w{ chef-client chef-solo knife chef-shell chef-apply }
 
-  s.require_path = %w( lib lib-backcompat )
-  s.files = %w(Gemfile Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,lib-backcompat,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) } + Dir.glob("*.gemspec")
+  s.require_path = %w{ lib lib-backcompat }
+  s.files = %w{Gemfile Rakefile LICENSE README.md CONTRIBUTING.md} + Dir.glob("{distro,lib,lib-backcompat,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) } + Dir.glob("*.gemspec")
 end

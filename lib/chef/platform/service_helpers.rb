@@ -103,7 +103,7 @@ class Chef
         end
 
         def has_systemd_service_unit?(svc_name)
-          %w( /etc /usr/lib /lib /run ).any? do |load_path|
+          %w{ /etc /usr/lib /lib /run }.any? do |load_path|
             ::File.exist?(
               Chef.path_to("#{load_path}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service")
             )
@@ -112,7 +112,7 @@ class Chef
 
         def has_systemd_unit?(svc_name)
           # TODO: stop supporting non-service units with service resource
-          %w( /etc /usr/lib /lib /run ).any? do |load_path|
+          %w{ /etc /usr/lib /lib /run }.any? do |load_path|
             ::File.exist?(Chef.path_to("#{load_path}/systemd/system/#{svc_name}"))
           end
         end

@@ -430,7 +430,7 @@ describe Chef::REST do
         end
       end
 
-      %w[ HTTPFound HTTPMovedPermanently HTTPSeeOther HTTPUseProxy HTTPTemporaryRedirect HTTPMultipleChoice ].each do |resp_name|
+      %w{ HTTPFound HTTPMovedPermanently HTTPSeeOther HTTPUseProxy HTTPTemporaryRedirect HTTPMultipleChoice }.each do |resp_name|
         describe "when encountering a #{resp_name} redirect" do
           let(:http_response) do
             resp_cls  = Net.const_get(resp_name)

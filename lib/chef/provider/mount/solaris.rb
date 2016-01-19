@@ -27,7 +27,7 @@ class Chef
     class Mount
       # Mount Solaris File systems
       class Solaris < Chef::Provider::Mount
-        provides :mount, platform: %w(openindiana opensolaris nexentacore omnios solaris2 smartos)
+        provides :mount, platform: %w{openindiana opensolaris nexentacore omnios solaris2 smartos}
 
         extend Forwardable
 
@@ -202,7 +202,7 @@ class Chef
         end
 
         def device_should_exist?
-          !%w(tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs vxfs).include?(fstype)
+          !%w{tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs vxfs}.include?(fstype)
         end
 
         def mount_at_boot?

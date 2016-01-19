@@ -32,7 +32,7 @@ class Chef
         end
 
         def to_ruby(object)
-          to_ruby_keys(object, %w(name description default_attributes override_attributes run_list env_run_lists))
+          to_ruby_keys(object, %w{name description default_attributes override_attributes run_list env_run_lists})
         end
       end
     end

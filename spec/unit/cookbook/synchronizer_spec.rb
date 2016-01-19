@@ -123,7 +123,7 @@ describe Chef::CookbookSynchronizer do
   end
 
   it "lists the cookbook names" do
-    expect(synchronizer.cookbook_names).to eq(%w[cookbook_a])
+    expect(synchronizer.cookbook_names).to eq(%w{cookbook_a})
   end
 
   it "lists the cookbook manifests" do

@@ -81,7 +81,7 @@ EOM
 
       context "when all _paths are set to alternates" do
         before :each do
-          %w(client cookbook data_bag environment node role user).each do |object_name|
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
             Chef::Config["#{object_name}_path".to_sym] = File.join(Chef::Config.chef_repo_path, "#{object_name}s2")
           end
           Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, "chef_repo2")
@@ -162,7 +162,7 @@ EOM
 
       context "when all _paths except chef_repo_path are set to alternates" do
         before :each do
-          %w(client cookbook data_bag environment node role user).each do |object_name|
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
             Chef::Config["#{object_name}_path".to_sym] = File.join(Chef::Config.chef_repo_path, "#{object_name}s2")
           end
         end
@@ -218,7 +218,7 @@ EOM
 
       context "when only chef_repo_path is set to its alternate" do
         before :each do
-          %w(client cookbook data_bag environment node role user).each do |object_name|
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, "chef_repo2")
@@ -275,7 +275,7 @@ EOM
 
       context "when paths are set to point to both versions of each" do
         before :each do
-          %w(client cookbook data_bag environment node role user).each do |object_name|
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
             Chef::Config["#{object_name}_path".to_sym] = [
               File.join(Chef::Config.chef_repo_path, "#{object_name}s"),
               File.join(Chef::Config.chef_repo_path, "#{object_name}s2"),
@@ -511,7 +511,7 @@ EOM
 
       context "when when chef_repo_path is set to both places and no other _path is set" do
         before :each do
-          %w(client cookbook data_bag environment node role user).each do |object_name|
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.chef_repo_path = [
@@ -613,7 +613,7 @@ EOM
 
       context "when cookbook_path is set and nothing else" do
         before :each do
-          %w(client data_bag environment node role user).each do |object_name|
+          %w{client data_bag environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)
@@ -671,7 +671,7 @@ EOM
 
       context "when cookbook_path is set to multiple places and nothing else is set" do
         before :each do
-          %w(client data_bag environment node role user).each do |object_name|
+          %w{client data_bag environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)
@@ -774,7 +774,7 @@ EOM
 
       context "when data_bag_path and chef_repo_path are set, and nothing else" do
         before :each do
-          %w(client cookbook  environment node role user).each do |object_name|
+          %w{client cookbook  environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.data_bag_path = File.join(Chef::Config.chef_repo_path, "data_bags")
@@ -834,7 +834,7 @@ EOM
         include_context "default config options"
 
         before :each do
-          %w(client cookbook  environment node role user).each do |object_name|
+          %w{client cookbook  environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)
@@ -871,7 +871,7 @@ EOM
     when_the_repository "is empty" do
       context "when the repository _paths point to places that do not exist" do
         before :each do
-          %w(client cookbook data_bag environment node role user).each do |object_name|
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
             Chef::Config["#{object_name}_path".to_sym] = File.join(Chef::Config.chef_repo_path, "nowhere", object_name)
           end
           Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, "nowhere")

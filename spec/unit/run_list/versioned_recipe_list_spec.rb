@@ -39,7 +39,7 @@ describe Chef::RunList::VersionedRecipeList do
 
   describe "add_recipe" do
 
-    let(:recipes) { %w[ apt god apache2 ] }
+    let(:recipes) { %w{ apt god apache2 } }
 
     it "should append the recipe to the end of the list" do
       list.add_recipe "rails"
@@ -130,20 +130,20 @@ describe Chef::RunList::VersionedRecipeList do
 
     context "with bare cookbook names" do
 
-      let(:recipes) { %w[ apache2 ] }
+      let(:recipes) { %w{ apache2 } }
 
       it "gives $cookbook_name::default" do
-        expect(fq_names).to eq( %w[ apache2::default ] )
+        expect(fq_names).to eq( %w{ apache2::default } )
       end
 
     end
 
     context "with qualified recipe names but no versions" do
 
-      let(:recipes) { %w[ mysql::server ] }
+      let(:recipes) { %w{ mysql::server } }
 
       it "returns the qualified recipe names" do
-        expect(fq_names).to eq( %w[ mysql::server ] )
+        expect(fq_names).to eq( %w{ mysql::server } )
       end
 
     end

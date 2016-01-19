@@ -48,9 +48,9 @@ class Chef
       def sane_paths
         @sane_paths ||= begin
           if Chef::Platform.windows?
-            %w[]
+            %w{}
           else
-            %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
+            %w{/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin}
           end
         end
       end

@@ -127,7 +127,7 @@ class Chef::EncryptedDataBagItem
       end
 
       def self.encryptor_keys
-        %w( encrypted_data iv version cipher )
+        %w{ encrypted_data iv version cipher }
       end
     end
 
@@ -155,7 +155,7 @@ class Chef::EncryptedDataBagItem
       end
 
       def self.encryptor_keys
-        super + %w( hmac )
+        super + %w{ hmac }
       end
     end
 
@@ -216,7 +216,7 @@ class Chef::EncryptedDataBagItem
       end
 
       def self.encryptor_keys
-        super + %w( auth_tag )
+        super + %w{ auth_tag }
       end
 
     end

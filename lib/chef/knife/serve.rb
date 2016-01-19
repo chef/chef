@@ -27,7 +27,7 @@ class Chef
         # --chef-repo-path forcibly overrides all other paths
         if config[:chef_repo_path]
           Chef::Config.chef_repo_path = config[:chef_repo_path]
-          %w(acl client cookbook container data_bag environment group node role user).each do |variable_name|
+          %w{acl client cookbook container data_bag environment group node role user}.each do |variable_name|
             Chef::Config.delete("#{variable_name}_path".to_sym)
           end
         end

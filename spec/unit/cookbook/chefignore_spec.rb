@@ -23,12 +23,12 @@ describe Chef::Cookbook::Chefignore do
   end
 
   it "loads the globs in the chefignore file" do
-    expect(@chefignore.ignores).to match_array(%w[recipes/ignoreme.rb ignored])
+    expect(@chefignore.ignores).to match_array(%w{recipes/ignoreme.rb ignored})
   end
 
   it "removes items from an array that match the ignores" do
-    file_list = %w[ recipes/ignoreme.rb recipes/dontignoreme.rb ]
-    expect(@chefignore.remove_ignores_from(file_list)).to eq(%w[recipes/dontignoreme.rb])
+    file_list = %w{ recipes/ignoreme.rb recipes/dontignoreme.rb }
+    expect(@chefignore.remove_ignores_from(file_list)).to eq(%w{recipes/dontignoreme.rb})
   end
 
   it "determines if a file is ignored" do
@@ -43,7 +43,7 @@ describe Chef::Cookbook::Chefignore do
     end
 
     it "loads the globs in the chefignore file" do
-      expect(@chefignore.ignores).to match_array(%w[recipes/ignoreme.rb ignored vendor/bundle/*])
+      expect(@chefignore.ignores).to match_array(%w{recipes/ignoreme.rb ignored vendor/bundle/*})
     end
   end
 end

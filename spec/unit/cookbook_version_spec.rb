@@ -285,7 +285,7 @@ describe Chef::CookbookVersion do
       @cbv = Chef::CookbookVersion.new("version validation", "/tmp/blah")
     end
     it "should accept valid cookbook versions" do
-      good_versions = %w(1.2 1.2.3 1000.80.50000 0.300.25)
+      good_versions = %w{1.2 1.2.3 1000.80.50000 0.300.25}
       good_versions.each do |v|
         @cbv.version = v
       end

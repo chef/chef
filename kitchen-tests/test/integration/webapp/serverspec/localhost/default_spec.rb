@@ -90,7 +90,7 @@ describe "webapp::default", :end_to_end => true do
           end
         end
 
-        %w(select update insert delete create).each do |priv|
+        %w{select update insert delete create}.each do |priv|
           include_examples "a privilege", priv do
           end
         end

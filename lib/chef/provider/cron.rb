@@ -199,7 +199,7 @@ class Chef
       private
 
       def set_environment_var(attr_name, attr_value)
-        if %w(MAILTO PATH SHELL HOME).include?(attr_name)
+        if %w{MAILTO PATH SHELL HOME}.include?(attr_name)
           @current_resource.send(attr_name.downcase.to_sym, attr_value)
         else
           @current_resource.environment(@current_resource.environment.merge(attr_name => attr_value))

@@ -51,9 +51,9 @@ class Chef
 
       def describe_self_for_error
         if respond_to?(:name)
-          %Q[`#{self.class} "#{name}"']
+          %Q{`#{self.class} "#{name}"'}
         elsif respond_to?(:recipe_name)
-          %Q[`#{self.class} "#{recipe_name}"']
+          %Q{`#{self.class} "#{recipe_name}"'}
         else
           to_s
         end
