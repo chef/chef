@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +34,42 @@ E
         error_description.section("Relevant Config Settings:",<<-E)
 chef_server_url  "#{server_url}"
 E
+      end
+
+      def describe_eof_error(error_description)
+        error_description.section("Authentication Error:",<<-E)
+Received an EOF on transport socket.  This almost always indicates a network
+error external to chef-client.  Some causes include:
+
+  - Blocking ICMP Dest Unreachable (breaking Path MTU Discovery)
+  - IPsec or VPN tunnelling breaking Path MTU
+  - Jumbo frames configured only on one side (breaking Path MTU)
+  - Jumbo frames configured on a LAN that does not support them
+  - Proxies or Load Balancers breaking large POSTs
+  - Broken TCP offload
+
+Try sending large pings to the destination:
+
+   windows:  ping server.example.com -f -l 9999
+   unix:  ping server.example.com -s 9999
+
+Try sending large POSTs to the destination (any HTTP code returned is success):
+
+   e.g.:  curl http://server.example.com/`printf '%*s' 9999 '' | tr ' ' 'a'`
+
+Try disabling TCP Offload Engines (TOE) in your ethernet drivers.
+
+  windows:
+    Disable-NetAdapterChecksumOffload * -TcpIPv4 -UdpIPv4 -IpIPv4 -NoRestart
+    Disable-NetAdapterLso * -IPv4 -NoRestart
+    Set-NetAdapterAdvancedProperty * -DisplayName "Large Receive Offload (IPv4)" -DisplayValue Disabled –NoRestart
+    Restart-NetAdapter *
+  unix(bash):
+    for i in rx tx sg tso ufo gso gro lro rxvlan txvlan rxhash; do /sbin/ethtool -K eth0 $i off; done
+
+In some cases the underlying virtualization layer (Xen, VMware, KVM, Hyper-V, etc) may have
+broken networking.
+        E
       end
 
       def describe_401_error(error_description)
