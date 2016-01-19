@@ -196,7 +196,7 @@ class Chef
           # Starts a new process and waits till the process exits
 
           result = shell_out(
-            "chef-client #{config_params}",
+            "chef-client.bat #{config_params}",
             :timeout => Chef::Config[:windows_service][:watchdog_timeout],
             :logger => Chef::Log,
           )
