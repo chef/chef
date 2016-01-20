@@ -30,17 +30,31 @@ class Chef
       def load_current_resource
       end
 
+      def do_update
+        %w{/var/lib/apt/periodic /etc/apt/apt.conf.d}.each do |d|
+          dir = Chef::Resource::Directory.new(d, run_context)
+          dir.recursive(true)
+          dir.run_action(:create_if_missing)
+          new_resource.updated_by_last_action(true) if dir.updated_by_last_action?
+        end
+        config = Chef::Resource::File.new("/etc/apt/apt.conf.d/15update-stamp", run_context)
+        config.content('APT::Update::Post-Invoke-Success {"touch /var/lib/apt/periodic/update-success-stamp 2>/dev/null || true";};')
+        config.run_action(:create)
+        new_resource.updated_by_last_action(true) if config.updated_by_last_action?
+        shell_out!("apt-get -q update")
+      end
+
       def action_periodic
         if !apt_up_to_date?
           converge_by "update new lists of packages" do
-            shell_out!("apt-get -q update")
+            do_update
           end
         end
       end
 
       def action_update
         converge_by "force update new lists of packages" do
-          shell_out!("apt-get -q update")
+          do_update
         end
       end
 
@@ -49,12 +63,8 @@ class Chef
       #
       # @return [Boolean]
       def apt_up_to_date?
-        if ::File.exist?("/var/lib/apt/periodic/update-success-stamp") &&
-            ::File.mtime("/var/lib/apt/periodic/update-success-stamp") > Time.now - new_resource.frequency
-          true
-        else
-          false
-        end
+        ::File.exist?("/var/lib/apt/periodic/update-success-stamp") &&
+          ::File.mtime("/var/lib/apt/periodic/update-success-stamp") > Time.now - new_resource.frequency
       end
 
     end
