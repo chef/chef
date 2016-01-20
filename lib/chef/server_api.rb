@@ -48,6 +48,12 @@ class Chef
     # responses.
     use Chef::HTTP::ValidateContentLength
 
+    # for back compat with Chef::REST, expose `<verb>_rest` as an alias to `<verb>`
+    alias :get_rest :get
+    alias :delete_rest :delete
+    alias :post_rest :post
+    alias :put_rest :put
+
     # Makes an HTTP request to +path+ with the given +method+, +headers+, and
     # +data+ (if applicable). Does not apply any middleware, besides that
     # needed for Authentication.
