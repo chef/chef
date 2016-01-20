@@ -23,6 +23,9 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
 
   before(:all) do
     powershell_out!("iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))")
+    unless ENV["PATH"] =~ /chocolatey\\bin/
+      ENV["PATH"] = "C:\\ProgramData\\chocolatey\\bin;#{ENV["PATH"]}"
+    end
   end
 
   let(:package_name) { "test-A" }
