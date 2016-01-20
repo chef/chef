@@ -22,11 +22,11 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
   include Chef::Mixin::PowershellOut
 
   before(:all) do
-    powershell_out("iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))")
+    powershell_out!("iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))")
   end
 
   let(:package_name) { "test-A" }
-  let(:package_list) { proc { powershell_out("choco list -lo -r #{Array(package_name).join(' ')}").stdout.chomp } }
+  let(:package_list) { proc { powershell_out!("choco list -lo -r #{Array(package_name).join(' ')}").stdout.chomp } }
   let(:package_source) { File.join(CHEF_SPEC_ASSETS, "chocolatey_feed") }
   
   subject do
