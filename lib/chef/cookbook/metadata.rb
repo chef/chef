@@ -25,6 +25,7 @@ require "chef/mixin/params_validate"
 require "chef/log"
 require "chef/version_class"
 require "chef/version_constraint"
+require "chef/version_constraint/platform"
 require "chef/json_compat"
 
 class Chef
