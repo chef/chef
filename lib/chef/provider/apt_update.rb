@@ -21,27 +21,18 @@ require "chef/resource/apt_update"
 class Chef
   class Provider
     class AptUpdate < Chef::Provider
+      include Chef::DSL::DeclareResource
+
       provides :apt_update, os: "linux"
+
+      APT_CONF_DIR = "/etc/apt/apt.conf.d"
+      STAMP_DIR = "/var/lib/apt/periodic"
 
       def whyrun_supported?
         true
       end
 
       def load_current_resource
-      end
-
-      def do_update
-        %w{/var/lib/apt/periodic /etc/apt/apt.conf.d}.each do |d|
-          dir = Chef::Resource::Directory.new(d, run_context)
-          dir.recursive(true)
-          dir.run_action(:create_if_missing)
-          new_resource.updated_by_last_action(true) if dir.updated_by_last_action?
-        end
-        config = Chef::Resource::File.new("/etc/apt/apt.conf.d/15update-stamp", run_context)
-        config.content('APT::Update::Post-Invoke-Success {"touch /var/lib/apt/periodic/update-success-stamp 2>/dev/null || true";};')
-        config.run_action(:create)
-        new_resource.updated_by_last_action(true) if config.updated_by_last_action?
-        shell_out!("apt-get -q update")
       end
 
       def action_periodic
@@ -63,8 +54,22 @@ class Chef
       #
       # @return [Boolean]
       def apt_up_to_date?
-        ::File.exist?("/var/lib/apt/periodic/update-success-stamp") &&
-          ::File.mtime("/var/lib/apt/periodic/update-success-stamp") > Time.now - new_resource.frequency
+        ::File.exist?("#{STAMP_DIR}/update-success-stamp") &&
+          ::File.mtime("#{STAMP_DIR}/update-success-stamp") > Time.now - new_resource.frequency
+      end
+
+      def do_update
+        [STAMP_DIR, APT_CONF_DIR].each do |d|
+          build_resource(:directory, d, caller[0]) do
+            recursive true
+          end.run_action(:create)
+        end
+
+        build_resource(:file, "#{APT_CONF_DIR}/15update-stamp", caller[0]) do
+          content "APT::Update::Post-Invoke-Success {\"touch #{STAMP_DIR}/update-success-stamp 2>/dev/null || true\";};"
+        end.run_action(:create_if_missing)
+
+        shell_out!("apt-get -q update")
       end
 
     end
