@@ -47,6 +47,34 @@ class Chef
       INFLECTIONS.each { |k,v| k.freeze; v.freeze }
       INFLECTIONS.freeze
 
+      # ChefFS supports three modes of operation: "static", "everything", and
+      # "hosted_everything". These names are antiquated since Chef 12 moved
+      # multi-tenant and RBAC to the open source product. In practice, they
+      # mean:
+      #
+      # * static: just static objects that are included in a traditional
+      #   chef-repo, with no support for anything introduced in Chef 12 or
+      #   later.
+      # * everything: all of the objects supported by the open source Chef
+      #   Server 11.x
+      # * hosted_everything: (the name comes from Hosted Chef) supports
+      #   everything in Chef Server 12 and later, including RBAC objects and
+      #   Policyfile objects.
+      #
+      # The "static" and "everything" modes are used for backup and
+      # upgrade/migration of older Chef Servers, so they should be considered
+      # frozen in time.
+
+      CHEF_11_OSS_STATIC_OBJECTS = %w{cookbooks cookbook_artifacts data_bags environments roles}.freeze
+      CHEF_11_OSS_DYNAMIC_OBJECTS = %w{clients nodes users}.freeze
+      RBAC_OBJECT_NAMES = %w{acls containers groups }.freeze
+      CHEF_12_OBJECTS = %w{ cookbook_artifacts policies policy_groups }.freeze
+
+      STATIC_MODE_OBJECT_NAMES = CHEF_11_OSS_STATIC_OBJECTS
+      EVERYTHING_MODE_OBJECT_NAMES = (CHEF_11_OSS_STATIC_OBJECTS + CHEF_11_OSS_DYNAMIC_OBJECTS).freeze
+      HOSTED_EVERYTHING_MODE_OBJECT_NAMES = (EVERYTHING_MODE_OBJECT_NAMES + RBAC_OBJECT_NAMES + CHEF_12_OBJECTS).freeze
+
+
       #
       # Create a new Config object which can produce a chef_fs and local_fs.
       #
@@ -234,11 +262,11 @@ class Chef
           result = {}
           case @chef_config[:repo_mode]
           when "static"
-            object_names = %w{cookbooks data_bags environments roles}
+            object_names = STATIC_MODE_OBJECT_NAMES
           when "hosted_everything"
-            object_names = %w{acls clients cookbooks cookbook_artifacts containers data_bags environments groups nodes roles policies policy_groups}
+            object_names = HOSTED_EVERYTHING_MODE_OBJECT_NAMES
           else
-            object_names = %w{clients cookbooks data_bags environments nodes roles users}
+            object_names = EVERYTHING_MODE_OBJECT_NAMES
           end
           object_names.each do |object_name|
             # cookbooks -> cookbook_path
