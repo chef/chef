@@ -242,17 +242,17 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:home) { "/home/#{username}" }
 
         it "ensures the user's home is set to the given path" do
-          expect(pw_entry.home).to eq("/home/#{username}")
+          expect(pw_entry.home).to eq(home)
         end
 
         if %w{rhel fedora}.include?(OHAI_SYSTEM["platform_family"])
           # Inconsistent behavior. See: CHEF-2205
           it "creates the home dir when not explicitly asked to on RHEL (XXX)" do
-            expect(File).to exist("/home/#{username}")
+            expect(File).to exist(home)
           end
         else
           it "does not create the home dir without `manage_home'" do
-            expect(File).not_to exist("/home/#{username}")
+            expect(File).not_to exist(home)
           end
         end
 
@@ -260,7 +260,7 @@ describe Chef::Provider::User::Useradd, metadata do
           let(:manage_home) { true }
 
           it "ensures the user's home directory exists" do
-            expect(File).to exist("/home/#{username}")
+            expect(File).to exist(home)
           end
         end
       end
