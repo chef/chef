@@ -28,9 +28,11 @@ group(:development, :test) do
 
   # for testing new chefstyle rules
   # gem 'chefstyle', github: 'chef/chefstyle'
-  gem "chefstyle", github: "chef/chefstyle", branch: "master"
+  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 
   gem "ruby-shadow", platforms: :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
+
+  gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git", ref: "4e32fca"
 
   # For external tests
   #  gem 'chef-zero', github: 'chef/chef-zero'
