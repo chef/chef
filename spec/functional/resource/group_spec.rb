@@ -361,7 +361,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group modify action", :not_supported_on_solaris do
-    let(:spec_members){ ["Gordon", "Eric", "Anthony"] }
+    let(:spec_members){ ["mnou5sdz", "htulrvwq", "x4c3g1lu"] }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :modify }
@@ -389,7 +389,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group manage action", :not_supported_on_solaris do
-    let(:spec_members){ ["Gordon", "Eric", "Anthony"] }
+    let(:spec_members){ ["mnou5sdz", "htulrvwq", "x4c3g1lu"] }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :manage }
@@ -427,7 +427,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
   describe "group resource with Usermod provider", :solaris_only do
     describe "when excluded_members is set" do
-      let(:excluded_members) { ["Anthony"] }
+      let(:excluded_members) { ["x4c3g1lu"] }
 
       it ":manage should raise an error" do
         expect {group_resource.run_action(:manage) }.to raise_error
@@ -443,7 +443,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
 
     describe "when append is not set" do
-      let(:included_members) { ["Gordon", "Eric"] }
+      let(:included_members) { ["gordon", "eric"] }
 
       before(:each) do
         group_resource.append(false)

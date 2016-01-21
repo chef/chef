@@ -32,8 +32,6 @@ group(:development, :test) do
 
   gem "ruby-shadow", platforms: :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 
-  gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git", ref: "4e32fca"
-
   # For external tests
   #  gem 'chef-zero', github: 'chef/chef-zero'
   #  gem 'cheffish', github: 'chef/cheffish'
@@ -46,6 +44,11 @@ group(:development, :test) do
   #  gem 'halite', github: 'poise/halite'
   #  gem 'foodcritic', github: 'acrmp/foodcritic', branch: 'v5.0.0'
   #  gem 'chef-rewind'
+end
+
+group(:travis) do
+  # See `bundler-audit` in .travis.yml
+  gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git", ref: "4e32fca"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
