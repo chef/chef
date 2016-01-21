@@ -1207,7 +1207,7 @@ describe Chef::Node do
     it "should deserialize itself from json", :json => true do
       node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(node)
-      serialized_node = Chef::JSONCompat.from_json(json)
+      serialized_node = Chef::Node.from_hash(Chef::JSONCompat.parse(json))
       expect(serialized_node).to be_a_kind_of(Chef::Node)
       expect(serialized_node.name).to eql(node.name)
       expect(serialized_node.chef_environment).to eql(node.chef_environment)
@@ -1246,7 +1246,7 @@ describe Chef::Node do
       end
 
       it "parses policyfile attributes from JSON" do
-        round_tripped_node = Chef::Node.json_create(node.for_json)
+        round_tripped_node = Chef::Node.from_hash(node.for_json)
 
         expect(round_tripped_node.policy_name).to eq("my-application")
         expect(round_tripped_node.policy_group).to eq("staging")

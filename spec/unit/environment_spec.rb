@@ -226,7 +226,7 @@ describe Chef::Environment do
         "json_class" => "Chef::Environment",
         "chef_type" => "environment",
       }
-      @environment = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@data))
+      @environment = Chef::Environment.from_hash(Chef::JSONCompat.parse(Chef::JSONCompat.to_json(@data)))
     end
 
     it "should return a Chef::Environment" do

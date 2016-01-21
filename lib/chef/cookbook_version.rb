@@ -476,6 +476,7 @@ class Chef
     end
 
     def self.json_create(o)
+      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::CookbookVersion#from_hash")
       from_hash(o)
     end
 

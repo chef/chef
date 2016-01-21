@@ -93,7 +93,7 @@ class Chef
             if @klass == Chef::DataBagItem
               r
             else
-              @klass.json_create(r)
+              @klass.from_hash(r)
             end
           when /\.rb$/
             r = klass.new

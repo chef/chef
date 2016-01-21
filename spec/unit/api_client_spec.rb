@@ -181,7 +181,7 @@ describe Chef::ApiClient do
     end
 
     let(:client) do
-      Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(client_hash))
+      Chef::ApiClient.from_hash(Chef::JSONCompat.parse(Chef::JSONCompat.to_json(client_hash)))
     end
 
     it "should deserialize to a Chef::ApiClient object" do

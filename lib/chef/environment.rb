@@ -217,6 +217,7 @@ class Chef
     end
 
     def self.json_create(o)
+      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Environment#from_hash")
       from_hash(o)
     end
 
@@ -260,7 +261,8 @@ class Chef
 
       if File.exists?(js_file)
         # from_json returns object.class => json_class in the JSON.
-        Chef::JSONCompat.from_json(IO.read(js_file))
+        hash = Chef::JSONCompat.parse(IO.read(js_file))
+        from_hash(hash)
       elsif File.exists?(rb_file)
         environment = Chef::Environment.new
         environment.name(name)

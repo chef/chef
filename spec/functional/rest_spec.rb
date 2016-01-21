@@ -80,6 +80,7 @@ describe Chef::REST do
   before do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
   end
 
   before(:all) do

@@ -142,6 +142,7 @@ class Chef
 
     # Create a Chef::DataBagItem from JSON
     def self.json_create(o)
+      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::DataBagItem#from_hash")
       from_hash(o)
     end
 

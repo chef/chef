@@ -174,7 +174,7 @@ describe Chef::DataBagItem do
       data_bag_item
     }
 
-    let(:deserial) { Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(data_bag_item)) }
+    let(:deserial) { Chef::DataBagItem.from_hash(Chef::JSONCompat.parse(Chef::JSONCompat.to_json(data_bag_item))) }
 
 
     it "should deserialize to a Chef::DataBagItem object" do
