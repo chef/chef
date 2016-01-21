@@ -1,6 +1,7 @@
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: e9675680662c8420b980d2d6067a93212d898f67
+  revision: 2d3bebe8b83666564ecbb93d9f1a0d23ba62f9ee
+  branch: tball/no_more_thor
   specs:
     omnibus-software (4.0.0)
 
