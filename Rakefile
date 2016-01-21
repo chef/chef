@@ -25,6 +25,7 @@ require "rdoc/task"
 require_relative "tasks/rspec"
 require_relative "tasks/external_tests"
 require_relative "tasks/maintainers"
+require_relative "tasks/cbgb"
 
 ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef") do |package|
   package.component_paths = ["chef-config"]
