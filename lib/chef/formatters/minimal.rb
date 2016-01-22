@@ -29,7 +29,8 @@ class Chef
 
       # Called at the very start of a Chef Run
       def run_start(version)
-        puts "Starting Chef Client, version #{version}"
+        puts_line "Starting Chef Client#{" (FIPS mode)" if Chef::Config[:openssl_fips]}" \
+            ", version #{version}"
       end
 
       # Called at the end of the Chef run.
