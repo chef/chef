@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'rake'
-require 'tomlrb'
+require "rake"
+require "tomlrb"
 
 CBGB_SOURCE = File.join(File.dirname(__FILE__), "..", "CBGB.toml")
 CBGB_TARGET = File.join(File.dirname(__FILE__), "..", "CBGB.md")
@@ -52,7 +52,7 @@ def components(list, cmp)
   out = ""
   cmp.each do |k,v|
     out << "\n#### #{v['title'].gsub('#','\\#')}\n"
-    out << cbgb(list, v['cbgb'])
+    out << cbgb(list, v["cbgb"])
   end
   out
 end
