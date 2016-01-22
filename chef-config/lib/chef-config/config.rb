@@ -452,7 +452,7 @@ module ChefConfig
     default :recipe_url, nil
 
     # Set to true if Chef is to set OpenSSL to run in FIPS mode
-    default :fips, false
+    default(:fips) { ENV['CHEF_FIPS'] == '1' }
 
     # Initialize openssl
     def self.init_openssl
