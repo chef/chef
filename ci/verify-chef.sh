@@ -86,4 +86,9 @@ if [ ! -f "Gemfile.lock" ]; then
   exit 1
 fi
 
-sudo env PATH=$PATH TERM=xterm bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec/functional spec/unit
+CHEF_FIPS=0
+if [ $PIPELINE_NAME='chef-fips'];
+then
+    CHEF_FIPS=1
+fi
+sudo env PATH=$PATH TERM=xterm CHEF_FIPS=$CHEF_FIPS bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec/functional spec/unit

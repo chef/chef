@@ -52,5 +52,8 @@ IF "%PIPELINE_NAME%" == "chef-13" (
   call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/unit spec/functional
 ) ELSE (
   REM ; Running unit tests
+  IF "%PIPELINE_NAME%" == "chef-fips" (
+    set CHEF_FIPS=1
+  )
   call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/unit spec/functional
 )
