@@ -169,7 +169,7 @@ EOM
       it "knife raw -z -i dummynode.json -m PUT /nodes/x" do
         knife("raw -z -i #{path_to('dummynode.json')} -m PUT /nodes/x").should_succeed( /"x"/ )
         knife("list --local /nodes").should_succeed "/nodes/x.json\n"
-        knife("show -z /nodes/x.json --verbose").should_succeed /"bar"/
+        knife("show -z /nodes/x.json --verbose").should_succeed(/"bar"/)
       end
 
       it "knife raw -z -i empty.json -m PUT /roles/x" do
@@ -237,7 +237,7 @@ EOM
       it "knife raw -z -i dummynode.json -m POST /nodes" do
         knife("raw -z -i #{path_to('dummynode.json')} -m POST /nodes").should_succeed( /uri/ )
         knife("list --local /nodes").should_succeed "/nodes/z.json\n"
-        knife("show -z /nodes/z.json").should_succeed /"bar"/
+        knife("show -z /nodes/z.json").should_succeed(/"bar"/)
       end
 
       it "knife raw -z -i empty.json -m POST /roles" do
