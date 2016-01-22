@@ -120,8 +120,8 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
             client_rb << %Q{trusted_certs_dir "/etc/chef/trusted_certs"\n}
           end
 
-          if @config[:openssl_fips]
-            client_rb << %Q{openssl_fips true\n}
+          if @config[:fips]
+            client_rb << %Q{fips true\n}
           end
 
           client_rb

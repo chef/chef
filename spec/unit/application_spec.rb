@@ -138,7 +138,7 @@ describe Chef::Application do
 
       context "when openssl fips" do
         before do
-          allow(Chef::Config).to receive(:openssl_fips).and_return(true)
+          allow(Chef::Config).to receive(:fips).and_return(true)
         end
 
         it "sets openssl in fips mode" do

@@ -250,8 +250,8 @@ class Chef
           Chef::Config[:knife][:bootstrap_vault_item]
         }
 
-      option :openssl_fips,
-        :long => "--openssl-fips",
+      option :fips,
+        :long => "--fips",
         :description => "Set openssl to run in fips mode",
         :boolean => true
 

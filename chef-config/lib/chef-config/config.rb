@@ -452,12 +452,12 @@ module ChefConfig
     default :recipe_url, nil
 
     # Set to true if Chef is to set OpenSSL to run in FIPS mode
-    default :openssl_fips, false
+    default :fips, false
 
     # Initialize openssl
     def self.init_openssl
-      if openssl_fips
-        ChefConfig.logger.warn "The `openssl_fips` is still a work in progress. This feature is incomplete."
+      if fips
+        ChefConfig.logger.warn "The `fips` feature is still a work in progress. This feature is incomplete."
         OpenSSL.fips_mode = true
         require 'digest'
         require 'digest/sha1'
@@ -471,7 +471,7 @@ module ChefConfig
     # the 'mixlib-authorization' project for more detail). Currently, versions
     # 1.0, 1.1, and 1.3 are available.
     default :authentication_protocol_version do
-      if openssl_fips
+      if fips
         "1.3"
       else
         "1.1"

@@ -52,7 +52,7 @@ describe Chef::Client do
     end
     context "when openssl is compiled with the FIPS module" do
       before do
-        Chef::Config[:openssl_fips] = true
+        Chef::Config[:fips] = true
       end
 
       it "defaults to 1.3" do
@@ -60,7 +60,7 @@ describe Chef::Client do
       end
 
       after do
-        Chef::Config[:openssl_fips] = false
+        Chef::Config[:fips] = false
       end
     end
   end
