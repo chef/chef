@@ -8,7 +8,6 @@ DEPEND_VERSIONS libsocket.so {
   ALLOW = SUNWprivate_1.1;
 };
 DEPEND_VERSIONS libdl.so {
-  ALLOW = SUNW_1.22.1;
   ALLOW = SUNW_1.4;
   ALLOW = SUNWprivate_1.1;
 };
