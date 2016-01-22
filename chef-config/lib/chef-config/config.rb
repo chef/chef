@@ -106,6 +106,9 @@ module ChefConfig
     # that upload or download files (such as knife upload, knife role from file,
     # etc.) work.
     default :chef_repo_path do
+      # TODO: this should also look at the cookbook_artifacts path, for the
+      # case when we have a repo from `chef export` that has cookbook artifacts
+      # and no cookbooks.
       if self.configuration[:cookbook_path]
         if self.configuration[:cookbook_path].kind_of?(String)
           File.expand_path("..", self.configuration[:cookbook_path])
@@ -306,6 +309,30 @@ module ChefConfig
     default :diff_output_threshold,   1000000
     default :local_mode, false
 
+    # Configures the mode of operation for ChefFS, which is applied to the
+    # ChefFS-based knife commands and chef-client's local mode. (ChefFS-based
+    # knife commands include: knife delete, knife deps, knife diff, knife down,
+    # knife edit, knife list, knife show, knife upload, and knife xargs.)
+    #
+    # Valid values are:
+    # * "static": ChefFS only manages objects that exist in a traditional Chef
+    #   Repo as of Chef 11.
+    # * "everything": ChefFS manages all object types that existed on the OSS
+    #   Chef 11 server.
+    # * "hosted_everything": ChefFS manages all object types as of the Chef 12
+    #   Server, including RBAC objects and Policyfile objects (new to Chef 12).
+    #
+    # TODO: add a test
+    default :repo_mode do
+      if local_mode
+        "hosted_everything"
+      elsif chef_server_url =~ /\/+organizations\/.+/
+        "hosted_everything"
+      else
+        "everything"
+      end
+    end
+
     default :pid_file, nil
 
     # Whether Chef Zero local mode should bind to a port. All internal requests
@@ -321,6 +348,21 @@ module ChefConfig
       default(:enabled) { ChefConfig::Config.local_mode }
       default :host, "localhost"
       default :port, 8889.upto(9999) # Will try ports from 8889-9999 until one works
+
+      # When set to a String, Chef Zero disables multitenant support.  This is
+      # what you want when using Chef Zero to serve a single Chef Repo. Setting
+      # this to `false` enables multi-tenant.
+      default :single_org, "chef"
+
+      # Whether Chef Zero should operate in a mode analogous to OSS Chef Server
+      # 11 (true) or Chef Server 12 (false). Chef Zero can still serve
+      # policyfile objects in Chef 11 mode, as long as `repo_mode` is set to
+      # "hosted_everything". The primary differences are:
+      # * Chef 11 mode doesn't support multi-tennant, so there is no
+      #   distinction between global and org-specific objects (since there are
+      #   no orgs).
+      # * Chef 11 mode doesn't expose RBAC objects
+      default :osc_compat, false
     end
     default :chef_server_url, "https://localhost:443"
 

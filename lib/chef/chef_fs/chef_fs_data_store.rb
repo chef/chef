@@ -126,6 +126,24 @@ class Chef
     #    - `delete(association_requests/NAME)` -> `get(/invitations.json)`, remove name, `set(/invitations.json)`
     #
     class ChefFSDataStore
+
+      # The base directories in a Chef Repo; even when these don't exist, a
+      # matching GET for these objects will return an empty list instead of a
+      # 404.
+      BASE_DIRNAMES = %w{
+        clients
+        cookbooks
+        data
+        environments
+        nodes
+        roles
+        users
+        containers
+        groups
+        policy_groups
+        policies
+      }.freeze
+
       #
       # Create a new ChefFSDataStore
       #
@@ -469,7 +487,11 @@ class Chef
         # LIST /policies
         elsif path == [ "policies" ]
           with_entry([ path[0] ]) do |policies|
-            policies.children.map { |policy| policy.name[0..-6].rpartition("-")[0] }.uniq
+            begin
+              policies.children.map { |policy| policy.name[0..-6].rpartition("-")[0] }.uniq
+            rescue Chef::ChefFS::FileSystem::NotFoundError
+              []
+            end
           end
 
         # LIST /policies/POLICY/revisions
@@ -741,7 +763,7 @@ class Chef
       end
 
       def path_always_exists?(path)
-        return path.length == 1 && %w{clients cookbooks data environments nodes roles users}.include?(path[0])
+        return path.length == 1 && BASE_DIRNAMES.include?(path[0])
       end
 
       def with_entry(path)
