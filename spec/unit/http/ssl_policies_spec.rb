@@ -109,7 +109,7 @@ describe "HTTP SSL Policy" do
         Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/chef-rspec.cert"
         Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/chef-rspec.key"
         expect(http_client.cert.to_s).to eq(OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.cert")).to_s)
-        expect(http_client.key.to_s).to  eq(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.key"))
+        expect(http_client.key.to_s).to eq(OpenSSL::PKey::RSA.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.key")).to_s)
       end
     end
 
