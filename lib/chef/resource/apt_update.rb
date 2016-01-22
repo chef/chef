@@ -17,7 +17,6 @@
 #
 
 require "chef/resource"
-require "chef/provider/apt_update"
 
 class Chef
   class Resource

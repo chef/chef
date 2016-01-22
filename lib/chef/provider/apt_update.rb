@@ -16,7 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/resource/apt_update"
+require "chef/resource"
+require "chef/dsl/declare_resource"
 
 class Chef
   class Provider

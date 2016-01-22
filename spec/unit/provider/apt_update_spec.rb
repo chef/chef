@@ -89,5 +89,25 @@ describe Chef::Provider::AptUpdate do
       provider.run_action(:periodic)
       expect(new_resource).to_not be_updated_by_last_action
     end
+
+    context "with a different frequency" do
+      before do
+        new_resource.frequency(400)
+      end
+
+      it "should run if the time stamp is old" do
+        expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 500)
+        expect(provider).to receive(:shell_out!).with("apt-get -q update")
+        provider.run_action(:periodic)
+        expect(new_resource).to be_updated_by_last_action
+      end
+
+      it "should not run if the time stamp is new" do
+        expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 300)
+        expect(provider).to_not receive(:shell_out!).with("apt-get -q update")
+        provider.run_action(:periodic)
+        expect(new_resource).to_not be_updated_by_last_action
+      end
+    end
   end
 end

@@ -27,4 +27,12 @@ describe Chef::Resource::AptUpdate do
     expect(resource).to be_a_kind_of(Chef::Resource::AptUpdate)
   end
 
+  it "the default frequency should be 1 day" do
+    expect(resource.frequency).to eql(86_400)
+  end
+
+  it "the frequency should accept integers" do
+    resource.frequency(400)
+    expect(resource.frequency).to eql(400)
+  end
 end
