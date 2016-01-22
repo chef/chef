@@ -436,6 +436,34 @@ describe "Resource.action" do
 
   end
 
+  context "With a resource with a set_or_return property named group (same name as a resource)" do
+    class ResourceActionSpecWithGroupAction < Chef::Resource
+      resource_name :resource_action_spec_set_group_to_nil
+      action :set_group_to_nil do
+        # Access x during converge to ensure that we emit no warnings there
+        resource_action_spec_with_group 'hi' do
+          group nil
+          action :nothing
+        end
+      end
+    end
+
+    class ResourceActionSpecWithGroup < Chef::Resource
+      resource_name :resource_action_spec_with_group
+      def group(value=nil)
+        set_or_return(:group, value, {})
+      end
+    end
+
+    it "Setting group to nil in an action does not emit a warning about it being defined in two places" do
+      expect_recipe {
+        resource_action_spec_set_group_to_nil "hi" do
+          action :set_group_to_nil
+        end
+      }.to emit_no_warnings_or_errors
+    end
+  end
+
   context "When a resource has a property with the same name as another resource" do
     class HasPropertyNamedTemplate < Chef::Resource
       use_automatic_resource_name

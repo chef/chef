@@ -320,7 +320,8 @@ class Chef
            resource.resource_initializing &&
            resource.respond_to?(:enclosing_provider) &&
            resource.enclosing_provider &&
-           resource.enclosing_provider.respond_to?(name)
+           resource.enclosing_provider.new_resource &&
+           resource.enclosing_provider.new_resource.respond_to?(name)
            Chef::Log.warn("#{Chef::Log.caller_location}: property #{name} is declared in both #{resource} and #{resource.enclosing_provider}. Use new_resource.#{name} instead. At #{Chef::Log.caller_location}")
         end
 
