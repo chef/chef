@@ -331,6 +331,51 @@ RSpec.describe ChefConfig::Config do
           end
         end
 
+        describe "ChefConfig::Config[:chef_repo_path]" do
+
+          context "when cookbook_path is set to a single path" do
+
+            before { ChefConfig::Config[:cookbook_path] = "/home/anne/repo/cookbooks" }
+
+            it "is set to a path one directory up from the cookbook_path" do
+              expect(ChefConfig::Config[:chef_repo_path]).to eq("/home/anne/repo")
+            end
+
+          end
+
+          context "when cookbook_path is set to multiple paths" do
+
+            before do
+              ChefConfig::Config[:cookbook_path] = [
+                "/home/anne/repo/cookbooks",
+                "/home/anne/other_repo/cookbooks"
+              ]
+            end
+
+            it "is set to an Array of paths one directory up from the cookbook_paths" do
+              expect(ChefConfig::Config[:chef_repo_path]).to eq([ "/home/anne/repo", "/home/anne/other_repo"])
+            end
+
+          end
+
+          context "when cookbook_path is not set but cookbook_artifact_path is set" do
+
+            it "is set to a path one directory up from the cookbook_artifact_path", :skip
+
+          end
+
+          context "when cookbook_path is not set" do
+
+            before { ChefConfig::Config[:cookbook_path] = nil }
+
+            it "is set to the cache_path" do
+              expect(ChefConfig::Config[:chef_repo_path]).to eq(ChefConfig::Config[:cache_path])
+            end
+
+          end
+
+        end
+
         # On Windows, we'll detect an omnibus build and set this to the
         # cacert.pem included in the package, but it's nil if you're on Windows
         # w/o omnibus (e.g., doing development on Windows, custom build, etc.)
