@@ -106,9 +106,6 @@ module ChefConfig
     # that upload or download files (such as knife upload, knife role from file,
     # etc.) work.
     default :chef_repo_path do
-      # TODO: this should also look at the cookbook_artifacts path, for the
-      # case when we have a repo from `chef export` that has cookbook artifacts
-      # and no cookbooks.
       if self.configuration[:cookbook_path]
         if self.configuration[:cookbook_path].kind_of?(String)
           File.expand_path("..", self.configuration[:cookbook_path])
@@ -117,6 +114,8 @@ module ChefConfig
             File.expand_path("..", path)
           end
         end
+      elsif configuration[:cookbook_artifact_path]
+          File.expand_path("..", self.configuration[:cookbook_artifact_path])
       else
         cache_path
       end
@@ -126,7 +125,7 @@ module ChefConfig
       # In local mode, we auto-discover the repo root by looking for a path with "cookbooks" under it.
       # This allows us to run config-free.
       path = cwd
-      until File.directory?(PathHelper.join(path, "cookbooks"))
+      until File.directory?(PathHelper.join(path, "cookbooks")) || File.directory?(PathHelper.join(path, "cookbook_artifacts"))
         new_path = File.expand_path("..", path)
         if new_path == path
           ChefConfig.logger.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")

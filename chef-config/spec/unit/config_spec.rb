@@ -338,7 +338,8 @@ RSpec.describe ChefConfig::Config do
             before { ChefConfig::Config[:cookbook_path] = "/home/anne/repo/cookbooks" }
 
             it "is set to a path one directory up from the cookbook_path" do
-              expect(ChefConfig::Config[:chef_repo_path]).to eq("/home/anne/repo")
+              expected = File.expand_path("/home/anne/repo")
+              expect(ChefConfig::Config[:chef_repo_path]).to eq(expected)
             end
 
           end
@@ -348,19 +349,28 @@ RSpec.describe ChefConfig::Config do
             before do
               ChefConfig::Config[:cookbook_path] = [
                 "/home/anne/repo/cookbooks",
-                "/home/anne/other_repo/cookbooks"
+                "/home/anne/other_repo/cookbooks",
               ]
             end
 
             it "is set to an Array of paths one directory up from the cookbook_paths" do
-              expect(ChefConfig::Config[:chef_repo_path]).to eq([ "/home/anne/repo", "/home/anne/other_repo"])
+              expected = [ "/home/anne/repo", "/home/anne/other_repo"].map { |p| File.expand_path(p) }
+              expect(ChefConfig::Config[:chef_repo_path]).to eq(expected)
             end
 
           end
 
           context "when cookbook_path is not set but cookbook_artifact_path is set" do
 
-            it "is set to a path one directory up from the cookbook_artifact_path", :skip
+            before do
+              ChefConfig::Config[:cookbook_path] = nil
+              ChefConfig::Config[:cookbook_artifact_path] = "/home/roxie/repo/cookbook_artifacts"
+            end
+
+            it "is set to a path one directory up from the cookbook_artifact_path" do
+              expected = File.expand_path("/home/roxie/repo")
+              expect(ChefConfig::Config[:chef_repo_path]).to eq(expected)
+            end
 
           end
 
@@ -395,6 +405,12 @@ RSpec.describe ChefConfig::Config do
           allow(ChefConfig::Config).to receive(:cache_path).and_return(primary_cache_path)
           environment_path = is_windows ? "#{primary_cache_path}\\environments" : "#{primary_cache_path}/environments"
           expect(ChefConfig::Config[:environment_path]).to eq(environment_path)
+        end
+
+        it "ChefConfig::Config[:cookbook_artifact_path] defaults to /var/chef/cookbook_artifacts" do
+          allow(ChefConfig::Config).to receive(:cache_path).and_return(primary_cache_path)
+          environment_path = is_windows ? "#{primary_cache_path}\\cookbook_artifacts" : "#{primary_cache_path}/cookbook_artifacts"
+          expect(ChefConfig::Config[:cookbook_artifact_path]).to eq(environment_path)
         end
 
         describe "setting the config dir" do
