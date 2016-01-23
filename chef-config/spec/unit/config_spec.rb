@@ -288,6 +288,49 @@ RSpec.describe ChefConfig::Config do
           expect(ChefConfig::Config[:ssl_ca_path]).to be_nil
         end
 
+        describe "ChefConfig::Config[:repo_mode]" do
+
+          context "when local mode is enabled" do
+
+            before { ChefConfig::Config[:local_mode] = true }
+
+            it "defaults to 'hosted_everything'" do
+              expect(ChefConfig::Config[:repo_mode]).to eq("hosted_everything")
+            end
+
+            context "and osc_compat is enabled" do
+
+              before { ChefConfig::Config.chef_zero.osc_compat = true }
+
+              it "defaults to 'everything'" do
+                expect(ChefConfig::Config[:repo_mode]).to eq("everything")
+              end
+            end
+          end
+
+          context "when local mode is not enabled" do
+
+            context "and the chef_server_url is multi-tenant" do
+
+              before { ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/example" }
+
+              it "defaults to 'hosted_everything'" do
+                expect(ChefConfig::Config[:repo_mode]).to eq("hosted_everything")
+              end
+
+            end
+
+            context "and the chef_server_url is not multi-tenant" do
+
+              before { ChefConfig::Config[:chef_server_url] = "https://chef.example/" }
+
+              it "defaults to 'everything'" do
+                expect(ChefConfig::Config[:repo_mode]).to eq("everything")
+              end
+            end
+          end
+        end
+
         # On Windows, we'll detect an omnibus build and set this to the
         # cacert.pem included in the package, but it's nil if you're on Windows
         # w/o omnibus (e.g., doing development on Windows, custom build, etc.)

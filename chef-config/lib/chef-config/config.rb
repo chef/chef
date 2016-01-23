@@ -321,10 +321,8 @@ module ChefConfig
     #   Chef 11 server.
     # * "hosted_everything": ChefFS manages all object types as of the Chef 12
     #   Server, including RBAC objects and Policyfile objects (new to Chef 12).
-    #
-    # TODO: add a test
     default :repo_mode do
-      if local_mode
+      if local_mode && !chef_zero.osc_compat
         "hosted_everything"
       elsif chef_server_url =~ /\/+organizations\/.+/
         "hosted_everything"
