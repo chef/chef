@@ -245,7 +245,7 @@ describe Chef::Provider::User::Useradd, metadata do
           expect(pw_entry.home).to eq(home)
         end
 
-        if %w{rhel fedora}.include?(OHAI_SYSTEM["platform_family"])
+        if %w{rhel fedora wrlinux}.include?(OHAI_SYSTEM["platform_family"])
           # Inconsistent behavior. See: CHEF-2205
           it "creates the home dir when not explicitly asked to on RHEL (XXX)" do
             expect(File).to exist(home)
