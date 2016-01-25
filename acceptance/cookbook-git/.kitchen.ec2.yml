@@ -1,4 +1,4 @@
-# chef-acceptance test --platform=ubuntu
+# Not quite ready yet
 
 <%
 def file_if_exists(path)
@@ -22,6 +22,7 @@ driver:
   subnet_id: subnet-19ac017c
   security_group_ids: ["sg-e401eb83", "sg-96274af3"]
   instance_type: m3.large
+  associate_public_ip: true
 
 platforms:
   #

@@ -1,5 +1,6 @@
 # Grab the cookbook
 directory CookbookGit.test_run_path
+
 # TODO Grab the source URL from supermarket
 # TODO get git to include its kitchen tests in the cookbook.
 git "#{CookbookGit.test_run_path}/#{CookbookGit.test_cookbook_name}" do
