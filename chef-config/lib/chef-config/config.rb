@@ -27,7 +27,7 @@ require "chef-config/windows"
 require "chef-config/path_helper"
 require "mixlib/shellout"
 require "uri"
-require 'openssl'
+require "openssl"
 
 module ChefConfig
 
@@ -452,18 +452,18 @@ module ChefConfig
     default :recipe_url, nil
 
     # Set to true if Chef is to set OpenSSL to run in FIPS mode
-    default(:fips) { ENV['CHEF_FIPS'] == '1' }
+    default(:fips) { ENV["CHEF_FIPS"] == "1" }
 
     # Initialize openssl
     def self.init_openssl
       if fips
         ChefConfig.logger.warn "The `fips` feature is still a work in progress. This feature is incomplete."
         OpenSSL.fips_mode = true
-        require 'digest'
-        require 'digest/sha1'
-        require 'digest/md5'
-        Digest.const_set('SHA1', OpenSSL::Digest::SHA1)
-        OpenSSL::Digest.const_set('MD5', Digest::MD5)
+        require "digest"
+        require "digest/sha1"
+        require "digest/md5"
+        Digest.const_set("SHA1", OpenSSL::Digest::SHA1)
+        OpenSSL::Digest.const_set("MD5", Digest::MD5)
       end
     end
 
