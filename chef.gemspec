@@ -54,6 +54,6 @@ Gem::Specification.new do |s|
   s.bindir       = "bin"
   s.executables  = %w{ chef-client chef-solo knife chef-shell chef-apply }
 
-  s.require_path = %w{ lib lib-backcompat }
+  s.require_paths = %w{ lib lib-backcompat }
   s.files = %w{Gemfile Rakefile LICENSE README.md CONTRIBUTING.md} + Dir.glob("{distro,lib,lib-backcompat,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) } + Dir.glob("*.gemspec")
 end
