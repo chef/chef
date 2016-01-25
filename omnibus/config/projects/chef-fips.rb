@@ -36,7 +36,7 @@ end
 
 # Global FIPS override flag.
 override :fips, enabled: true
-override :'ruby-windows', version: "2.0.0-p647"
+override :ruby, version: "2.1.7"
 
 override :chef, version: "local_source"
 override :ohai, version: "master"
