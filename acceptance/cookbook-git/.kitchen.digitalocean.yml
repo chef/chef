@@ -1,0 +1,19 @@
+driver:
+  name: digitalocean
+  digitalocean_access_token: <%= ENV['DIGITALOCEAN_API_TOKEN'] %>
+  region: <%= ENV['DIGITALOCEAN_REGION'] %>
+  size: 2gb
+  ssh_key_ids: <%= ENV['DIGITALOCEAN_SSH_KEYS'] %>
+  transport:
+    ssh_key: <%= ENV['DIGITALOCEAN_SSH_KEY_PATH'] %>
+
+platforms:
+<% %w(centos-6.5 centos-7.0
+      fedora-21
+      debian-8.1
+      ubuntu-12.04 ubuntu-14.04 ubuntu-15.10
+).each do |platform| %>
+  - name: #{platform}
+    driver_config:
+      image: <%= "#{platform.gsub('.', '-')}-x64" %>
+<% end %>

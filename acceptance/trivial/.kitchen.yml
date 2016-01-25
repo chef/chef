@@ -23,5 +23,5 @@ suites:
     provisioner:
       product_name: chef
       product_version: latest
-      channel: current
+      channel: unstable
     run_list:

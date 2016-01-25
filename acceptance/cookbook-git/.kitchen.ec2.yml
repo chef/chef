@@ -1,0 +1,299 @@
+# chef-acceptance test --platform=ubuntu
+
+<%
+def file_if_exists(path)
+  path = File.expand_path(path)
+  File.exist?(path) ? path : nil
+end
+%>
+
+driver:
+  name: ec2
+  tags:
+    X-Project: Kitchen Tests
+  aws_ssh_key_id: <%= ENV['AWS_SSH_KEY_ID'] || ENV['USER'] %>
+  transport:
+    ssh_key: <%= file_if_exists("~/.ssh/#{ENV['AWS_SSH_KEY_ID'] || ENV['USERNAME']}.pem") ||
+                 file_if_exists("~/.ssh/#{ENV['AWS_SSH_KEY_ID'] || ENV['USERNAME']}")
+                 file_if_exists("~/.ssh/id_rsa") %>
+  # test-specific stuff
+  region: us-west-2
+  availability_zone: a
+  subnet_id: subnet-19ac017c
+  security_group_ids: ["sg-e401eb83", "sg-96274af3"]
+  instance_type: m3.large
+
+platforms:
+  #
+  # AIX
+  #
+  # - name: aix-6.1
+  # - name: aix-7.1
+  #
+  # Debian
+  #
+  - name: debian-8
+    driver:
+      image_search:
+        name: debian-jessie-*
+        owner-id: 379101102735
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: admin
+  - name: debian-7
+    driver:
+      image_search:
+        name: debian-wheezy-*
+        owner-id: 379101102735
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: standard
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: admin
+  - name: debian-6
+    driver:
+      image_search:
+        name: debian-squeeze-*
+        owner-id: 379101102735
+        architecture: x86_64
+        virtualization-type: paravirtual
+        block-device-mapping.volume-type: standard
+        image-type: machine
+      instance_type: t1.micro
+    transport:
+      username: admin
+  #
+  # Ubuntu
+  #
+  - name: ubuntu-15.10
+    driver:
+      image_search:
+        name: ubuntu/images/*/ubuntu-*-15.10-amd64-server-*
+        owner-id: 099720109477
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: ubuntu
+  - name: ubuntu-14.04
+    driver:
+      image_search:
+        name: ubuntu/images/*/ubuntu-*-14.04-*-server-*
+        owner-id: 099720109477
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: ubuntu
+  - name: ubuntu-12.04
+    driver:
+      image_search:
+        name: ubuntu/images/*/ubuntu-*-12.04-*-server-*
+        owner-id: 099720109477
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: ubuntu
+  #
+  # Red Hat Enterprise Linux
+  #
+  - name: el-7
+    driver:
+      image_search:
+        name: RHEL-7.*
+        owner-id: 309956199498
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: ec2-user
+  - name: el-6
+    driver:
+      image_search:
+        name: RHEL-6.*
+        owner-id: 309956199498
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: ec2-user
+  - name: el-5
+    driver:
+      image_search:
+        name: RHEL-5.*
+        owner-id: 309956199498
+        architecture: x86_64
+        virtualization-type: paravirtual
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t1.micro
+    transport:
+      username: ec2-user
+  #
+  # FreeBSD
+  #
+  - name: freebsd-10
+    driver:
+      image_search:
+        name: FreeBSD/EC2 10.*-RELEASE*
+        owner-id: 118940168514
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: ec2-user
+  - name: freebsd-9
+    driver:
+      image_search:
+        name: FreeBSD/EC2 9.*-RELEASE*
+        owner-id: 118940168514
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: ec2-user
+  - name: freebsd-8
+    driver:
+      image_search:
+        name: FreeBSD/EC2 8.*-RELEASE*
+        owner-id: 118940168514
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: standard
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: ec2-user
+  #
+  # OS/X
+  #
+  # - name: mac_os_x-10.11
+  # - name: mac_os_x-10.10
+  # - name: mac_os_x-10.9
+  # - name: mac_os_x-10.8
+  #
+  # Nexus???
+  #
+  # - name: nexus-7
+  #
+  # Solaris
+  #
+  # - name: solaris-11
+  # - name: solaris-10
+  #
+  # Windows
+  #
+  - name: windows-2012r2
+    driver:
+      image_search:
+        name: Windows_Server-2012-R2*-English-*-Base-*
+        owner-alias: amazon
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: administrator
+    # user_data: |
+    #   <powershell>
+    #   $logfile="C:\\Program Files\\Amazon\\Ec2ConfigService\\Logs\\kitchen-ec2.log"
+    #   #PS Remoting and & winrm.cmd basic config
+    #   Enable-PSRemoting -Force -SkipNetworkProfileCheck
+    #   & winrm.cmd set winrm/config '@{MaxTimeoutms="1800000"}' >> $logfile
+    #   & winrm.cmd set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}' >> $logfile
+    #   & winrm.cmd set winrm/config/winrs '@{MaxShellsPerUser="50"}' >> $logfile
+    #   #Server settings - support username/password login
+    #   & winrm.cmd set winrm/config/service/auth '@{Basic="true"}' >> $logfile
+    #   & winrm.cmd set winrm/config/service '@{AllowUnencrypted="true"}' >> $logfile
+    #   & winrm.cmd set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}' >> $logfile
+    #   #Firewall Config
+    #   & netsh advfirewall firewall set rule name="Windows Remote Management (HTTP-In)" profile=public protocol=tcp localport=5985 remoteip=localsubnet new remoteip=any  >> $logfile
+    #   #Set script execution to unrestricted
+    #   & Set-ExecutionPolicy Unrestricted -Force
+    #   </powershell>
+  - name: windows-2012
+    driver:
+      image_search:
+        name: Windows_Server-2012-RTM*-English-*-Base-*
+        owner-alias: amazon
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: administrator
+  - name: windows-2008r2
+    driver:
+      image_search:
+        name: Windows_Server-2008-R2*-English-*-Base-*
+        owner-alias: amazon
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: administrator
+  #
+  # Centos
+  #
+  - name: centos-7
+    driver:
+      image_search:
+        name: CentOS Linux 7 *
+        owner-alias: aws-marketplace
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: standard
+        image-type: machine
+      instance_type: t2.micro
+    transport:
+      username: root
+  - name: centos-6
+    driver:
+      image_search:
+        name: CentOS-6.5-GA-*
+        owner-alias: aws-marketplace
+        architecture: x86_64
+        virtualization-type: paravirtual
+        block-device-mapping.volume-type: standard
+        image-type: machine
+      instance_type: t1.micro
+    transport:
+      username: root
+  #
+  # Fedora
+  #
+  - name: fedora-21
+    driver:
+      image_search:
+        name: Fedora-Cloud-Base-21-*
+        owner-id: 125523088429
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      instance_type: t2.micro

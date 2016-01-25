@@ -1,0 +1,71 @@
+driver:
+  name: vagrant
+  forward_agent: yes
+  customize:
+    cpus: 2
+    memory: 1024
+
+platforms:
+<% %w(debian-8
+debian-7
+debian-6
+ubuntu-15.10
+ubuntu-14.04
+ubuntu-12.04
+el-7
+el-6
+el-5
+freebsd-10
+freebsd-9
+freebsd-8
+centos-7
+centos-6
+fedora-21
+).each do |platform| %>
+  - name: <%= platform %>
+    driver:
+      box: opscode-<%= platform %>
+      box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_<%= platform %>_chef-provisionerless.box
+<% end %>
+
+<% %w(
+2012r2
+2012
+2008r2
+).each do |version| %>
+  - name: windows-<%= version %>
+    driver:
+      box: chef/windows-server-<%= version %>-standard
+# URL is atlas
+<% end %>
+
+suites:
+  - name: default
+    run_list:
+      - recipe[git]
+    attributes: {}
+    includes: ["ubuntu-14.04"]
+    excludes: ["windows-2012r2", "windows-2012", "windows-2008r2"]
+  - name: source
+    includes: ["nonexistent"]
+    excludes: ["ubuntu-12.04", "ubuntu-10.04", "windows-2012r2", "windows-2012", "windows-2008r2"]
+    run_list:
+      - recipe[git::source]
+    attributes: {}
+  - name: default-windows
+    includes: [
+      # 'windows-8.1-professional',
+      # 'windows-2008r2-standard',
+      "windows-2012r2",
+      # "windows-2012",
+      # "windows-2008r2"
+    ]
+    run_list:
+      - recipe[git]
+    attributes: {}
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  product_version: latest
+  channel: current
