@@ -9,8 +9,8 @@ describe "Resource.action" do
   shared_context "ActionJackson" do
     it "the default action is the first declared action" do
       converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
+        #{resource_dsl} "hi" do
+          foo "foo!"
         end
       EOM
       expect(ActionJackson.ran_action).to eq :access_recipe_dsl
@@ -19,8 +19,8 @@ describe "Resource.action" do
 
     it "the action can access recipe DSL" do
       converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
+        #{resource_dsl} "hi" do
+          foo "foo!"
           action :access_recipe_dsl
         end
       EOM
@@ -30,8 +30,8 @@ describe "Resource.action" do
 
     it "the action can access attributes" do
       converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
+        #{resource_dsl} "hi" do
+          foo "foo!"
           action :access_attribute
         end
       EOM
@@ -41,8 +41,8 @@ describe "Resource.action" do
 
     it "the action can access public methods" do
       converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
+        #{resource_dsl} "hi" do
+          foo "foo!"
           action :access_method
         end
       EOM
@@ -52,8 +52,8 @@ describe "Resource.action" do
 
     it "the action can access protected methods" do
       converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
+        #{resource_dsl} "hi" do
+          foo "foo!"
           action :access_protected_method
         end
       EOM
@@ -64,8 +64,8 @@ describe "Resource.action" do
     it "the action cannot access private methods" do
       expect {
         converge(<<-EOM, __FILE__, __LINE__+1)
-          #{resource_dsl} 'hi' do
-            foo 'foo!'
+          #{resource_dsl} "hi" do
+            foo "foo!"
             action :access_private_method
           end
         EOM
@@ -75,8 +75,8 @@ describe "Resource.action" do
 
     it "the action cannot access resource instance variables" do
       converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
+        #{resource_dsl} "hi" do
+          foo "foo!"
           action :access_instance_variable
         end
       EOM
@@ -86,14 +86,14 @@ describe "Resource.action" do
 
     it "the action does not compile until the prior resource has converged" do
       converge <<-EOM, __FILE__, __LINE__+1
-        ruby_block 'wow' do
+        ruby_block "wow" do
           block do
-            ResourceActionSpec::ActionJackson.ruby_block_converged = 'ruby_block_converged!'
+            ResourceActionSpec::ActionJackson.ruby_block_converged = "ruby_block_converged!"
           end
         end
 
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
+        #{resource_dsl} "hi" do
+          foo "foo!"
           action :access_class_method
         end
       EOM
@@ -103,12 +103,12 @@ describe "Resource.action" do
 
     it "the action's resources converge before the next resource converges" do
       converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
+        #{resource_dsl} "hi" do
+          foo "foo!"
           action :access_attribute
         end
 
-        ruby_block 'wow' do
+        ruby_block "wow" do
           block do
             ResourceActionSpec::ActionJackson.ruby_block_converged = ResourceActionSpec::ActionJackson.succeeded
           end
@@ -441,7 +441,7 @@ describe "Resource.action" do
       resource_name :resource_action_spec_set_group_to_nil
       action :set_group_to_nil do
         # Access x during converge to ensure that we emit no warnings there
-        resource_action_spec_with_group 'hi' do
+        resource_action_spec_with_group "hi" do
           group nil
           action :nothing
         end
