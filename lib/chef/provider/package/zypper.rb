@@ -20,9 +20,7 @@
 #
 
 require "chef/provider/package"
-require "chef/mixin/command"
-require "chef/resource/package"
-require "singleton"
+require "chef/resource/zypper_package"
 
 class Chef
   class Provider
