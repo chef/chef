@@ -11,11 +11,7 @@ driver:
   name: ec2
   tags:
     X-Project: Kitchen Tests
-  aws_ssh_key_id: <%= ENV['AWS_SSH_KEY_ID'] || ENV['USER'] %>
-  transport:
-    ssh_key: <%= file_if_exists("~/.ssh/#{ENV['AWS_SSH_KEY_ID'] || ENV['USERNAME']}.pem") ||
-                 file_if_exists("~/.ssh/#{ENV['AWS_SSH_KEY_ID'] || ENV['USERNAME']}")
-                 file_if_exists("~/.ssh/id_rsa") %>
+  aws_ssh_key_id: <%= ENV['AWS_SSH_KEY_ID'] || ENV['USER'] || ENV['USERNAME'] %>
   # test-specific stuff
   region: us-west-2
   availability_zone: a
@@ -23,6 +19,11 @@ driver:
   security_group_ids: ["sg-e401eb83", "sg-96274af3"]
   instance_type: m3.large
   associate_public_ip: true
+
+transport:
+  ssh_key: <%= file_if_exists("~/.ssh/#{ENV['AWS_SSH_KEY_ID'] || ENV['USER'] || ENV['USERNAME']}.pem") ||
+               file_if_exists("~/.ssh/#{ENV['AWS_SSH_KEY_ID'] || ENV['USER'] || ENV['USERNAME']}") ||
+               file_if_exists("~/.ssh/id_rsa") %>
 
 platforms:
   #
@@ -42,7 +43,6 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
     transport:
       username: admin
   - name: debian-7
@@ -54,7 +54,17 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: standard
         image-type: machine
-      instance_type: t2.micro
+    transport:
+      username: admin
+  - name: debian-6
+    driver:
+      image_search:
+        name: debian-squeeze-*
+        owner-id: 379101102735
+        architecture: x86_64
+        virtualization-type: paravirtual
+        block-device-mapping.volume-type: standard
+        image-type: machine
     transport:
       username: admin
   #
@@ -69,7 +79,6 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
     transport:
       username: ubuntu
   - name: ubuntu-14.04
@@ -81,7 +90,6 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
     transport:
       username: ubuntu
   # - name: ubuntu-12.04
@@ -93,7 +101,6 @@ platforms:
   #       virtualization-type: hvm
   #       block-device-mapping.volume-type: gp2
   #       image-type: machine
-  #     instance_type: t2.micro
   #   transport:
   #     username: ubuntu
   #
@@ -108,7 +115,6 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
     transport:
       username: ec2-user
   - name: el-6
@@ -120,7 +126,6 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
     transport:
       username: ec2-user
   - name: el-5
@@ -132,7 +137,6 @@ platforms:
         virtualization-type: paravirtual
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t1.micro
     transport:
       username: ec2-user
   #
@@ -147,7 +151,6 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
     transport:
       username: ec2-user
   - name: freebsd-9
@@ -159,7 +162,6 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
     transport:
       username: ec2-user
   # - name: freebsd-8
@@ -171,7 +173,6 @@ platforms:
   #       virtualization-type: hvm
   #       block-device-mapping.volume-type: standard
   #       image-type: machine
-  #     instance_type: t2.micro
   #   transport:
   #     username: ec2-user
   #
@@ -202,26 +203,26 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
+      user_data: |
+        <powershell>
+        $logfile="C:\\Program Files\\Amazon\\Ec2ConfigService\\Logs\\kitchen-ec2.log"
+        #PS Remoting and & winrm.cmd basic config
+        Enable-PSRemoting -Force -SkipNetworkProfileCheck
+        & winrm.cmd set winrm/config '@{MaxTimeoutms="1800000"}' >> $logfile
+        & winrm.cmd set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}' >> $logfile
+        & winrm.cmd set winrm/config/winrs '@{MaxShellsPerUser="50"}' >> $logfile
+        #Server settings - support username/password login
+        & winrm.cmd set winrm/config/service/auth '@{Basic="true"}' >> $logfile
+        & winrm.cmd set winrm/config/service '@{AllowUnencrypted="true"}' >> $logfile
+        & winrm.cmd set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}' >> $logfile
+        #Firewall Config
+        & netsh advfirewall firewall set rule name="Windows Remote Management (HTTP-In)" profile=public protocol=tcp localport=5985 remoteip=localsubnet new remoteip=any  >> $logfile
+        #Set script execution to unrestricted
+        & Set-ExecutionPolicy Unrestricted -Force
+        </powershell>
     transport:
       username: administrator
-    # user_data: |
-    #   <powershell>
-    #   $logfile="C:\\Program Files\\Amazon\\Ec2ConfigService\\Logs\\kitchen-ec2.log"
-    #   #PS Remoting and & winrm.cmd basic config
-    #   Enable-PSRemoting -Force -SkipNetworkProfileCheck
-    #   & winrm.cmd set winrm/config '@{MaxTimeoutms="1800000"}' >> $logfile
-    #   & winrm.cmd set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}' >> $logfile
-    #   & winrm.cmd set winrm/config/winrs '@{MaxShellsPerUser="50"}' >> $logfile
-    #   #Server settings - support username/password login
-    #   & winrm.cmd set winrm/config/service/auth '@{Basic="true"}' >> $logfile
-    #   & winrm.cmd set winrm/config/service '@{AllowUnencrypted="true"}' >> $logfile
-    #   & winrm.cmd set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}' >> $logfile
-    #   #Firewall Config
-    #   & netsh advfirewall firewall set rule name="Windows Remote Management (HTTP-In)" profile=public protocol=tcp localport=5985 remoteip=localsubnet new remoteip=any  >> $logfile
-    #   #Set script execution to unrestricted
-    #   & Set-ExecutionPolicy Unrestricted -Force
-    #   </powershell>
+
   - name: windows-2012
     driver:
       image_search:
@@ -231,7 +232,6 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
     transport:
       username: administrator
   - name: windows-2008r2
@@ -243,7 +243,6 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
     transport:
       username: administrator
   #
@@ -258,7 +257,6 @@ platforms:
   #       virtualization-type: hvm
   #       block-device-mapping.volume-type: standard
   #       image-type: machine
-  #     instance_type: t2.micro
   #   transport:
   #     username: root
   # - name: centos-6
@@ -270,7 +268,6 @@ platforms:
   #       virtualization-type: paravirtual
   #       block-device-mapping.volume-type: standard
   #       image-type: machine
-  #     instance_type: t1.micro
   #   transport:
   #     username: root
   #
@@ -285,4 +282,34 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-      instance_type: t2.micro
+
+suites:
+  - name: default
+    run_list:
+      - recipe[git]
+    attributes: {}
+    includes: ["ubuntu-14.04"]
+    excludes: ["windows-2012r2", "windows-2012", "windows-2008r2"]
+  - name: source
+    includes: ["nonexistent"]
+    excludes: ["ubuntu-12.04", "ubuntu-10.04", "windows-2012r2", "windows-2012", "windows-2008r2"]
+    run_list:
+      - recipe[git::source]
+    attributes: {}
+  - name: default-windows
+    includes: [
+      # 'windows-8.1-professional',
+      # 'windows-2008r2-standard',
+      "windows-2012r2",
+      # "windows-2012",
+      # "windows-2008r2"
+    ]
+    run_list:
+      - recipe[git]
+    attributes: {}
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  product_version: latest
+  channel: current
