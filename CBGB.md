@@ -9,7 +9,7 @@
 
 More information can be found in the [Chef Board of Governance RFC](Chef Board of Governance).
 
-# Board of Governers
+# Board of Governors
 
 ## Project Lead
 

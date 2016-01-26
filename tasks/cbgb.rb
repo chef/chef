@@ -33,7 +33,7 @@ namespace :cbgb do
     out << "<!-- Modify CBGB.toml file and run `rake cbgb:generate` to regenerate -->\n\n"
     out << "# " + cbgb["Preamble"]["title"] + "\n\n"
     out <<  cbgb["Preamble"]["text"] + "\n"
-    out << "# Board of Governers\n\n"
+    out << "# Board of Governors\n\n"
     out << "## " + cbgb["Org"]["Lead"]["title"] + "\n\n"
     out << person(cbgb["people"], cbgb["Org"]["Lead"]["person"]) + "\n\n"
     out << "### " + cbgb["Org"]["Contributors"]["title"] + "\n\n"
