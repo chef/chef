@@ -42,11 +42,11 @@ Received an EOF on transport socket.  This almost always indicates a network
 error external to chef-client.  Some causes include:
 
   - Blocking ICMP Dest Unreachable (breaking Path MTU Discovery)
-  - IPsec or VPN tunnelling breaking Path MTU
+  - IPsec or VPN tunnelling / TCP Encapsulation MTU issues
   - Jumbo frames configured only on one side (breaking Path MTU)
   - Jumbo frames configured on a LAN that does not support them
   - Proxies or Load Balancers breaking large POSTs
-  - Broken TCP offload
+  - Broken TCP offload in network drivers/hardware
 
 Try sending large pings to the destination:
 
@@ -68,7 +68,7 @@ Try disabling TCP Offload Engines (TOE) in your ethernet drivers.
     for i in rx tx sg tso ufo gso gro lro rxvlan txvlan rxhash; do /sbin/ethtool -K eth0 $i off; done
 
 In some cases the underlying virtualization layer (Xen, VMware, KVM, Hyper-V, etc) may have
-broken networking.
+broken virtual networking code.
         E
       end
 
