@@ -96,18 +96,18 @@ platforms:
       instance_type: t2.micro
     transport:
       username: ubuntu
-  - name: ubuntu-12.04
-    driver:
-      image_search:
-        name: ubuntu/images/*/ubuntu-*-12.04-*-server-*
-        owner-id: 099720109477
-        architecture: x86_64
-        virtualization-type: hvm
-        block-device-mapping.volume-type: gp2
-        image-type: machine
-      instance_type: t2.micro
-    transport:
-      username: ubuntu
+  # - name: ubuntu-12.04
+  #   driver:
+  #     image_search:
+  #       name: ubuntu/images/*/ubuntu-*-12.04-*-server-*
+  #       owner-id: 099720109477
+  #       architecture: x86_64
+  #       virtualization-type: hvm
+  #       block-device-mapping.volume-type: gp2
+  #       image-type: machine
+  #     instance_type: t2.micro
+  #   transport:
+  #     username: ubuntu
   #
   # Red Hat Enterprise Linux
   #
@@ -174,18 +174,18 @@ platforms:
       instance_type: t2.micro
     transport:
       username: ec2-user
-  - name: freebsd-8
-    driver:
-      image_search:
-        name: FreeBSD/EC2 8.*-RELEASE*
-        owner-id: 118940168514
-        architecture: x86_64
-        virtualization-type: hvm
-        block-device-mapping.volume-type: standard
-        image-type: machine
-      instance_type: t2.micro
-    transport:
-      username: ec2-user
+  # - name: freebsd-8
+  #   driver:
+  #     image_search:
+  #       name: FreeBSD/EC2 8.*-RELEASE*
+  #       owner-id: 118940168514
+  #       architecture: x86_64
+  #       virtualization-type: hvm
+  #       block-device-mapping.volume-type: standard
+  #       image-type: machine
+  #     instance_type: t2.micro
+  #   transport:
+  #     username: ec2-user
   #
   # OS/X
   #
@@ -261,30 +261,30 @@ platforms:
   #
   # Centos
   #
-  - name: centos-7
-    driver:
-      image_search:
-        name: CentOS Linux 7 *
-        owner-alias: aws-marketplace
-        architecture: x86_64
-        virtualization-type: hvm
-        block-device-mapping.volume-type: standard
-        image-type: machine
-      instance_type: t2.micro
-    transport:
-      username: root
-  - name: centos-6
-    driver:
-      image_search:
-        name: CentOS-6.5-GA-*
-        owner-alias: aws-marketplace
-        architecture: x86_64
-        virtualization-type: paravirtual
-        block-device-mapping.volume-type: standard
-        image-type: machine
-      instance_type: t1.micro
-    transport:
-      username: root
+  # - name: centos-7
+  #   driver:
+  #     image_search:
+  #       name: CentOS Linux 7 *
+  #       owner-alias: aws-marketplace
+  #       architecture: x86_64
+  #       virtualization-type: hvm
+  #       block-device-mapping.volume-type: standard
+  #       image-type: machine
+  #     instance_type: t2.micro
+  #   transport:
+  #     username: root
+  # - name: centos-6
+  #   driver:
+  #     image_search:
+  #       name: CentOS-6.5-GA-*
+  #       owner-alias: aws-marketplace
+  #       architecture: x86_64
+  #       virtualization-type: paravirtual
+  #       block-device-mapping.volume-type: standard
+  #       image-type: machine
+  #     instance_type: t1.micro
+  #   transport:
+  #     username: root
   #
   # Fedora
   #

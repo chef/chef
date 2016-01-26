@@ -6,20 +6,17 @@ driver:
     memory: 1024
 
 platforms:
-<% %w(debian-8
+<% %w(
+debian-8
 debian-7
 debian-6
 ubuntu-15.10
 ubuntu-14.04
-ubuntu-12.04
 el-7
 el-6
 el-5
 freebsd-10
 freebsd-9
-freebsd-8
-centos-7
-centos-6
 fedora-21
 ).each do |platform| %>
   - name: <%= platform %>
@@ -27,6 +24,10 @@ fedora-21
       box: opscode-<%= platform %>
       box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_<%= platform %>_chef-provisionerless.box
 <% end %>
+# freebsd-8
+# ubuntu-12.04
+# centos-7
+# centos-6
 
 <% %w(
 2012r2
