@@ -16,15 +16,22 @@ export APPBUNDLER_ALLOW_RVM=true
 ### Setting up and running a test suite
 To get started, do a bundle install from the acceptance directory:
 ```shell
-chef/acceptance$ bundle install
+chef/acceptance$ bundle install --binstubs
 ```
 
 To get some basic info and ensure chef-acceptance can be run, do:
 ```shell
-chef/acceptance$ bundle exec chef-acceptance info
+chef/acceptance$ bin/chef-acceptance info
 ```
 
 To run a particular test suite, do the following:
 ```shell
-chef/acceptance$ bundle exec chef-acceptance test TEST_SUITE
+chef/acceptance$ bin/chef-acceptance test TEST_SUITE
+```
+
+To restrict which OS's will run, use the KITCHEN_INSTANCES environment variable:
+
+```shell
+chef/acceptance$ export KITCHEN_INSTANCES=*-ubuntu-1404
+chef/acceptance$ bin/chef-acceptance test cookbook-git
 ```

@@ -1,10 +1,12 @@
 source "https://rubygems.org"
 
 gem "mixlib-install", github: "chef/mixlib-install"
+gem "chef", path: ".."
 gem "chef-acceptance", github: "chef/chef-acceptance"
-gem "test-kitchen", github: "sersut/test-kitchen",
-                    branch: "sersut/mixlib-install-update"
+gem "test-kitchen", github: "sersut/test-kitchen", branch: "sersut/mixlib-install-update"
+gem "kitchen-ec2"
 gem "kitchen-inspec"
 gem "kitchen-vagrant"
 gem "windows_chef_zero"
 gem "winrm-transport"
+gem "berkshelf"
