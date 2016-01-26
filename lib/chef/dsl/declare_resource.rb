@@ -18,7 +18,6 @@
 #
 
 require "chef/exceptions"
-require "chef/resource_builder"
 
 class Chef
   module DSL
@@ -104,3 +103,5 @@ class Chef
     end
   end
 end
+
+require 'chef/resource_builder'

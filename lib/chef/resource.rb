@@ -32,11 +32,9 @@ require "chef/resource/action_class"
 require "chef/resource_collection"
 require "chef/node_map"
 require "chef/node"
-require "chef/platform"
 require "chef/resource/resource_notification"
 require "chef/provider_resolver"
 require "chef/resource_resolver"
-require "chef/provider"
 require "set"
 
 require "chef/mixin/deprecation"
@@ -46,6 +44,8 @@ require "chef/mixin/shell_out"
 require "chef/mixin/powershell_out"
 
 class Chef
+  class Provider
+  end
   class Resource
 
     #
