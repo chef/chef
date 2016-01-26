@@ -136,6 +136,16 @@ describe Chef::Application do
         expect(Chef::Config.rspec_ran).to eq("true")
       end
 
+      context "when openssl fips" do
+        before do
+          allow(Chef::Config).to receive(:fips).and_return(true)
+        end
+
+        it "sets openssl in fips mode" do
+          expect(OpenSSL).to receive(:'fips_mode=').with(true)
+          @app.configure_chef
+        end
+      end
     end
 
     describe "when there is no config_file defined" do

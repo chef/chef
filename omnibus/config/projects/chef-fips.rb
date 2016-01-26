@@ -38,7 +38,7 @@ end
 override :fips, enabled: true
 override :'ruby-windows', version: "2.0.0-p647"
 
-override :chef, version: "jdm/1.3-fips"
+override :chef, version: "local_source"
 override :ohai, version: "master"
 
 msi_upgrade_code = "819F5DB3-B818-4358-BB2B-54B8171D0A26"

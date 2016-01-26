@@ -27,6 +27,7 @@ require "chef-config/windows"
 require "chef-config/path_helper"
 require "mixlib/shellout"
 require "uri"
+require "openssl"
 
 module ChefConfig
 
@@ -450,10 +451,32 @@ module ChefConfig
     # Where should chef-solo download recipes from?
     default :recipe_url, nil
 
+    # Set to true if Chef is to set OpenSSL to run in FIPS mode
+    default(:fips) { ENV["CHEF_FIPS"] == "1" }
+
+    # Initialize openssl
+    def self.init_openssl
+      if fips
+        ChefConfig.logger.warn "The `fips` feature is still a work in progress. This feature is incomplete."
+        OpenSSL.fips_mode = true
+        require "digest"
+        require "digest/sha1"
+        require "digest/md5"
+        Digest.const_set("SHA1", OpenSSL::Digest::SHA1)
+        OpenSSL::Digest.const_set("MD5", Digest::MD5)
+      end
+    end
+
     # Sets the version of the signed header authentication protocol to use (see
     # the 'mixlib-authorization' project for more detail). Currently, versions
-    # 1.0 and 1.1 are available.
-    default :authentication_protocol_version, "1.1"
+    # 1.0, 1.1, and 1.3 are available.
+    default :authentication_protocol_version do
+      if fips
+        "1.3"
+      else
+        "1.1"
+      end
+    end
 
     # This key will be used to sign requests to the Chef server. This location
     # must be writable by Chef during initial setup when generating a client

@@ -43,6 +43,7 @@ class Chef
 
       def run_start(version)
         puts_line "Starting Chef Client, version #{version}"
+        puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
 
       def total_resources

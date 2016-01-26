@@ -67,6 +67,10 @@ require "chef/util/file_edit"
 
 require "chef/config"
 
+if ENV["CHEF_FIPS"] == "1"
+  Chef::Config.init_openssl
+end
+
 # If you want to load anything into the testing environment
 # without versioning it, add it to spec/support/local_gems.rb
 require "spec/support/local_gems.rb" if File.exists?(File.join(File.dirname(__FILE__), "support", "local_gems.rb"))
@@ -165,6 +169,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
   config.filter_run_excluding :broken => true
   config.filter_run_excluding :not_wpar => true unless wpar?
+  config.filter_run_excluding :not_fips => true unless fips?
 
   running_platform_arch = `uname -m`.strip unless windows?
 

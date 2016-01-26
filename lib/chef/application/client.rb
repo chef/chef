@@ -274,6 +274,11 @@ class Chef::Application::Client < Chef::Application
     :description    => "Whether a local mode (-z) server binds to a port",
     :boolean        => true
 
+  option :fips,
+    :long         => "--fips",
+    :description  => "Enable fips mode",
+    :boolean      => true
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
   attr_reader :chef_client_json
@@ -286,6 +291,8 @@ class Chef::Application::Client < Chef::Application
     raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || "" ), (Chef::Config[:lockfile] || "")
 
     set_specific_recipes
+
+    Chef::Config[:fips] = config[:fips] if config.has_key? :fips
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 
