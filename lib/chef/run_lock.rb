@@ -72,7 +72,7 @@ class Chef
               end
             end
           end
-        rescue Timeout::Error => e
+        rescue Timeout::Error
           exit_from_timeout
         end
       else

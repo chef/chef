@@ -12,6 +12,14 @@ class Chef
       @config_location = config_location
     end
 
+    def expanded_path
+      if config_location.nil? || remote_config?
+        config_location
+      else
+        File.expand_path(config_location)
+      end
+    end
+
     def fetch_json
       config_data = read_config
       begin

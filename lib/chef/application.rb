@@ -90,6 +90,13 @@ class Chef
     # Parse the config file
     def load_config_file
       config_fetcher = Chef::ConfigFetcher.new(config[:config_file])
+
+      # Some config settings are derived relative to the config file path; if
+      # given as a relative path, this is computed relative to cwd, but
+      # chef-client will later chdir to root, so we need to get the absolute path
+      # here.
+      config[:config_file] = config_fetcher.expanded_path
+
       if config[:config_file].nil?
         Chef::Log.warn("No config file found or specified on command line, using command line options.")
       elsif config_fetcher.config_missing?
