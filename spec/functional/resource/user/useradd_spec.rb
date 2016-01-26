@@ -287,9 +287,9 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:uid_min) do
           case ohai[:platform]
           when "aix"
-            # UIDs and GIDs below 100 are typically reserved for system accounts and services
-            # http://www.ibm.com/developerworks/aix/library/au-satuidgid/
-            100
+            # UIDs and GIDs below 200 are typically reserved for system accounts and services
+            # https://abcofaix.wordpress.com/tag/usermod/
+            200
           else
             # from `man useradd`, login user means uid will be between
             # UID_SYS_MIN and UID_SYS_MAX defined in /etc/login.defs. On my
