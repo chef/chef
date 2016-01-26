@@ -45,6 +45,10 @@ require "chef/mixin/powershell_out"
 
 class Chef
   class Provider
+    # this breaks require loops so we don't have to require 'chef/provider' in this
+    # file.  when the magic of the resource computing its provider name goes away
+    # and this file no longer references Chef::Provider then this class definition
+    # can be deleted.
   end
   class Resource
 
