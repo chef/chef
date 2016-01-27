@@ -87,7 +87,7 @@ if [ ! -f "Gemfile.lock" ]; then
 fi
 
 unset CHEF_FIPS
-if [ $PIPELINE_NAME="chef-fips" ]; then
+if [ "$PIPELINE_NAME" = "chef-fips" ]; then
     echo "Setting fips mode"
     CHEF_FIPS=1
     export CHEF_FIPS
