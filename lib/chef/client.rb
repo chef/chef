@@ -621,7 +621,7 @@ class Chef
       # We now have the client key, and should use it from now on.
       @rest = Chef::ServerAPI.new(config[:chef_server_url], client_name: client_name,
                                   signing_key_filename: config[:client_key])
-      # force initialization of ther rest_clean API object
+      # force initialization of the rest_clean API object
       rest_clean(client_name, config)
       register_reporters
     rescue Exception => e
