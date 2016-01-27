@@ -72,7 +72,7 @@ describe "Chef::Resource.property validation" do
     end
   end
 
-  def self.validation_test(validation, success_values, failure_values, getter_values=[], *tags)
+  def self.validation_test(validation, success_values, failure_values, *tags)
     with_property ":x, #{validation}", *tags do
       it "gets nil when retrieving the initial (non-set) value" do
         expect(resource.x).to be_nil
@@ -91,11 +91,52 @@ describe "Chef::Resource.property validation" do
           expect { resource.x v }.to raise_error Chef::Exceptions::ValidationFailed
         end
       end
-      getter_values.each do |v|
-        it "setting value to #{v.inspect} does not change the value" do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      it "setting x to nil when it is already nil does not emit a warning" do
+        expect(resource.x nil).to be_nil
+        expect(resource.x).to be_nil
+      end
+      it "changing x to nil warns that the get will change to a set in Chef 13 and does not change the value" do
+        resource.instance_eval { @x = "default" }
+        expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+          /An attempt was made to change x from "default" to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+        expect(resource.x nil).to eq "default"
+        expect(resource.x).to eq "default"
+      end
+    end
+    if tags.include?(:nil_is_valid)
+      with_property ":x, #{validation}, default: nil" do
+        it "setting x to nil when it is already nil does not emit a warning" do
+          expect(resource.x nil).to be_nil
+          expect(resource.x).to be_nil
+        end
+        it "changing x to nil warns that the get will change to a set in Chef 13 and does not change the value" do
           resource.instance_eval { @x = "default" }
-          expect(resource.x v).to eq "default"
+          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /An attempt was made to change x from "default" to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          expect(resource.x nil).to eq "default"
+          expect(resource.x).to eq "default"
+        end
+      end
+    else
+      it "property :x, #{validation}, default: nil warns that the default is invalid" do
+        expect { resource_class.class_eval("property :x, #{validation}, default: nil", __FILE__, __LINE__) }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+          /Default value nil is invalid for property x of resource chef_resource_property_spec_(\d+). Possible fixes: 1. Remove 'default: nil' if nil means 'undefined'. 2. Set a valid default value if there is a reasonable one. 3. Allow nil as a valid value of your property \(for example, 'property :x, \[ String, nil \], default: nil'\)./
+      end
+      context "With property :x, #{validation}, default: nil" do
+        before do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          resource_class.class_eval("property :x, #{validation}, default: nil", __FILE__, __LINE__)
+          Chef::Config[:treat_deprecation_warnings_as_errors] = true
+        end
+
+        it "changing x to nil emits a warning that the value is invalid and does not change the value" do
+          resource.instance_eval { @x = "default" }
+          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /nil is an invalid value for x of resource chef_resource_property_spec_(\d+). In Chef 13, this warning will change to an error./
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          expect(resource.x nil).to eq "default"
           expect(resource.x).to eq "default"
         end
       end
@@ -150,9 +191,12 @@ describe "Chef::Resource.property validation" do
         it "get succeeds" do
           expect(resource.x).to eq "default"
         end
-        it "set(nil) sets the value" do
-          expect(resource.x nil).to be_nil
-          expect(resource.x).to be_nil
+        it "set(nil) emits a warning that the value will be set, but does not set the value" do
+          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /An attempt was made to change x from "default" to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          expect(resource.x nil).to eq "default"
+          expect(resource.x).to eq "default"
         end
         it "set to valid value succeeds" do
           expect(resource.x "str").to eq "str"
@@ -185,46 +229,41 @@ describe "Chef::Resource.property validation" do
   context "bare types" do
     validation_test "String",
       [ "hi" ],
-      [ 10 ],
-      [ nil ]
+      [ 10 ]
 
     validation_test ":a",
       [ :a ],
-      [ :b ],
-      [ nil ]
+      [ :b ]
 
     validation_test ":a, is: :b",
       [ :a, :b ],
-      [ :c ],
-      [ nil ]
+      [ :c ]
 
     validation_test ":a, is: [ :b, :c ]",
       [ :a, :b, :c ],
-      [ :d ],
-      [ nil ]
+      [ :d ]
 
     validation_test "[ :a, :b ], is: :c",
       [ :a, :b, :c ],
-      [ :d ],
-      [ nil ]
+      [ :d ]
 
     validation_test "[ :a, :b ], is: [ :c, :d ]",
       [ :a, :b, :c, :d ],
-      [ :e ],
-      [ nil ]
+      [ :e ]
 
     validation_test "nil",
-      [ nil ],
-      [ :a ]
+      [ ],
+      [ :a ],
+      :nil_is_valid
 
     validation_test "[ nil ]",
-      [ nil ],
-      [ :a ]
+      [ ],
+      [ :a ],
+      :nil_is_valid
 
     validation_test "[]",
       [],
-      [ :a ],
-      [ nil ]
+      [ :a ]
   end
 
   # is
@@ -232,35 +271,30 @@ describe "Chef::Resource.property validation" do
     # Class
     validation_test "is: String",
       [ "a", "" ],
-      [ :a, 1 ],
-      [ nil ]
+      [ :a, 1 ]
 
     # Value
     validation_test "is: :a",
       [ :a ],
-      [ :b ],
-      [ nil ]
+      [ :b ]
 
     validation_test "is: [ :a, :b ]",
       [ :a, :b ],
-      [ [ :a, :b ] ],
-      [ nil ]
+      [ [ :a, :b ] ]
 
     validation_test "is: [ [ :a, :b ] ]",
       [ [ :a, :b ] ],
-      [ :a, :b ],
-      [ nil ]
+      [ :a, :b ]
 
     # Regex
     validation_test "is: /abc/",
       [ "abc", "wowabcwow" ],
-      [ "", "abac" ],
-      [ nil ]
+      [ "", "abac" ]
 
     # Property
     validation_test "is: Chef::Property.new(is: :a)",
       [ :a ],
-      [ :b, nil ]
+      [ :b ]
 
     # RSpec Matcher
     class Globalses
@@ -269,31 +303,30 @@ describe "Chef::Resource.property validation" do
 
     validation_test "is: Globalses.eq(10)",
       [ 10 ],
-      [ 1 ],
-      [ nil ]
+      [ 1 ]
 
     # Proc
     validation_test "is: proc { |x| x }",
       [ true, 1 ],
-      [ false ],
-      [ nil ]
+      [ false ]
 
     validation_test "is: proc { |x| x > blah }",
       [ 10 ],
       [ -1 ]
 
     validation_test "is: nil",
-      [ nil ],
-      [ "a" ]
+      [ ],
+      [ "a" ],
+      :nil_is_valid
 
     validation_test "is: [ String, nil ]",
-      [ "a", nil ],
-      [ :b ]
+      [ "a" ],
+      [ :b ],
+      :nil_is_valid
 
     validation_test "is: []",
       [],
-      [ :a ],
-      [ nil ]
+      [ :a ]
   end
 
   # Combination
@@ -301,7 +334,7 @@ describe "Chef::Resource.property validation" do
     validation_test 'kind_of: String, equal_to: "a"',
       [ "a" ],
       [ "b" ],
-      [ nil ]
+      :nil_is_valid
   end
 
   # equal_to
@@ -310,37 +343,38 @@ describe "Chef::Resource.property validation" do
     validation_test "equal_to: :a",
       [ :a ],
       [ :b ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "equal_to: [ :a, :b ]",
       [ :a, :b ],
       [ [ :a, :b ] ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "equal_to: [ [ :a, :b ] ]",
       [ [ :a, :b ] ],
       [ :a, :b ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "equal_to: nil",
       [ ],
       [ "a" ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test 'equal_to: [ "a", nil ]',
       [ "a" ],
       [ "b" ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test 'equal_to: [ nil, "a" ]',
       [ "a" ],
       [ "b" ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "equal_to: []",
       [],
       [ :a ],
-      [ nil ]
+      :nil_is_valid
+
   end
 
   # kind_of
@@ -348,37 +382,37 @@ describe "Chef::Resource.property validation" do
     validation_test "kind_of: String",
       [ "a" ],
       [ :b ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "kind_of: [ String, Symbol ]",
       [ "a", :b ],
       [ 1 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "kind_of: [ Symbol, String ]",
       [ "a", :b ],
       [ 1 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "kind_of: NilClass",
       [ ],
       [ "a" ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "kind_of: [ NilClass, String ]",
       [ "a" ],
       [ :a ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "kind_of: []",
       [],
       [ :a ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "kind_of: nil",
       [],
       [ :a ],
-      [ nil ]
+      :nil_is_valid
   end
 
   # regex
@@ -386,53 +420,55 @@ describe "Chef::Resource.property validation" do
     validation_test "regex: /abc/",
       [ "xabcy" ],
       [ "gbh", 123 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "regex: [ /abc/, /z/ ]",
       [ "xabcy", "aza" ],
       [ "gbh", 123 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "regex: [ /z/, /abc/ ]",
       [ "xabcy", "aza" ],
       [ "gbh", 123 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "regex: [ [ /z/, /abc/ ], [ /n/ ] ]",
       [ "xabcy", "aza", "ana" ],
       [ "gbh", 123 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "regex: []",
       [],
       [ :a ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "regex: nil",
       [],
       [ :a ],
-      [ nil ]
+      :nil_is_valid
   end
 
   # callbacks
   context "callbacks" do
     validation_test 'callbacks: { "a" => proc { |x| x > 10 }, "b" => proc { |x| x%2 == 0 } }',
       [ 12 ],
-      [ 11, 4 ]
+      [ 11, 4 ],
+      :nil_is_valid
 
     validation_test 'callbacks: { "a" => proc { |x| x%2 == 0 }, "b" => proc { |x| x > 10 } }',
       [ 12 ],
-      [ 11, 4 ]
+      [ 11, 4 ],
+      :nil_is_valid
 
     validation_test 'callbacks: { "a" => proc { |x| x.nil? } }',
       [ ],
       [ "a" ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "callbacks: {}",
       [ :a ],
       [],
-      [ nil ]
+      :nil_is_valid
   end
 
   # respond_to
@@ -440,84 +476,84 @@ describe "Chef::Resource.property validation" do
     validation_test "respond_to: :split",
       [ "hi" ],
       [ 1 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test 'respond_to: "split"',
       [ "hi" ],
       [ 1 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "respond_to: :to_s",
       [ :a ],
       [],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "respond_to: [ :split, :to_s ]",
       [ "hi" ],
       [ 1 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "respond_to: %w(split to_s)",
       [ "hi" ],
       [ 1 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "respond_to: [ :to_s, :split ]",
       [ "hi" ],
       [ 1 ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "respond_to: []",
       [ :a ],
       [],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "respond_to: nil",
       [ :a ],
       [],
-      [ nil ]
+      :nil_is_valid
   end
 
   context "cannot_be" do
     validation_test "cannot_be: :empty",
       [ 1, [1,2], { a: 10 } ],
       [ [] ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test 'cannot_be: "empty"',
       [ 1, [1,2], { a: 10 } ],
       [ [] ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "cannot_be: [ :empty, :nil ]",
       [ 1, [1,2], { a: 10 } ],
       [ [] ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test 'cannot_be: [ "empty", "nil" ]',
       [ 1, [1,2], { a: 10 } ],
       [ [] ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "cannot_be: [ :nil, :empty ]",
       [ 1, [1,2], { a: 10 } ],
       [ [] ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "cannot_be: [ :empty, :nil, :blahblah ]",
       [ 1, [1,2], { a: 10 } ],
       [ [] ],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "cannot_be: []",
       [ :a ],
       [],
-      [ nil ]
+      :nil_is_valid
 
     validation_test "cannot_be: nil",
       [ :a ],
       [],
-      [ nil ]
+      :nil_is_valid
 
   end
 
@@ -549,9 +585,8 @@ describe "Chef::Resource.property validation" do
       it "if x is not specified, retrieval fails" do
         expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
       end
-      it "value nil is valid" do
-        expect(resource.x nil).to be_nil
-        expect(resource.x).to be_nil
+      it "value nil is not valid (required means 'not nil')" do
+        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
       end
       it "value '1' is valid" do
         expect(resource.x "1").to eq "1"

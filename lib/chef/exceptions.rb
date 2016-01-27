@@ -71,6 +71,7 @@ class Chef
     class RoleNotFound < RuntimeError; end
     class DuplicateRole < RuntimeError; end
     class ValidationFailed < ArgumentError; end
+    class CannotValidateStaticallyError < ArgumentError; end
     class InvalidPrivateKey < ArgumentError; end
     class MissingKeyAttribute < ArgumentError; end
     class KeyCommandInputError < ArgumentError; end
