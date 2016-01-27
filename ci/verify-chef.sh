@@ -86,9 +86,10 @@ if [ ! -f "Gemfile.lock" ]; then
   exit 1
 fi
 
-CHEF_FIPS=0
-if [ $PIPELINE_NAME='chef-fips'];
-then
+unset CHEF_FIPS
+if [ $PIPELINE_NAME="chef-fips" ]; then
+    echo "Setting fips mode"
     CHEF_FIPS=1
+    export CHEF_FIPS
 fi
 sudo env PATH=$PATH TERM=xterm CHEF_FIPS=$CHEF_FIPS bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec/functional spec/unit
