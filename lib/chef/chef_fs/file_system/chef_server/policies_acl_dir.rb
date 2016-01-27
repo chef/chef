@@ -28,6 +28,7 @@ class Chef
           # and make one acls/policies/NAME.json for each one.
           def children
             if @children.nil?
+              # /acls/policies -> List ../../policies
               names = parent.parent.child(name).children.map { |child| "#{child.policy_name}.json" }
               @children = names.uniq.map { |name| make_child_entry(name, true) }
             end

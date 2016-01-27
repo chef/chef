@@ -698,12 +698,15 @@ roles
 /acls:
 clients
 containers
+cookbook_artifacts
 cookbooks
 data_bags
 environments
 groups
 nodes
 organization.json
+policies
+policy_groups
 roles
 
 /acls/clients:
@@ -719,8 +722,11 @@ environments.json
 groups.json
 nodes.json
 policies.json
+policy_groups.json
 roles.json
 sandboxes.json
+
+/acls/cookbook_artifacts:
 
 /acls/cookbooks:
 
@@ -737,6 +743,10 @@ users.json
 
 /acls/nodes:
 
+/acls/policies:
+
+/acls/policy_groups:
+
 /acls/roles:
 
 /clients:
@@ -752,6 +762,7 @@ environments.json
 groups.json
 nodes.json
 policies.json
+policy_groups.json
 roles.json
 sandboxes.json
 
@@ -803,12 +814,15 @@ roles
 /acls:
 clients
 containers
+cookbook_artifacts
 cookbooks
 data_bags
 environments
 groups
 nodes
 organization.json
+policies
+policy_groups
 roles
 
 /acls/clients:
@@ -824,8 +838,11 @@ environments.json
 groups.json
 nodes.json
 policies.json
+policy_groups.json
 roles.json
 sandboxes.json
+
+/acls/cookbook_artifacts:
 
 /acls/cookbooks:
 
@@ -842,6 +859,10 @@ users.json
 
 /acls/nodes:
 
+/acls/policies:
+
+/acls/policy_groups:
+
 /acls/roles:
 
 /clients:
@@ -857,6 +878,7 @@ environments.json
 groups.json
 nodes.json
 policies.json
+policy_groups.json
 roles.json
 sandboxes.json
 
@@ -935,8 +957,12 @@ EOM
 /acls/containers/groups.json
 /acls/containers/nodes.json
 /acls/containers/policies.json
+/acls/containers/policy_groups.json
 /acls/containers/roles.json
 /acls/containers/sandboxes.json
+/acls/cookbook_artifacts/
+/acls/cookbook_artifacts/cookbook_artifact1.json
+/acls/cookbook_artifacts/cookbook_artifact2.json
 /acls/cookbooks/
 /acls/cookbooks/cookbook1.json
 /acls/cookbooks/cookbook2.json
@@ -958,6 +984,12 @@ EOM
 /acls/nodes/node1.json
 /acls/nodes/node2.json
 /acls/organization.json
+/acls/policies/
+/acls/policies/policy1.json
+/acls/policies/policy2.json
+/acls/policy_groups/
+/acls/policy_groups/policy_group1.json
+/acls/policy_groups/policy_group2.json
 /acls/roles/
 /acls/roles/role1.json
 /acls/roles/role2.json
@@ -977,6 +1009,7 @@ EOM
 /containers/groups.json
 /containers/nodes.json
 /containers/policies.json
+/containers/policy_groups.json
 /containers/roles.json
 /containers/sandboxes.json
 /cookbook_artifacts/

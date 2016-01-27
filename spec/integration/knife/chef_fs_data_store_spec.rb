@@ -37,6 +37,7 @@ describe "ChefFSDataStore tests", :workstation do
     when_the_repository "has one of each thing" do
       before do
         file "clients/x.json", {}
+        file "cookbook_artifacts/x-111/metadata.rb", cookbook_x_100_metadata_rb
         file "cookbooks/x/metadata.rb", cookbook_x_100_metadata_rb
         file "data_bags/x/y.json", {}
         file "environments/x.json", {}
@@ -47,18 +48,20 @@ describe "ChefFSDataStore tests", :workstation do
         file "groups/x.json", {}
         file "containers/x.json", {}
         file "groups/x.json", {}
-        file "policies/x.json", {}
+        file "policies/x-111.json", {}
         file "policy_groups/x.json", {}
       end
 
       context "GET /TYPE" do
-        it "knife list -z -R returns everything" do
+        it "knife list -z -R returns everything", :focus do
           knife("list -z -Rfp /").should_succeed <<EOM
 /acls/
 /acls/clients/
 /acls/clients/x.json
 /acls/containers/
 /acls/containers/x.json
+/acls/cookbook_artifacts/
+/acls/cookbook_artifacts/x.json
 /acls/cookbooks/
 /acls/cookbooks/x.json
 /acls/data_bags/
@@ -70,6 +73,10 @@ describe "ChefFSDataStore tests", :workstation do
 /acls/nodes/
 /acls/nodes/x.json
 /acls/organization.json
+/acls/policies/
+/acls/policies/x.json
+/acls/policy_groups/
+/acls/policy_groups/x.json
 /acls/roles/
 /acls/roles/x.json
 /clients/
@@ -77,6 +84,8 @@ describe "ChefFSDataStore tests", :workstation do
 /containers/
 /containers/x.json
 /cookbook_artifacts/
+/cookbook_artifacts/x-111/
+/cookbook_artifacts/x-111/metadata.rb
 /cookbooks/
 /cookbooks/x/
 /cookbooks/x/metadata.rb
@@ -93,6 +102,7 @@ describe "ChefFSDataStore tests", :workstation do
 /nodes/x.json
 /org.json
 /policies/
+/policies/x-111.json
 /policy_groups/
 /policy_groups/x.json
 /roles/
@@ -287,12 +297,15 @@ EOM
 /acls/
 /acls/clients/
 /acls/containers/
+/acls/cookbook_artifacts/
 /acls/cookbooks/
 /acls/data_bags/
 /acls/environments/
 /acls/groups/
 /acls/nodes/
 /acls/organization.json
+/acls/policies/
+/acls/policy_groups/
 /acls/roles/
 /clients/
 /containers/
