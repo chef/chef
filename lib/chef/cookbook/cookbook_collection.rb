@@ -18,6 +18,7 @@
 #
 
 require "chef/mash"
+require "chef/cookbook/gem_installer"
 
 class Chef
   # == Chef::CookbookCollection
@@ -53,6 +54,10 @@ class Chef
         cookbook_version.metadata.validate_chef_version!
         cookbook_version.metadata.validate_ohai_version!
       end
+    end
+
+    def install_gems
+      Cookbook::GemInstaller.new(self).install
     end
   end
 end

@@ -75,12 +75,16 @@ class Chef
           cl.load_cookbooks
           cookbook_collection = Chef::CookbookCollection.new(cl)
           cookbook_collection.validate!
+          cookbook_collection.install_gems
+
           run_context = Chef::RunContext.new(node, cookbook_collection, @events)
         else
           Chef::Cookbook::FileVendor.fetch_from_remote(api_service)
           cookbook_hash = sync_cookbooks
           cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
           cookbook_collection.validate!
+          cookbook_collection.install_gems
+
           run_context = Chef::RunContext.new(node, cookbook_collection, @events)
         end
 

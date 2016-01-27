@@ -153,6 +153,8 @@ class Chef
         sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbooks_to_sync)
         cookbook_collection.validate!
+        cookbook_collection.install_gems
+
         run_context = Chef::RunContext.new(node, cookbook_collection, events)
 
         setup_chef_class(run_context)
