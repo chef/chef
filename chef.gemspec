@@ -47,7 +47,7 @@ Gem::Specification.new do |s|
 
   # v1.10 is needed as a runtime dep now for 'bundler/inline'
   # very deliberately avoiding putting a ceiling on this to avoid depsolver conflicts.
-  s.add_depeenency "bundler", ">= 1.10"
+  s.add_dependency "bundler", ">= 1.10"
 
   s.add_development_dependency "rack"
   s.add_development_dependency "cheffish", ">= 1.1", "< 3.0"
