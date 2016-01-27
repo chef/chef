@@ -34,221 +34,233 @@ describe Chef::Application do
     ARGV.replace(@original_argv)
   end
 
-  describe "reconfigure" do
+  context "when there are no configuration errors" do
+
     before do
-      @app = Chef::Application.new
-      allow(@app).to receive(:configure_chef).and_return(true)
-      allow(@app).to receive(:configure_logging).and_return(true)
+      expect(Chef::Log).to_not receive(:fatal)
+      expect(Chef::Application).to_not receive(:fatal!)
     end
 
-    it "should configure chef" do
-      expect(@app).to receive(:configure_chef).and_return(true)
-      @app.reconfigure
-    end
-
-    it "should configure logging" do
-      expect(@app).to receive(:configure_logging).and_return(true)
-      @app.reconfigure
-    end
-
-    it "should not receive set_specific_recipes" do
-      expect(@app).to_not receive(:set_specific_recipes)
-      @app.reconfigure
-    end
-  end
-
-  describe Chef::Application do
-    before do
-      @app = Chef::Application.new
-    end
-
-    describe "run" do
+    describe "reconfigure" do
       before do
-        allow(@app).to receive(:setup_application).and_return(true)
-        allow(@app).to receive(:run_application).and_return(true)
+        @app = Chef::Application.new
         allow(@app).to receive(:configure_chef).and_return(true)
         allow(@app).to receive(:configure_logging).and_return(true)
       end
 
-      it "should reconfigure the application before running" do
-        expect(@app).to receive(:reconfigure).and_return(true)
-        @app.run
+      it "should configure chef" do
+        expect(@app).to receive(:configure_chef).and_return(true)
+        @app.reconfigure
       end
 
-      it "should setup the application before running it" do
-        expect(@app).to receive(:setup_application).and_return(true)
-        @app.run
+      it "should configure logging" do
+        expect(@app).to receive(:configure_logging).and_return(true)
+        @app.reconfigure
       end
 
-      it "should run the actual application" do
-        expect(@app).to receive(:run_application).and_return(true)
-        @app.run
+      it "should not receive set_specific_recipes" do
+        expect(@app).to_not receive(:set_specific_recipes)
+        @app.reconfigure
       end
     end
-  end
 
-  describe "configure_chef" do
-    before do
-      # Silence warnings when no config file exists
-      allow(Chef::Log).to receive(:warn)
-
-      @app = Chef::Application.new
-      #Chef::Config.stub(:merge!).and_return(true)
-      allow(@app).to receive(:parse_options).and_return(true)
-      expect(Chef::Config).to receive(:export_proxies).and_return(true)
-    end
-
-    it "should parse the commandline options" do
-      expect(@app).to receive(:parse_options).and_return(true)
-      @app.config[:config_file] = "/etc/chef/default.rb" #have a config file set, to prevent triggering error block
-      @app.configure_chef
-    end
-
-    describe "when a config_file is present" do
-      let(:config_content) { "rspec_ran('true')" }
-      let(:config_location) { "/etc/chef/default.rb" }
-
-      let(:config_location_pathname) do
-        p = Pathname.new(config_location)
-        allow(p).to receive(:realpath).and_return(config_location)
-        p
-      end
-
+    describe Chef::Application do
       before do
-        @app.config[:config_file] = config_location
-
-        # force let binding to get evaluated or else we stub Pathname.new before we try to use it.
-        config_location_pathname
-        allow(Pathname).to receive(:new).with(config_location).and_return(config_location_pathname)
-        expect(File).to receive(:read).
-          with(config_location).
-          and_return(config_content)
+        @app = Chef::Application.new
       end
 
-      it "should configure chef::config from a file" do
-        expect(Chef::Config).to receive(:from_string).with(config_content, config_location)
-        @app.configure_chef
-      end
-
-      it "should merge the local config hash into chef::config" do
-        #File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
-        @app.configure_chef
-        expect(Chef::Config.rspec_ran).to eq("true")
-      end
-
-      context "when openssl fips" do
+      describe "run" do
         before do
-          allow(Chef::Config).to receive(:fips).and_return(true)
+          allow(@app).to receive(:setup_application).and_return(true)
+          allow(@app).to receive(:run_application).and_return(true)
+          allow(@app).to receive(:configure_chef).and_return(true)
+          allow(@app).to receive(:configure_logging).and_return(true)
         end
 
-        it "sets openssl in fips mode" do
-          expect(OpenSSL).to receive(:'fips_mode=').with(true)
+        it "should reconfigure the application before running" do
+          expect(@app).to receive(:reconfigure).and_return(true)
+          @app.run
+        end
+
+        it "should setup the application before running it" do
+          expect(@app).to receive(:setup_application).and_return(true)
+          @app.run
+        end
+
+        it "should run the actual application" do
+          expect(@app).to receive(:run_application).and_return(true)
+          @app.run
+        end
+      end
+    end
+
+    describe "configure_chef" do
+      before do
+        # Silence warnings when no config file exists
+        allow(Chef::Log).to receive(:warn)
+
+        @app = Chef::Application.new
+        allow(@app).to receive(:parse_options).and_return(true)
+        expect(Chef::Config).to receive(:export_proxies).and_return(true)
+      end
+
+      it "should parse the commandline options" do
+        expect(@app).to receive(:parse_options).and_return(true)
+        @app.config[:config_file] = "/etc/chef/default.rb" #have a config file set, to prevent triggering error block
+        @app.configure_chef
+      end
+
+      describe "when a config_file is present" do
+        let(:config_content) { "rspec_ran('true')" }
+        let(:config_location) { "/etc/chef/default.rb" }
+
+        let(:config_location_pathname) do
+          p = Pathname.new(config_location)
+          allow(p).to receive(:realpath).and_return(config_location)
+          p
+        end
+
+        before do
+          @app.config[:config_file] = config_location
+
+          # force let binding to get evaluated or else we stub Pathname.new before we try to use it.
+          config_location_pathname
+          allow(Pathname).to receive(:new).with(config_location).and_return(config_location_pathname)
+          expect(File).to receive(:read).
+            with(config_location).
+            and_return(config_content)
+        end
+
+        it "should configure chef::config from a file" do
+          expect(Chef::Config).to receive(:from_string).with(config_content, config_location)
+          @app.configure_chef
+        end
+
+        it "should merge the local config hash into chef::config" do
+          #File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
+          @app.configure_chef
+          expect(Chef::Config.rspec_ran).to eq("true")
+        end
+
+        context "when openssl fips" do
+          before do
+            allow(Chef::Config).to receive(:fips).and_return(true)
+          end
+
+          it "sets openssl in fips mode" do
+            expect(OpenSSL).to receive(:'fips_mode=').with(true)
+            @app.configure_chef
+          end
+        end
+      end
+
+      describe "when there is no config_file defined" do
+        before do
+          @app.config[:config_file] = nil
+        end
+
+        it "should emit a warning" do
+          expect(Chef::Config).not_to receive(:from_file).with("/etc/chef/default.rb")
+          expect(Chef::Log).to receive(:warn).with("No config file found or specified on command line, using command line options.")
+          @app.configure_chef
+        end
+      end
+
+      describe "when the config file is set and not found" do
+        before do
+          @app.config[:config_file] = "/etc/chef/notfound"
+        end
+        it "should use the passed in command line options and defaults" do
+          expect(Chef::Config).to receive(:merge!)
           @app.configure_chef
         end
       end
     end
 
-    describe "when there is no config_file defined" do
+    describe "when configuring the logger" do
       before do
-        @app.config[:config_file] = nil
+        @app = Chef::Application.new
+        allow(Chef::Log).to receive(:init)
       end
 
-      it "should emit a warning" do
-        expect(Chef::Config).not_to receive(:from_file).with("/etc/chef/default.rb")
-        expect(Chef::Log).to receive(:warn).with("No config file found or specified on command line, using command line options.")
-        @app.configure_chef
+      it "should initialise the chef logger" do
+        allow(Chef::Log).to receive(:level=)
+        @monologger = double("Monologger")
+        expect(MonoLogger).to receive(:new).with(Chef::Config[:log_location]).and_return(@monologger)
+        expect(Chef::Log).to receive(:init).with(@monologger)
+        @app.configure_logging
       end
-    end
 
-    describe "when the config file is set and not found" do
-      before do
-        @app.config[:config_file] = "/etc/chef/notfound"
+      shared_examples_for "log_level_is_auto" do
+        context "when STDOUT is to a tty" do
+          before do
+            allow(STDOUT).to receive(:tty?).and_return(true)
+          end
+
+          it "configures the log level to :warn" do
+            @app.configure_logging
+            expect(Chef::Log.level).to eq(:warn)
+          end
+
+          context "when force_logger is configured" do
+            before do
+              Chef::Config[:force_logger] = true
+            end
+
+            it "configures the log level to info" do
+              @app.configure_logging
+              expect(Chef::Log.level).to eq(:info)
+            end
+          end
+        end
+
+        context "when STDOUT is not to a tty" do
+          before do
+            allow(STDOUT).to receive(:tty?).and_return(false)
+          end
+
+          it "configures the log level to :info" do
+            @app.configure_logging
+            expect(Chef::Log.level).to eq(:info)
+          end
+
+          context "when force_formatter is configured" do
+            before do
+              Chef::Config[:force_formatter] = true
+            end
+            it "sets the log level to :warn" do
+              @app.configure_logging
+              expect(Chef::Log.level).to eq(:warn)
+            end
+          end
+        end
       end
-      it "should use the passed in command line options and defaults" do
-        expect(Chef::Config).to receive(:merge!)
-        @app.configure_chef
+
+      context "when log_level is not set" do
+        it_behaves_like "log_level_is_auto"
+      end
+
+      context "when log_level is :auto" do
+        before do
+          Chef::Config[:log_level] = :auto
+        end
+
+        it_behaves_like "log_level_is_auto"
       end
     end
   end
 
-  describe "when configuring the logger" do
-    before do
-      @app = Chef::Application.new
-      allow(Chef::Log).to receive(:init)
-    end
 
-    it "should initialise the chef logger" do
-      allow(Chef::Log).to receive(:level=)
-      @monologger = double("Monologger")
-      expect(MonoLogger).to receive(:new).with(Chef::Config[:log_location]).and_return(@monologger)
-      expect(Chef::Log).to receive(:init).with(@monologger)
-      @app.configure_logging
-    end
+  context "with an invalid log location" do
 
-    it "should raise fatals if log location is invalid" do
+    it "logs a fatal error and exits" do
       Chef::Config[:log_location] = "/tmp/non-existing-dir/logfile"
       expect(Chef::Log).to receive(:fatal).at_least(:once)
       expect(Process).to receive(:exit)
       @app.configure_logging
     end
-
-    shared_examples_for "log_level_is_auto" do
-      context "when STDOUT is to a tty" do
-        before do
-          allow(STDOUT).to receive(:tty?).and_return(true)
-        end
-
-        it "configures the log level to :warn" do
-          @app.configure_logging
-          expect(Chef::Log.level).to eq(:warn)
-        end
-
-        context "when force_logger is configured" do
-          before do
-            Chef::Config[:force_logger] = true
-          end
-
-          it "configures the log level to info" do
-            @app.configure_logging
-            expect(Chef::Log.level).to eq(:info)
-          end
-        end
-      end
-
-      context "when STDOUT is not to a tty" do
-        before do
-          allow(STDOUT).to receive(:tty?).and_return(false)
-        end
-
-        it "configures the log level to :info" do
-          @app.configure_logging
-          expect(Chef::Log.level).to eq(:info)
-        end
-
-        context "when force_formatter is configured" do
-          before do
-            Chef::Config[:force_formatter] = true
-          end
-          it "sets the log level to :warn" do
-            @app.configure_logging
-            expect(Chef::Log.level).to eq(:warn)
-          end
-        end
-      end
-    end
-
-    context "when log_level is not set" do
-      it_behaves_like "log_level_is_auto"
-    end
-
-    context "when log_level is :auto" do
-      before do
-        Chef::Config[:log_level] = :auto
-      end
-
-      it_behaves_like "log_level_is_auto"
-    end
   end
+
 
   describe "class method: fatal!" do
     before do
