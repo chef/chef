@@ -365,15 +365,15 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   end
 
   describe "when locking the user" do
-    it "should run usermod -L with the new resources username" do
-      expect(provider).to receive(:shell_out!).with("usermod", "-L", @new_resource.username)
+    it "should run usermod -L -s /bin/false with the new resources username" do
+      expect(provider).to receive(:shell_out!).with("usermod", "-L", "-s", "/bin/false", @new_resource.username)
       provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
-    it "should run usermod -L with the new resources username" do
-      expect(provider).to receive(:shell_out!).with("usermod", "-U", @new_resource.username)
+    it "should run usermod -U -s with the new resources shell and username" do
+      expect(provider).to receive(:shell_out!).with("usermod", "-U", "-s", @new_resource.shell, @new_resource.username)
       provider.unlock_user
     end
   end
