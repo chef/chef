@@ -45,6 +45,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency "proxifier", "~> 1.0"
 
+  # needed for 'bundler/inline', very deliberately not pinning this at all to avoid conflicts
+  s.add_depeenency "bundler"
+
   s.add_development_dependency "rack"
   s.add_development_dependency "cheffish", ">= 1.1", "< 3.0"
 
