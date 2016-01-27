@@ -169,7 +169,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
   config.filter_run_excluding :broken => true
   config.filter_run_excluding :not_wpar => true unless wpar?
-  config.filter_run_excluding :not_fips => true unless fips?
+  config.filter_run_excluding :not_supported_under_fips => true if fips?
 
   running_platform_arch = `uname -m`.strip unless windows?
 
