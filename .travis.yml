@@ -68,9 +68,6 @@ matrix:
     before_install:
     env: "GEMFILE_MOD=\"gem 'halite', github: 'poise/halite'\""
     script: bundle exec rake halite_spec
-  - rvm: 2.2
-    env: "GEMFILE_MOD=\"gem 'poise', github: 'poise/poise'\""
-    script: bundle exec rake poise_spec
   ### START TEST KITCHEN ONLY ###
   - rvm: 2.2
     gemfile: kitchen-tests/Gemfile
