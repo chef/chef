@@ -290,7 +290,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
   end
 
-  context "when decrypting a version 0 (YAML+aes-256-cbc+no iv) encrypted value", :not_fips do
+  context "when decrypting a version 0 (YAML+aes-256-cbc+no iv) encrypted value", :not_supported_under_fips  do
     let(:encrypted_value) do
       Version0Encryptor.encrypt_value(plaintext_data, encryption_key)
     end
