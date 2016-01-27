@@ -56,17 +56,6 @@ platforms:
         image-type: machine
     transport:
       username: admin
-  - name: debian-6
-    driver:
-      image_search:
-        name: debian-squeeze-*
-        owner-id: 379101102735
-        architecture: x86_64
-        virtualization-type: paravirtual
-        block-device-mapping.volume-type: standard
-        image-type: machine
-    transport:
-      username: admin
   #
   # Ubuntu
   #

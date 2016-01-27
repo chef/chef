@@ -34,14 +34,31 @@ If you intend to run the acceptance tests on a cloud VM, the supported solution 
 The steps you will need to do are:
 
 1. Add your AWS credentials to the machine - e.g., to the ~/.aws/credentials directory.
-2. Create or import a SSH key to AWS. Make sure the key name is the same as the username.
-3. Copy or move the private key file (USERNAME.pem) to the SSH folder (e.g. `~/.ssh/`. Change the mode so that the file is only read-able by root (E.g.: chmod 0400 USERNAME.pem)
+   - The easiest way to do this is to download the aws command line (`brew install awscli` on OS/X) and run `aws configure`.
+2. Create or import a SSH key to AWS. (If you already have one, you can skip the import/create)
+   - In the AWS console, click Key Pairs, then Create Key Pair or Import Key Pair.
+3. Copy or move the private key file (USERNAME.pem) to the SSH folder (e.g. `~/.ssh/USERNAME.pem`).
+   - If you Created a key pair in step 2, download the private key and move it to `~/.ssh`.
+   - If you Importd a key pair in step 2, just ensure your private key is in `~/.ssh` and has the same name as the key pair (`~/.ssh/USERNAME` or `~/.ssh/USERNAME.pem`).
+4. Set AWS_SSH_KEY_ID to the SSH key name.
+   - This is **optional** if your AWS SSH key name is your local username.
+   - You may want to set this in your shell `.profile`.
 
-4. Set up the KITCHEN_DRIVER environment variable appropriately (value should be "ec2"). (This is optional, as ec2 is the default.) E.g.:
-```
-export KITCHEN_DRIVER=ec2
-```
-Add this to your shell profile or startup script as needed.
+     ```shell
+     export AWS_SSH_KEY_ID=name-of-private-key
+     ```
+5. Set the private key to only be readable by root
+
+   ```shell
+   chmod 0400 ~/.ssh/USERNAME.pem
+   ```
+6. Set up the KITCHEN_DRIVER environment variable appropriately (value should be "ec2"). (This is optional, as ec2 is the default.) E.g.:
+
+   ```shell
+   export KITCHEN_DRIVER=ec2
+   ```
+   Add this to your shell profile or startup script as needed.
+7. **Connect to Chef VPN**. The instances you create will not have public IPs!
 
 ### Setting up and running a test suite
 To get started, do a bundle install from the acceptance directory:
@@ -66,4 +83,4 @@ chef/acceptance$ export KITCHEN_INSTANCES=*-ubuntu-1404
 chef/acceptance$ bin/chef-acceptance test cookbook-git
 ```
 
-If KITCHEN_INSTANCES is not specified, the default instances are default-ubuntu-1404 and default-windows-windows-2012r2.
+If KITCHEN_INSTANCES is not specified, the default instances are default-ubuntu-1404 and default-windows-windows-2012r2. All selected instances will be run in *parallel* if the driver supports it (ec2 does, vagrant doesn't).
