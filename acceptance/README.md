@@ -37,7 +37,7 @@ The steps you will need to do are:
 2. Create or import a SSH key to AWS. Make sure the key name is the same as the username.
 3. Copy or move the private key file (USERNAME.pem) to the SSH folder (e.g. `~/.ssh/`. Change the mode so that the file is only read-able by root (E.g.: chmod 0400 USERNAME.pem)
 
-4. Set up the KITCHEN_DRIVER environment variable appropriately (value should be "ec2").  E.g.:
+4. Set up the KITCHEN_DRIVER environment variable appropriately (value should be "ec2"). (This is optional, as ec2 is the default.) E.g.:
 ```
 export KITCHEN_DRIVER=ec2
 ```

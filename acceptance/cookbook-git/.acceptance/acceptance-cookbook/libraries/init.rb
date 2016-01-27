@@ -16,4 +16,4 @@ module CookbookGit
   end
 end
 
-ENV["KITCHEN_LOCAL_YAML"] ||= File.join(Chef.node["chef-acceptance"]["suite-dir"], ".kitchen.#{ENV["KITCHEN_DRIVER"] || "vagrant"}.yml")
+ENV["KITCHEN_LOCAL_YAML"] ||= File.join(Chef.node["chef-acceptance"]["suite-dir"], ".kitchen.#{ENV["KITCHEN_DRIVER"] || "ec2"}.yml")
