@@ -85,6 +85,9 @@ platforms:
   - name: windows-2008r2-standard
     driver:
       box: chef/windows-server-2008r2-standard # private
+  - name: windows-2012r2-standard
+    driver:
+      box: chef/windows-server-2012r2-standard # private
 
 attribute_defaults: &attribute_defaults
   build_user:          vagrant
