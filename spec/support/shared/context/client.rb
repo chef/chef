@@ -71,6 +71,7 @@ shared_context "a client run" do
   let(:http_cookbook_sync) { double("Chef::ServerAPI (cookbook sync)") }
   let(:http_node_load)     { double("Chef::ServerAPI (node)") }
   let(:http_node_save)     { double("Chef::ServerAPI (node save)") }
+  let(:reporting_rest_client) { double("Chef::ServerAPI (reporting client)") }
 
   let(:runner)       { instance_double("Chef::Runner") }
   let(:audit_runner) { instance_double("Chef::Audit::Runner", :failed? => false) }
@@ -111,6 +112,10 @@ shared_context "a client run" do
     expect_any_instance_of(Chef::ResourceReporter).to receive(:node_load_completed)
   end
 
+  def stub_rest_clean
+    allow(client).to receive(:rest_clean).and_return(reporting_rest_client)
+  end
+
   def stub_for_sync_cookbooks
     # --Client#setup_run_context
     # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
@@ -147,6 +152,7 @@ shared_context "a client run" do
     stub_const("Chef::Client::STDOUT_FD", stdout)
     stub_const("Chef::Client::STDERR_FD", stderr)
 
+    stub_rest_clean
     stub_for_register
     stub_for_node_load
     stub_for_sync_cookbooks
