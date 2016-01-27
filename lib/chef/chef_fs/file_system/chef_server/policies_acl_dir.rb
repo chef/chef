@@ -22,15 +22,13 @@ class Chef
   module ChefFS
     module FileSystem
       module ChefServer
-        class CookbooksAclDir < AclDir
-          # If versioned_cookbooks is on, the list of cookbooks will have versions
-          # in them.  But all versions of a cookbook have the same acl, so even if
-          # we have cookbooks/apache2-1.0.0 and cookbooks/apache2-1.1.2, we will
-          # only have one acl: acls/cookbooks/apache2.json.  Thus, the list of
-          # children of acls/cookbooks is a unique list of cookbook *names*.
+        class PoliciesAclDir < AclDir
+          # Policies are presented like /NAME-VERSION.json. But there is only
+          # one ACL for a given NAME. So we find out the unique policy names,
+          # and make one acls/policies/NAME.json for each one.
           def children
             if @children.nil?
-              names = parent.parent.child(name).children.map { |child| "#{child.cookbook_name}.json" }
+              names = parent.parent.child(name).children.map { |child| "#{child.policy_name}.json" }
               @children = names.uniq.map { |name| make_child_entry(name, true) }
             end
             @children

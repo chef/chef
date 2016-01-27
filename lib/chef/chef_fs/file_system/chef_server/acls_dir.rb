@@ -19,6 +19,7 @@
 require "chef/chef_fs/file_system/base_fs_dir"
 require "chef/chef_fs/file_system/chef_server/acl_dir"
 require "chef/chef_fs/file_system/chef_server/cookbooks_acl_dir"
+require "chef/chef_fs/file_system/chef_server/policies_acl_dir"
 require "chef/chef_fs/file_system/chef_server/acl_entry"
 require "chef/chef_fs/data_handler/acl_data_handler"
 
@@ -27,7 +28,7 @@ class Chef
     module FileSystem
       module ChefServer
         class AclsDir < BaseFSDir
-          ENTITY_TYPES = %w{clients containers cookbooks data_bags environments groups nodes roles} # we don't read sandboxes, so we don't read their acls
+          ENTITY_TYPES = %w{clients containers cookbook_artifacts cookbooks data_bags environments groups nodes policies policy_groups roles} # we don't read sandboxes, so we don't read their acls
 
           def data_handler
             @data_handler ||= Chef::ChefFS::DataHandler::AclDataHandler.new
@@ -48,9 +49,13 @@ class Chef
           def children
             if @children.nil?
               @children = ENTITY_TYPES.map do |entity_type|
+                # All three of these can be versioned (NAME-VERSION), but only have
+                # one ACL that covers them all (NAME.json).
                 case entity_type
-                when "cookbooks"
+                when "cookbooks", "cookbook_artifacts"
                   CookbooksAclDir.new(entity_type, self)
+                when "policies"
+                  PoliciesAclDir.new(entity_type, self)
                 else
                   AclDir.new(entity_type, self)
                 end
