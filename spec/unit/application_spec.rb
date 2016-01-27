@@ -132,7 +132,7 @@ describe Chef::Application do
         end
 
         it "should configure chef::config from a file" do
-          expect(Chef::Config).to receive(:from_string).with(config_content, config_location)
+          expect(Chef::Config).to receive(:from_string).with(config_content, File.expand_path(config_location))
           @app.configure_chef
         end
 

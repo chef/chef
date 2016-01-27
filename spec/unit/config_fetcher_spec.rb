@@ -23,7 +23,7 @@ describe Chef::ConfigFetcher do
     end
 
     it "gives the expanded path to the config file" do
-      expect(fetcher.expanded_path).to eq(config_location)
+      expect(fetcher.expanded_path).to eq(File.expand_path(config_location))
     end
 
     context "with a relative path" do
