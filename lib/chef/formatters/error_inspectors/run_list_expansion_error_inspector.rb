@@ -1,7 +1,7 @@
 #--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,6 +45,8 @@ E
             humanize_http_exception(error_description)
           when Chef::Exceptions::MissingRole
             describe_missing_role(error_description)
+          when EOFError
+            describe_eof_error(error_description)
           else
             error_description.section("Unexpected Error:","#{exception.class.name}: #{exception.message}")
           end
@@ -117,4 +119,3 @@ E
     end
   end
 end
-

@@ -20,8 +20,8 @@
 require "spec_helper"
 
 describe Chef::Formatters::Base do
-  let(:out) { double("out") }
-  let(:err) { double("err") }
+  let(:out) { StringIO.new }
+  let(:err) { StringIO.new }
   let(:formatter) { Chef::Formatters::Base.new(out, err) }
 
   it "starts with an indentation of zero" do
@@ -43,6 +43,29 @@ describe Chef::Formatters::Base do
     formatter.indent_by(-2)
     expect(formatter.output.indent).to eql(0)
   end
+
+  it "humanizes EOFError exceptions for #registration_failed" do
+    formatter.registration_failed("foo.example.com", EOFError.new, double("Chef::Config"))
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
+
+  it "humanizes EOFError exceptions for #node_load_failed" do
+    formatter.node_load_failed("foo.example.com", EOFError.new, double("Chef::Config"))
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
+
+  it "humanizes EOFError exceptions for #run_list_expand_failed" do
+    formatter.run_list_expand_failed(double("Chef::Node"), EOFError.new)
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
+
+  it "humanizes EOFError exceptions for #cookbook_resolution_failed" do
+    formatter.run_list_expand_failed(double("Expanded Run List"), EOFError.new)
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
+
+  it "humanizes EOFError exceptions for #cookbook_sync_failed" do
+    formatter.cookbook_sync_failed("foo.example.com", EOFError.new)
+    expect(out.string).to match(/Received an EOF on transport socket/)
+  end
 end
-
-

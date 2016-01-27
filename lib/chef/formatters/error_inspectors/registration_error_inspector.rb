@@ -47,6 +47,8 @@ E
             error_description.section("Invalid Redirect:",<<-E)
 Change your server location in client.rb to the server's FQDN to avoid unwanted redirections.
 E
+          when EOFError
+            describe_eof_error(error_description)
           else
             "#{exception.class.name}: #{exception.message}"
           end
