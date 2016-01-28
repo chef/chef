@@ -134,6 +134,12 @@ class Chef::Application::Knife < Chef::Application
     :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
     :exit         => 0
 
+  option :fips,
+    :long         => "--[no-]fips",
+    :description  => "Enable fips mode",
+    :boolean      => true,
+    :default      => nil
+
   # Run knife
   def run
     Mixlib::Log::Formatter.show_time = false

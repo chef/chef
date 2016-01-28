@@ -20,6 +20,12 @@ require "spec_helper"
 require "chef/knife/core/bootstrap_context"
 
 describe Chef::Knife::Core::BootstrapContext do
+  before do
+    # This is required because the chef-fips pipeline does
+    # has a default value of true for fips
+    Chef::Config[:fips] = false
+  end
+
   let(:config) { {:foo => :bar, :color => true} }
   let(:run_list) { Chef::RunList.new("recipe[tmux]", "role[base]") }
   let(:chef_config) do
