@@ -34,7 +34,7 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-override :'ruby-windows', version: "2.0.0-p647"
+override :ruby, version: "2.1.7"
 
 # Global FIPS override flag.
 override :fips, enabled: true

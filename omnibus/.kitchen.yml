@@ -102,6 +102,13 @@ suites:
         install_dir: /opt/angrychef
     run_list:
       - omnibus::default
+  - name: chef-fips
+    attributes:
+      omnibus:
+        <<: *attribute_defaults
+        install_dir: /opt/chef-fips
+    run_list:
+      - omnibus::default
   - name: chef
     provisioner:
       chef_omnibus_install_options: -P angrychef
