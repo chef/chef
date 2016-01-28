@@ -333,13 +333,7 @@ class Chef
               end
             end
 
-            # Cookbook artifacts act as if certain things aren't set if they are empty
-            # (e.g. "definitions" and "libraries" are not set if they are empty, but
-            # "recipes" is)
             if cookbook_type == "cookbook_artifacts"
-              result.delete_if do |key,value|
-                (value == [] && key != "recipes")
-              end
               result["metadata"] = result["metadata"].to_hash
               result["metadata"].delete_if do |key,value|
                 value == [] ||

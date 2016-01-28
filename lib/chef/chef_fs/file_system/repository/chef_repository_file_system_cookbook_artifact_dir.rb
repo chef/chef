@@ -26,7 +26,7 @@ class Chef
           # Override from parent
           def cookbook_version
             loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
-            cookbook_name, dash, identifier = name.rpartition("-")
+            cookbook_name, _dash, identifier = name.rpartition("-")
             # KLUDGE: We shouldn't have to use instance_variable_set
             loader.instance_variable_set(:@cookbook_name, cookbook_name)
             loader.load_cookbooks
