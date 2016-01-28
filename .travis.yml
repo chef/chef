@@ -68,7 +68,6 @@ matrix:
     env: "GEMFILE_MOD=\"gem 'foodcritic', github: 'acrmp/foodcritic', branch: 'v5.0.0'\""
     script: bundle exec rake foodcritic_spec
   - rvm: 2.2
-    before_install:
     env: "GEMFILE_MOD=\"gem 'halite', github: 'poise/halite'\""
     script: bundle exec rake halite_spec
   - rvm: 2.2
