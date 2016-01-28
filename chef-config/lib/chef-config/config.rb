@@ -496,13 +496,7 @@ module ChefConfig
     # Initialize openssl
     def self.init_openssl
       if fips
-        ChefConfig.logger.warn "The `fips` feature is still a work in progress. This feature is incomplete."
-        OpenSSL.fips_mode = true
-        require "digest"
-        require "digest/sha1"
-        require "digest/md5"
-        Digest.const_set("SHA1", OpenSSL::Digest::SHA1)
-        OpenSSL::Digest.const_set("MD5", Digest::MD5)
+        self.enable_fips_mode
       end
     end
 
@@ -909,6 +903,19 @@ module ChefConfig
     # Path to this file in the current install.
     def self._this_file
       File.expand_path(__FILE__)
+    end
+
+    # Set fips mode in openssl. Do any patching necessary to make
+    # sure Chef runs do not crash.
+    # @api private
+    def self.enable_fips_mode
+      ChefConfig.logger.warn "The `fips` feature is still a work in progress. This feature is incomplete."
+      OpenSSL.fips_mode = true
+      require "digest"
+      require "digest/sha1"
+      require "digest/md5"
+      Digest.const_set("SHA1", OpenSSL::Digest::SHA1)
+      OpenSSL::Digest.const_set("MD5", Digest::MD5)
     end
   end
 end

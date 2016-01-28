@@ -93,7 +93,7 @@ describe Chef::Application::Knife do
       it "does not initialize fips mode when no flags are passed" do
         with_argv(*%w{noop knife command}) do
           expect(@knife).to receive(:exit).with(0)
-          expect(OpenSSL).not_to receive(:'fips_mode=')
+          expect(Chef::Config).not_to receive(:enable_fips_mode)
           @knife.run
           expect(Chef::Config[:fips]).to eq(false)
         end
@@ -102,7 +102,7 @@ describe Chef::Application::Knife do
       it "overwrites the Chef::Config value when passed --fips" do
         with_argv(*%w{noop knife command --fips}) do
           expect(@knife).to receive(:exit).with(0)
-          expect(OpenSSL).to receive(:'fips_mode=').with(true)
+          expect(Chef::Config).to receive(:enable_fips_mode)
           @knife.run
           expect(Chef::Config[:fips]).to eq(true)
         end
@@ -117,7 +117,7 @@ describe Chef::Application::Knife do
       it "initializes fips mode when passed --fips" do
         with_argv(*%w{noop knife command --fips}) do
           expect(@knife).to receive(:exit).with(0)
-          expect(OpenSSL).to receive(:'fips_mode=').with(true)
+          expect(Chef::Config).to receive(:enable_fips_mode)
           @knife.run
           expect(Chef::Config[:fips]).to eq(true)
         end
@@ -126,7 +126,7 @@ describe Chef::Application::Knife do
       it "overwrites the Chef::Config value when passed --no-fips" do
         with_argv(*%w{noop knife command --no-fips}) do
           expect(@knife).to receive(:exit).with(0)
-          expect(OpenSSL).not_to receive(:'fips_mode=')
+          expect(Chef::Config).not_to receive(:enable_fips_mode)
           @knife.run
           expect(Chef::Config[:fips]).to eq(false)
         end
