@@ -78,6 +78,7 @@ matrix:
   - rvm: 2.2
     gemfile: kitchen-tests/Gemfile
     before_install:
+    - gem install bundler
     - echo -n $DO_KEY_CHUNK_{0..30} >> ~/.ssh/id_aws.base64
     - cat ~/.ssh/id_aws.base64 | tr -d ' ' | base64 --decode > ~/.ssh/id_aws.pem
     before_script:
