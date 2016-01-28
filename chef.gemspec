@@ -47,7 +47,7 @@ Gem::Specification.new do |s|
   s.add_dependency "proxifier", "~> 1.0"
 
   s.add_development_dependency "rack"
-  s.add_development_dependency "cheffish", "~> 1.1"
+  s.add_development_dependency "cheffish", ">= 1.1", "< 3.0"
 
   s.add_development_dependency "rake", "~> 10.1"
 
