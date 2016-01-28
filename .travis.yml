@@ -77,6 +77,7 @@ matrix:
   - rvm: 2.2
     gemfile: kitchen-tests/Gemfile
     before_install:
+    - gem update --system
     - gem install bundler
     - echo -n $DO_KEY_CHUNK_{0..30} >> ~/.ssh/id_aws.base64
     - cat ~/.ssh/id_aws.base64 | tr -d ' ' | base64 --decode > ~/.ssh/id_aws.pem
@@ -128,6 +129,7 @@ matrix:
     sudo: required
     dist: trusty
     before_install:
+      - gem update --system
       - gem install bundler
       - sudo apt-get update
       - sudo apt-get -y install squid3 git curl
