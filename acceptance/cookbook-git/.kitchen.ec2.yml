@@ -301,4 +301,4 @@ provisioner:
   name: chef_zero
   product_name: chef
   product_version: latest
-  channel: current
+  channel: unstable
