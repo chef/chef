@@ -696,6 +696,12 @@ class Chef
           end
 
         elsif path[0] == "acls"
+          # /acls/data -> /acls/data_bags
+          if path[1] == "data"
+            path = path.dup
+            path[1] = "data_bags"
+          end
+
           # /acls/containers|nodes|.../x.json
           # /acls/organization.json
           if path.length == 3 || path == [ "acls", "organization" ]

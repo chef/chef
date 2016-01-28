@@ -53,7 +53,7 @@ describe "ChefFSDataStore tests", :workstation do
       end
 
       context "GET /TYPE" do
-        it "knife list -z -R returns everything", :focus do
+        it "knife list -z -R returns everything" do
           knife("list -z -Rfp /").should_succeed <<EOM
 /acls/
 /acls/clients/

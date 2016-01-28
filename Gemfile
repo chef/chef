@@ -51,8 +51,6 @@ group(:travis) do
   gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git", ref: "4e32fca"
 end
 
-gem "chef-zero", github: "chef/chef-zero", branch: "cd/run-acl-specs"
-
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,
