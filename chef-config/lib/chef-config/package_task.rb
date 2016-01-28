@@ -47,10 +47,6 @@ module ChefConfig
       @module_path || module_name.downcase
     end
 
-    # Path to a VERSION file with a single string that contains the package version.
-    # By default, this is root_path/VERSION
-    attr_accessor :version_file_path
-
     # Directory used to store package files and output that is generated.
     # This has the same meaning (or lack thereof) as package_dir in
     # rake/packagetask.
@@ -70,7 +66,6 @@ module ChefConfig
       @module_name = module_name
       @component_paths = []
       @module_path = nil
-      @version_file_path = "VERSION"
       @package_dir = "pkg"
       @git_remote = "origin"
       @generate_version_class = false
@@ -84,8 +79,12 @@ module ChefConfig
       File.expand_path("lib/#{module_path}/version.rb", root_path)
     end
 
+    def chef_root_path
+      module_name == "Chef" ? root_path : File.dirname(root_path)
+    end
+
     def version
-      IO.read(File.expand_path(version_file_path, root_path)).strip
+      IO.read(File.join(chef_root_path, "VERSION")).strip
     end
 
     def full_package_dir
@@ -175,7 +174,7 @@ module ChefConfig
 
 #{class_or_module} #{module_name}
   #{module_name.upcase}_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
-  VERSION = '#{version}'
+  VERSION = "#{version}"
 end
 
 #
