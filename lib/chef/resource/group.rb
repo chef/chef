@@ -55,7 +55,7 @@ class Chef
       end
 
       def members(arg=nil)
-        converted_members = arg.is_a?(String) ? [].push(arg) : arg
+        converted_members = arg.is_a?(String) ? arg.split(',') : arg
         set_or_return(
           :members,
           converted_members,
@@ -66,7 +66,7 @@ class Chef
       alias_method :users, :members
 
       def excluded_members(arg=nil)
-        converted_members = arg.is_a?(String) ? [].push(arg) : arg
+        converted_members = arg.is_a?(String) ? arg.split(',') : arg
         set_or_return(
           :excluded_members,
           converted_members,
