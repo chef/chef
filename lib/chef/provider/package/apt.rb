@@ -176,7 +176,18 @@ class Chef
         # interactive prompts. Command is run with default localization rather
         # than forcing locale to "C", so command output may not be stable.
         def run_noninteractive(command)
-          shell_out_with_timeout!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+          cmd = shell_out_with_timeout!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil }, :returns => [0, 100] )
+          if cmd.stderr == "E: dpkg was interrupted, you must manually run 'dpkg --configure -a' to correct the problem. \n"
+            # If the issue was that dpkg was interrupted,
+            # run 'dpkg --configure -a' to fix it.
+            Chef::Log.warn("dpkg was interrupted on the last run; running 'dpkg --configure -a' to correct the problem.")
+            shell_out_with_timeout!('dpkg --configure -a', :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+          else
+            # Otherwise, we want to preserve the error message, so we either
+            # need to run the original command again, or duplicate the error
+            # message code. Re-running the command is easier for now.
+            shell_out_with_timeout!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+          end
         end
 
       end
