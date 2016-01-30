@@ -1096,6 +1096,21 @@ describe "Chef::Resource.property" do
       /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
   end
 
+  it "property_types validate their defaults" do
+    expect {
+      module PropertySpecPropertyTypes
+        include Chef::Mixin::Properties
+        property_type(is: [:a, :b], default: :c)
+      end
+    }.to raise_error(Chef::Exceptions::DeprecatedFeatureError, /Default value :c is invalid for property <property type>./)
+    expect {
+      module PropertySpecPropertyTypes
+        include Chef::Mixin::Properties
+        property_type(is: [:a, :b], default: :b)
+      end
+    }.not_to raise_error
+  end
+
   context "with a custom property type" do
     class CustomPropertyType < Chef::Property
     end

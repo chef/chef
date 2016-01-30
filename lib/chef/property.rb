@@ -129,7 +129,7 @@ class Chef
     end
 
     def to_s
-      "#{name}#{declared_in ? " of resource #{declared_in.resource_name}" : ""}"
+      "#{name || "<property type>"}#{declared_in ? " of resource #{declared_in.resource_name}" : ""}"
     end
 
     #
@@ -463,7 +463,12 @@ class Chef
     def validate(resource, value)
       # If we have no default value, `nil` is never coerced or validated
       unless value.nil? && !has_default?
-        (resource || Chef::Mixin::ParamsValidate).validate({ name => value }, { name => validation_options })
+        if resource
+          resource.validate({ name => value }, { name => validation_options })
+        else
+          name = self.name || :property_type
+          (resource || Chef::Mixin::ParamsValidate).validate({ name => value }, { name => validation_options })
+        end
       end
     end
 
