@@ -34,13 +34,17 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
+# Try a newer bundler to improve build speed.
 override :ruby, version: "2.1.7"
+override :"rb-readline", version: "v0.5.3"
 
 # Global FIPS override flag.
 override :fips, enabled: true
 
 override :chef, version: "local_source"
 override :ohai, version: "master"
+
+dependency "rb-readline"
 
 msi_upgrade_code = "819F5DB3-B818-4358-BB2B-54B8171D0A26"
 project_location_dir = "chef-fips"
