@@ -1,6 +1,8 @@
 source "https://rubygems.org"
 gemspec name: "chef"
 
+gem "chef-zero", "4.4.2"
+
 gem "activesupport", "< 4.0.0", group: :compat_testing, platform: "ruby"
 
 gem "chef-config", path: "chef-config" if File.exist?(__FILE__ + "../chef-config")
