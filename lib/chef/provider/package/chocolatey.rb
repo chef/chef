@@ -30,6 +30,15 @@ class Chef
         # Declare that our arguments should be arrays
         use_multipackage_api
 
+        PATHFINDING_POWERSHELL_COMMAND = "[System.Environment]::GetEnvironmentVariable('ChocolateyInstall', 'MACHINE')"
+        CHOCO_MISSING_MSG = <<-EOS
+Could not locate your Chocolatey install. To install chocolatey, we recommend
+the 'chocolatey' cookbook (https://github.com/chocolatey/chocolatey-cookbook).
+If Chocolatey is installed, ensure that the 'ChocolateyInstall' environment
+variable is correctly set. You can verify this with the PowerShell command
+'#{PATHFINDING_POWERSHELL_COMMAND}'.
+EOS
+
         # Responsible for building the current_resource.
         #
         # @return [Chef::Resource::ChocolateyPackage] the current_resource
@@ -42,6 +51,13 @@ class Chef
 
         def define_resource_requirements
           super
+
+          requirements.assert(:all_actions) do |a|
+            # GetEnvironmentVariable returns "" on failure.
+            a.assertion { !choco_install_path.to_s.empty? }
+            a.failure_message(Chef::Exceptions::MissingLibrary, CHOCO_MISSING_MSG)
+            a.whyrun("Assuming Chocolatey is installed")
+          end
 
           # Chocolatey source attribute points to an alternate feed
           # and not a package specific alternate source like other providers
@@ -136,14 +152,18 @@ class Chef
         #
         # @return [String] full path of choco.exe
         def choco_exe
-          @choco_exe ||=
-            ::File.join(
-              powershell_out!(
-                "[System.Environment]::GetEnvironmentVariable('ChocolateyInstall', 'MACHINE')"
-              ).stdout.chomp,
-              "bin",
-              "choco.exe",
-          )
+          @choco_exe ||= ::File.join(
+            choco_install_path,
+            "bin",
+            "choco.exe",
+            )
+        end
+
+        # lets us mock out an incorrect value for testing.
+        def choco_install_path
+          @choco_install_path ||= powershell_out!(
+            PATHFINDING_POWERSHELL_COMMAND
+            ).stdout.chomp
         end
 
         # Helper to dispatch a choco command through shell_out using the timeout
