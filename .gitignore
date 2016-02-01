@@ -10,6 +10,7 @@ tags
 # You should check in your Gemfile.lock in applications, and not in gems
 # This also matches Berksfile.lock
 external_tests/*.lock
+acceptance/Gemfile.lock
 /*.lock
 /Gemfile.local
 
@@ -22,7 +23,14 @@ external_tests/*.lock
 # http://gembundler.com/man/bundle-exec.1.html
 b/
 binstubs/
-
+bin
+!bin/chef-apply
+!bin/chef-client
+!bin/chef-service-manager
+!bin/chef-shell
+!bin/chef-solo
+!bin/chef-windows-service
+!bin/knife
 # RVM and RBENV ruby version files
 .rbenv-version
 .rvmrc

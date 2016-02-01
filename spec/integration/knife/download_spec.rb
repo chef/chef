@@ -1120,8 +1120,10 @@ Created /acls/containers/environments.json
 Created /acls/containers/groups.json
 Created /acls/containers/nodes.json
 Created /acls/containers/policies.json
+Created /acls/containers/policy_groups.json
 Created /acls/containers/roles.json
 Created /acls/containers/sandboxes.json
+Created /acls/cookbook_artifacts
 Created /acls/cookbooks
 Created /acls/data_bags
 Created /acls/environments
@@ -1132,6 +1134,8 @@ Created /acls/groups/billing-admins.json
 Created /acls/groups/clients.json
 Created /acls/groups/users.json
 Created /acls/nodes
+Created /acls/policies
+Created /acls/policy_groups
 Created /acls/roles
 Created /acls/organization.json
 Created /clients
@@ -1146,6 +1150,7 @@ Created /containers/environments.json
 Created /containers/groups.json
 Created /containers/nodes.json
 Created /containers/policies.json
+Created /containers/policy_groups.json
 Created /containers/roles.json
 Created /containers/sandboxes.json
 Created /cookbook_artifacts
@@ -1196,11 +1201,15 @@ EOM
           knife("download /acls /groups/clients.json /groups/users.json").should_succeed <<-EOM
 Created /acls/clients/x.json
 Created /acls/containers/x.json
+Created /acls/cookbook_artifacts/x.json
 Created /acls/cookbooks/x.json
 Created /acls/data_bags/x.json
 Created /acls/environments/x.json
 Created /acls/groups/x.json
 Created /acls/nodes/x.json
+Created /acls/policies/blah.json
+Created /acls/policies/x.json
+Created /acls/policy_groups/x.json
 Created /acls/roles/x.json
 Updated /groups/clients.json
 Updated /groups/users.json
