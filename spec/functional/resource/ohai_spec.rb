@@ -20,9 +20,7 @@ require "spec_helper"
 
 describe Chef::Resource::Ohai do
   let(:ohai) {
-    o = Ohai::System.new
-    o.all_plugins
-    o
+    OHAI_SYSTEM
   }
 
   let(:node) { Chef::Node.new }
