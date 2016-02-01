@@ -180,6 +180,31 @@ class Chef
         unindent
       end
 
+      # Called when starting to collect gems from the cookbooks
+      def cookbook_gem_start(gems)
+        puts_line "Installing Cookbook Gems:"
+        indent
+      end
+
+      # Called when the result of installing the bundle is to install the gem
+      def cookbook_gem_installing(gem, version)
+        puts_line "- Installing #{gem} #{version}", :green
+      end
+
+      # Called when the result of installing the bundle is to use the gem
+      def cookbook_gem_using(gem, version)
+        puts_line "- Using #{gem} #{version}"
+      end
+
+      # Called when finished installing cookbook gems
+      def cookbook_gem_finished
+        unindent
+      end
+
+      def cookbook_gem_failed(exception)
+        unindent
+      end
+
       # Called when cookbook loading starts.
       def library_load_start(file_count)
         puts_line "Compiling Cookbooks..."

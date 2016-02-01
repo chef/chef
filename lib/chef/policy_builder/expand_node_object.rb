@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,7 +75,7 @@ class Chef
           cl.load_cookbooks
           cookbook_collection = Chef::CookbookCollection.new(cl)
           cookbook_collection.validate!
-          cookbook_collection.install_gems
+          cookbook_collection.install_gems(events)
 
           run_context = Chef::RunContext.new(node, cookbook_collection, @events)
         else
@@ -83,7 +83,7 @@ class Chef
           cookbook_hash = sync_cookbooks
           cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
           cookbook_collection.validate!
-          cookbook_collection.install_gems
+          cookbook_collection.install_gems(events)
 
           run_context = Chef::RunContext.new(node, cookbook_collection, @events)
         end

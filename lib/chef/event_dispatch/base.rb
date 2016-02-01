@@ -139,6 +139,30 @@ class Chef
       def cookbook_sync_complete
       end
 
+      # Called when starting to collect gems from the cookbooks
+      def cookbook_gem_start
+      end
+
+      # Called with the full list of gems to resolve
+      def cookbook_gem_set(gems)
+      end
+
+      # Called when the result of installing the bundle is to install the gem
+      def cookbook_gem_installing(gem, version)
+      end
+
+      # Called when the result of installing the bundle is to use the gem
+      def cookbook_gem_using(gem, version)
+      end
+
+      # Called when finished installing cookbook gems
+      def cookbook_gem_finished
+      end
+
+      # Called when cookbook gem installation fails
+      def cookbook_gem_failed(exception)
+      end
+
       ## TODO: add cookbook name to the API for file load callbacks
 
       ## TODO: add callbacks for overall cookbook eval start and complete.
