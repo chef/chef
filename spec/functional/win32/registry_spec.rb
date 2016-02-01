@@ -41,8 +41,11 @@ describe "Chef::Win32::Registry", :windows_only do
     #Create the node with ohai data
     events = Chef::EventDispatch::Dispatcher.new
     @node = Chef::Node.new
+
     ohai = Ohai::System.new
-    ohai.all_plugins
+    filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version os os_version} : nil
+    ohai.all_plugins(filter)
+
     @node.consume_external_attrs(ohai.data,{})
     @run_context = Chef::RunContext.new(@node, {}, events)
 

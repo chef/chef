@@ -19,9 +19,12 @@
 require "spec_helper"
 
 describe Chef::Resource::Ohai do
-  let(:ohai) {
+  let!(:ohai) {
     o = Ohai::System.new
-    o.all_plugins
+
+    filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version os os_version} : nil
+    o.all_plugins(filter)
+
     o
   }
 
