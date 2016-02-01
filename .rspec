@@ -1,2 +1,3 @@
 --color
 -fd
+spec/**/*_spec.rb
