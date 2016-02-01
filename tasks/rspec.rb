@@ -42,6 +42,7 @@ begin
 
   desc "Run standard specs (minus long running specs)"
   RSpec::Core::RakeTask.new(:spec) do |t|
+    t.rspec_opts = %w{--profile}
     # right now this just limits to functional + unit, but could also remove
     # individual tests marked long-running
     t.pattern = FileList["spec/**/*_spec.rb"]
@@ -50,6 +51,7 @@ begin
   namespace :spec do
     desc "Run all specs in spec directory with RCov"
     RSpec::Core::RakeTask.new(:rcov) do |t|
+      t.rspec_opts = %w{--profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
       t.rcov = true
       t.rcov_opts = lambda do
@@ -59,24 +61,26 @@ begin
 
     desc "Run all specs in spec directory"
     RSpec::Core::RakeTask.new(:all) do |t|
+      t.rspec_opts = %w{--profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
     desc "Print Specdoc for all specs"
     RSpec::Core::RakeTask.new(:doc) do |t|
-      t.rspec_opts = ["--format", "specdoc", "--dry-run"]
+      t.rspec_opts = %w{--format specdoc --dry-run --profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
     desc "Run the specs under spec/unit with activesupport loaded"
     RSpec::Core::RakeTask.new(:activesupport) do |t|
-      t.rspec_opts = ["--require active_support/core_ext"]
+      t.rspec_opts = %w{--require active_support/core_ext --profile}
       t.pattern = FileList["spec/unit/**/*_spec.rb"]
     end
 
     [:unit, :functional, :integration, :stress].each do |sub|
       desc "Run the specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
+        t.rspec_opts = %w{--profile}
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
     end
