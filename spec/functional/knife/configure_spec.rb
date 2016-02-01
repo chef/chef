@@ -19,15 +19,10 @@
 require "spec_helper"
 
 require "chef/knife/configure"
-require "ohai"
 
 describe "knife configure" do
   let (:ohai) do
-    o = Ohai::System.new
-    o.load_plugins
-    o.require_plugin "os"
-    o.require_plugin "hostname"
-    o
+    OHAI_SYSTEM
   end
 
   it "loads the fqdn from Ohai" do

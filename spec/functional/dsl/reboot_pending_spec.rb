@@ -22,17 +22,12 @@ require "spec_helper"
 
 describe Chef::DSL::RebootPending, :windows_only do
   def run_ohai
-    ohai = Ohai::System.new
-    # Would be nice to limit this to platform/kernel/arch etc for Ohai 7
-    ohai.all_plugins
-    node.consume_external_attrs(ohai.data,{})
-
-    ohai
+    node.consume_external_attrs(OHAI_SYSTEM.data,{})
   end
 
   let(:node) { Chef::Node.new }
-  let(:events) { Chef::EventDispatch::Dispatcher.new }
   let!(:ohai) { run_ohai } # Ensure we have necessary node data
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:recipe) { Chef::Recipe.new("a windows cookbook", "the windows recipe", run_context) }
   let(:registry) { Chef::Win32::Registry.new(run_context) }

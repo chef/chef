@@ -31,9 +31,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
     events = Chef::EventDispatch::Dispatcher.new
     node = Chef::Node.new
-    ohai = Ohai::System.new
-    ohai.all_plugins
-    node.consume_external_attrs(ohai.data,{})
+    node.consume_external_attrs(OHAI_SYSTEM.data,{})
     run_context = Chef::RunContext.new(node, {}, events)
     @resource = Chef::Resource.new("foo", run_context)
   end

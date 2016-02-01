@@ -90,7 +90,7 @@ Dir["spec/support/**/*.rb"].
   each { |f| require f }
 
 OHAI_SYSTEM = Ohai::System.new
-OHAI_SYSTEM.all_plugins("platform")
+OHAI_SYSTEM.all_plugins(["platform", "hostname", "languages/powershell"])
 
 test_node = Chef::Node.new
 test_node.automatic["os"] = (OHAI_SYSTEM["os"] || "unknown_os").dup.freeze

@@ -24,11 +24,8 @@ end
 describe "Chef::ReservedNames::Win32::Crypto", :windows_only do
   describe '#encrypt' do
     before(:all) do
-      ohai_reader = Ohai::System.new
-      ohai_reader.all_plugins("platform")
-
       new_node = Chef::Node.new
-      new_node.consume_external_attrs(ohai_reader.data,{})
+      new_node.consume_external_attrs(OHAI_SYSTEM.data,{})
 
       events = Chef::EventDispatch::Dispatcher.new
 

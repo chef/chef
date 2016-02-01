@@ -21,11 +21,8 @@ require File.expand_path("../../../../spec_helper", __FILE__)
 
 describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only  do
   before(:all) do
-    ohai = Ohai::System.new
-    ohai.load_plugins
-    ohai.run_plugins(true, ["platform", "kernel"])
     @node = Chef::Node.new
-    @node.consume_external_attrs(ohai.data, {})
+    @node.consume_external_attrs(OHAI_SYSTEM.data, {})
   end
   let(:cmd_output_format) { :text }
   let(:simple_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, "get-childitem", cmd_output_format, {:depth => 2}) }

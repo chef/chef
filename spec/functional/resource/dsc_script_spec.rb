@@ -385,9 +385,7 @@ EOH
 
     before(:each) do
       delete_user(dsc_user)
-      ohai_reader = Ohai::System.new
-      ohai_reader.all_plugins(["platform", "os", "languages/powershell"])
-      dsc_test_run_context.node.consume_external_attrs(ohai_reader.data,{})
+      dsc_test_run_context.node.consume_external_attrs(OHAI_SYSTEM.data,{})
     end
 
     let(:configuration_data_path) { 'C:\\configurationdata.psd1' }
