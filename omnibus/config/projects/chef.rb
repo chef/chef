@@ -20,7 +20,8 @@ maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
 
 build_iteration 1
-build_version "12.6.0"
+version_file = File.expand_path("../../../../VERSION", __FILE__)
+build_version IO.read(version_file).strip
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
@@ -57,8 +58,7 @@ end
 
 # Chef Release version pinning
 override :chef, version: "local_source"
-override :ohai, version: "master"
-
+override :ohai, version: "v8.9.0"
 
 dependency "preparation"
 dependency "chef"

@@ -1,97 +1,63 @@
-# Chef Client Release Notes 12.6.0:
+# Chef Client Release Notes 12.7:
 
+## Updates to versioning strategy
 
-## Upgrade to OpenSSL 1.0.1q
+We recently updated the [versioning specification](https://github.com/chef/chef-rfc/pull/175) in our [release process](https://github.com/chef/chef-rfc/commits/master/rfc047-release-process.md) to facilitate faster releases with lower risk between each release.  Soon an automated process will begin updating the "patch" version (the third number in the version).
 
-This release picks up the latest distribution from the OpenSSL 1.0.1 branch (1.0.1q).
-There are a number of OpenSSL security fixes that are addressed - please see the following for more info: https://www.openssl.org/news/openssl-1.0.1-notes.html
+For consumers of Chef this means that the first release of 12.7 you use may be 12.7.2 or 12.7.5 without earlier versions of 12.7 having been released first.  Those earlier versions may be available in the _current_ channel that you can access through the install.sh and install.ps1 scripts.
 
-## New `chef_version` and `ohai_version` metadata keywords
+## Net-ssh updates
 
-Two new keywords have been introduced to the metadata of cookbooks for constraining the acceptable range
-of chef-client versions that a cookbook runs on.  By default if these keywords are not present chef-client
-will always run.  If either of these keywords are given and none of the given ranges match the running
-Chef::VERSION or Ohai::VERSION then the chef-client will report an error that the cookbook does not support
-the running client or ohai version.
+We updated the version of [net-ssh](https://github.com/net-ssh/net-ssh) in Chef from version 2.9 to 3.0 to take in an upstream bug fix.  The biggest change here is that they dropped support for Ruby 1.9 (which Chef already dropped support for).  Because this is such a low level dependency we found that many other projects had to be updated in lock-step (like Test Kitchen and Berkshelf) for the ChefDK packaging to succeed without dependency conflicts.
 
-There is currently little integration with this outside of the client, but work is underway to display this
-information on the supermarket.  There are also plans to get depsolvers like Berkshelf able to automatically
-prune invalid cookbooks out of their solution sets to avoid uploading a cookbook which will only throw
-an exception.
+## Zypper Package Multipackage Support
 
-## New --profile-ruby option to profile Ruby
+On SuSE systems the `package` provider (aka `zypper_package` provider) now accepts arrays and will install them with a single zypper command together:
 
-The 'chef' gem now has a new optional development dependency on the 'ruby-prof' gem and when it is installed
-it can be used via the --profile-ruby command line option.  This gem will also be shipped in all the omnibus
-builds of `chef` and `chef-dk` going forwards so that while it will be 'optional' it will also be fairly
-broadly installed (it is 'optional' mostly for people who are installing chef in their own bundles).
-
-When invoked this option will dump a (large) profiling graph into `/var/chef/cache/graph_profile.out`.  For
-users who are familiar with reading call stack graphs this will likely be very useful for profiling the
-internal guts of a chef-client run.  The performance hit of this profiler will roughly double the length
-of a chef-client run so it is something that can be used without causing errant timeouts and other
-heisenbugs due to the profiler itself.  It is not suitable for daily use in production.  It is unlikely to
-be suitable for users without a background in software development and debugging.
-
-It was developed out of some particularly difficult profiling of performance issues in the Chef node
-attributes code, which was then turned into a patch so that other people could experiment with it.  It was
-not designed to be a general solution to performance issues inside of chef-client recipe code.
-
-This debugging feature will mostly be useful to people who are already Ruby experts.
-
-## `dpkg_package` now accepts an array of packages
-
-Similar to the `yum_package` and `apt_package` resources, the `dpkg_package` resource now handles an Array of package names (and
-also array of versions and array of sources).
-
-Some edge conditions in the `:remove` and `:purge` actions in `dpkg_package` were also fixed and the `:purge` action will now
-purge packages that were previously removed (`apt_package` still does not do this).
-
-## New ksh resource
-
-Korn Shell scripts can now be run using the ksh resource, or by setting the interpreter parameter of the script resource to ksh.
-
-Please see the following for more details : https://docs.chef.io/release/12-6/resource_ksh.html
-
-## New FastMSI omnibus installer (Windows)
-
-This is the first release where we are rolling out a MSI package for Windows that significantly improves the installation time. In a nutshell, the new approach is to deploy and extract a zipped package rather than individually tracking every file as a MSI component. Please note that the first  upgrade (ie, an older version of Chef client is already on the machine) may not exhibit the full extent of the speed-up (as MSI is still tracking the older files). New installs, as well as future upgrades, will be sped up. Uninstalls will remove the folder that Chef client is installed to (typically, C:\Opscode\Chef).
-
-## `windows_package` now supports non-`MSI` based Windows installers
-
-Today you can install `MSI`s using the `windows_package` resource. However, you have had to use the windows cookbook in order to install non `MSI` based installer packages such as Nullsoft, Inno Setup, Installshield and other `EXE` based installers. We have moved and slightly improved the windows cookbook resource into the core chef client. This means you can now run most windows installer types without taking on external cookbook dependencies. Note that the `source` attribute of non `:msi` windows packages is required since the `package_name` is expected to match the same name displayed in "Add/Remove Programs."
-
-## Better handling of log_location with chef client service (Windows)
-
-This change is for the scenario when running chef client as a Windows service. Currently, a default log_location gets used by the chef client windows service. This log_location overrides any log_location set in the client.rb. In 12.6.0, the behavior is changed to allow the Chef client running as a Windows service to prefer the log_location in client.rb instead. Now, the windows_service_manager will not explicitly pass in a log_location, and therefore the Chef service will always use what is in the client.rb or the typical default path if none is configured. This enables scenarios such as logging to the Windows event log when running chef client as a Windows service.
-
-## Dsc_resource changes and fixes (Windows)
-
-* A fix was made for the Nov 2015 update of Windows 10, where the dsc_resource did not properly show the command output when converging the resource.
-* Dsc_resource could in some cases show the plaintext password when #inspected - this is now prevented from happening.
-* Previously, Chef required the LCM Refreshmode to be set to Disabled when utilizing dsc_resource. Microsoft has relaxed this requirement in Windows Management Framework 5 (WMF5) (PowerShell 5.0.10586.0 or later). Now, we only require the RefreshMode to be disabled when running on earlier versions of PowerShell 5.
-* Added a reboot_action attribute to dsc_resource. If the DSC resource indicates that it requires a reboot, reboot_action can use the reboot resource to either reboot immediately (:reboot_now) or queue a reboot (:request_reboot).  The default value of reboot_action is :nothing.
-
-In addition to `:immediately` and `:delayed`, we have added the new notification timing `:before`. `:before` will trigger just before the
-resource converges, but will only trigger if the resource is going to
-actually cause an update.
-
-For example, this will stop apache if you are about to upgrade your particularly sensitive web app (which can't run while installing for
-whatever reason) and start it back up afterwards.
-
-```
-execute 'install my app' do
-  only_if { i_should_install_my_app }
-end
-
-# Only stop and start apache if i_should_install_my_app
-service 'httpd' do
-  action :nothing
-  subscribes :stop, 'template[/etc/httpd.conf]', :before
-  subscribes :start, 'template[/etc/httpd.conf]'
-end
+```ruby
+package [ 'git', 'nmap' ]
 ```
 
-## Other items
+Some additional code-cleanup was done to the provider and long-standing bugs may have been fixed.
 
-There are a large number of other PRs in this release. Please see the CHANGELOG for the full set of changes : https://github.com/chef/chef/blob/master/CHANGELOG.md
+## Chocolatey Package Provider
+
+There is now a `chocolatey_package` provider in core chef.  It is named `chocolatey_package` instead of `chocolatey` in order to not conflict with the existing resource in the chocolatey cookbook and to
+comply with existing naming standards for package resources in core chef.
+
+The API for `chocolatey_package` conforms to the `package` API in core chef, rather than being a straight port of the cookbook version, and there are some API differences (e.g. it favors the `:remove`
+action over the `:uninstall` action since that is the API standard for core chef package providers).  The `chocolatey_package` provider also supports multipackage installations and will execute them
+in a single statement where possible:
+
+```ruby
+chocolatey_package [ 'googlechrome', 'flashplayerplugin', '7zip', 'git' ]
+```
+
+The `choco.exe` binary must be installed prior to using the resource, so the chocolatey cookbook recipe should still be used to install it.
+
+## EMEA Customers and UTF-8 Support
+
+EMEA customers in particular, and those customers who need reliable UTF-8 support, are highly encouraged to upgrade to the 12.7.0 release.  The 12.4.x/12.5.x/12.6.x releases of chef-client had an
+extremely bad UTF-8 handling bug in them which corrupted all UTF-8 data in the node.  In 12.7.0 that bug was fixed, along with another fix to make resource and audit reporting more reliable when fed
+non-UTF-8 (e.g. Latin-1/ISO-8859-1) characters.
+
+## Chef::REST
+
+We recently completed moving our internal API calls from `Chef::REST` to
+`Chef::ServerAPI`. As part of that move, `Chef::REST` is no longer globally
+required, so if your code uses `Chef::REST`, you must ensure that you
+require it correctly.
+
+```ruby
+require 'chef/rest'
+```
+
+We strongly encourage users to move away from using `Chef::REST`; if
+your code is run inside `knife` or `chef` then consider using
+`Chef::ServerAPI`, otherwise please investigate [ChefAPI](http://sethvargo.github.io/chef-api/).
+
+## Nokogiri
+
+The latest version of the nokogiri gem will now be included in all omnibus-chef builds.  See
+[RFC 063](https://github.com/chef/chef-rfc/blob/master/rfc063-omnibus-chef-native-gems.md) and
+[RFC 063 PR discussion](https://github.com/chef/chef-rfc/pull/162) for more information.

@@ -15,4 +15,7 @@ group :development do
   gem "test-kitchen",    "~> 1.4.0"
   gem "kitchen-vagrant", "~> 0.19.0"
   gem "winrm-transport", "~> 1.0"
+  gem "pry"
+  gem "pry-byebug"
+  gem "pry-stack_explorer"
 end
