@@ -467,7 +467,7 @@ class Chef
           resource.validate({ name => value }, { name => validation_options })
         else
           name = self.name || :property_type
-          (resource || Chef::Mixin::ParamsValidate).validate({ name => value }, { name => validation_options })
+          Chef::Mixin::ParamsValidate.validate({ name => value }, { name => validation_options })
         end
       end
     end
