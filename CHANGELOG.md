@@ -1,11 +1,63 @@
 
-## Unreleased
+## 12.7.0
 
-* [pr#4278](https://github.com/chef/chef/pull/4278) make file resource use properties
 * [**Nate Walck**](https://github.com/natewalck)
   [pr#4078](https://github.com/chef/chef/pull/4078) Add `osx_profile` HWRP for OS X
+* [**Timothy Cyrus**](https://github.com/tcyrus)
+  [pr#4420](https://github.com/chef/chef/pull/4420) Update code climate badge and code climate blocks in README.md
+* [**Jordan Running**](https://github.com/jrunning)
+  [pr#4399](https://github.com/chef/chef/pull/4399) Correctly save policy_name and policy_group with `knife node edit`
+* [**Brian Goad**](https://github.com/bbbco)
+  [pr#4315](https://github.com/chef/chef/pull/4315) Add extra tests around whether to skip with multiple guards
+
 * [pr#4369](https://github.com/chef/chef/pull/4396) Import omnibus-chef chef project definition and history
 * [pr#4399](https://github.com/chef/chef/pull/4399) Correctly save `policy_name` and `policy_group` with `knife node edit`
+* [pr#4278](https://github.com/chef/chef/pull/4278) make file resource use properties
+* [pr#4386](https://github.com/chef/chef/pull/4386) Run acceptance tests in Jenkins
+* [pr#4479](https://github.com/chef/chef/pull/4479) Remove incorrect cookbook artifact normalization
+* [pr#4470](https://github.com/chef/chef/pull/4470) Fix sh spacing issues
+* [pr#4434](https://github.com/chef/chef/pull/4434) adds EOFError message to handlers
+* [pr#4466](https://github.com/chef/chef/pull/4466) Fix bug in sh script that runs test in jenkins
+* [pr#4422](https://github.com/chef/chef/pull/4422)  Add an apt_update resource
+* [pr#4287](https://github.com/chef/chef/pull/4287)  Default Chef with FIPS OpenSSL to use sign v1.3
+* [pr#4461](https://github.com/chef/chef/pull/4461)  debian-6 is EOL next month
+* [pr#4460](https://github.com/chef/chef/pull/4460)  Set range of system user/group id to max of 200
+* [pr#4231](https://github.com/chef/chef/pull/4231)  zypper multipackage patch
+* [pr#4459](https://github.com/chef/chef/pull/4459)  use require_paths and not path so bundler grabs all paths from a git reference
+* [pr#4450](https://github.com/chef/chef/pull/4450)  don't warn about ambiguous property usage
+* [pr#4445](https://github.com/chef/chef/pull/4445)  Add CBGB to the repository
+* [pr#4436](https://github.com/chef/chef/pull/4436)  Add a Windows acceptance test
+* [pr#4371](https://github.com/chef/chef/pull/4371)  Ensure gem dependencies are secure
+* [pr#4423](https://github.com/chef/chef/pull/4423)  Add deprecation warnings to Chef::REST and all json_creates
+* [pr#4439](https://github.com/chef/chef/pull/4439)  Sometimes chocolately doesn't appear on the path
+* [pr#4432](https://github.com/chef/chef/pull/4432)  add get_rest etc calls to ServerAPI
+* [pr#4435](https://github.com/chef/chef/pull/4435)  add nokogiri to omnibus-chef
+* [pr#4433](https://github.com/chef/chef/pull/4433)  add a comment on exception triggers
+* [pr#4419](https://github.com/chef/chef/pull/4419)  explicitly adding .bat to service executable called by service in cae users remove .bat from PATHEXT
+* [pr#4426](https://github.com/chef/chef/pull/4426)  let kitchen-appbundle-updater float
+* [pr#4413](https://github.com/chef/chef/pull/4413)  configure chef client windows service to the correct chef directory
+* [pr#4377](https://github.com/chef/chef/pull/4377)  fixing candidate filtering and adding functional tests for chocolatey_package
+* [pr#4406](https://github.com/chef/chef/pull/4406)  Updating to the latest release of net-ssh to consume https://github.com/net-ssh/net-ssh/pull/280
+* [pr#4405](https://github.com/chef/chef/pull/4405)  ServerAPI will return a raw hash, so do that
+* [pr#4400](https://github.com/chef/chef/pull/4400)  inflate an environment after loading it
+* [pr#4387](https://github.com/chef/chef/pull/4387)  Initial 'trivial' acceptance test suite
+* [pr#4396](https://github.com/chef/chef/pull/4396)  Remove duplicate initialization of @password in user_v1
+* [pr#4344](https://github.com/chef/chef/pull/4344)  Warn (v. info) when reloading resources
+* [pr#4369](https://github.com/chef/chef/pull/4369)  Migrate omnibus-chef project/software definitions for chef in here
+* [pr#4106](https://github.com/chef/chef/pull/4106)  add chocolatey_package to core chef
+* [pr#4340](https://github.com/chef/chef/pull/4340)  Re-enable AIX mount functional test
+* [pr#4347](https://github.com/chef/chef/pull/4347)  add knife-windows to external specs
+* [pr#4321](https://github.com/chef/chef/pull/4321)  fix run_as_user of windows_service
+* [pr#4333](https://github.com/chef/chef/pull/4333)  no longer wait on node search to refresh vault but pass created ApiCient instead
+* [pr#4327](https://github.com/chef/chef/pull/4327)  tiny_server should retry Errno::EHOSTUNREACH
+* [pr#4325](https://github.com/chef/chef/pull/4325)  Pin win32-eventlog to 0.6.3 to avoid clashing CreateEvent definition
+* [pr#4312](https://github.com/chef/chef/pull/4312)  Updates the template to use omnitruck-direct.chef.io
+* [pr#4277](https://github.com/chef/chef/pull/4277)  non msi packages must explicitly provide a source attribute on install
+* [pr#4309](https://github.com/chef/chef/pull/4309)  tags always an array; fix set_unless
+* [pr#4278](https://github.com/chef/chef/pull/4278)  make file resource use properties
+* [pr#4288](https://github.com/chef/chef/pull/4288)  Fix no_proxy setting in chef-config
+* [pr#4286](https://github.com/chef/chef/pull/4286)  bump up timeout for travis
+* [pr#4273](https://github.com/chef/chef/pull/4273)  Use signing protocol 1.1 by default
 
 ## 12.6.0
 
