@@ -25,8 +25,11 @@ describe Chef::Resource::RegistryKey, :unix_only do
   before(:all) do
     events = Chef::EventDispatch::Dispatcher.new
     node = Chef::Node.new
+
     ohai = Ohai::System.new
-    ohai.all_plugins
+    filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version os os_version} : nil
+    ohai.all_plugins(filter)
+
     node.consume_external_attrs(ohai.data,{})
     run_context = Chef::RunContext.new(node, {}, events)
     @resource = Chef::Resource::RegistryKey.new("HKCU\\Software", run_context)
@@ -96,8 +99,11 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
   before(:all) do
     @events = Chef::EventDispatch::Dispatcher.new
     @node = Chef::Node.new
+
     ohai = Ohai::System.new
-    ohai.all_plugins
+    filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version os os_version} : nil
+    ohai.all_plugins(filter)
+
     @node.consume_external_attrs(ohai.data,{})
     @run_context = Chef::RunContext.new(@node, {}, @events)
 

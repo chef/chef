@@ -54,8 +54,11 @@ describe Chef::Provider::Ohai do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Ohai.new("ohai_reload")
+
     ohai = Ohai::System.new
-    ohai.all_plugins
+    filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version os os_version} : nil
+    ohai.all_plugins(filter)
+
     @node.consume_external_attrs(ohai.data,{})
 
     @provider = Chef::Provider::Ohai.new(@new_resource, @run_context)

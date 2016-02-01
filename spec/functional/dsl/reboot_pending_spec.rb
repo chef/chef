@@ -24,7 +24,10 @@ describe Chef::DSL::RebootPending, :windows_only do
   def run_ohai
     ohai = Ohai::System.new
     # Would be nice to limit this to platform/kernel/arch etc for Ohai 7
-    ohai.all_plugins
+
+    filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version os os_version} : nil
+    ohai.all_plugins(filter)
+
     node.consume_external_attrs(ohai.data,{})
 
     ohai
