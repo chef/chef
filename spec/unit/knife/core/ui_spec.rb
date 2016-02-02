@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011, 2012 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

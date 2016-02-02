@@ -1,8 +1,8 @@
 #
 # Author:: Bryan W. Berry (<bryan.berry@gmail.com>)
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2012 Bryan W. Berry
-# Copyright:: Copyright (c) 2012 Daniel DeLeo
+# Copyright:: Copyright 2012-2016, Bryan W. Berry
+# Copyright:: Copyright 2012-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

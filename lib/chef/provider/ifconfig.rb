@@ -1,6 +1,6 @@
 #
 # Author:: Jason K. Jackson (jasonjackson@gmail.com)
-# Copyright:: Copyright (c) 2009 Jason K. Jackson
+# Copyright:: Copyright 2009-2016, Jason K. Jackson
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

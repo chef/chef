@@ -1,6 +1,6 @@
 #
 # Author:: Richard Manyanza (<liseki@nyikacraftsmen.com>)
-# Copyright:: Copyright (c) 2014 Richard Manyanza.
+# Copyright:: Copyright 2014-2016, Richard Manyanza.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

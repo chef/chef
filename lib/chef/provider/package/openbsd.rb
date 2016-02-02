@@ -3,8 +3,8 @@
 #           Matthew Landauer (matthew@openaustralia.org)
 #           Richard Manyanza (liseki@nyikacraftsmen.com)
 #           Scott Bonds (scott@ggr.com)
-# Copyright:: Copyright (c) 2009 Bryan McLellan, Matthew Landauer
-# Copyright:: Copyright (c) 2014 Richard Manyanza, Scott Bonds
+# Copyright:: Copyright 2009-2016, Bryan McLellan, Matthew Landauer
+# Copyright:: Copyright 2014-2016, Richard Manyanza, Scott Bonds
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

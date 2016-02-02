@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@opscode.com>)
-# Copyright:: Copyright (c) 2009-2014 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

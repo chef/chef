@@ -1,7 +1,7 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
 # Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Jesse Campbell
+# Copyright:: Copyright 2013-2016, Jesse Campbell
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

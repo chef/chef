@@ -4,7 +4,7 @@
 #
 # Original header:
 # Author:: Hongli Lai (hongli@phusion.nl)
-# Copyright:: Copyright (c) 2009 Phusion
+# Copyright:: Copyright 2009-2016, Phusion
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

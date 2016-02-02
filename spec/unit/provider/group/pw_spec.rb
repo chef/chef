@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
-# Copyright:: Copyright (c) 2009 OpsCode, Inc.
+# Copyright:: Copyright 2009-2016, OpsCode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

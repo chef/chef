@@ -1,6 +1,6 @@
 #
 # Author:: Kartik Null Cating-Subramanian (<ksubramanian@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef, Inc.
+# Copyright:: Copyright 2015-2016, Chef, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -151,7 +151,7 @@ module ChefConfig
       desc 'Regenerate lib/#{@module_path}/version.rb from VERSION file'
       task :version => :update_components_versions do
         contents = <<-VERSION_RB
-# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
+# Copyright:: Copyright 2010-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

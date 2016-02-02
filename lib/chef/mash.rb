@@ -1,4 +1,4 @@
-# Copyright (c) 2009 Dan Kubb
+# Copyright 2009-2016, Dan Kubb
 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@
 # Some portions of blank.rb and mash.rb are verbatim copies of software
 # licensed under the MIT license. That license is included below:
 
-# Copyright (c) 2005-2008 David Heinemeier Hansson
+# Copyright 2005-2016, David Heinemeier Hansson
 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the

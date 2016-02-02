@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
+# Copyright:: Copyright 2011-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

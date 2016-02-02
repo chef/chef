@@ -1,7 +1,7 @@
 #
 # Author:: John Keiser (<jkeiser@opscode.com>)
 # Author:: Ho-Sheng Hsiao (<hosh@opscode.com>)
-# Copyright:: Copyright (c) 2012, 2013-2015 Chef Software, Inc.
+# Copyright:: Copyright 2012-2016, 2013-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

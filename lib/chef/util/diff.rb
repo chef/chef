@@ -1,5 +1,5 @@
 # Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # Some portions of this file are derived from material in the diff-lcs
 # project licensed under the terms of the MIT license, provided below.
 #
-# Copyright:: Copyright (c) 2004-2013 Austin Ziegler
+# Copyright:: Copyright 2004-2016, Austin Ziegler
 # License:: MIT
 #
 # Permission is hereby granted, free of charge, to any person

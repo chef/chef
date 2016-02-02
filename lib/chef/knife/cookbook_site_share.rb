@@ -1,6 +1,6 @@
 # Author:: Nuo Yan (<nuo@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2016, Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010, 2013 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Opscode, Inc.
 #
 # License:: Apache License, Version 2.0
 #

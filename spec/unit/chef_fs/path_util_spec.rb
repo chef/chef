@@ -1,6 +1,6 @@
 #
 # Author:: Kartik Null Cating-Subramanian (<ksubramanian@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright 2015-2016, Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

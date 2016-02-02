@@ -16,8 +16,8 @@ module WEBrick
       # utils.rb -- Miscellaneous utilities
       #
       # Author: IPR -- Internet Programming with Ruby -- writers
-      # Copyright (c) 2001 TAKAHASHI Masayoshi, GOTOU Yuuzou
-      # Copyright (c) 2002 Internet Programming with Ruby writers. All rights
+      # Copyright 2001-2016, TAKAHASHI Masayoshi, GOTOU Yuuzou
+      # Copyright 2002-2016, Internet Programming with Ruby writers. All rights
       # reserved.
       #
       # $IPR: utils.rb,v 1.10 2003/02/16 22:22:54 gotoyuzo Exp $

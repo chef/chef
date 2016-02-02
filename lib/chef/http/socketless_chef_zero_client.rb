@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@
 # fakeweb is distributed under the MIT license, which is copied below:
 # ---
 #
-# Copyright 2006-2010 Blaine Cook, Chris Kampmeier, and other contributors
+# Copyright 2006-2016, Blaine Cook, Chris Kampmeier, and other contributors
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the

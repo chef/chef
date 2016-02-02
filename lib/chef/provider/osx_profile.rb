@@ -1,6 +1,6 @@
 #
 # Author:: Nate Walck (<nate.walck@gmail.com>)
-# Copyright:: Copyright (c) 2015 Facebook, Inc.
+# Copyright:: Copyright 2015-2016, Facebook, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

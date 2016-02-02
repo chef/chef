@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

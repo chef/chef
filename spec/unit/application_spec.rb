@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Author:: Mark Mzyk (mmzyk@opscode.com)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

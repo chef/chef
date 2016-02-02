@@ -1,6 +1,6 @@
 #
 # Author:: Michael Leinartas (<mleinartas@gmail.com>)
-# Copyright:: Copyright (c) 2010 Michael Leinartas
+# Copyright:: Copyright 2010-2016, Michael Leinartas
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

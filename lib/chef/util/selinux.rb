@@ -3,8 +3,8 @@
 # Author:: Kevin Keane
 # Author:: Lamont Granquist (<lamont@opscode.com>)
 #
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
-# Copyright:: Copyright (c) 2013, North County Tech Center, LLC
+# Copyright:: Copyright 2011-2016, Opscode, Inc.
+# Copyright:: Copyright 2013-2016, North County Tech Center, LLC
 #
 # License:: Apache License, Version 2.0
 #

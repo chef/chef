@@ -2,8 +2,8 @@
 # Authors:: AJ Christensen (<aj@opscode.com>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
 #           Scott Bonds (<scott@ggr.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# Copyright:: Copyright (c) 2014 Richard Manyanza, Scott Bonds
+# Copyright:: Copyright 2008-2016, Opscode, Inc.
+# Copyright:: Copyright 2014-2016, Richard Manyanza, Scott Bonds
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

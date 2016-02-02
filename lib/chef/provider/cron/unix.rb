@@ -1,8 +1,8 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
 # Author:: Toomas Pelberg (toomasp@gmx.net)
-# Copyright:: Copyright (c) 2009 Bryan McLellan
-# Copyright:: Copyright (c) 2010 Toomas Pelberg
+# Copyright:: Copyright 2009-2016, Bryan McLellan
+# Copyright:: Copyright 2010-2016, Toomas Pelberg
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

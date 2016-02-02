@@ -1,6 +1,6 @@
 #
 # Author:: Ranjib Dey
-# Copyright:: Copyright (c) 2015 Ranjib Dey <ranjib@linux.com>.
+# Copyright:: Copyright 2015-2016, Ranjib Dey <ranjib@linux.com>.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

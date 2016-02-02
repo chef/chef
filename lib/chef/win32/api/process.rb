@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Copyright:: Copyright 2011-2016, Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
