@@ -18,6 +18,14 @@
     <Package InstallerVersion="200" InstallPrivileges="elevated"
              Compressed="yes" InstallScope="perMachine" />
 
+    <!--
+      Create property references for the well known SIDs of the 
+      accounts we want to restrict for the project location folder
+    -->
+    <PropertyRef Id="WIX_ACCOUNT_LOCALSYSTEM" />
+    <PropertyRef Id="WIX_ACCOUNT_ADMINISTRATORS" />
+    <PropertyRef Id="WIX_ACCOUNT_USERS" />
+
     <Media Id="1" Cabinet="ChefClient.cab" EmbedCab="yes" CompressionLevel="high" />
 
     <!--
@@ -30,6 +38,7 @@
 
     <!-- We always do Major upgrades -->
     <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)" />
+
 
     <!--
       If fastmsi is set, custom actions will be invoked during install to unzip
@@ -78,6 +87,17 @@
         </Directory>
         <Directory Id="INSTALLLOCATION" Name="opscode">
           <Directory Id="PROJECTLOCATION" Name="$(var.ProjectLocationDir)" >
+            <Component Id="ProjectLocationPermissions" Guid="{75f50556-efae-4ede-beb2-a2c9b1a4d43f}" >
+              <!--
+                Windows client SKUs give the Authenticated Users group modify rights
+                to new folders created. We ONLY want the local system account and any administrator to have that right to protect non admin users from injecting code that could be executed by a service running as SYSTEM
+              -->
+              <CreateFolder>
+                <Permission User="[WIX_ACCOUNT_LOCALSYSTEM]" GenericAll="yes"/>
+                <Permission User="[WIX_ACCOUNT_ADMINISTRATORS]" GenericAll="yes"/>
+                <Permission User="[WIX_ACCOUNT_USERS]" GenericRead="yes" GenericExecute="yes"/>
+              </CreateFolder>
+            </Component>
             <Directory Id="PROJECTLOCATIONBIN" Name="bin" >
               <Component Id="ChefClientPath" Guid="{7F663F88-55A2-4E20-82BF-8BD2E60BB83A}" >
                 <Environment Id="ClientPathEnvironment"
@@ -121,6 +141,7 @@
     <!-- Set the components defined in our fragment files that will be used for our feature  -->
     <Feature Id="ChefClientFeature" Title="!(loc.FeatureMainName)" Absent="disallow" AllowAdvertise="no" Level="1" ConfigurableDirectory="INSTALLLOCATION">
       <ComponentGroupRef Id="ProjectDir" />
+      <ComponentRef Id="ProjectLocationPermissions" />
       <ComponentRef Id="ChefClientPath" />
       <ComponentRef Id="CONFIGLOCATIONDIR" />
       <ComponentRef Id="ChefClientLog" />

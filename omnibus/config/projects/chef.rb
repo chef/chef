@@ -84,6 +84,7 @@ package :msi do
   fast_msi true
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
+  wix_light_extension "WixUtilExtension"
   signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
   parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
     ProjectLocationDir: project_location_dir
