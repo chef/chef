@@ -106,7 +106,7 @@ describe Chef::Provider::OsxProfile do
         }
       end
       let(:no_profiles) do
-        { "_computerlevel"=> [] }
+        { }
       end
 
     before(:each) do
