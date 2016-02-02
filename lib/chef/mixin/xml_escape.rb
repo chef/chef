@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright 2009-2016, Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # Copyright:: Copyright 2005-2016, Sam Ruby
 # License:: Apache License, Version 2.0
 #

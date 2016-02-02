@@ -1,7 +1,7 @@
 #
 # Author:: Nuo Yan <nuo@opscode.com>
 # Author:: Seth Chisamore <schisamo@opscode.com>
-# Copyright:: Copyright 2010-2016, Opscode, Inc
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

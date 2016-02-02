@@ -2,7 +2,7 @@
 # Author:: Stephen Nelson-Smith (<sns@opscode.com>)
 # Author:: Jon Ramsey (<jonathon.ramsey@gmail.com>)
 # Author:: Dave Eddy (<dave@daveeddy.com>)
-# Copyright:: Copyright 2012-2016, Opscode, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # Copyright:: Copyright 2015-2016, Dave Eddy
 # License:: Apache License, Version 2.0
 #

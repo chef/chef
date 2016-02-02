@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2009-2016, Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #

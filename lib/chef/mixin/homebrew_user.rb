@@ -2,7 +2,7 @@
 # Author:: Joshua Timberman (<joshua@getchef.com>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
-# Copyright 2011-2016, Opscode, Inc.
+# Copyright 2011-2016, Chef Software Inc.
 # Copyright 2014-2016, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

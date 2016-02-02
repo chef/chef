@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright 2008-2016, Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # Author:: Doug MacEachern (<dougm@vmware.com>)
 # Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0

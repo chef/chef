@@ -2,7 +2,7 @@
 # Authors:: AJ Christensen (<aj@opscode.com>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
 #           Scott Bonds (<scott@ggr.com>)
-# Copyright:: Copyright 2008-2016, Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # Copyright:: Copyright 2014-2016, Richard Manyanza, Scott Bonds
 # License:: Apache License, Version 2.0
 #

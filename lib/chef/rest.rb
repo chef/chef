@@ -4,7 +4,7 @@
 # Author:: Nuo Yan (<nuo@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright 2009-2016, Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
