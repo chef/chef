@@ -31,376 +31,74 @@ class Chef
 
       def initialize(name, run_context = nil)
         super
-        @provider = Chef::Provider::Launchd
-        @resource_name = :launchd
-        @label = name
-        @disabled = false
-        @type = 'daemon'
-        @path = "/Library/LaunchDaemons/#{name}.plist"
+        provider = Chef::Provider::Launchd
+        resource_name = :launchd
       end
 
-      def label(arg = nil)
-        set_or_return(
-          :label, arg,
-          :kind_of => String
-        )
-      end
+      property :label, String, default: lazy { name }, identity: true
+      property :backup, [Integer, FalseClass]
+      property :cookbook, String
+      property :group, [String, Integer]
+      property :hash, Hash
+      property :mode, [String, Integer]
+      property :owner, [String, Integer]
+      property :path, String
+      property :source, String
+      property :session_type, String
 
-      def source(arg = nil)
-        set_or_return(
-          :source, arg,
-          :kind_of => [String, Array]
-        )
-      end
-
-      def cookbook(arg = nil)
-        set_or_return(
-          :cookbook, arg,
-          :kind_of => String
-        )
-      end
-
-      def path(arg = nil)
-        set_or_return(
-          :path, arg,
-          :kind_of => String
-        )
-      end
-
-      def hash(arg = nil)
-        set_or_return(
-          :hash, arg,
-          :kind_of => Hash
-        )
-      end
-
-      def backup(arg=nil)
-        set_or_return(
-          :backup, arg,
-          :kind_of => [Integer, FalseClass]
-        )
-      end
-
-      def group(arg = nil)
-        set_or_return(
-          :group, arg,
-          :kind_of => [String, Integer]
-        )
-      end
-
-      def mode(arg = nil)
-        set_or_return(
-          :mode, arg,
-          :kind_of => [String, Integer]
-        )
-      end
-
-      def owner(arg = nil)
-        set_or_return(
-          :owner, arg,
-          :kind_of => [String, Integer]
-        )
-      end
-
-      def type(type = nil)
+      property :type, String, default: 'daemon', coerce: proc { |type|
         type = type ? type.downcase : 'daemon'
-        if type == 'daemon'
-          @path = "/Library/LaunchDaemons/#{name}.plist"
-        elsif type == 'agent'
-          @path = "/Library/LaunchAgents/#{name}.plist"
-        else
+        types = [ 'daemon', 'agent' ]
+
+        unless types.include?(type)
           error_msg = 'type must be daemon or agent'
           raise Chef::Exceptions::ValidationFailed, error_msg
         end
         type
-      end
+      }
 
-      def abandon_process_group(arg = nil)
-        set_or_return(
-          :abandon_process_group, arg,
-          :kind_of => String
-        )
-      end
-
-      def debug(arg = nil)
-        set_or_return(
-          :debug, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def disabled(arg = nil)
-        set_or_return(
-          :disabled, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def enable_globbing(arg = nil)
-        set_or_return(
-          :enable_globbing, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def enable_transactions(arg = nil)
-        set_or_return(
-          :enable_transactions, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def environment_variables(arg = nil)
-        set_or_return(
-          :environment_variables, arg,
-          :kind_of => Hash
-        )
-      end
-
-      def exit_timeout(arg = nil)
-        set_or_return(
-          :exit_timeout, arg,
-          :kind_of => Integer
-        )
-      end
-
-      def hard_resource_limits(arg = nil)
-        set_or_return(
-          :hardre_source_limits, arg,
-          :kind_of => Hash
-        )
-      end
-
-      def keep_alive(arg = nil)
-        set_or_return(
-          :keep_alive, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def launch_only_once(arg = nil)
-        set_or_return(
-          :launch_only_once, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def limit_load_from_hosts(arg = nil)
-        set_or_return(
-          :limit_load_from_hosts, arg,
-          :kind_of => Array
-        )
-      end
-
-      def limit_load_to_hosts(arg = nil)
-        set_or_return(
-          :limit_load_to_hosts, arg,
-          :kind_of => Array
-        )
-      end
-
-      def limit_load_to_session_type(arg = nil)
-        set_or_return(
-          :limit_load_to_session_type, arg,
-          :kind_of => String
-        )
-      end
-
-      def low_priority_io(arg = nil)
-        set_or_return(
-          :low_priority_io, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def mach_services(arg = nil)
-        set_or_return(
-          :mach_services, arg,
-          :kind_of => Hash
-        )
-      end
-
-      def nice(arg = nil)
-        set_or_return(
-          :nice, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def on_demand(arg = nil)
-        set_or_return(
-          :on_demand, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def username(arg = nil)
-        set_or_return(
-          :username, arg,
-          :kind_of => String
-        )
-      end
-
-      def ld_group(arg = nil)
-        set_or_return(
-          :ld_group, arg,
-          :kind_of => String
-        )
-      end
-
-      def inetd_compatibility(arg = nil)
-        set_or_return(
-          :inetd_compatibility, arg,
-          :kind_of => Hash
-        )
-      end
-
-      def init_groups(arg = nil)
-        set_or_return(
-          :init_groups, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def process_type(arg = nil)
-        set_or_return(
-          :process_type, arg,
-          :kind_of => String
-        )
-      end
-
-      def program(arg = nil)
-        set_or_return(
-          :program, arg,
-          :kind_of => String
-        )
-      end
-
-      def program_arguments(arg = nil)
-        set_or_return(
-          :program_arguments, arg,
-          :kind_of => Array
-        )
-      end
-
-      def queue_directories(arg = nil)
-        set_or_return(
-          :queue_directories, arg,
-          :kind_of => Array
-        )
-      end
-
-      def root_directory(arg = nil)
-        set_or_return(
-          :root_directory, arg,
-          :kind_of => String
-        )
-      end
-
-      def run_at_load(arg = nil)
-        set_or_return(
-          :run_at_load, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def sockets(arg = nil)
-        set_or_return(
-          :sockets, arg,
-          :kind_of => Hash
-        )
-      end
-
-      def soft_resource_limits(arg = nil)
-        set_or_return(
-          :soft_resource_limits, arg,
-          :kind_of => Array
-        )
-      end
-
-      def standard_error_path(arg = nil)
-        set_or_return(
-          :standard_error_path, arg,
-          :kind_of => String
-        )
-      end
-
-      def standard_in_path(arg = nil)
-        set_or_return(
-          :standard_in_path, arg,
-          :kind_of => String
-        )
-      end
-
-      def standard_out_path(arg = nil)
-        set_or_return(
-          :standard_out_path, arg,
-          :kind_of => String
-        )
-      end
-
-      def start_calendar_interval(arg = nil)
-        set_or_return(
-          :start_calendar_interval, arg,
-          :kind_of => Hash
-        )
-      end
-
-      def start_interval(arg = nil)
-        set_or_return(
-          :start_interval, arg,
-          :kind_of => Integer
-        )
-      end
-
-      def start_on_mount(arg = nil)
-        set_or_return(
-          :start_on_mount, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def throttle_interval(arg = nil)
-        set_or_return(
-          :throttle_interval, arg,
-          :kind_of => Integer
-        )
-      end
-
-      def time_out(arg = nil)
-        set_or_return(
-          :time_out, arg,
-          :kind_of => Integer
-        )
-      end
-
-      def umask(arg = nil)
-        set_or_return(
-          :umask, arg,
-          :kind_of => Integer
-        )
-      end
-
-      def wait_for_debugger(arg = nil)
-        set_or_return(
-          :wait_for_debugger, arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def watch_paths(arg = nil)
-        set_or_return(
-          :watch_paths, arg,
-          :kind_of => Array
-        )
-      end
-
-      def working_directory(arg = nil)
-        set_or_return(
-          :working_directory, arg,
-          :kind_of => String
-        )
-      end
+      # Apple LaunchD Keys
+      property :abandon_process_group, [ TrueClass, FalseClass ]
+      property :debug, [ TrueClass, FalseClass ]
+      property :disabled, [ TrueClass, FalseClass ], default: false
+      property :enable_globbing, [ TrueClass, FalseClass ]
+      property :enable_transactions, [ TrueClass, FalseClass ]
+      property :environment_variables, Hash
+      property :exit_timeout, Integer
+      property :hard_resource_limits, Hash
+      property :inetd_compatibility, Hash
+      property :init_groups, [ TrueClass, FalseClass ]
+      property :keep_alive, [ TrueClass, FalseClass ]
+      property :launch_only_once, [ TrueClass, FalseClass ]
+      property :ld_group, String
+      property :limit_load_from_hosts, Array
+      property :limit_load_to_hosts, Array
+      property :limit_load_to_session_type, String
+      property :low_priority_io, [ TrueClass, FalseClass ]
+      property :mach_services, Hash
+      property :nice, Integer
+      property :on_demand, [ TrueClass, FalseClass ]
+      property :process_type, String
+      property :program, String
+      property :program_arguments, Array
+      property :queue_directories, Array
+      property :root_directory, String
+      property :run_at_load, [ TrueClass, FalseClass ]
+      property :sockets, Hash
+      property :soft_resource_limits, Array
+      property :standard_error_path, String
+      property :standard_in_path, String
+      property :standard_out_path, String
+      property :start_calendar_interval, Hash
+      property :start_interval, Integer
+      property :start_on_mount, [ TrueClass, FalseClass ]
+      property :throttle_interval, Integer
+      property :time_out, Integer
+      property :umask, Integer
+      property :username, String
+      property :wait_for_debugger, [ TrueClass, FalseClass ]
+      property :watch_paths, Array
+      property :working_directory, String
     end
   end
 end

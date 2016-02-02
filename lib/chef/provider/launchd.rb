@@ -17,27 +17,43 @@
 #
 
 require 'chef/provider'
-require 'chef/resource'
+require 'chef/resource/launchd'
 require 'chef/resource/file'
 require 'chef/resource/cookbook_file'
 require 'chef/resource/macosx_service'
+require 'plist'
+require "forwardable"
 
 class Chef
   class Provider
     class Launchd < Chef::Provider
+      extend Forwardable
+      provides :launchd, os: "darwin"
+
+      def_delegators :@new_resource, *[
+        :backup,
+        :cookbook,
+        :group,
+        :label,
+        :mode,
+        :owner,
+        :path,
+        :source,
+        :session_type,
+        :type
+      ]
 
       def load_current_resource
-        @current_resource = Chef::Resource::Launchd.new(@new_resource.name)
-        @name = @new_resource.name
-        @label = @new_resource.label ? @new_resource.label : @name
-        @backup = @new_resource.backup
-        @cookbook = @new_resource.cookbook
-        @group = @new_resource.group
-        @mode = @new_resource.mode
-        @owner = @new_resource.owner
-        @path = @new_resource.path
-        @source = @new_resource.source
-        @content = content?
+        current_resource = Chef::Resource::Launchd.new(new_resource.name)
+        @path = path ? path : gen_path_from_type
+      end
+
+      def gen_path_from_type
+        types = {
+          'daemon' => "/Library/LaunchDaemons/#{label}.plist",
+          'agent' => "/Library/LaunchAgents/#{label}.plist"
+        }
+        types[type]
       end
 
       def action_create
@@ -70,7 +86,7 @@ class Chef
       end
 
       def manage_plist(action)
-        if @source
+        if source
           res = cookbook_file_resource
         else
           res = file_resource
@@ -87,37 +103,34 @@ class Chef
       end
 
       def service_resource
-        res = Chef::Resource::MacosxService.new(@label, run_context)
-        res.name(@label)
-        res.service_name(@label)
-        res.plist(@path)
-        res.session_type(@session_type) if @session_type
-
+        res = Chef::Resource::MacosxService.new(label, run_context)
+        res.name(label) if label
+        res.service_name(label) if label
+        res.plist(@path) if @path
+        res.session_type(session_type) if session_type
         res
       end
 
       def file_resource
         res = Chef::Resource::File.new(@path, run_context)
-        res.name(@path)
-        res.backup(@backup) if @backup
-        res.content(@content) if @content
-        res.group(@group) if @group
-        res.mode(@mode) if @mode
-        res.owner(@owner) if @owner
-
+        res.name(@path) if @path
+        res.backup(backup) if backup
+        res.content(content) if content
+        res.group(group) if group
+        res.mode(mode) if mode
+        res.owner(owner) if owner
         res
       end
 
       def cookbook_file_resource
         res = Chef::Resource::CookbookFile.new(@path, run_context)
-        res.cookbook_name = @cookbook if @cookbook
-        res.name(@path)
-        res.backup(@backup) if @backup
-        res.group(@group) if @group
-        res.mode(@mode) if @mode
-        res.owner(@owner) if @owner
-        res.source(@source) if @source
-
+        res.cookbook_name = cookbook if cookbook
+        res.name(@path) if @path
+        res.backup(backup) if backup
+        res.group(group) if group
+        res.mode(mode) if mode
+        res.owner(owner) if owner
+        res.source(source) if source
         res
       end
 
@@ -125,23 +138,24 @@ class Chef
         requirements.assert(
           :create, :create_if_missing, :delete, :enable, :disable
         ) do |a|
-          type = @new_resource.type.to_s
-          a.assertion { ['daemon', 'agent'].include?(type) }
-          error_msg = 'type must be daemon or agent'
+          type = new_resource.type
+          a.assertion { ['daemon', 'agent'].include?(type.to_s) }
+          error_msg = 'type must be daemon or agent.'
           a.failure_message Chef::Exceptions::ValidationFailed, error_msg
         end
       end
 
       def content?
-        if @new_resource.hash
-          @new_resource.hash.to_plist
-        elsif @new_resource.program || @new_resource.program_arguments
-          gen_plist
-        end
+        !!content
       end
 
-      def gen_plist
-        plist_hash = {}
+      def content
+        plist_hash = new_resource.hash || gen_hash
+        Plist::Emit.dump(plist_hash) unless plist_hash.nil?
+      end
+
+      def gen_hash
+        return nil unless new_resource.program || new_resource.program_arguments
         {
           'label' => 'Label',
           'program' => 'Program',
@@ -185,14 +199,10 @@ class Chef
           'wait_for_debugger' => 'WaitForDebugger',
           'watch_paths' => 'WatchPaths',
           'working_directory' => 'WorkingDirectory',
-        }.each do |key, val|
-          if @new_resource.send(key)
-            plist_hash[val] = @new_resource.send(key)
-          end
+        }.each_with_object({}) do |(key, val), memo|
+          memo[val] = new_resource.send(key) if new_resource.send(key)
         end
-        plist_hash.to_plist
       end
-
     end
   end
 end
