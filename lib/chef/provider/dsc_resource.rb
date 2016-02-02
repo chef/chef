@@ -122,24 +122,30 @@ class Chef
 
       def test_resource
         result = invoke_resource(:test)
-        @converge_description = result.stream(:verbose)
-
-        # We really want this information from the verbose stream,
-        # however in some versions of WMF, Invoke-DscResource is not correctly
-        # writing to that stream and instead just dumping to stdout
-        if @converge_description.empty?
-          @converge_description = result.stdout
-        end
-
+        add_dsc_verbose_log(result)
         return_dsc_resource_result(result, "InDesiredState")
       end
 
       def set_resource
         result = invoke_resource(:set)
-        if return_dsc_resource_result(result, "RebootRequired")
-          create_reboot_resource
-        end
+        add_dsc_verbose_log(result)
+        create_reboot_resource if return_dsc_resource_result(result, "RebootRequired")
         result.return_value
+      end
+      
+      def add_dsc_verbose_log(result)
+        # We really want this information from the verbose stream,
+        # however in some versions of WMF, Invoke-DscResource is not correctly
+        # writing to that stream and instead just dumping to stdout
+        verbose_output = result.stream(:verbose)
+        verbose_output = result.stdout if verbose_output.empty?
+
+        if @converge_description.nil? || @converge_description.empty?
+          @converge_description = verbose_output
+        else
+          @converge_description << "\n"
+          @converge_description << verbose_output
+        end
       end
 
       def invoke_resource(method, output_format=:object)
