@@ -1,5 +1,5 @@
 #
-# Author:: Ho-Sheng Hsiao (hosh@opscode.com)
+# Author:: Ho-Sheng Hsiao (hosh@chef.io)
 # Code derived from spec/unit/mixin/command_spec.rb
 #
 # Original header:

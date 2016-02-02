@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Author:: Prajakta Purohit (prajakta@opscode.com>)
+# Author:: Prajakta Purohit (prajakta@chef.io>)
 # Auther:: Tyler Cloke (<tyler@opscode.com>)
 #
 # Copyright:: Copyright 2012-2016, Chef Software Inc.
