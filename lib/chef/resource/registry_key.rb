@@ -1,5 +1,5 @@
-# Author:: Prajakta Purohit (<prajakta@opscode.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Author:: Prajakta Purohit (<prajakta@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
 #
 # Copyright:: Copyright 2011-2016, Chef Software Inc.
 #

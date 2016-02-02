@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Authors:: Adam Jacob (<adam@opscode.com>)
+# Authors:: Adam Jacob (<adam@chef.io>)
 #           Ionuț Arțăriși (<iartarisi@suse.cz>)
 # Copyright:: Copyright 2008-2016, Chef Software, Inc.
 #             Copyright 2013-2016, SUSE Linux GmbH

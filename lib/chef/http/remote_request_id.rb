@@ -1,4 +1,4 @@
-# Author:: Prajakta Purohit (<prajakta@opscode.com>)
+# Author:: Prajakta Purohit (<prajakta@chef.io>)
 # Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

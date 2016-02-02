@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
 # Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

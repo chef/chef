@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
 # Author:: John Keiser (<jkeiser@chef.io)
 # Copyright:: Copyright 2008-2016, Chef, Inc.
 # License:: Apache License, Version 2.0

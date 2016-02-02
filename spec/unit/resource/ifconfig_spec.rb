@@ -1,5 +1,5 @@
 #
-# Author:: Tyler Cloke (<tyler@opscode.com>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
 # Copyright:: Copyright 2009-2016, Joe Williams
 # License:: Apache License, Version 2.0
 #

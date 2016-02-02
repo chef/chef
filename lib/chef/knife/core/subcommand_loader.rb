@@ -1,5 +1,5 @@
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
 # Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

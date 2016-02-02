@@ -1,5 +1,5 @@
 #
-# Author:: Chris Doherty <cdoherty@getchef.com>)
+# Author:: Chris Doherty <cdoherty@chef.io>)
 # Copyright:: Copyright 2014-2016, Chef, Inc.
 # License:: Apache License, Version 2.0
 #

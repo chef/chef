@@ -1,5 +1,5 @@
 #
-# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
 # Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

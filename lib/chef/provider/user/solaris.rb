@@ -1,5 +1,5 @@
 #
-# Author:: Stephen Nelson-Smith (<sns@opscode.com>)
+# Author:: Stephen Nelson-Smith (<sns@chef.io>)
 # Author:: Jon Ramsey (<jonathon.ramsey@gmail.com>)
 # Author:: Dave Eddy (<dave@daveeddy.com>)
 # Copyright:: Copyright 2012-2016, Chef Software Inc.

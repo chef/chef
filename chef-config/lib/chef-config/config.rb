@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Author:: Mark Mzyk (<mmzyk@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: AJ Christensen (<aj@chef.io>)
+# Author:: Mark Mzyk (<mmzyk@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0

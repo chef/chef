@@ -1,7 +1,7 @@
 # Encoding: utf-8
 # Author:: Hugo Fichter
-# Author:: Lamont Granquist (<lamont@getchef.com>)
-# Author:: Joshua Timberman (<joshua@getchef.com>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Author:: Joshua Timberman (<joshua@chef.io>)
 # Copyright:: Copyright 2009-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #

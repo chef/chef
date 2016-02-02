@@ -1,5 +1,5 @@
 #
-# Author:: Stephen Delano (<stephen@opscode.com>)
+# Author:: Stephen Delano (<stephen@chef.io>)
 # Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

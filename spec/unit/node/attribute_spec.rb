@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: AJ Christensen (<aj@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: AJ Christensen (<aj@chef.io>)
 # Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

@@ -1,5 +1,5 @@
 #
-# Authors:: AJ Christensen (<aj@opscode.com>)
+# Authors:: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
 # Copyright:: Copyright 2008-2016, Chef Software Inc.
 # Copyright:: Copyright 2014-2016, Richard Manyanza.

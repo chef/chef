@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, eersion 2.0
 #

@@ -1,6 +1,6 @@
 # encoding: UTF-8
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
 # Copyright:: Copyright 2013-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #

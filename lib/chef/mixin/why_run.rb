@@ -1,6 +1,6 @@
 #
-# Author:: Dan DeLeo ( <dan@opscode.com> )
-# Author:: Marc Paradise ( <marc@opscode.com> )
+# Author:: Dan DeLeo ( <dan@chef.io> )
+# Author:: Marc Paradise ( <marc@chef.io> )
 # Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #

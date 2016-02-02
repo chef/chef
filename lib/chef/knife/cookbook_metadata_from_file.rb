@@ -1,6 +1,6 @@
 #
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Matthew Kent (<mkent@magoazul.com>)
 # Copyright:: Copyright 2009-2016, Chef Software Inc.
 # Copyright:: Copyright 2010-2016, Matthew Kent

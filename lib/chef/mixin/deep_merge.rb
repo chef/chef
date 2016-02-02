@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Steve Midgley (http://www.misuse.org/science)
 # Copyright:: Copyright 2009-2016, Chef Software Inc.
 # Copyright:: Copyright 2008-2016, Steve Midgley

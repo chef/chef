@@ -1,5 +1,5 @@
 #
-# Author:: Adam Edwards (<adamed@opscode.com>)
+# Author:: Adam Edwards (<adamed@chef.io>)
 # Author:: Jay Mundrawala (<jdm@chef.io>)
 # Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0

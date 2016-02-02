@@ -1,7 +1,7 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Author:: Mark Mzyk (<mmzyk@opscode.com>)
-# Author:: John Keiser (<jkeiser@opscode.com>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Author:: Mark Mzyk (<mmzyk@chef.io>)
+# Author:: John Keiser (<jkeiser@chef.io>)
 # Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

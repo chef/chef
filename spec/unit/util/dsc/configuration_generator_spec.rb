@@ -1,5 +1,5 @@
 #
-# Author:: Jay Mundrawala <jmundrawala@getchef.com>
+# Author:: Jay Mundrawala <jmundrawala@chef.io>
 # Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #

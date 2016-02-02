@@ -1,5 +1,5 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
+# Author:: Serdar Sutay (<serdar@chef.io>)
 # Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

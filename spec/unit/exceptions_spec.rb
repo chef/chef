@@ -1,6 +1,6 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright 2010-2016, Thomas Bishop
 # Copyright:: Copyright 2010-2016, Chef Software Inc.

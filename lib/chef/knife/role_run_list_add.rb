@@ -1,4 +1,4 @@
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: William Albenzi (<walbenzi@gmail.com>)
 # Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0

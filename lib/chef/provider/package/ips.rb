@@ -1,6 +1,6 @@
 #
 # Author:: Jason J. W. Williams (<williamsjj@digitar.com>)
-# Author:: Stephen Nelson-Smith (<sns@opscode.com>)
+# Author:: Stephen Nelson-Smith (<sns@chef.io>)
 # Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

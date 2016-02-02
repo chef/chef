@@ -1,5 +1,5 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Prajakta Purohit (prajakta@opscode.com>)
 # Auther:: Tyler Cloke (<tyler@opscode.com>)
 #

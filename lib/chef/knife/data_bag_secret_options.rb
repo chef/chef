@@ -1,5 +1,5 @@
 #
-# Author:: Tyler Ball (<tball@opscode.com>)
+# Author:: Tyler Ball (<tball@chef.io>)
 # Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

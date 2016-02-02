@@ -1,6 +1,6 @@
 #
 # Author:: Jason K. Jackson (jasonjackson@gmail.com)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
 # Copyright:: Copyright 2009-2016, Jason K. Jackson
 # License:: Apache License, Version 2.0
 #

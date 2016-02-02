@@ -1,6 +1,6 @@
 #
-# Author:: Joshua Timberman (<joshua@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
+# Author:: Joshua Timberman (<joshua@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
 # Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

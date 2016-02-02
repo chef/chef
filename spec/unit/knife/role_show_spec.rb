@@ -1,5 +1,5 @@
 #
-# Author:: Lamont Granquist (<lamont@getchef.com>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
 # Copyright:: Copyright 2014-2016, Lamont Granquist
 # License:: Apache License, Version 2.0
 #

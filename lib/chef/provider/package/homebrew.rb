@@ -1,5 +1,5 @@
 #
-# Author:: Joshua Timberman (<joshua@getchef.com>)
+# Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
 # Copyright 2011-2016, Chef Software Inc.

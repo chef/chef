@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
 # Copyright:: Copyright 2009-2016, Daniel DeLeo
 # Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0

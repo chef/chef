@@ -1,5 +1,5 @@
 #
-# Author:: AJ Christensen (<aj@opscode.com>)
+# Author:: AJ Christensen (<aj@chef.io>)
 # Copyright:: Copyright 2009-2016, Opscode
 # License:: Apache License, Version 2.0
 #

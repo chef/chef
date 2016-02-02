@@ -1,5 +1,5 @@
 #
-# Author:: Joshua Timberman (<joshua@getchef.com>)
+# Author:: Joshua Timberman (<joshua@chef.io>)
 #
 # Copyright 2014-2016, Chef Software, Inc <legal@getchef.com>
 #

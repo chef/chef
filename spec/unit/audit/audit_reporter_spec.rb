@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Author:: Claire McQuin (<claire@getchef.com>)
+# Author:: Claire McQuin (<claire@chef.io>)
 #
 # Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0

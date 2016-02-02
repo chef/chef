@@ -1,6 +1,6 @@
 #
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Author:: Steven Danna (<steve@opscode.com>)
+# Author:: Steven Danna (<steve@chef.io>)
 # Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

@@ -1,5 +1,5 @@
 #
-# Author:: Bryan McLellan <btm@opscode.com>
+# Author:: Bryan McLellan <btm@chef.io>
 # Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #

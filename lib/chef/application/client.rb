@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com)
-# Author:: Christopher Brown (<cb@opscode.com>)
+# Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Mark Mzyk (mmzyk@opscode.com)
 # Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
