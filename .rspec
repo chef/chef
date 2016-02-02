@@ -1,2 +1,4 @@
 --color
 -fd
+--profile
+spec/**/*_spec.rb
