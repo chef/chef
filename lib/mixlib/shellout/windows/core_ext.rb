@@ -42,7 +42,7 @@ module Process::Functions
     [:buffer_in, :buffer_in, :buffer_in, :ulong, :ulong, :pointer], :bool
 
   attach_pfunc :CreateProcessAsUserW,
-    [:ulong, :buffer_in, :buffer_in, :pointer, :pointer, :bool,
+    [:ulong, :buffer_in, :buffer_inout, :pointer, :pointer, :int,
       :ulong, :buffer_in, :buffer_in, :pointer, :pointer], :bool
 
   ffi_lib :user32
