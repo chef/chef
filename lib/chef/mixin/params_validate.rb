@@ -400,23 +400,34 @@ class Chef
         return true if !opts.has_key?(key.to_s) && !opts.has_key?(key.to_sym)
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)
-        to_be.each do |tb|
+        errors = []
+        passed = to_be.any? do |tb|
           case tb
           when Proc
             raise CannotValidateStaticallyError, "is: proc { } must be evaluated once for each resource" if self == Chef::Mixin::ParamsValidate
-            return true if instance_exec(value, &tb)
+            instance_exec(value, &tb)
           when Property
-            validate(opts, { key => tb.validation_options })
-            return true
+            begin
+              validate(opts, { key => tb.validation_options })
+              true
+            rescue Exceptions::ValidationFailed
+              # re-raise immediately if there is only one "is" so we get a better stack
+              raise if to_be.size == 1
+              errors << $!
+              false
+            end
           else
-            return true if tb === value
+            tb === value
           end
         end
-
-        if raise_error
-          raise Exceptions::ValidationFailed, "Option #{key} must be one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+        if passed
+          true
         else
-          false
+          message = "Property #{key} must be one of: #{to_be.map { |v| v.inspect }.join(", ")}!  You passed #{value.inspect}."
+          unless errors.empty?
+            message << " Errors:\n#{errors.map { |m| "- #{m}" }.join("\n")}"
+          end
+          raise Exceptions::ValidationFailed, message
         end
       end
 

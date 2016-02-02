@@ -583,7 +583,7 @@ describe "Chef::Resource.property" do
     context "validation of defaults" do
       it "When a class is declared with property :x, String, default: 10, a warning is emitted" do
         expect { resource_class.class_eval { property :x, String, default: 10 } }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-          /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Option x must be one of: String!  You passed 10./
+          /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Property x must be one of: String!  You passed 10./
       end
       context "With property :x, String, default: 10" do
         before do
@@ -611,7 +611,7 @@ describe "Chef::Resource.property" do
         end
         it "when x is retrieved, an invalid default warning is emitted and the value is returned" do
           expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Default value 1 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Option x must be one of: String!  You passed 1./
+            /Default value 1 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Property x must be one of: String!  You passed 1./
           expect(Namer.current_index).to eq 1
           Chef::Config[:treat_deprecation_warnings_as_errors] = false
           expect(resource.x).to eq 2
@@ -729,7 +729,7 @@ describe "Chef::Resource.property" do
         with_property ':x, Integer, coerce: proc { |v| "#{v}#{next_index}" }, default: 10' do
           it "when x is retrieved, it is coerced and emits an invalid default warning, but still returns the value" do
             expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-              /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Option x must be one of: Integer!  You passed "101"./
+              /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Property x must be one of: Integer!  You passed "101"./
             Chef::Config[:treat_deprecation_warnings_as_errors] = false
             expect(resource.x).to eq "102"
           end
@@ -742,7 +742,7 @@ describe "Chef::Resource.property" do
         with_property ':x, Integer, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
           it "when x is retrieved, it is coerced and emits an invalid default warning; the value is still returned." do
             expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-              /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Option x must be one of: Integer!  You passed "101"./
+              /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Property x must be one of: Integer!  You passed "101"./
             Chef::Config[:treat_deprecation_warnings_as_errors] = false
             expect(resource.x).to eq "102"
           end
@@ -1096,19 +1096,80 @@ describe "Chef::Resource.property" do
       /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
   end
 
-  it "property_types validate their defaults" do
-    expect {
-      module PropertySpecPropertyTypes
-        include Chef::Mixin::Properties
-        property_type(is: [:a, :b], default: :c)
+  context "property_type" do
+    it "property_types validate their defaults" do
+      expect {
+        module ::PropertySpecPropertyTypes
+          include Chef::Mixin::Properties
+          property_type(is: [:a, :b], default: :c)
+        end
+      }.to raise_error(Chef::Exceptions::DeprecatedFeatureError, /Default value :c is invalid for property <property type>./)
+      expect {
+        module ::PropertySpecPropertyTypes
+          include Chef::Mixin::Properties
+          property_type(is: [:a, :b], default: :b)
+        end
+      }.not_to raise_error
+    end
+
+    context "With property_type ABType (is: [:a, :b]) and CDType (is: [:c, :d])" do
+      before :all do
+        module ::PropertySpecPropertyTypes
+          include Chef::Mixin::Properties
+          ABType = property_type(is: [:a, :b])
+          CDType = property_type(is: [:c, :d])
+        end
       end
-    }.to raise_error(Chef::Exceptions::DeprecatedFeatureError, /Default value :c is invalid for property <property type>./)
-    expect {
-      module PropertySpecPropertyTypes
-        include Chef::Mixin::Properties
-        property_type(is: [:a, :b], default: :b)
+
+      with_property ":x, [PropertySpecPropertyTypes::ABType, nil, PropertySpecPropertyTypes::CDType]" do
+        it "The property can be set to nil without triggering a warning" do
+          expect(resource.x nil).to be_nil
+          expect(resource.x).to be_nil
+        end
+        it "The property can be set to :a" do
+          expect(resource.x :a).to eq(:a)
+          expect(resource.x).to eq(:a)
+        end
+        it "The property can be set to :c" do
+          expect(resource.x :c).to eq(:c)
+          expect(resource.x).to eq(:c)
+        end
+        it "The property cannot be set to :z" do
+          expect { resource.x :z }.to raise_error(Chef::Exceptions::ValidationFailed, /Property x must be one of/)
+        end
       end
-    }.not_to raise_error
+
+      with_property ":x, [nil, PropertySpecPropertyTypes::ABType, PropertySpecPropertyTypes::CDType]" do
+        it "The property can be set to nil without triggering a warning" do
+          expect(resource.x nil).to be_nil
+          expect(resource.x).to be_nil
+        end
+        it "The property can be set to :a" do
+          expect(resource.x :a).to eq(:a)
+          expect(resource.x).to eq(:a)
+        end
+        it "The property can be set to :c" do
+          expect(resource.x :c).to eq(:c)
+          expect(resource.x).to eq(:c)
+        end
+        it "The property cannot be set to :z" do
+          expect { resource.x :z }.to raise_error(Chef::Exceptions::ValidationFailed, /Property x must be one of/)
+        end
+      end
+
+      with_property ":x, [PropertySpecPropertyTypes::ABType, nil], default: nil" do
+        it "The value defaults to nil" do
+          expect(resource.x).to be_nil
+        end
+      end
+
+      with_property ":x, [PropertySpecPropertyTypes::ABType, nil], default: lazy { nil }" do
+        it "The value defaults to nil" do
+          expect(resource.x).to be_nil
+        end
+      end
+    end
+
   end
 
   context "with a custom property type" do
