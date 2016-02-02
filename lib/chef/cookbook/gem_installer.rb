@@ -18,11 +18,7 @@
 #
 
 require "tmpdir"
-begin
-  require "bundler/inline"
-rescue LoadError
-  raise RuntimeError, "The RFC060 metadata gem feature requires bundler 1.10.0 or greater."
-end
+require "bundler/inline"
 
 class Chef
   class Cookbook
