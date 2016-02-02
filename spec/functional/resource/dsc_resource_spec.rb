@@ -19,16 +19,11 @@
 require "spec_helper"
 
 describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
-  before(:all) do
-    @ohai = Ohai::System.new
-    @ohai.all_plugins(["platform", "os", "languages/powershell"])
-  end
-
   let(:event_dispatch) { Chef::EventDispatch::Dispatcher.new }
 
   let(:node) {
     Chef::Node.new.tap do |n|
-      n.consume_external_attrs(@ohai.data, {})
+      n.consume_external_attrs(OHAI_SYSTEM.data, {})
     end
   }
 
