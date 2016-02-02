@@ -1,7 +1,7 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

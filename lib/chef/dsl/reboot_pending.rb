@@ -1,6 +1,6 @@
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Author:: Seth Chisamore <schisamo@opscode.com>
-# Copyright:: Copyright (c) 2011,2014, Chef Software, Inc.
+# Author:: Seth Chisamore <schisamo@chef.io>
+# Copyright:: Copyright 2011-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -2,7 +2,7 @@
 # Cookbook Name:: audit_test
 # Recipe:: serverspec_support
 #
-# Copyright (c) 2014 The Authors, All Rights Reserved.
+# Copyright 2014-2016, The Authors, All Rights Reserved.
 
 file "/tmp/audit_test_file" do
   action :create

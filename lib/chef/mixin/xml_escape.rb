@@ -1,7 +1,7 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
-# Copyright:: Copyright (c) 2005 Sam Ruby
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2005-2016, Sam Ruby
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@
 #
 # Thanks, Sam!
 #
-# Copyright (c) 2005, Sam Ruby
+# Copyright 2005-2016, Sam Ruby
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal

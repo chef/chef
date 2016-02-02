@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@ospcode.com>)
 # Author:: Seth Falcon (<seth@ospcode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

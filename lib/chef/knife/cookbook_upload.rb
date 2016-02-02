@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Nuo Yan (<yan.nuo@gmail.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

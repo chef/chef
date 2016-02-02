@@ -1,7 +1,7 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software, Inc.
 #p License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

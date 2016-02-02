@@ -1,8 +1,8 @@
 #
-# Author:: Stephen Delano (<stephen@opscode.com>)$
+# Author:: Stephen Delano (<stephen@chef.io>)$
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.$
-# Copyright:: Copyright (c) 2010 Matthew Kent
+# Copyright:: Copyright 2010-2016, Chef Software Inc.$
+# Copyright:: Copyright 2010-2016, Matthew Kent
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

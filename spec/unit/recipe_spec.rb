@@ -1,9 +1,9 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,7 +1,7 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

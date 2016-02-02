@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

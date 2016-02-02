@@ -1,9 +1,9 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Dave Eddy (<dave@daveeddy.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
-# Copyright:: Copyright (c) 2015, Dave Eddy
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2015-2016, Dave Eddy
 #
 # License:: Apache License, Version 2.0
 #

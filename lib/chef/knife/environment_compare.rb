@@ -1,6 +1,6 @@
 #
 # Author:: Sander Botman (<sbotman@schubergphilis.com>)
-# Copyright:: Copyright (c) 2013 Sander Botman.
+# Copyright:: Copyright 2013-2016, Sander Botman.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

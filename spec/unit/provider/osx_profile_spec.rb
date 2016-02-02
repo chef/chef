@@ -1,6 +1,6 @@
 #
 # Author:: Nate Walck (<nate.walck@gmail.com>)
-# Copyright:: Copyright (c) 2015 Chef, Inc.
+# Copyright:: Copyright 2015-2016, Chef, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

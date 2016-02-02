@@ -1,7 +1,7 @@
 #
-# Author:: Lamont Granquist (<lamont@getchef.com>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: Copyright (c) 2012 Chef Software, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

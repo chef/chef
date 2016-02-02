@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 HJK Solutions, LLC
+# Copyright:: Copyright 2008-2016, HJK Solutions, LLC
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

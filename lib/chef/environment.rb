@@ -1,9 +1,9 @@
 #
-# Author:: Stephen Delano (<stephen@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Stephen Delano (<stephen@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
 # Author:: John Keiser (<jkeiser@ospcode.com>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2010-2011 Opscode, Inc.
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,7 +1,7 @@
 #
 # Author:: Mike Fiedler (<miketheman@gmail.com>)
 # Author:: William Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright (c) 2013 Mike Fiedler
+# Copyright:: Copyright 2013-2016, Mike Fiedler
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

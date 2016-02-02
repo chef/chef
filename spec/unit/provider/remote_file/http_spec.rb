@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Lamont Granquist
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Lamont Granquist
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

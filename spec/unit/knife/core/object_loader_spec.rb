@@ -1,7 +1,7 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Juanje Ojeda (<juanje.ojeda@gmail.com>)
-# Copyright:: Copyright (c) 2011-2012 Opscode, Inc.
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

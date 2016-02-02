@@ -1,6 +1,6 @@
 #
 # Author:: Dan Bjorge (<dbjorge@gmail.com>)
-# Copyright:: Copyright (c) 2015 Dan Bjorge
+# Copyright:: Copyright 2015-2016, Dan Bjorge
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,6 +1,6 @@
 #
 # Author:: Noah Kantrowitz (<noah@coderanger.net>)
-# Copyright:: Copyright (c) 2015 Noah Kantrowitz
+# Copyright:: Copyright 2015-2016, Noah Kantrowitz
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

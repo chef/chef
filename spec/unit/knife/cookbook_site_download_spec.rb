@@ -1,6 +1,6 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
-# Copyright:: Copyright (c) 2012 Thomas Bishop
+# Copyright:: Copyright 2012-2016, Thomas Bishop
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

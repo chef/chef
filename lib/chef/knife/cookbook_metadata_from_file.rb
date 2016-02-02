@@ -1,9 +1,9 @@
 #
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
-# Copyright:: Copyright (c) 2010 Matthew Kent
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2016, Matthew Kent
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
