@@ -47,7 +47,7 @@ class Chef
         unless cookbook_gems.empty?
           begin
             inline_gemfile do
-              source "https://rubygems.org"
+              source Chef::Config[:rubygems_url]
               cookbook_gems.each do |args|
                 gem *args
               end

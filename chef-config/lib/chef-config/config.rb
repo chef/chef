@@ -886,6 +886,8 @@ module ChefConfig
     # break Chef community cookbooks and is very highly discouraged.
     default :ruby_encoding, Encoding::UTF_8
 
+    default :rubygems_url, "https://rubygems.org"
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
