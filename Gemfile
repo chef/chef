@@ -4,6 +4,7 @@ gemspec name: "chef"
 gem "activesupport", "< 4.0.0", group: :compat_testing, platform: "ruby"
 
 gem "chef-config", path: "chef-config" if File.exist?(__FILE__ + "../chef-config")
+gem "ohai", github: "chef/ohai", branch: "jdm/revert-package"
 
 group(:docgen) do
   gem "yard"
