@@ -98,6 +98,7 @@ describe Chef::Provider::DscResource do
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
         and_return(double(:stdout => "", :return_value =>nil))
+      expect(provider).to receive(:add_dsc_verbose_log)
       expect(provider).to receive(:return_dsc_resource_result).and_return(true)
       expect(provider).to receive(:create_reboot_resource)
       provider.run_action(:run)
@@ -108,6 +109,7 @@ describe Chef::Provider::DscResource do
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
         and_return(double(:stdout => "", :return_value =>nil))
+      expect(provider).to receive(:add_dsc_verbose_log)
       expect(provider).to receive(:return_dsc_resource_result).and_return(false)
       expect(provider).to_not receive(:create_reboot_resource)
       provider.run_action(:run)

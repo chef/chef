@@ -29,6 +29,8 @@ class Chef
           TrueClass => { :type => lambda { |x| "$true" }},
           Hash => {:type => Proc.new { |x| translate_hash(x)}},
           Array => {:type => Proc.new { |x| translate_array(x)}},
+          Chef::Node::ImmutableMash => {:type => Proc.new { |x| translate_hash(x)}},
+          Chef::Node::ImmutableArray => {:type => Proc.new { |x| translate_array(x)}},
         }
       end
 
