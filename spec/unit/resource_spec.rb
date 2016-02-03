@@ -1098,4 +1098,27 @@ describe Chef::Resource do
       it { is_expected.to eq [:two, :one] }
     end
   end
+
+  describe "apply" do
+    let(:resource) { Chef::Resource::ZenMaster.new("coffee", run_context) }
+
+    it "allows setting with a block" do
+      resource.apply do
+        something "meow"
+      end
+      expect(resource.something).to eql("meow")
+    end
+
+    it "allows setting with a proc" do
+      prop = proc { something "meow" }
+      resource.apply prop
+      expect(resource.something).to eql("meow")
+    end
+
+    it "allows setting with a lambda" do
+      prop = lambda { |ign| something "meow" }
+      resource.apply prop
+      expect(resource.something).to eql("meow")
+    end
+  end
 end
