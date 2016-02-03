@@ -25,7 +25,7 @@ class Chef
 
       provides :powershell_script, os: "windows"
 
-      def initialize (new_resource, run_context)
+      def initialize(new_resource, run_context)
         super(new_resource, run_context, ".ps1")
         add_exit_status_wrapper
       end

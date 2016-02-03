@@ -69,7 +69,7 @@ class Chef
       end
 
       def to_s
-        "#{@type}[#{@name}#{@version ? "@#{@version}" :""}]"
+        "#{@type}[#{@name}#{@version ? "@#{@version}" : ""}]"
       end
 
       def role?

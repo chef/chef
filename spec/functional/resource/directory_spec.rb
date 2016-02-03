@@ -33,7 +33,7 @@ describe Chef::Resource::Directory do
   end
 
   let(:resource) do
-  	create_resource
+    create_resource
   end
 
   it_behaves_like "a directory resource"

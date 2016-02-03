@@ -24,7 +24,7 @@ class Chef
 
       provides :batch, os: "windows"
 
-      def initialize (new_resource, run_context)
+      def initialize(new_resource, run_context)
         super(new_resource, run_context, ".bat")
       end
 

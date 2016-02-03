@@ -165,7 +165,7 @@ class Chef
           if @action_nodes.length == 0
             ui.fatal("No nodes returned from search!")
           else
-            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes":"node"} found, " +
+            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes": "node"} found, " +
                      "but does not have the required attribute to establish the connection. " +
                      "Try setting another attribute to open the connection using --attribute.")
           end

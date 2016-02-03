@@ -191,7 +191,7 @@ describe Chef::Application::Knife do
     end
 
     it "should load the environment from the CLI options" do
-      with_argv(*%W{noop knife command -E development}) do
+      with_argv(*%w{noop knife command -E development}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end

@@ -43,8 +43,6 @@ class Chef
           case exception
           when Net::HTTPServerException, Net::HTTPFatalError
             humanize_http_exception(error_description)
-          when *NETWORK_ERROR_CLASSES
-            describe_network_errors(error_description)
           when Chef::Exceptions::PrivateKeyMissing
             error_description.section("Private Key Not Found:",<<-E)
 Your private key could not be loaded. If the key file exists, ensure that it is
@@ -55,6 +53,8 @@ client_key        "#{api_key}"
 E
           when EOFError
             describe_eof_error(error_description)
+          when *NETWORK_ERROR_CLASSES
+            describe_network_errors(error_description)
           else
             error_description.section("Unexpected Error:","#{exception.class.name}: #{exception.message}")
           end

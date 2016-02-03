@@ -32,7 +32,7 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
   describe "when explaining a 403 error" do
     before do
 
-      @response_body = %Q({"error": [{"message": "gtfo"}])
+      @response_body = %q({"error": [{"message": "gtfo"}])
       @response = Net::HTTPForbidden.new("1.1", "403", "(response) forbidden")
       allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
