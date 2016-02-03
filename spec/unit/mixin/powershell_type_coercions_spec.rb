@@ -69,6 +69,11 @@ describe Chef::Mixin::PowershellTypeCoercions do
       expect(test_class.translate_type(test_mash)).to eq("@{a=1;b=1.2;c=$false;d=$true}")
     end
 
+    it "translates a Chef::Node::ImmutableArray like an array" do
+      test_array = Chef::Node::ImmutableArray.new([true, false])
+      expect(test_class.translate_type(test_array)).to eq("@($true,$false)")
+    end
+
     it "falls back :to_psobject if we have not defined at explicit rule" do
       ps_obj = double("PSObject")
       expect(ps_obj).to receive(:to_psobject).and_return("$true")
