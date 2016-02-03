@@ -1,5 +1,9 @@
 # mixlib-shellout Changelog
 
+## Release 2.2.6
+
+* Fix regression introduced in 2.2.2 by changing `CreateProcessAsUserW` to use a `:int` instead of `:bool` for the `inherit` flag to fix `shell_out` on windows from a service context
+
 ## Release 2.2.5
 
 * [**tschuy**:](https://github.com/tschuy)
