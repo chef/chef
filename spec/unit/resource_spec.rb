@@ -1103,20 +1103,30 @@ describe Chef::Resource do
     let(:resource) { Chef::Resource::ZenMaster.new("coffee", run_context) }
 
     it "allows setting with a block" do
-      resource.apply do
+      rspec = self
+      resource.apply do |r|
+        rspec.expect(r).to rspec.be_kind_of(Chef::Resource::ZenMaster)
         something "meow"
       end
       expect(resource.something).to eql("meow")
     end
 
     it "allows setting with a proc" do
-      prop = proc { something "meow" }
+      rspec = self
+      prop = proc do |r|
+        rspec.expect(r).to rspec.be_kind_of(Chef::Resource::ZenMaster)
+        something "meow"
+      end
       resource.apply prop
       expect(resource.something).to eql("meow")
     end
 
     it "allows setting with a lambda" do
-      prop = lambda { |ign| something "meow" }
+      rspec = self
+      prop = lambda do |r|
+        rspec.expect(r).to rspec.be_kind_of(Chef::Resource::ZenMaster)
+        something "meow"
+      end
       resource.apply prop
       expect(resource.something).to eql("meow")
     end
