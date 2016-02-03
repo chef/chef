@@ -46,16 +46,6 @@ class Chef
         USE_LOTS_OF_FORCE = 2 #every windows API should support this flag
 
         NERR_Success = 0
-        NERR_InvalidComputer = 2351
-        NERR_NotPrimary = 2226
-        NERR_SpeGroupOp = 2234
-        NERR_LastAdmin = 2452
-        NERR_BadUsername = 2202
-        NERR_BadPassword = 2203
-        NERR_PasswordTooShort = 2245
-        NERR_UserNotFound = 2221
-        NERR_GroupNotFound = 2220
-        ERROR_ACCESS_DENIED = 5
         ERROR_MORE_DATA = 234
 
         ffi_lib "netapi32"
