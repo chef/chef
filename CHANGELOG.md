@@ -51,6 +51,7 @@
 * [pr#4278](https://github.com/chef/chef/pull/4278)  make file resource use properties
 * [pr#4288](https://github.com/chef/chef/pull/4288)  Fix no_proxy setting in chef-config
 * [pr#4273](https://github.com/chef/chef/pull/4273)  Use signing protocol 1.1 by default
+* [pr#4520](https://github.com/chef/chef/pull/4520)  Fix a few `dsc_resource` bugs
 
 ## 12.6.0
 
