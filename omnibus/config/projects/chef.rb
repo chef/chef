@@ -62,6 +62,7 @@ override :ohai, version: "master"
 
 dependency "preparation"
 dependency "chef"
+dependency "pry"
 dependency "nokogiri"
 dependency "shebang-cleanup"
 dependency "version-manifest"
