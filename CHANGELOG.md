@@ -10,6 +10,10 @@
 * [**Brian Goad**](https://github.com/bbbco)
   [pr#4315](https://github.com/chef/chef/pull/4315) Add extra tests around whether to skip with multiple guards
 
+* [pr#4516](https://github.com/chef/chef/pull/4516) Return propper error messages when using windows based `mount`, `user` and `group` resources
+* [pr#4500](https://github.com/chef/chef/pull/4500) Explicitly declare directory permissions of chef install on windows to restrict rights on Windows client versions
+* [pr#4498](https://github.com/chef/chef/pull/4498) Correct major and minor OS versions for Windows 10 and add versions for Windows 2016 Server
+* [pr#4375](https://github.com/chef/chef/pull/4375) No longer try to auto discover package version of `exe` based windows packages
 * [pr#4369](https://github.com/chef/chef/pull/4396) Import omnibus-chef chef project definition and history
 * [pr#4399](https://github.com/chef/chef/pull/4399) Correctly save `policy_name` and `policy_group` with `knife node edit`
 * [pr#4278](https://github.com/chef/chef/pull/4278) make file resource use properties
@@ -28,7 +32,7 @@
 * [pr#4439](https://github.com/chef/chef/pull/4439)  Sometimes chocolately doesn't appear on the path
 * [pr#4432](https://github.com/chef/chef/pull/4432)  add get_rest etc calls to ServerAPI
 * [pr#4435](https://github.com/chef/chef/pull/4435)  add nokogiri to omnibus-chef
-* [pr#4419](https://github.com/chef/chef/pull/4419)  explicitly adding .bat to service executable called by service in cae users remove .bat from PATHEXT
+* [pr#4419](https://github.com/chef/chef/pull/4419)  explicitly adding .bat to service executable called by service in case users remove .bat from PATHEXT
 * [pr#4413](https://github.com/chef/chef/pull/4413)  configure chef client windows service to the correct chef directory
 * [pr#4377](https://github.com/chef/chef/pull/4377)  fixing candidate filtering and adding functional tests for chocolatey_package
 * [pr#4406](https://github.com/chef/chef/pull/4406)  Updating to the latest release of net-ssh to consume https://github.com/net-ssh/net-ssh/pull/280
