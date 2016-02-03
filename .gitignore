@@ -11,6 +11,7 @@ tags
 # This also matches Berksfile.lock
 external_tests/*.lock
 acceptance/Gemfile.lock
+omnibus/Gemfile.lock
 /*.lock
 /Gemfile.local
 
