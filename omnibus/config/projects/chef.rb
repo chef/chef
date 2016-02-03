@@ -58,7 +58,7 @@ end
 
 # Chef Release version pinning
 override :chef, version: "local_source"
-override :ohai, version: "v8.9.0"
+override :ohai, version: "v8.10.0"
 
 dependency "preparation"
 dependency "chef"
