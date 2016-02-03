@@ -148,7 +148,7 @@ describe Chef::Application do
           end
 
           it "sets openssl in fips mode" do
-            expect(OpenSSL).to receive(:'fips_mode=').with(true)
+            expect(Chef::Config).to receive(:enable_fips_mode)
             @app.configure_chef
           end
         end

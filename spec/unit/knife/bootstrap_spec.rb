@@ -422,6 +422,42 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  context "when doing fips things" do
+    let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
+    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), "../../data/trusted_certs")) }
+
+    before do
+      Chef::Config[:knife][:bootstrap_template] = template_file
+    end
+
+    let(:rendered_template) do
+      knife.render_template
+    end
+
+    context "when knife is in fips mode" do
+      before do
+        Chef::Config[:fips] = true
+      end
+
+      it "renders 'fips true'" do
+        Chef::Config[:fips] = true
+        expect(rendered_template).to match("fips")
+      end
+    end
+
+    context "when knife is not in fips mode" do
+      before do
+        # This is required because the chef-fips pipeline does
+        # has a default value of true for fips
+        Chef::Config[:fips] = false
+      end
+
+      it "does not render anything about fips" do
+        expect(rendered_template).not_to match("fips")
+      end
+    end
+  end
+
   describe "handling policyfile options" do
 
     context "when only policy_name is given" do
@@ -735,5 +771,4 @@ describe Chef::Knife::Bootstrap do
   describe "specifying ssl verification" do
 
   end
-
 end

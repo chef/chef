@@ -398,7 +398,6 @@ class Chef
       merge_configs
       apply_computed_config
       Chef::Config.export_proxies
-      Chef::Config.init_openssl
       # This has to be after apply_computed_config so that Mixlib::Log is configured
       Chef::Log.info("Using configuration from #{config[:config_file]}") if config[:config_file]
     end
@@ -412,6 +411,7 @@ class Chef
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
       enforce_path_sanity
+      maybe_setup_fips
       Chef::LocalMode.with_server_connectivity do
         run
       end
@@ -570,5 +570,11 @@ class Chef
       Chef::Config[:chef_server_url]
     end
 
+    def maybe_setup_fips
+      if !config[:fips].nil?
+        Chef::Config[:fips] = config[:fips]
+      end
+      Chef::Config.init_openssl
+    end
   end
 end

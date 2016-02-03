@@ -82,6 +82,58 @@ describe Chef::Application::Knife do
     end
   end
 
+  context "when given fips flags" do
+    context "when Chef::Config[:fips]=false" do
+      before do
+        # This is required because the chef-fips pipeline does
+        # has a default value of true for fips
+        Chef::Config[:fips] = false
+      end
+
+      it "does not initialize fips mode when no flags are passed" do
+        with_argv(*%w{noop knife command}) do
+          expect(@knife).to receive(:exit).with(0)
+          expect(Chef::Config).not_to receive(:enable_fips_mode)
+          @knife.run
+          expect(Chef::Config[:fips]).to eq(false)
+        end
+      end
+
+      it "overwrites the Chef::Config value when passed --fips" do
+        with_argv(*%w{noop knife command --fips}) do
+          expect(@knife).to receive(:exit).with(0)
+          expect(Chef::Config).to receive(:enable_fips_mode)
+          @knife.run
+          expect(Chef::Config[:fips]).to eq(true)
+        end
+      end
+    end
+
+    context "when Chef::Config[:fips]=true" do
+      before do
+        Chef::Config[:fips] = true
+      end
+
+      it "initializes fips mode when passed --fips" do
+        with_argv(*%w{noop knife command --fips}) do
+          expect(@knife).to receive(:exit).with(0)
+          expect(Chef::Config).to receive(:enable_fips_mode)
+          @knife.run
+          expect(Chef::Config[:fips]).to eq(true)
+        end
+      end
+
+      it "overwrites the Chef::Config value when passed --no-fips" do
+        with_argv(*%w{noop knife command --no-fips}) do
+          expect(@knife).to receive(:exit).with(0)
+          expect(Chef::Config).not_to receive(:enable_fips_mode)
+          @knife.run
+          expect(Chef::Config[:fips]).to eq(false)
+        end
+      end
+    end
+  end
+
   describe "when given a path to the client key" do
     it "expands a relative path relative to the CWD" do
       relative_path = ".chef/client.pem"
