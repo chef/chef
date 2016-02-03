@@ -28,42 +28,48 @@ describe Chef::Mixin::PowershellTypeCoercions do
   let (:test_class) { Chef::PSTypeTester.new }
 
   describe '#translate_type' do
-    it "should single quote a string" do
+    it "single quotes a string" do
       expect(test_class.translate_type("foo")).to eq("'foo'")
     end
 
     ["'", '"', '#', "`"].each do |c|
-      it "should base64 encode a string that contains #{c}" do
+      it "base64 encodes a string that contains #{c}" do
         expect(test_class.translate_type("#{c}")).to match(Base64.strict_encode64(c))
       end
     end
 
-    it "should not quote an integer" do
+    it "does not quote an integer" do
       expect(test_class.translate_type(123)).to eq("123")
     end
 
-    it "should not quote a floating point number" do
+    it "does not quote a floating point number" do
       expect(test_class.translate_type(123.4)).to eq("123.4")
     end
 
-    it "should return $false when an instance of FalseClass is provided" do
+    it "translates $false when an instance of FalseClass is provided" do
       expect(test_class.translate_type(false)).to eq("$false")
     end
 
-    it "should return $true when an instance of TrueClass is provided" do
+    it "translates $true when an instance of TrueClass is provided" do
       expect(test_class.translate_type(true)).to eq("$true")
     end
 
-    it "should translate all members of a hash and wrap them in @{} separated by ;" do
+    it "translates all members of a hash and wrap them in @{} separated by ;" do
       expect(test_class.translate_type({"a" => 1, "b" => 1.2, "c" => false, "d" => true
       })).to eq("@{a=1;b=1.2;c=$false;d=$true}")
     end
 
-    it "should translat all members of an array and them by a ," do
+    it "translates all members of an array and them by a ," do
       expect(test_class.translate_type([true, false])).to eq("@($true,$false)")
     end
+    
+    it "translates a Chef::Node::ImmutableMash like a hash" do
+      test_mash = Chef::Node::ImmutableMash.new({"a" => 1, "b" => 1.2, 
+                                                 "c" => false, "d" => true})
+      expect(test_class.translate_type(test_mash)).to eq("@{a=1;b=1.2;c=$false;d=$true}")
+    end
 
-    it "should fall back :to_psobject if we have not defined at explicit rule" do
+    it "falls back :to_psobject if we have not defined at explicit rule" do
       ps_obj = double("PSObject")
       expect(ps_obj).to receive(:to_psobject).and_return("$true")
       expect(test_class.translate_type(ps_obj)).to eq("($true)")
