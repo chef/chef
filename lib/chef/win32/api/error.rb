@@ -848,6 +848,7 @@ class Chef
         ERROR_INVALID_COLORINDEX              = 2022
         ERROR_CONNECTED_OTHER_PASSWORD        = 2108
         ERROR_BAD_USERNAME                    = 2202
+        ERROR_USER_NOT_FOUND                  = 2221
         ERROR_NOT_CONNECTED                   = 2250
         ERROR_OPEN_FILES                      = 2401
         ERROR_ACTIVE_CONNECTIONS              = 2402

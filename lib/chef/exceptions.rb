@@ -138,22 +138,6 @@ class Chef
     # Errors originating from calls to the Win32 API
     class Win32APIError < RuntimeError; end
 
-    class Win32NetAPIError < Win32APIError
-      attr_reader :msg, :error_code
-      def initialize(msg, error_code)
-        @msg = msg
-        @error_code = error_code
-
-        formatted_message = ""
-        formatted_message << "---- Begin Win32 API output ----\n"
-        formatted_message << "Net Api Error Code: #{error_code}\n"
-        formatted_message << "Net Api Error Message: #{msg}\n"
-        formatted_message << "---- End Win32 API output ----\n"
-
-        super(formatted_message)
-      end
-    end
-
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.
     class Win32APIFunctionNotImplemented < NotImplementedError; end
