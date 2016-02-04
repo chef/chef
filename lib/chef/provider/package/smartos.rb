@@ -59,10 +59,10 @@ class Chef
           name = nil
           version = nil
           pkg = shell_out_with_timeout!("/opt/local/bin/pkgin", "se", new_resource.package_name, :env => nil, :returns => [0,1])
-          pkg.stdout.each_line do |line|
+          pkg.stdout.each_line.sort.each do |line|
             case line
             when /^#{new_resource.package_name}/
-              name, version = line.split(/[; ]/)[0].split(/-([^-]+)$/)
+              name, version = line.split(/[; ]/)[0].split(/-([^-]+)$/) if line =~ /.*[<=].*/
             end
           end
           @candidate_version = version
