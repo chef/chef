@@ -30,7 +30,8 @@ describe Chef::Cookbook::Metadata do
                   :maintainer_email, :license, :platforms, :dependencies,
                   :recommendations, :suggestions, :conflicting, :providing,
                   :replacing, :attributes, :groupings, :recipes, :version,
-                  :source_url, :issues_url, :privacy, :ohai_versions, :chef_versions ]
+                  :source_url, :issues_url, :privacy, :ohai_versions, :chef_versions,
+                  :gems ]
     end
 
     it "does not depend on object identity for equality" do
