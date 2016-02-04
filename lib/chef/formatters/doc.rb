@@ -201,6 +201,7 @@ class Chef
         unindent
       end
 
+      # Called when cookbook gem installation fails
       def cookbook_gem_failed(exception)
         unindent
       end

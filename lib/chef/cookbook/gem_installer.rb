@@ -1,6 +1,4 @@
 #--
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
 # Copyright:: Copyright (c) 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -23,7 +21,10 @@ require "bundler/inline"
 class Chef
   class Cookbook
     class GemInstaller
+
+      # @return [Chef::EventDispatch::Dispatcher] the client event dispatcher
       attr_accessor :events
+      # @return [Chef::CookbookCollection] the cookbook collection
       attr_accessor :cookbook_collection
 
       def initialize(cookbook_collection, events)
@@ -31,6 +32,8 @@ class Chef
         @events = events
       end
 
+      # Installs the gems into the omnibus gemset.
+      #
       def install
         cookbook_gems = []
 
@@ -57,6 +60,9 @@ class Chef
         events.cookbook_gem_finished
       end
 
+      # Bundler::UI object so that we can intercept and log the output
+      # of the in-memory bundle install that we are going to do.
+      #
       class ChefBundlerUI < Bundler::UI::Silent
         attr_accessor :events
 
@@ -96,6 +102,10 @@ class Chef
 
       private
 
+      # Helper to handle older bundler versions that do not support injecting the UI
+      # object.  On older bundler versions, we work, but you get no output other than
+      # on STDOUT.
+      #
       def inline_gemfile(&block)
         # requires https://github.com/bundler/bundler/pull/4245
         gemfile(true, ui: ChefBundlerUI.new(events), &block)

@@ -140,11 +140,7 @@ class Chef
       end
 
       # Called when starting to collect gems from the cookbooks
-      def cookbook_gem_start
-      end
-
-      # Called with the full list of gems to resolve
-      def cookbook_gem_set(gems)
+      def cookbook_gem_start(gems)
       end
 
       # Called when the result of installing the bundle is to install the gem
