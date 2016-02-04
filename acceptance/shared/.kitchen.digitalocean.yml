@@ -9,6 +9,12 @@ driver:
   transport:
     ssh_key: <%= ENV['DIGITALOCEAN_SSH_KEY_PATH'] %>
 
+provisioner:
+  name: chef_zero
+  product_name: chef
+  product_version: latest
+  channel: current
+
 platforms:
 <% %w(centos-6.5 centos-7.0
       fedora-21

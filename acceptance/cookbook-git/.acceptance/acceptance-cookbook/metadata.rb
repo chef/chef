@@ -1,1 +1,3 @@
-name 'acceptance-cookbook'
+name "acceptance-cookbook"
+
+depends "shared"

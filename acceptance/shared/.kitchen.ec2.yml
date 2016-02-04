@@ -25,6 +25,12 @@ transport:
                file_if_exists("~/.ssh/#{ENV['AWS_SSH_KEY_ID'] || ENV['USER'] || ENV['USERNAME']}") ||
                file_if_exists("~/.ssh/id_rsa") %>
 
+provisioner:
+  name: chef_zero
+  product_name: <%= ENV["KITCHEN_CHEF_PRODUCT"] %>
+  product_version: <%= ENV["KITCHEN_CHEF_VERSION"] %>
+  channel: <%= ENV["KITCHEN_CHEF_CHANNEL"] %>
+
 platforms:
   #
   # AIX
@@ -271,34 +277,3 @@ platforms:
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
-
-suites:
-  - name: default
-    run_list:
-      - recipe[git]
-    attributes: {}
-    includes: ["ubuntu-14.04"]
-    excludes: ["windows-2012r2", "windows-2012", "windows-2008r2"]
-  - name: source
-    includes: ["nonexistent"]
-    excludes: ["ubuntu-12.04", "ubuntu-10.04", "windows-2012r2", "windows-2012", "windows-2008r2"]
-    run_list:
-      - recipe[git::source]
-    attributes: {}
-  - name: default-windows
-    includes: [
-      # 'windows-8.1-professional',
-      # 'windows-2008r2-standard',
-      "windows-2012r2",
-      # "windows-2012",
-      # "windows-2008r2"
-    ]
-    run_list:
-      - recipe[git]
-    attributes: {}
-
-provisioner:
-  name: chef_zero
-  product_name: chef
-  product_version: latest
-  channel: unstable
