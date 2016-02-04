@@ -258,7 +258,7 @@ class Chef
         has_double_star = false
         pattern.split(pattern_special_characters).each_with_index do |part, index|
           # Odd indexes from the split are symbols.  Even are normal bits.
-          if index % 2 == 0
+          if index.even?
             exact << part if !exact.nil?
             regexp << part
           else

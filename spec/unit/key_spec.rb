@@ -231,7 +231,7 @@ EOS
 
       it "should include the expiration_date field when present" do
         new_key.expiration_date "2020-12-24T21:00:00Z"
-        expect(new_key.to_json).to include(%Q{"expiration_date":"2020-12-24T21:00:00Z"})
+        expect(new_key.to_json).to include(%q{"expiration_date":"2020-12-24T21:00:00Z"})
       end
 
       it "should not include the expiration_date if not present" do

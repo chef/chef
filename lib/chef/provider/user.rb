@@ -180,7 +180,7 @@ class Chef
             lock_user
             Chef::Log.info("#{@new_resource} locked")
           end
-         else
+        else
           Chef::Log.debug("#{@new_resource} already locked - nothing to do")
         end
       end

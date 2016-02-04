@@ -78,7 +78,7 @@ module ChefConfig
 
     default :formatters, []
 
-    def self.is_valid_url? uri
+    def self.is_valid_url?(uri)
       url = uri.to_s.strip
       /^http:\/\// =~ url || /^https:\/\// =~ url || /^chefzero:/ =~ url
     end
