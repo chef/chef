@@ -2,7 +2,7 @@
 ## 12.7.0
 
 * [**Nate Walck**](https://github.com/natewalck)
-  [pr#4078](https://github.com/chef/chef/pull/4078) Add `osx_profile` HWRP for OS X
+  [pr#4078](https://github.com/chef/chef/pull/4078) Add `osx_profile` resource for OS X
 * [**Timothy Cyrus**](https://github.com/tcyrus)
   [pr#4420](https://github.com/chef/chef/pull/4420) Update code climate badge and code climate blocks in README.md
 * [**Jordan Running**](https://github.com/jrunning)
