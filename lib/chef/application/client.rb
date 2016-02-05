@@ -372,7 +372,12 @@ class Chef::Application::Client < Chef::Application
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
       end
     end
+
+    # Load the client.rb configuration
     super
+
+    # Load all config files in client.d
+    load_config_d_directory
   end
 
   def configure_logging
@@ -501,6 +506,30 @@ class Chef::Application::Client < Chef::Application
       open(url) do |r|
         f.write(r.read)
       end
+    end
+  end
+
+  def load_config_d_directory
+    list_config_d_files.sort.each do |conf|
+      if File.file?(conf)
+        load_config_d_file(conf)
+      end
+    end
+  end
+
+  def load_config_d_file(f)
+    config_fetcher = Chef::ConfigFetcher.new(conf)
+    config_fetcher.read_local_config.tap do |config_content|
+      apply_config(config_content, conf)
+    end
+  end
+
+  def list_config_d_files
+    if Chef::Config[:client_d_dir]
+      Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(
+        Chef::Config[:client_d_dir]), "*.rb"))
+    else
+      []
     end
   end
 end
