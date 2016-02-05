@@ -47,12 +47,12 @@ describe Chef::Knife::UserCreate do
 
     it "displays the osc warning" do
       expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
     it "calls knife osc_user create" do
       expect(knife).to receive(:run_osc_11_user_create)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
   end
@@ -186,7 +186,7 @@ describe Chef::Knife::UserCreate do
 
     context "when a private_key is returned" do
       before do
-        allow(knife).to receive(:create_user_from_hash).and_return(Chef::UserV1.from_hash(knife.user.to_hash.merge({"private_key" => "some_private_key"})))
+        allow(knife).to receive(:create_user_from_hash).and_return(Chef::UserV1.from_hash(knife.user.to_hash.merge({ "private_key" => "some_private_key" })))
       end
 
       context "when --file is passed" do

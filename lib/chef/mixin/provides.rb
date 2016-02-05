@@ -7,7 +7,7 @@ class Chef
       # TODO no longer needed, remove or deprecate?
       include Chef::Mixin::DescendantsTracker
 
-      def provides(short_name, opts={}, &block)
+      def provides(short_name, opts = {}, &block)
         raise NotImplementedError, :provides
       end
 

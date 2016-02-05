@@ -101,15 +101,15 @@ describe Chef::CookbookManifest do
 
         "frozen?" => false,
 
-        "recipes"     =>[],
-        "definitions" =>[],
-        "libraries"   =>[],
-        "attributes"  =>[],
-        "files"       =>[],
-        "templates"   =>[],
-        "resources"   =>[],
-        "providers"   =>[],
-        "root_files"  =>[],
+        "recipes" => [],
+        "definitions" => [],
+        "libraries" => [],
+        "attributes" => [],
+        "files" => [],
+        "templates" => [],
+        "resources" => [],
+        "providers" => [],
+        "root_files" => [],
       }
     end
 
@@ -241,4 +241,3 @@ describe Chef::CookbookManifest do
   end
 
 end
-

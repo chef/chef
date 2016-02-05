@@ -71,7 +71,7 @@ describe Chef::ChefFS::Config do
       },)
     end
 
-    let(:chef_fs_config)  { Chef::ChefFS::Config.new(chef_config, Dir.pwd) }
+    let(:chef_fs_config) { Chef::ChefFS::Config.new(chef_config, Dir.pwd) }
 
     subject(:local_fs) { chef_fs_config.local_fs }
 

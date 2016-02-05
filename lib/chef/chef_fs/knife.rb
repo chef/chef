@@ -111,7 +111,7 @@ class Chef
           end
           # Use the original path because we can't be sure.
           inferred_path = arg
-        elsif arg[0,1] == "~"
+        elsif arg[0, 1] == "~"
           # Let's be nice and fix it if possible - but warn the user.
           ui.warn("A path relative to a user home directory has been provided: #{arg}")
           ui.warn("Paths provided need to be rooted at the chef-repo being considered or be relative paths.")

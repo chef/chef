@@ -38,8 +38,8 @@ describe Chef::Resource::OsxProfile do
   end
 
   it "should accept install and remove as actions" do
-    expect { resource.action :install}.not_to raise_error
-    expect { resource.action :remove}.not_to raise_error
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
   it "should allow you to set the profile attribute" do

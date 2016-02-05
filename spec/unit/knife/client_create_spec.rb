@@ -24,7 +24,6 @@ describe Chef::Knife::ClientCreate do
   let(:stderr) { StringIO.new }
   let(:stdout) { StringIO.new }
 
-
   let(:default_client_hash) do
     {
       "name" => "adam",
@@ -53,7 +52,7 @@ describe Chef::Knife::ClientCreate do
   end
 
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
   end
 
   describe "run" do

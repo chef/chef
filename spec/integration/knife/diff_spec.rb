@@ -174,7 +174,7 @@ EOM
 
       when_the_chef_server "has a later version for the cookbook" do
         before do
-          cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => ""}
+          cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => "" }
           cookbook "x", "1.0.1", { "onlyin1.0.1.rb" => "" }
         end
 
@@ -470,7 +470,7 @@ EOM
 
       when_the_chef_server "has a later version for the cookbook" do
         before do
-          cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => ""}
+          cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => "" }
           cookbook "x", "1.0.1", { "onlyin1.0.1.rb" => "" }
         end
 

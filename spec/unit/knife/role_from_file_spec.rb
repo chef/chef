@@ -22,7 +22,7 @@ Chef::Knife::RoleFromFile.load_deps
 
 describe Chef::Knife::RoleFromFile do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleFromFile.new
     @knife.config = {
       :print_after => nil

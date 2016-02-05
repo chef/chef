@@ -21,7 +21,7 @@ require "chef/provider/package/windows/msi"
 
 describe Chef::Provider::Package::Windows::MSI do
   let(:node) { double("Chef::Node") }
-  let(:events) { double("Chef::Events").as_null_object }  # mock all the methods
+  let(:events) { double("Chef::Events").as_null_object } # mock all the methods
   let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
   let(:package_name) { "calculator" }
   let(:resource_source) { "calculator.msi" }
@@ -85,7 +85,7 @@ describe Chef::Provider::Package::Windows::MSI do
 
     context "version is explicitly provided" do
       let(:resource_version) { "given_version" }
-      
+
       it "returns the given version" do
         expect(provider.package_version).to eql("given_version")
       end
@@ -95,7 +95,7 @@ describe Chef::Provider::Package::Windows::MSI do
       before do
         allow(::File).to receive(:exist?).with(Chef::Util::PathHelper.canonical_path(resource_source, false)).and_return(false)
       end
-      
+
       it "returns nil" do
         expect(provider.package_version).to eql(nil)
       end

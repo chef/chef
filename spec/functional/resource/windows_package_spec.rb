@@ -70,7 +70,7 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
       subject { Chef::Resource::WindowsPackage.new(pkg_name, run_context) }
 
       context "multiple versions and a version given to remove" do
-        before { subject.version("8.0.56336")}
+        before { subject.version("8.0.56336") }
 
         it "removes specified version" do
           subject.run_action(:remove)
@@ -127,7 +127,7 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
       let(:pkg_name) { "Ultra Defragmenter" }
       let(:pkg_path) { "http://iweb.dl.sourceforge.net/project/ultradefrag/stable-release/6.1.1/ultradefrag-6.1.1.bin.amd64.exe" }
       let(:pkg_checksum) { "11d53ed4c426c8c867ad43f142b7904226ffd9938c02e37086913620d79e3c09" }
-      
+
       it "finds the correct installer type" do
         subject.run_action(:install)
         expect(subject.provider_for_action(:install).installer_type).to eq(:nsis)
@@ -164,5 +164,5 @@ describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
       subject.run_action(:remove)
       expect(subject).to be_updated_by_last_action
     end
-  end  
+  end
 end

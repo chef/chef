@@ -47,11 +47,11 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
 
   describe "#list_commands" do
     it "lists all commands by category when no argument is given" do
-      expect(loader.list_commands).to eq({"cool" => ["cool_a"], "cooler" => ["cooler_b"]})
+      expect(loader.list_commands).to eq({ "cool" => ["cool_a"], "cooler" => ["cooler_b"] })
     end
 
     it "lists only commands in the given category when a category is given" do
-      expect(loader.list_commands("cool")).to eq({"cool" => ["cool_a"]})
+      expect(loader.list_commands("cool")).to eq({ "cool" => ["cool_a"] })
     end
   end
 

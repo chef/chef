@@ -32,7 +32,7 @@ class Chef
 
       allowed_actions :install, :remove
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @source ||= source(@package_name) if @package_name.downcase.end_with?(".msi")
       end

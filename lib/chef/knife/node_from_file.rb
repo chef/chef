@@ -37,11 +37,11 @@ class Chef
       def run
         @name_args.each do |arg|
           updated = loader.load_from("nodes", arg)
-  
+
           updated.save
-  
+
           output(format_for_display(updated)) if config[:print_after]
-  
+
           ui.info("Updated Node #{updated.name}!")
         end
       end

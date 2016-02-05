@@ -40,7 +40,7 @@ class Chef
       # url:: An URI for the remote server.
       # === Options:
       # ssl_policy:: The SSL Policy to use, defaults to DefaultSSLPolicy
-      def initialize(url, opts={})
+      def initialize(url, opts = {})
         @url = url
         @ssl_policy = opts[:ssl_policy] || DefaultSSLPolicy
         @http_client = build_http_client
@@ -54,7 +54,7 @@ class Chef
         @url.port
       end
 
-      def request(method, url, req_body, base_headers={})
+      def request(method, url, req_body, base_headers = {})
         http_request = HTTPRequest.new(method, url, req_body, base_headers).http_request
         Chef::Log.debug("Initiating #{method} to #{url}")
         Chef::Log.debug("---- HTTP Request Header Data: ----")
@@ -105,12 +105,12 @@ class Chef
         # here since we are really just trying to get the string built correctly.
         if String === proxy && !proxy.strip.empty?
           if proxy.match(/^.*:\/\//)
-           proxy = URI.parse(proxy.strip)
+            proxy = URI.parse(proxy.strip)
           else
-           proxy = URI.parse("#{url.scheme}://#{proxy.strip}")
-          end 
+            proxy = URI.parse("#{url.scheme}://#{proxy.strip}")
+          end
         end
-        
+
         no_proxy = Chef::Config[:no_proxy] || env["NO_PROXY"] || env["no_proxy"]
         excludes = no_proxy.to_s.split(/\s*,\s*/).compact
         excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
@@ -151,12 +151,12 @@ class Chef
 
       def http_proxy_user(http_proxy)
         http_proxy.user || Chef::Config["#{url.scheme}_proxy_user"] ||
-        env["#{url.scheme.upcase}_PROXY_USER"] || env["#{url.scheme}_proxy_user"]
+          env["#{url.scheme.upcase}_PROXY_USER"] || env["#{url.scheme}_proxy_user"]
       end
 
       def http_proxy_pass(http_proxy)
         http_proxy.password || Chef::Config["#{url.scheme}_proxy_pass"] ||
-        env["#{url.scheme.upcase}_PROXY_PASS"] || env["#{url.scheme}_proxy_pass"]
+          env["#{url.scheme.upcase}_PROXY_PASS"] || env["#{url.scheme}_proxy_pass"]
       end
 
       def configure_ssl(http_client)

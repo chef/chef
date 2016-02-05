@@ -28,7 +28,7 @@ class Chef
       allowed_actions :create, :remove, :modify, :manage
       default_action :create
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @group_name = name
         @gid = nil
@@ -38,7 +38,7 @@ class Chef
         @non_unique = false
       end
 
-      def group_name(arg=nil)
+      def group_name(arg = nil)
         set_or_return(
           :group_name,
           arg,
@@ -46,7 +46,7 @@ class Chef
         )
       end
 
-      def gid(arg=nil)
+      def gid(arg = nil)
         set_or_return(
           :gid,
           arg,
@@ -54,7 +54,7 @@ class Chef
         )
       end
 
-      def members(arg=nil)
+      def members(arg = nil)
         converted_members = arg.is_a?(String) ? [].push(arg) : arg
         set_or_return(
           :members,
@@ -65,7 +65,7 @@ class Chef
 
       alias_method :users, :members
 
-      def excluded_members(arg=nil)
+      def excluded_members(arg = nil)
         converted_members = arg.is_a?(String) ? [].push(arg) : arg
         set_or_return(
           :excluded_members,
@@ -74,8 +74,7 @@ class Chef
         )
       end
 
-
-      def append(arg=nil)
+      def append(arg = nil)
         set_or_return(
           :append,
           arg,
@@ -83,7 +82,7 @@ class Chef
         )
       end
 
-      def system(arg=nil)
+      def system(arg = nil)
         set_or_return(
           :system,
           arg,
@@ -91,7 +90,7 @@ class Chef
         )
       end
 
-      def non_unique(arg=nil)
+      def non_unique(arg = nil)
         set_or_return(
           :non_unique,
           arg,

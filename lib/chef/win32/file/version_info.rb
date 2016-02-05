@@ -75,7 +75,7 @@ class Chef
         end
 
         def to_hex(integer)
-          integer.to_s(16).rjust(4,"0")
+          integer.to_s(16).rjust(4, "0")
         end
 
         def get_version_info_string(string_key)

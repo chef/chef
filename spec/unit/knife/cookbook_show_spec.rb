@@ -21,9 +21,9 @@ require "spec_helper"
 
 describe Chef::Knife::CookbookShow do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::CookbookShow.new
-    @knife.config = { }
+    @knife.config = {}
     @knife.name_args = [ "cookbook_name" ]
     @rest = double(Chef::ServerAPI)
     allow(@knife).to receive(:rest).and_return(@rest)
@@ -72,7 +72,7 @@ describe Chef::Knife::CookbookShow do
     describe "with 2 arguments: name and version" do
       before(:each) do
         @knife.name_args << "0.1.0"
-        @response = { "0.1.0" => { "recipes" => {"default.rb" => ""} } }
+        @response = { "0.1.0" => { "recipes" => { "default.rb" => "" } } }
       end
 
       it "should show the specific part of a cookbook" do
@@ -97,7 +97,7 @@ describe Chef::Knife::CookbookShow do
           ]
         }
         @cookbook_response.manifest = @manifest
-        @response = {"name"=>"default.rb", "url"=>"http://example.org/files/default.rb", "checksum"=>"1234", "path"=>"recipes/default.rb"}
+        @response = { "name" => "default.rb", "url" => "http://example.org/files/default.rb", "checksum" => "1234", "path" => "recipes/default.rb" }
       end
 
       it "should print the json of the part" do
@@ -220,4 +220,3 @@ describe Chef::Knife::CookbookShow do
     end
   end
 end
-

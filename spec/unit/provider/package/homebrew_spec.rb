@@ -22,7 +22,7 @@ describe Chef::Provider::Package::Homebrew do
   let(:events) { double("Chef::Events").as_null_object }
   let(:run_context) { double("Chef::RunContext", node: node, events: events) }
   let(:new_resource) { Chef::Resource::HomebrewPackage.new("emacs") }
-  let(:current_resource) { Chef::Resource::HomebrewPackage.new("emacs")}
+  let(:current_resource) { Chef::Resource::HomebrewPackage.new("emacs") }
 
   let(:provider) do
     Chef::Provider::Package::Homebrew.new(new_resource, run_context)

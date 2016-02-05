@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 shared_examples_for "mandatory field missing" do
   context "when field is nil" do
     before do

@@ -29,7 +29,7 @@ class Chef
         @versions = Hash.new
       end
 
-      def add_recipe(name, version=nil)
+      def add_recipe(name, version = nil)
         if version && @versions.has_key?(name)
           unless Chef::Version.new(@versions[name]) == Chef::Version.new(version)
             raise Chef::Exceptions::CookbookVersionConflict, "Run list requires #{name} at versions #{@versions[name]} and #{version}"
@@ -40,7 +40,7 @@ class Chef
       end
 
       def with_versions
-        self.map {|recipe_name| {:name => recipe_name, :version => @versions[recipe_name]}}
+        self.map { |recipe_name| { :name => recipe_name, :version => @versions[recipe_name] } }
       end
 
       # Return an Array of Hashes, each of the form:

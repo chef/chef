@@ -17,15 +17,15 @@ describe Chef::DSL::Audit do
   let(:cookbook_collection) { {} }
 
   it "raises an error when a block of audits is not provided" do
-    expect{ auditor.control_group "name" }.to raise_error(Chef::Exceptions::NoAuditsProvided)
+    expect { auditor.control_group "name" }.to raise_error(Chef::Exceptions::NoAuditsProvided)
   end
 
   it "raises an error when no audit name is given" do
-    expect{ auditor.control_group do end }.to raise_error(Chef::Exceptions::AuditNameMissing)
+    expect { auditor.control_group do end }.to raise_error(Chef::Exceptions::AuditNameMissing)
   end
 
   context "audits already populated" do
-    let(:audits) { {"unique" => {} } }
+    let(:audits) { { "unique" => {} } }
 
     it "raises an error if the audit name is a duplicate" do
       expect { auditor.control_group "unique" do end }.to raise_error(Chef::Exceptions::AuditControlGroupDuplicate)

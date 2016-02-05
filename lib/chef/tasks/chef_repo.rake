@@ -176,7 +176,6 @@ def deprecation_notice
 NOTICE: Chef Repository Rake Tasks Are Deprecated
 *************************************************
 }
-
 end
 
 def deprecated_cookbook_upload

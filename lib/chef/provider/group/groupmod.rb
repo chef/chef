@@ -111,7 +111,7 @@ class Chef
         #
         # ==== Returns
         # <string>:: A string containing the option and then the quoted value
-        def set_options(overwrite_gid=false)
+        def set_options(overwrite_gid = false)
           opts = ""
           if overwrite_gid || @new_resource.gid && (@current_resource.gid != @new_resource.gid)
             opts << " -g '#{@new_resource.gid}'"

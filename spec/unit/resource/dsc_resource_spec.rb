@@ -40,7 +40,7 @@ describe Chef::Resource::DscResource do
     end
 
     it "has an ed_actions attribute with only the `:run` and `:nothing` attributes" do
-      expect(dsc_test_resource.allowed_actions.to_set).to eq([:run,:nothing].to_set)
+      expect(dsc_test_resource.allowed_actions.to_set).to eq([:run, :nothing].to_set)
     end
 
     it "allows the resource attribute to be set" do

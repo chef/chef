@@ -72,7 +72,7 @@ describe Chef::Provider::Script, "action_run" do
 
     describe "when writing the script to the file" do
       it "should put the contents of the script in the temp file" do
-        allow(provider).to receive(:unlink_script_file)  # stub to avoid remove
+        allow(provider).to receive(:unlink_script_file) # stub to avoid remove
         provider.action_run
         expect(IO.read(tempfile.path)).to eq("$| = 1; print 'i like beans'\n")
         provider.unlink_script_file

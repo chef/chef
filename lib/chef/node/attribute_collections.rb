@@ -82,7 +82,7 @@ class Chef
       end
 
       def dup
-        Array.new(map {|e| safe_dup(e)})
+        Array.new(map { |e| safe_dup(e) })
       end
 
     end
@@ -130,7 +130,7 @@ class Chef
         end
       end
 
-      def initialize(root, data={})
+      def initialize(root, data = {})
         @root = root
         super(data)
       end
@@ -241,7 +241,7 @@ class Chef
       # Initialize with an array of mashes.  For the delete return value to work
       # properly the mashes must come from the same attribute level (i.e. all
       # override or all default, but not a mix of both).
-      def initialize(root, primary_mash, mashes, opts={})
+      def initialize(root, primary_mash, mashes, opts = {})
         @root = root
         @primary_mash = primary_mash
         @mashes = mashes

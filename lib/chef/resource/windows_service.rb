@@ -34,14 +34,14 @@ class Chef
 
       state_attrs :enabled, :running
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @startup_type = :automatic
         @run_as_user = ""
         @run_as_password = ""
       end
 
-      def startup_type(arg=nil)
+      def startup_type(arg = nil)
         # Set-Service arguments are automatic and manual
         # Win32::Service returns 'auto start' or 'demand start' respectively, which the provider currently uses
         set_or_return(
@@ -51,7 +51,7 @@ class Chef
         )
       end
 
-      def run_as_user(arg=nil)
+      def run_as_user(arg = nil)
         set_or_return(
           :run_as_user,
           arg,
@@ -59,7 +59,7 @@ class Chef
         )
       end
 
-      def run_as_password(arg=nil)
+      def run_as_password(arg = nil)
         set_or_return(
           :run_as_password,
           arg,

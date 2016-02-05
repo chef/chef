@@ -32,7 +32,7 @@ describe Chef::Provider::Package::Solaris do
 
   describe "assessing the current package status" do
     before do
-      @pkginfo =<<-PKGINFO
+      @pkginfo = <<-PKGINFO
 PKGINST:  SUNWbash
 NAME:  GNU Bourne-Again shell (bash)
 CATEGORY:  system
@@ -46,7 +46,7 @@ INSTDATE:  Nov 04 2009 01:02
 HOTLINE:  Please contact your local service provider
 PKGINFO
 
-      @status = double("Status",:stdout => "", :exitstatus => 0)
+      @status = double("Status", :stdout => "", :exitstatus => 0)
     end
 
     it "should create a current resource with the name of new_resource" do

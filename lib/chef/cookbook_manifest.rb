@@ -152,6 +152,7 @@ class Chef
     def named_cookbook_url
       "#{cookbook_url_path}/#{name}"
     end
+
     # Adds the `force=true` parameter to the upload URL. This allows
     # the user to overwrite a frozen cookbook (a PUT against the
     # normal #save_url raises a 409 Conflict in this case).
@@ -169,7 +170,7 @@ class Chef
 
       COOKBOOK_SEGMENTS.each do |segment|
         next unless @manifest.has_key?(segment)
-        filenames = @manifest[segment].map{|manifest_record| manifest_record["name"]}
+        filenames = @manifest[segment].map { |manifest_record| manifest_record["name"] }
 
         cookbook_version.replace_segment_filenames(segment, filenames)
       end

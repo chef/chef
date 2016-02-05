@@ -38,7 +38,7 @@ class Chef
           find_longest_key(manifest[KEY]["plugins_by_category"], category_words, " ")
         end
 
-        def list_commands(pref_category=nil)
+        def list_commands(pref_category = nil)
           if pref_category || manifest[KEY]["plugins_by_category"].key?(pref_category)
             { pref_category => manifest[KEY]["plugins_by_category"][pref_category] }
           else

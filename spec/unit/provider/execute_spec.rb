@@ -130,7 +130,7 @@ describe Chef::Provider::Execute do
         expect(Chef::Log).to receive(:warn).with(/relative path/)
         expect(FileTest).to receive(:exist?).with(new_resource.creates).and_return(true)
         expect(provider).not_to receive(:shell_out!)
-        expect { provider.run_action(:run) }.to raise_error  # @todo: add a real error for Chef-13
+        expect { provider.run_action(:run) }.to raise_error # @todo: add a real error for Chef-13
       end
     end
 

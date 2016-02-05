@@ -44,7 +44,7 @@ class Chef
       @cookbooks_by_name = Mash.new
       @loaded_cookbooks = {}
       @metadata = Mash.new
-      @cookbooks_paths = Hash.new {|h,k| h[k] = []} # for deprecation warnings
+      @cookbooks_paths = Hash.new { |h, k| h[k] = [] } # for deprecation warnings
       @chefignores = {}
       @repo_paths = repo_paths.map do |repo_path|
         repo_path = File.expand_path(repo_path)
@@ -62,7 +62,7 @@ class Chef
 
     def merged_cookbook_paths # for deprecation warnings
       merged_cookbook_paths = {}
-      @merged_cookbooks.each {|c| merged_cookbook_paths[c] = @cookbooks_paths[c]}
+      @merged_cookbooks.each { |c| merged_cookbook_paths[c] = @cookbooks_paths[c] }
       merged_cookbook_paths
     end
 
@@ -119,7 +119,7 @@ class Chef
     alias :key? :has_key?
 
     def each
-      @cookbooks_by_name.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
+      @cookbooks_by_name.keys.sort { |a, b| a.to_s <=> b.to_s }.each do |cname|
         yield(cname, @cookbooks_by_name[cname])
       end
     end

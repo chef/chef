@@ -38,7 +38,7 @@ begin
     task :generate do
       out = "<!-- This is a generated file. Please do not edit directly -->\n\n"
       out << "# " + source["Preamble"]["title"] + "\n\n"
-      out <<  source["Preamble"]["text"] + "\n"
+      out << source["Preamble"]["text"] + "\n"
 
       # The project lead is a special case
       out << "# " + source["Org"]["Lead"]["title"] + "\n\n"
@@ -70,7 +70,7 @@ begin
   end
 
   def teams
-    @teams ||= {"client-maintainers" => {"title" => "Client Maintainers"}}
+    @teams ||= { "client-maintainers" => { "title" => "Client Maintainers" } }
   end
 
   def add_members(team, name)
@@ -94,7 +94,7 @@ begin
   # setting, so we know whether we need to update it
   def get_github_teams
     github.org_teams("chef").each do |team|
-      gh_teams[team[:slug]] = {"id" => team[:id], "privacy" => team[:privacy]}
+      gh_teams[team[:slug]] = { "id" => team[:id], "privacy" => team[:privacy] }
     end
   end
 
@@ -109,8 +109,8 @@ begin
   def create_team(team)
     puts "creating new github team: #{team} with title: #{teams[team]["title"]} "
     t = github.create_team("chef", name: team, description: teams[team]["title"],
-                       privacy: "closed", repo_names: REPOSITORIES,
-                       accept: "application/vnd.github.ironman-preview+json")
+                                   privacy: "closed", repo_names: REPOSITORIES,
+                                   accept: "application/vnd.github.ironman-preview+json")
     gh_teams[team] = { "id" => t[:id], "privacy" => t[:privacy] }
   end
 
@@ -146,14 +146,14 @@ begin
     return if gh_teams[team]["privacy"] == "closed"
     puts "Setting #{team} privacy to closed from #{gh_teams[team]["privacy"]}"
     github.update_team(gh_teams[team]["id"], privacy: "closed",
-                       accept: "application/vnd.github.ironman-preview+json")
+                                             accept: "application/vnd.github.ironman-preview+json")
   end
 
   def add_team_members(team, additions)
     additions.each do |member|
       puts "Adding #{member} to #{team}"
       github.add_team_membership(gh_teams[team]["id"], member, role: "member",
-                                 accept: "application/vnd.github.ironman-preview+json")
+                                                               accept: "application/vnd.github.ironman-preview+json")
     end
   end
 
@@ -188,7 +188,7 @@ begin
     end
     out << format_maintainers(cmp.delete("maintainers")) + "\n" if cmp.has_key?("maintainers")
     cmp.delete("paths")
-    cmp.each {|k,v| out << format_components(v) }
+    cmp.each { |k, v| out << format_components(v) }
     out
   end
 

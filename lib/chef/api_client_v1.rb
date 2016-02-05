@@ -44,7 +44,7 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::ApiVersionRequestHandling
 
-    SUPPORTED_API_VERSIONS = [0,1]
+    SUPPORTED_API_VERSIONS = [0, 1]
 
     # Create a new Chef::ApiClientV1 object.
     def initialize
@@ -57,22 +57,22 @@ class Chef
     end
 
     def chef_rest_v0
-      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0", :inflate_json_class => false})
+      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0", :inflate_json_class => false })
     end
 
     def chef_rest_v1
-      @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "1", :inflate_json_class => false})
+      @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "1", :inflate_json_class => false })
     end
 
     def self.http_api
-      Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "1", :inflate_json_class => false})
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "1", :inflate_json_class => false })
     end
 
     # Gets or sets the client name.
     #
     # @params [Optional String] The name must be alpha-numeric plus - and _.
     # @return [String] The current value of the name.
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(
         :name,
         arg,
@@ -84,7 +84,7 @@ class Chef
     #
     # @params [Optional True/False] Should be true or false - default is false.
     # @return [True/False] The current value
-    def admin(arg=nil)
+    def admin(arg = nil)
       set_or_return(
         :admin,
         arg,
@@ -96,7 +96,7 @@ class Chef
     #
     # @params [Optional String] The string representation of the public key.
     # @return [String] The current value.
-    def public_key(arg=nil)
+    def public_key(arg = nil)
       set_or_return(
         :public_key,
         arg,
@@ -109,7 +109,7 @@ class Chef
     # @params [Boolean] whether or not the client is a validator.  If
     #   `nil`, retrieves the already-set value.
     # @return [Boolean] The current value
-    def validator(arg=nil)
+    def validator(arg = nil)
       set_or_return(
         :validator,
         arg,
@@ -122,7 +122,7 @@ class Chef
     #
     # @params [Optional String] The string representation of the private key.
     # @return [String] The current value.
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(
         :private_key,
         arg,
@@ -134,7 +134,7 @@ class Chef
     #
     # @params [Optional True/False] Should be true or false - default is false.
     # @return [True/False] The current value
-    def create_key(arg=nil)
+    def create_key(arg = nil)
       set_or_return(
         :create_key,
         arg,
@@ -186,7 +186,7 @@ class Chef
       api_client.reregister
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:client) do |n|

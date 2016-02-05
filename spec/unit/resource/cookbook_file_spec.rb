@@ -48,28 +48,27 @@ describe Chef::Resource::CookbookFile do
 
   describe "when it has a backup number, group, mode, owner, source, checksum, and cookbook on nix or path, rights, deny_rights, checksum on windows" do
     before do
-       if Chef::Platform.windows?
-         @cookbook_file.path("C:/temp/origin/file.txt")
-         @cookbook_file.rights(:read, "Everyone")
-         @cookbook_file.deny_rights(:full_control, "Clumsy_Sam")
-       else
-         @cookbook_file.path("/tmp/origin/file.txt")
-         @cookbook_file.group("wheel")
-         @cookbook_file.mode("0664")
-         @cookbook_file.owner("root")
-         @cookbook_file.source("/tmp/foo.txt")
-         @cookbook_file.cookbook("/tmp/cookbooks/cooked.rb")
-       end
+      if Chef::Platform.windows?
+        @cookbook_file.path("C:/temp/origin/file.txt")
+        @cookbook_file.rights(:read, "Everyone")
+        @cookbook_file.deny_rights(:full_control, "Clumsy_Sam")
+      else
+        @cookbook_file.path("/tmp/origin/file.txt")
+        @cookbook_file.group("wheel")
+        @cookbook_file.mode("0664")
+        @cookbook_file.owner("root")
+        @cookbook_file.source("/tmp/foo.txt")
+        @cookbook_file.cookbook("/tmp/cookbooks/cooked.rb")
+      end
       @cookbook_file.checksum("1" * 64)
     end
-
 
     it "describes the state" do
       state = @cookbook_file.state
       if Chef::Platform.windows?
         puts state
-        expect(state[:rights]).to eq([{:permissions => :read, :principals => "Everyone"}])
-        expect(state[:deny_rights]).to eq([{:permissions => :full_control, :principals => "Clumsy_Sam"}])
+        expect(state[:rights]).to eq([{ :permissions => :read, :principals => "Everyone" }])
+        expect(state[:deny_rights]).to eq([{ :permissions => :full_control, :principals => "Clumsy_Sam" }])
       else
         expect(state[:group]).to eq("wheel")
         expect(state[:mode]).to eq("0664")

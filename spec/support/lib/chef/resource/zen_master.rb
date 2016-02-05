@@ -26,12 +26,11 @@ class Chef
 
       attr_reader :peace
 
-
       def peace(tf)
         @peace = tf
       end
 
-      def something(arg=nil)
+      def something(arg = nil)
         if !arg.nil?
           @something = arg
         end

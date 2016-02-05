@@ -202,7 +202,7 @@ describe Chef::RunContext do
     let(:notification) { Chef::Resource::Notification.new(nil, nil, notifying_resource) }
 
     shared_context "notifying resource is a Chef::Resource" do
-      let(:notifying_resource)  { Chef::Resource.new("gerbil") }
+      let(:notifying_resource) { Chef::Resource.new("gerbil") }
 
       it "should be keyed off the resource name" do
         run_context.send(setter, notification)
@@ -212,7 +212,7 @@ describe Chef::RunContext do
 
     shared_context "notifying resource is a subclass of Chef::Resource" do
       let(:declared_type) { :alpaca }
-      let(:notifying_resource)  {
+      let(:notifying_resource) {
         r = Class.new(Chef::Resource).new("guinea pig")
         r.declared_type = declared_type
         r

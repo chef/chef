@@ -26,7 +26,7 @@ class Chef
         @i_can_count = tf
       end
 
-      def something(arg=nil)
+      def something(arg = nil)
         if arg == true or arg == false
           @something = arg
         end

@@ -34,13 +34,13 @@ class Chef
         :long  => "--after ITEM",
         :description => "Place the ENTRY in the run list after ITEM"
 
-      def add_to_env_run_list(role, environment, entries, after=nil)
+      def add_to_env_run_list(role, environment, entries, after = nil)
         if after
           nlist = []
           unless role.env_run_lists.key?(environment)
             role.env_run_lists_add(environment => nlist)
           end
-          role.run_list_for(environment).each do |entry| 
+          role.run_list_for(environment).each do |entry|
             nlist << entry
             if entry == after
               entries.each { |e| nlist << e }

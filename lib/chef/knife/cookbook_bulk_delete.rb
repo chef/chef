@@ -58,9 +58,8 @@ class Chef
           ui.msg ""
         end
 
-
         cookbooks_names.each do |cookbook_name|
-          versions = rest.get("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map {|v| v["version"]}.flatten
+          versions = rest.get("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map { |v| v["version"] }.flatten
           versions.each do |version|
             object = rest.delete("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? "?purge=true" : ""}")
             ui.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")

@@ -478,7 +478,6 @@ describe Chef::ChefFS::FilePattern do
     end
   end
 
-
   # match?
   #  - single element matches (empty, fixed, ?, *, characters, escapes)
   #  - nested matches

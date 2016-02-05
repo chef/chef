@@ -38,4 +38,3 @@ describe Chef::Mixin::Checksum do
   end
 
 end
-

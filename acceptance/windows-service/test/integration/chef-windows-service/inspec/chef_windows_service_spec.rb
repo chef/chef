@@ -15,7 +15,7 @@ end
 
 describe command("chef-service-manager -a install") do
   its("exit_status") { should eq 0 }
-  its(:stdout) { should match /Service 'chef-client' has successfully been installed./}
+  its(:stdout) { should match /Service 'chef-client' has successfully been installed./ }
 end
 
 describe service("chef-client") do
@@ -26,7 +26,7 @@ end
 
 describe command("chef-service-manager -a start") do
   its("exit_status") { should eq 0 }
-  its(:stdout) { should match /Service 'chef-client' is now 'running'/}
+  its(:stdout) { should match /Service 'chef-client' is now 'running'/ }
 end
 
 describe service("chef-client") do
@@ -37,7 +37,7 @@ end
 
 describe command("chef-service-manager -a stop") do
   its("exit_status") { should eq 0 }
-  its(:stdout) { should match /Service 'chef-client' is now 'stopped'/}
+  its(:stdout) { should match /Service 'chef-client' is now 'stopped'/ }
 end
 
 describe service("chef-client") do
@@ -48,7 +48,7 @@ end
 
 describe command("chef-service-manager -a uninstall") do
   its("exit_status") { should eq 0 }
-  its(:stdout) { should match /Service chef-client deleted/}
+  its(:stdout) { should match /Service chef-client deleted/ }
 end
 
 describe service("chef-client") do

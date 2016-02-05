@@ -73,7 +73,7 @@ class Chef
 
       private
 
-      def add_to_run_list_after(node, entries, after=nil)
+      def add_to_run_list_after(node, entries, after = nil)
         if after
           nlist = []
           node.run_list.each do |entry|

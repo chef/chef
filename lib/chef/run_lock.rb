@@ -132,7 +132,7 @@ class Chef
     def create_lock
       # ensure the runlock_file path exists
       create_path(File.dirname(runlock_file))
-      @runlock = File.open(runlock_file,"a+")
+      @runlock = File.open(runlock_file, "a+")
     end
 
     # @api private solely for race condition tests
@@ -148,7 +148,7 @@ class Chef
         end
         # Flock will return 0 if it can acquire the lock otherwise it
         # will return false
-        if runlock.flock(File::LOCK_NB|File::LOCK_EX) == 0
+        if runlock.flock(File::LOCK_NB | File::LOCK_EX) == 0
           true
         else
           false

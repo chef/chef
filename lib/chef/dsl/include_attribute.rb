@@ -59,5 +59,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language_include_attribute. Load the file to activate the deprecation code.
 require "chef/mixin/language_include_attribute"
-
-

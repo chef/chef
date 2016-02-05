@@ -38,22 +38,22 @@ class Chef
       @chef_rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root])
     end
 
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(:name, arg,
                     :regex => /^[a-z0-9\-_]+$/)
     end
 
-    def full_name(arg=nil)
+    def full_name(arg = nil)
       set_or_return(:full_name,
                     arg, :kind_of => String)
     end
 
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(:private_key,
                     arg, :kind_of => String)
     end
 
-    def guid(arg=nil)
+    def guid(arg = nil)
       set_or_return(:guid,
                     arg, :kind_of => String)
     end
@@ -73,13 +73,13 @@ class Chef
     end
 
     def create
-      payload = {:name => self.name, :full_name => self.full_name}
+      payload = { :name => self.name, :full_name => self.full_name }
       new_org = chef_rest.post("organizations", payload)
       Chef::Org.from_hash(self.to_hash.merge(new_org))
     end
 
     def update
-      payload = {:name => self.name, :full_name => self.full_name}
+      payload = { :name => self.name, :full_name => self.full_name }
       new_org = chef_rest.put("organizations/#{name}", payload)
       Chef::Org.from_hash(self.to_hash.merge(new_org))
     end
@@ -101,7 +101,7 @@ class Chef
     end
 
     def associate_user(username)
-      request_body = {:user => username}
+      request_body = { :user => username }
       response = chef_rest.post "organizations/#{@name}/association_requests", request_body
       association_id = response["uri"].split("/").last
       chef_rest.put "users/#{username}/association_requests/#{association_id}", { :response => "accept" }
@@ -130,11 +130,11 @@ class Chef
     end
 
     def self.load(org_name)
-      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("organizations/#{org_name}")
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("organizations/#{org_name}")
       Chef::Org.from_hash(response)
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       orgs = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("organizations")
       if inflate
         orgs.inject({}) do |org_map, (name, _url)|

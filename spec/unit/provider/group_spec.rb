@@ -120,7 +120,7 @@ describe Chef::Provider::User do
     end
 
     it "should return true if the append is true and excluded_members include an existing user" do
-      @new_resource.members.each {|m| @new_resource.excluded_members << m }
+      @new_resource.members.each { |m| @new_resource.excluded_members << m }
       @new_resource.members.clear
       allow(@new_resource).to receive(:append).and_return(true)
       expect(@provider.compare_group).to be_truthy
@@ -256,18 +256,18 @@ describe Chef::Provider::User do
 
   describe "when determining the reason for a change" do
     it "should report which group members are missing if members are missing and appending to the group" do
-       @new_resource.members << "user1"
-       @new_resource.members << "user2"
-       allow(@new_resource).to receive(:append).and_return true
-       expect(@provider.compare_group).to be_truthy
-       expect(@provider.change_desc).to eq([ "add missing member(s): user1, user2" ])
+      @new_resource.members << "user1"
+      @new_resource.members << "user2"
+      allow(@new_resource).to receive(:append).and_return true
+      expect(@provider.compare_group).to be_truthy
+      expect(@provider.change_desc).to eq([ "add missing member(s): user1, user2" ])
     end
 
     it "should report that the group members will be overwritten if not appending" do
-       @new_resource.members << "user1"
-       allow(@new_resource).to receive(:append).and_return false
-       expect(@provider.compare_group).to be_truthy
-       expect(@provider.change_desc).to eq([ "replace group members with new list of members" ])
+      @new_resource.members << "user1"
+      allow(@new_resource).to receive(:append).and_return false
+      expect(@provider.compare_group).to be_truthy
+      expect(@provider.change_desc).to eq([ "replace group members with new list of members" ])
     end
 
     it "should report the gid will be changed when it does not match" do

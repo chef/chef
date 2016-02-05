@@ -33,10 +33,10 @@ describe Chef::Provider::Package::Aix do
 
   describe "assessing the current package status" do
     before do
-     @bffinfo ="/usr/lib/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:
- /etc/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:"
+      @bffinfo = "/usr/lib/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:
+  /etc/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:"
 
-     @empty_status = double("Status", :stdout => "", :exitstatus => 0)
+      @empty_status = double("Status", :stdout => "", :exitstatus => 0)
     end
 
     it "should create a current resource with the name of new_resource" do

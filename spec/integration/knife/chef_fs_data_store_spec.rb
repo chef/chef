@@ -179,7 +179,7 @@ EOM
       context "PUT /TYPE/NAME" do
         before do
           file "empty.json", {}
-          file "dummynode.json", { "name" => "x", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => {"foo" => "bar"}}
+          file "dummynode.json", { "name" => "x", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => { "foo" => "bar" } }
           file "rolestuff.json", '{"description":"hi there","name":"x"}'
           file "cookbooks_to_upload/x/metadata.rb", cookbook_x_100_metadata_rb
         end
@@ -234,7 +234,7 @@ EOM
       context "POST /TYPE/NAME" do
         before do
           file "empty.json", { "name" => "z" }
-          file "dummynode.json", { "name" => "z", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => {"foo" => "bar"}}
+          file "dummynode.json", { "name" => "z", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => { "foo" => "bar" } }
           file "empty_x.json", { "name" => "x" }
           file "empty_id.json", { "id" => "z" }
           file "rolestuff.json", '{"description":"hi there","name":"x"}'
@@ -479,7 +479,7 @@ EOM
       context "PUT /TYPE/NAME" do
         before do
           file "empty.json", {}
-          file "dummynode.json", { "name" => "x", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => {"foo" => "bar"}}
+          file "dummynode.json", { "name" => "x", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => { "foo" => "bar" } }
           file "rolestuff.json", '{"description":"hi there","name":"x"}'
           file "cookbooks_to_upload/x/metadata.rb", cookbook_x_100_metadata_rb
         end
@@ -505,7 +505,7 @@ EOM
       context "POST /TYPE/NAME" do
         before do
           file "empty.json", { "name" => "z" }
-          file "dummynode.json", { "name" => "z", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => {"foo" => "bar"}}
+          file "dummynode.json", { "name" => "z", "chef_environment" => "rspec" , "json_class" => "Chef::Node", "normal" => { "foo" => "bar" } }
           file "empty_x.json", { "name" => "x" }
           file "empty_id.json", { "id" => "z" }
           file "rolestuff.json", '{"description":"hi there","name":"x"}'

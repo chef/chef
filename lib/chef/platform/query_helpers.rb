@@ -99,7 +99,6 @@ class Chef
         metadata = cmdlet.run!.return_value
         metadata["RefreshMode"] == "Disabled"
       end
-      
 
       def supported_powershell_version?(node, version_string)
         return false unless node[:languages] && node[:languages][:powershell]

@@ -33,7 +33,7 @@ module Shell
   class ShellSession
     include Singleton
 
-    def self.session_type(type=nil)
+    def self.session_type(type = nil)
       @session_type = type if type
       @session_type
     end
@@ -244,7 +244,7 @@ module Shell
       Chef::Log.debug("Building node object for #{@node_name}")
       @node = Chef::Node.find_or_create(node_name)
       ohai_data = @ohai.data.merge(@node.automatic_attrs)
-      @node.consume_external_attrs(ohai_data,nil)
+      @node.consume_external_attrs(ohai_data, nil)
       @run_list_expansion = @node.expand!("server")
       @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
       Chef::Log.info("Run List is [#{@node.run_list}]")
@@ -254,7 +254,7 @@ module Shell
 
     def register
       @rest = Chef::ServerAPI.new(Chef::Config[:chef_server_url], :client_name => Chef::Config[:node_name],
-                                  :signing_key_filename => Chef::Config[:client_key])
+                                                                  :signing_key_filename => Chef::Config[:client_key])
     end
 
   end

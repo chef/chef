@@ -45,7 +45,7 @@ class Chef
         #   :default => default_value
         def initialize(platform_hash)
           @values = {}
-          platform_hash.each { |platforms, value| set(platforms, value)}
+          platform_hash.each { |platforms, value| set(platforms, value) }
         end
 
         def value_for_node(node)
@@ -110,7 +110,7 @@ class Chef
             @values["default"] = value
           else
             assert_valid_platform_values!(platforms, value)
-            Array(platforms).each { |platform| @values[platform.to_s] = normalize_keys(value)}
+            Array(platforms).each { |platform| @values[platform.to_s] = normalize_keys(value) }
             value
           end
         end
@@ -133,8 +133,6 @@ class Chef
           end
         end
       end
-
-
 
       # Given a hash similar to the one we use for Platforms, select a value from the hash.  Supports
       # per platform defaults, along with a single base default. Arrays may be passed as hash keys and
@@ -168,8 +166,6 @@ class Chef
         has_platform
       end
 
-
-
      # Implementation class for determining platform family dependent values
       class PlatformFamilyDependentValue
 
@@ -193,7 +189,7 @@ class Chef
         def initialize(platform_family_hash)
           @values = {}
           @values["default"] = nil
-          platform_family_hash.each { |platform_families, value| set(platform_families, value)}
+          platform_family_hash.each { |platform_families, value| set(platform_families, value) }
         end
 
         def value_for_node(node)
@@ -220,7 +216,6 @@ class Chef
           end
         end
       end
-
 
       # Given a hash mapping platform families to values, select a value from the hash. Supports a single
       # base default if platform family is not in the map. Arrays may be passed as hash keys and will be
@@ -257,4 +252,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
 require "chef/mixin/language"
-

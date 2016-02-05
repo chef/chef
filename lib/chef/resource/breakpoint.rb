@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require "chef/resource"
 
 class Chef
@@ -24,7 +23,7 @@ class Chef
     class Breakpoint < Chef::Resource
       default_action :break
 
-      def initialize(action="break", *args)
+      def initialize(action = "break", *args)
         super(caller.first, *args)
       end
 

@@ -42,5 +42,3 @@ describe Chef::FileContentManagement::Deploy::Cp do
 
   end
 end
-
-

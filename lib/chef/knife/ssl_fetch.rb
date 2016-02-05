@@ -87,10 +87,9 @@ class Chef
         end
       end
 
-
       def cn_of(certificate)
         subject = certificate.subject
-        cn_field_tuple = subject.to_a.find {|field| field[0] == "CN" }
+        cn_field_tuple = subject.to_a.find { |field| field[0] == "CN" }
         cn_field_tuple[1]
       end
 
@@ -120,7 +119,7 @@ class Chef
         cn = cn_of(cert)
         filename = File.join(trusted_certs_dir, "#{normalize_cn(cn)}.crt")
         ui.msg("Adding certificate for #{cn} in #{filename}")
-        File.open(filename, File::CREAT|File::TRUNC|File::RDWR, 0644) do |f|
+        File.open(filename, File::CREAT | File::TRUNC | File::RDWR, 0644) do |f|
           f.print(cert.to_s)
         end
       end
@@ -152,7 +151,6 @@ TRUST_TRUST
         end
         exit 1
       end
-
 
     end
   end

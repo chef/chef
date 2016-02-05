@@ -112,7 +112,7 @@ class Chef
       run_context.events
     end
 
-    def run_action(action=nil)
+    def run_action(action = nil)
       @action = action unless action.nil?
 
       # TODO: it would be preferable to get the action to be executed in the
@@ -244,7 +244,7 @@ class Chef
       true
     end
 
-    def self.provides(short_name, opts={}, &block)
+    def self.provides(short_name, opts = {}, &block)
       Chef.provider_handler_map.set(short_name, self, opts, &block)
     end
 

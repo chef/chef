@@ -61,10 +61,10 @@ class Chef
         if config[:long_output]
           opts = {}
         else
-          opts = {filter_result:
+          opts = { filter_result:
                  { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
-                  ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
-                  platform_version: ["platform_version"], chef_environment: ["chef_environment"]}}
+                   ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
+                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } }
         end
 
         @query ||= ""
@@ -76,7 +76,7 @@ class Chef
           time = Time.now.to_i
           # AND NOT is not valid lucene syntax, so don't use append_to_query
           @query << " " unless @query.empty?
-          @query << "NOT ohai_time:[#{(time - 60*60)} TO #{time}]"
+          @query << "NOT ohai_time:[#{(time - 60 * 60)} TO #{time}]"
         end
 
         if config[:hide_by_mins]
@@ -84,7 +84,7 @@ class Chef
           time = Time.now.to_i
           # AND NOT is not valid lucene syntax, so don't use append_to_query
           @query << " " unless @query.empty?
-          @query << "NOT ohai_time:[#{(time - hidemins*60)} TO #{time}]"
+          @query << "NOT ohai_time:[#{(time - hidemins * 60)} TO #{time}]"
         end
 
         @query = @query.empty? ? "*:*" : @query

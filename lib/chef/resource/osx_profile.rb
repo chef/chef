@@ -29,7 +29,7 @@ class Chef
       default_action :install
       allowed_actions :install, :remove
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @profile_name = name
         @profile = nil
@@ -37,7 +37,7 @@ class Chef
         @path = nil
       end
 
-      def profile_name(arg=nil)
+      def profile_name(arg = nil)
         set_or_return(
           :profile_name,
           arg,
@@ -45,7 +45,7 @@ class Chef
         )
       end
 
-      def profile(arg=nil)
+      def profile(arg = nil)
         set_or_return(
           :profile,
           arg,
@@ -53,7 +53,7 @@ class Chef
         )
       end
 
-      def identifier(arg=nil)
+      def identifier(arg = nil)
         set_or_return(
           :identifier,
           arg,
@@ -61,7 +61,7 @@ class Chef
         )
       end
 
-      def path(arg=nil)
+      def path(arg = nil)
         set_or_return(
           :path,
           arg,

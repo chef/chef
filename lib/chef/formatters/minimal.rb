@@ -4,7 +4,6 @@ class Chef
 
   module Formatters
 
-
     # == Formatters::Minimal
     # Shows the progress of the chef run by printing single characters, and
     # displays a summary of updates at the conclusion of the run. For events
@@ -20,11 +19,10 @@ class Chef
       attr_reader :updated_resources
       attr_reader :updates_by_resource
 
-
       def initialize(out, err)
         super
         @updated_resources = []
-        @updates_by_resource = Hash.new {|h, k| h[k] = []}
+        @updates_by_resource = Hash.new { |h, k| h[k] = [] }
       end
 
       # Called at the very start of a Chef Run
@@ -168,7 +166,7 @@ class Chef
       end
 
       # Called before action is executed on a resource.
-      def resource_action_start(resource, action, notification_type=nil, notifier=nil)
+      def resource_action_start(resource, action, notification_type = nil, notifier = nil)
       end
 
       # Called when a resource fails, but will retry.
@@ -233,4 +231,3 @@ class Chef
     end
   end
 end
-

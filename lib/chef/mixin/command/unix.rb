@@ -27,7 +27,7 @@ class Chef
         # The original appears in external/open4.rb in its unmodified form.
         #
         # Thanks Ara!
-        def popen4(cmd, args={}, &b)
+        def popen4(cmd, args = {}, &b)
           # Ruby 1.8 suffers from intermittent segfaults believed to be due to GC while IO.select
           # See CHEF-2916 / CHEF-1305
           GC.disable
@@ -89,7 +89,7 @@ class Chef
                 Process.uid = args[:user]
               end
 
-              args[:environment].each do |key,value|
+              args[:environment].each do |key, value|
                 ENV[key] = value
               end
 
@@ -116,7 +116,7 @@ class Chef
             $VERBOSE = verbose
           end
 
-          [pw.first, pr.last, pe.last, ps.last].each{|fd| fd.close}
+          [pw.first, pr.last, pe.last, ps.last].each { |fd| fd.close }
 
           begin
             e = Marshal.load ps.first
@@ -205,7 +205,7 @@ class Chef
                 results.last
               end
             ensure
-              pi.each{|fd| fd.close unless fd.closed?}
+              pi.each { |fd| fd.close unless fd.closed? }
             end
           else
             [cid, pw.last, pr.first, pe.first]

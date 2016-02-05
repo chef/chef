@@ -57,8 +57,7 @@ class Chef
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get_rest+ with 'nodes' will make an
     # HTTP GET request to http://localhost:4000/nodes
-    def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
-
+    def initialize(url, client_name = Chef::Config[:node_name], signing_key_filename = Chef::Config[:client_key], options = {})
       Chef.log_deprecation("Chef::REST is deprecated. Please use Chef::ServerAPI, or investigate Ridley or ChefAPI.")
 
       signing_key_filename = nil if chef_zero_uri?(url)
@@ -84,7 +83,6 @@ class Chef
       # because the order of middlewares is reversed when handling
       # responses.
       @middlewares << ValidateContentLength.new(options)
-
     end
 
     def signing_key_filename
@@ -115,7 +113,7 @@ class Chef
     # path:: The path to GET
     # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults
     #   to JSON inflated.
-    def get(path, raw=false, headers={})
+    def get(path, raw = false, headers = {})
       if raw
         streaming_request(path, headers)
       else
@@ -136,8 +134,8 @@ class Chef
     # If you rename the tempfile, it will not be deleted.
     # Beware that if the server streams infinite content, this method will
     # stream it until you run out of disk space.
-    def fetch(path, headers={})
-      streaming_request(create_url(path), headers) {|tmp_file| yield tmp_file }
+    def fetch(path, headers = {})
+      streaming_request(create_url(path), headers) { |tmp_file| yield tmp_file }
     end
 
     alias :api_request :request
@@ -203,7 +201,7 @@ class Chef
       @decompressor.decompress_body(body)
     end
 
-    def authentication_headers(method, url, json_body=nil)
+    def authentication_headers(method, url, json_body = nil)
       authenticator.authentication_headers(method, url, json_body)
     end
 

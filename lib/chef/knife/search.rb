@@ -106,7 +106,7 @@ class Chef
             formatted_item = Hash.new
             if item.is_a?(Hash)
               # doing a little magic here to set the correct name
-              formatted_item[item["__display_name"]] = item.reject{|k| k == "__display_name"}
+              formatted_item[item["__display_name"]] = item.reject { |k| k == "__display_name" }
             else
               formatted_item = format_for_display(item)
             end
@@ -120,7 +120,7 @@ class Chef
         end
 
         if ui.interchange?
-          output({:results => result_count, :rows => result_items})
+          output({ :results => result_count, :rows => result_items })
         else
           ui.log "#{result_count} items found"
           ui.log("\n")

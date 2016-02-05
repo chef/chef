@@ -30,7 +30,7 @@ describe Shell do
   describe "smoke tests", :unix_only => true do
     include Chef::Mixin::Command::Unix
 
-    TIMEOUT=300
+    TIMEOUT = 300
 
     def read_until(io, expected_value)
       start = Time.new
@@ -43,7 +43,7 @@ describe Shell do
         end
         if Time.new - start > TIMEOUT
           raise "did not read expected value `#{expected_value}' within #{TIMEOUT}s\n" +
-                "Buffer so far: `#{buffer}'"
+            "Buffer so far: `#{buffer}'"
         end
       end
       buffer

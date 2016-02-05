@@ -92,7 +92,7 @@ describe Chef::Application::Apply do
 
   end
   describe "when the json_attribs configuration option is specified" do
-    let(:json_attribs) { {"a" => "b"} }
+    let(:json_attribs) { { "a" => "b" } }
     let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
     let(:json_source) { "https://foo.com/foo.json" }
 

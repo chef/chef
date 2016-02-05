@@ -129,7 +129,7 @@ EOM
     before do
       environment "x", {
         "default_attributes" => { "foo" => "bar" },
-        "cookbook_versions" => { "blah" => "= 1.0.0"},
+        "cookbook_versions" => { "blah" => "= 1.0.0" },
         "override_attributes" => { "x" => "y" },
         "description" => "woo",
         "name" => "x",

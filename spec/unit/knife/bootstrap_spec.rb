@@ -51,7 +51,7 @@ describe Chef::Knife::Bootstrap do
   context "with --bootstrap-vault-item" do
     let(:bootstrap_cli_options) { [ "--bootstrap-vault-item", "vault1:item1", "--bootstrap-vault-item", "vault1:item2", "--bootstrap-vault-item", "vault2:item1" ] }
     it "sets the knife config cli option correctly" do
-      expect(knife.config[:bootstrap_vault_item]).to eq({"vault1"=>["item1", "item2"], "vault2"=>["item1"]})
+      expect(knife.config[:bootstrap_vault_item]).to eq({ "vault1" => ["item1", "item2"], "vault2" => ["item1"] })
     end
   end
 
@@ -102,7 +102,7 @@ describe Chef::Knife::Bootstrap do
     context "when :bootstrap_template config is set to a template name" do
       let(:bootstrap_template) { "example" }
 
-      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), "../../../lib/chef/knife/bootstrap/templates", "example.erb"))}
+      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), "../../../lib/chef/knife/bootstrap/templates", "example.erb")) }
 
       let(:chef_config_dir_template_path) { "/knife/chef/config/bootstrap/example.erb" }
 
@@ -209,7 +209,7 @@ describe Chef::Knife::Bootstrap do
   ["-d", "--distro", "-t", "--bootstrap-template", "--template-file"].each do |t|
     context "when #{t} option is given in the command line" do
       it "sets the knife :bootstrap_template config" do
-        knife.parse_options([t,"blahblah"])
+        knife.parse_options([t, "blahblah"])
         knife.merge_configs
         expect(knife.bootstrap_template).to eq("blahblah")
       end
@@ -224,7 +224,7 @@ describe Chef::Knife::Bootstrap do
     end
 
     it "should have role[base] in the run_list" do
-      knife.parse_options(["-r","role[base]"])
+      knife.parse_options(["-r", "role[base]"])
       knife.merge_configs
       expect(knife.render_template).to eq('{"run_list":["role[base]"]}')
     end
@@ -238,7 +238,7 @@ describe Chef::Knife::Bootstrap do
     context "with bootstrap_attribute options" do
       let(:jsonfile) {
         file = Tempfile.new (["node", ".json"])
-        File.open(file.path, "w") {|f| f.puts '{"foo":{"bar":"baz"}}' }
+        File.open(file.path, "w") { |f| f.puts '{"foo":{"bar":"baz"}}' }
         file
       }
 
@@ -264,7 +264,7 @@ describe Chef::Knife::Bootstrap do
           knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
           knife.parse_options(["--json-attribute-file", jsonfile.path])
           knife.merge_configs
-          expect{ knife.run }.to raise_error(Chef::Exceptions::BootstrapCommandInputError)
+          expect { knife.run }.to raise_error(Chef::Exceptions::BootstrapCommandInputError)
           jsonfile.close
         end
       end
@@ -297,7 +297,7 @@ describe Chef::Knife::Bootstrap do
       k
     end
 
-    let(:options){ ["--bootstrap-no-proxy", setting, "-s", "foo"] }
+    let(:options) { ["--bootstrap-no-proxy", setting, "-s", "foo"] }
     let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
     let(:rendered_template) do
       knife.render_template
@@ -339,7 +339,7 @@ describe Chef::Knife::Bootstrap do
       let(:options) { ["--node-ssl-verify-mode", "all"] }
 
       it "raises error" do
-        expect{ rendered_template }.to raise_error
+        expect { rendered_template }.to raise_error
       end
     end
 
@@ -633,7 +633,7 @@ describe Chef::Knife::Bootstrap do
     describe "when falling back to password auth when host key auth fails" do
       let(:knife_ssh_with_password_auth) do
         knife.name_args = ["foo.example.com"]
-        knife.config[:ssh_user]      = "rooty"
+        knife.config[:ssh_user] = "rooty"
         knife.config[:ssh_identity_file] = "~/.ssh/me.rsa"
         allow(knife).to receive(:render_template).and_return("")
         k = knife.knife_ssh
@@ -662,7 +662,7 @@ describe Chef::Knife::Bootstrap do
     let(:knife_ssh) do
       knife.name_args = ["foo.example.com"]
       knife.config[:chef_node_name] = "foo.example.com"
-      knife.config[:ssh_user]      = "rooty"
+      knife.config[:ssh_user] = "rooty"
       knife.config[:ssh_identity_file] = "~/.ssh/me.rsa"
       allow(knife).to receive(:render_template).and_return("")
       knife_ssh = knife.knife_ssh
@@ -676,7 +676,6 @@ describe Chef::Knife::Bootstrap do
         # this tests runs the old code path where we have a validation key, so we need to pass that check
         allow(File).to receive(:exist?).with(File.expand_path(Chef::Config[:validation_key])).and_return(true)
       end
-
 
       it "configures the underlying ssh command and then runs it" do
         expect(knife_ssh).to receive(:run)

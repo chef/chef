@@ -19,7 +19,6 @@
 require "spec_helper"
 require "chef/resource_resolver"
 
-
 describe Chef::ResourceResolver do
   it '#resolve' do
     expect(described_class.resolve(:execute)).to eq(Chef::Resource::Execute)

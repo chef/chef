@@ -156,7 +156,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
   describe "when the json_attribs configuration option is specified" do
 
-    let(:json_attribs) { {"a" => "b"} }
+    let(:json_attribs) { { "a" => "b" } }
     let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
     let(:json_source) { "https://foo.com/foo.json" }
 
@@ -254,7 +254,6 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
   end
 end
-
 
 describe Chef::Application::Client, "setup_application" do
   before do

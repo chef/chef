@@ -130,7 +130,7 @@ class Chef
         if ::File.exist?(@new_resource.path)
           requirements.assert(:delete) do |a|
             a.assertion { ::File.writable?(@new_resource.path) }
-            a.failure_message(Chef::Exceptions::InsufficientPermissions,"File #{@new_resource.path} exists but is not writable so it cannot be deleted")
+            a.failure_message(Chef::Exceptions::InsufficientPermissions, "File #{@new_resource.path} exists but is not writable so it cannot be deleted")
           end
         end
 
@@ -266,7 +266,7 @@ class Chef
         else
           [ Chef::Exceptions::FileTypeMismatch,
             "File #{path} exists, but is a symlink to #{real_path} which is a #{file_type_string(real_path)}. " +
-            "Disable manage_symlink_source and set force_unlink to remove it.",
+              "Disable manage_symlink_source and set force_unlink to remove it.",
             "Assuming symlink #{path} or source file #{real_path} would have been fixed by a previous resource",
           ]
         end
@@ -464,7 +464,7 @@ class Chef
 
       def short_cksum(checksum)
         return "none" if checksum.nil?
-        checksum.slice(0,6)
+        checksum.slice(0, 6)
       end
 
       def load_resource_attributes_from_file(resource)

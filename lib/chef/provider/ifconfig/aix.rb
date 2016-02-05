@@ -67,6 +67,7 @@ class Chef
         end
 
         private
+
         def add_command
           # ifconfig changes are temporary, chdev persist across reboots.
           raise Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action" if @new_resource.metric
@@ -88,7 +89,7 @@ class Chef
         def hex_to_dec_netmask(netmask)
           # example '0xffff0000' -> '255.255.0.0'
           dec = netmask[2..3].to_i(16).to_s(10)
-          [4,6,8].each { |n| dec = dec + "." + netmask[n..n+1].to_i(16).to_s(10) }
+          [4, 6, 8].each { |n| dec = dec + "." + netmask[n..n + 1].to_i(16).to_s(10) }
           dec
         end
 

@@ -40,7 +40,7 @@ class Chef
       end
 
       def ignored?(file_name)
-        @ignores.any? {|glob| File.fnmatch?(glob, file_name)}
+        @ignores.any? { |glob| File.fnmatch?(glob, file_name) }
       end
 
       private
@@ -72,4 +72,3 @@ class Chef
     end
   end
 end
-

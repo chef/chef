@@ -19,16 +19,16 @@
 require "spec_helper"
 
 describe Chef::Provider::Group::Groupmod do
-    before do
-      @node = Chef::Node.new
-      @events = Chef::EventDispatch::Dispatcher.new
-      @run_context = Chef::RunContext.new(@node, {}, @events)
-      @new_resource = Chef::Resource::Group.new("wheel")
-      @new_resource.gid 123
-      @new_resource.members %w{lobster rage fist}
-      @new_resource.append false
-      @provider = Chef::Provider::Group::Groupmod.new(@new_resource, @run_context)
-    end
+  before do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @new_resource = Chef::Resource::Group.new("wheel")
+    @new_resource.gid 123
+    @new_resource.members %w{lobster rage fist}
+    @new_resource.append false
+    @provider = Chef::Provider::Group::Groupmod.new(@new_resource, @run_context)
+  end
 
   describe "manage_group" do
     describe "when determining the current group state" do

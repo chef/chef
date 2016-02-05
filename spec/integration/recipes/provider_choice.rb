@@ -18,6 +18,7 @@ describe "Recipe DSL methods" do
         class Chef::Provider::ProviderThingy < Chef::Provider
           def load_current_resource
           end
+
           def action_create
             Chef::Log.warn("hello from #{self.class.name}")
           end

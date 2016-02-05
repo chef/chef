@@ -135,7 +135,7 @@ describe Chef::Provider::Mount do
       provider.unmount_retries = 1
       expect(provider).to receive(:umount_fs)
       expect(provider).to receive(:mounted?).and_return(true, true)
-      expect{ provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
+      expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
   end
 
@@ -180,7 +180,6 @@ describe Chef::Provider::Mount do
       expect(new_resource).not_to be_updated_by_last_action
     end
   end
-
 
   it "should delegates the mount implementation to subclasses" do
     expect { provider.mount_fs }.to raise_error(Chef::Exceptions::UnsupportedAction)

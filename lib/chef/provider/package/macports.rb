@@ -81,6 +81,7 @@ class Chef
         end
 
         private
+
         def get_response_from_command(command)
           output = nil
           status = shell_out_with_timeout(command)

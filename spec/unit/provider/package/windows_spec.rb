@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
   end
 
   let(:node) { double("Chef::Node") }
-  let(:events) { double("Chef::Events").as_null_object }  # mock all the methods
+  let(:events) { double("Chef::Events").as_null_object } # mock all the methods
   let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
   let(:resource_source) { "calculator.msi" }
   let(:resource_name) { "calculator" }
@@ -327,7 +327,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
           new_resource.version("5.5.5")
           allow(provider).to receive(:current_version_array).and_return([ ["5.5.5", "4.3.0", "1.1.1"] ])
         end
-        
+
         it "does not install" do
           expect(provider).not_to receive(:install_package)
           provider.run_action(:install)
@@ -339,7 +339,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
           new_resource.version("5.5.5")
           allow(provider).to receive(:current_version_array).and_return([ ["5.5.0", "4.3.0", "1.1.1"] ])
         end
-        
+
         it "installs given version" do
           expect(provider).to receive(:install_package).with("blah", "5.5.5")
           provider.run_action(:install)
@@ -353,7 +353,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
           new_resource.version("5.5.5")
           allow(provider).to receive(:current_version_array).and_return(["5.5.5"])
         end
-        
+
         it "does not install" do
           expect(provider).not_to receive(:install_package)
           provider.run_action(:install)
@@ -365,7 +365,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
           new_resource.version("5.5.5")
           allow(provider).to receive(:current_version_array).and_return(["5.5.0"])
         end
-        
+
         it "installs given version" do
           expect(provider).to receive(:install_package).with("blah", "5.5.5")
           provider.run_action(:install)

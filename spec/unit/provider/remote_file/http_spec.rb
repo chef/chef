@@ -61,7 +61,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         end
 
         it "has the user-specified custom headers" do
-          expect(fetcher.headers).to eq({"x-myapp-header" => "custom-header-value"})
+          expect(fetcher.headers).to eq({ "x-myapp-header" => "custom-header-value" })
         end
       end
 
@@ -178,7 +178,6 @@ describe Chef::Provider::RemoteFile::HTTP do
       expect(Chef::HTTP::Simple).to receive(:new).with(*expected_http_args).and_return(rest)
     end
 
-
     describe "and the request does not return new content" do
 
       it "should return a nil tempfile for a 304 HTTPNotModifed" do
@@ -207,7 +206,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       end
 
       context "and the response does not contain an etag" do
-        let(:last_response) { {"etag" => nil} }
+        let(:last_response) { { "etag" => nil } }
         it "does not include an etag in the result" do
           fetcher.fetch
           expect(cache_control_data.etag).to be_nil
@@ -217,7 +216,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       end
 
       context "and the response has an etag header" do
-        let(:last_response) { {"etag" => "abc123"} }
+        let(:last_response) { { "etag" => "abc123" } }
 
         it "includes the etag value in the response" do
           fetcher.fetch
@@ -229,7 +228,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       end
 
       context "and the response has no Date or Last-Modified header" do
-        let(:last_response) { {"date" => nil, "last_modified" => nil} }
+        let(:last_response) { { "date" => nil, "last_modified" => nil } }
         it "does not set an mtime in the result" do
           # RFC 2616 suggests that servers that do not set a Date header do not
           # have a reliable clock, so no use in making them deal with dates.
@@ -243,7 +242,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       context "and the response has a Last-Modified header" do
         let(:last_response) do
           # Last-Modified should be preferred to Date if both are set
-          {"date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => "Fri, 17 May 2013 11:11:11 GMT"}
+          { "date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => "Fri, 17 May 2013 11:11:11 GMT" }
         end
 
         it "sets the mtime to the Last-Modified time in the response" do
@@ -255,7 +254,7 @@ describe Chef::Provider::RemoteFile::HTTP do
 
       context "and the response has a Date header but no Last-Modified header" do
         let(:last_response) do
-          {"date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => nil}
+          { "date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => nil }
         end
 
         it "sets the mtime to the Date in the response" do
@@ -270,7 +269,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       context "and the target file is a tarball [CHEF-3140]" do
 
         let(:uri) { URI.parse("http://opscode.com/tarball.tgz") }
-        let(:expected_http_opts) { {:disable_gzip => true} }
+        let(:expected_http_opts) { { :disable_gzip => true } }
 
         # CHEF-3140
         # Some servers return tarballs as content type tar and encoding gzip, which
@@ -300,4 +299,3 @@ describe Chef::Provider::RemoteFile::HTTP do
   end
 
 end
-

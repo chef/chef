@@ -32,7 +32,7 @@ shared_examples_for "version handling" do
     end
 
     it "raises the original exception" do
-      expect{ object.send(method) }.to raise_error(exception_406)
+      expect { object.send(method) }.to raise_error(exception_406)
     end
   end # when the server does not support the min or max server API version that Chef::UserV1 supports
 end # version handling
@@ -60,7 +60,7 @@ shared_examples_for "user and client reregister" do
 
       it "raises an error about only V0 being supported" do
         expect(object).to receive(:reregister_only_v0_supported_error_msg).with(max_version, min_version)
-        expect{ object.reregister }.to raise_error(Chef::Exceptions::OnlyApiVersion0SupportedForAction)
+        expect { object.reregister }.to raise_error(Chef::Exceptions::OnlyApiVersion0SupportedForAction)
       end
 
     end
@@ -70,7 +70,7 @@ shared_examples_for "user and client reregister" do
       end
 
       it "raises the original error" do
-        expect{ object.reregister }.to raise_error(generic_exception)
+        expect { object.reregister }.to raise_error(generic_exception)
       end
     end
   end

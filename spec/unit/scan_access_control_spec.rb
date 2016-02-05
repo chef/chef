@@ -181,4 +181,3 @@ describe Chef::ScanAccessControl do
     end
   end
 end
-

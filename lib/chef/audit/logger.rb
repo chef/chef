@@ -20,7 +20,7 @@ require "stringio"
 class Chef
   class Audit
     class Logger
-      def self.puts(message="")
+      def self.puts(message = "")
         @buffer ||= StringIO.new
         @buffer.puts(message)
 

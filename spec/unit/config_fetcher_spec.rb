@@ -2,7 +2,7 @@ require "spec_helper"
 require "chef/config_fetcher"
 
 describe Chef::ConfigFetcher do
-  let(:valid_json) { Chef::JSONCompat.to_json({:a=>"b"}) }
+  let(:valid_json) { Chef::JSONCompat.to_json({ :a => "b" }) }
   let(:invalid_json) { %q[{"syntax-error": "missing quote}] }
   let(:http) { double("Chef::HTTP::Simple") }
 
@@ -41,19 +41,17 @@ describe Chef::ConfigFetcher do
 
       let(:config_location) { "/etc/chef/first-boot.json" }
 
-
       it "returns the parsed JSON" do
         expect(::File).to receive(:read).
           with(config_location).
           and_return(valid_json)
 
-        expect(fetcher.fetch_json).to eq({"a" => "b"})
+        expect(fetcher.fetch_json).to eq({ "a" => "b" })
       end
 
       context "and the JSON is invalid" do
 
         it "reports the JSON error" do
-
 
           expect(::File).to receive(:read).
             with(config_location).
@@ -86,8 +84,8 @@ describe Chef::ConfigFetcher do
       end
 
       it "reads the file over HTTP" do
-          expect(http).to receive(:get).
-            with("").and_return(config_content)
+        expect(http).to receive(:get).
+          with("").and_return(config_content)
         expect(fetcher.read_config).to eq(config_content)
       end
 
@@ -97,7 +95,7 @@ describe Chef::ConfigFetcher do
         it "fetches the file and parses it" do
           expect(http).to receive(:get).
             with("").and_return(valid_json)
-          expect(fetcher.fetch_json).to eq({"a" => "b"})
+          expect(fetcher.fetch_json).to eq({ "a" => "b" })
         end
 
         context "and the JSON is invalid" do
@@ -123,6 +121,5 @@ describe Chef::ConfigFetcher do
       expect(fetcher.expanded_path).to eq(nil)
     end
   end
-
 
 end

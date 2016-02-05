@@ -47,7 +47,7 @@ class Chef
           # alternate value and overwrite it with the defaults.
           Gem.configuration
 
-          DEFAULT_UNINSTALLER_OPTS = {:ignore => true, :executables => true}
+          DEFAULT_UNINSTALLER_OPTS = { :ignore => true, :executables => true }
 
           ##
           # The paths where rubygems should search for installed gems.
@@ -133,7 +133,7 @@ class Chef
           def candidate_version_from_file(gem_dependency, source)
             spec = spec_from_file(source)
             if spec.satisfies_requirement?(gem_dependency)
-              logger.debug {"#{@new_resource} found candidate gem version #{spec.version} from local gem package #{source}"}
+              logger.debug { "#{@new_resource} found candidate gem version #{spec.version} from local gem package #{source}" }
               spec.version
             else
               # This is probably going to end badly...
@@ -189,7 +189,7 @@ class Chef
           # === Options
           # :sources    rubygems servers to use
           # Other options are passed to Gem::DependencyInstaller.new
-          def install(gem_dependency, options={})
+          def install(gem_dependency, options = {})
             with_gem_sources(*options.delete(:sources)) do
               with_correct_verbosity do
                 dependency_installer(options).install(gem_dependency)
@@ -203,7 +203,7 @@ class Chef
           # Otherwise, all versions are uninstalled.
           # === Options
           # Options are passed to Gem::Uninstaller.new
-          def uninstall(gem_name, gem_version=nil, opts={})
+          def uninstall(gem_name, gem_version = nil, opts = {})
             gem_version ? opts[:version] = gem_version : opts[:all] = true
             with_correct_verbosity do
               uninstaller(gem_name, opts).uninstall
@@ -218,11 +218,11 @@ class Chef
             yield
           end
 
-          def dependency_installer(opts={})
+          def dependency_installer(opts = {})
             Gem::DependencyInstaller.new(opts)
           end
 
-          def uninstaller(gem_name, opts={})
+          def uninstaller(gem_name, opts = {})
             Gem::Uninstaller.new(gem_name, DEFAULT_UNINSTALLER_OPTS.merge(opts))
           end
 
@@ -358,7 +358,7 @@ class Chef
 
         include Chef::Mixin::GetSourceFromPackage
 
-        def initialize(new_resource, run_context=nil)
+        def initialize(new_resource, run_context = nil)
           super
           @cleanup_gem_env = true
           if new_resource.gem_binary
@@ -398,7 +398,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true
-          elsif RbConfig::CONFIG["bindir"].sub(/^[\w]:/, "")  == "/opscode/chef/embedded/bin"
+          elsif RbConfig::CONFIG["bindir"].sub(/^[\w]:/, "") == "/opscode/chef/embedded/bin"
             Chef::Log.debug("#{@new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
             # windows, with the drive letter removed
             true
@@ -436,7 +436,7 @@ class Chef
           # is the current version
           if !matching_installed_versions.empty?
             gemspec = matching_installed_versions.last
-            logger.debug { "#{@new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}"}
+            logger.debug { "#{@new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}" }
             gemspec
             # If no version matching the requirements exists, the latest installed
             # version is the current version.
@@ -445,7 +445,7 @@ class Chef
             logger.debug { "#{@new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
             gemspec
           else
-            logger.debug { "#{@new_resource} no installed version found for #{gem_dependency}"}
+            logger.debug { "#{@new_resource} no installed version found for #{gem_dependency}" }
             nil
           end
         end
@@ -519,7 +519,7 @@ class Chef
           elsif @new_resource.gem_binary.nil?
             @gem_env.install(@new_resource.source)
           else
-            install_via_gem_command(name,version)
+            install_via_gem_command(name, version)
           end
           true
         end
@@ -538,9 +538,9 @@ class Chef
             src = @new_resource.source && " --source=#{@new_resource.source} --source=https://rubygems.org"
           end
           if !version.nil? && version.length > 0
-            shell_out_with_timeout!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env => nil)
           else
-            shell_out_with_timeout!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env => nil)
           end
         end
 
@@ -564,9 +564,9 @@ class Chef
 
         def uninstall_via_gem_command(name, version)
           if version
-            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", :env => nil)
           else
-            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", :env=>nil)
+            shell_out_with_timeout!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", :env => nil)
           end
         end
 

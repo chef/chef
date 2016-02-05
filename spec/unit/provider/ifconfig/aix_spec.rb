@@ -35,7 +35,6 @@ lo0: flags=e08084b,c0<UP,BROADCAST,LOOPBACK,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64
 IFCONFIG
   end
 
-
   before(:each) do
     @node = Chef::Node.new
     @cookbook_collection = Chef::CookbookCollection.new([])
@@ -87,7 +86,7 @@ IFCONFIG
         @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
 
-      expect{@provider.run_action(:add)}.to raise_error(Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action")
+      expect { @provider.run_action(:add) }.to raise_error(Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action")
     end
   end
 

@@ -49,7 +49,7 @@ class Chef
       # our place in it (just before the first value with the same preference level).
       insert_at = nil
       map[key] ||= []
-      map[key].each_with_index do |matcher,index|
+      map[key].each_with_index do |matcher, index|
         cmp = compare_matchers(key, new_matcher, matcher)
         insert_at ||= index if cmp && cmp <= 0
       end
@@ -145,16 +145,16 @@ class Chef
       value = node[attribute]
 
       filter_values.empty? ||
-      Array(filter_values).any? do |v|
-        Chef::VersionConstraint::Platform.new(v).include?(value)
-      end
+        Array(filter_values).any? do |v|
+          Chef::VersionConstraint::Platform.new(v).include?(value)
+        end
     end
 
     def filters_match?(node, filters)
       matches_black_white_list?(node, filters, :os) &&
-      matches_black_white_list?(node, filters, :platform_family) &&
-      matches_black_white_list?(node, filters, :platform) &&
-      matches_version_list?(node, filters, :platform_version)
+        matches_black_white_list?(node, filters, :platform_family) &&
+        matches_black_white_list?(node, filters, :platform) &&
+        matches_version_list?(node, filters, :platform_version)
     end
 
     def block_matches?(node, block)

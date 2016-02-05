@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require "chef/exceptions"
 require "chef/mixin/wide_string"
 require "chef/platform/query_helpers"

@@ -64,6 +64,7 @@ class Chef
       def self.is_absolute?(path)
         !!(path =~ /^#{regexp_path_separator}/)
       end
+
       # Given a path which may only be partly real (i.e. /x/y/z when only /x exists,
       # or /x/y/*/blah when /x/y/z/blah exists), call File.realpath on the biggest
       # part that actually exists.  The paths operated on here are not Chef-FS paths.
@@ -114,8 +115,8 @@ class Chef
         return nil unless PathUtils.os_path_eq?(candidate_fragment, ancestor)
         if ancestor.length == path.length
           ""
-        elsif path[ancestor.length,1] =~ /#{PathUtils.regexp_path_separator}/
-          path[ancestor.length+1..-1]
+        elsif path[ancestor.length, 1] =~ /#{PathUtils.regexp_path_separator}/
+          path[ancestor.length + 1..-1]
         else
           nil
         end

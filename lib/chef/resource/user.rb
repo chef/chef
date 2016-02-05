@@ -28,7 +28,7 @@ class Chef
       default_action :create
       allowed_actions :create, :remove, :modify, :manage, :lock, :unlock
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @username = name
         @comment = nil
@@ -49,7 +49,7 @@ class Chef
         @salt = nil
       end
 
-      def username(arg=nil)
+      def username(arg = nil)
         set_or_return(
           :username,
           arg,
@@ -57,7 +57,7 @@ class Chef
         )
       end
 
-      def comment(arg=nil)
+      def comment(arg = nil)
         set_or_return(
           :comment,
           arg,
@@ -65,7 +65,7 @@ class Chef
         )
       end
 
-      def uid(arg=nil)
+      def uid(arg = nil)
         set_or_return(
           :uid,
           arg,
@@ -73,7 +73,7 @@ class Chef
         )
       end
 
-      def gid(arg=nil)
+      def gid(arg = nil)
         set_or_return(
           :gid,
           arg,
@@ -83,7 +83,7 @@ class Chef
 
       alias_method :group, :gid
 
-      def home(arg=nil)
+      def home(arg = nil)
         set_or_return(
           :home,
           arg,
@@ -91,7 +91,7 @@ class Chef
         )
       end
 
-      def shell(arg=nil)
+      def shell(arg = nil)
         set_or_return(
           :shell,
           arg,
@@ -99,7 +99,7 @@ class Chef
         )
       end
 
-      def password(arg=nil)
+      def password(arg = nil)
         set_or_return(
           :password,
           arg,
@@ -107,7 +107,7 @@ class Chef
         )
       end
 
-      def salt(arg=nil)
+      def salt(arg = nil)
         set_or_return(
           :salt,
           arg,
@@ -115,7 +115,7 @@ class Chef
         )
       end
 
-      def iterations(arg=nil)
+      def iterations(arg = nil)
         set_or_return(
           :iterations,
           arg,
@@ -123,7 +123,7 @@ class Chef
         )
       end
 
-      def system(arg=nil)
+      def system(arg = nil)
         set_or_return(
           :system,
           arg,
@@ -131,7 +131,7 @@ class Chef
         )
       end
 
-      def manage_home(arg=nil)
+      def manage_home(arg = nil)
         set_or_return(
           :manage_home,
           arg,
@@ -139,7 +139,7 @@ class Chef
         )
       end
 
-      def force(arg=nil)
+      def force(arg = nil)
         set_or_return(
           :force,
           arg,
@@ -147,7 +147,7 @@ class Chef
         )
       end
 
-      def non_unique(arg=nil)
+      def non_unique(arg = nil)
         set_or_return(
           :non_unique,
           arg,

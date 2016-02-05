@@ -214,7 +214,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
     # local file system path limits resulting in exceptions from
     # file system API's on both Windows and Unix systems.
     context "and the URI results in a file cache path that exceeds #{CACHE_FILE_PATH_LIMIT} characters in length" do
-      let(:long_remote_path) { "http://www.bing.com/" +  ("0" * (CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH * 2 )) }
+      let(:long_remote_path) { "http://www.bing.com/" + ("0" * (CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH * 2 )) }
       let(:uri) { URI.parse(long_remote_path) }
       let(:truncated_remote_uri) { URI.parse(long_remote_path[0...CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH]) }
       let(:truncated_file_cache_path) do
@@ -243,4 +243,3 @@ describe Chef::Provider::RemoteFile::CacheControlData do
   end
 
 end
-

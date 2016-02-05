@@ -24,7 +24,7 @@ describe Chef::Util::Powershell::PSCredential do
   let (:password) { "ThIsIsThEpAsSwOrD" }
 
   context "when username and password are provided" do
-    let(:ps_credential) { Chef::Util::Powershell::PSCredential.new(username, password)}
+    let(:ps_credential) { Chef::Util::Powershell::PSCredential.new(username, password) }
     context "when calling to_psobject" do
       it "should create the script to create a PSCredential when calling" do
         allow(ps_credential).to receive(:encrypt).with(password).and_return("encrypted")

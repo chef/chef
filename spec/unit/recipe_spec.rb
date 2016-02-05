@@ -100,7 +100,7 @@ describe Chef::Recipe do
           end
         end
 
-        expect(run_context.resource_collection.map{|r| r.name}).to eql(["monkey", "dog", "cat"])
+        expect(run_context.resource_collection.map { |r| r.name }).to eql(["monkey", "dog", "cat"])
       end
 
       it "should return the new resource after creating it" do
@@ -270,13 +270,11 @@ describe Chef::Recipe do
 
       it "validating resources via build_resource" do
         expect {recipe.build_resource(:remote_file, "klopp") do
-          source Chef::DelayedEvaluator.new {"http://chef.io"}
+          source Chef::DelayedEvaluator.new { "http://chef.io" }
         end}.to_not raise_error
       end
 
     end
-
-
 
     describe "creating resources via declare_resource" do
       let(:zm_resource) do
@@ -322,8 +320,8 @@ describe Chef::Recipe do
           zm_resource
           recipe.declare_resource(:zen_master, "klopp2", run_context: run_context2)
           run_context2.resource_collection.lookup("zen_master[klopp2]")
-          expect {run_context2.resource_collection.lookup("zen_master[klopp]")}.to raise_error(Chef::Exceptions::ResourceNotFound)
-          expect {run_context.resource_collection.lookup("zen_master[klopp2]")}.to raise_error(Chef::Exceptions::ResourceNotFound)
+          expect { run_context2.resource_collection.lookup("zen_master[klopp]") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+          expect { run_context.resource_collection.lookup("zen_master[klopp2]") }.to raise_error(Chef::Exceptions::ResourceNotFound)
           run_context.resource_collection.lookup("zen_master[klopp]")
         end
       end
@@ -354,7 +352,6 @@ describe Chef::Recipe do
           master "none"
         end
       end
-
 
       it "defines the resource using the declaration name with long name" do
         resource_zn_follower

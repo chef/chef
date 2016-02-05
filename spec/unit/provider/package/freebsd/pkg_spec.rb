@@ -77,7 +77,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
 
     it "should return the version number when it is installed" do
       pkg_info = OpenStruct.new(:stdout => "zsh-4.3.6_7")
-      expect(@provider).to receive(:shell_out!).with('pkg_info -E "zsh*"', env: nil, returns: [0,1], timeout: 900).and_return(pkg_info)
+      expect(@provider).to receive(:shell_out!).with('pkg_info -E "zsh*"', env: nil, returns: [0, 1], timeout: 900).and_return(pkg_info)
       #@provider.should_receive(:popen4).with('pkg_info -E "zsh*"').and_yield(@pid, @stdin, ["zsh-4.3.6_7"], @stderr).and_return(@status)
       allow(@provider).to receive(:package_name).and_return("zsh")
       expect(@provider.current_installed_version).to eq("4.3.6_7")
@@ -85,7 +85,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
 
     it "does not set the current version number when the package is not installed" do
       pkg_info = OpenStruct.new(:stdout => "")
-      expect(@provider).to receive(:shell_out!).with('pkg_info -E "zsh*"', env: nil, returns: [0,1], timeout: 900).and_return(pkg_info)
+      expect(@provider).to receive(:shell_out!).with('pkg_info -E "zsh*"', env: nil, returns: [0, 1], timeout: 900).and_return(pkg_info)
       allow(@provider).to receive(:package_name).and_return("zsh")
       expect(@provider.current_installed_version).to be_nil
     end
@@ -102,7 +102,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     it "should return the ports candidate version when given a valid port path" do
       allow(@provider).to receive(:port_path).and_return("/usr/ports/shells/zsh")
       make_v = OpenStruct.new(:stdout => "4.3.6\n", :exitstatus => 0)
-      expect(@provider).to receive(:shell_out!).with("make -V PORTVERSION", {cwd: "/usr/ports/shells/zsh", returns: [0, 1], env: nil, timeout: 900}).and_return(make_v)
+      expect(@provider).to receive(:shell_out!).with("make -V PORTVERSION", { cwd: "/usr/ports/shells/zsh", returns: [0, 1], env: nil, timeout: 900 }).and_return(make_v)
       expect(@provider.ports_candidate_version).to eq("4.3.6")
     end
 
@@ -110,7 +110,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
       allow(::File).to receive(:exist?).with("/usr/ports/Makefile").and_return(true)
       allow(@provider).to receive(:port_path).and_return("/usr/ports/shells/zsh")
       make_v = OpenStruct.new(:stdout => "zsh-4.3.6_7\n", :exitstatus => 0)
-      expect(@provider).to receive(:shell_out!).with("make -V PKGNAME", {cwd: "/usr/ports/shells/zsh", env: nil, returns: [0, 1], timeout: 900}).and_return(make_v)
+      expect(@provider).to receive(:shell_out!).with("make -V PKGNAME", { cwd: "/usr/ports/shells/zsh", env: nil, returns: [0, 1], timeout: 900 }).and_return(make_v)
       #@provider.should_receive(:ports_makefile_variable_value).with("PKGNAME").and_return("zsh-4.3.6_7")
       expect(@provider.package_name).to eq("zsh")
     end
@@ -220,7 +220,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
 
     it "should return the version number when it is installed" do
       pkg_info = OpenStruct.new(:stdout => "bonnie++-1.96")
-      expect(@provider).to receive(:shell_out!).with('pkg_info -E "bonnie++*"', env: nil, returns: [0,1], timeout: 900).and_return(pkg_info)
+      expect(@provider).to receive(:shell_out!).with('pkg_info -E "bonnie++*"', env: nil, returns: [0, 1], timeout: 900).and_return(pkg_info)
       allow(@provider).to receive(:package_name).and_return("bonnie++")
       expect(@provider.current_installed_version).to eq("1.96")
     end

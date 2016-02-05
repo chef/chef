@@ -41,12 +41,12 @@ describe Chef::Knife::UserReregister do
 
     it "displays the osc warning" do
       expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
     it "forwards the command to knife osc_user edit" do
       expect(knife).to receive(:run_osc_11_user_reregister)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
   end
 

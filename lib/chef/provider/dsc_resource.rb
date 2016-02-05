@@ -132,7 +132,7 @@ class Chef
         create_reboot_resource if return_dsc_resource_result(result, "RebootRequired")
         result.return_value
       end
-      
+
       def add_dsc_verbose_log(result)
         # We really want this information from the verbose stream,
         # however in some versions of WMF, Invoke-DscResource is not correctly
@@ -148,7 +148,7 @@ class Chef
         end
       end
 
-      def invoke_resource(method, output_format=:object)
+      def invoke_resource(method, output_format = :object)
         properties = translate_type(@new_resource.properties)
         switches = "-Method #{method} -Name #{@new_resource.resource}"\
                    " -Property #{properties} -Verbose"
@@ -160,7 +160,7 @@ class Chef
           "Invoke-DscResource #{switches}",
           output_format,
         )
-        cmdlet.run!({}, {:timeout => new_resource.timeout})
+        cmdlet.run!({}, { :timeout => new_resource.timeout })
       end
 
       def return_dsc_resource_result(result, property_name)

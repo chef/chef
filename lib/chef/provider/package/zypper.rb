@@ -42,10 +42,10 @@ class Chef
               candidate_version = $1
               Chef::Log.debug("#{new_resource} version #{$1}")
             when /^Installed: Yes$/
-              is_installed=true
+              is_installed = true
               Chef::Log.debug("#{new_resource} is installed")
             when /^Status: out-of-date \(version (.+) installed\)$/
-              current_version=$1
+              current_version = $1
               Chef::Log.debug("#{new_resource} out of date version #{$1}")
             end
           end

@@ -55,17 +55,17 @@ describe Chef::Mixin::PowershellTypeCoercions do
     end
 
     it "translates all members of a hash and wrap them in @{} separated by ;" do
-      expect(test_class.translate_type({"a" => 1, "b" => 1.2, "c" => false, "d" => true
+      expect(test_class.translate_type({ "a" => 1, "b" => 1.2, "c" => false, "d" => true
       })).to eq("@{a=1;b=1.2;c=$false;d=$true}")
     end
 
     it "translates all members of an array and them by a ," do
       expect(test_class.translate_type([true, false])).to eq("@($true,$false)")
     end
-    
+
     it "translates a Chef::Node::ImmutableMash like a hash" do
-      test_mash = Chef::Node::ImmutableMash.new({"a" => 1, "b" => 1.2, 
-                                                 "c" => false, "d" => true})
+      test_mash = Chef::Node::ImmutableMash.new({ "a" => 1, "b" => 1.2,
+                                                  "c" => false, "d" => true })
       expect(test_class.translate_type(test_mash)).to eq("@{a=1;b=1.2;c=$false;d=$true}")
     end
 

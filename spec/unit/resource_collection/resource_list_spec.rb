@@ -24,7 +24,7 @@ describe Chef::ResourceCollection::ResourceList do
   let(:second_resource) { Chef::Resource::ZenMaster.new("hattori") }
 
   def insert_resource(res)
-    expect{ resource_list.insert(res) }.not_to raise_error
+    expect { resource_list.insert(res) }.not_to raise_error
   end
 
   describe "initialize" do
@@ -47,14 +47,14 @@ describe Chef::ResourceCollection::ResourceList do
     end
 
     it "should raise error when trying to install something other than Chef::Resource" do
-      expect{ resource_list.insert("not a resource") }.to raise_error(ArgumentError)
+      expect { resource_list.insert("not a resource") }.to raise_error(ArgumentError)
     end
   end
 
   describe "accessors" do
     it "should be able to insert with []=" do
-      expect{ resource_list[0] = resource }.not_to raise_error
-      expect{ resource_list[1] = second_resource }.not_to raise_error
+      expect { resource_list[0] = resource }.not_to raise_error
+      expect { resource_list[1] = second_resource }.not_to raise_error
       expect(resource_list[0]).to be(resource)
       expect(resource_list[1]).to be(second_resource)
     end

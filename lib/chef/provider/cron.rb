@@ -67,7 +67,7 @@ class Chef
               if cron_found
                 @current_resource.time($2.to_sym)
                 @current_resource.command($3)
-                cron_found=false
+                cron_found = false
               end
             when CRON_PATTERN
               if cron_found
@@ -77,11 +77,11 @@ class Chef
                 @current_resource.month($4)
                 @current_resource.weekday($5)
                 @current_resource.command($6)
-                cron_found=false
+                cron_found = false
               end
               next
             else
-              cron_found=false # We've got a Chef comment with no following crontab line
+              cron_found = false # We've got a Chef comment with no following crontab line
               next
             end
           end

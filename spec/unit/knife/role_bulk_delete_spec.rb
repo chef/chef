@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::RoleBulkDelete do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleBulkDelete.new
     @knife.config = {
       :print_after => nil

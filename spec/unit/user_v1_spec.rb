@@ -90,7 +90,6 @@ describe Chef::UserV1 do
       expect { @user.username "foo&" }.to raise_error(ArgumentError)
     end
 
-
     it "should not accept spaces" do
       expect { @user.username "ops master" }.to raise_error(ArgumentError)
     end
@@ -474,7 +473,7 @@ describe Chef::UserV1 do
       context "when handling API V1" do
         it "creates a new user via the API with a middle_name when it exists" do
           @user.middle_name "some_middle_name"
-          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({:middle_name => "some_middle_name"})).and_return({})
+          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({ :middle_name => "some_middle_name" })).and_return({})
           @user.create
         end
       end # when server API V1 is valid on the Chef Server receiving the request
@@ -497,7 +496,7 @@ describe Chef::UserV1 do
 
         it "creates a new user via the API with a middle_name when it exists" do
           @user.middle_name "some_middle_name"
-          expect(@user.chef_root_rest_v0).to receive(:post).with("users", payload.merge({:middle_name => "some_middle_name"})).and_return({})
+          expect(@user.chef_root_rest_v0).to receive(:post).with("users", payload.merge({ :middle_name => "some_middle_name" })).and_return({})
           @user.create
         end
       end # when server API V1 is not valid on the Chef Server receiving the request
@@ -519,7 +518,7 @@ describe Chef::UserV1 do
 
       context "when server API V0 is valid on the Chef Server receiving the request" do
         it "creates a new object via the API" do
-          expect(@user.chef_root_rest_v0).to receive(:put).with("users/#{@user.username}", payload.merge({"private_key" => true})).and_return({})
+          expect(@user.chef_root_rest_v0).to receive(:put).with("users/#{@user.username}", payload.merge({ "private_key" => true })).and_return({})
           @user.reregister
         end
       end # when server API V0 is valid on the Chef Server receiving the request
@@ -546,8 +545,8 @@ describe Chef::UserV1 do
     describe "list" do
       before(:each) do
         Chef::Config[:chef_server_url] = "http://www.example.com"
-        @osc_response = { "admin" => "http://www.example.com/users/admin"}
-        @ohc_response = [ { "user" => { "username" => "admin" }} ]
+        @osc_response = { "admin" => "http://www.example.com/users/admin" }
+        @ohc_response = [ { "user" => { "username" => "admin" } } ]
         allow(Chef::UserV1).to receive(:load).with("admin").and_return(@user)
         @osc_inflated_response = { "admin" => @user }
       end
@@ -567,7 +566,7 @@ describe Chef::UserV1 do
 
     describe "read" do
       it "loads a named user from the API" do
-        expect(@http_client).to receive(:get).with("users/foobar").and_return({"username" => "foobar", "admin" => true, "public_key" => "pubkey"})
+        expect(@http_client).to receive(:get).with("users/foobar").and_return({ "username" => "foobar", "admin" => true, "public_key" => "pubkey" })
         user = Chef::UserV1.load("foobar")
         expect(user.username).to eq("foobar")
         expect(user.public_key).to eq("pubkey")

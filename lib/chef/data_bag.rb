@@ -48,7 +48,7 @@ class Chef
       @chef_server_rest = chef_server_rest
     end
 
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(
         :name,
         arg,
@@ -90,7 +90,7 @@ class Chef
       bag
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if Chef::Config[:solo]
         paths = Array(Chef::Config[:data_bag_path])
         names = []
@@ -99,9 +99,9 @@ class Chef
             raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' is invalid"
           end
 
-          names += Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(path), "*")).map{|f|File.basename(f)}.sort
+          names += Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(path), "*")).map { |f| File.basename(f) }.sort
         end
-        names.inject({}) {|h, n| h[n] = n; h}
+        names.inject({}) { |h, n| h[n] = n; h }
       else
         if inflate
           # Can't search for all data bags like other objects, fall back to N+1 :(

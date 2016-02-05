@@ -36,7 +36,7 @@ module ChefConfig
           elsif slash == end_slash - 1
             end_slash = slash
           else
-            return path[0..slash-1]
+            return path[0..slash - 1]
           end
         end
       else
@@ -110,7 +110,7 @@ module ChefConfig
     end
 
     # Produces a comparable path.
-    def self.canonical_path(path, add_prefix=true)
+    def self.canonical_path(path, add_prefix = true)
       # First remove extra separators and resolve any relative paths
       abs_path = File.absolute_path(path)
 
@@ -146,7 +146,7 @@ module ChefConfig
     # http://stackoverflow.com/questions/14127343
     def self.escape_glob(*parts)
       path = cleanpath(join(*parts))
-      path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\"+x }
+      path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\" + x }
     end
 
     def self.relative_path_from(from, to)
@@ -233,18 +233,19 @@ module ChefConfig
     def self.is_sip_path?(path, node)
       if node["platform"] == "mac_os_x" and Gem::Version.new(node["platform_version"]) >= Gem::Version.new("10.11")
           # todo: parse rootless.conf for this?
-          sip_paths= [
-            "/System", "/bin", "/sbin", "/usr"
-          ]
-          sip_paths.each do |sip_path|
-            ChefConfig.logger.info("This is a SIP path, checking if it in exceptions list.")
-            return true if path.start_with?(sip_path)
-          end
-          false
+        sip_paths = [
+          "/System", "/bin", "/sbin", "/usr"
+        ]
+        sip_paths.each do |sip_path|
+          ChefConfig.logger.info("This is a SIP path, checking if it in exceptions list.")
+          return true if path.start_with?(sip_path)
+        end
+        false
       else
         false
       end
     end
+
     # Determine if the given path is on the exception list for OS X System Integrity Protection.
     def self.writable_sip_path?(path)
       # todo: parse rootless.conf for this?
@@ -261,4 +262,3 @@ module ChefConfig
     end
   end
 end
-

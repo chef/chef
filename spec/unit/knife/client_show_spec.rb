@@ -36,7 +36,7 @@ describe Chef::Knife::ClientShow do
       @knife.config[:format] = "json"
       @stdout = StringIO.new
       allow(@knife.ui).to receive(:stdout).and_return(@stdout)
-      fake_client_contents = {"foo"=>"bar", "baz"=>"qux"}
+      fake_client_contents = { "foo" => "bar", "baz" => "qux" }
       expect(Chef::ApiClientV1).to receive(:load).with("adam").and_return(fake_client_contents)
       @knife.run
       expect(@stdout.string).to eql("{\n  \"foo\": \"bar\",\n  \"baz\": \"qux\"\n}\n")

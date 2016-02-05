@@ -72,7 +72,7 @@ describe Chef::Exceptions do
 
   exception_to_super_class.each do |exception, expected_super_class|
     it "should have an exception class of #{exception} which inherits from #{expected_super_class}" do
-      expect{ raise exception }.to raise_error(expected_super_class)
+      expect { raise exception }.to raise_error(expected_super_class)
     end
 
     if exception.methods.include?(:to_json)
@@ -95,7 +95,7 @@ describe Chef::Exceptions do
     end
 
     context "initialized with nothing" do
-      let(:e) { Chef::Exceptions::RunFailedWrappingError.new  }
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new }
       let(:num_errors) { 0 }
       let(:backtrace) { [] }
 
@@ -103,7 +103,7 @@ describe Chef::Exceptions do
     end
 
     context "initialized with nil" do
-      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(nil, nil)  }
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(nil, nil) }
       let(:num_errors) { 0 }
       let(:backtrace) { [] }
 
@@ -111,7 +111,7 @@ describe Chef::Exceptions do
     end
 
     context "initialized with 1 error and nil" do
-      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), nil)  }
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), nil) }
       let(:num_errors) { 1 }
       let(:backtrace) { ["1) RuntimeError -  foo"] }
 
@@ -119,7 +119,7 @@ describe Chef::Exceptions do
     end
 
     context "initialized with 2 errors" do
-      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), RuntimeError.new("bar"))  }
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), RuntimeError.new("bar")) }
       let(:num_errors) { 2 }
       let(:backtrace) { ["1) RuntimeError -  foo", "", "2) RuntimeError -  bar"] }
 

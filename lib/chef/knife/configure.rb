@@ -97,7 +97,7 @@ EOH
           user_create = Chef::Knife::UserCreate.new
           user_create.name_args = [ new_client_name ]
           user_create.config[:user_password] = config[:user_password] ||
-            ui.ask("Please enter a password for the new user: ") {|q| q.echo = false}
+                                               ui.ask("Please enter a password for the new user: ") { |q| q.echo = false }
           user_create.config[:admin] = true
           user_create.config[:file] = new_client_key
           user_create.config[:yes] = true
@@ -133,7 +133,7 @@ EOH
 
       def ask_user_for_config
         server_name = guess_servername
-        @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "https://#{server_name}:443")
+        @chef_server = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "https://#{server_name}:443")
         if config[:initial]
           @new_client_name        = config[:node_name] || ask_question("Please enter a name for the new user: ", :default => Etc.getlogin)
           @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin name: ", :default => "admin")

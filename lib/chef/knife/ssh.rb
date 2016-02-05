@@ -165,7 +165,7 @@ class Chef
           if @action_nodes.length == 0
             ui.fatal("No nodes returned from search!")
           else
-            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes": "node"} found, " +
+            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes" : "node"} found, " +
                      "but does not have the required attribute to establish the connection. " +
                      "Try setting another attribute to open the connection using --attribute.")
           end
@@ -209,7 +209,7 @@ class Chef
           next if item.nil?
           # next if we couldn't find the specified attribute in the
           # returned node object
-          host = extract_nested_value(item,get_ssh_attribute(item))
+          host = extract_nested_value(item, get_ssh_attribute(item))
           next if host.nil?
           ssh_port = item[:cloud].nil? ? nil : item[:cloud][:public_ssh_port]
           srv = [host, ssh_port]
@@ -227,7 +227,7 @@ class Chef
       # @param port [String] SSH port for this session.
       # @param user [String] Optional username for this session.
       # @return [Hash<Symbol, Object>]
-      def session_options(host, port, user=nil)
+      def session_options(host, port, user = nil)
         ssh_config = Net::SSH.configuration_for(host)
         {}.tap do |opts|
           # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
@@ -297,7 +297,7 @@ class Chef
         ui.msg(str)
       end
 
-      def ssh_command(command, subsession=nil)
+      def ssh_command(command, subsession = nil)
         exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
@@ -425,7 +425,7 @@ class Chef
           end.join(" \\; ")
         end
 
-        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
+        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/, '=')}'"
         begin
           server = session.servers_for.first
           cmd = ["tmux new-session -d -s #{tmux_name}",
@@ -446,13 +446,13 @@ class Chef
         end
 
         Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate
-        Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
+        Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using => :command_down)
         term = Appscript.app("Terminal")
         window = term.windows.first.get
 
         (session.servers_for.size - 1).times do |i|
           window.activate
-          Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", :using=>:command_down)
+          Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", :using => :command_down)
         end
 
         session.servers_for.each_with_index do |server, tab_number|

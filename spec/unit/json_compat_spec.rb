@@ -58,14 +58,14 @@ describe Chef::JSONCompat do
     let(:json) { '{"json_class": "Chef::Sandbox", "arbitrary": "data"}' }
 
     it "returns a Hash, because Chef::Sandbox is a dummy class" do
-      expect(Chef::JSONCompat.from_json(json)).to eq({"json_class" => "Chef::Sandbox", "arbitrary" => "data"})
+      expect(Chef::JSONCompat.from_json(json)).to eq({ "json_class" => "Chef::Sandbox", "arbitrary" => "data" })
     end
   end
 
   describe "when pretty printing an object that defines #to_json" do
     class Foo
       def to_json(*a)
-        Chef::JSONCompat.to_json({"foo" => 1234, "bar" => {"baz" => 5678}}, *a)
+        Chef::JSONCompat.to_json({ "foo" => 1234, "bar" => { "baz" => 5678 } }, *a)
       end
     end
 

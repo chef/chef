@@ -36,7 +36,7 @@ describe Chef::Knife::Raw do
       knife.config[:proxy_auth] = true
       expect(rest).to receive(:request).with(:GET, "/nodes",
                                               { "Content-Type" => "application/json",
-                                                "x-ops-request-source" => "web"}, false)
+                                                "x-ops-request-source" => "web" }, false)
       knife.run
     end
   end

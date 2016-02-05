@@ -53,7 +53,7 @@ module Win32
         when REG_SZ, REG_EXPAND_SZ
           data = data.to_s.encode(WCHAR) + WCHAR_NUL
         when REG_MULTI_SZ
-          data = data.to_a.map {|s| s.encode(WCHAR)}.join(WCHAR_NUL) << WCHAR_NUL << WCHAR_NUL
+          data = data.to_a.map { |s| s.encode(WCHAR) }.join(WCHAR_NUL) << WCHAR_NUL << WCHAR_NUL
         when REG_BINARY
           data = data.to_s
         when REG_DWORD

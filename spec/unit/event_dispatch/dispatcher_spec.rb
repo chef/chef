@@ -75,7 +75,6 @@ describe Chef::EventDispatch::Dispatcher do
     end
   end
 
-
   context "when two event sinks have different arguments for an event" do
     let(:event_sink_1) do
       Class.new(Chef::EventDispatch::Base) do

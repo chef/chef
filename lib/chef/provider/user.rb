@@ -98,7 +98,7 @@ class Chef
           a.assertion { @shadow_lib_ok }
           a.failure_message Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
           a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." +
-                   "Note that user update converge may report false-positive on the basis of mismatched password. "
+            "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
         requirements.assert(:modify, :lock, :unlock) do |a|
           a.assertion { @user_exists }
@@ -125,7 +125,6 @@ class Chef
       end
 
       def action_create
-
         if !@user_exists
           converge_by("create user #{@new_resource.username}") do
             create_user

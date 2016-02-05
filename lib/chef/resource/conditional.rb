@@ -30,11 +30,11 @@ class Chef
         private :new
       end
 
-      def self.not_if(parent_resource, command=nil, command_opts={}, &block)
+      def self.not_if(parent_resource, command = nil, command_opts = {}, &block)
         new(:not_if, parent_resource, command, command_opts, &block)
       end
 
-      def self.only_if(parent_resource, command=nil, command_opts={}, &block)
+      def self.only_if(parent_resource, command = nil, command_opts = {}, &block)
         new(:only_if, parent_resource, command, command_opts, &block)
       end
 
@@ -43,7 +43,7 @@ class Chef
       attr_reader :command_opts
       attr_reader :block
 
-      def initialize(positivity, parent_resource, command=nil, command_opts={}, &block)
+      def initialize(positivity, parent_resource, command = nil, command_opts = {}, &block)
         @positivity = positivity
         @command, @command_opts = command, command_opts
         @block = block
@@ -55,7 +55,7 @@ class Chef
 
       def configure
         case @command
-        when String,Array
+        when String, Array
           @guard_interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, @command, @command_opts)
           @block = nil
         when nil

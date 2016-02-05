@@ -48,7 +48,7 @@ describe Chef::Resource::HttpRequest do
     before do
       @resource.url("http://www.trololol.net")
       @resource.message("Get sum post brah.")
-      @resource.headers({"head" => "tail"})
+      @resource.headers({ "head" => "tail" })
     end
 
     it "returns the url as its identity" do

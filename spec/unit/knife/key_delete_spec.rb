@@ -45,8 +45,8 @@ describe "key delete commands that inherit knife" do
       context "when the service object is called" do
         it "creates a new instance of Chef::Knife::KeyDelete with the correct args" do
           expect(Chef::Knife::KeyDelete).to receive(:new).
-                                             with("charmander-key", "charmander", command.actor_field_name, command.ui).
-                                             and_return(service_object)
+            with("charmander-key", "charmander", command.actor_field_name, command.ui).
+            and_return(service_object)
           command.service_object
         end
       end # when the service object is called
@@ -117,7 +117,6 @@ describe Chef::Knife::KeyDelete do
       end
     end # when the command is run
 
-
   end # key delete run command
 
   context "when actor_field_name is 'user'" do
@@ -132,4 +131,3 @@ describe Chef::Knife::KeyDelete do
     end
   end
 end
-

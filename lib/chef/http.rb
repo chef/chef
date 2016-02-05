@@ -61,7 +61,6 @@ class Chef
 
     end
 
-
     def self.middlewares
       @middlewares ||= []
     end
@@ -81,7 +80,7 @@ class Chef
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get+ with 'nodes' will make an
     # HTTP GET request to http://localhost:4000/nodes
-    def initialize(url, options={})
+    def initialize(url, options = {})
       @url = url
       @default_headers = options[:headers] || {}
       @sign_on_redirect = true
@@ -99,7 +98,7 @@ class Chef
     #
     # === Parameters
     # path:: path part of the request URL
-    def head(path, headers={})
+    def head(path, headers = {})
       request(:HEAD, path, headers)
     end
 
@@ -107,7 +106,7 @@ class Chef
     #
     # === Parameters
     # path:: The path to GET
-    def get(path, headers={})
+    def get(path, headers = {})
       request(:GET, path, headers)
     end
 
@@ -115,7 +114,7 @@ class Chef
     #
     # === Parameters
     # path:: path part of the request URL
-    def put(path, json, headers={})
+    def put(path, json, headers = {})
       request(:PUT, path, headers, json)
     end
 
@@ -123,7 +122,7 @@ class Chef
     #
     # === Parameters
     # path:: path part of the request URL
-    def post(path, json, headers={})
+    def post(path, json, headers = {})
       request(:POST, path, headers, json)
     end
 
@@ -131,13 +130,13 @@ class Chef
     #
     # === Parameters
     # path:: path part of the request URL
-    def delete(path, headers={})
+    def delete(path, headers = {})
       request(:DELETE, path, headers)
     end
 
     # Makes an HTTP request to +path+ with the given +method+, +headers+, and
     # +data+ (if applicable).
-    def request(method, path, headers={}, data=false)
+    def request(method, path, headers = {}, data = false)
       url = create_url(path)
       method, url, headers, data = apply_request_middleware(method, url, headers, data)
 
@@ -160,7 +159,7 @@ class Chef
     #
     # If no block is given, the tempfile is returned, which means it's up to
     # you to unlink the tempfile when you're done with it.
-    def streaming_request(path, headers={}, &block)
+    def streaming_request(path, headers = {}, &block)
       url = create_url(path)
       response, rest_request, return_value = nil, nil, nil
       tempfile = nil
@@ -196,7 +195,7 @@ class Chef
       raise
     end
 
-    def http_client(base_url=nil)
+    def http_client(base_url = nil)
       base_url ||= url
       if chef_zero_uri?(base_url)
         # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
@@ -272,7 +271,7 @@ class Chef
         if block_given?
           request, response = client.request(method, url, body, headers, &response_handler)
         else
-          request, response = client.request(method, url, body, headers) {|r| r.read_body }
+          request, response = client.request(method, url, body, headers) { |r| r.read_body }
           return_value = response.read_body
         end
         @last_response = response
@@ -284,7 +283,7 @@ class Chef
         elsif redirect_location = redirected_to(response)
           if [:GET, :HEAD].include?(method)
             follow_redirect do
-              send_http_request(method, url+redirect_location, headers, body, &response_handler)
+              send_http_request(method, url + redirect_location, headers, body, &response_handler)
             end
           else
             raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
@@ -294,7 +293,6 @@ class Chef
         end
       end
     end
-
 
     # Wraps an HTTP request with retry logic.
     # === Arguments
@@ -308,7 +306,7 @@ class Chef
           # handle HTTP 50X Error
           if response.kind_of?(Net::HTTPServerError) && !Chef::Config.local_mode
             if http_retry_count - http_attempts + 1 > 0
-              sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
+              sleep_time = 1 + (2**http_attempts) + rand(2**http_attempts)
               Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
               sleep(sleep_time)
               redo
@@ -384,7 +382,7 @@ class Chef
       response["location"]
     end
 
-    def build_headers(method, url, headers={}, json_body=false)
+    def build_headers(method, url, headers = {}, json_body = false)
       headers                 = @default_headers.merge(headers)
       headers["Content-Length"] = json_body.bytesize.to_s if json_body
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
@@ -411,7 +409,6 @@ class Chef
       tf.close!
       raise
     end
-
 
     public
 

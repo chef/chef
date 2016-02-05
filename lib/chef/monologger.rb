@@ -38,7 +38,6 @@ class MonoLogger < Logger
     end
   end
 
-
   class LocklessLogDevice < LogDevice
 
     def initialize(log = nil)
@@ -85,6 +84,5 @@ class MonoLogger < Logger
     end
 
   end
-
 
 end

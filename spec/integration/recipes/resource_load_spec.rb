@@ -21,11 +21,13 @@ describe "Resource.load_current_value" do
   let(:resource_class) {
     result = Class.new(Chef::Resource) do
       def self.to_s; resource_name; end
+
       def self.inspect; resource_name.inspect; end
       property :x, default: lazy { "default #{Namer.incrementing_value}" }
       def self.created_x=(value)
         @created = value
       end
+
       def self.created_x
         @created
       end
@@ -43,9 +45,9 @@ describe "Resource.load_current_value" do
   context "with a resource with load_current_value" do
     before :each do
       resource_class.load_current_value do
-        x "loaded #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name,p| name }.
-          select { |name,p| p.is_set?(self) }.
-          map { |name,p| "#{name}=#{p.get(self)}" }.
+        x "loaded #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
+          select { |name, p| p.is_set?(self) }.
+          map { |name, p| "#{name}=#{p.get(self)}" }.
           join(", ") })"
       end
     end
@@ -170,9 +172,9 @@ describe "Resource.load_current_value" do
     context "And a child resource class with load_current_value" do
       before {
         subresource_class.load_current_value do
-          y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name,p| name }.
-            select { |name,p| p.is_set?(self) }.
-            map { |name,p| "#{name}=#{p.get(self)}" }.
+          y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
+            select { |name, p| p.is_set?(self) }.
+            map { |name, p| "#{name}=#{p.get(self)}" }.
             join(", ") })"
         end
       }
@@ -188,9 +190,9 @@ describe "Resource.load_current_value" do
       before {
         subresource_class.load_current_value do
           super()
-          y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name,p| name }.
-            select { |name,p| p.is_set?(self) }.
-            map { |name,p| "#{name}=#{p.get(self)}" }.
+          y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
+            select { |name, p| p.is_set?(self) }.
+            map { |name, p| "#{name}=#{p.get(self)}" }.
             join(", ") })"
         end
       }

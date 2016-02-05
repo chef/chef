@@ -87,9 +87,9 @@ module AptServer
 end
 
 metadata = { :unix_only => true,
-  :requires_root => true,
-  :provider => {:package => Chef::Provider::Package::Apt},
-  :arch => "x86_64" # test packages are 64bit
+             :requires_root => true,
+             :provider => { :package => Chef::Provider::Package::Apt },
+             :arch => "x86_64" # test packages are 64bit
 }
 
 describe Chef::Resource::Package, metadata do
@@ -111,7 +111,6 @@ describe Chef::Resource::Package, metadata do
       disable_testing_apt_source
       shell_out!("apt-get clean")
     end
-
 
     after do
       shell_out!("dpkg -r chef-integration-test")
@@ -325,13 +324,12 @@ describe Chef::Resource::Package, metadata do
       # un  chef-integration-test             <none>                                    (no description available)
       def pkg_should_be_removed
         # will raise if exit code != 0,1
-        pkg_check = shell_out!("dpkg -l chef-integration-test", :returns => [0,1])
+        pkg_check = shell_out!("dpkg -l chef-integration-test", :returns => [0, 1])
 
         if pkg_check.exitstatus == 0
           expect(pkg_check.stdout).to match(/un[\s]+chef-integration-test/)
         end
       end
-
 
       it "removes the package for action :remove" do
         package_resource.run_action(:remove)

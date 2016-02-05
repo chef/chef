@@ -100,7 +100,7 @@ describe Chef::Handler do
         $report_ran = true
         raise Exception, "I died the deth"
       end
-      expect {@handler.run_report_safely(@run_status)}.not_to raise_error
+      expect { @handler.run_report_safely(@run_status) }.not_to raise_error
       expect($report_ran).to be_truthy
     end
     it "does not fail if the report handler does not raise an exception" do
@@ -108,7 +108,7 @@ describe Chef::Handler do
       def @handler.report
         $report_ran = true
       end
-      expect {@handler.run_report_safely(@run_status)}.not_to raise_error
+      expect { @handler.run_report_safely(@run_status) }.not_to raise_error
       expect($report_ran).to be_truthy
     end
   end

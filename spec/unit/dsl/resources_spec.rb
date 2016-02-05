@@ -44,7 +44,7 @@ describe Chef::DSL::Resources do
         end
       end
     end
-    it { is_expected.to eq [[:test_resource, "test_name"]]}
+    it { is_expected.to eq [[:test_resource, "test_name"]] }
   end
 
   context "with no resource added" do
@@ -77,9 +77,9 @@ describe Chef::DSL::Resources do
     before do
       Chef::DSL::Resources.add_resource_dsl(:test_resource)
       test_class.new.instance_eval do
-        test_resource { }
+        test_resource {}
       end
     end
-    it { is_expected.to eq [[:test_resource, nil]]}
+    it { is_expected.to eq [[:test_resource, nil]] }
   end
 end

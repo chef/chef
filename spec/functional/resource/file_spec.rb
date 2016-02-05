@@ -25,7 +25,7 @@ describe Chef::Resource::File do
   let(:file_base) { "file_spec" }
   let(:expected_content) { "Don't fear the ruby." }
 
-  def create_resource(opts={})
+  def create_resource(opts = {})
     events = Chef::EventDispatch::Dispatcher.new
     node = Chef::Node.new
     run_context = Chef::RunContext.new(node, {}, events)
@@ -85,7 +85,6 @@ describe Chef::Resource::File do
       end
     end
   end
-
 
   describe "when using backup" do
     before do

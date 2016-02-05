@@ -30,7 +30,7 @@ class Chef
       banner "knife user delete USER (options)"
 
       def osc_11_warning
-<<-EOF
+        <<-EOF
 The Chef Server you are using does not support the username field.
 This means it is an Open Source 11 Server.
 knife user delete for Open Source 11 Server is being deprecated.
@@ -89,7 +89,6 @@ EOF
         else # proceed with EC / CS delete
           delete_object(@user_name)
         end
-
       end
     end
   end

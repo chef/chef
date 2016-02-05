@@ -32,8 +32,8 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   end
 
   def load_current_resource
-    raise Chef::Exceptions::Service, "Could not find /etc/rc.conf"  unless ::File.exists?("/etc/rc.conf")
-    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf"  unless ::File.read("/etc/rc.conf").match(/DAEMONS=\((.*)\)/m)
+    raise Chef::Exceptions::Service, "Could not find /etc/rc.conf" unless ::File.exists?("/etc/rc.conf")
+    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf" unless ::File.read("/etc/rc.conf").match(/DAEMONS=\((.*)\)/m)
     super
 
     @current_resource.enabled(daemons.include?(@current_resource.service_name))
@@ -50,7 +50,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   def daemons
     entries = []
     if ::File.read("/etc/rc.conf").match(/DAEMONS=\((.*)\)/m)
-      entries += $1.gsub(/\\?[\r\n]/, " ").gsub(/# *[^ ]+/," ").split(" ") if $1.length > 0
+      entries += $1.gsub(/\\?[\r\n]/, " ").gsub(/# *[^ ]+/, " ").split(" ") if $1.length > 0
     end
 
     yield(entries) if block_given?

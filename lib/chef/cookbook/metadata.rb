@@ -65,14 +65,14 @@ class Chef
                             :replacing, :attributes, :groupings, :recipes, :version,
                             :source_url, :issues_url, :privacy, :chef_versions, :ohai_versions ]
 
-      VERSION_CONSTRAINTS = {:depends      => DEPENDENCIES,
-                             :recommends   => RECOMMENDATIONS,
-                             :suggests     => SUGGESTIONS,
-                             :conflicts    => CONFLICTING,
-                             :provides     => PROVIDING,
-                             :replaces     => REPLACING,
-                             :chef_version => CHEF_VERSIONS,
-                             :ohai_version => OHAI_VERSIONS }
+      VERSION_CONSTRAINTS = { :depends      => DEPENDENCIES,
+                              :recommends   => RECOMMENDATIONS,
+                              :suggests     => SUGGESTIONS,
+                              :conflicts    => CONFLICTING,
+                              :provides     => PROVIDING,
+                              :replaces     => REPLACING,
+                              :chef_version => CHEF_VERSIONS,
+                              :ohai_version => OHAI_VERSIONS }
 
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
@@ -105,7 +105,7 @@ class Chef
       # === Returns
       # metadata<Chef::Cookbook::Metadata>
       def initialize
-        @name =  nil
+        @name = nil
 
         @description = ""
         @long_description = ""
@@ -173,7 +173,7 @@ class Chef
       #
       # === Returns
       # maintainer<String>:: Returns the current maintainer.
-      def maintainer(arg=nil)
+      def maintainer(arg = nil)
         set_or_return(
           :maintainer,
           arg,
@@ -188,7 +188,7 @@ class Chef
       #
       # === Returns
       # maintainer_email<String>:: Returns the current maintainer email.
-      def maintainer_email(arg=nil)
+      def maintainer_email(arg = nil)
         set_or_return(
           :maintainer_email,
           arg,
@@ -203,7 +203,7 @@ class Chef
       #
       # === Returns
       # license<String>:: Returns the current license
-      def license(arg=nil)
+      def license(arg = nil)
         set_or_return(
           :license,
           arg,
@@ -218,7 +218,7 @@ class Chef
       #
       # === Returns
       # description<String>:: Returns the description
-      def description(arg=nil)
+      def description(arg = nil)
         set_or_return(
           :description,
           arg,
@@ -233,7 +233,7 @@ class Chef
       #
       # === Returns
       # long_description<String>:: Returns the long description
-      def long_description(arg=nil)
+      def long_description(arg = nil)
         set_or_return(
           :long_description,
           arg,
@@ -249,7 +249,7 @@ class Chef
       #
       # === Returns
       # version<String>:: Returns the current version
-      def version(arg=nil)
+      def version(arg = nil)
         if arg
           @version = Chef::Version.new(arg)
         end
@@ -264,7 +264,7 @@ class Chef
       #
       # === Returns
       # name<String>:: Returns the current cookbook name.
-      def name(arg=nil)
+      def name(arg = nil)
         set_or_return(
           :name,
           arg,
@@ -321,7 +321,7 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def recommends(cookbook, *version_args)
-        version = new_args_format(:recommends, cookbook,  version_args)
+        version = new_args_format(:recommends, cookbook, version_args)
         constraint = validate_version_constraint(:recommends, cookbook, version)
         @recommendations[cookbook] = constraint.to_s
         @recommendations[cookbook]
@@ -622,11 +622,11 @@ class Chef
         metadata = new()
         VERSION_CONSTRAINTS.each do |dependency_type, hash_key|
           if dependency_group = o[hash_key]
-           dependency_group.each do |cb_name, constraints|
-             if metadata.respond_to?(method_name)
-               metadata.public_send(method_name, cb_name, *Array(constraints))
-             end
-           end
+            dependency_group.each do |cb_name, constraints|
+              if metadata.respond_to?(method_name)
+                metadata.public_send(method_name, cb_name, *Array(constraints))
+              end
+            end
           end
         end
         true
@@ -644,7 +644,7 @@ class Chef
       #
       # === Returns
       # source_url<String>:: Returns the current source URL.
-      def source_url(arg=nil)
+      def source_url(arg = nil)
         set_or_return(
           :source_url,
           arg,
@@ -659,7 +659,7 @@ class Chef
       #
       # === Returns
       # issues_url<String>:: Returns the current issues URL.
-      def issues_url(arg=nil)
+      def issues_url(arg = nil)
         set_or_return(
           :issues_url,
           arg,
@@ -676,7 +676,7 @@ class Chef
       # === Returns
       # privacy<TrueClass,FalseClass>:: Whether this cookbook is private or not
       #
-      def privacy(arg=nil)
+      def privacy(arg = nil)
         set_or_return(
           :privacy,
           arg,
@@ -733,14 +733,14 @@ class Chef
         elsif version_constraints.size == 1
           version_constraints.first
         else
-          msg=<<-OBSOLETED
+          msg = <<-OBSOLETED
 The dependency specification syntax you are using is no longer valid. You may not
 specify more than one version constraint for a particular cookbook.
 Consult https://docs.chef.io/config_rb_metadata.html for the updated syntax.
 
-Called by: #{caller_name} '#{dep_name}', #{version_constraints.map {|vc| vc.inspect}.join(", ")}
+Called by: #{caller_name} '#{dep_name}', #{version_constraints.map { |vc| vc.inspect }.join(", ")}
 Called from:
-#{caller[0...5].map {|line| "  " + line}.join("\n")}
+#{caller[0...5].map { |line| "  " + line }.join("\n")}
 OBSOLETED
           raise Exceptions::ObsoleteDependencySyntax, msg
         end
@@ -751,7 +751,7 @@ OBSOLETED
       rescue Chef::Exceptions::InvalidVersionConstraint => e
         Log.debug(e)
 
-        msg=<<-INVALID
+        msg = <<-INVALID
 The version constraint syntax you are using is not valid. If you recently
 upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
 'less than' and 'greater than'; use '<' and '>' instead.
@@ -759,7 +759,7 @@ Consult https://docs.chef.io/config_rb_metadata.html for more information.
 
 Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
 Called from:
-#{caller[0...5].map {|line| "  " + line}.join("\n")}
+#{caller[0...5].map { |line| "  " + line }.join("\n")}
 INVALID
         raise Exceptions::InvalidVersionConstraint, msg
       end
@@ -773,7 +773,7 @@ INVALID
       def validate_string_array(arry)
         if arry.kind_of?(Array)
           arry.each do |choice|
-            validate( {:choice => choice}, {:choice => {:kind_of => String}} )
+            validate( { :choice => choice }, { :choice => { :kind_of => String } } )
           end
         end
       end
@@ -783,28 +783,28 @@ INVALID
       # Raise an exception if the members of the array do not match the defaults
       # === Parameters
       # opts<Hash>:: The options hash
-        def validate_choice_array(opts)
-          if opts[:choice].kind_of?(Array)
-            case opts[:type]
-            when "string"
-              validator = [ String ]
-            when "array"
-              validator = [ Array ]
-            when "hash"
-              validator = [ Hash ]
-            when "symbol"
-              validator = [ Symbol ]
-            when "boolean"
-              validator = [ TrueClass, FalseClass ]
-            when "numeric"
-              validator = [ Numeric ]
-            end
+      def validate_choice_array(opts)
+        if opts[:choice].kind_of?(Array)
+          case opts[:type]
+          when "string"
+            validator = [ String ]
+          when "array"
+            validator = [ Array ]
+          when "hash"
+            validator = [ Hash ]
+          when "symbol"
+            validator = [ Symbol ]
+          when "boolean"
+            validator = [ TrueClass, FalseClass ]
+          when "numeric"
+            validator = [ Numeric ]
+          end
 
-            opts[:choice].each do |choice|
-              validate( {:choice => choice}, {:choice => {:kind_of => validator}} )
-            end
+          opts[:choice].each do |choice|
+            validate( { :choice => choice }, { :choice => { :kind_of => validator } } )
           end
         end
+      end
 
       # For backwards compatibility, remap Boolean values to String
       #   true is mapped to "required"

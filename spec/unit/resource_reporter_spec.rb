@@ -44,7 +44,7 @@ describe Chef::ResourceReporter do
     @new_resource.cookbook_name = @cookbook_name
     @cookbook_version = double("Cookbook::Version", :version => "1.2.3")
     allow(@new_resource).to receive(:cookbook_version).and_return(@cookbook_version)
-    @current_resource  = Chef::Resource::File.new("/tmp/a-file.txt")
+    @current_resource = Chef::Resource::File.new("/tmp/a-file.txt")
     @start_time = Time.new
     @end_time = Time.new + 20
     @events = Chef::EventDispatch::Dispatcher.new
@@ -92,8 +92,8 @@ describe Chef::ResourceReporter do
 
   context "when chef fails" do
     before do
-      allow(@rest_client).to receive(:raw_request).and_return({"result"=>"ok"});
-      allow(@rest_client).to receive(:post).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
+      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" });
+      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" });
 
     end
 
@@ -201,12 +201,12 @@ describe Chef::ResourceReporter do
       context "and a nested resource is updated" do
         before do
           @implementation_resource = Chef::Resource::CookbookFile.new("/preseed-file.txt")
-        @resource_reporter.resource_action_start(@implementation_resource , :create)
-        @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
-        @resource_reporter.resource_updated(@implementation_resource, :create)
-        @resource_reporter.resource_completed(@implementation_resource)
-        @resource_reporter.resource_updated(@new_resource, :create)
-        @resource_reporter.resource_completed(@new_resource)
+          @resource_reporter.resource_action_start(@implementation_resource , :create)
+          @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
+          @resource_reporter.resource_updated(@implementation_resource, :create)
+          @resource_reporter.resource_completed(@implementation_resource)
+          @resource_reporter.resource_updated(@new_resource, :create)
+          @resource_reporter.resource_completed(@new_resource)
         end
 
         it "does not collect data about the nested resource" do
@@ -259,8 +259,8 @@ describe Chef::ResourceReporter do
   describe "when generating a report for the server" do
 
     before do
-      allow(@rest_client).to receive(:raw_request).and_return({"result"=>"ok"});
-      allow(@rest_client).to receive(:post).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
+      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" });
+      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" });
 
       @resource_reporter.run_started(@run_status)
     end
@@ -293,9 +293,9 @@ describe Chef::ResourceReporter do
       context "the new_resource name and id are hashes" do
         before do
           @bad_resource = Chef::Resource::File.new("/tmp/filename_as_hash.txt")
-          allow(@bad_resource).to receive(:name).and_return({:foo=>:bar})
-          allow(@bad_resource).to receive(:identity).and_return({:foo=>:bar})
-          allow(@bad_resource).to receive(:path).and_return({:foo=>:bar})
+          allow(@bad_resource).to receive(:name).and_return({ :foo => :bar })
+          allow(@bad_resource).to receive(:identity).and_return({ :foo => :bar })
+          allow(@bad_resource).to receive(:path).and_return({ :foo => :bar })
           @resource_reporter.resource_action_start(@bad_resource, :create)
           @resource_reporter.resource_current_state_loaded(@bad_resource, :create, @current_resource)
           @resource_reporter.resource_updated(@bad_resource, :create)
@@ -466,7 +466,7 @@ describe Chef::ResourceReporter do
     context "for an unsuccessful run" do
 
       before do
-        @backtrace = ["foo.rb:1 in `foo!'","bar.rb:2 in `bar!","'baz.rb:3 in `baz!'"]
+        @backtrace = ["foo.rb:1 in `foo!'", "bar.rb:2 in `bar!", "'baz.rb:3 in `baz!'"]
         @node = Chef::Node.new
         @node.name("spitfire")
         @exception = ArgumentError.new
@@ -496,7 +496,7 @@ describe Chef::ResourceReporter do
 
       it "includes the error inspector output in the event data" do
         expect(@report["data"]["exception"]).to have_key("description")
-        expect(@report["data"]["exception"]["description"]).to include({"title"=>"Error expanding the run_list:", "sections"=>[{"Unexpected Error:" => "ArgumentError: Object not found"}]})
+        expect(@report["data"]["exception"]["description"]).to include({ "title" => "Error expanding the run_list:", "sections" => [{ "Unexpected Error:" => "ArgumentError: Object not found" }] })
       end
 
     end
@@ -593,9 +593,9 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
         @error = Net::HTTPServerException.new("404 message", @response)
         expect(@rest_client).to receive(:post).
-          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id,
-                                               :start_time => @start_time.to_s},
-               {"X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION}).
+          with("reports/nodes/spitfire/runs", { :action => :start, :run_id => @run_id,
+                                                :start_time => @start_time.to_s },
+               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION }).
           and_raise(@error)
       end
 
@@ -623,8 +623,8 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
         expect(@rest_client).to receive(:post).
-          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
-               {"X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION}).
+          with("reports/nodes/spitfire/runs", { :action => :start, :run_id => @run_id, :start_time => @start_time.to_s },
+               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION }).
           and_raise(@error)
       end
 
@@ -653,8 +653,8 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
         expect(@rest_client).to receive(:post).
-          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
-               {"X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION}).
+          with("reports/nodes/spitfire/runs", { :action => :start, :run_id => @run_id, :start_time => @start_time.to_s },
+               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION }).
           and_raise(@error)
       end
 
@@ -672,10 +672,10 @@ describe Chef::ResourceReporter do
 
     context "after creating the run history document" do
       before do
-        response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/@run_id"}
+        response = { "uri" => "https://example.com/reports/nodes/spitfire/runs/@run_id" }
         expect(@rest_client).to receive(:post).
-          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
-               {"X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION}).
+          with("reports/nodes/spitfire/runs", { :action => :start, :run_id => @run_id, :start_time => @start_time.to_s },
+               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION }).
           and_return(response)
         @resource_reporter.run_started(@run_status)
       end
@@ -693,12 +693,12 @@ describe Chef::ResourceReporter do
         allow(@resource_reporter).to receive(:end_time).and_return(@end_time)
         @expected_data = @resource_reporter.prepare_run_data
 
-        response = {"result"=>"ok"}
+        response = { "result" => "ok" }
 
         expect(@rest_client).to receive(:raw_request).ordered do |method, url, headers, data|
           expect(method).to eq(:POST)
-          expect(headers).to eq({"Content-Encoding" => "gzip",
-                             "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION,
+          expect(headers).to eq({ "Content-Encoding" => "gzip",
+                                  "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION,
           },)
           data_stream = Zlib::GzipReader.new(StringIO.new(data))
           data = data_stream.read

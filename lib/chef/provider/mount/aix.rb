@@ -42,7 +42,7 @@ class Chef
 
           # lsfs o/p = #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
           # search only for current mount point
-          shell_out("lsfs -c #{@new_resource.mount_point}").stdout.each_line do | line |
+          shell_out("lsfs -c #{@new_resource.mount_point}").stdout.each_line do |line|
             case line
             when /^#\s/
               next
@@ -61,7 +61,7 @@ class Chef
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}/
-              enabled=false
+              enabled = false
               Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/filesystems")
             end
           end
@@ -167,7 +167,7 @@ class Chef
               end
             end
             ::File.open("/etc/filesystems", "w") do |fstab|
-              contents.each { |line| fstab.puts line}
+              contents.each { |line| fstab.puts line }
             end
           else
             Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")

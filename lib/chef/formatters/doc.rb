@@ -240,7 +240,7 @@ class Chef
       end
 
       # Called before action is executed on a resource.
-      def resource_action_start(resource, action, notification_type=nil, notifier=nil)
+      def resource_action_start(resource, action, notification_type = nil, notifier = nil)
         if resource.cookbook_name && resource.recipe_name
           resource_recipe = "#{resource.cookbook_name}::#{resource.recipe_name}"
         else
@@ -282,7 +282,7 @@ class Chef
 
       # Called when a resource has no converge actions, e.g., it was already correct.
       def resource_up_to_date(resource, action)
-        @up_to_date_resources+= 1
+        @up_to_date_resources += 1
         puts " (up to date)", :stream => resource
         unindent
       end
@@ -293,7 +293,6 @@ class Chef
       end
 
       def output_record(line)
-
       end
 
       # Called when a change has been made to a resource. May be called multiple
@@ -369,7 +368,7 @@ class Chef
         end
       end
 
-      def deprecation(message, location=caller(2..2)[0])
+      def deprecation(message, location = caller(2..2)[0])
         if Chef::Config[:treat_deprecation_warnings_as_errors]
           super
         end

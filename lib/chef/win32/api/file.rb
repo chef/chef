@@ -163,7 +163,7 @@ class Chef
           (device_type << 16) | (access << 14) | (function << 2) | method
         end
 
-        FSCTL_GET_REPARSE_POINT         = CTL_CODE(FILE_DEVICE_FILE_SYSTEM, 42, METHOD_BUFFERED, FILE_ANY_ACCESS)
+        FSCTL_GET_REPARSE_POINT = CTL_CODE(FILE_DEVICE_FILE_SYSTEM, 42, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
         # Reparse point tags
         IO_REPARSE_TAG_MOUNT_POINT              = 0xA0000003
@@ -176,7 +176,7 @@ class Chef
         IO_REPARSE_TAG_SYMLINK                  = 0xA000000C
         IO_REPARSE_TAG_DFSR                     = 0x80000012
 
-        MAXIMUM_REPARSE_DATA_BUFFER_SIZE        = 16*1024
+        MAXIMUM_REPARSE_DATA_BUFFER_SIZE        = 16 * 1024
 
         ###############################################
         # Win32 API Bindings
@@ -238,7 +238,7 @@ typedef struct _WIN32_FIND_DATA {
           :n_file_size_low, :DWORD,
           :dw_reserved_0, :DWORD,
           :dw_reserved_1, :DWORD,
-          :c_file_name, [:BYTE, MAX_PATH*2],
+          :c_file_name, [:BYTE, MAX_PATH * 2],
           :c_alternate_file_name, [:BYTE, 14]
         end
 
@@ -307,11 +307,12 @@ typedef struct _REPARSE_DATA_BUFFER {
 
           def substitute_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:SubstituteNameOffset]
-            string_pointer.read_wstring(self[:SubstituteNameLength]/2)
+            string_pointer.read_wstring(self[:SubstituteNameLength] / 2)
           end
+
           def print_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:PrintNameOffset]
-            string_pointer.read_wstring(self[:PrintNameLength]/2)
+            string_pointer.read_wstring(self[:PrintNameLength] / 2)
           end
         end
         class REPARSE_DATA_BUFFER_MOUNT_POINT < FFI::Struct
@@ -323,11 +324,12 @@ typedef struct _REPARSE_DATA_BUFFER {
 
           def substitute_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:SubstituteNameOffset]
-            string_pointer.read_wstring(self[:SubstituteNameLength]/2)
+            string_pointer.read_wstring(self[:SubstituteNameLength] / 2)
           end
+
           def print_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:PrintNameOffset]
-            string_pointer.read_wstring(self[:PrintNameLength]/2)
+            string_pointer.read_wstring(self[:PrintNameLength] / 2)
           end
         end
         class REPARSE_DATA_BUFFER_GENERIC < FFI::Struct
@@ -457,7 +459,6 @@ BOOL WINAPI DeviceIoControl(
 );
 =end
         safe_attach_function :DeviceIoControl, [:HANDLE, :DWORD, :LPVOID, :DWORD, :LPVOID, :DWORD, :LPDWORD, :pointer], :BOOL
-
 
 #BOOL WINAPI DeleteVolumeMountPoint(
   #_In_ LPCTSTR lpszVolumeMountPoint
@@ -606,7 +607,7 @@ BOOL WINAPI VerQueryValue(
           if file_size == 0
             Chef::ReservedNames::Win32::Error.raise!
           end
-          
+
           version_info = FFI::MemoryPointer.new(file_size)
           unless GetFileVersionInfoW(file_name, 0, file_size, version_info)
             Chef::ReservedNames::Win32::Error.raise!

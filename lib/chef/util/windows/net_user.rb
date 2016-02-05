@@ -26,6 +26,7 @@ require "chef/win32/security"
 class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   private
+
   NetUser = Chef::ReservedNames::Win32::NetUser
   Security = Chef::ReservedNames::Win32::Security
 
@@ -62,7 +63,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   }
 
   def transform_usri3(args)
-    args.inject({}) do |memo, (k,v)|
+    args.inject({}) do |memo, (k, v)|
       memo[USER_INFO_3_TRANSFORM[k]] = v
       memo
     end
@@ -70,7 +71,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def usri3_to_hash(usri3)
     t = USER_INFO_3_TRANSFORM.invert
-    usri3.inject({}) do |memo, (k,v)|
+    usri3.inject({}) do |memo, (k, v)|
       memo[t[k]] = v
       memo
     end
@@ -128,7 +129,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def update(args)
     user_modify do |user|
-      args.each do |key,val|
+      args.each do |key, val|
         user[key] = val
       end
     end

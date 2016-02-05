@@ -114,10 +114,10 @@ describe Chef::Knife::Ssh do
       end
 
       it "should raise an error if no host are found" do
-          configure_query([ ])
-          expect(@knife.ui).to receive(:fatal)
-          expect(@knife).to receive(:exit).with(10)
-          @knife.configure_session
+        configure_query([ ])
+        expect(@knife.ui).to receive(:fatal)
+        expect(@knife).to receive(:exit).with(10)
+        @knife.configure_session
       end
 
       context "when there are some hosts found but they do not have an attribute to connect with" do
@@ -170,26 +170,26 @@ describe Chef::Knife::Ssh do
       expect(@knife.get_ssh_attribute(@node_foo)).to eq("cloud.public_hostname")
     end
 
-    it "should favor to attribute_from_cli over config file and cloud" do 
+    it "should favor to attribute_from_cli over config file and cloud" do
       @knife.config[:attribute] = "command_line"
       Chef::Config[:knife][:ssh_attribute] = "config_file"
       expect( @knife.get_ssh_attribute(@node_foo)).to eq("command_line")
     end
 
-    it "should favor config file over cloud and default" do 
+    it "should favor config file over cloud and default" do
       Chef::Config[:knife][:ssh_attribute] = "config_file"
       expect( @knife.get_ssh_attribute(@node_foo)).to eq("config_file")
     end
 
     it "should return fqdn if cloud.hostname is empty" do
-          expect( @knife.get_ssh_attribute(@node_bar)).to eq("fqdn")
+      expect( @knife.get_ssh_attribute(@node_bar)).to eq("fqdn")
     end
   end
 
   describe "#session_from_list" do
     before :each do
       @knife.instance_variable_set(:@longest, 0)
-      ssh_config = {:timeout => 50, :user => "locutus", :port => 23 }
+      ssh_config = { :timeout => 50, :user => "locutus", :port => 23 }
       allow(Net::SSH).to receive(:configuration_for).with("the.b.org").and_return(ssh_config)
     end
 
@@ -211,10 +211,10 @@ describe Chef::Knife::Ssh do
 
   describe "#ssh_command" do
     let(:execution_channel) { double(:execution_channel, :on_data => nil) }
-    let(:session_channel) { double(:session_channel, :request_pty => nil)}
+    let(:session_channel) { double(:session_channel, :request_pty => nil) }
 
     let(:execution_channel2) { double(:execution_channel, :on_data => nil) }
-    let(:session_channel2) { double(:session_channel, :request_pty => nil)}
+    let(:session_channel2) { double(:session_channel, :request_pty => nil) }
 
     let(:session) { double(:session, :loop => nil) }
 
@@ -309,14 +309,14 @@ describe Chef::Knife::Ssh do
 
     context "when setting ssh_password_ng from knife ssh" do
       # in this case ssh_password_ng exists, but ssh_password does not
-      it "should prompt for a password when ssh_passsword_ng is nil"  do
+      it "should prompt for a password when ssh_passsword_ng is nil" do
         @knife.config[:ssh_password_ng] = nil
         expect(@knife).to receive(:get_password).and_return("mysekretpassw0rd")
         @knife.configure_password
         expect(@knife.config[:ssh_password]).to eq("mysekretpassw0rd")
       end
 
-      it "should set ssh_password to false if ssh_password_ng is false"  do
+      it "should set ssh_password to false if ssh_password_ng is false" do
         @knife.config[:ssh_password_ng] = false
         expect(@knife).not_to receive(:get_password)
         @knife.configure_password
@@ -360,14 +360,14 @@ describe Chef::Knife::Ssh do
       end
       context "when setting ssh_password_ng from knife ssh" do
         # in this case ssh_password_ng exists, but ssh_password does not
-        it "should prompt for a password when ssh_passsword_ng is nil"  do
+        it "should prompt for a password when ssh_passsword_ng is nil" do
           @knife.config[:ssh_password_ng] = nil
           expect(@knife).to receive(:get_password).and_return("mysekretpassw0rd")
           @knife.configure_password
           expect(@knife.config[:ssh_password]).to eq("mysekretpassw0rd")
         end
 
-        it "should set ssh_password to the configured knife.rb value if ssh_password_ng is false"  do
+        it "should set ssh_password to the configured knife.rb value if ssh_password_ng is false" do
           @knife.config[:ssh_password_ng] = false
           expect(@knife).not_to receive(:get_password)
           @knife.configure_password

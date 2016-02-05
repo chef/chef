@@ -133,7 +133,7 @@ class Chef
         511 => "Network Authentication Required",
       }
 
-      STATUS_MESSAGE.values.each {|v| v.freeze }
+      STATUS_MESSAGE.values.each { |v| v.freeze }
       STATUS_MESSAGE.freeze
 
       def initialize(base_url)
@@ -195,11 +195,10 @@ class Chef
       private
 
       def headers_extracted_from_options
-        options.reject {|name, _| KNOWN_OPTIONS.include?(name) }.map { |name, value|
+        options.reject { |name, _| KNOWN_OPTIONS.include?(name) }.map { |name, value|
           [name.to_s.split("_").map { |segment| segment.capitalize }.join("-"), value]
         }
       end
-
 
     end
 

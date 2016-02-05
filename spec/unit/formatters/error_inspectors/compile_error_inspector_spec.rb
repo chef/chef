@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-BAD_RECIPE=<<-E
+BAD_RECIPE = <<-E
 #
 # Cookbook Name:: syntax-err
 # Recipe:: default
@@ -91,7 +91,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
       describe "when explaining an error in the compile phase" do
         before do
-          recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
+          recipe_lines = BAD_RECIPE.split("\n").map { |l| l << "\n" }
           expect(IO).to receive(:readlines).with(path_to_failed_file).and_return(recipe_lines)
           inspector.add_explanation(description)
         end
@@ -209,7 +209,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
     before do
       allow(Chef::Config).to receive(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
-      recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
+      recipe_lines = BAD_RECIPE.split("\n").map { |l| l << "\n" }
       expect(IO).to receive(:readlines).at_least(1).times.with(full_path_to_failed_file).and_return(recipe_lines)
       inspector.add_explanation(description)
     end

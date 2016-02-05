@@ -29,7 +29,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def to_ui2_struct(use_info)
-    use_info.inject({}) do |memo, (k,v)|
+    use_info.inject({}) do |memo, (k, v)|
       memo["ui2_#{k}".to_sym] = v
       memo
     end
@@ -52,7 +52,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def from_use_info_struct(ui2_hash)
-    ui2_hash.inject({}) do |memo, (k,v)|
+    ui2_hash.inject({}) do |memo, (k, v)|
       memo[k.to_s.sub("ui2_", "").to_sym] = v
       memo
     end

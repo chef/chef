@@ -37,7 +37,7 @@ class Chef
           },
           :test => Proc.new { |config_manager, document, shellout_flags|
             config_manager.test_configuration(document, shellout_flags)
-          }}
+          } }
       end
 
       def action_run
@@ -138,7 +138,7 @@ class Chef
           @dsc_resource.configuration_data_script
         elsif @dsc_resource.configuration_data
           configuration_data_path = "#{config_directory}/chef_dsc_config_data.psd1"
-          ::File.open(configuration_data_path, "wt") do | script |
+          ::File.open(configuration_data_path, "wt") do |script|
             script.write(@dsc_resource.configuration_data)
           end
           configuration_data_path
@@ -165,7 +165,7 @@ class Chef
             if resource.changes_state?
               # We ignore the last log message because it only contains the time it took, which looks weird
               cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, "").strip }
-              "converge DSC resource #{resource.name} by #{cleaned_messages.find_all{ |c| c != ''}.join("\n")}"
+              "converge DSC resource #{resource.name} by #{cleaned_messages.find_all { |c| c != '' }.join("\n")}"
             else
               # This is needed because a dsc script can have resources that are both converged and not
               "converge DSC resource #{resource.name} by doing nothing because it is already converged"

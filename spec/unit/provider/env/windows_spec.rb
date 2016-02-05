@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Provider::Env::Windows, :windows_only do
   let(:node) { Chef::Node.new }
-  let(:events) {Chef::EventDispatch::Dispatcher.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
   context "when environment variable is not PATH" do
@@ -29,8 +29,8 @@ describe Chef::Provider::Env::Windows, :windows_only do
       new_resource.value("foo")
       new_resource
     }
-    let(:provider) { 
-      provider = Chef::Provider::Env::Windows.new(new_resource, run_context) 
+    let(:provider) {
+      provider = Chef::Provider::Env::Windows.new(new_resource, run_context)
       allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
       provider
     }
@@ -74,21 +74,21 @@ describe Chef::Provider::Env::Windows, :windows_only do
 
   context "when environment is PATH" do
     describe "for PATH" do
-      let(:system_root) {"%SystemRoot%"}
+      let(:system_root) { "%SystemRoot%" }
       let(:system_root_value) { 'D:\Windows' }
       let(:new_resource) {
         new_resource = Chef::Resource::Env.new("PATH")
         new_resource.value(system_root)
         new_resource
       }
-      let(:provider) { 
-        provider = Chef::Provider::Env::Windows.new(new_resource, run_context) 
+      let(:provider) {
+        provider = Chef::Provider::Env::Windows.new(new_resource, run_context)
         allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
         provider
       }
 
       before do
-        stub_const("ENV", {"PATH" => ""})
+        stub_const("ENV", { "PATH" => "" })
       end
 
       it "replaces Windows system variables" do

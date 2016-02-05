@@ -36,17 +36,17 @@ describe Chef::Knife::UserEdit do
   context "when the username field is not supported by the server" do
     before do
       allow(knife).to receive(:run_osc_11_user_edit).and_raise(SystemExit)
-      allow(Chef::UserV1).to receive(:load).and_return({"username" => nil})
+      allow(Chef::UserV1).to receive(:load).and_return({ "username" => nil })
     end
 
     it "displays the osc warning" do
       expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
     it "forwards the command to knife osc_user edit" do
       expect(knife).to receive(:run_osc_11_user_edit)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
   end
 

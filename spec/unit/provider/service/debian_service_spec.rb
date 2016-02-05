@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Provider::Service::Debian do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = {:ps => "fuuuu"}
+    @node.automatic_attrs[:command] = { :ps => "fuuuu" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -114,7 +114,7 @@ describe Chef::Provider::Service::Debian do
       end
     end
 
-    {"Debian/Lenny and older" => {
+    { "Debian/Lenny and older" => {
         "linked" => {
           "stdout" => <<-STDOUT,
  Removing any system startup links for /etc/init.d/chef ...
@@ -128,13 +128,13 @@ describe Chef::Provider::Service::Debian do
           STDOUT
           "stderr" => "",
           "priorities" => {
-            "0"=>[:stop, "20"],
-            "1"=>[:stop, "20"],
-            "2"=>[:start, "20"],
-            "3"=>[:start, "20"],
-            "4"=>[:start, "20"],
-            "5"=>[:start, "20"],
-            "6"=>[:stop, "20"],
+            "0" => [:stop, "20"],
+            "1" => [:stop, "20"],
+            "2" => [:start, "20"],
+            "3" => [:start, "20"],
+            "4" => [:start, "20"],
+            "5" => [:start, "20"],
+            "6" => [:stop, "20"],
           },
         },
         "not linked" => {
@@ -156,13 +156,13 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
   insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
           STDERR
           "priorities" => {
-            "0"=>[:stop, "20"],
-            "1"=>[:stop, "20"],
-            "2"=>[:start, "20"],
-            "3"=>[:start, "20"],
-            "4"=>[:start, "20"],
-            "5"=>[:start, "20"],
-            "6"=>[:stop, "20"],
+            "0" => [:stop, "20"],
+            "1" => [:stop, "20"],
+            "2" => [:start, "20"],
+            "3" => [:start, "20"],
+            "4" => [:start, "20"],
+            "5" => [:start, "20"],
+            "6" => [:stop, "20"],
           },
         },
         "not linked" => {
@@ -181,10 +181,10 @@ insserv: remove service /etc/init.d/../rcS.d/S13rpcbind
 insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
           STDERR
           "priorities" => {
-            "0"=>[:stop, "06"],
-            "1"=>[:stop, "06"],
-            "6"=>[:stop, "06"],
-            "S"=>[:start, "13"],
+            "0" => [:stop, "06"],
+            "1" => [:stop, "06"],
+            "6" => [:stop, "06"],
+            "S" => [:start, "13"],
           },
         },
         "not linked" => {
@@ -276,7 +276,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
     context "when the service is enabled" do
       before do
         @current_resource.enabled(true)
-  @current_resource.priority(80)
+        @current_resource.priority(80)
       end
 
       context "and the service sets no priority" do

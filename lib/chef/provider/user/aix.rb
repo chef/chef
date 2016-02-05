@@ -48,7 +48,7 @@ class Chef
           end
           raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if lock_info.stdout.empty?
 
-          status  = /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)
+          status = /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)
           if status && status[1] == "true"
             @locked = true
           else
@@ -67,6 +67,7 @@ class Chef
         end
 
       private
+
         def add_password
           if @current_resource.password != @new_resource.password && @new_resource.password
             Chef::Log.debug("#{@new_resource.username} setting password to #{@new_resource.password}")

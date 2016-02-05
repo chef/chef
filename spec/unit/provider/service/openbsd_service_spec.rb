@@ -31,11 +31,11 @@ end
 describe Chef::Provider::Service::Openbsd do
   let(:node) do
     node = Chef::Node.new
-    node.automatic_attrs[:command] = {:ps => "ps -ax"}
+    node.automatic_attrs[:command] = { :ps => "ps -ax" }
     node
   end
 
-  let(:supports) { {:status => false} }
+  let(:supports) { { :status => false } }
 
   let(:new_resource) do
     new_resource = Chef::Resource::Service.new("sndiod")
@@ -54,7 +54,7 @@ describe Chef::Provider::Service::Openbsd do
     run_context = Chef::RunContext.new(node, {}, events)
     allow(::File).to receive(:read).with("/etc/rc.conf").and_return("")
     allow(::File).to receive(:read).with("/etc/rc.conf.local").and_return("")
-    provider = Chef::Provider::Service::Openbsd.new(new_resource,run_context)
+    provider = Chef::Provider::Service::Openbsd.new(new_resource, run_context)
     provider.action = :start
     provider
   end

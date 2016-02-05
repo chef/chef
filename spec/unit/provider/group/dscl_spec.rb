@@ -40,7 +40,7 @@ describe Chef::Provider::Group::Dscl do
   it "should return an array of four elements - cmd, status, stdout, stderr" do
     dscl_retval = @provider.dscl("cmd /Path args")
     expect(dscl_retval).to be_a_kind_of(Array)
-    expect(dscl_retval).to eq(["dscl . -cmd /Path args",@status,"\n",""])
+    expect(dscl_retval).to eq(["dscl . -cmd /Path args", @status, "\n", ""])
   end
 
   describe "safe_dscl" do

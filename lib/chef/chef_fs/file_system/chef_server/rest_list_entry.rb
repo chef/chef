@@ -38,10 +38,10 @@ class Chef
           end
 
           def api_child_name
-            if name.length < 5 || name[-5,5] != ".json"
+            if name.length < 5 || name[-5, 5] != ".json"
               raise "Invalid name #{path}: must end in .json"
             end
-            name[0,name.length-5]
+            name[0, name.length - 5]
           end
 
           def api_path

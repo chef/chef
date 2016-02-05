@@ -44,7 +44,7 @@ class Chef
         with_chef_local_server
         get_private_key
       }.each do |method_name|
-        eval(<<-EOM, binding, __FILE__, __LINE__+1)
+        eval(<<-EOM, binding, __FILE__, __LINE__ + 1)
           def #{method_name}(*args, &block)
             Chef::DSL::Cheffish.load_cheffish
             self.#{method_name}(*args, &block)

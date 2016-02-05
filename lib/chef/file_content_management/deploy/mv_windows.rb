@@ -96,10 +96,8 @@ class Chef
           dst_so.owner = dst_sd.owner
           dst_so.set_dacl(apply_dacl, dst_sd.dacl_inherits?) if dacl_present
           dst_so.set_sacl(apply_sacl, dst_sd.sacl_inherits?) if sacl_present
-
         end
       end
     end
   end
 end
-

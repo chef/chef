@@ -515,7 +515,7 @@ shared_examples_for "a securable resource without existing target" do
       resource.inherits(false)
       resource.run_action(:create)
 
-      descriptor.dacl.each do | ace |
+      descriptor.dacl.each do |ace|
         expect(ace.inherited?).to eq(false)
       end
     end

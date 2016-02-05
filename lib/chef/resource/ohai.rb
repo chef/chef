@@ -27,13 +27,13 @@ class Chef
 
       default_action :reload
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @name = name
         @plugin = nil
       end
 
-      def plugin(arg=nil)
+      def plugin(arg = nil)
         set_or_return(
           :plugin,
           arg,
@@ -41,7 +41,7 @@ class Chef
         )
       end
 
-      def name(arg=nil)
+      def name(arg = nil)
         set_or_return(
           :name,
           arg,

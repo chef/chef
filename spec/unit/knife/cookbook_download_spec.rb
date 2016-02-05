@@ -49,20 +49,20 @@ describe Chef::Knife::CookbookDownload do
 
         @manifest_data = {
           :recipes => [
-            {"path" => "recipes/foo.rb",
-             "url" => "http://example.org/files/foo.rb"},
-            {"path" => "recipes/bar.rb",
-             "url" => "http://example.org/files/bar.rb"},
+            { "path" => "recipes/foo.rb",
+              "url" => "http://example.org/files/foo.rb" },
+            { "path" => "recipes/bar.rb",
+              "url" => "http://example.org/files/bar.rb" },
           ],
           :templates => [
-            {"path" => "templates/default/foo.erb",
-             "url" => "http://example.org/files/foo.erb"},
-            {"path" => "templates/default/bar.erb",
-             "url" => "http://example.org/files/bar.erb"},
+            { "path" => "templates/default/foo.erb",
+              "url" => "http://example.org/files/foo.erb" },
+            { "path" => "templates/default/bar.erb",
+              "url" => "http://example.org/files/bar.erb" },
           ],
           :attributes => [
-            {"path" => "attributes/default.rb",
-             "url" => "http://example.org/files/default.rb"},
+            { "path" => "attributes/default.rb",
+              "url" => "http://example.org/files/default.rb" },
           ],
         }
 
@@ -102,17 +102,17 @@ describe Chef::Knife::CookbookDownload do
           before(:each) do
             @files.map { |f| File.dirname(f) }.flatten.uniq.each do |dir|
               expect(FileUtils).to receive(:mkdir_p).with("/var/tmp/chef/foobar-1.0.0/#{dir}").
-              at_least(:once)
+                at_least(:once)
             end
 
             @files_mocks.each_pair do |file, mock|
               expect(@rest_mock).to receive(:streaming_request).with("http://example.org/files/#{file}").
-              and_return(mock)
+                and_return(mock)
             end
 
             @files.each do |f|
               expect(FileUtils).to receive(:mv).
-                        with("/var/tmp/#{File.basename(f)}", "/var/tmp/chef/foobar-1.0.0/#{f}")
+                with("/var/tmp/#{File.basename(f)}", "/var/tmp/chef/foobar-1.0.0/#{f}")
             end
           end
 
@@ -165,7 +165,7 @@ describe Chef::Knife::CookbookDownload do
       it "should return and set the version to the latest version" do
         @knife.config[:latest] = true
         expect(@knife).to receive(:available_versions).at_least(:once).
-                                                   and_return(["1.0.0", "1.1.0", "2.0.0"])
+          and_return(["1.0.0", "1.1.0", "2.0.0"])
         @knife.determine_version
         expect(@knife.version.to_s).to eq("2.0.0")
       end
@@ -179,15 +179,15 @@ describe Chef::Knife::CookbookDownload do
 
     it "should return nil if there are no versions" do
       expect(Chef::CookbookVersion).to receive(:available_versions).
-                            with("foobar").
-                            and_return(nil)
+        with("foobar").
+        and_return(nil)
       expect(@knife.available_versions).to eq(nil)
     end
 
     it "should return the available versions" do
       expect(Chef::CookbookVersion).to receive(:available_versions).
-                            with("foobar").
-                            and_return(["1.1.0", "2.0.0", "1.0.0"])
+        with("foobar").
+        and_return(["1.1.0", "2.0.0", "1.0.0"])
       expect(@knife.available_versions).to eq([Chef::Version.new("1.0.0"),
                                            Chef::Version.new("1.1.0"),
                                            Chef::Version.new("2.0.0")])
@@ -195,9 +195,9 @@ describe Chef::Knife::CookbookDownload do
 
     it "should avoid multiple API calls to the server" do
       expect(Chef::CookbookVersion).to receive(:available_versions).
-                            once.
-                            with("foobar").
-                            and_return(["1.1.0", "2.0.0", "1.0.0"])
+        once.
+        with("foobar").
+        and_return(["1.1.0", "2.0.0", "1.0.0"])
       @knife.available_versions
       @knife.available_versions
     end

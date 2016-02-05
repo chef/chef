@@ -136,7 +136,6 @@ class Chef
         Chef::Log.info("Run List is [#{run_list}]")
         Chef::Log.info("Run List expands to [#{run_list_with_versions_for_display.join(', ')}]")
 
-
         events.node_load_completed(node, run_list_with_versions_for_display, Chef::Config)
 
         node
@@ -149,7 +148,7 @@ class Chef
       # run.
       #
       # @return [Chef::RunContext]
-      def setup_run_context(specific_recipes=nil)
+      def setup_run_context(specific_recipes = nil)
         Chef::Cookbook::FileVendor.fetch_from_remote(http_api)
         sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbooks_to_sync)
@@ -258,7 +257,7 @@ class Chef
           named_run_list or
             raise ConfigurationError,
             "Policy '#{retrieved_policy_name}' revision '#{revision_id}' does not have named_run_list '#{named_run_list_name}'" +
-            "(available named_run_lists: [#{available_named_run_lists.join(', ')}])"
+              "(available named_run_lists: [#{available_named_run_lists.join(', ')}])"
         else
           policy["run_list"]
         end

@@ -236,7 +236,7 @@ class Chef
           found = false
           ::File.readlines(VFSTAB).reverse_each do |line|
             if !found && line =~ /^#{device_regex}\s+\S+\s+#{Regexp.escape(mount_point)}/
-                found = true
+              found = true
               Chef::Log.debug("#{new_resource} is removed from vfstab")
               next
             end

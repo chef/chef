@@ -40,7 +40,7 @@ class Chef
         @resources_by_key.keys
       end
 
-      def insert_as(resource, resource_type=nil, instance_name=nil)
+      def insert_as(resource, resource_type = nil, instance_name = nil)
         is_chef_resource!(resource)
         resource_type ||= resource.resource_name
         instance_name ||= resource.name
@@ -124,7 +124,7 @@ class Chef
           else
             raise Chef::Exceptions::InvalidResourceSpecification,
                   "The object `#{query_object.inspect}' is not valid for resource collection lookup. " +
-                      "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
+                    "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
         end
       end
 

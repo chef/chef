@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-
 #
 # mixin to make this syntax work without specifying a source:
 #

@@ -47,14 +47,14 @@ if Net::SSH::Multi::Version::STRING == "1.1.0" || Net::SSH::Multi::Version::STRI
 
           # Make sure that server returns false if the ssh connection
           # has failed.
-          def busy?(include_invisible=false)
+          def busy?(include_invisible = false)
             !failed? && session && session.busy?(include_invisible)
           end
 
         end
 
         class Session
-          def next_session(server, force=false) #:nodoc:
+          def next_session(server, force = false) #:nodoc:
             # don't retry a failed attempt
             return nil if server.failed?
 

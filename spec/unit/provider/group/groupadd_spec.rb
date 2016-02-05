@@ -43,9 +43,9 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
 
   field_list.each do |attribute, option|
     it "should check for differences in #{attribute} between the current and new resources" do
-        expect(@new_resource).to receive(attribute)
-        expect(@current_resource).to receive(attribute)
-        @provider.set_options
+      expect(@new_resource).to receive(attribute)
+      expect(@current_resource).to receive(attribute)
+      @provider.set_options
     end
     it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
       allow(@new_resource).to receive(attribute).and_return("wowaweea")
@@ -55,7 +55,7 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
 
   it "should combine all the possible options" do
     match_string = ""
-    field_list.sort{ |a,b| a[0] <=> b[0] }.each do |attribute, option|
+    field_list.sort { |a, b| a[0] <=> b[0] }.each do |attribute, option|
       allow(@new_resource).to receive(attribute).and_return("hola")
       match_string << " #{option} 'hola'"
     end

@@ -69,7 +69,7 @@ describe Chef::ChefFS::PathUtils do
     end
 
     it "handles paths with .. and ." do
-      expect(Chef::ChefFS::PathUtils.realest_path(good_path+"/../.")).to eq(File.expand_path(parent_path))
+      expect(Chef::ChefFS::PathUtils.realest_path(good_path + "/../.")).to eq(File.expand_path(parent_path))
     end
 
     it "handles paths with *" do

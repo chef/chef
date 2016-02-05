@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 def run_context
   @run_context ||= begin
     node = Chef::Node.new
@@ -27,4 +26,3 @@ def run_context
     Chef::RunContext.new(node, {}, events)
   end
 end
-

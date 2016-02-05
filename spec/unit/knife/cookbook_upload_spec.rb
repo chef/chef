@@ -26,7 +26,7 @@ describe Chef::Knife::CookbookUpload do
   let(:cookbook) { Chef::CookbookVersion.new("test_cookbook", "/tmp/blah.txt") }
 
   let(:cookbooks_by_name) do
-    {cookbook.name => cookbook}
+    { cookbook.name => cookbook }
   end
 
   let(:cookbook_loader) do
@@ -62,8 +62,8 @@ describe Chef::Knife::CookbookUpload do
       allow(cookbook_loader).to receive(:each).and_yield("test_cookbook", test_cookbook)
       allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook"])
       expect(Chef::CookbookUploader).to receive(:new).
-        with( kind_of(Array), { :force => nil, :concurrency => 3}).
-        and_return(double("Chef::CookbookUploader", :upload_cookbooks=> true))
+        with( kind_of(Array), { :force => nil, :concurrency => 3 }).
+        and_return(double("Chef::CookbookUploader", :upload_cookbooks => true))
       knife.run
     end
   end
@@ -107,12 +107,12 @@ describe Chef::Knife::CookbookUpload do
       before do
         allow(cookbook_loader).to receive(:merged_cookbooks).and_return(["test_cookbook"])
         allow(cookbook_loader).to receive(:merged_cookbook_paths).
-          and_return({"test_cookbook" => %w{/path/one/test_cookbook /path/two/test_cookbook}})
+          and_return({ "test_cookbook" => %w{/path/one/test_cookbook /path/two/test_cookbook} })
       end
 
       it "emits a warning" do
         knife.run
-        expected_message=<<-E
+        expected_message = <<-E
 WARNING: The cookbooks: test_cookbook exist in multiple places in your cookbook_path.
 A composite version of these cookbooks has been compiled for uploading.
 
@@ -196,9 +196,9 @@ E
 
       before(:each) do
         cookbook.metadata.depends("dependency")
-        allow(cookbook_loader).to receive(:[])  do |ckbk|
+        allow(cookbook_loader).to receive(:[]) do |ckbk|
           { "test_cookbook" =>  cookbook,
-            "dependency" => cookbook_dependency}[ckbk]
+            "dependency" => cookbook_dependency }[ckbk]
         end
         allow(knife).to receive(:cookbook_names).and_return(["cookbook_dependency", "test_cookbook"])
         @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
@@ -209,11 +209,11 @@ E
         expect(cookbook_loader).to receive(:[]).once.with("test_cookbook")
         expect(cookbook_loader).not_to receive(:load_cookbooks)
         expect(cookbook_uploader).not_to receive(:upload_cookbooks)
-        expect {knife.run}.to raise_error(SystemExit)
+        expect { knife.run }.to raise_error(SystemExit)
       end
 
       it "should output a message for a single missing dependency" do
-        expect {knife.run}.to raise_error(SystemExit)
+        expect { knife.run }.to raise_error(SystemExit)
         expect(@stderr.string).to include("Cookbook test_cookbook depends on cookbooks which are not currently")
         expect(@stderr.string).to include("being uploaded and cannot be found on the server.")
         expect(@stderr.string).to include("The missing cookbook(s) are: 'dependency' version '>= 0.0.0'")
@@ -222,13 +222,13 @@ E
       it "should output a message for a multiple missing dependencies which are concatenated" do
         cookbook_dependency2 = Chef::CookbookVersion.new("dependency2")
         cookbook.metadata.depends("dependency2")
-        allow(cookbook_loader).to receive(:[])  do |ckbk|
+        allow(cookbook_loader).to receive(:[]) do |ckbk|
           { "test_cookbook" =>  cookbook,
             "dependency" => cookbook_dependency,
-            "dependency2" => cookbook_dependency2}[ckbk]
+            "dependency2" => cookbook_dependency2 }[ckbk]
         end
         allow(knife).to receive(:cookbook_names).and_return(["dependency", "dependency2", "test_cookbook"])
-        expect {knife.run}.to raise_error(SystemExit)
+        expect { knife.run }.to raise_error(SystemExit)
         expect(@stderr.string).to include("Cookbook test_cookbook depends on cookbooks which are not currently")
         expect(@stderr.string).to include("being uploaded and cannot be found on the server.")
         expect(@stderr.string).to include("The missing cookbook(s) are:")

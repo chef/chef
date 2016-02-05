@@ -212,7 +212,7 @@ class Chef
         file_load_failed(path, exception)
       end
 
-      def deprecation(message, location=caller(2..2)[0])
+      def deprecation(message, location = caller(2..2)[0])
         Chef::Log.deprecation("#{message} at #{location}")
       end
 
@@ -220,7 +220,6 @@ class Chef
         true
       end
     end
-
 
     # == NullFormatter
     # Formatter that doesn't actually produce any output. You can use this to

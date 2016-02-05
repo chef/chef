@@ -19,7 +19,6 @@
 require "spec_helper"
 require "chef/dsl/recipe"
 
-
 RecipeDSLExampleClass = Struct.new(:cookbook_name, :recipe_name)
 class RecipeDSLExampleClass
   include Chef::DSL::Recipe
@@ -79,4 +78,3 @@ describe Chef::DSL::Recipe do
   end
 
 end
-

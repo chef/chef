@@ -49,7 +49,7 @@ BRANCHES
   describe "when sanity checking the repo" do
     it "exits when the directory does not exist" do
       expect(::File).to receive(:directory?).with(@repo_path).and_return(false)
-      expect {@cookbook_repo.sanity_check}.to raise_error(SystemExit)
+      expect { @cookbook_repo.sanity_check }.to raise_error(SystemExit)
     end
 
     describe "and the repo dir exists" do
@@ -59,7 +59,7 @@ BRANCHES
 
       it "exits when there is no git repo" do
         allow(::File).to receive(:directory?).with(/.*\.git/).and_return(false)
-        expect {@cookbook_repo.sanity_check}.to raise_error(SystemExit)
+        expect { @cookbook_repo.sanity_check }.to raise_error(SystemExit)
       end
 
       describe "and the repo is a git repo" do
@@ -68,9 +68,9 @@ BRANCHES
         end
 
         it "exits when the default branch doesn't exist" do
-          @nobranches = Mixlib::ShellOut.new.tap {|s|s.stdout.replace "\n"}
+          @nobranches = Mixlib::ShellOut.new.tap { |s| s.stdout.replace "\n" }
           expect(@cookbook_repo).to receive(:shell_out!).with("git branch --no-color", :cwd => @repo_path).and_return(@nobranches)
-          expect {@cookbook_repo.sanity_check}.to raise_error(SystemExit)
+          expect { @cookbook_repo.sanity_check }.to raise_error(SystemExit)
         end
 
         describe "and the default branch exists" do
@@ -86,12 +86,12 @@ BRANCHES
  M chef/lib/chef/knife/cookbook_site_vendor.rb
 DIRTY
             expect(@cookbook_repo).to receive(:shell_out!).with("git status --porcelain", :cwd => @repo_path).and_return(@dirty_status)
-            expect {@cookbook_repo.sanity_check}.to raise_error(SystemExit)
+            expect { @cookbook_repo.sanity_check }.to raise_error(SystemExit)
           end
 
           describe "and the repo is clean" do
             before do
-              @clean_status = Mixlib::ShellOut.new.tap {|s| s.stdout.replace("\n")}
+              @clean_status = Mixlib::ShellOut.new.tap { |s| s.stdout.replace("\n") }
               allow(@cookbook_repo).to receive(:shell_out!).with("git status --porcelain", :cwd => @repo_path).and_return(@clean_status)
             end
 

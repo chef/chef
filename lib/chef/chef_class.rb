@@ -178,14 +178,17 @@ class Chef
       # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
       @provider_priority_map ||= Chef::Platform::ProviderPriorityMap.instance
     end
+
     # @api private
     def resource_priority_map
       @resource_priority_map ||= Chef::Platform::ResourcePriorityMap.instance
     end
+
     # @api private
     def provider_handler_map
       @provider_handler_map ||= Chef::Platform::ProviderHandlerMap.instance
     end
+
     # @api private
     def resource_handler_map
       @resource_handler_map ||= Chef::Platform::ResourceHandlerMap.instance
@@ -204,7 +207,7 @@ class Chef
     #
     # @api private this will likely be removed in favor of an as-yet unwritten
     #      `Chef.log`
-    def log_deprecation(message, location=nil)
+    def log_deprecation(message, location = nil)
       location ||= Chef::Log.caller_location
       # `run_context.events` is the primary deprecation target if we're in a
       # run. If we are not yet in a run, print to `Chef::Log`.

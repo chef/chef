@@ -72,8 +72,8 @@ describe Chef::Audit::AuditData do
 
     describe ":control_groups" do
 
-      let(:control_hash_1) { {:name => "control group 1"} }
-      let(:control_hash_2) { {:name => "control group 2"} }
+      let(:control_hash_1) { { :name => "control group 1" } }
+      let(:control_hash_2) { { :name => "control group 2" } }
 
       let(:control_groups) { audit_data_hash[:control_groups] }
 
@@ -123,9 +123,8 @@ describe Chef::Audit::ControlData do
   let(:line_number) { 27 }
 
   let(:control_data) { described_class.new(name: name,
-    resource_type: resource_type, resource_name: resource_name,
-    context: context, line_number: line_number) }
-
+                                           resource_type: resource_type, resource_name: resource_name,
+                                           context: context, line_number: line_number) }
 
   describe "#to_hash" do
 
@@ -188,14 +187,14 @@ describe Chef::Audit::ControlGroupData do
     include_context "control data"
 
     let(:control) { Chef::Audit::ControlData.new(name: name,
-      resource_type: resource_type, resource_name: resource_name,
-      context: context, line_number: line_number) }
+                                                 resource_type: resource_type, resource_name: resource_name,
+                                                 context: context, line_number: line_number) }
 
     before do
       allow(Chef::Audit::ControlData).to receive(:new).
         with(name: name, resource_type: resource_type,
-          resource_name: resource_name, context: context,
-          line_number: line_number).
+             resource_name: resource_name, context: context,
+             line_number: line_number).
         and_return(control)
     end
   end
@@ -433,9 +432,9 @@ describe Chef::Audit::ControlGroupData do
 
       context "with multiple controls added" do
 
-        let(:control_hash_1) { {:line_number => 27} }
-        let(:control_hash_2) { {:line_number => 13} }
-        let(:control_hash_3) { {:line_number => 35} }
+        let(:control_hash_1) { { :line_number => 27 } }
+        let(:control_hash_2) { { :line_number => 13 } }
+        let(:control_hash_3) { { :line_number => 35 } }
 
         let(:control_1) { double("control 1",
           :line_number => control_hash_1[:line_number],

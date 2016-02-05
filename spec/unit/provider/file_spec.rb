@@ -33,7 +33,7 @@ describe Chef::Provider::File do
   end
 
   let(:node) { double("Chef::Node") }
-  let(:events) { double("Chef::Events").as_null_object }  # mock all the methods
+  let(:events) { double("Chef::Events").as_null_object } # mock all the methods
   let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
   let(:enclosing_directory) {
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
@@ -54,4 +54,3 @@ describe Chef::Provider::File do
 
   it_behaves_like "a file provider with content field"
 end
-

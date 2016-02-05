@@ -117,7 +117,7 @@ describe Chef::Provider::DscScript do
 
       it "should not converge if the script is already converged" do
         allow(provider).to receive(:run_configuration).with(:test).and_return([])
-        
+
         provider.run_action(:run)
         expect(resource).not_to be_updated
       end
@@ -171,4 +171,3 @@ describe Chef::Provider::DscScript do
     end
   end
 end
-

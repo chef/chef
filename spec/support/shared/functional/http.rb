@@ -37,7 +37,7 @@ module ChefHTTPShared
     content
   end
 
-  def start_tiny_server(server_opts={})
+  def start_tiny_server(server_opts = {})
     nyan_uncompressed_size = File::Stat.new(nyan_uncompressed_filename).size
     nyan_compressed_size   = File::Stat.new(nyan_compressed_filename).size
 
@@ -162,7 +162,6 @@ module ChefHTTPShared
     #
     @api.get("/bad_request", 400, '{ "error": [ "Your request is just terrible." ] }')
     @api.post("/bad_request", 400, '{ "error": [ "Your request is just terrible." ] }')
-
   end
 
   def stop_tiny_server

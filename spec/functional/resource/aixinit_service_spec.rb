@@ -39,7 +39,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   def valide_symlinks(expected_output, run_level = nil, status = nil, priority = nil)
     directory = []
     if priority.is_a? Hash
-      priority.each do |level,o|
+      priority.each do |level, o|
         directory << "/etc/rc.d/rc#{level}.d/#{(o[0] == :start ? 'S' : 'K')}#{o[1]}#{new_resource.service_name}"
       end
       directory
@@ -59,7 +59,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   let(:new_resource) do
     new_resource = Chef::Resource::Service.new("chefinittest", run_context)
     new_resource.provider Chef::Provider::Service::AixInit
-    new_resource.supports({:status => true, :restart => true, :reload => true})
+    new_resource.supports({ :status => true, :restart => true, :reload => true })
     new_resource
   end
 
@@ -70,7 +70,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
   before(:all) do
     File.delete("/etc/rc.d/init.d/chefinittest") if File.exists?("/etc/rc.d/init.d/chefinittest")
-    FileUtils.cp("#{File.join(File.dirname(__FILE__), "/../assets/chefinittest")}",  "/etc/rc.d/init.d/chefinittest")
+    FileUtils.cp("#{File.join(File.dirname(__FILE__), "/../assets/chefinittest")}", "/etc/rc.d/init.d/chefinittest")
   end
 
   after(:all) do
@@ -130,7 +130,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
     context "when the service doesn't set a priority" do
       it "creates symlink with status S" do
         new_resource.run_action(:enable)
-        valide_symlinks(["/etc/rc.d/rc2.d/Schefinittest"],2,"S")
+        valide_symlinks(["/etc/rc.d/rc2.d/Schefinittest"], 2, "S")
       end
     end
 
@@ -141,19 +141,19 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
       it "creates a symlink with status S and a priority" do
         new_resource.run_action(:enable)
-        valide_symlinks(["/etc/rc.d/rc2.d/S75chefinittest"], 2,"S",75)
+        valide_symlinks(["/etc/rc.d/rc2.d/S75chefinittest"], 2, "S", 75)
       end
     end
 
     context "when the service sets complex priorities (hash)" do
       before do
-        priority = {2 => [:start, 20], 3 => [:stop, 10]}
+        priority = { 2 => [:start, 20], 3 => [:stop, 10] }
         new_resource.priority(priority)
       end
 
       it "create symlink with status start (S) or stop (K) and a priority " do
         new_resource.run_action(:enable)
-        valide_symlinks(["/etc/rc.d/rc2.d/S20chefinittest", "/etc/rc.d/rc3.d/K10chefinittest"], 2,"S",new_resource.priority)
+        valide_symlinks(["/etc/rc.d/rc2.d/S20chefinittest", "/etc/rc.d/rc3.d/K10chefinittest"], 2, "S", new_resource.priority)
       end
     end
   end
@@ -171,7 +171,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
       it "creates symlink with status K" do
         new_resource.run_action(:disable)
-        valide_symlinks(["/etc/rc.d/rc2.d/Kchefinittest"], 2,"K")
+        valide_symlinks(["/etc/rc.d/rc2.d/Kchefinittest"], 2, "K")
       end
     end
 
@@ -187,13 +187,13 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
       it "creates a symlink with status K and a priority" do
         new_resource.run_action(:disable)
-        valide_symlinks(["/etc/rc.d/rc2.d/K25chefinittest"], 2,"K",25)
+        valide_symlinks(["/etc/rc.d/rc2.d/K25chefinittest"], 2, "K", 25)
       end
     end
 
     context "when the service sets complex priorities (hash)" do
       before do
-        @priority = {2 => [:stop, 20], 3 => [:start, 10]}
+        @priority = { 2 => [:stop, 20], 3 => [:start, 10] }
         new_resource.priority(@priority)
         File.symlink("/etc/rc.d/init.d/chefinittest", "/etc/rc.d/rc2.d/Schefinittest")
       end
@@ -204,7 +204,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
       it "create symlink with status stop (K) and a priority " do
         new_resource.run_action(:disable)
-        valide_symlinks(["/etc/rc.d/rc2.d/K80chefinittest"], 2,"K",80)
+        valide_symlinks(["/etc/rc.d/rc2.d/K80chefinittest"], 2, "K", 80)
       end
     end
   end

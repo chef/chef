@@ -39,7 +39,6 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
     !::File.exists?("/usr/PkgA/bin/acommand")
   end
 
-
   before(:all) do
     @pkg_name = "PkgA.rte"
     @pkg_path = "/tmp/PkgA.1.0.0.0.bff"
@@ -119,4 +118,3 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
     end
   end
 end
-

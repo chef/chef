@@ -537,7 +537,7 @@ RSpec.describe ChefConfig::Config do
       end
 
       describe "ChefConfig::Config[:encrypted_data_bag_secret]" do
-        let(:db_secret_default_path){ to_platform("/etc/chef/encrypted_data_bag_secret") }
+        let(:db_secret_default_path) { to_platform("/etc/chef/encrypted_data_bag_secret") }
 
         before do
           allow(File).to receive(:exist?).with(db_secret_default_path).and_return(secret_exists)
@@ -837,7 +837,6 @@ RSpec.describe ChefConfig::Config do
         expect(ChefConfig::Config[:treat_deprecation_warnings_as_errors]).to be(false)
       end
     end
-
 
   end
 

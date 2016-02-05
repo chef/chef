@@ -53,9 +53,9 @@ class Chef
           a.assertion { !(@new_resource.revision =~ /^origin\//) }
           a.failure_message Chef::Exceptions::InvalidRemoteGitReference,
              "Deploying remote branches is not supported. " +
-             "Specify the remote branch as a local branch for " +
-             "the git repository you're deploying from " +
-             "(ie: '#{@new_resource.revision.gsub('origin/', '')}' rather than '#{@new_resource.revision}')."
+               "Specify the remote branch as a local branch for " +
+               "the git repository you're deploying from " +
+               "(ie: '#{@new_resource.revision.gsub('origin/', '')}' rather than '#{@new_resource.revision}')."
         end
 
         requirements.assert(:all_actions) do |a|
@@ -65,8 +65,8 @@ class Chef
           a.assertion { target_revision != nil }
           a.failure_message Chef::Exceptions::UnresolvableGitReference,
             "Unable to parse SHA reference for '#{@new_resource.revision}' in repository '#{@new_resource.repository}'. " +
-            "Verify your (case-sensitive) repository URL and revision.\n" +
-            "`git ls-remote '#{@new_resource.repository}' '#{rev_search_pattern}'` output: #{@resolved_reference}"
+              "Verify your (case-sensitive) repository URL and revision.\n" +
+              "`git ls-remote '#{@new_resource.repository}' '#{rev_search_pattern}'` output: #{@resolved_reference}"
         end
       end
 
@@ -86,7 +86,7 @@ class Chef
       def action_export
         action_checkout
         converge_by("complete the export by removing #{@new_resource.destination}.git after checkout") do
-          FileUtils.rm_rf(::File.join(@new_resource.destination,".git"))
+          FileUtils.rm_rf(::File.join(@new_resource.destination, ".git"))
         end
       end
 
@@ -113,14 +113,14 @@ class Chef
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == [".",".."]
+        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == [".", ".."]
       end
 
       def find_current_revision
         Chef::Log.debug("#{@new_resource} finding current git revision")
         if ::File.exist?(::File.join(cwd, ".git"))
           # 128 is returned when we're not in a git repo. this is fine
-          result = shell_out!("git rev-parse HEAD", :cwd => cwd, :returns => [0,128]).stdout.strip
+          result = shell_out!("git rev-parse HEAD", :cwd => cwd, :returns => [0, 128]).stdout.strip
         end
         sha_hash?(result) ? result : nil
       end
@@ -189,10 +189,9 @@ class Chef
 
       def setup_remote_tracking_branches(remote_name, remote_url)
         converge_by("set up remote tracking branches for #{remote_url} at #{remote_name}") do
-          Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{remote_url} "+
-            "at remote #{remote_name}"
+          Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{remote_url} " + "at remote #{remote_name}"
           check_remote_command = "git config --get remote.#{remote_name}.url"
-          remote_status = shell_out!(check_remote_command, run_options(:cwd => @new_resource.destination, :returns => [0,1,2]))
+          remote_status = shell_out!(check_remote_command, run_options(:cwd => @new_resource.destination, :returns => [0, 1, 2]))
           case remote_status.exitstatus
           when 0, 2
             # * Status 0 means that we already have a remote with this name, so we should update the url
@@ -200,7 +199,7 @@ class Chef
             # * Status 2 means that we have multiple urls assigned to the same remote (not a good idea)
             #   which we can fix by replacing them all with our target url (hence the --replace-all option)
 
-            if multiple_remotes?(remote_status) || !remote_matches?(remote_url,remote_status)
+            if multiple_remotes?(remote_status) || !remote_matches?(remote_url, remote_status)
               update_remote_url_command = "git config --replace-all remote.#{remote_name}.url #{remote_url}"
               shell_out!(update_remote_url_command, run_options(:cwd => @new_resource.destination))
             end
@@ -259,7 +258,7 @@ class Chef
         found.size == 1 ? found.first[0] : nil
       end
 
-      def find_revision(refs, revision, suffix="")
+      def find_revision(refs, revision, suffix = "")
         found = refs_search(refs, rev_match_pattern("refs/tags/", revision) + suffix)
         found = refs_search(refs, rev_match_pattern("refs/heads/", revision) + suffix) if found.empty?
         found = refs_search(refs, revision + suffix) if found.empty?
@@ -293,7 +292,7 @@ class Chef
 
       private
 
-      def run_options(run_opts={})
+      def run_options(run_opts = {})
         env = {}
         if @new_resource.user
           run_opts[:user] = @new_resource.user
@@ -314,7 +313,6 @@ class Chef
         env.merge!(@new_resource.environment) if @new_resource.environment
         run_opts[:environment] = env unless env.empty?
         run_opts
-
       end
 
       def cwd

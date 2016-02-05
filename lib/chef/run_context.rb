@@ -173,9 +173,9 @@ class Chef
     def initialize_child_state
       @audits = {}
       @resource_collection = Chef::ResourceCollection.new
-      @before_notification_collection = Hash.new {|h,k| h[k] = []}
-      @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
-      @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
+      @before_notification_collection = Hash.new { |h, k| h[k] = [] }
+      @immediate_notification_collection = Hash.new { |h, k| h[k] = [] }
+      @delayed_notification_collection = Hash.new { |h, k| h[k] = [] }
     end
 
     #
@@ -321,7 +321,6 @@ first add a dependency on cookbook '#{cookbook_name}' in the cookbook you're
 including it from in that cookbook's metadata.
 ERROR_MESSAGE
       end
-
 
       if loaded_fully_qualified_recipe?(cookbook_name, recipe_short_name)
         Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
@@ -591,7 +590,6 @@ ERROR_MESSAGE
       end
     end
     prepend Deprecated
-
 
     #
     # A child run context.  Delegates all root context calls to its parent.

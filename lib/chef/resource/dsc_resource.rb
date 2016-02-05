@@ -52,7 +52,7 @@ class Chef
         @reboot_action = :nothing
       end
 
-      def resource(value=nil)
+      def resource(value = nil)
         if value
           @resource = value
         else
@@ -60,7 +60,7 @@ class Chef
         end
       end
 
-      def module_name(value=nil)
+      def module_name(value = nil)
         if value
           @module_name = value
         else
@@ -68,7 +68,7 @@ class Chef
         end
       end
 
-      def property(property_name, value=nil)
+      def property(property_name, value = nil)
         if not property_name.is_a?(Symbol)
           raise TypeError, "A property name of type Symbol must be specified, '#{property_name}' of type #{property_name.class} was given"
         end
@@ -91,7 +91,7 @@ class Chef
       # If the set method of the DSC resource indicate that a reboot
       # is necessary, reboot_action provides the mechanism for a reboot to
       # be requested.
-      def reboot_action(value=nil)
+      def reboot_action(value = nil)
         if value
           @reboot_action = value
         else
@@ -99,13 +99,14 @@ class Chef
         end
       end
 
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,
           :kind_of => [ Integer ],
         )
       end
+
       private
 
       def value_of(value)

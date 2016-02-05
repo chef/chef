@@ -32,9 +32,9 @@ describe "Chef::Resource#identity and #state" do
   end
 
   def self.with_property(*properties, &block)
-    tags_index = properties.find_index { |p| !p.is_a?(String)}
+    tags_index = properties.find_index { |p| !p.is_a?(String) }
     if tags_index
-      properties, tags = properties[0..tags_index-1], properties[tags_index..-1]
+      properties, tags = properties[0..tags_index - 1], properties[tags_index..-1]
     else
       tags = []
     end
@@ -203,10 +203,11 @@ describe "Chef::Resource#identity and #state" do
       before do
         resource_class.class_eval do
           def custom_property
-            @blarghle ? @blarghle*3 : nil
+            @blarghle ? @blarghle * 3 : nil
           end
+
           def custom_property=(x)
-            @blarghle = x*2
+            @blarghle = x * 2
           end
         end
       end
@@ -353,10 +354,11 @@ describe "Chef::Resource#identity and #state" do
       before do
         resource_class.class_eval do
           def x
-            @blah*3
+            @blah * 3
           end
+
           def x=(value)
-            @blah = value*2
+            @blah = value * 2
           end
         end
       end

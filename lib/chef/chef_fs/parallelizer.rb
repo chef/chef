@@ -54,7 +54,7 @@ class Chef
 
       def resize(to_threads, wait = true, timeout = nil)
         if to_threads < num_threads
-          threads_to_stop = @threads[to_threads..num_threads-1]
+          threads_to_stop = @threads[to_threads..num_threads - 1]
           @threads = @threads.slice(0, to_threads)
           threads_to_stop.each do |thread|
             @stop_thread[thread] = true

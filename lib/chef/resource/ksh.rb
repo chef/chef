@@ -22,7 +22,7 @@ class Chef
   class Resource
     class Ksh < Chef::Resource::Script
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @interpreter = "ksh"
       end

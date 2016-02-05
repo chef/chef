@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Chef::Knife::RoleRunListClear do
   before(:each) do
-    Chef::Config[:role_name]  = "will"
+    Chef::Config[:role_name] = "will"
     @setup = Chef::Knife::RoleRunListAdd.new
     @setup.name_args = [ "will", "role[monkey]", "role[person]" ]
 
@@ -41,10 +41,7 @@ describe Chef::Knife::RoleRunListClear do
 
   end
 
-
-
   describe "run" do
-
 
 #    it "should display all the things" do
 #      @knife.run
@@ -56,35 +53,32 @@ describe Chef::Knife::RoleRunListClear do
       @knife.run
     end
 
-     it "should remove the item from the run list" do
-       @setup.run
-       @knife.run
-       expect(@role.run_list[0]).to be_nil
-     end
+    it "should remove the item from the run list" do
+      @setup.run
+      @knife.run
+      expect(@role.run_list[0]).to be_nil
+    end
 
-     it "should save the node" do
-       expect(@role).to receive(:save).and_return(true)
-       @knife.run
-     end
+    it "should save the node" do
+      expect(@role).to receive(:save).and_return(true)
+      @knife.run
+    end
 
-     it "should print the run list" do
-       expect(@knife).to receive(:output).and_return(true)
-       @knife.config[:print_after] = true
-       @setup.run
-       @knife.run
-     end
+    it "should print the run list" do
+      expect(@knife).to receive(:output).and_return(true)
+      @knife.config[:print_after] = true
+      @setup.run
+      @knife.run
+    end
 
-     describe "should clear an environmental run list of roles and recipes" do
-       it "should remove the items from the run list" do
-         @setup.name_args = [ "will", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
-         @setup.run
-         @knife.name_args = [ "will" ]
-         @knife.run
-         expect(@role.run_list[0]).to be_nil
-       end
-     end
+    describe "should clear an environmental run list of roles and recipes" do
+      it "should remove the items from the run list" do
+        @setup.name_args = [ "will", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
+        @setup.run
+        @knife.name_args = [ "will" ]
+        @knife.run
+        expect(@role.run_list[0]).to be_nil
+      end
+    end
   end
 end
-
-
-

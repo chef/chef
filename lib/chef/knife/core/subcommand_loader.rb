@@ -96,7 +96,7 @@ class Chef
       end
 
       def force_load
-        @loaded=false
+        @loaded = false
         load_commands
       end
 
@@ -128,7 +128,6 @@ class Chef
                          category_words, " ")
       end
 
-
       #
       # This is shared between the custom_manifest_loader and the gem_glob_loader
       #
@@ -137,7 +136,7 @@ class Chef
         files = Dir[File.join(Chef::Util::PathHelper.escape_glob(File.expand_path("../../../knife", __FILE__)), "*.rb")]
         subcommand_files = {}
         files.each do |knife_file|
-          rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1]
+          rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/, 1]
           subcommand_files[rel_path] = knife_file
         end
         subcommand_files

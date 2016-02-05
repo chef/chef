@@ -187,12 +187,12 @@ class Chef
           Chef::Log.info "Starting chef-client in a new process"
           # Pass config params to the new process
           config_params = " --no-fork"
-          config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
+          config_params += " -c #{Chef::Config[:config_file]}" unless Chef::Config[:config_file].nil?
           # log_location might be an event logger and if so we cannot pass as a command argument
           # but shed no tears! If the logger is an event logger, it must have been configured
           # as such in the config file and chef-client will use that when no arg is passed here
           config_params += " -L #{resolve_log_location}" if resolve_log_location.is_a?(String)
-          
+
           # Starts a new process and waits till the process exits
 
           result = shell_out(
@@ -204,8 +204,8 @@ class Chef
           Chef::Log.debug "#{result.stderr}"
         rescue Mixlib::ShellOut::CommandTimeout => e
           Chef::Log.error "chef-client timed out\n(#{e})"
-          Chef::Log.error(<<-EOF) 
-            Your chef-client run timed out. You can increase the time chef-client is given 
+          Chef::Log.error(<<-EOF)
+            Your chef-client run timed out. You can increase the time chef-client is given
             to complete by configuring windows_service.watchdog_timeout in your client.rb.
           EOF
         rescue Mixlib::ShellOut::ShellCommandFailed => e
@@ -225,12 +225,12 @@ class Chef
 
       # Lifted from Chef::Application, with addition of optional startup parameters
       # for playing nicely with Windows Services
-      def reconfigure(startup_parameters=[])
+      def reconfigure(startup_parameters = [])
         configure_chef startup_parameters
         configure_logging
 
         Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
-        unless Chef::Config[:exception_handlers].any? {|h| Chef::Handler::ErrorReport === h}
+        unless Chef::Config[:exception_handlers].any? { |h| Chef::Handler::ErrorReport === h }
           Chef::Config[:exception_handlers] << Chef::Handler::ErrorReport.new
         end
 
@@ -251,7 +251,7 @@ class Chef
       def configure_stdout_logger
         stdout_logger = MonoLogger.new(STDOUT)
         stdout_logger.formatter = Chef::Log.logger.formatter
-        Chef::Log.loggers <<  stdout_logger
+        Chef::Log.loggers << stdout_logger
       end
 
       # Based on config and whether or not STDOUT is a tty, should we setup a
@@ -334,5 +334,5 @@ end
 # To run this file as a service, it must be called as a script from within
 # the Windows Service framework.  In that case, kick off the main loop!
 if __FILE__ == $0
-    Chef::Application::WindowsService.mainloop
+  Chef::Application::WindowsService.mainloop
 end

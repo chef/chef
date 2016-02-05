@@ -26,7 +26,7 @@ end
 
 describe Chef::EventLoggers::WindowsEventLogger, :windows_only, :not_supported_on_win2k3 do
   def rand
-    random.rand(1<<32).to_s 
+    random.rand(1 << 32).to_s
   end
 
   let(:random)       { Random.new }
@@ -36,10 +36,10 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only, :not_supported_o
   let(:logger)       { Chef::EventLoggers::WindowsEventLogger.new }
   let(:flags)        { nil }
   let(:node)         { nil }
-  let(:run_status)   { double("Run Status", {run_id: run_id, elapsed_time: elapsed_time }) }
+  let(:run_status)   { double("Run Status", { run_id: run_id, elapsed_time: elapsed_time }) }
   let(:event_log)    { EventLog.new("Application") }
   let!(:offset)      { event_log.read_last_event.record_number }
-  let(:mock_exception) { double("Exception", {message: rand, backtrace: [rand, rand]})}
+  let(:mock_exception) { double("Exception", { message: rand, backtrace: [rand, rand] }) }
 
   it "is available" do
     expect(Chef::EventLoggers::WindowsEventLogger.available?).to be_truthy

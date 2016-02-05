@@ -39,7 +39,7 @@ class Chef
       #
       # === Returns
       # true
-      def store(path, contents, perm=0640)
+      def store(path, contents, perm = 0640)
         validate(
           {
             :path => path,
@@ -102,7 +102,7 @@ class Chef
       #
       # === Raises
       # Chef::Exceptions::FileNotFound:: If it cannot find the file in the cache
-      def load(path, read=true)
+      def load(path, read = true)
         validate(
           {
             :path => path
@@ -201,7 +201,7 @@ class Chef
       #
       # === Returns
       # String:: The fully expanded path
-      def create_cache_path(path, create_if_missing=true)
+      def create_cache_path(path, create_if_missing = true)
         cache_dir = File.expand_path(File.join(file_cache_path, path))
         if create_if_missing
           create_path(cache_dir)

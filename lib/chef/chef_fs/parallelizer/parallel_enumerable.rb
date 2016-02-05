@@ -92,7 +92,7 @@ class Chef
           end
         end
 
-        def first(n=nil)
+        def first(n = nil)
           if n
             restricted_copy(@input_enumerable.first(n)).to_a
           else

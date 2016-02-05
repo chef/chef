@@ -72,7 +72,7 @@ class Chef
       @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
     end
 
-    def self.msg(msg="")
+    def self.msg(msg = "")
       ui.msg(msg)
     end
 
@@ -195,7 +195,7 @@ class Chef
     # args::: usually ARGV
     # options::: A Mixlib::CLI option parser hash. These +options+ are how
     # subcommands know about global knife CLI options
-    def self.run(args, options={})
+    def self.run(args, options = {})
       # Fallback debug logging. Normally the logger isn't configured until we
       # read the config, but this means any logging that happens before the
       # config file is read may be lost. If the KNIFE_DEBUG variable is set, we
@@ -250,7 +250,7 @@ class Chef
 
       if category_commands = guess_category(args)
         list_commands(category_commands)
-      elsif missing_plugin = ( OFFICIAL_PLUGINS.find {|plugin| plugin == args[0]} )
+      elsif missing_plugin = ( OFFICIAL_PLUGINS.find { |plugin| plugin == args[0] } )
         ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
         ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}`")
         ui.info("Use `chef gem install knife-#{missing_plugin}` instead if using ChefDK")
@@ -261,7 +261,7 @@ class Chef
       exit 10
     end
 
-    def self.list_commands(preferred_category=nil)
+    def self.list_commands(preferred_category = nil)
       category_desc = preferred_category ? preferred_category + " " : ""
       msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
       subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
@@ -285,7 +285,7 @@ class Chef
 
     # Create a new instance of the current class configured for the given
     # arguments and options
-    def initialize(argv=[])
+    def initialize(argv = [])
       super() # having to call super in initialize is the most annoying anti-pattern :(
       @ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, config)
 
@@ -510,7 +510,7 @@ class Chef
       response.body
     end
 
-    def create_object(object, pretty_name=nil, &block)
+    def create_object(object, pretty_name = nil, &block)
       output = edit_data(object)
 
       if Kernel.block_given?
@@ -526,7 +526,7 @@ class Chef
       output(output) if config[:print_after]
     end
 
-    def delete_object(klass, name, delete_name=nil, &block)
+    def delete_object(klass, name, delete_name = nil, &block)
       confirm("Do you really want to delete #{name}")
 
       if Kernel.block_given?

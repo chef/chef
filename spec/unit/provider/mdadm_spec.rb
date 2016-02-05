@@ -26,7 +26,7 @@ describe Chef::Provider::Mdadm do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Mdadm.new("/dev/md1")
-    @new_resource.devices ["/dev/sdz1","/dev/sdz2","/dev/sdz3"]
+    @new_resource.devices ["/dev/sdz1", "/dev/sdz2", "/dev/sdz3"]
     @provider = Chef::Provider::Mdadm.new(@new_resource, @run_context)
   end
 
@@ -39,13 +39,13 @@ describe Chef::Provider::Mdadm do
     end
 
     it "determines that the metadevice exists when mdadm exit code is zero" do
-      allow(@provider).to receive(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 0))
+      allow(@provider).to receive(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0, 4]).and_return(OpenStruct.new(:status => 0))
       @provider.load_current_resource
       expect(@provider.current_resource.exists).to be_truthy
     end
 
     it "determines that the metadevice does not exist when mdadm exit code is 4" do
-      allow(@provider).to receive(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 4))
+      allow(@provider).to receive(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0, 4]).and_return(OpenStruct.new(:status => 4))
       @provider.load_current_resource
       expect(@provider.current_resource.exists).to be_falsey
     end
@@ -102,12 +102,12 @@ describe Chef::Provider::Mdadm do
         expect(@new_resource).to be_updated_by_last_action
       end
 
-        it "should not assemble the raid device if it doesnt exist" do
+      it "should not assemble the raid device if it doesnt exist" do
         @current_resource.exists(true)
         expect(@provider).not_to receive(:shell_out!)
         @provider.run_action(:assemble)
         expect(@new_resource).not_to be_updated_by_last_action
-        end
+      end
     end
 
     describe "when stopping the metadevice" do

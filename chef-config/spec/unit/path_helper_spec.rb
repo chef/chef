@@ -93,7 +93,6 @@ RSpec.describe ChefConfig::PathHelper do
 
     end
 
-
     it "cleanpath changes slashes into backslashes and leaves backslashes alone" do
       expect(path_helper.cleanpath('/a/b\\c/d/')).to eq('\\a\\b\\c\\d')
     end
@@ -224,7 +223,7 @@ RSpec.describe ChefConfig::PathHelper do
       end
     end
 
-    context "not on windows", :unix_only  do
+    context "not on windows", :unix_only do
       it "returns a canonical path" do
         expect(path_helper.canonical_path("/etc//apache.d/sites-enabled/../sites-available/default")).to eq("/etc/apache.d/sites-available/default")
       end

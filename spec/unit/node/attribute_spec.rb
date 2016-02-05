@@ -23,172 +23,128 @@ require "chef/node/attribute"
 describe Chef::Node::Attribute do
   before(:each) do
     @attribute_hash =
-      {"dmi"=>{},
-        "command"=>{"ps"=>"ps -ef"},
-        "platform_version"=>"10.5.7",
-        "platform"=>"mac_os_x",
-        "ipaddress"=>"192.168.0.117",
-        "network"=>
-    {"default_interface"=>"en1",
-      "interfaces"=>
-    {"vmnet1"=>
-      {"flags"=>
-        ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-          "number"=>"1",
-          "addresses"=>
-        {"00:50:56:c0:00:01"=>{"family"=>"lladdr"},
-          "192.168.110.1"=>
-        {"broadcast"=>"192.168.110.255",
-          "netmask"=>"255.255.255.0",
-          "family"=>"inet"}},
-          "mtu"=>"1500",
-          "type"=>"vmnet",
-          "arp"=>{"192.168.110.255"=>"ff:ff:ff:ff:ff:ff"},
-          "encapsulation"=>"Ethernet"},
-          "stf0"=>
-        {"flags"=>[],
-          "number"=>"0",
-          "addresses"=>{},
-          "mtu"=>"1280",
-          "type"=>"stf",
-          "encapsulation"=>"6to4"},
-          "lo0"=>
-        {"flags"=>["UP", "LOOPBACK", "RUNNING", "MULTICAST"],
-          "number"=>"0",
-          "addresses"=>
-        {"::1"=>{"scope"=>"Node", "prefixlen"=>"128", "family"=>"inet6"},
-          "127.0.0.1"=>{"netmask"=>"255.0.0.0", "family"=>"inet"},
-          "fe80::1"=>{"scope"=>"Link", "prefixlen"=>"64", "family"=>"inet6"}},
-          "mtu"=>"16384",
-          "type"=>"lo",
-          "encapsulation"=>"Loopback"},
-          "gif0"=>
-        {"flags"=>["POINTOPOINT", "MULTICAST"],
-          "number"=>"0",
-          "addresses"=>{},
-          "mtu"=>"1280",
-          "type"=>"gif",
-          "encapsulation"=>"IPIP"},
-          "vmnet8"=>
-        {"flags"=>
-          ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-            "number"=>"8",
-            "addresses"=>
-          {"192.168.4.1"=>
-            {"broadcast"=>"192.168.4.255",
-              "netmask"=>"255.255.255.0",
-              "family"=>"inet"},
-              "00:50:56:c0:00:08"=>{"family"=>"lladdr"}},
-              "mtu"=>"1500",
-              "type"=>"vmnet",
-              "arp"=>{"192.168.4.255"=>"ff:ff:ff:ff:ff:ff"},
-              "encapsulation"=>"Ethernet"},
-              "en0"=>
-            {"status"=>"inactive",
-              "flags"=>
-            ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-              "number"=>"0",
-              "addresses"=>{"00:23:32:b0:32:f2"=>{"family"=>"lladdr"}},
-              "mtu"=>"1500",
-              "media"=>
-            {"supported"=>
-              {"autoselect"=>{"options"=>[]},
-                "none"=>{"options"=>[]},
-                "1000baseT"=>
-              {"options"=>["full-duplex", "flow-control", "hw-loopback"]},
-                "10baseT/UTP"=>
-              {"options"=>
-                ["half-duplex", "full-duplex", "flow-control", "hw-loopback"]},
-                  "100baseTX"=>
-                {"options"=>
-                  ["half-duplex", "full-duplex", "flow-control", "hw-loopback"]}},
-                    "selected"=>{"autoselect"=>{"options"=>[]}}},
-                    "type"=>"en",
-                    "encapsulation"=>"Ethernet"},
-                    "en1"=>
-                  {"status"=>"active",
-                    "flags"=>
-                  ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-                    "number"=>"1",
-                    "addresses"=>
-                  {"fe80::223:6cff:fe7f:676c"=>
-                    {"scope"=>"Link", "prefixlen"=>"64", "family"=>"inet6"},
-                      "00:23:6c:7f:67:6c"=>{"family"=>"lladdr"},
-                      "192.168.0.117"=>
-                    {"broadcast"=>"192.168.0.255",
-                      "netmask"=>"255.255.255.0",
-                      "family"=>"inet"}},
-                      "mtu"=>"1500",
-                      "media"=>
-                    {"supported"=>{"autoselect"=>{"options"=>[]}},
-                      "selected"=>{"autoselect"=>{"options"=>[]}}},
-                      "type"=>"en",
-                      "arp"=>
-                    {"192.168.0.72"=>"0:f:ea:39:fa:d5",
-                      "192.168.0.1"=>"0:1c:fb:fc:6f:20",
-                      "192.168.0.255"=>"ff:ff:ff:ff:ff:ff",
-                      "192.168.0.3"=>"0:1f:33:ea:26:9b",
-                      "192.168.0.77"=>"0:23:12:70:f8:cf",
-                      "192.168.0.152"=>"0:26:8:7d:2:4c"},
-                      "encapsulation"=>"Ethernet"},
-                      "en2"=>
-                    {"status"=>"active",
-                      "flags"=>
-                    ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-                      "number"=>"2",
-                      "addresses"=>
-                    {"169.254.206.152"=>
-                      {"broadcast"=>"169.254.255.255",
-                        "netmask"=>"255.255.0.0",
-                        "family"=>"inet"},
-                        "00:1c:42:00:00:01"=>{"family"=>"lladdr"},
-                        "fe80::21c:42ff:fe00:1"=>
-                      {"scope"=>"Link", "prefixlen"=>"64", "family"=>"inet6"}},
-                        "mtu"=>"1500",
-                        "media"=>
-                      {"supported"=>{"autoselect"=>{"options"=>[]}},
-                        "selected"=>{"autoselect"=>{"options"=>[]}}},
-                        "type"=>"en",
-                        "encapsulation"=>"Ethernet"},
-                        "fw0"=>
-                      {"status"=>"inactive",
-                        "flags"=>["BROADCAST", "SIMPLEX", "MULTICAST"],
-                        "number"=>"0",
-                        "addresses"=>{"00:23:32:ff:fe:b0:32:f2"=>{"family"=>"lladdr"}},
-                        "mtu"=>"4078",
-                        "media"=>
-                      {"supported"=>{"autoselect"=>{"options"=>["full-duplex"]}},
-                        "selected"=>{"autoselect"=>{"options"=>["full-duplex"]}}},
-                        "type"=>"fw",
-                        "encapsulation"=>"1394"},
-                        "en3"=>
-                      {"status"=>"active",
-                        "flags"=>
-                      ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-                        "number"=>"3",
-                        "addresses"=>
-                      {"169.254.206.152"=>
-                        {"broadcast"=>"169.254.255.255",
-                          "netmask"=>"255.255.0.0",
-                          "family"=>"inet"},
-                          "00:1c:42:00:00:00"=>{"family"=>"lladdr"},
-                          "fe80::21c:42ff:fe00:0"=>
-                        {"scope"=>"Link", "prefixlen"=>"64", "family"=>"inet6"}},
-                          "mtu"=>"1500",
-                          "media"=>
-                        {"supported"=>{"autoselect"=>{"options"=>[]}},
-                          "selected"=>{"autoselect"=>{"options"=>[]}}},
-                          "type"=>"en",
-                          "encapsulation"=>"Ethernet"}}},
-                          "fqdn"=>"latte.local",
-                          "ohai_time"=>1249065590.90391,
-                          "domain"=>"local",
-                          "os"=>"darwin",
-                          "platform_build"=>"9J61",
-                          "os_version"=>"9.7.0",
-                          "hostname"=>"latte",
-                          "macaddress"=>"00:23:6c:7f:67:6c",
-                          "music" => { "jimmy_eat_world" => "nice", "apophis" => false },
+      { "dmi" => {},
+        "command" => { "ps" => "ps -ef" },
+        "platform_version" => "10.5.7",
+        "platform" => "mac_os_x",
+        "ipaddress" => "192.168.0.117",
+        "network" =>     { "default_interface" => "en1",
+                           "interfaces" =>     { "vmnet1" =>       { "flags" =>         ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                     "number" => "1",
+                                                                     "addresses" =>         { "00:50:56:c0:00:01" => { "family" => "lladdr" },
+                                                                                              "192.168.110.1" =>         { "broadcast" => "192.168.110.255",
+                                                                                                                           "netmask" => "255.255.255.0",
+                                                                                                                           "family" => "inet" } },
+                                                                     "mtu" => "1500",
+                                                                     "type" => "vmnet",
+                                                                     "arp" => { "192.168.110.255" => "ff:ff:ff:ff:ff:ff" },
+                                                                     "encapsulation" => "Ethernet" },
+                                                 "stf0" =>         { "flags" => [],
+                                                                     "number" => "0",
+                                                                     "addresses" => {},
+                                                                     "mtu" => "1280",
+                                                                     "type" => "stf",
+                                                                     "encapsulation" => "6to4" },
+                                                 "lo0" =>         { "flags" => ["UP", "LOOPBACK", "RUNNING", "MULTICAST"],
+                                                                    "number" => "0",
+                                                                    "addresses" =>         { "::1" => { "scope" => "Node", "prefixlen" => "128", "family" => "inet6" },
+                                                                                             "127.0.0.1" => { "netmask" => "255.0.0.0", "family" => "inet" },
+                                                                                             "fe80::1" => { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" } },
+                                                                    "mtu" => "16384",
+                                                                    "type" => "lo",
+                                                                    "encapsulation" => "Loopback" },
+                                                 "gif0" =>         { "flags" => ["POINTOPOINT", "MULTICAST"],
+                                                                     "number" => "0",
+                                                                     "addresses" => {},
+                                                                     "mtu" => "1280",
+                                                                     "type" => "gif",
+                                                                     "encapsulation" => "IPIP" },
+                                                 "vmnet8" =>         { "flags" =>           ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                       "number" => "8",
+                                                                       "addresses" =>           { "192.168.4.1" =>             { "broadcast" => "192.168.4.255",
+                                                                                                                                 "netmask" => "255.255.255.0",
+                                                                                                                                 "family" => "inet" },
+                                                                                                  "00:50:56:c0:00:08" => { "family" => "lladdr" } },
+                                                                       "mtu" => "1500",
+                                                                       "type" => "vmnet",
+                                                                       "arp" => { "192.168.4.255" => "ff:ff:ff:ff:ff:ff" },
+                                                                       "encapsulation" => "Ethernet" },
+                                                 "en0" =>             { "status" => "inactive",
+                                                                        "flags" =>             ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                        "number" => "0",
+                                                                        "addresses" => { "00:23:32:b0:32:f2" => { "family" => "lladdr" } },
+                                                                        "mtu" => "1500",
+                                                                        "media" =>             { "supported" =>               { "autoselect" => { "options" => [] },
+                                                                                                                                "none" => { "options" => [] },
+                                                                                                                                "1000baseT" =>               { "options" => ["full-duplex", "flow-control", "hw-loopback"] },
+                                                                                                                                "10baseT/UTP" =>               { "options" =>                 ["half-duplex", "full-duplex", "flow-control", "hw-loopback"] },
+                                                                                                                                "100baseTX" =>                 { "options" =>                   ["half-duplex", "full-duplex", "flow-control", "hw-loopback"] } },
+                                                                                                 "selected" => { "autoselect" => { "options" => [] } } },
+                                                                        "type" => "en",
+                                                                        "encapsulation" => "Ethernet" },
+                                                 "en1" =>                   { "status" => "active",
+                                                                              "flags" =>                   ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                              "number" => "1",
+                                                                              "addresses" =>                   { "fe80::223:6cff:fe7f:676c" =>                     { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" },
+                                                                                                                 "00:23:6c:7f:67:6c" => { "family" => "lladdr" },
+                                                                                                                 "192.168.0.117" =>                     { "broadcast" => "192.168.0.255",
+                                                                                                                                                          "netmask" => "255.255.255.0",
+                                                                                                                                                          "family" => "inet" } },
+                                                                              "mtu" => "1500",
+                                                                              "media" =>                     { "supported" => { "autoselect" => { "options" => [] } },
+                                                                                                               "selected" => { "autoselect" => { "options" => [] } } },
+                                                                              "type" => "en",
+                                                                              "arp" =>                     { "192.168.0.72" => "0:f:ea:39:fa:d5",
+                                                                                                             "192.168.0.1" => "0:1c:fb:fc:6f:20",
+                                                                                                             "192.168.0.255" => "ff:ff:ff:ff:ff:ff",
+                                                                                                             "192.168.0.3" => "0:1f:33:ea:26:9b",
+                                                                                                             "192.168.0.77" => "0:23:12:70:f8:cf",
+                                                                                                             "192.168.0.152" => "0:26:8:7d:2:4c" },
+                                                                              "encapsulation" => "Ethernet" },
+                                                 "en2" =>                     { "status" => "active",
+                                                                                "flags" =>                     ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                                "number" => "2",
+                                                                                "addresses" =>                     { "169.254.206.152" =>                       { "broadcast" => "169.254.255.255",
+                                                                                                                                                                  "netmask" => "255.255.0.0",
+                                                                                                                                                                  "family" => "inet" },
+                                                                                                                     "00:1c:42:00:00:01" => { "family" => "lladdr" },
+                                                                                                                     "fe80::21c:42ff:fe00:1" =>                       { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" } },
+                                                                                "mtu" => "1500",
+                                                                                "media" =>                       { "supported" => { "autoselect" => { "options" => [] } },
+                                                                                                                   "selected" => { "autoselect" => { "options" => [] } } },
+                                                                                "type" => "en",
+                                                                                "encapsulation" => "Ethernet" },
+                                                 "fw0" =>                       { "status" => "inactive",
+                                                                                  "flags" => ["BROADCAST", "SIMPLEX", "MULTICAST"],
+                                                                                  "number" => "0",
+                                                                                  "addresses" => { "00:23:32:ff:fe:b0:32:f2" => { "family" => "lladdr" } },
+                                                                                  "mtu" => "4078",
+                                                                                  "media" =>                       { "supported" => { "autoselect" => { "options" => ["full-duplex"] } },
+                                                                                                                     "selected" => { "autoselect" => { "options" => ["full-duplex"] } } },
+                                                                                  "type" => "fw",
+                                                                                  "encapsulation" => "1394" },
+                                                 "en3" =>                       { "status" => "active",
+                                                                                  "flags" =>                       ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                                  "number" => "3",
+                                                                                  "addresses" =>                       { "169.254.206.152" =>                         { "broadcast" => "169.254.255.255",
+                                                                                                                                                                        "netmask" => "255.255.0.0",
+                                                                                                                                                                        "family" => "inet" },
+                                                                                                                         "00:1c:42:00:00:00" => { "family" => "lladdr" },
+                                                                                                                         "fe80::21c:42ff:fe00:0" =>                         { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" } },
+                                                                                  "mtu" => "1500",
+                                                                                  "media" =>                         { "supported" => { "autoselect" => { "options" => [] } },
+                                                                                                                       "selected" => { "autoselect" => { "options" => [] } } },
+                                                                                  "type" => "en",
+                                                                                  "encapsulation" => "Ethernet" } } },
+        "fqdn" => "latte.local",
+        "ohai_time" => 1249065590.90391,
+        "domain" => "local",
+        "os" => "darwin",
+        "platform_build" => "9J61",
+        "os_version" => "9.7.0",
+        "hostname" => "latte",
+        "macaddress" => "00:23:6c:7f:67:6c",
+        "music" => { "jimmy_eat_world" => "nice", "apophis" => false },
     }
     @default_hash = {
       "domain" => "opscode.com",
@@ -198,7 +154,7 @@ describe Chef::Node::Attribute do
         "mastodon" => "rocks",
         "mars_volta" => "is loud and nutty",
         "deeper" => { "gates_of_ishtar" => nil },
-        "this" => {"apparatus" => {"must" => "be unearthed"}},
+        "this" => { "apparatus" => { "must" => "be unearthed" } },
       },
     }
     @override_hash = {
@@ -209,7 +165,7 @@ describe Chef::Node::Attribute do
         "mars_volta" => "cicatriz"
       },
     }
-    @automatic_hash = {"week" => "friday"}
+    @automatic_hash = { "week" => "friday" }
     @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash)
   end
 
@@ -354,13 +310,13 @@ describe Chef::Node::Attribute do
 
     it "merges nested hashes between precedence levels" do
       @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
-      @attributes.env_default = {"a" => {"b" => {"default" => "default"}}}
-      @attributes.normal = {"a" => {"b" => {"normal" => "normal"}}}
-      @attributes.override = {"a" => {"override" => "role"}}
-      @attributes.automatic = {"a" => {"automatic" => "auto"}}
-      expect(@attributes["a"]).to eq({"b"=>{"default"=>"default", "normal"=>"normal"},
-                                  "override"=>"role",
-                                  "automatic"=>"auto"})
+      @attributes.env_default = { "a" => { "b" => { "default" => "default" } } }
+      @attributes.normal = { "a" => { "b" => { "normal" => "normal" } } }
+      @attributes.override = { "a" => { "override" => "role" } }
+      @attributes.automatic = { "a" => { "automatic" => "auto" } }
+      expect(@attributes["a"]).to eq({ "b" => { "default" => "default", "normal" => "normal" },
+                                       "override" => "role",
+                                       "automatic" => "auto" })
     end
   end
 
@@ -431,7 +387,7 @@ describe Chef::Node::Attribute do
 
   describe "[]=" do
     it "should error out when the type of attribute to set has not been specified" do
-      @attributes.normal["the_ghost"] = {  }
+      @attributes.normal["the_ghost"] = {}
       expect { @attributes["the_ghost"]["exterminate"] = false }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
@@ -490,29 +446,29 @@ describe Chef::Node::Attribute do
     it "should create a deep copy of the node attribute" do
       @attributes.default["foo"]["bar"]["baz"] = "fizz"
       hash = @attributes["foo"].to_hash
-      expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
+      expect(hash).to eql({ "bar" => { "baz" => "fizz" } })
       hash["bar"]["baz"] = "buzz"
-      expect(hash).to eql({"bar"=>{"baz"=>"buzz"}})
-      expect(@attributes.default["foo"]).to eql({"bar"=>{"baz"=>"fizz"}})
+      expect(hash).to eql({ "bar" => { "baz" => "buzz" } })
+      expect(@attributes.default["foo"]).to eql({ "bar" => { "baz" => "fizz" } })
     end
 
     it "should create a deep copy of arrays in the node attribute" do
       @attributes.default["foo"]["bar"] = ["fizz"]
       hash = @attributes["foo"].to_hash
-      expect(hash).to eql({"bar"=>[ "fizz" ]})
+      expect(hash).to eql({ "bar" => [ "fizz" ] })
       hash["bar"].push("buzz")
-      expect(hash).to eql({"bar"=>[ "fizz", "buzz" ]})
-      expect(@attributes.default["foo"]).to eql({"bar"=>[ "fizz" ]})
+      expect(hash).to eql({ "bar" => [ "fizz", "buzz" ] })
+      expect(@attributes.default["foo"]).to eql({ "bar" => [ "fizz" ] })
     end
 
     it "mutating strings should not mutate the attributes" do
       pending "this is a bug that should be fixed"
       @attributes.default["foo"]["bar"]["baz"] = "fizz"
       hash = @attributes["foo"].to_hash
-      expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
+      expect(hash).to eql({ "bar" => { "baz" => "fizz" } })
       hash["bar"]["baz"] << "buzz"
-      expect(hash).to eql({"bar"=>{"baz"=>"fizzbuzz"}})
-      expect(@attributes.default["foo"]).to eql({"bar"=>{"baz"=>"fizz"}})
+      expect(hash).to eql({ "bar" => { "baz" => "fizzbuzz" } })
+      expect(@attributes.default["foo"]).to eql({ "bar" => { "baz" => "fizz" } })
     end
   end
 
@@ -592,7 +548,7 @@ describe Chef::Node::Attribute do
         {
           "one" =>  { "two" => "three" },
           "hut" =>  { "two" => "three" },
-          "place" => { },
+          "place" => {},
         },
         {
           "one" =>  { "four" => "five" },
@@ -853,7 +809,7 @@ describe Chef::Node::Attribute do
           "hut" => "three",
           "snakes" => "on a plane",
           "snack" => "cookies",
-        }.each do |k,v|
+        }.each do |k, v|
           expect(@attributes.fetch(k)).to eq(v)
         end
       end
@@ -1031,7 +987,7 @@ describe Chef::Node::Attribute do
       end
     else
       it "should raise a LocalJumpError if no block is given" do
-        expect{ @attributes.select }.to raise_error(LocalJumpError)
+        expect { @attributes.select }.to raise_error(LocalJumpError)
       end
     end
 
@@ -1070,7 +1026,7 @@ describe Chef::Node::Attribute do
         {},
       )
 
-      @empty = Chef::Node::Attribute.new({},{},{},{})
+      @empty = Chef::Node::Attribute.new({}, {}, {}, {})
     end
 
     it "should respond to size" do
@@ -1137,7 +1093,6 @@ describe Chef::Node::Attribute do
       expect(@attributes.inspect).to match(/@normal=\{.*\}/)
     end
   end
-
 
   describe "when not mutated" do
 

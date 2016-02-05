@@ -206,7 +206,7 @@ ADVICE
       def debug_invalid_host
         noverify_socket.connect
         subject = noverify_socket.peer_cert.subject
-        cn_field_tuple = subject.to_a.find {|field| field[0] == "CN" }
+        cn_field_tuple = subject.to_a.find { |field| field[0] == "CN" }
         cn = cn_field_tuple[1]
 
         ui.error("You are attempting to connect to:   '#{host}'")
@@ -253,6 +253,7 @@ ADVICE
       end
 
       private
+
       def trusted_certificates
         if configuration.trusted_certs_dir && Dir.exist?(configuration.trusted_certs_dir)
           Dir.glob(File.join(configuration.trusted_certs_dir, "*.{crt,pem}"))

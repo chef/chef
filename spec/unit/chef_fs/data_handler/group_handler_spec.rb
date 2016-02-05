@@ -45,8 +45,8 @@ describe Chef::ChefFS::DataHandler::GroupDataHandler do
     let(:normalized) do
       { "actors" =>
           { "users" => %w{fizz buzz},
-            "clients"=> %w{honey sting},
-            "groups"=> [],
+            "clients" => %w{honey sting},
+            "groups" => [],
           },
         "groupname" => "workers",
         "name" => "worker_bees",

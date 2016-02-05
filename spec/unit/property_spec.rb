@@ -8,12 +8,15 @@ describe "Chef::Resource.property" do
     def self.next_resource_name
       "chef_resource_property_spec_#{@i += 1}"
     end
+
     def self.reset_index
       @current_index = 0
     end
+
     def self.current_index
       @current_index
     end
+
     def self.next_index
       @current_index += 1
     end
@@ -52,9 +55,9 @@ describe "Chef::Resource.property" do
   end
 
   def self.with_property(*properties, &block)
-    tags_index = properties.find_index { |p| !p.is_a?(String)}
+    tags_index = properties.find_index { |p| !p.is_a?(String) }
     if tags_index
-      properties, tags = properties[0..tags_index-1], properties[tags_index..-1]
+      properties, tags = properties[0..tags_index - 1], properties[tags_index..-1]
     else
       tags = []
     end
@@ -551,6 +554,7 @@ describe "Chef::Resource.property" do
           def self.blah
             "class"
           end
+
           def blah
             "#{name}#{next_index}"
           end
@@ -800,6 +804,7 @@ describe "Chef::Resource.property" do
             def self.blah
               "class"
             end
+
             def blah
               "#{name}#{Namer.next_index}"
             end

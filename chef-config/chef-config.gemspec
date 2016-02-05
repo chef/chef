@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.files = %w{Rakefile LICENSE README.md} + Dir.glob("*.gemspec") +
-    Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }
+               Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
 
   spec.bindir        = "bin"
   spec.executables   = []

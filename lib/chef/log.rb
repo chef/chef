@@ -51,7 +51,7 @@ class Chef
       caller(0..20).select { |c| !c.start_with?(chef_gem_path) }.first
     end
 
-    def self.deprecation(msg=nil, location=caller(2..2)[0], &block)
+    def self.deprecation(msg = nil, location = caller(2..2)[0], &block)
       if msg
         msg << " at #{Array(location).join("\n")}"
         msg = msg.join("") if msg.respond_to?(:join)

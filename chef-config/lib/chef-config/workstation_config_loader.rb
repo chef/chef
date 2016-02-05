@@ -29,7 +29,7 @@ module ChefConfig
     attr_accessor :explicit_config_file
 
     # TODO: initialize this with a logger for Chef and Knife
-    def initialize(explicit_config_file, logger=nil)
+    def initialize(explicit_config_file, logger = nil)
       @explicit_config_file = explicit_config_file
       @chef_config_dir = nil
       @config_location = nil
@@ -119,7 +119,7 @@ module ChefConfig
         candidate_configs << File.join(dot_chef_dir, "knife.rb")
       end
 
-      candidate_configs.find do | candidate_config |
+      candidate_configs.find do |candidate_config|
         have_config?(candidate_config)
       end
     end
@@ -151,7 +151,7 @@ module ChefConfig
       message = "You have an error in your config file #{config_file_path}\n\n"
       message << "#{e.class.name}: #{e.message}\n"
       filtered_trace = e.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-      filtered_trace.each {|bt_line| message << "  " << bt_line << "\n" }
+      filtered_trace.each { |bt_line| message << "  " << bt_line << "\n" }
       if !filtered_trace.empty?
         line_nr = filtered_trace.first[/#{Regexp.escape(config_file_path)}:([\d]+)/, 1]
         message << highlight_config_error(config_file_path, line_nr.to_i)
@@ -159,10 +159,9 @@ module ChefConfig
       raise ChefConfig::ConfigurationError, message
     end
 
-
     def highlight_config_error(file, line)
       config_file_lines = []
-      IO.readlines(file).each_with_index {|l, i| config_file_lines << "#{(i + 1).to_s.rjust(3)}: #{l.chomp}"}
+      IO.readlines(file).each_with_index { |l, i| config_file_lines << "#{(i + 1).to_s.rjust(3)}: #{l.chomp}" }
       if line == 1
         lines = config_file_lines[0..3]
       else

@@ -23,8 +23,7 @@ describe Chef::Mixin::ApiVersionRequestHandling do
   let(:object) { dummy_class.new }
 
   describe ".server_client_api_version_intersection" do
-    let(:default_supported_client_versions) { [0,1,2] }
-
+    let(:default_supported_client_versions) { [0, 1, 2] }
 
     context "when the response code is not 406" do
       let(:response) { OpenStruct.new(:code => "405") }
@@ -78,13 +77,13 @@ describe Chef::Mixin::ApiVersionRequestHandling do
 
           context "when all the versions are higher than the max" do
             it_should_behave_like "no intersection between client and server versions" do
-              let(:supported_client_versions) { [5,6,7] }
+              let(:supported_client_versions) { [5, 6, 7] }
             end
           end
 
           context "when all the versions are lower than the min" do
             it_should_behave_like "no intersection between client and server versions" do
-              let(:supported_client_versions) { [0,1] }
+              let(:supported_client_versions) { [0, 1] }
             end
           end
 
@@ -92,16 +91,16 @@ describe Chef::Mixin::ApiVersionRequestHandling do
 
         context "when there is an intersection between client and server versions" do
           context "when multiple versions intersect" do
-            let(:supported_client_versions) { [1,2,3,4,5] }
+            let(:supported_client_versions) { [1, 2, 3, 4, 5] }
 
             it "includes all of the intersection" do
               expect(object.server_client_api_version_intersection(exception, supported_client_versions)).
-                to eq([2,3,4])
+                to eq([2, 3, 4])
             end
           end # when multiple versions intersect
 
           context "when only the min client version intersects" do
-            let(:supported_client_versions) { [0,1,2] }
+            let(:supported_client_versions) { [0, 1, 2] }
 
             it "includes the intersection" do
               expect(object.server_client_api_version_intersection(exception, supported_client_versions)).
@@ -110,7 +109,7 @@ describe Chef::Mixin::ApiVersionRequestHandling do
           end # when only the min client version intersects
 
           context "when only the max client version intersects" do
-            let(:supported_client_versions) { [4,5,6] }
+            let(:supported_client_versions) { [4, 5, 6] }
 
             it "includes the intersection" do
               expect(object.server_client_api_version_intersection(exception, supported_client_versions)).

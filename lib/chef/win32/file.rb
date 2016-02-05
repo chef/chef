@@ -125,8 +125,8 @@ class Chef
         if size == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
-        result = FFI::MemoryPointer.new :char, (size+1)*2
-        if GetShortPathNameW(path, result, size+1) == 0
+        result = FFI::MemoryPointer.new :char, (size + 1) * 2
+        if GetShortPathNameW(path, result, size + 1) == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
         result.read_wstring(size)
@@ -139,8 +139,8 @@ class Chef
         if size == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
-        result = FFI::MemoryPointer.new :char, (size+1)*2
-        if GetLongPathNameW(path, result, size+1) == 0
+        result = FFI::MemoryPointer.new :char, (size + 1) * 2
+        if GetLongPathNameW(path, result, size + 1) == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
         result.read_wstring(size)
@@ -199,7 +199,7 @@ class Chef
 
       def self.get_volume_name_for_volume_mount_point(mount_point)
         buffer = FFI::MemoryPointer.new(2, 128)
-        unless GetVolumeNameForVolumeMountPointW(wstring(mount_point), buffer, buffer.size/buffer.type_size)
+        unless GetVolumeNameForVolumeMountPointW(wstring(mount_point), buffer, buffer.size / buffer.type_size)
           Chef::ReservedNames::Win32::Error.raise!
         end
         buffer.read_wstring

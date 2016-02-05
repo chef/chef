@@ -31,7 +31,7 @@ describe Chef::Mixin::ShellOut do
     let(:cmd) { "echo '#{rand(1000)}'" }
 
     let(:output) { StringIO.new }
-    let!(:capture_log_output) { Chef::Log.logger = Logger.new(output)  }
+    let!(:capture_log_output) { Chef::Log.logger = Logger.new(output) }
     let(:assume_deprecation_log_level) { allow(Chef::Log).to receive(:level).and_return(:warn) }
 
     context "without options" do
@@ -171,7 +171,7 @@ describe Chef::Mixin::ShellOut do
           end
 
           it "should not change env when language options are set to non-nil" do
-            options = { :env => { "LC_ALL" => "de_DE.UTF-8", "LANG" => "de_DE.UTF-8", "LANGUAGE" => "de_DE.UTF-8" }}
+            options = { :env => { "LC_ALL" => "de_DE.UTF-8", "LANG" => "de_DE.UTF-8", "LANGUAGE" => "de_DE.UTF-8" } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
@@ -266,7 +266,7 @@ describe Chef::Mixin::ShellOut do
           end
 
           it "should not change env when set to non-nil" do
-            options = { :env => { "LC_ALL" => "en_US.UTF-8"}}
+            options = { :env => { "LC_ALL" => "en_US.UTF-8" } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out_with_systems_locale(cmd, options)
           end

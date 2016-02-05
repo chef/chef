@@ -22,13 +22,13 @@ describe Chef::Util::DSC::LocalConfigurationManager::Parser do
   context "empty input parameter" do
     it "raises an exception when there are no valid lines" do
       str = <<-EOF
-                
+
       EOF
-      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)}.to raise_error(Chef::Exceptions::LCMParser)
+      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str) }.to raise_error(Chef::Exceptions::LCMParser)
     end
 
     it "raises an exception for a nil input" do
-      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(nil)}.to raise_error(Chef::Exceptions::LCMParser)
+      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(nil) }.to raise_error(Chef::Exceptions::LCMParser)
     end
   end
 
@@ -69,7 +69,7 @@ logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
       resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-      expect(resources[0].change_log).to match_array(["[name]","[message]","[name]"])
+      expect(resources[0].change_log).to match_array(["[name]", "[message]", "[name]"])
     end
 
     it "should return false for changes_state?" do

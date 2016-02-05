@@ -43,4 +43,3 @@ describe Chef::VersionConstraint::Platform do
 
   end
 end
-

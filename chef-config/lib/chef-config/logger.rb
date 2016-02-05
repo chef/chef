@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-
 module ChefConfig
 
   # Implements enough of Logger's API that we can use it in place of a real
@@ -58,5 +57,3 @@ module ChefConfig
     @logger
   end
 end
-
-

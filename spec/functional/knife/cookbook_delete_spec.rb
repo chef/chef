@@ -44,7 +44,7 @@ describe Chef::Knife::CookbookDelete do
 
     before do
       @knife.name_args = %w{no-such-cookbook}
-      @api.get("/cookbooks/no-such-cookbook", 404, Chef::JSONCompat.to_json({"error"=>"dear Tim, no. -Sent from my iPad"}))
+      @api.get("/cookbooks/no-such-cookbook", 404, Chef::JSONCompat.to_json({ "error" => "dear Tim, no. -Sent from my iPad" }))
     end
 
     around do |ex|
@@ -62,7 +62,7 @@ describe Chef::Knife::CookbookDelete do
 
     it "logs an error and exits" do
       allow(@knife.ui).to receive(:stderr).and_return(log_output)
-      expect {@knife.run}.to raise_error(SystemExit)
+      expect { @knife.run }.to raise_error(SystemExit)
       expect(log_output.string).to match(/Cannot find a cookbook named no-such-cookbook to delete/)
     end
 
@@ -71,7 +71,7 @@ describe Chef::Knife::CookbookDelete do
   context "when there is only one version of a cookbook" do
     before do
       @knife.name_args = %w{obsolete-cookbook}
-      @cookbook_list = {"obsolete-cookbook" => { "versions" => ["version" => "1.0.0"]} }
+      @cookbook_list = { "obsolete-cookbook" => { "versions" => ["version" => "1.0.0"] } }
       @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 
@@ -114,7 +114,7 @@ describe Chef::Knife::CookbookDelete do
       @knife.name_args = %w{obsolete-cookbook}
       versions = ["1.0.0", "1.1.0", "1.2.0"]
       with_version = lambda { |version| { "version" => version } }
-      @cookbook_list = {"obsolete-cookbook" => { "versions" => versions.map(&with_version) } }
+      @cookbook_list = { "obsolete-cookbook" => { "versions" => versions.map(&with_version) } }
       @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 

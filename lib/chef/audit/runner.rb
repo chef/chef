@@ -52,6 +52,7 @@ class Chef
       end
 
       private
+
       # Prepare to run audits:
       #  - Require files
       #  - Configure RSpec

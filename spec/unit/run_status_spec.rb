@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require "spec_helper"
 
 describe Chef::RunStatus do

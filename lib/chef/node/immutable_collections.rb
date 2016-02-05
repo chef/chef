@@ -88,7 +88,7 @@ class Chef
       end
 
       def dup
-        Array.new(map {|e| safe_dup(e)})
+        Array.new(map { |e| safe_dup(e) })
       end
 
       def to_a

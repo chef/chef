@@ -98,7 +98,7 @@ describe Chef::Knife::KeyList do
       end
 
       it "raises a Chef::Exceptions::KeyCommandInputError with the proper error message" do
-        expect{ key_list_object.run }.to raise_error(Chef::Exceptions::KeyCommandInputError, key_list_object.expired_and_non_expired_msg)
+        expect { key_list_object.run }.to raise_error(Chef::Exceptions::KeyCommandInputError, key_list_object.expired_and_non_expired_msg)
       end
     end
 
@@ -193,9 +193,9 @@ describe Chef::Knife::KeyList do
       let(:list_method) { :list_by_user }
       let(:http_response) {
         [
-          {"uri"=>"https://api.opscode.piab/users/charmander/keys/non-expired1", "name"=>"non-expired1", "expired"=>false},
-          {"uri"=>"https://api.opscode.piab/users/charmander/keys/non-expired2", "name"=>"non-expired2", "expired"=>false},
-          {"uri"=>"https://api.opscode.piab/users/mary/keys/out-of-date",        "name"=>"out-of-date", "expired"=>true},
+          { "uri" => "https://api.opscode.piab/users/charmander/keys/non-expired1", "name" => "non-expired1", "expired" => false },
+          { "uri" => "https://api.opscode.piab/users/charmander/keys/non-expired2", "name" => "non-expired2", "expired" => false },
+          { "uri" => "https://api.opscode.piab/users/mary/keys/out-of-date",        "name" => "out-of-date", "expired" => true },
         ]
       }
     end
@@ -206,9 +206,9 @@ describe Chef::Knife::KeyList do
       let(:list_method) { :list_by_client }
       let(:http_response) {
         [
-          {"uri"=>"https://api.opscode.piab/organizations/pokemon/clients/charmander/keys/non-expired1", "name"=>"non-expired1", "expired"=>false},
-          {"uri"=>"https://api.opscode.piab/organizations/pokemon/clients/charmander/keys/non-expired2", "name"=>"non-expired2", "expired"=>false},
-          {"uri"=>"https://api.opscode.piab/organizations/pokemon/clients/mary/keys/out-of-date",        "name"=>"out-of-date", "expired"=>true},
+          { "uri" => "https://api.opscode.piab/organizations/pokemon/clients/charmander/keys/non-expired1", "name" => "non-expired1", "expired" => false },
+          { "uri" => "https://api.opscode.piab/organizations/pokemon/clients/charmander/keys/non-expired2", "name" => "non-expired2", "expired" => false },
+          { "uri" => "https://api.opscode.piab/organizations/pokemon/clients/mary/keys/out-of-date",        "name" => "out-of-date", "expired" => true },
         ]
       }
     end

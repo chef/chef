@@ -12,7 +12,6 @@ def ensure_present(commands)
   end
 end
 
-
 EVT_MC_FILE = "chef-log.man"
 EVT_RC_FILE = "chef-log.rc"
 EVT_RESOURCE_OBJECT = "resource.o"
@@ -26,7 +25,7 @@ ensure_present [MC, RC, CC]
 task :build => [EVT_RESOURCE_OBJECT, EVT_SHARED_OBJECT]
 task :default => [:build, :register]
 
-file EVT_RC_FILE=> EVT_MC_FILE do
+file EVT_RC_FILE => EVT_MC_FILE do
   sh "#{MC} #{EVT_MC_FILE}"
 end
 

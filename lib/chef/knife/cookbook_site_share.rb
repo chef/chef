@@ -103,7 +103,6 @@ class Chef
           ui.error("Could not find cookbook #{cookbook_name} in your cookbook path.")
           exit(1)
         end
-
       end
 
       def get_category(cookbook_name)
@@ -125,7 +124,7 @@ class Chef
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
         uri = "https://supermarket.chef.io/api/v1/cookbooks"
 
-        category_string = Chef::JSONCompat.to_json({ "category"=>cookbook_category })
+        category_string = Chef::JSONCompat.to_json({ "category" => cookbook_category })
 
         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
           :tarball => File.open(cookbook_filename),

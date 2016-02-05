@@ -46,4 +46,3 @@ describe Chef::Resource::OpenbsdPackage do
   end
 
 end
-

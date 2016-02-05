@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::RoleList do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleList.new
     allow(@knife).to receive(:output).and_return(true)
     @list = {
@@ -52,5 +52,3 @@ describe Chef::Knife::RoleList do
     end
   end
 end
-
-

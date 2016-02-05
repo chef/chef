@@ -45,7 +45,7 @@ class Chef
     # @param instance_name [String] If known, the recource name as used in the recipe, IE `vim` in `package 'vim'`
     # This method is meant to be the 1 insert method necessary in the future.  It should support all known use cases
     #   for writing into the ResourceCollection.
-    def insert(resource, opts={})
+    def insert(resource, opts = {})
       resource_type ||= opts[:resource_type] # Would rather use Ruby 2.x syntax, but oh well
       instance_name ||= opts[:instance_name]
       resource_list.insert(resource)
@@ -78,8 +78,8 @@ class Chef
     # Read-only methods are simple to delegate - doing that below
 
     resource_list_methods = Enumerable.instance_methods +
-        [:iterator, :all_resources, :[], :each, :execute_each_resource, :each_index, :empty?] -
-        [:find] # find needs to run on the set
+                            [:iterator, :all_resources, :[], :each, :execute_each_resource, :each_index, :empty?] -
+                            [:find] # find needs to run on the set
     resource_set_methods = [:lookup, :find, :resources, :keys, :validate_lookup_spec!]
 
     def_delegators :resource_list, *resource_list_methods

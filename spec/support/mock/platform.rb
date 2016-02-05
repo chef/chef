@@ -16,10 +16,10 @@ def platform_mock(platform = :unix, &block)
   end
 
   if block_given?
-    mock_constants({"RUBY_PLATFORM" => (platform == :windows ? "i386-mingw32" : "x86_64-darwin11.2.0"),
-                    "File::PATH_SEPARATOR" => (platform == :windows ? ";" : ":"),
-                    "File::ALT_SEPARATOR" => (platform == :windows ? "\\" : nil) }) do
-yield
+    mock_constants({ "RUBY_PLATFORM" => (platform == :windows ? "i386-mingw32" : "x86_64-darwin11.2.0"),
+                     "File::PATH_SEPARATOR" => (platform == :windows ? ";" : ":"),
+                     "File::ALT_SEPARATOR" => (platform == :windows ? "\\" : nil) }) do
+      yield
     end
   end
 end

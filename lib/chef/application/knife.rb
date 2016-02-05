@@ -38,7 +38,7 @@ class Chef::Application::Knife < Chef::Application
     :short => "-V",
     :long  => "--verbose",
     :description => "More verbose output. Use twice for max verbosity",
-    :proc  => Proc.new { verbosity_level += 1},
+    :proc  => Proc.new { verbosity_level += 1 },
     :default => 0
 
   option :color,
@@ -131,7 +131,7 @@ class Chef::Application::Knife < Chef::Application
     :long         => "--version",
     :description  => "Show chef version",
     :boolean      => true,
-    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
     :exit         => 0
 
   option :fips,
@@ -191,7 +191,7 @@ class Chef::Application::Knife < Chef::Application
     ARGV[0] =~ /^(--version|-v)$/
   end
 
-  def print_help_and_exit(exitcode=1, fatal_message=nil)
+  def print_help_and_exit(exitcode = 1, fatal_message = nil)
     Chef::Log.error(fatal_message) if fatal_message
 
     begin

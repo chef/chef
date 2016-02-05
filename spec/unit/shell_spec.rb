@@ -82,7 +82,7 @@ describe Shell do
 
       conf = OpenStruct.new
       events = Chef::EventDispatch::Dispatcher.new
-      conf.main = Chef::Recipe.new(nil,nil,Chef::RunContext.new(Chef::Node.new, {}, events))
+      conf.main = Chef::Recipe.new(nil, nil, Chef::RunContext.new(Chef::Node.new, {}, events))
       Shell.irb_conf[:IRB_RC].call(conf)
       expect(conf.prompt_c).to      eq("chef:recipe > ")
       expect(conf.prompt_i).to      eq("chef:recipe (#{Chef::VERSION})> ")
@@ -116,7 +116,7 @@ describe Shell do
     end
 
     it "adds help text when a new method is described then defined" do
-      describe_define =<<-EVAL
+      describe_define = <<-EVAL
         desc "foo2the Bar"
         def baz
         end
@@ -127,7 +127,7 @@ describe Shell do
     end
 
     it "adds help text for subcommands" do
-      describe_define =<<-EVAL
+      describe_define = <<-EVAL
         subcommands :baz_obj_command => "something you can do with baz.baz_obj_command"
         def baz
         end
@@ -139,7 +139,7 @@ describe Shell do
     end
 
     it "doesn't add previous subcommand help to commands defined afterward" do
-      describe_define =<<-EVAL
+      describe_define = <<-EVAL
         desc "swingFromTree"
         def monkey_time
         end
@@ -150,7 +150,7 @@ describe Shell do
       EVAL
       @chef_object.instance_eval describe_define
       expect(@chef_object.help_descriptions.size).to eq(2)
-      expect(@chef_object.help_descriptions.select {|h| h.cmd == "super_monkey_time" }).to be_empty
+      expect(@chef_object.help_descriptions.select { |h| h.cmd == "super_monkey_time" }).to be_empty
     end
 
     it "creates a help banner with the command descriptions" do

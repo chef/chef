@@ -29,12 +29,12 @@ class Chef
       attr_accessor :raw_output
       attr_accessor :inflate_json_class
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @raw_output = opts[:raw_output]
         @inflate_json_class = opts[:inflate_json_class]
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         # Ideally this should always set Accept to application/json, but
         # Chef::REST is sometimes used to make non-JSON requests, so it sets
         # Accept to the desired value before middlewares get called.

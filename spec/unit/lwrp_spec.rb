@@ -202,7 +202,7 @@ describe "LWRP" do
     end
 
     it "should create a method for each attribute" do
-      expect(get_lwrp(:lwrp_foo).new("blah").methods.map{ |m| m.to_sym}).to include(:monkey)
+      expect(get_lwrp(:lwrp_foo).new("blah").methods.map { |m| m.to_sym }).to include(:monkey)
     end
 
     it "should build attribute methods that respect validation rules" do
@@ -246,8 +246,8 @@ describe "LWRP" do
         let(:klass) do
           Class.new(Chef::Resource::LWRPBase) do
             self.resource_name = :sample_resource
-            attribute :food,  :default => lazy { "BACON!"*3 }
-            attribute :drink, :default => lazy { |r| "Drink after #{r.food}!"}
+            attribute :food,  :default => lazy { "BACON!" * 3 }
+            attribute :drink, :default => lazy { |r| "Drink after #{r.food}!" }
           end
         end
 
@@ -718,5 +718,3 @@ describe "LWRP" do
     end
   end
 end
-
-

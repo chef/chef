@@ -109,13 +109,13 @@ class Chef
 
       private
 
-        def check_message(message)
-          if message.kind_of?(Proc)
-            message.call
-          else
-            message
-          end
+      def check_message(message)
+        if message.kind_of?(Proc)
+          message.call
+        else
+          message
         end
+      end
 
     end
   end

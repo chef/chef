@@ -35,7 +35,6 @@ class Chef
           exit 42
         end
 
-
         nodes_to_delete = {}
         matcher = /#{name_args[0]}/
 
@@ -55,7 +54,6 @@ class Chef
         ui.msg("")
         ui.confirm("Are you sure you want to delete these nodes")
 
-
         nodes_to_delete.sort.each do |name, node|
           node.destroy
           ui.msg("Deleted node #{name}")
@@ -66,7 +64,7 @@ class Chef
         node_uris_by_name = Chef::Node.list
 
         node_uris_by_name.keys.inject({}) do |nodes_by_name, name|
-          nodes_by_name[name] = Chef::Node.new.tap {|n| n.name(name)}
+          nodes_by_name[name] = Chef::Node.new.tap { |n| n.name(name) }
           nodes_by_name
         end
       end
@@ -74,7 +72,3 @@ class Chef
     end
   end
 end
-
-
-
-

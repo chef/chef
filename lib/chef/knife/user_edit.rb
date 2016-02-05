@@ -30,7 +30,7 @@ class Chef
       banner "knife user edit USER (options)"
 
       def osc_11_warning
-<<-EOF
+        <<-EOF
 The Chef Server you are using does not support the username field.
 This means it is an Open Source 11 Server.
 knife user edit for Open Source 11 Server is being deprecated.
@@ -75,7 +75,6 @@ EOF
             ui.msg("User unchanged, not saving.")
           end
         end
-
       end
     end
   end

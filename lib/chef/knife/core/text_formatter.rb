@@ -45,7 +45,7 @@ class Chef
           buffer = ""
 
           if data.respond_to?(:keys)
-            justify_width = data.keys.map {|k| k.to_s.size }.max.to_i + 1
+            justify_width = data.keys.map { |k| k.to_s.size }.max.to_i + 1
             data.sort.each do |key, value|
               # key: ['value'] should be printed as key: value
               if value.kind_of?(Array) && value.size == 1 && is_singleton(value[0])
@@ -68,7 +68,7 @@ class Chef
               buffer << text_format(data[index])
               # Separate items with newlines if it's an array of hashes or an
               # array of arrays
-              buffer << "\n" if !is_singleton(data[index]) && index != data.size-1
+              buffer << "\n" if !is_singleton(data[index]) && index != data.size - 1
             end
           else
             buffer << "#{data}\n"

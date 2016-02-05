@@ -239,11 +239,11 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should ignore commented lines in fstab " do
-       fstab = "\# #{@new_resource.device}  #{@new_resource.mount_point}  ext3  defaults  1 2\n"
-       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
+      fstab = "\# #{@new_resource.device}  #{@new_resource.mount_point}  ext3  defaults  1 2\n"
+      allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
 
-       @provider.load_current_resource
-       expect(@provider.current_resource.enabled).to be_falsey
+      @provider.load_current_resource
+      expect(@provider.current_resource.enabled).to be_falsey
     end
 
     it "should set enabled to false if the mount point is not last in fstab" do
@@ -347,14 +347,14 @@ describe Chef::Provider::Mount::Mount do
 
     describe "remount_fs" do
       it "should use mount -o remount if remount is supported" do
-        @new_resource.supports({:remount => true})
+        @new_resource.supports({ :remount => true })
         @current_resource.mounted(true)
         expect(@provider).to receive(:shell_out!).with("mount -o remount,defaults #{@new_resource.mount_point}")
         @provider.remount_fs
       end
 
       it "should use mount -o remount with new mount options if remount is supported" do
-        @new_resource.supports({:remount => true})
+        @new_resource.supports({ :remount => true })
         options = "rw,noexec,noauto"
         @new_resource.options(%w{rw noexec noauto})
         @current_resource.mounted(true)
@@ -363,7 +363,7 @@ describe Chef::Provider::Mount::Mount do
       end
 
       it "should umount and mount if remount is not supported" do
-        @new_resource.supports({:remount => false})
+        @new_resource.supports({ :remount => false })
         @current_resource.mounted(true)
         expect(@provider).to receive(:umount_fs)
         expect(@provider).to receive(:sleep).with(1)

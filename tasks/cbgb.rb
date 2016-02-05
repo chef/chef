@@ -34,7 +34,7 @@ begin
       out = "<!-- This is a generated file. Please do not edit directly -->\n"
       out << "<!-- Modify CBGB.toml file and run `rake cbgb:generate` to regenerate -->\n\n"
       out << "# " + cbgb["Preamble"]["title"] + "\n\n"
-      out <<  cbgb["Preamble"]["text"] + "\n"
+      out << cbgb["Preamble"]["text"] + "\n"
       out << "# Board of Governors\n\n"
       out << "## " + cbgb["Org"]["Lead"]["title"] + "\n\n"
       out << person(cbgb["people"], cbgb["Org"]["Lead"]["person"]) + "\n\n"
@@ -52,8 +52,8 @@ begin
 
   def components(list, cmp)
     out = ""
-    cmp.each do |k,v|
-      out << "\n#### #{v['title'].gsub('#','\\#')}\n"
+    cmp.each do |k, v|
+      out << "\n#### #{v['title'].gsub('#', '\\#')}\n"
       out << cbgb(list, v["cbgb"])
     end
     out

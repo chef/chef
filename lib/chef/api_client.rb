@@ -49,7 +49,7 @@ class Chef
     #
     # @params [Optional String] The name must be alpha-numeric plus - and _.
     # @return [String] The current value of the name.
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(
         :name,
         arg,
@@ -61,7 +61,7 @@ class Chef
     #
     # @params [Optional True/False] Should be true or false - default is false.
     # @return [True/False] The current value
-    def admin(arg=nil)
+    def admin(arg = nil)
       set_or_return(
         :admin,
         arg,
@@ -73,7 +73,7 @@ class Chef
     #
     # @params [Optional String] The string representation of the public key.
     # @return [String] The current value.
-    def public_key(arg=nil)
+    def public_key(arg = nil)
       set_or_return(
         :public_key,
         arg,
@@ -86,7 +86,7 @@ class Chef
     # @params [Boolean] whether or not the client is a validator.  If
     #   `nil`, retrieves the already-set value.
     # @return [Boolean] The current value
-    def validator(arg=nil)
+    def validator(arg = nil)
       set_or_return(
         :validator,
         arg,
@@ -98,7 +98,7 @@ class Chef
     #
     # @params [Optional String] The string representation of the private key.
     # @return [String] The current value.
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(
         :private_key,
         arg,
@@ -150,7 +150,7 @@ class Chef
     end
 
     def self.http_api
-      Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0" })
     end
 
     def self.reregister(name)
@@ -158,7 +158,7 @@ class Chef
       api_client.reregister
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:client) do |n|
@@ -189,11 +189,11 @@ class Chef
     # Save this client via the REST API, returns a hash including the private key
     def save
       begin
-        http_api.put("clients/#{name}", { :name => self.name, :admin => self.admin, :validator => self.validator})
+        http_api.put("clients/#{name}", { :name => self.name, :admin => self.admin, :validator => self.validator })
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
         if e.response.code == "404"
-          http_api.post("clients", {:name => self.name, :admin => self.admin, :validator => self.validator })
+          http_api.post("clients", { :name => self.name, :admin => self.admin, :validator => self.validator })
         else
           raise e
         end
@@ -222,11 +222,11 @@ class Chef
 
     def inspect
       "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' validator:'#{validator}' " +
-      "public_key:'#{public_key}' private_key:'#{private_key}'"
+        "public_key:'#{public_key}' private_key:'#{private_key}'"
     end
 
     def http_api
-      @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
+      @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0" })
     end
 
   end

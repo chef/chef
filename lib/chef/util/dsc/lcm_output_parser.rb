@@ -73,7 +73,7 @@ class Chef
                   if current_resource[:name]
                     resources.push(current_resource)
                   end
-                  current_resource = {:name => info}
+                  current_resource = { :name => info }
                 else
                   Chef::Log.debug("Ignoring op_action #{op_action}: Read line #{line}")
                 end
@@ -108,8 +108,8 @@ class Chef
                 # If the line looks like
                 # What If: [machinename]: LCM: [op_action op_type] message
                 # extract op_action, op_type, and message
-                operation, info = match.captures
-                op_action, op_type = operation.strip.split(" ").map {|m| m.downcase.to_sym}
+              operation, info = match.captures
+              op_action, op_type = operation.strip.split(" ").map { |m| m.downcase.to_sym }
             else
               op_action = op_type = :info
               if match = line.match(/^.*?:.*?: \s+(.*)/)

@@ -38,7 +38,6 @@ shared_examples_for "a content deploy strategy" do
   let(:content_deployer) { described_class.new }
   let(:target_file_path) { File.join(sandbox_dir, "cp-deploy-strategy-target-file.txt") }
 
-
   describe "creating the file" do
 
     ##
@@ -69,7 +68,7 @@ shared_examples_for "a content deploy strategy" do
 
     def ace_inherits?(ace)
       flags = ace.flags
-      (flags & masks::OBJECT_INHERIT_ACE) !=0
+      (flags & masks::OBJECT_INHERIT_ACE) != 0
     end
 
     let(:parent_inheritable_aces) do

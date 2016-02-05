@@ -154,13 +154,13 @@ class Chef
       end
 
       def headers(additional_headers = {})
-        options = {"X-Ops-Audit-Report-Protocol-Version" => PROTOCOL_VERSION}
+        options = { "X-Ops-Audit-Report-Protocol-Version" => PROTOCOL_VERSION }
         options.merge(additional_headers)
       end
 
       def encode_gzip(data)
         "".tap do |out|
-          Zlib::GzipWriter.wrap(StringIO.new(out)){|gz| gz << data }
+          Zlib::GzipWriter.wrap(StringIO.new(out)) { |gz| gz << data }
         end
       end
 

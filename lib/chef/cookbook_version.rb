@@ -300,7 +300,7 @@ class Chef
         if segment == :files || segment == :templates
           error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
           error_locations = if filename.is_a?(Array)
-                              filename.map{|name| "  #{File.join(segment.to_s, name)}"}
+                              filename.map { |name| "  #{File.join(segment.to_s, name)}" }
                             else
                               [
                                 "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
@@ -312,7 +312,7 @@ class Chef
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
           # Strip the root_dir prefix off all files for readability
-          existing_files.map!{|path| path[root_dir.length+1..-1]} if root_dir
+          existing_files.map! { |path| path[root_dir.length + 1..-1] } if root_dir
           # Show the files that the cookbook does have. If the user made a typo,
           # hopefully they'll see it here.
           unless existing_files.empty?
@@ -325,7 +325,7 @@ class Chef
       end
     end
 
-    def preferred_filename_on_disk_location(node, segment, filename, current_filepath=nil)
+    def preferred_filename_on_disk_location(node, segment, filename, current_filepath = nil)
       manifest_record = preferred_manifest_record(node, segment, filename)
       if current_filepath && (manifest_record["checksum"] == self.class.checksum_cookbook_file(current_filepath))
         nil
@@ -354,7 +354,7 @@ class Chef
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
         if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
-            specificity_dirname = $1
+          specificity_dirname = $1
           non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)}\/(.+)$/, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
@@ -369,7 +369,6 @@ class Chef
       raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/default/#{dirname}" unless best_pref
 
       filenames_by_pref[best_pref]
-
     end
 
     # Determine the manifest records from the most specific directory
@@ -389,7 +388,7 @@ class Chef
             # dirname argument as above, which is what
             # preferences_for_path returns. It could be
             # "files/ubuntu-9.10/dirname", for example.
-            specificity_dirname = $1
+          specificity_dirname = $1
 
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
@@ -449,7 +448,7 @@ class Chef
 
                                  search_path
                                end
-        relative_search_path.map {|relative_path| File.join(segment.to_s, relative_path)}
+        relative_search_path.map { |relative_path| File.join(segment.to_s, relative_path) }
       else
         if segment.to_sym == :root_files
           [path]
@@ -501,7 +500,6 @@ class Chef
       rendered_manifest
     end
 
-
     def to_hash
       # TODO: this should become deprecated when the API for CookbookManifest becomes stable
       cookbook_manifest.to_hash
@@ -511,7 +509,6 @@ class Chef
       # TODO: this should become deprecated when the API for CookbookManifest becomes stable
       cookbook_manifest.to_json
     end
-
 
     def metadata_json_file
       File.join(root_paths[0], "metadata.json")
@@ -554,7 +551,7 @@ class Chef
       self
     end
 
-    def self.load(name, version="_latest")
+    def self.load(name, version = "_latest")
       version = "_latest" if version == "latest"
       from_hash(chef_server_rest.get("cookbooks/#{name}/#{version}"))
     end
@@ -610,13 +607,13 @@ class Chef
       preferences = preferences_for_path(node, segment, filename)
 
       # in order of prefernce, look for the filename in the manifest
-      preferences.find {|preferred_filename| manifest_records_by_path[preferred_filename] }
+      preferences.find { |preferred_filename| manifest_records_by_path[preferred_filename] }
     end
 
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(filenames)
-      filenames.select{|filename| filename =~ /\.rb$/}.inject({}){|memo, filename| memo[File.basename(filename, ".rb")] = filename ; memo }
+      filenames.select { |filename| filename =~ /\.rb$/ }.inject({}) { |memo, filename| memo[File.basename(filename, ".rb")] = filename ; memo }
     end
 
     def file_vendor

@@ -41,6 +41,7 @@ class Chef
       end
 
     protected
+
       def template_source_name(name, options)
         if options[:source]
           options[:source]

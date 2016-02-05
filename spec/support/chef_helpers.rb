@@ -25,7 +25,6 @@ Chef::Log.init(StringIO.new)
 Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
 
-
 def sha256_checksum(path)
   OpenSSL::Digest::SHA256.hexdigest(File.read(path))
 end

@@ -107,7 +107,7 @@ class Chef
       if port.is_a?(String)
         parts = port.split(",")
         if parts.size == 1
-          a,b = parts[0].split("-",2)
+          a, b = parts[0].split("-", 2)
           if b
             a.to_i.upto(b.to_i)
           else

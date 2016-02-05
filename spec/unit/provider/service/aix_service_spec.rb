@@ -193,4 +193,3 @@ describe Chef::Provider::Service::Aix do
     end
   end
 end
-

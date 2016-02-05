@@ -82,7 +82,6 @@ describe Chef::ApiClient do
     expect { @client.public_key Hash.new }.to raise_error(ArgumentError)
   end
 
-
   it "has a private key attribute" do
     @client.private_key("super private")
     expect(@client.private_key).to eq("super private")
@@ -267,11 +266,10 @@ describe Chef::ApiClient do
     end
 
     let :private_key_data do
-      File.open(Chef::Config[:client_key], "r") {|f| f.read.chomp }
+      File.open(Chef::Config[:client_key], "r") { |f| f.read.chomp }
     end
 
   end
-
 
   describe "when requesting a new key" do
     before do
@@ -299,7 +297,6 @@ describe Chef::ApiClient do
         expect(@http_client).to receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
       end
 
-
       context "and the client exists on a Chef 11-like server" do
         before do
           @api_client_with_key = Chef::ApiClient.new
@@ -322,7 +319,7 @@ describe Chef::ApiClient do
 
       context "and the client exists on a Chef 10-like server" do
         before do
-          @api_client_with_key = {"name" => "lost-my-key", "private_key" => "the new private key"}
+          @api_client_with_key = { "name" => "lost-my-key", "private_key" => "the new private key" }
           expect(@http_client).to receive(:put).
             with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
             and_return(@api_client_with_key)

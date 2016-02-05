@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 class Chef
   class Resource
     class OpenldapIncluder < Chef::Resource::LWRPBase

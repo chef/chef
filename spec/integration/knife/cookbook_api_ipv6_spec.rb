@@ -23,7 +23,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
   include Chef::Mixin::ShellOut
 
   when_the_chef_server "is bound to IPv6" do
-    let(:chef_zero_opts) { {:host => "::1"} }
+    let(:chef_zero_opts) { { :host => "::1" } }
 
     let(:client_key) do
       <<-END_VALIDATION_PEM
@@ -102,7 +102,7 @@ END_CLIENT_RB
 
           it "downloads the cookbook" do
             shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", :cwd => chef_dir)
-            expect(Dir["#{cache_path}/*"].map {|entry| File.basename(entry)}).to include("apache2-0.0.1")
+            expect(Dir["#{cache_path}/*"].map { |entry| File.basename(entry) }).to include("apache2-0.0.1")
           end
         end
 

@@ -32,7 +32,7 @@ class Chef
 
       attr_reader :metadata_error
 
-      def initialize(path, chefignore=nil)
+      def initialize(path, chefignore = nil)
         @cookbook_path = File.expand_path( path ) # cookbook_path from which this was loaded
         # We keep a list of all cookbook paths that have been merged in
         @cookbook_paths = [ cookbook_path ]

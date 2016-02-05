@@ -40,7 +40,7 @@ module Shell
         # so these methods need to be defined at the latest possible time.
         unless jobs.respond_to?(:select_session_by_context)
           def jobs.select_session_by_context(&block)
-            @jobs.select { |job| block.call(job[1].context.main)}
+            @jobs.select { |job| block.call(job[1].context.main) }
           end
         end
 
@@ -125,7 +125,7 @@ module Shell
         @explain = explain_text
       end
 
-      def subcommands(subcommand_help={})
+      def subcommands(subcommand_help = {})
         @subcommand_help = subcommand_help
       end
 
@@ -197,7 +197,7 @@ module Shell
   prints a detailed explanation of the command if available, or the
   description if no explanation is available.
       E
-      def help(commmand=nil)
+      def help(commmand = nil)
         if commmand
           explain_command(commmand)
         else
@@ -209,10 +209,10 @@ module Shell
 
       desc "prints information about chef"
       def version
-        puts  "This is the chef-shell.\n" +
-          " Chef Version: #{::Chef::VERSION}\n" +
-          " http://www.chef.io/\n" +
-          " http://docs.chef.io/"
+        puts "This is the chef-shell.\n" +
+             " Chef Version: #{::Chef::VERSION}\n" +
+             " http://www.chef.io/\n" +
+             " http://docs.chef.io/"
         :ucanhaz_automation
       end
       alias :shell :version
@@ -240,9 +240,9 @@ module Shell
 
       desc "returns an object to control a paused chef run"
       subcommands :resume       => "resume the chef run",
-        :step         => "run only the next resource",
-        :skip_back    => "move back in the run list",
-        :skip_forward => "move forward in the run list"
+                  :step         => "run only the next resource",
+                  :skip_back    => "move back in the run list",
+                  :skip_forward => "move forward in the run list"
       def chef_run
         Shell.session.resource_collection.iterator
       end
@@ -295,7 +295,7 @@ module Shell
       end
 
       desc "pretty print the node's attributes"
-      def ohai(key=nil)
+      def ohai(key = nil)
         pp(key ? node.attribute[key] : node.attribute)
       end
     end
@@ -394,17 +394,17 @@ module Shell
   This will strip the admin privileges from any client named after borat.
       E
       subcommands :all        => "list all api clients",
-        :show       => "load an api client by name",
-        :search     => "search for API clients",
-        :transform  => "edit all api clients via a code block and save them"
+                  :show       => "load an api client by name",
+                  :search     => "search for API clients",
+                  :transform  => "edit all api clients via a code block and save them"
       def clients
         @clients ||= Shell::ModelWrapper.new(Chef::ApiClient, :client)
       end
 
       desc "Find and edit cookbooks"
       subcommands :all        => "list all cookbooks",
-        :show       => "load a cookbook by name",
-        :transform  => "edit all cookbooks via a code block and save them"
+                  :show       => "load a cookbook by name",
+                  :transform  => "edit all cookbooks via a code block and save them"
       def cookbooks
         @cookbooks ||= Shell::ModelWrapper.new(Chef::CookbookVersion)
       end
@@ -456,9 +456,9 @@ module Shell
   This will assign the attribute to every node with a FQDN matching the regex.
       E
       subcommands :all        => "list all nodes",
-        :show       => "load a node by name",
-        :search     => "search for nodes",
-        :transform  => "edit all nodes via a code block and save them"
+                  :show       => "load a node by name",
+                  :search     => "search for nodes",
+                  :transform  => "edit all nodes via a code block and save them"
       def nodes
         @nodes ||= Shell::ModelWrapper.new(Chef::Node)
       end
@@ -478,9 +478,9 @@ module Shell
   See the help for +nodes+ for more information about the subcommands.
       E
       subcommands :all        => "list all roles",
-        :show       => "load a role by name",
-        :search     => "search for roles",
-        :transform  => "edit all roles via a code block and save them"
+                  :show       => "load a role by name",
+                  :search     => "search for roles",
+                  :transform  => "edit all roles via a code block and save them"
       def roles
         @roles ||= Shell::ModelWrapper.new(Chef::Role)
       end
@@ -504,9 +504,9 @@ module Shell
 
       E
       subcommands :all        => "list all items in the data bag",
-        :show       => "load a data bag item by id",
-        :search     => "search for items in the data bag",
-        :transform  => "edit all items via a code block and save them"
+                  :show       => "load a data bag item by id",
+                  :search     => "search for items in the data bag",
+                  :transform  => "edit all items via a code block and save them"
       def databags(databag_name)
         @named_databags_wrappers ||= {}
         @named_databags_wrappers[databag_name] ||= Shell::NamedDataBagWrapper.new(databag_name)
@@ -527,9 +527,9 @@ module Shell
   See the help for +nodes+ for more information about the subcommands.
       E
       subcommands :all        => "list all environments",
-        :show       => "load an environment by name",
-        :search     => "search for environments",
-        :transform  => "edit all environments via a code block and save them"
+                  :show       => "load an environment by name",
+                  :search     => "search for environments",
+                  :transform  => "edit all environments via a code block and save them"
       def environments
         @environments ||= Shell::ModelWrapper.new(Chef::Environment)
       end

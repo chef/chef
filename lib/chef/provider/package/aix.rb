@@ -53,7 +53,7 @@ class Chef
             if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
               ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
-              ret.stdout.each_line do | line |
+              ret.stdout.each_line do |line|
                 case line
                 when /#{@new_resource.package_name}:/
                   fields = line.split(":")
@@ -66,7 +66,7 @@ class Chef
 
           Chef::Log.debug("#{@new_resource} checking install state")
           ret = shell_out_with_timeout("lslpp -lcq #{@current_resource.package_name}")
-          ret.stdout.each_line do | line |
+          ret.stdout.each_line do |line|
             case line
             when /#{@current_resource.package_name}/
               fields = line.split(":")
@@ -85,7 +85,7 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
           ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
-          ret.stdout.each_line do | line |
+          ret.stdout.each_line do |line|
             case line
             when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
               fields = line.split(":")

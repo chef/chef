@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-
-
 #
 # This is for typical "static" provider resolution which maps resources onto
 # providers based only on the node data.  Its not really 'static' because it
@@ -25,7 +23,7 @@
 # a static mapping for the node (unlike the service resource which is
 # complicated).
 #
-def static_provider_resolution(opts={})
+def static_provider_resolution(opts = {})
   action           = opts[:action]
   provider_class   = opts[:provider]
   resource_class   = opts[:resource]
@@ -63,4 +61,3 @@ def static_provider_resolution(opts={})
     end
   end
 end
-

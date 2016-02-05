@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Knife::EnvironmentCompare do
   before(:each) do
     @knife = Chef::Knife::EnvironmentCompare.new
-    
+
     @environments = {
       "cita" => "http://localhost:4000/environments/cita",
       "citm" => "http://localhost:4000/environments/citm",
@@ -33,10 +33,10 @@ describe Chef::Knife::EnvironmentCompare do
       "cita" => { "foo" => "= 1.0.1", "bar" => "= 0.0.4" },
       "citm" => { "foo" => "= 1.0.1", "bar" => "= 0.0.2" },
     }
- 
+
     allow(@knife).to receive(:constraint_list).and_return(@constraints)
 
-    @cookbooks = { "foo"=>"= 1.0.1", "bar"=>"= 0.0.1" } 
+    @cookbooks = { "foo" => "= 1.0.1", "bar" => "= 0.0.1" }
 
     allow(@knife).to receive(:cookbook_list).and_return(@cookbooks)
 
@@ -46,10 +46,10 @@ describe Chef::Knife::EnvironmentCompare do
     @base_url = "https://server.example.com/cookbooks"
     @cookbook_data = {}
     @cookbook_names.each do |item|
-      @cookbook_data[item] = {"url" => "#{@base_url}/#{item}",
-                              "versions" => [{"version" => "1.0.1",
-                                              "url" => "#{@base_url}/#{item}/1.0.1"}]}
-    end 
+      @cookbook_data[item] = { "url" => "#{@base_url}/#{item}",
+                               "versions" => [{ "version" => "1.0.1",
+                                                "url" => "#{@base_url}/#{item}/1.0.1" }] }
+    end
 
     allow(@rest_double).to receive(:get).with("/cookbooks?num_versions=1").and_return(@cookbook_data)
 
@@ -65,7 +65,7 @@ describe Chef::Knife::EnvironmentCompare do
         expect(@stdout.string).to match /#{item}/ and expect(@stdout.string.lines.count).to be 4
       end
     end
- 
+
     it "should display 4 number of lines" do
       @knife.config[:format] = "summary"
       @knife.run
@@ -90,7 +90,7 @@ describe Chef::Knife::EnvironmentCompare do
       expect(@stdout.string.lines.count).to be 3
     end
   end
- 
+
   describe "with -a or --all" do
     it "should display all cookbooks" do
       @knife.config[:format] = "summary"

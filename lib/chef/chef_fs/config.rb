@@ -44,7 +44,7 @@ class Chef
         "policies" => "policy",
         "policy_groups" => "policy_group",
       }
-      INFLECTIONS.each { |k,v| k.freeze; v.freeze }
+      INFLECTIONS.each { |k, v| k.freeze; v.freeze }
       INFLECTIONS.freeze
 
       # ChefFS supports three modes of operation: "static", "everything", and
@@ -73,7 +73,6 @@ class Chef
       STATIC_MODE_OBJECT_NAMES = CHEF_11_OSS_STATIC_OBJECTS
       EVERYTHING_MODE_OBJECT_NAMES = (CHEF_11_OSS_STATIC_OBJECTS + CHEF_11_OSS_DYNAMIC_OBJECTS).freeze
       HOSTED_EVERYTHING_MODE_OBJECT_NAMES = (EVERYTHING_MODE_OBJECT_NAMES + RBAC_OBJECT_NAMES + CHEF_12_OBJECTS).freeze
-
 
       #
       # Create a new Config object which can produce a chef_fs and local_fs.
@@ -243,12 +242,12 @@ class Chef
       # Print the given server path, relative to the current directory
       def format_path(entry)
         server_path = entry.path
-        if base_path && server_path[0,base_path.length] == base_path
+        if base_path && server_path[0, base_path.length] == base_path
           if server_path == base_path
             return "."
-          elsif server_path[base_path.length,1] == "/"
+          elsif server_path[base_path.length, 1] == "/"
             return server_path[base_path.length + 1, server_path.length - base_path.length - 1]
-          elsif base_path == "/" && server_path[0,1] == "/"
+          elsif base_path == "/" && server_path[0, 1] == "/"
             return server_path[1, server_path.length - 1]
           end
         end

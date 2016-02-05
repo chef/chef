@@ -68,9 +68,9 @@ describe Chef::Search::Query do
     let(:response_rows) {
       [
         { "env" => "elysium", "ruby_plat" => "nudibranch" },
-        { "env" => "hades", "ruby_plat" => "i386-mingw32"},
-        { "env" => "elysium", "ruby_plat" => "centos"},
-        { "env" => "moon", "ruby_plat" => "solaris2"},
+        { "env" => "hades", "ruby_plat" => "i386-mingw32" },
+        { "env" => "elysium", "ruby_plat" => "centos" },
+        { "env" => "moon", "ruby_plat" => "solaris2" },
       ]
     }
   end

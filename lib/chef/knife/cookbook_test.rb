@@ -76,7 +76,6 @@ class Chef
         end
       end
 
-
       def test_ruby(syntax_checker)
         ui.info("Validating ruby files")
         exit(1) unless syntax_checker.validate_ruby_files

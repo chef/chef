@@ -98,7 +98,7 @@ class Chef
             # special case ec2 with their split horizon whatsis.
             ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
 
-            summarized=<<-SUMMARY
+            summarized = <<-SUMMARY
 #{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
 SUMMARY
             show_policy = !(node.policy_name.nil? && node.policy_group.nil?)
@@ -128,13 +128,13 @@ ROLES
 #{key('Tags:')}        #{node.tags.join(', ')}
 SUMMARY
             if config[:medium_output] || config[:long_output]
-              summarized +=<<-MORE
+              summarized += <<-MORE
 #{key('Attributes:')}
 #{text_format(node.normal_attrs)}
 MORE
             end
             if config[:long_output]
-              summarized +=<<-MOST
+              summarized += <<-MOST
 #{key('Default Attributes:')}
 #{text_format(node.default_attrs)}
 #{key('Override Attributes:')}
@@ -157,4 +157,3 @@ MOST
     end
   end
 end
-

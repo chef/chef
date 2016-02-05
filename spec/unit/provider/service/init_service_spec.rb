@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Provider::Service::Init, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = {:ps => "ps -ef"}
+    @node.automatic_attrs[:command] = { :ps => "ps -ef" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -53,7 +53,7 @@ PS
 
   describe "when the service supports status" do
     before do
-      @new_resource.supports({:status => true})
+      @new_resource.supports({ :status => true })
     end
 
     it "should run '/etc/init.d/service_name status'" do
@@ -109,7 +109,7 @@ PS
   describe "when the node has not specified a ps command" do
 
     it "should raise an error if the node has a nil ps attribute" do
-      @node.automatic_attrs[:command] = {:ps => nil}
+      @node.automatic_attrs[:command] = { :ps => nil }
       @provider.load_current_resource
       @provider.action = :start
       @provider.define_resource_requirements
@@ -117,7 +117,7 @@ PS
     end
 
     it "should raise an error if the node has an empty ps attribute" do
-      @node.automatic_attrs[:command] = {:ps => ""}
+      @node.automatic_attrs[:command] = { :ps => "" }
       @provider.load_current_resource
       @provider.action = :start
       @provider.define_resource_requirements
@@ -189,7 +189,7 @@ RUNNING_PS
 
   describe "when restarting a service" do
     it "should call 'restart' on the service_name if the resource supports it" do
-      @new_resource.supports({:restart => true})
+      @new_resource.supports({ :restart => true })
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} restart")
       @provider.restart_service()
     end
@@ -210,7 +210,7 @@ RUNNING_PS
 
   describe "when reloading a service" do
     it "should call 'reload' on the service if it supports it" do
-      @new_resource.supports({:reload => true})
+      @new_resource.supports({ :reload => true })
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef reload")
       @provider.reload_service()
     end

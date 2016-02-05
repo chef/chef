@@ -334,7 +334,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
         invalid_resource = group_resource.dup
         invalid_resource.members(["Jack"])
         invalid_resource.excluded_members(["Jack"])
-        expect { invalid_resource.run_action(:create)}.to raise_error(Chef::Exceptions::ConflictingMembersInGroup)
+        expect { invalid_resource.run_action(:create) }.to raise_error(Chef::Exceptions::ConflictingMembersInGroup)
       end
     end
   end
@@ -361,7 +361,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group modify action", :not_supported_on_solaris do
-    let(:spec_members){ ["mnou5sdz", "htulrvwq", "x4c3g1lu"] }
+    let(:spec_members) { ["mnou5sdz", "htulrvwq", "x4c3g1lu"] }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :modify }
@@ -379,7 +379,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     describe "when running on Windows", :windows_only do
       describe "when members are Active Directory domain identities", :windows_domain_joined_only do
         let(:computer_domain) { ohai[:kernel]["cs_info"]["domain"].split(".")[0] }
-        let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
+        let(:spec_members) { ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
 
         include_examples "correct group management"
       end
@@ -389,7 +389,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group manage action", :not_supported_on_solaris do
-    let(:spec_members){ ["mnou5sdz", "htulrvwq", "x4c3g1lu"] }
+    let(:spec_members) { ["mnou5sdz", "htulrvwq", "x4c3g1lu"] }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :manage }
@@ -416,7 +416,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     describe "running on windows", :windows_only do
       describe "when members are Windows domain identities", :windows_domain_joined_only do
         let(:computer_domain) { ohai[:kernel]["cs_info"]["domain"].split(".")[0] }
-        let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
+        let(:spec_members) { ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
 
         include_examples "correct group management"
       end
@@ -430,15 +430,15 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
       let(:excluded_members) { ["x4c3g1lu"] }
 
       it ":manage should raise an error" do
-        expect {group_resource.run_action(:manage) }.to raise_error
+        expect { group_resource.run_action(:manage) }.to raise_error
       end
 
       it ":modify should raise an error" do
-        expect {group_resource.run_action(:modify) }.to raise_error
+        expect { group_resource.run_action(:modify) }.to raise_error
       end
 
       it ":create should raise an error" do
-        expect {group_resource.run_action(:create) }.to raise_error
+        expect { group_resource.run_action(:create) }.to raise_error
       end
     end
 
@@ -450,11 +450,11 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
       end
 
       it ":manage should raise an error" do
-        expect {group_resource.run_action(:manage) }.to raise_error
+        expect { group_resource.run_action(:manage) }.to raise_error
       end
 
       it ":modify should raise an error" do
-        expect {group_resource.run_action(:modify) }.to raise_error
+        expect { group_resource.run_action(:modify) }.to raise_error
       end
     end
   end

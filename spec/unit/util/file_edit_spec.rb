@@ -111,7 +111,7 @@ twice
     end
 
     it "should throw an exception if the input file does not exist" do
-      expect{Chef::Util::FileEdit.new("nonexistfile")}.to raise_error(ArgumentError)
+      expect { Chef::Util::FileEdit.new("nonexistfile") }.to raise_error(ArgumentError)
     end
 
     # CHEF-5018: people have monkey patched this and it has accidentally been broken
@@ -124,7 +124,7 @@ twice
     let(:hosts_content) { "" }
 
     it "should not throw an exception" do
-      expect{ fedit }.not_to raise_error
+      expect { fedit }.not_to raise_error
     end
   end
 

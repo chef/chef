@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require "spec_helper"
 require "ostruct"
 
@@ -30,14 +29,12 @@ describe Chef::Provider::Package::Freebsd::Port do
     @provider = Chef::Provider::Package::Freebsd::Port.new(@new_resource, @run_context)
   end
 
-
   describe "initialization" do
     it "should create a current resource with the name of the new resource" do
       expect(@provider.current_resource.is_a?(Chef::Resource::Package)).to be_truthy
       expect(@provider.current_resource.name).to eq("zsh")
     end
   end
-
 
   describe "loading current resource" do
     before(:each) do
@@ -63,7 +60,6 @@ describe Chef::Provider::Package::Freebsd::Port do
     end
   end
 
-
   describe "determining current installed version" do
     before(:each) do
       @pkg_info = OpenStruct.new(:stdout => "zsh-3.1.7\n")
@@ -72,7 +68,7 @@ describe Chef::Provider::Package::Freebsd::Port do
     it "should check 'pkg_info' if system uses pkg_* tools" do
       allow(@new_resource).to receive(:supports_pkgng?)
       expect(@new_resource).to receive(:supports_pkgng?).and_return(false)
-      expect(@provider).to receive(:shell_out!).with('pkg_info -E "zsh*"', env: nil, returns: [0,1], timeout: 900).and_return(@pkg_info)
+      expect(@provider).to receive(:shell_out!).with('pkg_info -E "zsh*"', env: nil, returns: [0, 1], timeout: 900).and_return(@pkg_info)
       expect(@provider.current_installed_version).to eq("3.1.7")
     end
 
@@ -81,7 +77,7 @@ describe Chef::Provider::Package::Freebsd::Port do
       [1000016, 1000000, 901503, 902506, 802511].each do |__freebsd_version|
         @node.automatic_attrs[:os_version] = __freebsd_version
         expect(@new_resource).to receive(:shell_out!).with("make -V WITH_PKGNG", env: nil).and_return(pkg_enabled)
-        expect(@provider).to receive(:shell_out!).with('pkg info "zsh"', env: nil, returns: [0,70], timeout: 900).and_return(@pkg_info)
+        expect(@provider).to receive(:shell_out!).with('pkg info "zsh"', env: nil, returns: [0, 70], timeout: 900).and_return(@pkg_info)
         expect(@provider.current_installed_version).to eq("3.1.7")
       end
     end
@@ -89,7 +85,7 @@ describe Chef::Provider::Package::Freebsd::Port do
     it "should check 'pkg info' if the freebsd version is greater than or equal to 1000017" do
       __freebsd_version = 1000017
       @node.automatic_attrs[:os_version] = __freebsd_version
-      expect(@provider).to receive(:shell_out!).with('pkg info "zsh"', env: nil, returns: [0,70], timeout: 900).and_return(@pkg_info)
+      expect(@provider).to receive(:shell_out!).with('pkg info "zsh"', env: nil, returns: [0, 70], timeout: 900).and_return(@pkg_info)
       expect(@provider.current_installed_version).to eq("3.1.7")
     end
   end
@@ -102,7 +98,7 @@ describe Chef::Provider::Package::Freebsd::Port do
     it "should return candidate version if port exists" do
       allow(::File).to receive(:exist?).with("/usr/ports/Makefile").and_return(true)
       allow(@provider).to receive(:port_dir).and_return("/usr/ports/shells/zsh")
-      expect(@provider).to receive(:shell_out!).with("make -V PORTVERSION", cwd: "/usr/ports/shells/zsh", env: nil, returns: [0,1], timeout: 900).
+      expect(@provider).to receive(:shell_out!).with("make -V PORTVERSION", cwd: "/usr/ports/shells/zsh", env: nil, returns: [0, 1], timeout: 900).
         and_return(@port_version)
       expect(@provider.candidate_version).to eq("5.0.5")
     end
@@ -112,7 +108,6 @@ describe Chef::Provider::Package::Freebsd::Port do
       expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package, "Ports collection could not be found")
     end
   end
-
 
   describe "determining port directory" do
     it "should return name if package name is absolute path" do
@@ -138,7 +133,6 @@ describe Chef::Provider::Package::Freebsd::Port do
     end
   end
 
-
   describe "building a binary package" do
     before(:each) do
       @install_result = OpenStruct.new(:status => true)
@@ -152,7 +146,6 @@ describe Chef::Provider::Package::Freebsd::Port do
       @provider.install_package("zsh", "5.0.5")
     end
   end
-
 
   describe "removing a binary package" do
     before(:each) do

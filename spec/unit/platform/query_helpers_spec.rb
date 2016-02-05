@@ -103,7 +103,7 @@ describe "Chef::Platform#windows_nano_server?" do
 end
 
 describe "Chef::Platform#supports_msi?" do
-  include_context "Win32"  # clear and restore Win32:: namespace
+  include_context "Win32" # clear and restore Win32:: namespace
 
   let(:key) { "System\\CurrentControlSet\\Services\\msiserver" }
   let(:key_query_value) { 0x0001 }
@@ -198,7 +198,7 @@ end
 describe 'Chef::Platform#dsc_refresh_mode_disabled?' do
   let(:node) { instance_double("Chef::Node") }
   let(:cmdlet) { instance_double("Chef::Util::Powershell::Cmdlet") }
-  let(:cmdlet_result) { instance_double("Chef::Util::Powershell::CmdletResult")}
+  let(:cmdlet_result) { instance_double("Chef::Util::Powershell::CmdletResult") }
 
   it "returns true when RefreshMode is Disabled" do
     expect(Chef::Util::Powershell::Cmdlet).to receive(:new).

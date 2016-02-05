@@ -11,7 +11,7 @@ module WEBrick
     # create_listeners on Windows with Ruby > 2.0.0 does not
     # raise an error if we're already listening on a port.
     #
-    def create_listeners(address, port, logger=nil)
+    def create_listeners(address, port, logger = nil)
       #
       # utils.rb -- Miscellaneous utilities
       #
@@ -40,7 +40,7 @@ module WEBrick
           sockets << sock
         rescue => ex
           logger.warn("TCPServer Error: #{ex}") if logger
-          last_error  = ex
+          last_error = ex
         end
       }
       raise last_error if sockets.empty?

@@ -33,7 +33,7 @@ class Chef
 
       attr_accessor :sign_request
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @raw_key = nil
         @sign_request = true
         @signing_key_filename = opts[:signing_key_filename]
@@ -46,8 +46,8 @@ class Chef
         end
       end
 
-      def handle_request(method, url, headers={}, data=false)
-        headers.merge!({"X-Ops-Server-API-Version" => @api_version})
+      def handle_request(method, url, headers = {}, data = false)
+        headers.merge!({ "X-Ops-Server-API-Version" => @api_version })
         headers.merge!(authentication_headers(method, url, data, headers)) if sign_requests?
         [method, url, headers, data]
       end
@@ -90,7 +90,7 @@ class Chef
         raise Chef::Exceptions::InvalidPrivateKey, msg
       end
 
-      def authentication_headers(method, url, json_body=nil, headers=nil)
+      def authentication_headers(method, url, json_body = nil, headers = nil)
         request_params = {
           :http_method => method,
           :path => url.path,

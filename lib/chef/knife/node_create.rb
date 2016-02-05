@@ -45,6 +45,3 @@ class Chef
     end
   end
 end
-
-
-

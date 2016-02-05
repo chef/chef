@@ -57,14 +57,14 @@ class Chef
         end
 
         def enable_service
-          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f)}
+          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
 
           if @new_resource.priority.is_a? Integer
             create_symlink(2, "S", @new_resource.priority)
 
           elsif @new_resource.priority.is_a? Hash
-            @new_resource.priority.each do |level,o|
-              create_symlink(level,(o[0] == :start ? "S" : "K"),o[1])
+            @new_resource.priority.each do |level, o|
+              create_symlink(level, (o[0] == :start ? "S" : "K"), o[1])
             end
           else
             create_symlink(2, "S", "")
@@ -75,9 +75,9 @@ class Chef
           Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
 
           if @new_resource.priority.is_a? Integer
-            create_symlink(2, "K",100 - @new_resource.priority)
+            create_symlink(2, "K", 100 - @new_resource.priority)
           elsif @new_resource.priority.is_a? Hash
-            @new_resource.priority.each do |level,o|
+            @new_resource.priority.each do |level, o|
               create_symlink(level, "K", 100 - o[1]) if o[0] == :stop
             end
           else

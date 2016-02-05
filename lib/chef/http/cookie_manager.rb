@@ -27,11 +27,11 @@ class Chef
     # it, so it's included with Chef::REST
     class CookieManager
 
-      def initialize(options={})
+      def initialize(options = {})
         @cookies = CookieJar.instance
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         @host, @port = url.host, url.port
         if @cookies.has_key?("#{@host}:#{@port}")
           headers["Cookie"] = @cookies["#{@host}:#{@port}"]

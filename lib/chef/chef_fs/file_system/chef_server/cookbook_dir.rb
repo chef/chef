@@ -58,7 +58,7 @@ class Chef
             :files => { :recursive => true },
             :resources => { :ruby_only => true, :recursive => true },
             :providers => { :ruby_only => true, :recursive => true },
-            :root_files => { },
+            :root_files => {},
           }
 
           def add_child(child)
@@ -99,7 +99,7 @@ class Chef
                   parts = segment_file[:path].split("/")
                   # Get or create the path to the file
                   container = self
-                  parts[0,parts.length-1].each do |part|
+                  parts[0, parts.length - 1].each do |part|
                     old_container = container
                     container = old_container.children.select { |child| part == child.name }.first
                     if !container
@@ -108,7 +108,7 @@ class Chef
                     end
                   end
                   # Create the file itself
-                  container.add_child(CookbookFile.new(parts[parts.length-1], container, segment_file))
+                  container.add_child(CookbookFile.new(parts[parts.length - 1], container, segment_file))
                 end
               end
               @children = @children.sort_by { |c| c.name }

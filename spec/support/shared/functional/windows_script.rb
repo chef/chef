@@ -27,7 +27,7 @@ shared_context Chef::Resource::WindowsScript do
     @ohai_reader.all_plugins(["platform", "kernel"])
 
     new_node = Chef::Node.new
-    new_node.consume_external_attrs(@ohai_reader.data,{})
+    new_node.consume_external_attrs(@ohai_reader.data, {})
 
     events = Chef::EventDispatch::Dispatcher.new
 
@@ -116,7 +116,7 @@ shared_context Chef::Resource::WindowsScript do
         let (:guard_architecture) { :i386 }
         it "raises an error" do
           resource.only_if resource_guard_command, :architecture => guard_architecture
-          expect{ resource.run_action(:run) }.to raise_error(
+          expect { resource.run_action(:run) }.to raise_error(
             Chef::Exceptions::Win32ArchitectureIncorrect,
             /cannot execute script with requested architecture 'i386' on Windows Nano Server/)
         end

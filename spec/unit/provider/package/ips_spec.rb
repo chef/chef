@@ -35,17 +35,16 @@ describe Chef::Provider::Package::Ips do
   def local_output
     stdin  = StringIO.new
     stdout = ""
-    stderr =<<-PKG_STATUS
+    stderr = <<-PKG_STATUS
 pkg: info: no packages matching the following patterns you specified are
 installed on the system.  Try specifying -r to query remotely:
 
    crypto/gnupg
 PKG_STATUS
-    return OpenStruct.new(:stdout => stdout,:stdin => stdin,:stderr => stderr,:status => @status,:exitstatus => 1)
+    return OpenStruct.new(:stdout => stdout, :stdin => stdin, :stderr => stderr, :status => @status, :exitstatus => 1)
   end
 
   def remote_output
-
     stdout = <<-PKG_STATUS
           Name: security/sudo
        Summary: sudo - authority delegation tool
@@ -58,9 +57,9 @@ Packaging Date: April  1, 2012 05:55:52 PM
           Size: 2.57 MB
           FMRI: pkg://omnios/security/sudo@1.8.4.1,5.11-0.151002:20120401T175552Z
 PKG_STATUS
-  stdin = StringIO.new
-  stderr = ""
-  return OpenStruct.new(:stdout => stdout,:stdin => stdin,:stderr => stderr,:status => @status,:exitstatus => 0)
+    stdin = StringIO.new
+    stderr = ""
+    return OpenStruct.new(:stdout => stdout, :stdin => stdin, :stderr => stderr, :status => @status, :exitstatus => 0)
   end
 
   context "when loading current resource" do

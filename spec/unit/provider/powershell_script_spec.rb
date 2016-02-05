@@ -72,7 +72,7 @@ describe Chef::Provider::PowershellScript, "action_run" do
         provider_flags = provider.flags.split(" ")
         execution_policy_specified = false
 
-        provider_flags.find do | value |
+        provider_flags.find do |value|
           execution_policy_index += 1
           execution_policy_specified = value.downcase == "-ExecutionPolicy".downcase
         end
@@ -92,7 +92,7 @@ describe Chef::Provider::PowershellScript, "action_run" do
         "3.0" => "Bypass",
         "3.6" => "Bypass",
         "4.0" => "Bypass",
-        "5.0" => "Bypass" }.each do | version_policy |
+        "5.0" => "Bypass" }.each do |version_policy|
         let(:powershell_version) { version_policy[0].to_f }
         context "when running PowerShell version #{version_policy[0]}" do
           let(:powershell_version) { version_policy[0].to_f }

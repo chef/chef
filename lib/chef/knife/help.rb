@@ -43,8 +43,6 @@ MOAR_HELP
           @query = name_args.join("-")
         end
 
-
-
         case @query
         when "topics", "list"
           print_help_topics
@@ -67,7 +65,7 @@ MOAR_HELP
 
       def print_help_topics
         ui.info "Available help topics are: "
-        help_topics.collect {|t| t.gsub(/knife-/, "") }.sort.each do |topic|
+        help_topics.collect { |t| t.gsub(/knife-/, "") }.sort.each do |topic|
           ui.msg "  #{topic}"
         end
       end

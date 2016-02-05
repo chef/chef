@@ -67,7 +67,7 @@ class Chef
         :long         => "--version",
         :description  => "Show chef version",
         :boolean      => true,
-        :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+        :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
         :exit         => 0
 
       def initialize(service_options)
@@ -169,7 +169,7 @@ class Chef
         return ::Win32::Service.exists?(@service_name)
       end
 
-      def take_action(action=nil, desired_state=nil)
+      def take_action(action = nil, desired_state = nil)
         if service_exists?
           if current_state != desired_state
             ::Win32::Service.send(action, @service_name)

@@ -40,7 +40,7 @@ UNMOUNTED
          /dev/sdz3         /tmp/foo         jfs2   Jul 17 13:22 rw,log=/dev/hd8
 MOUNT
 
-  @enabled_output = <<-ENABLED
+    @enabled_output = <<-ENABLED
 #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
 /tmp/foo:/dev/sdz1:jfs2::bootfs:10485760:rw:yes:no
 ENABLED
@@ -156,7 +156,7 @@ ENABLED
 
   describe "remount_fs" do
     it "should remount resource if it is already mounted and it supports remounting" do
-      @new_resource.supports({:remount => true})
+      @new_resource.supports({ :remount => true })
       stub_mounted_enabled(@provider, @mounted_output, "")
 
       expect(@provider).to receive(:shell_out!).with("mount -o remount #{@new_resource.device} #{@new_resource.mount_point}")
@@ -165,7 +165,7 @@ ENABLED
     end
 
     it "should remount with new mount options if it is already mounted and it supports remounting" do
-      @new_resource.supports({:remount => true})
+      @new_resource.supports({ :remount => true })
       @new_resource.options("nodev,rw")
       stub_mounted_enabled(@provider, @mounted_output, "")
 

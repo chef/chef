@@ -51,7 +51,6 @@ describe Chef::RunContext::CookbookCompiler do
     Chef::RunContext::CookbookCompiler.new(run_context, run_list_expansion, events)
   end
 
-
   describe "loading attribute files" do
 
     # Attribute files in the fixture data will append their
@@ -180,7 +179,6 @@ describe Chef::RunContext::CookbookCompiler do
       expect(compiler.unreachable_cookbook?(:'circular-dep1')).to be_truthy
       expect(compiler.unreachable_cookbook?(:'circular-dep2')).to be_truthy
     end
-
 
   end
 end

@@ -49,7 +49,6 @@ describe Chef::Handler::JsonFile do
       allow(File).to receive(:open).and_yield(@file_mock)
     end
 
-
     it "saves run status data to a file as JSON" do
       expect(@handler).to receive(:build_report_dir)
       @handler.run_report_unsafe(@run_status)

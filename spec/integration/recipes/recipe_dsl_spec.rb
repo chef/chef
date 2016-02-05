@@ -30,6 +30,7 @@ describe "Recipe DSL methods" do
         class Provider < Chef::Provider
           def load_current_resource
           end
+
           def action_create
             BaseThingy.created_name = new_resource.name
             BaseThingy.created_resource = new_resource.class
@@ -89,6 +90,7 @@ describe "Recipe DSL methods" do
           class Chef::Provider::BackcompatThingy < Chef::Provider
             def load_current_resource
             end
+
             def action_create
               BaseThingy.created_resource = new_resource.class
               BaseThingy.created_provider = self.class
@@ -832,7 +834,9 @@ describe "Recipe DSL methods" do
           def self.name
             "B"
           end
+
           def self.to_s; name; end
+
           def self.inspect; name.inspect; end
         end
         result.resource_name two_classes_one_dsl
@@ -846,7 +850,9 @@ describe "Recipe DSL methods" do
             def self.name
               "A"
             end
+
             def self.to_s; name; end
+
             def self.inspect; name.inspect; end
           end
           result.resource_name two_classes_one_dsl
@@ -874,7 +880,9 @@ describe "Recipe DSL methods" do
             def self.name
               "Z"
             end
+
             def self.to_s; name; end
+
             def self.inspect; name.inspect; end
           end
           result.resource_name two_classes_one_dsl
@@ -1009,7 +1017,9 @@ describe "Recipe DSL methods" do
             def self.name
               "B"
             end
+
             def self.to_s; name; end
+
             def self.inspect; name.inspect; end
           end
           result.provides two_classes_one_dsl
@@ -1023,7 +1033,9 @@ describe "Recipe DSL methods" do
               def self.name
                 "A"
               end
+
               def self.to_s; name; end
+
               def self.inspect; name.inspect; end
             end
             result
@@ -1060,7 +1072,9 @@ describe "Recipe DSL methods" do
               def self.name
                 "Z"
               end
+
               def self.to_s; name; end
+
               def self.inspect; name.inspect; end
             end
             result
@@ -1132,7 +1146,9 @@ describe "Recipe DSL methods" do
             def self.name
               "Blarghle"
             end
+
             def self.to_s; name; end
+
             def self.inspect; name.inspect; end
           end
           result.resource_name two_classes_one_dsl
@@ -1170,6 +1186,7 @@ describe "Recipe DSL methods" do
         def self.called_provides
           @called_provides
         end
+
         def to_s
           "MyResource"
         end
@@ -1237,8 +1254,11 @@ describe "Recipe DSL methods" do
               def self.name
                 "MyProvider"
               end
+
               def self.to_s; name; end
+
               def self.inspect; name.inspect; end
+
               def self.called_provides
                 @called_provides
               end
@@ -1256,7 +1276,7 @@ describe "Recipe DSL methods" do
 
             context "with supports? returning true" do
               before do
-                provider_class.define_singleton_method(:supports?) { |resource,action| true }
+                provider_class.define_singleton_method(:supports?) { |resource, action| true }
               end
 
               it "my_resource runs the provider and does not emit a warning" do
@@ -1274,8 +1294,11 @@ describe "Recipe DSL methods" do
                     def self.name
                       "MyProvider2"
                     end
+
                     def self.to_s; name; end
+
                     def self.inspect; name.inspect; end
+
                     def self.called_provides
                       @called_provides
                     end
@@ -1299,7 +1322,7 @@ describe "Recipe DSL methods" do
 
             context "with supports? returning false" do
               before do
-                provider_class.define_singleton_method(:supports?) { |resource,action| false }
+                provider_class.define_singleton_method(:supports?) { |resource, action| false }
               end
 
               # TODO no warning? ick
@@ -1319,8 +1342,11 @@ describe "Recipe DSL methods" do
                     def self.name
                       "MyProvider2"
                     end
+
                     def self.to_s; name; end
+
                     def self.inspect; name.inspect; end
+
                     def self.called_provides
                       @called_provides
                     end
@@ -1475,6 +1501,7 @@ describe "Recipe DSL methods" do
       class Chef::Provider::LwResourceWithHwProviderTestCase < Chef::Provider
         def load_current_resource
         end
+
         def action_create
           new_resource.created_provider = self.class
         end

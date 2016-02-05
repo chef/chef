@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 class Chef
   module Deprecation
     module Provider

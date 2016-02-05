@@ -10,7 +10,6 @@ require "openssl"
 require "webrick"
 require "webrick/https"
 
-
 $ssl = true
 
 CHEF_SPEC_DATA = File.expand_path("../../data", __FILE__)
@@ -21,13 +20,11 @@ key = OpenSSL::PKey::RSA.new(key_text)
 
 server_opts = {}
 if $ssl
-server_opts.merge!( { :SSLEnable => true,
-                :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
-                :SSLCertificate => cert,
-                :SSLPrivateKey => key })
+  server_opts.merge!( { :SSLEnable => true,
+                        :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
+                        :SSLCertificate => cert,
+                        :SSLPrivateKey => key })
 end
-
-
 
 # 5 == debug, 3 == warning
 LOGGER = WEBrick::Log.new(STDOUT, 5)
@@ -48,5 +45,3 @@ server = WEBrick::HTTPServer.new(webrick_opts)
 trap "INT" do server.shutdown end
 
 server.start
-
-

@@ -65,7 +65,7 @@ describe Chef::ResourceCollection do
     end
 
     it "should accept named arguments in any order" do
-      rc.insert(resource, :instance_name => "foo", :resource_type =>"bar")
+      rc.insert(resource, :instance_name => "foo", :resource_type => "bar")
       expect(rc[0]).to eq(resource)
     end
 
@@ -211,7 +211,7 @@ describe Chef::ResourceCollection do
     end
 
     it "raises an error when attempting to find a resource that does not exist" do
-      expect {rc.find("script[nonesuch]")}.to raise_error(Chef::Exceptions::ResourceNotFound)
+      expect { rc.find("script[nonesuch]") }.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
   end
@@ -224,7 +224,6 @@ describe Chef::ResourceCollection do
     it "accepts a single-element :resource_type => 'resource_name' Hash" do
       expect(rc.validate_lookup_spec!(:service => "apache2")).to be_truthy
     end
-
 
     it "accepts a chef resource object" do
       res = Chef::Resource.new("foo", nil)
@@ -286,13 +285,13 @@ describe Chef::ResourceCollection do
 
   def check_by_names(results, *names)
     names.each do |res_name|
-      expect(results.detect{ |res| res.name == res_name }).not_to eql(nil)
+      expect(results.detect { |res| res.name == res_name }).not_to eql(nil)
     end
   end
 
   def load_up_resources
     %w{dog cat monkey}.each do |n|
-       rc << Chef::Resource::ZenMaster.new(n)
+      rc << Chef::Resource::ZenMaster.new(n)
     end
     rc << Chef::Resource::File.new("something")
   end

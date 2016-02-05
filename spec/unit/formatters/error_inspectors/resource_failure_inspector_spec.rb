@@ -95,7 +95,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
         @error = begin
                    @context.render_template_from_string("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno")
-                 rescue  Chef::Mixin::Template::TemplateError => e
+                 rescue Chef::Mixin::Template::TemplateError => e
                    e
                  end
 
@@ -107,7 +107,6 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @description.display(@outputter)
         expect(@stdout.string).to include(@error.source_listing)
       end
-
 
     end
 
@@ -188,6 +187,5 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     end
 
   end
-
 
 end

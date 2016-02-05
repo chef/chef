@@ -191,7 +191,7 @@ describe Chef::Provider::Directory do
       end
 
       it "raises the right exception when the parent directory is a file and recursive is true" do
-        pending "this seems to return the wrong error"  # FIXME
+        pending "this seems to return the wrong error" # FIXME
         FileUtils.touch tmp_dir
         new_resource.recursive true
         expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
@@ -219,7 +219,7 @@ describe Chef::Provider::Directory do
         allow(node).to receive(:[]).with("platform_version").and_return("10.11")
         allow(::File).to receive(:directory?).and_return(true)
         allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
-        expect {directory.run_action(:create) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
+        expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
       end
 
       it "os x 10.11 can write to sip exlcusions" do
@@ -269,7 +269,7 @@ describe Chef::Provider::Directory do
       end
 
       it "cannot delete it and raises an exception" do
-        expect {  directory.run_action(:delete) }.to raise_error(RuntimeError)
+        expect { directory.run_action(:delete) }.to raise_error(RuntimeError)
       end
     end
 
@@ -280,7 +280,7 @@ describe Chef::Provider::Directory do
       end
 
       it "cannot delete it and raises an exception" do
-        expect {  directory.run_action(:delete) }.to raise_error(RuntimeError)
+        expect { directory.run_action(:delete) }.to raise_error(RuntimeError)
       end
     end
   end

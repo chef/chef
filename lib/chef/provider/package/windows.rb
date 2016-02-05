@@ -79,7 +79,7 @@ class Chef
             if new_resource.installer_type
               new_resource.installer_type
             elsif source_location.nil?
-                inferred_registry_type
+              inferred_registry_type
             else
               basename = ::File.basename(source_location)
               file_extension = basename.split(".").last.downcase
@@ -220,7 +220,7 @@ class Chef
             r.backup(false)
 
             if new_resource.remote_file_attributes
-              new_resource.remote_file_attributes.each do |(k,v)|
+              new_resource.remote_file_attributes.each do |(k, v)|
                 r.send(k.to_sym, v)
               end
             end

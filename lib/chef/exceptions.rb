@@ -33,7 +33,7 @@ class Chef
     def self.const_missing(const_name)
       if const_name == :ShellCommandFailed
         Chef::Log.warn("Chef::Exceptions::ShellCommandFailed is deprecated, use Mixlib::ShellOut::ShellCommandFailed")
-        called_from = caller[0..3].inject("Called from:\n") {|msg, trace_line| msg << "  #{trace_line}\n" }
+        called_from = caller[0..3].inject("Called from:\n") { |msg, trace_line| msg << "  #{trace_line}\n" }
         Chef::Log.warn(called_from)
         Mixlib::ShellOut::ShellCommandFailed
       else
@@ -250,7 +250,7 @@ class Chef
 
       attr_reader :expansion
 
-      def initialize(message_or_expansion=NULL)
+      def initialize(message_or_expansion = NULL)
         @expansion = nil
         case message_or_expansion
         when NULL
@@ -449,7 +449,7 @@ This error is most often caused by network issues (proxies, etc) outside of chef
     class RunFailedWrappingError < RuntimeError
       attr_reader :wrapped_errors
       def initialize(*errors)
-        errors = errors.select {|e| !e.nil?}
+        errors = errors.select { |e| !e.nil? }
         output = "Found #{errors.size} errors, they are stored in the backtrace"
         @wrapped_errors = errors
         super output
@@ -457,8 +457,8 @@ This error is most often caused by network issues (proxies, etc) outside of chef
 
       def fill_backtrace
         backtrace = []
-        wrapped_errors.each_with_index do |e,i|
-          backtrace << "#{i+1}) #{e.class} -  #{e.message}"
+        wrapped_errors.each_with_index do |e, i|
+          backtrace << "#{i + 1}) #{e.class} -  #{e.message}"
           backtrace += e.backtrace if e.backtrace
           backtrace << "" unless i == wrapped_errors.length - 1
         end

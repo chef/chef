@@ -92,12 +92,12 @@ describe Chef::Resource::Mount do
   end
 
   it "should allow options to be sent as a delayed evaluator" do
-    @resource.options Chef::DelayedEvaluator.new {["rw", "noexec"]}
+    @resource.options Chef::DelayedEvaluator.new { ["rw", "noexec"] }
     expect(@resource.options).to eql(["rw", "noexec"])
   end
 
   it "should allow options to be sent as a delayed evaluator, and convert to array" do
-    @resource.options Chef::DelayedEvaluator.new {"rw,noexec"}
+    @resource.options Chef::DelayedEvaluator.new { "rw,noexec" }
     expect(@resource.options).to be_a_kind_of(Array)
     expect(@resource.options).to eql(["rw", "noexec"])
   end

@@ -100,7 +100,7 @@ describe Chef::Resource::Cron do
   end
 
   it "should allow you to specify environment variables hash" do
-    env = {"TEST" => "LOL"}
+    env = { "TEST" => "LOL" }
     @resource.environment env
     expect(@resource.environment).to eql(env)
   end

@@ -101,7 +101,7 @@ class Chef
         # Get a list of cookbooks and their versions from the server
         # to check for the existence of a cookbook's dependencies.
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
-        justify_width = @server_side_cookbooks.map {|name| name.size}.max.to_i + 2
+        justify_width = @server_side_cookbooks.map { |name| name.size }.max.to_i + 2
         if config[:all]
           cookbook_repo.load_cookbooks
           cookbooks_for_upload = []
@@ -144,7 +144,6 @@ class Chef
               upload_failures += 1
             end
           end
-
 
           upload_failures += @name_args.length - @cookbooks_to_upload.length
 
@@ -259,7 +258,7 @@ WARNING
           info[CHECKSUM].nil? || info[CHECKSUM] !~ MATCH_CHECKSUM
         end
         unless broken_files.empty?
-          broken_filenames = Array(broken_files).map {|path, info| path}
+          broken_filenames = Array(broken_files).map { |path, info| path }
           ui.error "The cookbook #{cookbook.name} has one or more broken files"
           ui.error "This is probably caused by broken symlinks in the cookbook directory"
           ui.error "The broken file(s) are: #{broken_filenames.join(' ')}"
@@ -275,7 +274,7 @@ WARNING
         end
 
         unless missing_dependencies.empty?
-          missing_cookbook_names = missing_dependencies.map { |cookbook_name, version|  "'#{cookbook_name}' version '#{version}'"}
+          missing_cookbook_names = missing_dependencies.map { |cookbook_name, version| "'#{cookbook_name}' version '#{version}'" }
           ui.error "Cookbook #{cookbook.name} depends on cookbooks which are not currently"
           ui.error "being uploaded and cannot be found on the server."
           ui.error "The missing cookbook(s) are: #{missing_cookbook_names.join(', ')}"
@@ -287,7 +286,7 @@ WARNING
         if @server_side_cookbooks[cookbook_name].nil?
           false
         else
-          versions = @server_side_cookbooks[cookbook_name]["versions"].collect {|versions| versions["version"]}
+          versions = @server_side_cookbooks[cookbook_name]["versions"].collect { |versions| versions["version"] }
           Log.debug "Versions of cookbook '#{cookbook_name}' returned by the server: #{versions.join(", ")}"
           @server_side_cookbooks[cookbook_name]["versions"].each do |versions_hash|
             if Chef::VersionConstraint.new(version).include?(versions_hash["version"])

@@ -80,7 +80,7 @@ Deleted extra entry /roles/x.json (purge is on)
 Deleted extra entry /users/admin.json (purge is on)
 Deleted extra entry /users/x.json (purge is on)
 EOM
-        knife("diff --name-status /").should_succeed <<EOM
+          knife("diff --name-status /").should_succeed <<EOM
 D\t/environments/_default.json
 EOM
         end
@@ -565,7 +565,7 @@ EOM
 
       when_the_chef_server "has an earlier version for the cookbook" do
         before do
-          cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => ""}
+          cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => "" }
           cookbook "x", "0.9.9", { "onlyin0.9.9.rb" => "hi" }
         end
 
@@ -1129,7 +1129,7 @@ EOM
 
       when_the_chef_server "has an earlier version for the cookbook" do
         before do
-          cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => ""}
+          cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => "" }
           cookbook "x", "0.9.9", { "onlyin0.9.9.rb" => "hi" }
         end
         it "knife upload /cookbooks uploads the local version" do
@@ -1248,7 +1248,6 @@ EOM
     end
   end # with versioned cookbooks
 
-
   when_the_chef_server "has a user" do
     before do
       user "x", {}
@@ -1296,8 +1295,8 @@ EOM
           file "members.json", [ "bar" ]
           file "org.json", { "full_name" => "wootles" }
           file "nodes/x.json", {}
-          file "policies/x-1.0.0.json", { }
-          file "policies/blah-1.0.0.json", { }
+          file "policies/x-1.0.0.json", {}
+          file "policies/blah-1.0.0.json", {}
           file "policy_groups/x.json", { "policies" => { "x" => { "revision_id" => "1.0.0" }, "blah" => { "revision_id" => "1.0.0" } } }
           file "roles/x.json", {}
         end
@@ -1397,9 +1396,9 @@ EOM
             environment "x", { "description" => "foo" }
             group "x", { "groups" => [ "admin" ] }
             node "x", { "run_list" => [ "blah" ] }
-            policy "x", "1.0.0", { }
-            policy "x", "1.0.1", { }
-            policy "y", "1.0.0", { }
+            policy "x", "1.0.0", {}
+            policy "x", "1.0.1", {}
+            policy "y", "1.0.0", {}
             policy_group "x", {
               "policies" => {
                 "x" => { "revision_id" => "1.0.1" },
@@ -1443,7 +1442,7 @@ EOM
 
       when_the_repository "has an org.json that changes full_name" do
         before do
-          file "org.json", { "full_name" => "Something Else"}
+          file "org.json", { "full_name" => "Something Else" }
         end
 
         it "knife upload / emits a warning for bar and adds foo and foobar" do

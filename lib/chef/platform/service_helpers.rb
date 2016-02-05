@@ -99,7 +99,7 @@ class Chef
 
         def systemd_is_init?
           ::File.exist?(Chef.path_to("/proc/1/comm")) &&
-            ::File.open(Chef.path_to("/proc/1/comm")).gets.chomp == "systemd" 
+            ::File.open(Chef.path_to("/proc/1/comm")).gets.chomp == "systemd"
         end
 
         def has_systemd_service_unit?(svc_name)

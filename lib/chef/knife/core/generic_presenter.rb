@@ -32,7 +32,7 @@ class Chef
             option :attribute,
               :short => "-a ATTR1 [-a ATTR2]",
               :long => "--attribute ATTR1 [--attribute ATTR2] ",
-              :proc => lambda {|val| @attrs_to_show << val},
+              :proc => lambda { |val| @attrs_to_show << val },
               :description => "Show one or more attributes"
           end
         end
@@ -133,7 +133,7 @@ class Chef
         end
 
         def format_list_for_display(list)
-          config[:with_uri] ? list : list.keys.sort { |a,b| a <=> b }
+          config[:with_uri] ? list : list.keys.sort { |a, b| a <=> b }
         end
 
         def format_for_display(data)
@@ -142,7 +142,7 @@ class Chef
           elsif config[:id_only]
             name_or_id_for(data)
           elsif config[:environment] && data.respond_to?(:chef_environment)
-            {"chef_environment" => data.chef_environment}
+            { "chef_environment" => data.chef_environment }
           else
             data
           end
@@ -162,7 +162,7 @@ class Chef
                    else
                      raise ArgumentError, "format_data_subset_for_display requires attribute, run_list, or id_only config option to be set"
                    end
-          {name_or_id_for(data) => subset }
+          { name_or_id_for(data) => subset }
         end
 
         def name_or_id_for(data)
@@ -173,7 +173,6 @@ class Chef
           config[:attribute] || config[:run_list]
         end
 
-
         def extract_nested_value(data, nested_value_spec)
           nested_value_spec.split(".").each do |attr|
             if data.nil?
@@ -181,7 +180,7 @@ class Chef
               # Must check :[] before attr because spec can include
               #   `keys` - want the key named `keys`, not a list of
               #   available keys.
-            elsif data.respond_to?(:[])  && data.has_key?(attr)
+            elsif data.respond_to?(:[]) && data.has_key?(attr)
               data = data[attr]
             elsif data.respond_to?(attr.to_sym)
               data = data.send(attr.to_sym)
@@ -207,10 +206,10 @@ class Chef
             end
           else
             versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
-              collected[cookbook] = versions["versions"].map {|v| v["version"]}
+              collected[cookbook] = versions["versions"].map { |v| v["version"] }
               collected
             end
-            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map {|name| name.size }.max + 2
+            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map { |name| name.size }.max + 2
             versions_by_cookbook.sort.map do |cookbook, versions|
               "#{cookbook.ljust(key_length)} #{versions.join('  ')}"
             end

@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require "spec_helper"
 
 describe Chef::Util::Selinux do
@@ -62,7 +61,7 @@ describe Chef::Util::Selinux do
     describe "when selinux is enabled" do
       before do
         cmd_result = double("Cmd Result", :exitstatus => 0)
-        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
+        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, { :returns => [0, 1] }).and_return(cmd_result)
       end
 
       it "should report selinux is enabled" do
@@ -75,7 +74,7 @@ describe Chef::Util::Selinux do
     describe "when selinux is disabled" do
       before do
         cmd_result = double("Cmd Result", :exitstatus => 1)
-        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
+        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, { :returns => [0, 1] }).and_return(cmd_result)
       end
 
       it "should report selinux is disabled" do
@@ -88,11 +87,11 @@ describe Chef::Util::Selinux do
     describe "when selinux gives an unexpected status" do
       before do
         cmd_result = double("Cmd Result", :exitstatus => 101)
-        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
+        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, { :returns => [0, 1] }).and_return(cmd_result)
       end
 
       it "should throw an error" do
-        expect {@test_instance.selinux_enabled?}.to raise_error(RuntimeError)
+        expect { @test_instance.selinux_enabled? }.to raise_error(RuntimeError)
       end
     end
   end

@@ -45,10 +45,10 @@ describe Chef::Knife::DataBagShow do
   let(:bag_name) { "sudoing_admins" }
   let(:item_name) { "ME" }
 
-  let(:data_bag_contents) { { "id" => "id", "baz"=>"http://localhost:4000/data/bag_o_data/baz",
-                        "qux"=>"http://localhost:4000/data/bag_o_data/qux"} }
-  let(:enc_hash) {Chef::EncryptedDataBagItem.encrypt_data_bag_item(data_bag_contents, secret)}
-  let(:data_bag) {Chef::DataBagItem.from_hash(data_bag_contents)}
+  let(:data_bag_contents) { { "id" => "id", "baz" => "http://localhost:4000/data/bag_o_data/baz",
+                              "qux" => "http://localhost:4000/data/bag_o_data/qux" } }
+  let(:enc_hash) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(data_bag_contents, secret) }
+  let(:data_bag) { Chef::DataBagItem.from_hash(data_bag_contents) }
   let(:data_bag_with_encoded_hash) { Chef::DataBagItem.from_hash(enc_hash) }
   let(:enc_data_bag) { Chef::EncryptedDataBagItem.new(enc_hash, secret) }
 
@@ -56,7 +56,7 @@ describe Chef::Knife::DataBagShow do
   #
   # let(:raw_hash)  {{ "login_name" => "alphaomega", "id" => item_name }}
   #
-  let(:config) { {format: "json"} }
+  let(:config) { { format: "json" } }
 
   context "Data bag to show is encrypted" do
     before do
@@ -116,7 +116,7 @@ qux: http://localhost:4000/data/bag_o_data/qux}
   it "raises an error when no @name_args are provided" do
     knife.name_args = []
 
-    expect {knife.run}.to exit_with_code(1)
+    expect { knife.run }.to exit_with_code(1)
     expect(stdout.string).to start_with("knife data bag show BAG [ITEM] (options)")
   end
 

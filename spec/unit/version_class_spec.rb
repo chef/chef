@@ -105,7 +105,7 @@ describe Chef::Version do
       a = %w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1}.map do |s|
         Chef::Version.new(s)
       end
-      got = a.sort.map {|v| v.to_s }
+      got = a.sort.map { |v| v.to_s }
       expect(got).to eq(%w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1})
     end
 
@@ -169,4 +169,3 @@ describe Chef::Version do
     end
   end
 end
-

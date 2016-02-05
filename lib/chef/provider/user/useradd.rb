@@ -55,7 +55,7 @@ class Chef
         def check_lock
           # we can get an exit code of 1 even when it's successful on
           # rhel/centos (redhat bug 578534). See additional error checks below.
-          passwd_s = shell_out!("passwd", "-S", new_resource.username, :returns => [0,1])
+          passwd_s = shell_out!("passwd", "-S", new_resource.username, :returns => [0, 1])
           if whyrun_mode? && passwd_s.stdout.empty? && passwd_s.stderr.match(/does not exist/)
             # if we're in whyrun mode and the user is not yet created we assume it would be
             return false

@@ -28,15 +28,15 @@ describe Chef::Formatters::Base do
 
   it "prints a policyfile's name and revision ID" do
     minimal_policyfile = {
-      "revision_id"=> "613f803bdd035d574df7fa6da525b38df45a74ca82b38b79655efed8a189e073",
-      "name"=> "jenkins",
-      "run_list"=> [
+      "revision_id" => "613f803bdd035d574df7fa6da525b38df45a74ca82b38b79655efed8a189e073",
+      "name" => "jenkins",
+      "run_list" => [
         "recipe[apt::default]",
         "recipe[java::default]",
         "recipe[jenkins::master]",
         "recipe[policyfile_demo::default]",
       ],
-      "cookbook_locks"=> { },
+      "cookbook_locks" => {},
     }
 
     formatter.policyfile_loaded(minimal_policyfile)

@@ -31,15 +31,14 @@ def user_provider_for_platform
 end
 
 metadata = { :unix_only => true,
-  :requires_root => true,
-  :not_supported_on_mac_osx => true,
-  :provider => {:user => user_provider_for_platform},
+             :requires_root => true,
+             :not_supported_on_mac_osx => true,
+             :provider => { :user => user_provider_for_platform },
 }
 
 describe Chef::Provider::User::Useradd, metadata do
 
   include Chef::Mixin::ShellOut
-
 
   # Utility code for /etc/passwd interaction, avoid any caching of user records:
   PwEntry = Struct.new(:name, :passwd, :uid, :gid, :gecos, :home, :shell)
@@ -47,7 +46,7 @@ describe Chef::Provider::User::Useradd, metadata do
   class UserNotFound < StandardError; end
 
   def pw_entry
-    passwd_file = File.open("/etc/passwd", "rb") {|f| f.read}
+    passwd_file = File.open("/etc/passwd", "rb") { |f| f.read }
     matcher = /^#{Regexp.escape(username)}.+$/
     if passwd_entry = passwd_file.scan(matcher).first
       PwEntry.new(*passwd_entry.split(":"))
@@ -59,9 +58,9 @@ describe Chef::Provider::User::Useradd, metadata do
   def etc_shadow
     case ohai[:platform]
     when "aix"
-      File.open("/etc/security/passwd") {|f| f.read }
+      File.open("/etc/security/passwd") { |f| f.read }
     else
-      File.open("/etc/shadow") {|f| f.read }
+      File.open("/etc/shadow") { |f| f.read }
     end
   end
 
@@ -104,7 +103,7 @@ describe Chef::Provider::User::Useradd, metadata do
     while max_retries > 0
       begin
         pw_entry # will raise if the user doesn't exist
-        status = shell_out!("userdel", "-r", username, :returns => [0,8,12])
+        status = shell_out!("userdel", "-r", username, :returns => [0, 8, 12])
 
         # Error code 8 during userdel indicates that the user is logged in.
         # This occurs randomly because the accounts daemon holds a lock due to which userdel fails.
@@ -160,7 +159,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
   let(:expected_shadow) do
     if ohai[:platform] == "aix"
-      expected_shadow = "cf-test"  # For aix just check user entry in shadow file
+      expected_shadow = "cf-test" # For aix just check user entry in shadow file
     else
       expected_shadow = "cf-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
     end
@@ -173,7 +172,6 @@ describe Chef::Provider::User::Useradd, metadata do
         user_resource.run_action(:create)
         expect(user_resource).to be_updated_by_last_action
       end
-
 
       it "ensures the user exists" do
         expect(pw_entry.name).to eq(username)
@@ -193,7 +191,6 @@ describe Chef::Provider::User::Useradd, metadata do
           expect(pw_entry.name).to eq(username)
         end
       end
-
 
       context "when uid is set" do
         # Should verify uid not in use...
@@ -296,7 +293,7 @@ describe Chef::Provider::User::Useradd, metadata do
             # Ubuntu 13.04 system, these are commented out, so we'll look at
             # UID_MIN to find the lower limit of the non-system-user range, and
             # use that value in our assertions.
-            login_defs = File.open("/etc/login.defs", "rb") {|f| f.read }
+            login_defs = File.open("/etc/login.defs", "rb") { |f| f.read }
             uid_min_scan = /^UID_MIN\s+(\d+)/
             login_defs.match(uid_min_scan)[1]
           end
@@ -455,7 +452,6 @@ describe Chef::Provider::User::Useradd, metadata do
           end
         end
 
-
         it "ensures the password is set" do
           password_should_be_set
           expect(etc_shadow).to include(expected_shadow)
@@ -483,7 +479,6 @@ describe Chef::Provider::User::Useradd, metadata do
             "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
           end
         end
-
 
         it "ensures the password is set to the desired value" do
           password_should_be_set
@@ -518,7 +513,7 @@ describe Chef::Provider::User::Useradd, metadata do
     let(:user_locked_context?) { false }
 
     def shadow_entry
-      etc_shadow.lines.select {|l| l.include?(username) }.first
+      etc_shadow.lines.select { |l| l.include?(username) }.first
     end
 
     def shadow_password
@@ -595,7 +590,6 @@ describe Chef::Provider::User::Useradd, metadata do
             "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
           end
         end
-
 
         it "locks the user's password" do
           user_account_should_be_locked

@@ -49,7 +49,6 @@ describe Chef::Provider::Service do
     end
   end
 
-
   describe "when disabling the service" do
     it "should disable the service if enabled and set the resource as updated" do
       allow(@current_resource).to receive(:enabled).and_return(true)

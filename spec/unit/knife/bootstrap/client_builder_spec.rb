@@ -18,7 +18,6 @@
 
 require "spec_helper"
 
-
 describe Chef::Knife::Bootstrap::ClientBuilder do
 
   let(:stdout) { StringIO.new }
@@ -131,7 +130,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     end
   end
 
-  context "#create_node!" do    
+  context "#create_node!" do
     before do
       # mock out the rest of #run
       expect(client_builder).to receive(:sanity_check)
@@ -181,8 +180,8 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     end
 
     it "builds a node with first_boot_attributes if they're given" do
-      knife_config[:first_boot_attributes] = {:baz => :quux}
-      expect(node).to receive(:normal_attrs=).with({:baz=>:quux})
+      knife_config[:first_boot_attributes] = { :baz => :quux }
+      expect(node).to receive(:normal_attrs=).with({ :baz => :quux })
       expect(node).to receive(:run_list).with([])
       client_builder.run
     end

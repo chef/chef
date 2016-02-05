@@ -145,14 +145,14 @@ class Chef
         #
         # @return [Boolean] True if all sources exist
         def source_files_exist?
-          resolved_source_array.all? {|s| s && ::File.exist?(s) }
+          resolved_source_array.all? { |s| s && ::File.exist?(s) }
         end
 
         # Helper to return all the nanes of the missing sources for error messages.
         #
         # @return [Array<String>] Array of missing sources
         def missing_sources
-          resolved_source_array.select {|s| s.nil? || !::File.exist?(s) }
+          resolved_source_array.select { |s| s.nil? || !::File.exist?(s) }
         end
 
         def current_package_name_array
@@ -187,14 +187,14 @@ class Chef
         def name_candidate_version
           @name_candidate_version ||=
             begin
-              Hash[name_pkginfo.map {|k, v| [k, v ? v.split("\t")[1].strip : nil] }]
+              Hash[name_pkginfo.map { |k, v| [k, v ? v.split("\t")[1].strip : nil] }]
             end
         end
 
         def name_package_name
           @name_package_name ||=
             begin
-              Hash[name_pkginfo.map {|k, v| [k, v ? v.split("\t")[0] : nil] }]
+              Hash[name_pkginfo.map { |k, v| [k, v ? v.split("\t")[0] : nil] }]
             end
         end
 

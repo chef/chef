@@ -61,7 +61,7 @@ class Chef
       # String::
       #   Location of the pid file for @name
       def pid_file
-         Chef::Config[:pid_file] or "/tmp/#{@name}.pid"
+        Chef::Config[:pid_file] or "/tmp/#{@name}.pid"
       end
 
       # Suck the pid out of pid_file
@@ -100,7 +100,7 @@ class Chef
       # ==== Alternatives
       # If group is left out, the user will be used (changing to user:user)
       #
-      def _change_privilege(user, group=user)
+      def _change_privilege(user, group = user)
         uid, gid = Process.euid, Process.egid
 
         begin

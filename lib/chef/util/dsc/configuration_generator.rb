@@ -70,7 +70,7 @@ class Chef::Util::DSC
     def get_merged_configuration_flags!(configuration_flags, configuration_name)
       merged_configuration_flags = { :outputpath  => configuration_document_directory(configuration_name) }
       if configuration_flags
-        configuration_flags.map do | switch, value |
+        configuration_flags.map do |switch, value|
           if merged_configuration_flags.key?(switch.to_s.downcase.to_sym)
             raise ArgumentError, "The `flags` attribute for the dsc_script resource contained a command line switch :#{switch} that is disallowed."
           end
@@ -114,7 +114,7 @@ Configuration '#{configuration_name}'
 
     def write_document_generation_script(code, configuration_name, imports)
       script_path = "#{@config_directory}/chef_dsc_config.ps1"
-      ::File.open(script_path, "wt") do | script |
+      ::File.open(script_path, "wt") do |script|
         script.write(configuration_code(code, configuration_name, imports))
       end
       script_path
@@ -122,7 +122,7 @@ Configuration '#{configuration_name}'
 
     def find_configuration_document(configuration_name)
       document_directory = configuration_document_directory(configuration_name)
-      document_file_name = ::Dir.entries(document_directory).find { | path | path =~ /.*.mof/ }
+      document_file_name = ::Dir.entries(document_directory).find { |path| path =~ /.*.mof/ }
       ::File.join(document_directory, document_file_name) if document_file_name
     end
 
@@ -131,7 +131,7 @@ Configuration '#{configuration_name}'
     end
 
     def get_configuration_document(document_path)
-      ::File.open(document_path, "rb") do | file |
+      ::File.open(document_path, "rb") do |file|
         file.read
       end
     end

@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::RoleEdit do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleEdit.new
     @knife.config[:print_after] = nil
     @knife.name_args = [ "adam" ]
@@ -75,5 +75,3 @@ describe Chef::Knife::RoleEdit do
     end
   end
 end
-
-

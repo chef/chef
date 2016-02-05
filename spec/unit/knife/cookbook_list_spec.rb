@@ -27,9 +27,9 @@ describe Chef::Knife::CookbookList do
     @base_url = "https://server.example.com/cookbooks"
     @cookbook_data = {}
     @cookbook_names.each do |item|
-      @cookbook_data[item] = {"url" => "#{@base_url}/#{item}",
-                              "versions" => [{"version" => "1.0.1",
-                                              "url" => "#{@base_url}/#{item}/1.0.1"}]}
+      @cookbook_data[item] = { "url" => "#{@base_url}/#{item}",
+                               "versions" => [{ "version" => "1.0.1",
+                                                "url" => "#{@base_url}/#{item}/1.0.1" }] }
     end
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
@@ -38,7 +38,7 @@ describe Chef::Knife::CookbookList do
   describe "run" do
     it "should display the latest version of the cookbooks" do
       expect(@rest_mock).to receive(:get).with("/cookbooks?num_versions=1").
-                                           and_return(@cookbook_data)
+        and_return(@cookbook_data)
       @knife.run
       @cookbook_names.each do |item|
         expect(@stdout.string).to match /#{item}\s+1\.0\.1/
@@ -48,8 +48,8 @@ describe Chef::Knife::CookbookList do
     it "should query cookbooks for the configured environment" do
       @knife.config[:environment] = "production"
       expect(@rest_mock).to receive(:get).
-                 with("/environments/production/cookbooks?num_versions=1").
-                 and_return(@cookbook_data)
+        with("/environments/production/cookbooks?num_versions=1").
+        and_return(@cookbook_data)
       @knife.run
     end
 
@@ -68,15 +68,15 @@ describe Chef::Knife::CookbookList do
     describe "with -a or --all" do
       before do
         @cookbook_names.each do |item|
-          @cookbook_data[item]["versions"] << {"version" => "1.0.0",
-                                               "url" => "#{@base_url}/#{item}/1.0.0"}
+          @cookbook_data[item]["versions"] << { "version" => "1.0.0",
+                                                "url" => "#{@base_url}/#{item}/1.0.0" }
         end
       end
 
       it "should display all versions of the cookbooks" do
         @knife.config[:all_versions] = true
         expect(@rest_mock).to receive(:get).with("/cookbooks?num_versions=all").
-                                             and_return(@cookbook_data)
+          and_return(@cookbook_data)
         @knife.run
         @cookbook_names.each do |item|
           expect(@stdout.string).to match /#{item}\s+1\.0\.1\s+1\.0\.0/

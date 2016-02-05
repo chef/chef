@@ -26,7 +26,7 @@ class Chef
     class Reboot < Chef::Resource
       allowed_actions :request_reboot, :reboot_now, :cancel
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @provider = Chef::Provider::Reboot
 
@@ -36,11 +36,11 @@ class Chef
         # no default action.
       end
 
-      def reason(arg=nil)
+      def reason(arg = nil)
         set_or_return(:reason, arg, :kind_of => String)
       end
 
-      def delay_mins(arg=nil)
+      def delay_mins(arg = nil)
         set_or_return(:delay_mins, arg, :kind_of => Fixnum)
       end
     end

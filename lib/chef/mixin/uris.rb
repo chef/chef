@@ -29,7 +29,6 @@ class Chef
         !!(%r{\A[A-Za-z][A-Za-z0-9+\-\.]*://} =~ source)
       end
 
-
       def as_uri(source)
         begin
           URI.parse(source)

@@ -34,12 +34,15 @@ class MockShellout
       exitstatus: 0,
     }.merge(properties)
   end
+
   def method_missing(name, *args)
     @properties[name.to_sym]
   end
+
   def error?
     exitstatus != 0
   end
+
   def error!
     raise Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with 0, but received #{exitstatus}" if error?
   end

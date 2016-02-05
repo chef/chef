@@ -62,13 +62,13 @@ class Chef
       end
 
       def define_resource_requirements
-       requirements.assert(:reload) do |a|
-         a.assertion { supports[:reload] || @new_resource.reload_command }
-         a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support :reload"
-         # if a service is not declared to support reload, that won't
-         # typically change during the course of a run - so no whyrun
-         # alternative here.
-       end
+        requirements.assert(:reload) do |a|
+          a.assertion { supports[:reload] || @new_resource.reload_command }
+          a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support :reload"
+          # if a service is not declared to support reload, that won't
+          # typically change during the course of a run - so no whyrun
+          # alternative here.
+        end
       end
 
       def action_enable

@@ -22,6 +22,7 @@ describe "Resource::ActionClass#converge_if_changed" do
     let(:resource_class) {
       result = Class.new(Chef::Resource) do
         def self.to_s; resource_name; end
+
         def self.inspect; resource_name.inspect; end
         property :identity1, identity: true, default: "default_identity1"
         property :control1, desired_state: false, default: "default_control1"

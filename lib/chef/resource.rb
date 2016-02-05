@@ -132,7 +132,7 @@ class Chef
     #   used for notifications to this resource).
     # @param run_context The context of the Chef run. Corresponds to #run_context.
     #
-    def initialize(name, run_context=nil)
+    def initialize(name, run_context = nil)
       name(name) unless name.nil?
       @run_context = run_context
       @noop = nil
@@ -167,7 +167,7 @@ class Chef
     # @param arg [Array[Symbol], Symbol] A list of actions (e.g. `:create`)
     # @return [Array[Symbol]] the list of actions.
     #
-    def action(arg=nil)
+    def action(arg = nil)
       if arg
         arg = Array(arg).map(&:to_sym)
         arg.each do |action|
@@ -240,7 +240,7 @@ class Chef
     #     notifies :create, bar
     #   end
     #
-    def notifies(action, resource_spec, timing=:delayed)
+    def notifies(action, resource_spec, timing = :delayed)
       # when using old-style resources(:template => "/foo.txt") style, you
       # could end up with multiple resources.
       validate_resource_spec!(resource_spec)
@@ -327,7 +327,7 @@ class Chef
     #     subscribes :create, [ bar, baz ]
     #   end
     #
-    def subscribes(action, resources, timing=:delayed)
+    def subscribes(action, resources, timing = :delayed)
       resources = [resources].flatten
       resources.each do |resource|
         if resource.is_a?(String)
@@ -364,7 +364,7 @@ class Chef
     # @param opts [Hash] Options control the execution of the command
     # @param block [Proc] A ruby block to run. Ignored if a command is given.
     #
-    def only_if(command=nil, opts={}, &block)
+    def only_if(command = nil, opts = {}, &block)
       if command || block_given?
         @only_if << Conditional.only_if(self, command, opts, &block)
       end
@@ -394,7 +394,7 @@ class Chef
     # @param opts [Hash] Options control the execution of the command
     # @param block [Proc] A ruby block to run. Ignored if a command is given.
     #
-    def not_if(command=nil, opts={}, &block)
+    def not_if(command = nil, opts = {}, &block)
       if command || block_given?
         @not_if << Conditional.not_if(self, command, opts, &block)
       end
@@ -411,7 +411,7 @@ class Chef
     # @param arg [Integer] The number of retries.
     # @return [Integer] The number of retries.
     #
-    def retries(arg=nil)
+    def retries(arg = nil)
       set_or_return(:retries, arg, kind_of: Integer)
     end
     attr_writer :retries
@@ -422,7 +422,7 @@ class Chef
     # @param arg [Integer] The number of seconds to wait between retries.
     # @return [Integer] The number of seconds to wait between retries.
     #
-    def retry_delay(arg=nil)
+    def retry_delay(arg = nil)
       set_or_return(:retry_delay, arg, kind_of: Integer)
     end
     attr_writer :retry_delay
@@ -434,7 +434,7 @@ class Chef
     # @param arg [Boolean] Whether this resource is sensitive or not.
     # @return [Boolean] Whether this resource is sensitive or not.
     #
-    def sensitive(arg=nil)
+    def sensitive(arg = nil)
       set_or_return(:sensitive, arg, :kind_of => [ TrueClass, FalseClass ])
     end
     attr_writer :sensitive
@@ -468,7 +468,7 @@ class Chef
     #   symbol/name.
     # @return [Class, Symbol, String] The Guard interpreter resource.
     #
-    def guard_interpreter(arg=nil)
+    def guard_interpreter(arg = nil)
       if arg.nil?
         @guard_interpreter || @default_guard_interpreter
       else
@@ -535,7 +535,7 @@ class Chef
     # @param arg [Boolean] Whether to ignore failures.
     # @return Whether this resource will ignore failures.
     #
-    def ignore_failure(arg=nil)
+    def ignore_failure(arg = nil)
       set_or_return(:ignore_failure, arg, kind_of: [ TrueClass, FalseClass ])
     end
     attr_writer :ignore_failure
@@ -567,7 +567,7 @@ class Chef
     #
     # @raise Any error that occurs during the actual action.
     #
-    def run_action(action, notification_type=nil, notifying_resource=nil)
+    def run_action(action, notification_type = nil, notifying_resource = nil)
       # reset state in case of multiple actions on the same resource.
       @elapsed_time = 0
       start_time = Time.now
@@ -647,7 +647,7 @@ class Chef
       ivars.each do |ivar|
         if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
           value_string = value.respond_to?(:to_text) ? value.to_text : value.inspect
-          text << "  #{ivar.to_s.sub(/^@/,'')} #{value_string}\n"
+          text << "  #{ivar.to_s.sub(/^@/, '')} #{value_string}\n"
         end
       end
       [@not_if, @only_if].flatten.each do |conditional|
@@ -692,7 +692,7 @@ class Chef
       end
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       safe_ivars.each do |iv|
-        key = iv.to_s.sub(/^@/,"").to_sym
+        key = iv.to_s.sub(/^@/, "").to_sym
         next if result.has_key?(key)
         result[key] = instance_variable_get(iv)
       end
@@ -701,7 +701,7 @@ class Chef
 
     def self.json_create(o)
       resource = self.new(o["instance_vars"]["@name"])
-      o["instance_vars"].each do |k,v|
+      o["instance_vars"].each do |k, v|
         resource.instance_variable_set("@#{k}".to_sym, v)
       end
       resource
@@ -730,7 +730,7 @@ class Chef
     #
     # @see Chef::Resource.action_class
     #
-    def provider(arg=nil)
+    def provider(arg = nil)
       klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
                 lookup_provider_constant(arg)
               else
@@ -739,6 +739,7 @@ class Chef
       set_or_return(:provider, klass, kind_of: [ Class ]) ||
         self.class.action_class
     end
+
     def provider=(arg)
       provider(arg)
     end
@@ -791,7 +792,7 @@ class Chef
     # @raise [ArgumentError] If no arguments are passed and the resource has
     #   more than one identity property.
     #
-    def self.identity_property(name=nil)
+    def self.identity_property(name = nil)
       result = identity_properties(*Array(name))
       if result.size > 1
         raise Chef::Exceptions::MultipleIdentityError, "identity_property cannot be called on an object with more than one identity property (#{result.map { |r| r.name }.join(", ")})."
@@ -813,7 +814,7 @@ class Chef
     # @raise [ArgumentError] If no arguments are passed and the resource has
     #   more than one identity property.
     #
-    def self.identity_attr(name=nil)
+    def self.identity_attr(name = nil)
       property = identity_property(name)
       return nil if !property
       property.name
@@ -842,7 +843,7 @@ class Chef
     #   have.
     #
     attr_accessor :allowed_actions
-    def allowed_actions(value=NOT_PASSED)
+    def allowed_actions(value = NOT_PASSED)
       if value != NOT_PASSED
         self.allowed_actions = value
       end
@@ -900,7 +901,7 @@ class Chef
     def updated=(true_or_false)
       Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
       Chef::Log.warn("Called from:")
-      caller[0..3].each {|line| Chef::Log.warn(line)}
+      caller[0..3].each { |line| Chef::Log.warn(line) }
       updated_by_last_action(true_or_false)
       @updated = true_or_false
     end
@@ -927,13 +928,14 @@ class Chef
     #   this resource. Default: {}
     # @return Hash{Symbol=>Boolean} An array of things this resource supports.
     #
-    def supports(args={})
+    def supports(args = {})
       if args.any?
         @supports = args
       else
         @supports
       end
     end
+
     def supports=(args)
       supports(args)
     end
@@ -977,7 +979,7 @@ class Chef
     #
     # @return [Symbol] The name of this resource type (e.g. `:execute`).
     #
-    def self.resource_name(name=NOT_PASSED)
+    def self.resource_name(name = NOT_PASSED)
       # Setter
       if name != NOT_PASSED
         remove_canonical_dsl
@@ -996,6 +998,7 @@ class Chef
       end
       @resource_name
     end
+
     def self.resource_name=(name)
       resource_name(name)
     end
@@ -1029,7 +1032,7 @@ class Chef
     #
     # @deprecated Use `provides` on the provider, or `provider` on the resource, instead.
     #
-    def self.provider_base(arg=nil)
+    def self.provider_base(arg = nil)
       if arg
         Chef.log_deprecation("Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
       end
@@ -1052,6 +1055,7 @@ class Chef
         end
       @allowed_actions |= actions.flatten
     end
+
     def self.allowed_actions=(value)
       @allowed_actions = value.uniq
     end
@@ -1069,7 +1073,7 @@ class Chef
     #
     # @return [Array<Symbol>] The default actions for the resource.
     #
-    def self.default_action(action_name=NOT_PASSED)
+    def self.default_action(action_name = NOT_PASSED)
       unless action_name.equal?(NOT_PASSED)
         @default_action = Array(action_name).map(&:to_sym)
         self.allowed_actions |= @default_action
@@ -1083,6 +1087,7 @@ class Chef
         [:nothing]
       end
     end
+
     def self.default_action=(action_name)
       default_action action_name
     end
@@ -1313,6 +1318,7 @@ class Chef
     def self.sorted_descendants
       @@sorted_descendants ||= descendants.sort_by { |x| x.to_s }
     end
+
     def self.inherited(child)
       super
       @@sorted_descendants = nil
@@ -1323,7 +1329,6 @@ class Chef
         end
       end
     end
-
 
     # If an unknown method is invoked, determine whether the enclosing Provider's
     # lexical scope can fulfill the request. E.g. This happens when the Resource's
@@ -1444,7 +1449,7 @@ class Chef
     end
 
     # ??? TODO Seems unused.  Delete?
-    def noop(tf=nil)
+    def noop(tf = nil)
       if !tf.nil?
         raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
         @noop = tf
@@ -1540,7 +1545,6 @@ class Chef
         Chef::Resource.const_set(class_name, resource_class)
         deprecated_constants[class_name.to_sym] = resource_class
       end
-
     end
 
     def self.deprecated_constants
@@ -1548,7 +1552,7 @@ class Chef
     end
 
     # @api private
-    def lookup_provider_constant(name, action=:nothing)
+    def lookup_provider_constant(name, action = :nothing)
       begin
         self.class.provider_base.const_get(convert_to_class_name(name.to_s))
       rescue NameError => e

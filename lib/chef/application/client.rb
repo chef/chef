@@ -181,7 +181,7 @@ class Chef::Application::Client < Chef::Application
     :long         => "--version",
     :description  => "Show chef version",
     :boolean      => true,
-    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
     :exit         => 0
 
   option :override_runlist,
@@ -402,6 +402,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
   def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
@@ -461,16 +462,16 @@ class Chef::Application::Client < Chef::Application
 
   def unforked_interval_error_message
     "Unforked chef-client interval runs are disabled in Chef 12." +
-    "\nConfiguration settings:" +
-    "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
-    "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+      "\nConfiguration settings:" +
+      "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+      "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 
   def audit_mode_settings_explanation
     "\n* To enable audit mode after converge, use command line option `--audit-mode enabled` or set `audit_mode :enabled` in your config file." +
-    "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `audit_mode :disabled` in your config file." +
-    "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `audit_mode :audit_only` in your config file." +
-    "\nAudit mode is disabled by default."
+      "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `audit_mode :disabled` in your config file." +
+      "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `audit_mode :audit_only` in your config file." +
+      "\nAudit mode is disabled by default."
   end
 
   def unrecognized_audit_mode(mode)

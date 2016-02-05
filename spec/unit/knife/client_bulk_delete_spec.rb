@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::ClientBulkDelete do
   let(:stdout_io) { StringIO.new }
-  let(:stdout) {stdout_io.string}
+  let(:stdout) { stdout_io.string }
   let(:stderr_io) { StringIO.new }
   let(:stderr) { stderr_io.string }
 
@@ -69,7 +69,7 @@ describe Chef::Knife::ClientBulkDelete do
     clients
   }
 
-  let(:client_names) { nonvalidator_client_names + validator_client_names}
+  let(:client_names) { nonvalidator_client_names + validator_client_names }
   let(:clients) {
     nonvalidator_clients.merge(validator_clients)
   }
@@ -128,7 +128,7 @@ describe Chef::Knife::ClientBulkDelete do
       end
 
       describe "with --delete-validators" do
-        let(:option_args) { {:delete_validators => true} }
+        let(:option_args) { { :delete_validators => true } }
 
         it "should mention that validator clients will be deleted" do
           knife.run

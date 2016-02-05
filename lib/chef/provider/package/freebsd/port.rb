@@ -35,9 +35,9 @@ class Chef
 
           def current_installed_version
             pkg_info = if @new_resource.supports_pkgng?
-                         shell_out_with_timeout!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,70])
+                         shell_out_with_timeout!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0, 70])
                        else
-                         shell_out_with_timeout!("pkg_info -E \"#{@new_resource.package_name}*\"", :env => nil, :returns => [0,1])
+                         shell_out_with_timeout!("pkg_info -E \"#{@new_resource.package_name}*\"", :env => nil, :returns => [0, 1])
                        end
             pkg_info.stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+)/, 1]
           end
