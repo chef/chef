@@ -226,6 +226,11 @@ cat > /etc/chef/first-boot.json <<EOP
 <%= Chef::JSONCompat.to_json(first_boot) %>
 EOP
 
+<% unless client_d.empty? -%>
+mkdir -p /etc/chef/client.d
+<%= client_d %>
+<% end -%>
+
 echo "Starting the first Chef Client run..."
 
 <%= start_chef %>'
